@@ -1,0 +1,65 @@
+services:
+  jaeger:
+    image: jaegertracing/opentelemetry-all-in-one
+    ports:
+    - "16686:16686/tcp"
+  collector:
+    image: otel/opentelemetry-collector
+    volumes:
+    - ./otel-config.yml:/otel-config.yml
+    command: [ "--config=/otel-config.yml" ]
+    depends_on:
+    - jaeger
+  opensearch:
+    image: opensearchproject/opensearch
+    environment:
+      discovery.type: single-node
+    ports:
+    - 9200:9200/tcp
+  benthos:
+    image: jeffail/benthos
+    ports:
+    - "4195:4195/tcp"
+    volumes:
+    - ./benthos:/config
+    working_dir: /config
+    command:
+    - -w
+    - -c
+    - config.yml
+    - --log.level
+    - trace
+    environment:
+      OPENSEARCH_URL: https://opensearch:9200
+      HTTP_CLIENT_TLS_SKIP_CERT_VERIFY: "true"
+      HTTP_CLIENT_TLS_ENABLED: "true"
+      BASIC_AUTH_ENABLED: "true"
+      BASIC_AUTH_USERNAME: "admin"
+      BASIC_AUTH_PASSWORD: "admin"
+      JAEGER_COLLECTOR: "collector:6831"
+      INDEX: "ledger"
+    depends_on:
+    - opensearch
+  search:
+    command: go run main.go
+    build:
+      target: dev
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+    - 8080:8080/tcp
+    depends_on:
+      - opensearch
+      - collector
+    environment:
+      OPEN_SEARCH_SERVICE: "admin:admin@opensearch:9200"
+      DEBUG: "true"
+      OTEL_TRACES: "true"
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_TRACES_EXPORTER_OTLP_ENDPOINT: collector:4317
+      OTEL_TRACES_EXPORTER_OTLP_INSECURE: "true"
+    volumes:
+      - .:/app

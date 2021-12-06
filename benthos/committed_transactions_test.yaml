@@ -1,0 +1,204 @@
+tests:
+- name: Test volumes mapping
+  target_mapping: './committed_transactions.blobl'
+  environment:
+    INDEX: ledger
+  input_batch:
+  - content: |
+      {
+        "date": "2022-03-16T13:11:38.47608275Z",
+        "type": "COMMITTED_TRANSACTIONS",
+        "payload": {
+          "volumes": {
+            "world": {
+              "USD": {
+                "input": 0, 
+                "output": 1000
+              }
+            }, 
+            "bank": {
+              "USD": {
+                "input": 1000, 
+                "output": 0
+              }
+            }
+          }, 
+          "transactions": [
+            {
+              "postings": [{"source":"world","destination":"another","amount":1000,"asset":"USD"}],
+              "reference": "",
+              "metadata": null,
+              "txid": 22,
+              "timestamp": "2022-03-16T13:11:38Z",
+              "hash": "79d4c2b0917952bcf0bd7651b5b227aca2c3d08ca928cf2b2f35b1661e6a8998"
+            }
+          ]
+        },
+        "ledger": "test"
+      }
+  output_batches:
+  -
+    - json_equals: [
+        {
+          "index": {
+            "_id": "TRANSACTION-foo-test-22",
+            "_index": "ledger"
+          }
+        },
+        {
+          "data": {
+            "metadata": {},
+            "postings": [
+              {
+                "amount": 1000,
+                "asset": "USD",
+                "destination": "another",
+                "source": "world"
+              }
+            ],
+            "reference": "",
+            "timestamp": "2022-03-16T13:11:38Z",
+            "txid": 22
+          },
+          "indexed": {
+            "amount": [
+              1000
+            ],
+            "asset": [
+              "USD"
+            ],
+            "destination": [
+              "another"
+            ],
+            "reference": "",
+            "source": [
+              "world"
+            ],
+            "timestamp": "2022-03-16T13:11:38Z",
+            "txid": 22
+          },
+          "kind": "TRANSACTION",
+          "ledger": "test",
+          "when": "2022-03-16T13:11:38.47608275Z"
+        },
+        {
+          "index": {
+            "_id": "ASSET-foo-test-bank-USD",
+            "_index": "ledger"
+          }
+        },
+        {
+          "data": {
+            "account": "bank",
+            "input": 1000,
+            "name": "USD",
+            "output": 0,
+          },
+          "indexed": {
+            "name": "USD",
+            "account": "bank"
+          },
+          "kind": "ASSET",
+          "ledger": "test",
+          "when": "2022-03-16T13:11:38.47608275Z"
+        },
+        {
+          "index": {
+            "_id": "ASSET-foo-test-world-USD",
+            "_index": "ledger"
+          }
+        },
+        {
+          "data": {
+            "account": "world",
+            "input": 0,
+            "name": "USD",
+            "output": 1000,
+          },
+          "indexed": {
+            "name": "USD",
+            "account": "world"
+          },
+          "kind": "ASSET",
+          "ledger": "test",
+          "when": "2022-03-16T13:11:38.47608275Z"
+        },
+      {
+        "update": {
+          "_id": "ACCOUNT-foo-test-bank",
+          "_index": "ledger"
+        }
+      },
+      {
+        "script": {
+          "params": {
+            "asset": "USD",
+            "input": 1000,
+            "output": 0,
+            "when": "2022-03-16T13:11:38.47608275Z"
+          },
+          "source": "ctx._source.when=params.when; ctx._source.data.volumes[params.asset]=[\"output\": params.output, \"input\": params.input]; ctx._source.data.balances[params.asset]=params.input-params.output",
+          "lang": "painless"
+        },
+        "upsert": {
+          "data": {
+            "address": "bank",
+            "balances": {
+              "USD": 1000
+            },
+            "metadata": { },
+            "volumes": {
+              "USD": {
+                "input": 1000,
+                "output": 0
+              }
+            }
+          },
+          "indexed": {
+            "address": "bank"
+          },
+          "kind": "ACCOUNT",
+          "ledger": "test",
+          "when": "2022-03-16T13:11:38.47608275Z"
+        }
+      },
+      {
+        "update": {
+          "_id": "ACCOUNT-foo-test-world",
+          "_index": "ledger"
+        }
+      },
+      {
+        "script": {
+          "lang": "painless",
+          "params": {
+            "asset": "USD",
+            "input": 0,
+            "output": 1000,
+            "when": "2022-03-16T13:11:38.47608275Z"
+          },
+          "source": "ctx._source.when=params.when; ctx._source.data.volumes[params.asset]=[\"output\": params.output, \"input\": params.input]; ctx._source.data.balances[params.asset]=params.input-params.output",
+        },
+        "upsert": {
+          "data": {
+            "address": "world",
+            "balances": {
+              "USD": -1000
+            },
+            "metadata": { },
+            "volumes": {
+              "USD": {
+                "input": 0,
+                "output": 1000
+              }
+            }
+          },
+          "indexed": {
+            "address": "world"
+          },
+          "kind": "ACCOUNT",
+          "ledger": "test",
+          "when": "2022-03-16T13:11:38.47608275Z"
+        }
+      }
+      ]
