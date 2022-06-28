@@ -1,0 +1,17 @@
+name: Pull Request - Open
+on:
+  pull_request:
+    types: [assigned, opened, synchronize, reopened]
+jobs:
+  Infracost:
+    uses: numary/gh-workflows/.github/workflows/infracost-staging.yml@main
+    secrets:
+      TERRAFORM_CLOUD_TOKEN: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
+      INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
+
+  Test:
+    uses: numary/gh-workflows/.github/workflows/go-test.yml@main
+    with:
+      go_version: 1.18
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}

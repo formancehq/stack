@@ -1,0 +1,35 @@
+version: '3'
+
+vars:
+  SERVICE: webhooks
+  APP_VERSION: develop
+  APP_SHA: ksjfsldkf
+
+tasks:
+  tests:
+    cmds:
+      - go test -v -coverpkg=./... -coverprofile=coverage.out ./...
+  ci:
+    cmds:
+      - go env -w GOPRIVATE=github.com/numary/go-libs-cloud
+      - go mod vendor
+
+  build:
+    run: once
+    cmds:
+      - docker build -t numary:{{.SERVICE}}-{{.APP_SHA}} --target app --build-arg APP_SHA={{.APP_SHA}} --build-arg APP_VERSION={{.APP_VERSION}} .
+
+  push-staging:
+    cmds:
+      - docker tag numary:{{.SERVICE}}-{{.APP_SHA}} 955332203423.dkr.ecr.eu-west-1.amazonaws.com/numary:pull-{{.SERVICE}}-{{.APP_SHA}}
+      - docker push 955332203423.dkr.ecr.eu-west-1.amazonaws.com/numary:pull-{{.SERVICE}}-{{.APP_SHA}}
+
+  push-main:
+    cmds:
+      - docker tag numary:{{.SERVICE}}-{{.APP_SHA}} 955332203423.dkr.ecr.eu-west-1.amazonaws.com/numary:{{.SERVICE}}-main
+      - docker push 955332203423.dkr.ecr.eu-west-1.amazonaws.com/numary:{{.SERVICE}}-main
+
+  push-prod:
+    cmds:
+      - docker tag numary:{{.SERVICE}}-{{.APP_SHA}} 288350113309.dkr.ecr.eu-west-1.amazonaws.com/numary:{{.SERVICE}}-{{.APP_VERSION}}
+      - docker push 288350113309.dkr.ecr.eu-west-1.amazonaws.com/numary:{{.SERVICE}}-{{.APP_VERSION}}

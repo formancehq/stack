@@ -1,0 +1,26 @@
+name: release
+on:
+  release:
+    types: [prereleased, released]
+
+jobs:
+  Build:
+    uses: numary/gh-workflows/.github/workflows/docker-build-prod.yml@main
+    with:
+      go_version: 1.18
+      service: webhooks
+      version: ${{ github.event.release.tag_name }}
+      sha: ${{ github.sha }}
+      env: prod
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+
+  Deploy:
+    needs:
+      - Build
+    uses: numary/gh-workflows/.github/workflows/deploy-production.yml@main
+    with:
+      service: webhooks
+      version: ${{ github.event.release.tag_name }}
+    secrets:
+      ARGOCD_TOKEN: ${{ secrets.ARGOCD_PRODUCTION }}
