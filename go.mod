@@ -1,4 +1,4 @@
-module webhooks-cloud
+module github.com/numary/webhooks-cloud
 
 go 1.18
 
