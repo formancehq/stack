@@ -1,0 +1,35 @@
+services:
+  collector:
+    image: otel/opentelemetry-collector
+  benthos:
+    image: jeffail/benthos
+    ports:
+    - "4195:4195/tcp"
+    volumes:
+    - ./.cloud/helm/benthos:/config
+    working_dir: /config
+    command:
+    - -w
+    - -c
+    - config.yml
+    - --log.level
+    - trace
+    environment:
+      HTTP_CLIENT_TLS_SKIP_CERT_VERIFY: "true"
+      HTTP_CLIENT_TLS_ENABLED: "true"
+      BASIC_AUTH_ENABLED: "true"
+      BASIC_AUTH_USERNAME: "admin"
+      BASIC_AUTH_PASSWORD: "admin"
+      JAEGER_COLLECTOR: "collector:6831"
+      INDEX: "ledger"
+  webhooks:
+    command: reflex -r '\.go' -s -- sh -c "go run ./"
+    build:
+      target: dev
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - .:/app

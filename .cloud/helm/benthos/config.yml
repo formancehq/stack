@@ -1,0 +1,35 @@
+http:
+  enabled: true
+  address: 0.0.0.0:4195
+
+tracer:
+  jaeger:
+    agent_address: "${JAEGER_COLLECTOR}"
+    service_name: webhooks-ingester
+
+input:
+  broker:
+    inputs:
+    - http_server:
+        path: /
+        allowed_verbs:
+        - POST
+    - kafka:
+        consumer_group: webhooks
+        addresses:
+        - ${KAFKA_ADDRESS}
+        topics:
+        - ${KAFKA_TOPIC}
+        client_id: webhooks-benthos-ingester
+        tls:
+          enabled: ${KAFKA_TLS_ENABLED}
+        sasl:
+          enabled: ${KAFKA_SASL_ENABLED}
+          mechanism: ${KAFKA_SASL_MECHANISM}
+          user: ${KAFKA_SASL_USER}
+          password: ${KAFKA_SASL_PASSWORD}
+
+output:
+  broker:
+    outputs:
+      - stdout: {}

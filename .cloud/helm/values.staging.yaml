@@ -27,3 +27,6 @@ global:
 auth:
   audienceTemplate: "https://<organization>.o.staging.numary.cloud"
   introspectUrl: "https://api.staging.numary.cloud/auth/introspect"
+
+kafka:
+  topic: defaults,ledger,payments

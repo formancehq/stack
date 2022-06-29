@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-serviceName: search
+serviceName: webhooks
 env: dev
 awsAccountId: "955332203423"
 
@@ -12,7 +12,7 @@ hpaMaxReplicas: 20
 
 image:
   repository: dkr.ecr.eu-west-1.amazonaws.com/numary
-  tag: search-main
+  tag: webhooks-main
 
 resource:
   ephemeral: true
@@ -22,26 +22,7 @@ ephemeralName: ""
 
 global:
   exposeUrl: ""
-  elasticSearch: opensearch-cluster-master:9200
-  elasticSearchScheme: http
   auth: http://auth
-
-opensearch:
-  antiAffinity: soft
-  opensearchJavaOpts: "-Xmx128m -Xms128m"
-  resources:
-    requests:
-      cpu: 100m
-      memory: 412m
-  replicas: 1
-  minimumMasterNodes: 0
-  config:
-    opensearch.yml: |
-      cluster.name: opensearch-cluster
-      network.host: 0.0.0.0
-      plugins:
-        security:
-          disabled: true
 
 kafka:
   topic: defaults,ledger,payments
