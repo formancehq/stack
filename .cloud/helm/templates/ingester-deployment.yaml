@@ -3,8 +3,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: {{ .Values.serviceName }}-ingester
-  name: {{ .Values.serviceName }}-ingester
+    app: {{ .Values.serviceName }}-ingest
+  name: {{ .Values.serviceName }}-ingest
 spec:
   replicas: 1
   revisionHistoryLimit: 2
@@ -15,21 +15,21 @@ spec:
       maxSurge: 1
   selector:
     matchLabels:
-      app: {{ .Values.serviceName }}-ingester
+      app: {{ .Values.serviceName }}-ingest
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/ingester-configmap.yaml") . | sha256sum }}
         ad.datadoghq.com/{{ .Values.serviceName }}.logs: '[{"source":"kubernetes","service":"{{ .Values.serviceName }}"}]'
       labels:
-        app: {{ .Values.serviceName }}-ingester
-        tags.datadoghq.com/{{ .Values.serviceName }}-ingester.service: "{{ .Values.serviceName }}-ingester"
+        app: {{ .Values.serviceName }}-ingest
+        tags.datadoghq.com/{{ .Values.serviceName }}-ingest.service: "{{ .Values.serviceName }}-ingest"
     spec:
       serviceAccountName: {{ .Values.serviceName }}-cluster-secret-manager
       volumes:
         - name: config
           configMap:
-            name: {{ .Values.serviceName }}-ingester-config
+            name: {{ .Values.serviceName }}-ingest-config
         - name: secrets-store-inline
           csi:
             driver: secrets-store.csi.k8s.io
@@ -100,7 +100,7 @@ spec:
           value: $(HOST):14268
         ports:
         - containerPort: 8080
-          name: {{ .Values.serviceName }}-ingester
+          name: {{ .Values.serviceName }}-ingest
         resources:
           limits:
             cpu: 500m

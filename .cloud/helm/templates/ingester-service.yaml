@@ -2,12 +2,12 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: {{ .Values.serviceName }}-ingester
-  name: {{ .Values.serviceName }}-ingester
+    app: {{ .Values.serviceName }}-ingest
+  name: {{ .Values.serviceName }}-ingest
 spec:
   ports:
-    - name: {{ .Values.serviceName }}-ingester
+    - name: {{ .Values.serviceName }}-ingest
       port: 4195
       targetPort: 4195
   selector:
-    app: {{ .Values.serviceName }}-ingester
+    app: {{ .Values.serviceName }}-ingest

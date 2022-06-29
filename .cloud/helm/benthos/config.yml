@@ -5,7 +5,7 @@ http:
 tracer:
   jaeger:
     agent_address: "${JAEGER_COLLECTOR}"
-    service_name: webhooks-ingester
+    service_name: webhooks-ingest
 
 input:
   broker:
@@ -20,7 +20,7 @@ input:
         - ${KAFKA_ADDRESS}
         topics:
         - ${KAFKA_TOPIC}
-        client_id: webhooks-benthos-ingester
+        client_id: webhooks-benthos-ingest
         tls:
           enabled: ${KAFKA_TLS_ENABLED}
         sasl:
