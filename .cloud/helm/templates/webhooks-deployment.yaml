@@ -35,14 +35,6 @@ spec:
           name: {{ .Values.serviceName }}
           imagePullPolicy: Always
           env:
-            - name: DD_AGENT_HOST
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.hostIP
-            - name: DD_TRACE_AGENT_HOST
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.hostIP
             - name: ENV
               value: {{ .Values.env }}
             - name: AUTH_BEARER_AUDIENCE_TEMPLATE
@@ -61,4 +53,3 @@ spec:
             requests:
               cpu: 500m
               memory: 512Mi
-
