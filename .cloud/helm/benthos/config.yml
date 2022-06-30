@@ -34,7 +34,7 @@ output:
     outputs:
       - stdout: {}
       - http_client:
-          url: https://webhooks:8080
+          url: http://webhooks:80
           verb: POST
           headers:
             Content-Type: application/json
