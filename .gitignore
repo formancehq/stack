@@ -1,3 +1,5 @@
 .env
 .idea
-./webhooks*
+webhooks
+coverage.out
+coverage.html

@@ -33,3 +33,8 @@ output:
   broker:
     outputs:
       - stdout: {}
+      - http_client:
+          url: https://webhooks:8080
+          verb: POST
+          headers:
+            Content-Type: application/json
