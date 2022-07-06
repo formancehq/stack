@@ -10,8 +10,11 @@ jobs:
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
 
   Test:
-    uses: numary/gh-workflows/.github/workflows/go-test.yml@main
+    uses: numary/gh-workflows/.github/workflows/golang-test.yml@main
     with:
       go_version: 1.18
-    secrets:
-      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+
+  Lint:
+    uses: numary/gh-workflows/.github/workflows/golang-lint.yml@main
+    with:
+      go_version: 1.18

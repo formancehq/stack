@@ -25,6 +25,7 @@ linters:
     - varcheck    #Default linter
     - gofmt
     - gci
+    - goimports
 
 run:
   timeout: 5m
