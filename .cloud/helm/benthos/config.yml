@@ -29,6 +29,22 @@ input:
           user: ${KAFKA_SASL_USER}
           password: ${KAFKA_SASL_PASSWORD}
 
+pipeline:
+  processors:
+    - json_schema:
+        schema: '{"type": "object"}'
+    - catch:
+        - log:
+            level: ERROR
+            message: "Schema validation failed due to: ${!error()}"
+        - bloblang: root = deleted()
+    - log:
+        level: DEBUG
+        message: log
+        fields_mapping: |
+          root.message = this.parse_json()
+          root.meta = meta()
+
 output:
   broker:
     outputs:

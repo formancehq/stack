@@ -25,7 +25,7 @@ global:
   auth: http://auth
 
 kafka:
-  topic: defaults,ledger,payments
+  topic: defaults,ledger,payments,reports,auth
   tls:
     enabled: true
   sasl:

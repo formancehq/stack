@@ -29,4 +29,4 @@ auth:
   introspectUrl: "https://api.staging.numary.cloud/auth/introspect"
 
 kafka:
-  topic: defaults,ledger,payments
+  topic: defaults,ledger,payments,reports,auth
