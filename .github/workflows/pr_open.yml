@@ -9,6 +9,9 @@ jobs:
       TERRAFORM_CLOUD_TOKEN: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
 
+  Pr:
+    uses: numary/gh-workflows/.github/workflows/pr-style.yml@main
+
   Test:
     uses: numary/gh-workflows/.github/workflows/golang-test.yml@main
     with:

@@ -4,8 +4,15 @@ on:
     types: [prereleased, released]
 
 jobs:
+  Test:
+    uses: numary/gh-workflows/.github/workflows/golang-test.yml@main
+    with:
+      go_version: 1.18
+
   Build:
     uses: numary/gh-workflows/.github/workflows/docker-build-prod.yml@main
+    needs:
+      - Test
     with:
       go_version: 1.18
       service: webhooks
