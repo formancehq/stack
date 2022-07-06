@@ -39,7 +39,7 @@ pipeline:
             message: "Schema validation failed due to: ${!error()}"
         - bloblang: root = deleted()
     - log:
-        level: DEBUG
+        level: INFO
         message: log
         fields_mapping: |
           root.message = this
