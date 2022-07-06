@@ -42,7 +42,7 @@ pipeline:
         level: DEBUG
         message: log
         fields_mapping: |
-          root.message = this.parse_json()
+          root.message = this
           root.meta = meta()
 
 output:
