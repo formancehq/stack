@@ -1,0 +1,18 @@
+
+{"@timestamp":"2022-07-07T14:37:46Z","@service":"benthos",
+ "component":"benthos.pipeline.processor.0","date":"2022-07-07T14:37:46.684Z",
+ "payload":{"organization":{"activated":false,"id":"ad4b13ce-d9a7-4212-ad71-8a02dee11763","name":"test-antoine-benthos"}},
+ "type":"CREATED_ORGANIZATION","level":"INFO","message":"LOG-BEFORE"}
+
+{"@timestamp":"2022-07-07T14:37:46Z","@service":"benthos",
+ "_organization":"ad4b13ce-d9a7-4212-ad71-8a02dee11763","_type":"CREATED_ORGANIZATION",
+ "component":"benthos.pipeline.processor.10","date":"2022-07-07T14:37:46.684Z",
+ "meta":{"kafka_lag":"0","kafka_offset":"622","kafka_partition":"1","kafka_timestamp_unix":"1657204666","kafka_topic":"auth","organization":"ad4b13ce-d9a7-4212-ad71-8a02dee11763","x-datadog-origin":"rum","x-datadog-parent-id":"7200159180972644369","x-datadog-sampled":"1","x-datadog-sampling-priority":"1","x-datadog-trace-id":"8208736328154880936"},
+ "payload":{"organization":{"activated":false,"id":"ad4b13ce-d9a7-4212-ad71-8a02dee11763","name":"test-antoine-benthos"}},
+ "type":"CREATED_ORGANIZATION","level":"INFO","message":"LOG-AFTER"}
+
+  {
+    "uid":"ad4b13ce-d9a7-4212-ad71-8a02dee11763",
+    "name":"test-antoine-benthos",
+    "rateLimit": 1000
+  }

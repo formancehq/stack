@@ -10,6 +10,8 @@ tracer:
 input:
   broker:
     inputs:
+    - http_server:
+        path: /
     - kafka:
         consumer_group: webhooks
         addresses:
@@ -27,11 +29,6 @@ input:
 
 pipeline:
   processors:
-    - log:
-        level: INFO
-        message: "LOG-BEFORE"
-        fields_mapping: root = this
-
     - json_schema:
         schema: '{"type": "object"}'
     - catch:
@@ -75,7 +72,7 @@ pipeline:
 
     - log:
         level: INFO
-        message: "LOG-AFTER"
+        message: "END OF PIPELINE"
         fields_mapping: root = this
 
 output:
@@ -84,10 +81,17 @@ output:
       - check: this.type == "CREATED_ORGANIZATION"
         output:
           http_client:
-            url: http://webhooks:80/organizations
+            url: https://api.eu.svix.com/api/v1/app
             verb: POST
+            propagate_response: true
             headers:
               Content-Type: application/json
+              Authorization: "Bearer testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb"
+          processors:
+            - bloblang: |
+                root.uid = this._organisation
+                root.name = this.payload.organization.name
+                root.rateLimit = 1000
 
       - check: this.type == "DELETED_ORGANIZATION"
         output:

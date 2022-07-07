@@ -29,7 +29,6 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc(healthCheckPath, healthCheckHandler)
-	router.HandleFunc(organizationsPath, createOrganizationHandler).Methods(http.MethodPost)
 	router.HandleFunc(organizationsPath, deleteOrganizationHandler).Methods(http.MethodDelete)
 	router.HandleFunc(trashPath, trashHandler).Methods(http.MethodPost)
 
@@ -42,18 +41,6 @@ func main() {
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	logger.Infof("health check OK")
-	w.WriteHeader(http.StatusOK)
-}
-
-func createOrganizationHandler(w http.ResponseWriter, r *http.Request) {
-	b, err := io.ReadAll(r.Body)
-	if err != nil {
-		logger.Errorf("%s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	logger.Infof("CREATE:%s", string(b))
 	w.WriteHeader(http.StatusOK)
 }
 
