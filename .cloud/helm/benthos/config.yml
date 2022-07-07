@@ -60,9 +60,9 @@ pipeline:
         - bloblang: root = deleted()
 
     - bloblang: |
-      root = this
-      root.meta = meta()
-      root.type = this.type | "unknown"
+        root = this
+        root.meta = meta()
+        root.type = this.type | "unknown"
 
     - log:
         level: INFO
