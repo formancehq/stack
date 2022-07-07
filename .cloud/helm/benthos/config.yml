@@ -10,10 +10,6 @@ tracer:
 input:
   broker:
     inputs:
-    - http_server:
-        path: /
-        allowed_verbs:
-        - POST
     - kafka:
         consumer_group: webhooks
         addresses:
@@ -31,6 +27,11 @@ input:
 
 pipeline:
   processors:
+    - log:
+        level: INFO
+        message: "LOG-BEFORE"
+        fields_mapping: root = this
+
     - json_schema:
         schema: '{"type": "object"}'
     - catch:
@@ -38,19 +39,58 @@ pipeline:
             level: ERROR
             message: "Schema validation failed due to: ${!error()}"
         - bloblang: root = deleted()
+
+    - bloblang: |
+        root = this
+        meta organization = if (meta("Message-Metadata") != null).catch(false) {
+          meta("Message-Metadata").parse_json().organization
+        }
+    - bloblang: |
+        root = this
+        meta organization = if (meta("Organization") != null).catch(false) {
+          meta("Organization")
+        }
+    - bloblang: |
+        root = this
+        _ = meta("organization")
+    - catch:
+        - log:
+            level: ERROR
+            message: 'Skipping message because missing "organization" metadata'
+        - bloblang: root = deleted()
+
+    - bloblang: |
+      root = this
+      root.meta = meta()
+      root.type = this.type | "unknown"
+
     - log:
         level: INFO
-        message: log
-        fields_mapping: |
-          root.message = this
-          root.meta = meta()
+        message: "LOG-AFTER"
+        fields_mapping: root = this
 
 output:
-  broker:
-    outputs:
-      - stdout: {}
-      - http_client:
-          url: http://webhooks:80/_ingest
-          verb: POST
-          headers:
+  switch:
+    cases:
+      - check: this.type == "CREATED_ORGANIZATION"
+        output:
+          http_client:
+            url: http://webhooks:80/organizations
+            verb: POST
+            headers:
             Content-Type: application/json
+
+      - check: this.type == "DELETED_ORGANIZATION"
+        output:
+          http_client:
+            url: http://webhooks:80/organizations
+            verb: DELETE
+            headers:
+              Content-Type: application/json
+
+      - output:
+          http_client:
+            url: http://webhooks:80/trash
+            verb: POST
+            headers:
+              Content-Type: application/json
