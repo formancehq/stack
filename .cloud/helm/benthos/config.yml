@@ -83,7 +83,7 @@ output:
       - check: this.type == "CREATED_ORGANIZATION"
         output:
           http_client:
-            url: https://api.eu.svix.com/api/v1/app
+            url: https://api.eu.svix.com/api/v1/app/
             verb: POST
             propagate_response: true
             headers:
