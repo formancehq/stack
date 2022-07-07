@@ -60,6 +60,7 @@ pipeline:
         - log:
             level: ERROR
             message: 'Skipping message because missing "organization" metadata'
+            fields_mapping: root = this
         - bloblang: root = deleted()
     - bloblang: |
         root = this
@@ -68,6 +69,7 @@ pipeline:
         - log:
             level: ERROR
             message: 'Skipping message because missing "type" key'
+            fields_mapping: root = this
         - bloblang: root = deleted()
 
     - log:
