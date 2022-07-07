@@ -42,8 +42,8 @@ pipeline:
 
     - bloblang: |
         root = this
-        meta organization = if (root.payload.organization.id) != null).catch(false) {
-          root.payload.organization.id
+        meta organization = if (this.root.payload.organization.id) != null).catch(false) {
+          this.root.payload.organization.id
         }
     - bloblang: |
         root = this
