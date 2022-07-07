@@ -78,7 +78,7 @@ output:
             url: http://webhooks:80/organizations
             verb: POST
             headers:
-            Content-Type: application/json
+              Content-Type: application/json
 
       - check: this.type == "DELETED_ORGANIZATION"
         output:
