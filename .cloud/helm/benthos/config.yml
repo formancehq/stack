@@ -92,7 +92,7 @@ output:
           processors:
             - bloblang: |
                 root.uid = this._organisation
-                root.name = this.payload.organization.name
+                root.name = "%s-%s-%s".format(meta("organization"), this.payload.organization.name, now())
                 root.rateLimit = 1000
 
       - check: this.type == "DELETED_ORGANIZATION"
