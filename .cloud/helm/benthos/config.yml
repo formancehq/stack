@@ -42,6 +42,11 @@ pipeline:
 
     - bloblang: |
         root = this
+        meta organization = if (root.payload.organization.id) != null).catch(false) {
+          root.payload.organization.id
+        }
+    - bloblang: |
+        root = this
         meta organization = if (meta("Message-Metadata") != null).catch(false) {
           meta("Message-Metadata").parse_json().organization
         }
@@ -52,17 +57,21 @@ pipeline:
         }
     - bloblang: |
         root = this
-        _ = meta("organization")
+        root.meta = meta()
+        _organization = meta("organization")
     - catch:
         - log:
             level: ERROR
             message: 'Skipping message because missing "organization" metadata'
         - bloblang: root = deleted()
-
     - bloblang: |
         root = this
-        root.meta = meta()
-        root.type = this.type | "unknown"
+        _type = this.type
+    - catch:
+        - log:
+            level: ERROR
+            message: 'Skipping message because missing "type" key'
+        - bloblang: root = deleted()
 
     - log:
         level: INFO
