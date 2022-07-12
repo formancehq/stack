@@ -5,7 +5,6 @@ http:
 tracer:
   jaeger:
     agent_address: "${JAEGER_COLLECTOR}"
-    service_name: webhooks-ingest
 
 input:
   broker:
@@ -13,7 +12,6 @@ input:
     - http_server:
         path: /
     - kafka:
-        consumer_group: webhooks
         addresses:
         - ${KAFKA_ADDRESS}
         topics:
@@ -22,10 +20,9 @@ input:
         tls:
           enabled: ${KAFKA_TLS_ENABLED}
         sasl:
-          enabled: ${KAFKA_SASL_ENABLED}
-          mechanism: ${KAFKA_SASL_MECHANISM}
           user: ${KAFKA_SASL_USER}
           password: ${KAFKA_SASL_PASSWORD}
+          mechanism: "SCRAM-SHA-512"
 
 pipeline:
   processors:
@@ -34,48 +31,38 @@ pipeline:
     - catch:
         - log:
             level: ERROR
-            message: "Schema validation failed due to: ${!error()}"
-        - bloblang: root = deleted()
+            message: "message deleted: invalid JSON format: ${!error()}"
+            fields_mapping: |-
+              root._status = "Deleted"
+              root._error = "ErrInvalidJSON"
+        - bloblang: root = if errored() { deleted() }
 
     - bloblang: |
         root = this
-        meta organization = if (this.payload.organization.id != null).catch(false) {
-          this.payload.organization.id
+        meta organization = match {
+          meta("organization") != null => meta("organization")
+          meta("Organization") != null => meta("Organization")
+          meta("Message-Metadata") != null && meta("Message-Metadata").parse_json().organization != null => meta("Message-Metadata").parse_json().organization
+          this.type == "CREATED_ORGANIZATION" && this.exists("payload.organization.id") => this.payload.organization.id
+          this.type == "DELETED_ORGANIZATION" && this.exists("id") => this.id
+          _ => throw("missing organization")
         }
-    - bloblang: |
-        root = this
-        meta organization = if (meta("Message-Metadata") != null).catch(false) {
-          meta("Message-Metadata").parse_json().organization
-        }
-    - bloblang: |
-        root = this
-        meta organization = if (meta("Organization") != null).catch(false) {
-          meta("Organization")
-        }
-    - bloblang: |
-        root = this
-        root.meta = meta()
-        _organization = meta("organization")
     - catch:
         - log:
             level: ERROR
-            message: 'Skipping message because missing "organization" metadata'
-            fields_mapping: root = this
-        - bloblang: root = deleted()
-    - bloblang: |
-        root = this
-        _type = this.type
-    - catch:
-        - log:
-            level: ERROR
-            message: 'Skipping message because missing "type" key'
-            fields_mapping: root = this
-        - bloblang: root = deleted()
+            message: "message deleted: ${!error()}"
+            fields_mapping: |-
+              root._status = "Deleted"
+              root._error = "ErrMissingOrganization"
+        - bloblang: root = if errored() { deleted() }
 
     - log:
         level: INFO
-        message: "END OF PIPELINE"
-        fields_mapping: root = this
+        message: "message passed pipeline successfully"
+        fields_mapping: |-
+          root = this
+          root._status = "Succeeded"
+          root._error = ""
 
 output:
   switch:
@@ -88,24 +75,31 @@ output:
             propagate_response: true
             headers:
               Content-Type: application/json
-              Authorization: "Bearer testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb"
+              Authorization: "Bearer ${SVIX_API_KEY_DEV}"
           processors:
             - bloblang: |
-                root.uid = this._organisation
-                root.name = "%s-%s-%s".format(meta("organization"), this.payload.organization.name, now())
+                root.uid = meta("organization")
+                root.name = "%s (%s)".format(this.payload.organization.name, meta("organization"))
                 root.rateLimit = 1000
+            - log:
+                level: INFO
+                message: Svix app created
+                fields_mapping: root = this
 
       - check: this.type == "DELETED_ORGANIZATION"
         output:
           http_client:
-            url: http://webhooks:80/organizations
+            url: https://api.eu.svix.com/api/v1/app/${! meta("organisation") }/
             verb: DELETE
+            propagate_response: true
             headers:
               Content-Type: application/json
+              Authorization: "Bearer ${SVIX_API_KEY_DEV}"
+          processors:
+            - log:
+                level: INFO
+                message: Svix app deleted
+                fields_mapping: root = this
 
       - output:
-          http_client:
-            url: http://webhooks:80/trash
-            verb: POST
-            headers:
-              Content-Type: application/json
+          stdout: {}

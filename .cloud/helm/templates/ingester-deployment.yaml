@@ -98,6 +98,8 @@ spec:
               fieldPath: status.hostIP
         - name: JAEGER_COLLECTOR
           value: $(HOST):14268
+        - name: SVIX_API_KEY_DEV
+          value: "testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb"
         ports:
         - containerPort: 8080
           name: {{ .Values.serviceName }}-ingest

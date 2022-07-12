@@ -14,6 +14,8 @@ install: build
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
 		| sh -s -- -b $(shell go env GOPATH)/bin latest
 	golangci-lint --version
+	curl -Lsf https://sh.benthos.dev | bash
+	benthos --version
 
 lint:
 	golangci-lint run -v --fix
@@ -27,6 +29,7 @@ test:
 	@echo "To open the html coverage file, use one of the following commands:"
 	@echo "open coverage.html on mac"
 	@echo "xdg-open coverage.html on linux"
+	benthos test --log ALL .cloud/helm/benthos/*
 
 bench:
 	go test -v -bench=. -run=^a $(PKG)
