@@ -31,9 +31,6 @@ test:
 	@echo "xdg-open coverage.html on linux"
 	benthos test --log ALL .cloud/helm/benthos/*
 
-bench:
-	go test -v -bench=. -run=^a $(PKG)
-
 clean:
 	go clean
 	rm -f $(BINARY_NAME) $(COVERAGE_FILE)

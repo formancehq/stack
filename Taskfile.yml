@@ -9,6 +9,8 @@ tasks:
   tests:
     cmds:
       - go test -v -coverpkg=./... -coverprofile=coverage.out ./...
+      - curl -Lsf https://sh.benthos.dev | bash
+      - benthos test --log ALL .cloud/helm/benthos/*
   ci:
     cmds:
       - go env -w GOPRIVATE=github.com/numary/go-libs-cloud

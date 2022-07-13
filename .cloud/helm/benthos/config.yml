@@ -100,6 +100,3 @@ output:
                 level: INFO
                 message: Svix app deleted
                 fields_mapping: root = this
-
-      - output:
-          stdout: {}
