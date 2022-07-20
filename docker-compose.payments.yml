@@ -1,0 +1,35 @@
+---
+version: '3.9'
+volumes:
+  mongodb_data:
+services:
+  mongodb:
+    image: mongo:5.0
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u admin -p $MONGODB_ROOT_PASSWORD --quiet | grep 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: formance
+      MONGO_INITDB_DATABASE: payments
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017/tcp"
+  payments:
+    image: "ghcr.io/numary/payments:v0.1.0"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: "mongodb://admin:formance@mongodb:27017"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.payments.rule=Host(`localhost`) && PathPrefix(`/payments`)
+      - traefik.http.routers.payments.entrypoints=web
+      - traefik.http.services.payments.loadbalancer.server.port=8080
+      - traefik.http.middlewares.payments.stripprefix.prefixes=/payments
+      - traefik.http.routers.payments.middlewares=payments@docker
