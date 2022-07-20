@@ -30,7 +30,7 @@ services:
       MONGODB_URI: "mongodb://admin:formance@mongodb:27017"
       PUBLISHER_KAFKA_ENABLED: true
       PUBLISHER_KAFKA_BROKER: kafka:9092
-      PUBLISHER_TOPIC_MAPPING: "*:ledger"
+      PUBLISHER_TOPIC_MAPPING: "*:payments"
     labels:
       - traefik.enable=true
       - traefik.http.routers.payments.rule=Host(`localhost`) && PathPrefix(`/payments`)

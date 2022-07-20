@@ -3,7 +3,7 @@
 version: '3'
 
 vars:
-  COMPOSE_FILE: -f docker-compose.proxy.yml -f docker-compose.ledger.yml -f docker-compose.payments.yml -f docker-compose.core.yml
+  COMPOSE_FILE: -f docker-compose.proxy.yml -f docker-compose.ledger.yml -f docker-compose.payments.yml -f docker-compose.core.yml -f docker-compose.search.yml
 
 tasks:
   run:
