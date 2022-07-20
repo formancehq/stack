@@ -25,3 +25,17 @@ services:
       - zookeeper
     volumes:
       - "kafka_data:/bitnami"
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      SERVER_SERVLET_CONTEXT_PATH: /kafka-ui
+    depends_on:
+      kafka:
+        condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.kafka-ui.rule=Host(`localhost`) && PathPrefix(`/kafka-ui`)
+      - traefik.http.routers.kafka-ui.entrypoints=web
+      - traefik.http.services.kafka-ui.loadbalancer.server.port=8080
