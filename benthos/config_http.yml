@@ -5,7 +5,7 @@ http:
 tracer:
   jaeger:
     agent_address: "${JAEGER_COLLECTOR}"
-    service_name: search-ingester
+    service_name: ${SERVICE_NAME}
 
 input:
   broker:
@@ -28,17 +28,17 @@ pipeline:
       - check: this.type == "SAVED_METADATA"
         processors:
         - bloblang: |
-            import "./saved_metadata.blobl"
+            import "./../saved_metadata.blobl"
             root = this.apply("savedMetadata")
       - check: this.type == "COMMITTED_TRANSACTIONS"
         processors:
         - bloblang: |
-            import "./committed_transactions.blobl"
+            import "./../committed_transactions.blobl"
             root = this.apply("committedTransactions")
       - check: this.type == "SAVED_PAYMENT"
         processors:
         - bloblang: |
-            import "./saved_payment.blobl"
+            import "./../saved_payment.blobl"
             root = this.apply("savedPayment")
       - processors:
         - bloblang: |
@@ -58,9 +58,9 @@ output:
           headers:
             Content-Type: application/x-ndjson
           tls:
-            enabled: ${HTTP_CLIENT_TLS_ENABLED}
-            skip_cert_verify: ${HTTP_CLIENT_TLS_SKIP_CERT_VERIFY}
+            enabled: ${OPENSEARCH_TLS_ENABLED}
+            skip_cert_verify: ${OPENSEARCH_TLS_SKIP_CERT_VERIFY}
           basic_auth:
-            enabled: ${BASIC_AUTH_ENABLED}
-            username: ${BASIC_AUTH_USERNAME}
-            password: ${BASIC_AUTH_PASSWORD}
+            enabled: ${OPENSEARCH_BASIC_AUTH_ENABLED}
+            username: ${OPENSEARCH_AUTH_USERNAME}
+            password: ${OPENSEARCH_AUTH_PASSWORD}
