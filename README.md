@@ -2,8 +2,7 @@
 
 ## Env vars
 ### Ingester
-- BENTHOS_MODE: kafka (default) or http
-#### Input for Kafka
+#### Input
 - KAFKA_ADDRESS
 - KAFKA_TOPIC
 - KAFKA_VERSION
@@ -13,6 +12,7 @@
 - SERVICE_NAME
 #### Output
 - OPENSEARCH_URL
+- OPENSEARCH_INDEX
 - OPENSEARCH_TLS_ENABLED
 - OPENSEARCH_TLS_SKIP_CERT_VERIFY
 - OPENSEARCH_BASIC_AUTH_ENABLED

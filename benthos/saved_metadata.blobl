@@ -4,7 +4,7 @@ map savedMetadata {
     root = [{
       "update": {
           "_id": "%s-%s-%s".format(this.payload.targetType, this.ledger, this.payload.targetId),
-          "_index": env("INDEX")
+          "_index": env("OPENSEARCH_INDEX")
       }
     }, {
         "script": {

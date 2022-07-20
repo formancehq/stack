@@ -28,17 +28,17 @@ pipeline:
         - check: this.type == "SAVED_METADATA"
           processors:
             - bloblang: |
-                import "./../saved_metadata.blobl"
+                import "/config/saved_metadata.blobl"
                 root = this.apply("savedMetadata")
         - check: this.type == "COMMITTED_TRANSACTIONS"
           processors:
             - bloblang: |
-                import "./../committed_transactions.blobl"
+                import "/config/committed_transactions.blobl"
                 root = this.apply("committedTransactions")
         - check: this.type == "SAVED_PAYMENT"
           processors:
             - bloblang: |
-                import "./../saved_payment.blobl"
+                import "/config/saved_payment.blobl"
                 root = this.apply("savedPayment")
         - processors:
             - bloblang: |
