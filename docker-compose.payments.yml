@@ -6,7 +6,7 @@ services:
   mongodb:
     image: mongo:5.0
     healthcheck:
-      test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u admin -p $MONGODB_ROOT_PASSWORD --quiet | grep 1
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u admin -p $MONGO_INITDB_DATABASE --quiet | grep 1
       interval: 10s
       timeout: 10s
       retries: 5
@@ -24,8 +24,13 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
     environment:
       MONGODB_URI: "mongodb://admin:formance@mongodb:27017"
+      PUBLISHER_KAFKA_ENABLED: true
+      PUBLISHER_KAFKA_BROKER: kafka:9092
+      PUBLISHER_TOPIC_MAPPING: "*:ledger"
     labels:
       - traefik.enable=true
       - traefik.http.routers.payments.rule=Host(`localhost`) && PathPrefix(`/payments`)

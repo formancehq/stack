@@ -25,10 +25,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
     environment:
       NUMARY_STORAGE_DRIVER: "postgres"
       NUMARY_STORAGE_POSTGRES_CONN_STRING: "postgresql://ledger:ledger@postgres/ledger"
       NUMARY_SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
+      NUMARY_PUBLISHER_KAFKA_ENABLED: true
+      NUMARY_PUBLISHER_KAFKA_BROKER: kafka:9092
+      NUMARY_PUBLISHER_TOPIC_MAPPING: "*:ledger"
     labels:
       - traefik.enable=true
       - traefik.http.routers.ledger.rule=Host(`localhost`) && PathPrefix(`/ledger`)

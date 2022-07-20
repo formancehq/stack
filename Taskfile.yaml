@@ -25,3 +25,5 @@ tasks:
     cmds:
       - docker-compose {{.COMPOSE_FILE}} rm -f
       - docker volume remove stack_postgres_data
+      - docker volume remove stack_mongodb_data
+      - docker volume remove stack_kafka_data
