@@ -28,7 +28,7 @@ services:
       - "5601:5601"
 
   search-ingester:
-    image: "ghcr.io/numary/search-ingester:661ca84c07125202ecbdd57b81bbcc964e1af505"
+    image: "ghcr.io/numary/search-ingester:v0.1.0"
     depends_on:
       opensearch:
         condition: service_healthy
@@ -46,7 +46,7 @@ services:
       OPENSEARCH_BASIC_AUTH_ENABLED: "false"
 
   search:
-    image: "ghcr.io/numary/search:661ca84c07125202ecbdd57b81bbcc964e1af505"
+    image: "ghcr.io/numary/search:v0.1.0"
     depends_on:
       opensearch:
         condition: service_healthy
