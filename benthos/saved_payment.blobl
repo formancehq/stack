@@ -3,7 +3,7 @@ map savedPayment {
 	root = [{
      "index": {
          "_id": "PAYMENT-%s".format(this.payload.id),
-         "_index": env("INDEX")
+         "_index": env("OPENSEARCH_INDEX")
      }
    }, {
         "data": this.payload,

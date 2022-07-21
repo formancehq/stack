@@ -160,7 +160,7 @@ func TestSearchEngine(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	pipelineDir := "../../pipelines"
+	pipelineDir := "../../tests/pipelines"
 	dir, err := os.ReadDir(pipelineDir)
 	assert.NoError(t, err)
 

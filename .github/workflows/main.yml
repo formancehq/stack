@@ -28,13 +28,13 @@ jobs:
     needs:
       - Test
 
-  build_docker:
-    name: 'Build & Publish Docker'
+  DockerSearch:
+    name: 'Build Docker for Search'
     runs-on: ubuntu-latest
     needs:
       - Test
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -45,13 +45,82 @@ jobs:
           registry: ghcr.io
           username: "NumaryBot"
           password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - name: Build and push
+      - name: Build and push Released
+        if: inputs.RELEASE == 'released'
         uses: docker/build-push-action@v2
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/search:main,ghcr.io/numary/search:${{ github.sha }}
+          tags: ghcr.io/numary/search:latest,ghcr.io/numary/search:VERSION=${{ github.event.release.tag_name }}
+          build-args: |
+            APP_SHA=${{ github.sha }}
+            VERSION=${{ github.event.release.tag_name }}
+      - name: Build and push PreReleased
+        if: inputs.RELEASE == 'prereleased'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/numary/search:VERSION=${{ github.event.release.tag_name }}
+          build-args: |
+            APP_SHA=${{ github.sha }}
+            VERSION=${{ github.event.release.tag_name }}
+      - name: Build and push
+        if: inputs.RELEASE != 'released' || inputs.RELEASE != 'prereleased'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/numary/search:${{ github.sha }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=develop
+
+
+  DockerIngester:
+    name: 'Build Docker for Ingester'
+    runs-on: ubuntu-latest
+    needs:
+      - Test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: "NumaryBot"
+          password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - name: Build and push Released
+        if: inputs.RELEASE == 'released'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          file: benthos.Dockerfile
+          push: true
+          tags: ghcr.io/numary/search-ingester:latest,ghcr.io/numary/search-ingester:${{ github.event.release.tag_name }}
+      - name: Build and push PreReleased
+        if: inputs.RELEASE == 'prereleased'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          file: benthos.Dockerfile
+          push: true
+          tags: ghcr.io/numary/search-ingester:${{ github.event.release.tag_name }}
+      - name: Build and push
+        if: inputs.RELEASE != 'released' || inputs.RELEASE != 'prereleased'
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          file: benthos.Dockerfile
+          push: true
+          tags: ghcr.io/numary/search-ingester:${{ github.sha }}
