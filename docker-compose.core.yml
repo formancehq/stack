@@ -23,8 +23,8 @@ services:
       ALLOW_PLAINTEXT_LISTENER: yes
     depends_on:
       - zookeeper
-    volumes:
-      - "kafka_data:/bitnami"
+#    volumes:
+#      - "kafka_data:/bitnami"
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     environment:
