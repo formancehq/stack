@@ -62,7 +62,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/search:latest,ghcr.io/numary/search:VERSION=${{ github.event.release.tag_name }}
+          tags: ghcr.io/numary/search:latest,ghcr.io/numary/search:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
@@ -73,7 +73,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/search:VERSION=${{ github.event.release.tag_name }}
+          tags: ghcr.io/numary/search:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
