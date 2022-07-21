@@ -32,7 +32,7 @@ jobs:
   Release:
     if: github.event_name == 'release'
     uses: numary/gh-workflows/.github/workflows/goreleaser-release.yml@main
-    with:
+    secrets:
       FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
     needs:
