@@ -24,7 +24,17 @@ jobs:
       go_version: 1.18
 
   Build:
+    if: github.event_name != 'release'
     uses: numary/gh-workflows/.github/workflows/goreleaser-build.yml@main
+    needs:
+      - Test
+
+  Release:
+    if: github.event_name == 'release'
+    uses: numary/gh-workflows/.github/workflows/goreleaser-release.yml@main
+    with:
+      FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
     needs:
       - Test
 
@@ -46,7 +56,7 @@ jobs:
           username: "NumaryBot"
           password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
       - name: Build and push Released
-        if: inputs.RELEASE == 'released'
+        if: github.event.action == 'released'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -57,7 +67,7 @@ jobs:
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
       - name: Build and push PreReleased
-        if: inputs.RELEASE == 'prereleased'
+        if: github.event.action == 'prereleased'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -68,7 +78,7 @@ jobs:
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
       - name: Build and push
-        if: inputs.RELEASE != 'released' || inputs.RELEASE != 'prereleased'
+        if: github.event.action != 'released' || github.event.action != 'prereleased'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -98,7 +108,7 @@ jobs:
           username: "NumaryBot"
           password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
       - name: Build and push Released
-        if: inputs.RELEASE == 'released'
+        if: github.event.action == 'released'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -107,7 +117,7 @@ jobs:
           push: true
           tags: ghcr.io/numary/search-ingester:latest,ghcr.io/numary/search-ingester:${{ github.event.release.tag_name }}
       - name: Build and push PreReleased
-        if: inputs.RELEASE == 'prereleased'
+        if: github.event.action == 'prereleased'
         uses: docker/build-push-action@v2
         with:
           context: .
@@ -116,7 +126,7 @@ jobs:
           push: true
           tags: ghcr.io/numary/search-ingester:${{ github.event.release.tag_name }}
       - name: Build and push
-        if: inputs.RELEASE != 'released' || inputs.RELEASE != 'prereleased'
+        if: github.event.action != 'released' || github.event.action != 'prereleased'
         uses: docker/build-push-action@v2
         with:
           context: .
