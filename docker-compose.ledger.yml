@@ -39,5 +39,5 @@ services:
       - traefik.http.routers.ledger.rule=Host(`localhost`) && PathPrefix(`/ledger`)
       - traefik.http.routers.ledger.entrypoints=web
       - traefik.http.services.ledger.loadbalancer.server.port=3068
+      - traefik.http.routers.ledger.middlewares=ledger@docker,cors@docker
       - traefik.http.middlewares.ledger.stripprefix.prefixes=/ledger
-      - traefik.http.routers.ledger.middlewares=ledger@docker

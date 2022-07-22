@@ -37,4 +37,4 @@ services:
       - traefik.http.routers.payments.entrypoints=web
       - traefik.http.services.payments.loadbalancer.server.port=8080
       - traefik.http.middlewares.payments.stripprefix.prefixes=/payments
-      - traefik.http.routers.payments.middlewares=payments@docker
+      - traefik.http.routers.payments.middlewares=payments@docker,cors@docker

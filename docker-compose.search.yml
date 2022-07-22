@@ -62,4 +62,4 @@ services:
       - traefik.http.routers.search.entrypoints=web
       - traefik.http.services.search.loadbalancer.server.port=8080
       - traefik.http.middlewares.search.stripprefix.prefixes=/search
-      - traefik.http.routers.search.middlewares=search@docker
+      - traefik.http.routers.search.middlewares=search@docker,cors@docker
