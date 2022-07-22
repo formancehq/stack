@@ -18,19 +18,13 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func HealthHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}
-}
-
 func resolveQuery(r *http.Request) (*cursorTokenInfo, interface{}, error) {
-
 	var (
 		target      string
 		cursorToken string
 		info        *cursorTokenInfo
 	)
+
 	if r.ContentLength > 0 {
 		type resolveQuery struct {
 			Target      string `json:"target"`
@@ -127,6 +121,7 @@ func resolveQuery(r *http.Request) (*cursorTokenInfo, interface{}, error) {
 			}
 		}
 	}
+
 	return info, searchQuery, nil
 }
 
@@ -138,7 +133,10 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 			return
 		}
 
-		r.ParseForm()
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 
 		cursor, searchQuery, err := resolveQuery(r)
 		if err != nil {
@@ -206,15 +204,15 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 					TermPolicy: qq.TermPolicy,
 					Terms:      qq.Terms,
 				}
-				for _, sort := range qq.Sort {
-					value := gjson.Get(string(item), sort.Key)
+				for _, s := range qq.Sort {
+					value := gjson.Get(string(item), s.Key)
 					nextNti.SearchAfter = append(nextNti.SearchAfter, value.Value())
 				}
 				next = EncodePaginationToken(*nextNti)
 			}
 			previous := ""
 			if cursor != nil && (!reverse || (reverse && hasMore)) {
-				sort := make([]searchengine.Sort, 0)
+				var sort []searchengine.Sort
 				if cursor.Reverse {
 					sort = cursor.Sort
 				} else {
@@ -230,8 +228,8 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 					Terms:      qq.Terms,
 				}
 				firstItem := items[0]
-				for _, sort := range qq.Sort {
-					value := gjson.Get(string(firstItem), sort.Key)
+				for _, s := range qq.Sort {
+					value := gjson.Get(string(firstItem), s.Key)
 					previousNti.SearchAfter = append(previousNti.SearchAfter, value.Value())
 				}
 				previous = EncodePaginationToken(*previousNti)

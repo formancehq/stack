@@ -112,15 +112,6 @@ func insertAccount(t *testing.T, ledgerName, id string, when time.Time, payload 
 	})
 }
 
-func insertPayment(t *testing.T, id string, when time.Time, payload interface{}) {
-	insertESDocument(t, id, "PAYMENT",
-		map[string]interface{}{
-			"kind": "PAYMENT",
-			"when": when,
-			"data": payload,
-		})
-}
-
 func TestSearchEngine(t *testing.T) {
 
 	if testing.Verbose() {
