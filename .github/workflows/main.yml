@@ -23,6 +23,7 @@ jobs:
     if: github.event_name != 'release'
     uses: numary/gh-workflows/.github/workflows/goreleaser-build.yml@main
     needs:
+      - Lint
       - Test
 
   Release:
@@ -32,12 +33,14 @@ jobs:
       FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
     needs:
+      - Lint
       - Test
 
   DockerSearch:
     name: 'Build Docker for Search'
     runs-on: ubuntu-latest
     needs:
+      - Lint
       - Test
     steps:
       - uses: actions/checkout@v3
@@ -90,6 +93,7 @@ jobs:
     name: 'Build Docker for Ingester'
     runs-on: ubuntu-latest
     needs:
+      - Lint
       - Test
     steps:
       - uses: actions/checkout@v3
