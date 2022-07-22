@@ -28,7 +28,7 @@ type cursorTokenInfo struct {
 	SearchAfter []interface{}       `json:"searchAfter"`
 	Ledgers     []string            `json:"ledgers"`
 	Size        uint64              `json:"size"`
-	TermPolicy  string              `json:"termPolicy""`
+	TermPolicy  string              `json:"termPolicy"`
 	Reverse     bool                `json:"reverse"`
 	Terms       []string            `json:"terms"`
 }
