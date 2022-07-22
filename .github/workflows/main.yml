@@ -15,13 +15,9 @@ jobs:
 
   Lint:
     uses: numary/gh-workflows/.github/workflows/golang-lint.yml@main
-    with:
-      go_version: 1.18
 
   Test:
     uses: numary/gh-workflows/.github/workflows/golang-test.yml@main
-    with:
-      go_version: 1.18
 
   Build:
     if: github.event_name != 'release'
