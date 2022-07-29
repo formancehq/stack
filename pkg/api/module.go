@@ -7,8 +7,9 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(addr string) fx.Option {
+func Module(issuer, addr string) fx.Option {
 	return fx.Options(
+		fx.Supply(Issuer(issuer)),
 		fx.Provide(fx.Annotate(NewRouter, fx.As(new(http.Handler)))),
 		fx.Invoke(func(lc fx.Lifecycle, handler http.Handler) {
 			lc.Append(fx.Hook{
@@ -17,5 +18,6 @@ func Module(addr string) fx.Option {
 				},
 			})
 		}),
+		fx.Provide(NewOpenIDProvider),
 	)
 }
