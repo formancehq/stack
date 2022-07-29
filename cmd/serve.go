@@ -1,13 +1,14 @@
 package cmd
 
 import (
+	"github.com/numary/auth/pkg/api"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )
 
 var fxOptions = []fx.Option{
-	// TODO: Add fx options
+	api.Module(":8080"),
 	fx.Invoke(func() {
 		sharedlogging.Infof("App started.")
 	}),
