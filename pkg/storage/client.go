@@ -1,21 +1,25 @@
 package storage
 
 import (
-	"fmt"
 	"time"
 
 	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/delegatedauth"
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
+	"golang.org/x/oauth2"
 )
 
 type clientFacade struct {
-	Client *auth.Client
+	Client              *auth.Client
+	delegatedAuthConfig delegatedauth.OAuth2Config
 }
 
-func newClientFacade(client *auth.Client) *clientFacade {
-	return &clientFacade{client}
+func newClientFacade(client *auth.Client, delegatedAuthConfig delegatedauth.OAuth2Config) *clientFacade {
+	return &clientFacade{
+		Client:              client,
+		delegatedAuthConfig: delegatedAuthConfig,
+	}
 }
 
 //GetID must return the client_id
@@ -57,16 +61,9 @@ func (c *clientFacade) GrantTypes() []oidc.GrantType {
 //LoginURL will be called to redirect the user (agent) to the login UI
 //you could implement some logic here to redirect the users to different login UIs depending on the client
 func (c *clientFacade) LoginURL(id string) string {
-	// TODO: Need to provide the dex client
-	dexClientId := "gateway"
-	dexRedirectUri := "http://127.0.0.1:8080/authorize/callback" // TODO: Make configurable
-
-	state := delegatedauth.DelegatedState{
+	return c.delegatedAuthConfig.AuthCodeURL(delegatedauth.DelegatedState{
 		AuthRequestID: id,
-	}
-
-	return fmt.Sprintf("http://localhost:5556/dex/auth?client_id=%s&response_type=code&scope=openid+email"+
-		"&redirect_uri=%s&state=%s", dexClientId, dexRedirectUri, state.EncodeAsUrlParam())
+	}.EncodeAsUrlParam(), oauth2.SetAuthURLParam("scope", "openid email"))
 }
 
 //AccessTokenType must return the type of access token the client uses (Bearer (opaque) or JWT)

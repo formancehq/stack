@@ -9,7 +9,7 @@ import (
 )
 
 func NewRouter(provider op.OpenIDProvider, storage storage.Storage,
-	delegatedOAuth2Config *delegatedauth.OAuth2Config, delegatedOIDCProvider *oidc.Provider) *mux.Router {
+	delegatedOAuth2Config delegatedauth.OAuth2Config, delegatedOIDCProvider *oidc.Provider) *mux.Router {
 	router := mux.NewRouter()
 	router.NewRoute().Path("/authorize/callback").Handler(authorizeCallbackHandler(
 		provider, storage, delegatedOAuth2Config, delegatedOIDCProvider))

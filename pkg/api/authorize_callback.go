@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/coreos/go-oidc"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/delegatedauth"
@@ -16,7 +17,7 @@ import (
 func authorizeCallbackHandler(
 	provider op.OpenIDProvider,
 	storage storage.Storage,
-	delegatedOAuth2Config *oauth2.Config,
+	delegatedOAuth2Config oauth2.Config,
 	delegatedOIDCProvider *oidc.Provider,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -25,12 +26,14 @@ func authorizeCallbackHandler(
 		if err != nil {
 			panic(err)
 		}
+		spew.Dump(state)
 
 		authRequest, err := storage.AuthRequestByID(context.Background(), state.AuthRequestID)
 		if err != nil {
 			panic(err)
 		}
 
+		spew.Dump(r.URL.Query().Get("code"))
 		token, err := delegatedOAuth2Config.Exchange(context.Background(), r.URL.Query().Get("code"))
 		if err != nil {
 			panic(err)

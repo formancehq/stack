@@ -32,18 +32,20 @@ var serveCmd = &cobra.Command{
 		return bindFlagsToViper(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
+
 		issuer := viper.GetString(issuerFlag)
 		if issuer == "" {
 			return errors.New("issuer has to be defined")
 		}
 		app := fx.New(
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-			fx.Supply(&delegatedauth.OAuth2Config{
+			fx.Supply(delegatedauth.OAuth2Config{
 				//TODO: Make configurable
 				ClientID:     "gateway",
 				ClientSecret: "ZXhhbXBsZS1hcHAtc2VjcmV0",
 				Endpoint: oauth2.Endpoint{
-					TokenURL: "http://dex:5556/dex/token",
+					AuthURL:  "http://localhost:5556/dex/auth",
+					TokenURL: "http://localhost:5556/dex/token",
 				},
 				RedirectURL: "http://127.0.0.1:8080/authorize/callback",
 			}),

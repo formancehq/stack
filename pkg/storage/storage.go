@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/numary/auth-membership-gateway/pkg"
 	"github.com/numary/auth/pkg"
+	"github.com/numary/auth/pkg/delegatedauth"
 	"golang.org/x/text/language"
 	"gopkg.in/square/go-jose.v2"
 	"gorm.io/gorm"
@@ -42,9 +43,10 @@ type Storage interface {
 var _ Storage = (*storage)(nil)
 
 type storage struct {
-	services   map[string]pkg.Service
-	signingKey signingKey
-	db         *gorm.DB
+	services            map[string]pkg.Service
+	signingKey          signingKey
+	db                  *gorm.DB
+	delegatedAuthConfig delegatedauth.OAuth2Config
 }
 
 func (s *storage) ClientCredentialsTokenRequest(ctx context.Context, clientID string, scopes []string) (op.TokenRequest, error) {
@@ -84,9 +86,10 @@ type signingKey struct {
 	Key       *rsa.PrivateKey
 }
 
-func New(db *gorm.DB) *storage {
+func New(db *gorm.DB, config delegatedauth.OAuth2Config) *storage {
 	key, _ := rsa.GenerateKey(rand.Reader, 2048)
 	return &storage{
+		delegatedAuthConfig: config,
 		services: map[string]pkg.Service{
 			"service": {
 				Keys: map[string]*rsa.PublicKey{
@@ -332,7 +335,7 @@ func (s *storage) GetClientByClientID(ctx context.Context, clientID string) (op.
 	if err != nil {
 		return nil, err
 	}
-	return newClientFacade(client), nil
+	return newClientFacade(client, s.delegatedAuthConfig), nil
 }
 
 //AuthorizeClientIDSecret implements the op.Storage interface
