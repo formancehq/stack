@@ -20,6 +20,7 @@ type Client struct {
 	IdTokenUserinfoClaimsAssertion bool
 	ClockSkew                      time.Duration
 	PostLogoutRedirectUri          Array[string] `gorm:"type:text"`
+	Scopes                         Array[string] `gorm:"type:text"`
 }
 
 //WebClient will create a client of type web, which will always use Basic Auth and allow the use of refresh tokens

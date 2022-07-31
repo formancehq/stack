@@ -4,13 +4,7 @@ import (
 	"time"
 
 	"github.com/numary/auth/pkg"
-	"github.com/zitadel/oidc/pkg/op"
 )
-
-//RefreshTokenRequestFromBusiness will simply wrap the internal RefreshToken to implement the op.RefreshTokenRequest interface
-func RefreshTokenRequestFromBusiness(token *auth.RefreshToken) op.RefreshTokenRequest {
-	return &RefreshTokenRequest{token}
-}
 
 type RefreshTokenRequest struct {
 	*auth.RefreshToken

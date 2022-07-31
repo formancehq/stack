@@ -3,6 +3,8 @@ package cmd
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 
 	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/api"
@@ -59,8 +61,13 @@ var serveCmd = &cobra.Command{
 							Clauses(clause.OnConflict{
 								Columns: []clause.Column{{Name: "id"}},
 								DoUpdates: clause.Assignments(map[string]interface{}{
-									"grant_types":              auth.Array[oidc.GrantType]{oidc.GrantTypeCode, oidc.GrantTypeRefreshToken},
+									"grant_types": auth.Array[oidc.GrantType]{
+										oidc.GrantTypeCode,
+										oidc.GrantTypeRefreshToken,
+										oidc.GrantTypeClientCredentials,
+									},
 									"post_logout_redirect_uri": `["http://localhost:3000/"]`,
+									"scopes":                   fmt.Sprintf(`["%s"]`, strings.Join(auth.Scopes, `", "`)),
 								}),
 							}).
 							Create(&auth.Client{
@@ -69,12 +76,17 @@ var serveCmd = &cobra.Command{
 								RedirectURIs: auth.Array[string]{
 									"http://localhost:3000/auth-callback",
 								},
-								ApplicationType:       op.ApplicationTypeWeb,
-								AuthMethod:            oidc.AuthMethodNone,
-								ResponseTypes:         []oidc.ResponseType{oidc.ResponseTypeCode},
-								GrantTypes:            []oidc.GrantType{oidc.GrantTypeCode, oidc.GrantTypeRefreshToken},
+								ApplicationType: op.ApplicationTypeWeb,
+								AuthMethod:      oidc.AuthMethodNone,
+								ResponseTypes:   []oidc.ResponseType{oidc.ResponseTypeCode},
+								GrantTypes: []oidc.GrantType{
+									oidc.GrantTypeCode,
+									oidc.GrantTypeRefreshToken,
+									oidc.GrantTypeClientCredentials,
+								},
 								AccessTokenType:       op.AccessTokenTypeBearer,
 								PostLogoutRedirectUri: auth.Array[string]{"http://localhost:3000/"},
+								Scopes:                auth.Scopes,
 							}).Error
 					},
 				})

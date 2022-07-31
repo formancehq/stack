@@ -33,6 +33,7 @@ var (
 
 type Storage interface {
 	op.Storage
+	op.ClientCredentialsStorage
 	MarkAuthRequestAsDone(ctx context.Context, id, subject string) error
 	CreateUser(ctx context.Context, user *auth.User) error
 	FindUserByEmail(ctx context.Context, email string) (*auth.User, error)
@@ -44,6 +45,25 @@ type storage struct {
 	services   map[string]pkg.Service
 	signingKey signingKey
 	db         *gorm.DB
+}
+
+func (s *storage) ClientCredentialsTokenRequest(ctx context.Context, clientID string, scopes []string) (op.TokenRequest, error) {
+	client, err := s.getClientByClientID(ctx, clientID)
+	if err != nil {
+		return nil, oidc.ErrInvalidClient().WithDescription("client not found")
+	}
+	allowedScopes := auth.Array[string]{}
+	for _, scope := range scopes {
+		if client.Scopes.Contains(scope) {
+			allowedScopes = append(allowedScopes, scope)
+		}
+	}
+	return &auth.Request{
+		ID:            uuid.NewString(),
+		CreatedAt:     time.Now(),
+		ApplicationID: clientID,
+		Scopes:        allowedScopes,
+	}, nil
 }
 
 func (s *storage) CreateUser(ctx context.Context, user *auth.User) error {
