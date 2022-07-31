@@ -16,14 +16,16 @@ import (
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
 	"go.uber.org/fx"
-	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 const (
-	issuerFlag      = "issuer"
-	postgresUriFlag = "postgres-uri"
+	postgresUriFlag           = "postgres-uri"
+	delegatedClientIDFlag     = "delegated-client-id"
+	delegatedClientSecretFlag = "delegated-client-secret"
+	delegatedIssuerFlag       = "delegated-issuer"
+	baseUrlFlag               = "base-url"
 )
 
 var serveCmd = &cobra.Command{
@@ -33,25 +35,33 @@ var serveCmd = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		issuer := viper.GetString(issuerFlag)
-		if issuer == "" {
-			return errors.New("issuer has to be defined")
+		baseUrl := viper.GetString(baseUrlFlag)
+		if baseUrl == "" {
+			return errors.New("base url must be defined")
+		}
+		delegatedClientID := viper.GetString(delegatedClientIDFlag)
+		if delegatedClientID == "" {
+			return errors.New("delegated client id must be defined")
+		}
+		delegatedClientSecret := viper.GetString(delegatedClientSecretFlag)
+		if delegatedClientSecret == "" {
+			return errors.New("delegated client secret must be defined")
+		}
+		delegatedIssuer := viper.GetString(delegatedIssuerFlag)
+		if delegatedIssuer == "" {
+			return errors.New("delegated issuer must be defined")
 		}
 		app := fx.New(
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-			fx.Supply(delegatedauth.OAuth2Config{
-				//TODO: Make configurable
-				ClientID:     "gateway",
-				ClientSecret: "ZXhhbXBsZS1hcHAtc2VjcmV0",
-				Endpoint: oauth2.Endpoint{
-					AuthURL:  "http://localhost:5556/dex/auth",
-					TokenURL: "http://localhost:5556/dex/token",
-				},
-				RedirectURL: "http://127.0.0.1:8080/authorize/callback",
-			}),
-			api.Module(issuer, ":8080"),
+			api.Module(baseUrl, ":8080"),
 			storage.Module(viper.GetString(postgresUriFlag)),
-			delegatedauth.Module("http://127.0.0.1:5556/dex"),
+			//delegatedauth.Module("http://127.0.0.1:5556/dex", "gateway", "ZXhhbXBsZS1hcHAtc2VjcmV0", "http://127.0.0.1:8080/authorize/callback"),
+			delegatedauth.Module(
+				delegatedIssuer,
+				delegatedClientID,
+				delegatedClientSecret,
+				fmt.Sprintf("%s/authorize/callback", baseUrl),
+			),
 			fx.Invoke(func() {
 				sharedlogging.Infof("App started.")
 			}),
@@ -107,6 +117,9 @@ var serveCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(serveCmd)
-	serveCmd.Flags().StringP(issuerFlag, "i", "http://localhost:8080", "OIDC issuer")
 	serveCmd.Flags().String(postgresUriFlag, "", "Postgres uri")
+	serveCmd.Flags().String(delegatedIssuerFlag, "", "Delegated OIDC issuer")
+	serveCmd.Flags().String(delegatedClientIDFlag, "", "Delegated OIDC client id")
+	serveCmd.Flags().String(delegatedClientSecretFlag, "", "Delegated OIDC client secret")
+	serveCmd.Flags().String(baseUrlFlag, "http://localhost:8080", "Base service url")
 }

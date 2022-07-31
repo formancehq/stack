@@ -39,6 +39,10 @@ services:
       DEBUG: 1
       POSTGRES_URI: "host=postgres user=auth password=auth dbname=auth port=5432 sslmode=disable"
       CAOS_OIDC_DEV: 1
+      DELEGATED_CLIENT_ID: gateway
+      DELEGATED_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
+      DELEGATED_ISSUER: http://localhost:5556/dex
+      BASE_URL: http://127.0.0.1:8080
     network_mode: service:dex
     depends_on:
     - dex

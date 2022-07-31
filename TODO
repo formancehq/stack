@@ -7,4 +7,3 @@ TODO:
 * urn:ietf:params:oauth:grant-type:jwt-bearer
 * session timeout and session cookie?
 * scope profile/phone
-* Config clients
