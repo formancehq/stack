@@ -4,6 +4,6 @@ TODO:
 * Error page ?
 * Login url for clients
 * Signing key
-* Bearer jwt
 * urn:ietf:params:oauth:grant-type:jwt-bearer
 * session timeout and session cookie?
+* scope profile/phone

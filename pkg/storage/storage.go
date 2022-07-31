@@ -411,7 +411,9 @@ func (s *storage) SetIntrospectionFromToken(ctx context.Context, introspection o
 //GetPrivateClaimsFromScopes implements the op.Storage interface
 //it will be called for the creation of a JWT access token to assert claims for custom scopes
 func (s *storage) GetPrivateClaimsFromScopes(ctx context.Context, userID, clientID string, scopes []string) (claims map[string]interface{}, err error) {
-	return claims, nil
+	return map[string]any{
+		"scp": scopes,
+	}, nil
 }
 
 //GetKeyByIDAndUserID implements the op.Storage interface
@@ -511,7 +513,7 @@ func (s *storage) setUserinfo(ctx context.Context, userInfo oidc.UserInfoSetter,
 		case oidc.ScopeEmail:
 			userInfo.SetEmail(user.Email, true)
 		case oidc.ScopeProfile:
-			// TODO: Support that
+			// TODO: Support that ?
 		case oidc.ScopePhone:
 			// TODO: Support that ?
 		}

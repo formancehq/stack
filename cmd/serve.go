@@ -68,6 +68,7 @@ var serveCmd = &cobra.Command{
 									},
 									"post_logout_redirect_uri": `["http://localhost:3000/"]`,
 									"scopes":                   fmt.Sprintf(`["%s"]`, strings.Join(auth.Scopes, `", "`)),
+									"access_token_type":        op.AccessTokenTypeJWT,
 								}),
 							}).
 							Create(&auth.Client{
@@ -84,7 +85,7 @@ var serveCmd = &cobra.Command{
 									oidc.GrantTypeRefreshToken,
 									oidc.GrantTypeClientCredentials,
 								},
-								AccessTokenType:       op.AccessTokenTypeBearer,
+								AccessTokenType:       op.AccessTokenTypeJWT,
 								PostLogoutRedirectUri: auth.Array[string]{"http://localhost:3000/"},
 								Scopes:                auth.Scopes,
 							}).Error

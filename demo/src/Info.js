@@ -4,7 +4,7 @@ import React from "react";
 export const Info = () => {
     const { logout } = useOidc();
     const { idToken, idTokenPayload } = useOidcIdToken();
-    const { accessToken } = useOidcAccessToken();
+    const { accessToken, accessTokenPayload } = useOidcAccessToken();
     const { oidcUser, oidcUserLoadingState } = useOidcUser();
 
     let userInfo = '';
@@ -30,6 +30,7 @@ export const Info = () => {
                 <div className="card-body">
                     <h5 className="card-title">Access Token</h5>
                     {<p className="card-text">{accessToken}</p>}
+                    {accessTokenPayload != null && <pre className="card-text">{JSON.stringify(accessTokenPayload, null, 2)}</pre>}
                 </div>
             </div>
             <div className="card text-white bg-info mb-3">
