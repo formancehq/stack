@@ -2,14 +2,12 @@ package storage
 
 import (
 	"context"
-	"crypto/rand"
 	"crypto/rsa"
+	"errors"
 	"fmt"
-	"math/big"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/numary/auth-membership-gateway/pkg"
 	"github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/delegatedauth"
 	"golang.org/x/text/language"
@@ -18,18 +16,6 @@ import (
 
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
-)
-
-var (
-	//serviceKey1 is a public key which will be used for the JWT Profile Authorization Grant
-	//the corresponding private key is in the service-key1.json (for demonstration purposes)
-	serviceKey1 = &rsa.PublicKey{
-		N: func() *big.Int {
-			n, _ := new(big.Int).SetString("00f6d44fb5f34ac2033a75e73cb65ff24e6181edc58845e75a560ac21378284977bb055b1a75b714874e2a2641806205681c09abec76efd52cf40984edcf4c8ca09717355d11ac338f280d3e4c905b00543bdb8ee5a417496cb50cb0e29afc5a0d0471fd5a2fa625bd5281f61e6b02067d4fe7a5349eeae6d6a4300bcd86eef331", 16)
-			return n
-		}(),
-		E: 65537,
-	}
 )
 
 type Storage interface {
@@ -43,7 +29,6 @@ type Storage interface {
 var _ Storage = (*storage)(nil)
 
 type storage struct {
-	services            map[string]pkg.Service
 	signingKey          signingKey
 	db                  *gorm.DB
 	delegatedAuthConfig delegatedauth.OAuth2Config
@@ -86,17 +71,9 @@ type signingKey struct {
 	Key       *rsa.PrivateKey
 }
 
-func New(db *gorm.DB, config delegatedauth.OAuth2Config) *storage {
-	key, _ := rsa.GenerateKey(rand.Reader, 2048)
+func New(db *gorm.DB, config delegatedauth.OAuth2Config, key *rsa.PrivateKey) *storage {
 	return &storage{
 		delegatedAuthConfig: config,
-		services: map[string]pkg.Service{
-			"service": {
-				Keys: map[string]*rsa.PublicKey{
-					"key1": serviceKey1,
-				},
-			},
-		},
 		signingKey: signingKey{
 			ID:        "id",
 			Algorithm: "RS256",
@@ -422,19 +399,7 @@ func (s *storage) GetPrivateClaimsFromScopes(ctx context.Context, userID, client
 //GetKeyByIDAndUserID implements the op.Storage interface
 //it will be called to validate the signatures of a JWT (JWT Profile Grant and Authentication)
 func (s *storage) GetKeyByIDAndUserID(ctx context.Context, keyID, userID string) (*jose.JSONWebKey, error) {
-	service, ok := s.services[userID]
-	if !ok {
-		return nil, fmt.Errorf("user not found")
-	}
-	key, ok := service.Keys[keyID]
-	if !ok {
-		return nil, fmt.Errorf("key not found")
-	}
-	return &jose.JSONWebKey{
-		KeyID: keyID,
-		Use:   "sig",
-		Key:   key,
-	}, nil
+	return nil, errors.New("not implemented")
 }
 
 //ValidateJWTProfileScopes implements the op.Storage interface

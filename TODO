@@ -1,10 +1,8 @@
 TODO:
 * Clients api
 * Scopes api
-* Signing key
 * session timeout and session cookie?
 * scope profile/phone
-* health checks
 
 TODO later:
 * Error page ?

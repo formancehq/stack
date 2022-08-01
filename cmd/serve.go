@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"context"
+	"crypto/x509"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"strings"
@@ -26,6 +28,7 @@ const (
 	delegatedClientSecretFlag = "delegated-client-secret"
 	delegatedIssuerFlag       = "delegated-issuer"
 	baseUrlFlag               = "base-url"
+	signingKeyFlag            = "signing-key"
 )
 
 var serveCmd = &cobra.Command{
@@ -55,10 +58,20 @@ var serveCmd = &cobra.Command{
 			return errors.New("delegated issuer must be defined")
 		}
 
+		signingKey := viper.GetString(signingKeyFlag)
+		if signingKey == "" {
+			return errors.New("signing key must be defined")
+		}
+		block, _ := pem.Decode([]byte(signingKey))
+		key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+		if err != nil {
+			return err
+		}
+
 		app := fx.New(
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
 			api.Module(baseUrl, ":8080"),
-			storage.Module(viper.GetString(postgresUriFlag)),
+			storage.Module(viper.GetString(postgresUriFlag), key),
 			delegatedauth.Module(
 				delegatedIssuer,
 				delegatedClientID,
@@ -109,11 +122,12 @@ var serveCmd = &cobra.Command{
 			}),
 			fx.NopLogger,
 		)
-		err := app.Start(cmd.Context())
+		err = app.Start(cmd.Context())
 		if err != nil {
 			return err
 		}
 		<-app.Done()
+
 		return app.Err()
 	},
 }
@@ -125,4 +139,5 @@ func init() {
 	serveCmd.Flags().String(delegatedClientIDFlag, "", "Delegated OIDC client id")
 	serveCmd.Flags().String(delegatedClientSecretFlag, "", "Delegated OIDC client secret")
 	serveCmd.Flags().String(baseUrlFlag, "http://localhost:8080", "Base service url")
+	serveCmd.Flags().String(signingKeyFlag, "", "Signing key")
 }
