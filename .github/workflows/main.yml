@@ -3,30 +3,20 @@ on:
     branches:
       - main
 
-name: Main
+name: main
 jobs:
-  Test:
-    uses: numary/gh-workflows/.github/workflows/golang-test.yml@main
-    with:
-      go_version: 1.18
+  lint:
+    uses: numary/gh-workflows/.github/workflows/golang-lint.yml@main
 
-  Build:
+  tests:
+    uses: ./.github/workflows/tests.yml
+
+  build-main:
     uses: numary/gh-workflows/.github/workflows/docker-build.yml@main
     needs:
-      - Test
+      - lint
+      - tests
     with:
-      go_version: 1.18
-      service: webhooks
-      version: develop
-      sha: ${{ github.sha }}
-      env: staging
-    secrets:
-      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-
-  BuildMain:
-    uses: numary/gh-workflows/.github/workflows/docker-build.yml@main
-    with:
-      go_version: 1.18
       service: webhooks
       version: develop
       sha: ${{ github.sha }}
@@ -34,9 +24,22 @@ jobs:
     secrets:
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
 
-  Deploy:
+  build-staging:
+    uses: numary/gh-workflows/.github/workflows/docker-build.yml@main
     needs:
-      - Build
+      - lint
+      - tests
+    with:
+      service: webhooks
+      version: develop
+      sha: ${{ github.sha }}
+      env: staging
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+
+  deploy-staging:
+    needs:
+      - build-staging
     uses: numary/gh-workflows/.github/workflows/deploy-staging.yml@main
     with:
       service: webhooks

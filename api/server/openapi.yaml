@@ -1,0 +1,112 @@
+openapi: 3.0.3
+info:
+  title: Webhooks
+  version: 0.0.0
+paths:
+  /_healthcheck:
+    get:
+      summary: Health check of the server.
+      operationId: healthCheck
+      tags:
+        - Health check
+      responses:
+        "200":
+          description: The server is healthy.
+          content: {}
+
+  /configs:
+    get:
+      summary: Get all configs, ordered by inserted date descending.
+      operationId: getAllConfigs
+      tags:
+        - Configs
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cursor
+                properties:
+                  cursor:
+                    allOf:
+                      - $ref: '#/components/schemas/Cursor'
+                      - type: object
+                        properties:
+                          data:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ConfigInserted'
+                        required:
+                          - data
+
+    delete:
+      summary: Delete all configs.
+      operationId: deleteAllConfigs
+      tags:
+        - Configs
+      responses:
+        "200":
+          description: OK
+          content: {}
+
+    post:
+      summary: Insert a new config.
+      operationId: insertConfig
+      tags:
+        - Configs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Config'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cursor
+                properties:
+                  cursor:
+                    allOf:
+                      - $ref: '#/components/schemas/Cursor'
+                      - type: object
+                        properties:
+                          data:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/ConfigInserted'
+                        required:
+                          - data
+        "400":
+          description: Bad Request
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: endpoints should be valid urls
+
+components:
+  schemas:
+    Config:
+      type: object
+      additionalProperties:
+        type: object
+      example: {"active":true,"event_types":["TYPE"],"endpoints":["https://www.site.com"]}
+    ConfigInserted:
+      type: object
+      additionalProperties:
+        type: object
+      example: {"active":true,"event_types":["TYPE"],"endpoints":["https://www.site.com"],"inserted_at":"2022-07-20T07:31:40.9Z"}
+    Cursor:
+      type: object
+      properties:
+        has_more:
+          type: boolean
+          example: false

@@ -5,10 +5,9 @@ on:
 
 name: Push
 jobs:
-  Build:
+  build-staging:
     uses: numary/gh-workflows/.github/workflows/docker-build.yml@main
     with:
-      go_version: 1.18
       service: webhooks
       version: develop
       sha: ${{ github.sha }}

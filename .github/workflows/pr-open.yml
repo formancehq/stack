@@ -2,22 +2,19 @@ name: Pull Request - Open
 on:
   pull_request:
     types: [assigned, opened, synchronize, reopened]
+
 jobs:
-  Infracost:
+  infracost:
     uses: numary/gh-workflows/.github/workflows/infracost-staging.yml@main
     secrets:
       TERRAFORM_CLOUD_TOKEN: ${{ secrets.TERRAFORM_CLOUD_TOKEN }}
       INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
 
-  Pr:
+  pr-style:
     uses: numary/gh-workflows/.github/workflows/pr-style.yml@main
 
-  Test:
-    uses: numary/gh-workflows/.github/workflows/golang-test.yml@main
-    with:
-      go_version: 1.18
-
-  Lint:
+  lint:
     uses: numary/gh-workflows/.github/workflows/golang-lint.yml@main
-    with:
-      go_version: 1.18
+
+  tests:
+    uses: ./.github/workflows/tests.yml
