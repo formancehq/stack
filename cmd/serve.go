@@ -39,23 +39,26 @@ var serveCmd = &cobra.Command{
 		if baseUrl == "" {
 			return errors.New("base url must be defined")
 		}
+
 		delegatedClientID := viper.GetString(delegatedClientIDFlag)
 		if delegatedClientID == "" {
 			return errors.New("delegated client id must be defined")
 		}
+
 		delegatedClientSecret := viper.GetString(delegatedClientSecretFlag)
 		if delegatedClientSecret == "" {
 			return errors.New("delegated client secret must be defined")
 		}
+
 		delegatedIssuer := viper.GetString(delegatedIssuerFlag)
 		if delegatedIssuer == "" {
 			return errors.New("delegated issuer must be defined")
 		}
+
 		app := fx.New(
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
 			api.Module(baseUrl, ":8080"),
 			storage.Module(viper.GetString(postgresUriFlag)),
-			//delegatedauth.Module("http://127.0.0.1:5556/dex", "gateway", "ZXhhbXBsZS1hcHAtc2VjcmV0", "http://127.0.0.1:8080/authorize/callback"),
 			delegatedauth.Module(
 				delegatedIssuer,
 				delegatedClientID,

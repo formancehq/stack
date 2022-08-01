@@ -1,9 +1,11 @@
 TODO:
 * Clients api
 * Scopes api
-* Consent page ?
-* Error page ?
 * Signing key
-* urn:ietf:params:oauth:grant-type:jwt-bearer
 * session timeout and session cookie?
 * scope profile/phone
+* health checks
+
+TODO later:
+* Error page ?
+* Consent page ? (pre authorized by default)
