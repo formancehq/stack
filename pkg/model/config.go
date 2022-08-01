@@ -3,7 +3,6 @@ package model
 import (
 	"errors"
 	"net/url"
-	"time"
 )
 
 type Config struct {
@@ -14,8 +13,8 @@ type Config struct {
 
 type ConfigInserted struct {
 	Config     `bson:"inline"`
-	ID         string    `json:"_id" bson:"_id"`
-	InsertedAt time.Time `json:"insertedAt" bson:"insertedAt"`
+	ID         string `json:"_id" bson:"_id"`
+	InsertedAt int64  `json:"insertedAt" bson:"insertedAt"`
 }
 
 func (c Config) Validate() error {

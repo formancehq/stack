@@ -77,7 +77,7 @@ func (s Store) InsertOneConfig(ctx context.Context, config model.Config) (string
 	configInserted := model.ConfigInserted{
 		Config:     config,
 		ID:         uuid.New().String(),
-		InsertedAt: time.Now().UTC(),
+		InsertedAt: time.Now().UnixNano(),
 	}
 
 	res, err := s.collection.InsertOne(ctx, configInserted)
