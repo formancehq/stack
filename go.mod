@@ -5,10 +5,12 @@ go 1.18
 require (
 	github.com/aquasecurity/esquery v0.2.0
 	github.com/bombsimon/logrusr/v3 v3.0.0
+	github.com/davecgh/go-spew v1.1.1
 	github.com/elastic/go-elasticsearch/v7 v7.17.1
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
-	github.com/numary/go-libs v0.0.0-20220614122310-19e6f94d07c3
+	github.com/numary/go-libs v0.0.0-20220801155717-200c269e800d
+	github.com/numary/go-libs/sharedhealth v0.0.0-20220801152411-b600be8e0d85
 	github.com/numary/ledger v1.0.0-rc1
 	github.com/opensearch-project/opensearch-go v1.1.0
 	github.com/ory/dockertest/v3 v3.8.1
@@ -30,7 +32,6 @@ require (
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/containerd/continuity v0.3.0 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgraph-io/ristretto v0.1.0 // indirect
 	github.com/docker/cli v20.10.16+incompatible // indirect
 	github.com/docker/docker v20.10.16+incompatible // indirect
@@ -55,6 +56,7 @@ require (
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
+	github.com/numary/go-libs/sharedotlp v0.0.0-20220801155717-200c269e800d // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/opencontainers/runc v1.1.2 // indirect

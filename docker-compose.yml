@@ -41,9 +41,8 @@ services:
     depends_on:
     - opensearch
   search:
-    command: go run main.go
-    build:
-      target: dev
+    command: go run main.go serve
+    image: golang:1.18-alpine
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
       interval: 10s
@@ -63,3 +62,4 @@ services:
       OTEL_TRACES_EXPORTER_OTLP_INSECURE: "true"
     volumes:
       - .:/app
+    working_dir: /app
