@@ -23,4 +23,4 @@ RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lis
 COPY --from=builder /go/src/github.com/numary/search/search /usr/local/bin/search
 EXPOSE 8080
 ENTRYPOINT ["search"]
-CMD ["server"]
+CMD ["serve"]

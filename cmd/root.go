@@ -10,6 +10,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+func init() {
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+	viper.AutomaticEnv()
+}
+
 var (
 	Version   = "develop"
 	BuildDate = "-"
@@ -35,9 +40,6 @@ func NewRootCommand() *cobra.Command {
 	root.AddCommand(server)
 
 	root.Flags().Bool(debugFlag, false, "debug mode")
-
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
-	viper.AutomaticEnv()
 	err := viper.BindPFlags(root.Flags())
 	if err != nil {
 		panic(err)

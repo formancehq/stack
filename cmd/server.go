@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/numary/go-libs/oauth2/oauth2introspect"
 	"github.com/numary/go-libs/sharedauth"
+	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/go-libs/sharedotlp/sharedotlptraces"
 	"github.com/numary/search/pkg/searchengine"
@@ -53,7 +54,7 @@ const (
 
 func NewServer() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:          "server",
+		Use:          "serve",
 		Short:        "Launch the search server",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -84,6 +85,15 @@ func NewServer() *cobra.Command {
 
 			options := make([]fx.Option, 0)
 			options = append(options, opensearchClientModule(openSearchServiceHost, esIndices...))
+			options = append(options,
+				sharedhealth.Module(),
+				sharedhealth.ProvideHealthCheck(func(client *opensearch.Client) sharedhealth.NamedCheck {
+					return sharedhealth.NewNamedCheck("elasticsearch connection", sharedhealth.CheckFn(func(ctx context.Context) error {
+						_, err := client.Ping()
+						return err
+					}))
+				}),
+			)
 
 			if viper.GetBool(otelTracesFlag) {
 				options = append(options, telemetryModule())
@@ -122,6 +132,8 @@ func NewServer() *cobra.Command {
 	cmd.Flags().String(authBearerIntrospectUrlFlag, "", "OAuth2 introspect URL")
 	cmd.Flags().String(authBearerAudienceFlag, "", "OAuth2 audience template")
 
+	viper.BindPFlags(cmd.Flags())
+
 	return cmd
 }
 
@@ -155,15 +167,13 @@ func opensearchClientModule(openSearchServiceHost string, esIndices ...string) f
 
 func apiModule(serviceName, bind string, esIndices ...string) fx.Option {
 	return fx.Options(
-		fx.Provide(fx.Annotate(func(openSearchClient *opensearch.Client, tp trace.TracerProvider) (http.Handler, error) {
+		fx.Provide(fx.Annotate(func(openSearchClient *opensearch.Client, tp trace.TracerProvider, healthController *sharedhealth.HealthController) (http.Handler, error) {
 			router := mux.NewRouter()
 			if viper.GetBool(otelTracesFlag) {
 				router.Use(otelmux.Middleware(serviceName, otelmux.WithTracerProvider(tp)))
 			}
 			router.Use(handlers.RecoveryHandler())
-			router.Handle(healthCheckPath, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-			}))
+			router.Handle(healthCheckPath, http.HandlerFunc(healthController.Check))
 
 			protected := router.PathPrefix("/").Subrouter()
 
