@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.3.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/numary/go-libs v0.0.0-20220725095655-f5dc496adce9
 	github.com/sirupsen/logrus v1.9.0
