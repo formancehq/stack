@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/numary/webhooks-cloud/cmd/internal"
 	"os"
 
 	"github.com/numary/go-libs/sharedlogging"
@@ -35,6 +36,8 @@ func Execute() {
 		sharedlogging.Errorf("viper.BindFlags: %s", err)
 		os.Exit(1)
 	}
+
+	internal.BindEnv(viper.GetViper())
 
 	if err := rootCmd.Execute(); err != nil {
 		sharedlogging.Errorf("cobra.Command.Execute: %s", err)
