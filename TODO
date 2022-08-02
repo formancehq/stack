@@ -1,9 +1,2 @@
 TODO:
-* Clients api
-* Scopes api
-* session timeout and session cookie?
 * scope profile/phone
-
-TODO later:
-* Error page ?
-* Consent page ? (pre authorized by default)
