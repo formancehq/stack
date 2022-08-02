@@ -1,6 +1,8 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/coreos/go-oidc"
 	"github.com/gorilla/mux"
 	"github.com/numary/auth/pkg/delegatedauth"
@@ -18,5 +20,13 @@ func NewRouter(provider op.OpenIDProvider, storage storage.Storage, healthContro
 	router.Path("/_healthcheck").HandlerFunc(healthController.Check)
 	router.Path("/delegatedoidc/callback").Handler(authorizeCallbackHandler(
 		provider, storage, delegatedOAuth2Config, delegatedOIDCProvider))
+	router.Path("/clients").Methods(http.MethodPost).HandlerFunc(createClient)
+	router.Path("/clients").Methods(http.MethodGet).HandlerFunc(listClients)
+	router.Path("/clients/{clientId}").Methods(http.MethodPut).HandlerFunc(updateClient)
+	router.Path("/clients/{clientId}").Methods(http.MethodPatch).HandlerFunc(patchClient)
+	router.Path("/clients/{clientId}").Methods(http.MethodGet).HandlerFunc(readClient)
+	router.Path("/clients/{clientId}/secrets").Methods(http.MethodPost).HandlerFunc(createSecret)
+	router.Path("/clients/{clientId}/secrets/{secretId}").Methods(http.MethodDelete).HandlerFunc(deleteSecret)
+	router.Path("/clients/{clientId}/app/scopes").Methods(http.MethodPut).HandlerFunc(updateClientScopes)
 	return router
 }
