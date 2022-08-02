@@ -1,31 +1,28 @@
 openapi: 3.0.3
 info:
-  title: Auth API
   contact: {}
-  version: "AUTH_VERSION"
-
+  title: Auth API
+  version: AUTH_VERSION
 servers:
-- url: https://{organization}.o.numary.cloud/auth
-  description: Production server
+- description: Production server
+  url: "https://{organization}.o.numary.cloud/auth"
   variables:
     organization:
-      description: The organization on which the auth server is located
       default: ""
-
+      description: The organization on which the auth server is located
 paths:
   /clients:
     get:
-      summary: List clients
       operationId: listClients
       responses:
         "200":
-          description: List of clients
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListClientsResponse'
+          description: List of clients
+      summary: List clients
     post:
-      summary: Create client
       operationId: createClient
       requestBody:
         content:
@@ -34,117 +31,131 @@ paths:
               $ref: '#/components/schemas/CreateClientRequest'
       responses:
         "201":
-          description: Client created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateClientResponse'
+          description: Client created
+      summary: Create client
   /clients/{clientId}:
-    get:
-      summary: Read client
-      operationId: readClient
+    delete:
+      operationId: deleteClient
       parameters:
       - description: Client ID
+        explode: false
         in: path
         name: clientId
         required: true
         schema:
           type: string
+        style: simple
+      responses:
+        "204":
+          description: Client deleted
+      summary: Delete client
+    get:
+      operationId: readClient
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
       responses:
         "200":
-          description: Retrieved client
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadClientResponse'
+          description: Retrieved client
+      summary: Read client
     put:
-      summary: Update client
       operationId: updateClient
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateClientRequest'
-      parameters:
-      - description: Client ID
-        in: path
-        name: clientId
-        required: true
-        schema:
-          type: string
       responses:
         "200":
-          description: Updated client
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdateClientResponse'
-    delete:
-      summary: Delete client
-      operationId: deleteClient
-      parameters:
-      - description: Client ID
-        in: path
-        name: clientId
-        required: true
-        schema:
-          type: string
-      responses:
-        "204":
-          description: Client deleted
+          description: Updated client
+      summary: Update client
   /clients/{clientId}/scopes/{scopeId}:
-    put:
-      summary: Add scope to client
-      operationId: addScopeToClient
-      parameters:
-      - description: Client ID
-        in: path
-        name: clientId
-        required: true
-        schema:
-          type: string
-      - description: Scope ID
-        in: path
-        name: scopeId
-        required: true
-        schema:
-          type: string
-      responses:
-        "204":
-          description: Scope added to client
     delete:
-      summary: Delete scope from client
       operationId: deleteScopeFromClient
       parameters:
       - description: Client ID
+        explode: false
         in: path
         name: clientId
         required: true
         schema:
           type: string
+        style: simple
       - description: Scope ID
+        explode: false
         in: path
         name: scopeId
         required: true
         schema:
           type: string
+        style: simple
       responses:
         "204":
           description: Scope deleted from client
+      summary: Delete scope from client
+    put:
+      operationId: addScopeToClient
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Scope ID
+        explode: false
+        in: path
+        name: scopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Scope added to client
+      summary: Add scope to client
   /scopes:
     get:
-      summary: List scopes
       description: List Scopes
       operationId: listScopes
       responses:
-        200:
-          description: List of scopes
+        "200":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListScopesResponse'
+          description: List of scopes
+      summary: List scopes
     post:
-      summary: Create scope
       description: Create scope
       operationId: createScope
       requestBody:
@@ -153,203 +164,246 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateScopeRequest'
       responses:
-        201:
-          description: Created scope
+        "201":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateScopeResponse'
+          description: Created scope
+      summary: Create scope
   /scopes/{scopeId}:
+    delete:
+      description: Delete scope
+      operationId: deleteScope
+      parameters:
+      - description: Scope ID
+        explode: false
+        in: path
+        name: scopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Scope deleted
+      summary: Delete scope
     get:
-      summary: Read scope
       description: Read scope
       operationId: readScope
       parameters:
       - description: Scope ID
+        explode: false
         in: path
         name: scopeId
         required: true
         schema:
           type: string
+        style: simple
       responses:
-        200:
-          description: Retrieved scope
+        "200":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadScopeResponse'
+          description: Retrieved scope
+      summary: Read scope
     put:
-      summary: Update scope
       description: Update scope
       operationId: updateScope
       parameters:
       - description: Scope ID
+        explode: false
         in: path
         name: scopeId
         required: true
         schema:
           type: string
+        style: simple
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateScopeRequest'
       responses:
-        200:
-          description: Updated scope
+        "200":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdateScopeResponse'
-    delete:
-      summary: Delete scope
-      description: Delete scope
-      operationId: deleteScope
-      parameters:
-      - description: Scope ID
-        in: path
-        name: scopeId
-        required: true
-        schema:
-          type: string
-      responses:
-        204:
-          description: "Scope deleted"
+          description: Updated scope
+      summary: Update scope
   /scopes/{scopeId}/transient/{transientScopeId}:
-    put:
-      summary: Add a transient scope to a scope
-      description: Add a transient scope to a scope
-      operationId: addTransientScope
-      parameters:
-      - description: Scope ID
-        in: path
-        name: scopeId
-        required: true
-        schema:
-          type: string
-      - description: Transient scope ID
-        in: path
-        name: transientScopeId
-        required: true
-        schema:
-          type: string
-      responses:
-        204:
-          description: "Scope added"
     delete:
-      summary: Delete a transient scope from a scope
       description: Delete a transient scope from a scope
       operationId: deleteTransientScope
       parameters:
       - description: Scope ID
+        explode: false
         in: path
         name: scopeId
         required: true
         schema:
           type: string
+        style: simple
       - description: Transient scope ID
+        explode: false
         in: path
         name: transientScopeId
         required: true
         schema:
           type: string
+        style: simple
       responses:
-        204:
-          description: "Transient scope deleted"
+        "204":
+          description: Transient scope deleted
+      summary: Delete a transient scope from a scope
+    put:
+      description: Add a transient scope to a scope
+      operationId: addTransientScope
+      parameters:
+      - description: Scope ID
+        explode: false
+        in: path
+        name: scopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Transient scope ID
+        explode: false
+        in: path
+        name: transientScopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Scope added
+      summary: Add a transient scope to a scope
 components:
   schemas:
     ClientOptions:
-      type: object
+      example:
+        public: true
+        postLogoutRedirectUris:
+        - postLogoutRedirectUris
+        - postLogoutRedirectUris
+        name: name
+        description: description
+        redirectUris:
+        - redirectUris
+        - redirectUris
       properties:
         public:
           type: boolean
         redirectUris:
-          type: array
           items:
             type: string
+          type: array
         description:
           type: string
         name:
           type: string
         postLogoutRedirectUris:
-          type: array
           items:
             type: string
+          type: array
       required:
       - name
+      type: object
     Client:
       allOf:
       - $ref: '#/components/schemas/ClientOptions'
-      - type: object
-        properties:
-          id:
-            type: string
-          scopes:
-            type: array
-            items:
-              type: string
-        required:
-        - id
+      - $ref: '#/components/schemas/Client_allOf'
     ScopeOptions:
-      type: object
       properties:
         label:
           type: string
       required:
       - label
+      type: object
     Scope:
       allOf:
       - $ref: '#/components/schemas/ScopeOptions'
-      - type: object
-        properties:
-          id:
-            type: string
-          transient:
-            type: array
-            items:
-              type: string
-        required:
-        - id
+      - $ref: '#/components/schemas/Scope_allOf'
     CreateClientRequest:
       $ref: '#/components/schemas/ClientOptions'
     CreateClientResponse:
-      type: object
+      example:
+        data: null
       properties:
         data:
           $ref: '#/components/schemas/Client'
-    ListClientsResponse:
       type: object
+    ListClientsResponse:
+      example:
+        data:
+        - null
+        - null
       properties:
         data:
-          type: array
           items:
             $ref: '#/components/schemas/Client'
+          type: array
+      type: object
     UpdateClientRequest:
       $ref: '#/components/schemas/ClientOptions'
     UpdateClientResponse:
       $ref: '#/components/schemas/CreateClientResponse'
     ReadClientResponse:
-      type: object
+      example:
+        data: null
       properties:
         data:
           $ref: '#/components/schemas/Client'
-    ListScopesResponse:
       type: object
+    ListScopesResponse:
+      example:
+        data:
+        - null
+        - null
       properties:
         data:
-          type: array
           items:
             $ref: '#/components/schemas/Scope'
+          type: array
+      type: object
     CreateScopeRequest:
       $ref: '#/components/schemas/ClientOptions'
     CreateScopeResponse:
-      type: object
+      example:
+        data: null
       properties:
         data:
           $ref: '#/components/schemas/Scope'
+      type: object
     ReadScopeResponse:
       $ref: '#/components/schemas/CreateScopeResponse'
     UpdateScopeRequest:
       $ref: '#/components/schemas/ClientOptions'
     UpdateScopeResponse:
       $ref: '#/components/schemas/CreateScopeResponse'
+    Client_allOf:
+      properties:
+        id:
+          type: string
+        scopes:
+          items:
+            type: string
+          type: array
+      required:
+      - id
+      type: object
+    Scope_allOf:
+      properties:
+        id:
+          type: string
+        transient:
+          items:
+            type: string
+          type: array
+      required:
+      - id
+      type: object

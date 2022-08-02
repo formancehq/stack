@@ -1,3 +1,4 @@
+//go:generate task generate-client
 package main
 
 import "github.com/numary/auth/cmd"

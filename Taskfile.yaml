@@ -19,3 +19,17 @@ tasks:
     - build-image
     cmds:
     - docker run --rm github.com/numary/{{.COMPONENT}}
+  generate-client:
+  - >
+    docker run --rm 
+    -w /local 
+    -v ${PWD}:/local 
+    openapitools/openapi-generator-cli:latest generate 
+    -i swagger.yaml 
+    -g go 
+    -o ./pkg/client 
+    --git-user-id=numary 
+    --git-repo-id=auth 
+    -p packageVersion=latest 
+    -p isGoSubmodule=true 
+    -p packageName=authclient
