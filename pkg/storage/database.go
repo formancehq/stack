@@ -27,7 +27,7 @@ func newLogger() logger.Interface {
 	)
 }
 
-func OpenDatabase(uri string) gorm.Dialector {
+func OpenPostgresDatabase(uri string) gorm.Dialector {
 	return postgres.Open(uri)
 }
 
@@ -51,7 +51,7 @@ func MigrateTables(ctx context.Context, db *gorm.DB) error {
 func gormModule(uri string) fx.Option {
 	return fx.Options(
 		fx.Provide(func() gorm.Dialector {
-			return OpenDatabase(uri)
+			return OpenPostgresDatabase(uri)
 		}),
 		fx.Provide(LoadGorm),
 		fx.Invoke(func(lc fx.Lifecycle, db *gorm.DB) {

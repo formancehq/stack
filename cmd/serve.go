@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/uuid"
 	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/api"
 	"github.com/numary/auth/pkg/delegatedauth"
@@ -99,11 +100,17 @@ var serveCmd = &cobra.Command{
 									"post_logout_redirect_uri": `["http://localhost:3000/"]`,
 									"scopes":                   fmt.Sprintf(`["%s"]`, strings.Join(auth.Scopes, `", "`)),
 									"access_token_type":        op.AccessTokenTypeJWT,
+									"secrets":                  `[{"value": "1234"}]`,
 								}),
 							}).
 							Create(&auth.Client{
-								Id:     "demo",
-								Secret: "1234",
+								Id: "demo",
+								Secrets: auth.Array[auth.ClientSecret]{
+									{
+										ID:   uuid.NewString(),
+										Hash: "1234",
+									},
+								},
 								RedirectURIs: auth.Array[string]{
 									"http://localhost:3000/auth-callback",
 								},
@@ -115,9 +122,9 @@ var serveCmd = &cobra.Command{
 									oidc.GrantTypeRefreshToken,
 									oidc.GrantTypeClientCredentials,
 								},
-								AccessTokenType:       op.AccessTokenTypeJWT,
-								PostLogoutRedirectUri: auth.Array[string]{"http://localhost:3000/"},
-								Scopes:                auth.Scopes,
+								AccessTokenType:        op.AccessTokenTypeJWT,
+								PostLogoutRedirectUris: auth.Array[string]{"http://localhost:3000/"},
+								Scopes:                 auth.Scopes,
 							}).Error
 					},
 				})

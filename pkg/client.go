@@ -1,16 +1,48 @@
 package auth
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
 )
 
+func newHash(v string) string {
+	digest := sha256.New()
+	digest.Write([]byte(v))
+	hash := digest.Sum(nil)
+
+	return base64.StdEncoding.EncodeToString(hash)
+}
+
+type ClientSecret struct {
+	ID         string `json:"id"`
+	Hash       string `json:"hash"`
+	LastDigits string `json:"lastDigits"`
+	Name       string `json:"lastDigits"`
+}
+
+func (s ClientSecret) Check(clear string) bool {
+	return s.Hash == newHash(clear)
+}
+
+func newSecret(name string) (ClientSecret, string) {
+	secret := uuid.NewString()
+	return ClientSecret{
+		ID:         uuid.NewString(),
+		Hash:       newHash(secret),
+		LastDigits: secret[len(secret)-4:],
+		Name:       name,
+	}, secret
+}
+
 type Client struct {
-	Id                             string `gorm:"primarykey"`
-	Secret                         string
-	RedirectURIs                   Array[string] `gorm:"type:text"`
+	Id                             string              `gorm:"primarykey"`
+	Secrets                        Array[ClientSecret] `gorm:"type:text"`
+	RedirectURIs                   Array[string]       `gorm:"type:text"`
 	ApplicationType                op.ApplicationType
 	AuthMethod                     oidc.AuthMethod
 	ResponseTypes                  Array[oidc.ResponseType] `gorm:"type:text"`
@@ -19,26 +51,66 @@ type Client struct {
 	DevMode                        bool
 	IdTokenUserinfoClaimsAssertion bool
 	ClockSkew                      time.Duration
-	PostLogoutRedirectUri          Array[string] `gorm:"type:text"`
+	PostLogoutRedirectUris         Array[string] `gorm:"type:text"`
 	Scopes                         Array[string] `gorm:"type:text"`
+	Description                    string
 }
 
-//WebClient will create a client of type web, which will always use Basic Auth and allow the use of refresh tokens
-//user-defined redirectURIs may include:
-// - http://localhost with port specification (e.g. http://localhost:9999/auth/callback)
-//(the example will be used as default, if none is provided)
-//func WebClient(id, secret string, redirectURIs ...string) *Client {
-//	return &Client{
-//		Id:                             id,
-//		Secret:                         secret,
-//		RedirectURIs:                   redirectURIs,
-//		ApplicationType:                op.ApplicationTypeWeb,
-//		AuthMethod:                     oidc.AuthMethodNone,
-//		ResponseTypes:                  []oidc.ResponseType{oidc.ResponseTypeCode},
-//		GrantTypes:                     []oidc.GrantType{oidc.GrantTypeCode},
-//		AccessTokenType:                0,
-//		DevMode:                        false, // TODO: Make configurable if required
-//		IdTokenUserinfoClaimsAssertion: false,
-//		ClockSkew:                      0,
-//	}
-//}
+func (c *Client) Update(opts ClientOptions) {
+	grantTypes := []oidc.GrantType{
+		oidc.GrantTypeCode,
+		oidc.GrantTypeRefreshToken,
+	}
+	if !opts.Public {
+		grantTypes = append(grantTypes, oidc.GrantTypeClientCredentials)
+	}
+
+	c.GrantTypes = grantTypes
+	c.RedirectURIs = opts.RedirectUris
+	c.PostLogoutRedirectUris = opts.PostLogoutRedirectUris
+	c.Scopes = opts.Scopes
+	c.Description = opts.Description
+}
+
+func (c *Client) GenerateNewSecret(name string) (ClientSecret, string) {
+	secret, clear := newSecret(name)
+	c.Secrets = append(c.Secrets, secret)
+
+	return secret, clear
+}
+
+func (c *Client) DeleteSecret(id string) bool {
+	for i, secret := range c.Secrets {
+		if secret.ID == id {
+			if i < len(c.Secrets)-1 {
+				c.Secrets = append(c.Secrets[:i], c.Secrets[i+1:]...)
+			} else {
+				c.Secrets = c.Secrets[:i]
+			}
+			return true
+		}
+	}
+	return false
+}
+
+type ClientOptions struct {
+	Public                 bool     `json:"public"`
+	RedirectUris           []string `json:"redirectUris"`
+	PreAuthorized          bool     `json:"preAuthorized"`
+	Description            string   `json:"description"`
+	Name                   string   `json:"name"`
+	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris"`
+	Scopes                 []string `json:"scopes"`
+}
+
+func NewClient(opts ClientOptions) *Client {
+	client := &Client{
+		Id:              uuid.NewString(),
+		ApplicationType: op.ApplicationTypeWeb,
+		AuthMethod:      oidc.AuthMethodNone,
+		ResponseTypes:   []oidc.ResponseType{oidc.ResponseTypeCode},
+		AccessTokenType: op.AccessTokenTypeJWT,
+	}
+	client.Update(opts)
+	return client
+}

@@ -323,10 +323,12 @@ func (s *storage) AuthorizeClientIDSecret(ctx context.Context, clientID, clientS
 		return err
 	}
 
-	if client.Secret != clientSecret {
-		return fmt.Errorf("invalid secret")
+	for _, secret := range client.Secrets {
+		if secret.Hash == clientSecret {
+			return nil
+		}
 	}
-	return nil
+	return fmt.Errorf("invalid secret")
 }
 
 //SetUserinfoFromScopes implements the op.Storage interface

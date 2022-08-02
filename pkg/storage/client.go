@@ -34,7 +34,7 @@ func (c *clientFacade) RedirectURIs() []string {
 
 //PostLogoutRedirectURIs must return the registered post_logout_redirect_uris for sign-outs
 func (c *clientFacade) PostLogoutRedirectURIs() []string {
-	return c.Client.PostLogoutRedirectUri
+	return c.Client.PostLogoutRedirectUris
 }
 
 //ApplicationType must return the type of the client (app, native, user agent)
