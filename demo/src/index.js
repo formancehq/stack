@@ -9,7 +9,7 @@ const configuration = {
     client_id: 'demo',
     redirect_uri: 'http://localhost:3000/auth-callback',
     silent_redirect_uri: 'http://localhost:3000/silent-auth-callback',
-    scope: 'openid offline_access email transactions:write accounts:write stats payments:write connectors:write',
+    scope: 'openid offline_access email',
     authority: 'http://localhost:8080',
     post_logout_redirect_uri: 'http://localhost:3000'
 };

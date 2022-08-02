@@ -52,8 +52,9 @@ type Client struct {
 	IdTokenUserinfoClaimsAssertion bool
 	ClockSkew                      time.Duration
 	PostLogoutRedirectUris         Array[string] `gorm:"type:text"`
-	Scopes                         Array[string] `gorm:"type:text"`
+	Scopes                         []Scope       `gorm:"many2many:client_scopes;"`
 	Description                    string
+	Name                           string
 }
 
 func (c *Client) Update(opts ClientOptions) {
@@ -68,8 +69,8 @@ func (c *Client) Update(opts ClientOptions) {
 	c.GrantTypes = grantTypes
 	c.RedirectURIs = opts.RedirectUris
 	c.PostLogoutRedirectUris = opts.PostLogoutRedirectUris
-	c.Scopes = opts.Scopes
 	c.Description = opts.Description
+	c.Name = opts.Name
 }
 
 func (c *Client) GenerateNewSecret(name string) (ClientSecret, string) {
@@ -93,14 +94,21 @@ func (c *Client) DeleteSecret(id string) bool {
 	return false
 }
 
+func (c *Client) HasScope(id string) bool {
+	for _, clientScope := range c.Scopes {
+		if clientScope.ID == id {
+			return true
+		}
+	}
+	return false
+}
+
 type ClientOptions struct {
 	Public                 bool     `json:"public"`
 	RedirectUris           []string `json:"redirectUris"`
-	PreAuthorized          bool     `json:"preAuthorized"`
 	Description            string   `json:"description"`
 	Name                   string   `json:"name"`
 	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris"`
-	Scopes                 []string `json:"scopes"`
 }
 
 func NewClient(opts ClientOptions) *Client {

@@ -1,10 +1,7 @@
 package api
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,7 +9,6 @@ import (
 	"github.com/gorilla/mux"
 	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/storage"
-	"github.com/numary/go-libs/sharedapi"
 	"github.com/stretchr/testify/require"
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
@@ -31,19 +27,6 @@ func withDbAndClientRouter(t *testing.T, callback func(router *mux.Router, db *g
 	callback(router, db)
 }
 
-func createJSONBuffer(t *testing.T, v any) io.Reader {
-	data, err := json.Marshal(v)
-	require.NoError(t, err)
-
-	return bytes.NewBuffer(data)
-}
-
-func readObject[T any](t *testing.T, recorder *httptest.ResponseRecorder) T {
-	body := sharedapi.BaseResponse[T]{}
-	require.NoError(t, json.NewDecoder(recorder.Body).Decode(&body))
-	return *body.Data
-}
-
 func TestCreateClient(t *testing.T) {
 
 	type testCase struct {
@@ -56,7 +39,6 @@ func TestCreateClient(t *testing.T) {
 			name: "confidential client",
 			options: auth.ClientOptions{
 				Name:                   "confidential client",
-				Scopes:                 auth.Scopes,
 				RedirectUris:           []string{"http://localhost:8080"},
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
@@ -72,10 +54,10 @@ func TestCreateClient(t *testing.T) {
 					oidc.ResponseTypeCode,
 				},
 				AuthMethod:             oidc.AuthMethodNone,
-				Scopes:                 auth.Scopes,
 				RedirectURIs:           []string{"http://localhost:8080"},
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
+				Name:                   "confidential client",
 			},
 		},
 		{
@@ -94,6 +76,7 @@ func TestCreateClient(t *testing.T) {
 					oidc.ResponseTypeCode,
 				},
 				AuthMethod: oidc.AuthMethodNone,
+				Name:       "public client",
 			},
 		},
 	} {
@@ -130,7 +113,6 @@ func TestUpdateClient(t *testing.T) {
 			name: "confidential client",
 			options: auth.ClientOptions{
 				Name:                   "confidential client",
-				Scopes:                 auth.Scopes,
 				RedirectUris:           []string{"http://localhost:8080"},
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
@@ -146,10 +128,10 @@ func TestUpdateClient(t *testing.T) {
 					oidc.ResponseTypeCode,
 				},
 				AuthMethod:             oidc.AuthMethodNone,
-				Scopes:                 auth.Scopes,
 				RedirectURIs:           []string{"http://localhost:8080"},
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
+				Name:                   "confidential client",
 			},
 		},
 		{
@@ -168,6 +150,7 @@ func TestUpdateClient(t *testing.T) {
 					oidc.ResponseTypeCode,
 				},
 				AuthMethod: oidc.AuthMethodNone,
+				Name:       "public client",
 			},
 		},
 	} {
@@ -265,8 +248,51 @@ func TestDeleteSecret(t *testing.T) {
 
 		router.ServeHTTP(res, req)
 
-		require.Equal(t, http.StatusOK, res.Code)
+		require.Equal(t, http.StatusNoContent, res.Code)
 		require.NoError(t, db.First(client, "id = ?", client.Id).Error)
 		require.Len(t, client.Secrets, 0)
+	})
+}
+
+func TestAddScope(t *testing.T) {
+	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+		client := auth.NewClient(auth.ClientOptions{})
+		require.NoError(t, db.Create(client).Error)
+
+		scope := auth.NewScope("XXX")
+		require.NoError(t, db.Create(scope).Error)
+
+		req := httptest.NewRequest(http.MethodPut, "/clients/"+client.Id+"/scopes/"+scope.ID, nil)
+		res := httptest.NewRecorder()
+
+		router.ServeHTTP(res, req)
+
+		require.Equal(t, http.StatusNoContent, res.Code)
+
+		require.NoError(t, db.Preload("Scopes").First(client).Error)
+		require.Len(t, client.Scopes, 1)
+		require.Equal(t, *scope, client.Scopes[0])
+	})
+}
+
+func TestRemoveScope(t *testing.T) {
+	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+
+		scope := auth.NewScope("XXX")
+		require.NoError(t, db.Create(scope).Error)
+
+		client := auth.NewClient(auth.ClientOptions{})
+		client.Scopes = append(client.Scopes, *scope)
+		require.NoError(t, db.Create(client).Error)
+
+		req := httptest.NewRequest(http.MethodDelete, "/clients/"+client.Id+"/scopes/"+scope.ID, nil)
+		res := httptest.NewRecorder()
+
+		router.ServeHTTP(res, req)
+
+		require.Equal(t, http.StatusNoContent, res.Code)
+
+		require.NoError(t, db.Preload("Scopes").First(client).Error)
+		require.Len(t, client.Scopes, 0)
 	})
 }

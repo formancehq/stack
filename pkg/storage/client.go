@@ -8,17 +8,20 @@ import (
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
 	"golang.org/x/oauth2"
+	"gorm.io/gorm"
 )
 
 type clientFacade struct {
 	Client              *auth.Client
 	delegatedAuthConfig delegatedauth.OAuth2Config
+	db                  *gorm.DB
 }
 
-func newClientFacade(client *auth.Client, delegatedAuthConfig delegatedauth.OAuth2Config) *clientFacade {
+func newClientFacade(client *auth.Client, delegatedAuthConfig delegatedauth.OAuth2Config, db *gorm.DB) *clientFacade {
 	return &clientFacade{
 		Client:              client,
 		delegatedAuthConfig: delegatedAuthConfig,
+		db:                  db,
 	}
 }
 
@@ -96,9 +99,17 @@ func (c *clientFacade) RestrictAdditionalAccessTokenScopes() func(scopes []strin
 }
 
 //IsScopeAllowed enables Client specific custom scopes validation
-//in this example we allow the CustomScope for all clients
 func (c *clientFacade) IsScopeAllowed(scope string) bool {
-	return auth.Scopes.Contains(scope)
+	scopes := make([]auth.Scope, 0)
+	if err := c.db.First(&scopes, "string_value = ?", scope).Error; err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return false
+		default:
+			panic(err)
+		}
+	}
+	return true
 }
 
 //IDTokenUserinfoClaimsAssertion allows specifying if claims of scope profile, email, phone and address are asserted into the id_token

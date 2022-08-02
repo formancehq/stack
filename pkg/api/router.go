@@ -20,6 +20,8 @@ func addClientRoutes(db *gorm.DB, router *mux.Router) {
 	router.Path("/clients/{clientId}").Methods(http.MethodGet).HandlerFunc(readClient(db))
 	router.Path("/clients/{clientId}/secrets").Methods(http.MethodPost).HandlerFunc(createSecret(db))
 	router.Path("/clients/{clientId}/secrets/{secretId}").Methods(http.MethodDelete).HandlerFunc(deleteSecret(db))
+	router.Path("/clients/{clientId}/scopes/{scopeId}").Methods(http.MethodPut).HandlerFunc(addScopeToClient(db))
+	router.Path("/clients/{clientId}/scopes/{scopeId}").Methods(http.MethodDelete).HandlerFunc(deleteScopeOfClient(db))
 }
 
 func NewRouter(provider op.OpenIDProvider, storage storage.Storage, healthController *sharedhealth.HealthController,
@@ -31,5 +33,6 @@ func NewRouter(provider op.OpenIDProvider, storage storage.Storage, healthContro
 	router.Path("/delegatedoidc/callback").Handler(authorizeCallbackHandler(
 		provider, storage, delegatedOAuth2Config, delegatedOIDCProvider))
 	addClientRoutes(db, router)
+	addScopeRoutes(db, router)
 	return router
 }

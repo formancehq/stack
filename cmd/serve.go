@@ -6,7 +6,6 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/google/uuid"
 	auth "github.com/numary/auth/pkg"
@@ -98,7 +97,6 @@ var serveCmd = &cobra.Command{
 										oidc.GrantTypeClientCredentials,
 									},
 									"post_logout_redirect_uri": `["http://localhost:3000/"]`,
-									"scopes":                   fmt.Sprintf(`["%s"]`, strings.Join(auth.Scopes, `", "`)),
 									"access_token_type":        op.AccessTokenTypeJWT,
 									"secrets":                  `[{"value": "1234"}]`,
 								}),
@@ -124,7 +122,6 @@ var serveCmd = &cobra.Command{
 								},
 								AccessTokenType:        op.AccessTokenTypeJWT,
 								PostLogoutRedirectUris: auth.Array[string]{"http://localhost:3000/"},
-								Scopes:                 auth.Scopes,
 							}).Error
 					},
 				})

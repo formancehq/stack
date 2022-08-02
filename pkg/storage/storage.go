@@ -35,14 +35,46 @@ type storage struct {
 }
 
 func (s *storage) ClientCredentialsTokenRequest(ctx context.Context, clientID string, scopes []string) (op.TokenRequest, error) {
-	client, err := s.getClientByClientID(ctx, clientID)
+	client := &auth.Client{}
+	err := s.db.
+		WithContext(ctx).
+		Preload("Scopes").
+		First(client, "id = ?", clientID).
+		Error
 	if err != nil {
 		return nil, oidc.ErrInvalidClient().WithDescription("client not found")
 	}
 	allowedScopes := auth.Array[string]{}
+	verifiedScopes := make(map[string]any)
+	scopesToCheck := client.Scopes
+
+l:
 	for _, scope := range scopes {
-		if client.Scopes.Contains(scope) {
-			allowedScopes = append(allowedScopes, scope)
+		for {
+			if len(scopesToCheck) == 0 {
+				break l
+			}
+			clientScope := scopesToCheck[0]
+			if len(scopesToCheck) == 1 {
+				scopesToCheck = make([]auth.Scope, 0)
+			} else {
+				scopesToCheck = scopesToCheck[1:]
+			}
+			if clientScope.Label == scope {
+				allowedScopes = append(allowedScopes, scope)
+				continue l
+			}
+			verifiedScopes[clientScope.ID] = struct{}{}
+
+			triggeredScopes := make([]auth.Scope, 0)
+			if err := s.db.
+				WithContext(ctx).
+				Model(clientScope).
+				Association("Triggers").
+				Find(&triggeredScopes); err != nil {
+				return nil, err
+			}
+			scopesToCheck = append(scopesToCheck, triggeredScopes...)
 		}
 	}
 	return &auth.Request{
@@ -312,7 +344,7 @@ func (s *storage) GetClientByClientID(ctx context.Context, clientID string) (op.
 	if err != nil {
 		return nil, err
 	}
-	return newClientFacade(client, s.delegatedAuthConfig), nil
+	return newClientFacade(client, s.delegatedAuthConfig, s.db), nil
 }
 
 //AuthorizeClientIDSecret implements the op.Storage interface
