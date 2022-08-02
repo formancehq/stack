@@ -13,6 +13,7 @@ import (
 	"github.com/numary/auth/pkg/delegatedauth"
 	"github.com/numary/auth/pkg/storage"
 	"github.com/numary/go-libs/sharedlogging"
+	"github.com/numary/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/zitadel/oidc/pkg/oidc"
@@ -78,6 +79,7 @@ var serveCmd = &cobra.Command{
 				delegatedClientSecret,
 				fmt.Sprintf("%s/authorize/callback", baseUrl),
 			),
+			sharedotlptraces.CLITracesModule(viper.GetViper()),
 			fx.Invoke(func() {
 				sharedlogging.Infof("App started.")
 			}),
@@ -140,4 +142,6 @@ func init() {
 	serveCmd.Flags().String(delegatedClientSecretFlag, "", "Delegated OIDC client secret")
 	serveCmd.Flags().String(baseUrlFlag, "http://localhost:8080", "Base service url")
 	serveCmd.Flags().String(signingKeyFlag, "", "Signing key")
+
+	sharedotlptraces.InitOTLPTracesFlags(serveCmd.Flags())
 }

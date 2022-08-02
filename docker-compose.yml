@@ -2,6 +2,10 @@
 version: '3.8'
 
 services:
+  jaeger:
+    image: jaegertracing/opentelemetry-all-in-one
+    ports:
+    - "16686:16686/tcp"
   dex:
     image: ghcr.io/dexidp/dex:latest
     volumes:
@@ -39,6 +43,9 @@ services:
       DEBUG: 1
       POSTGRES_URI: "host=postgres user=auth password=auth dbname=auth port=5432 sslmode=disable"
       CAOS_OIDC_DEV: 1
+      OTEL_TRACES: "true"
+      OTEL_TRACES_EXPORTER: jaeger
+      OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
       DELEGATED_CLIENT_ID: gateway
       DELEGATED_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
       DELEGATED_ISSUER: http://localhost:5556/dex
@@ -75,6 +82,7 @@ services:
     depends_on:
     - dex
     - postgres
+    - jaeger
     volumes:
     - .:/src
     working_dir: /src
