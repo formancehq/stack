@@ -18,7 +18,7 @@ func createJSONBuffer(t *testing.T, v any) io.Reader {
 	return bytes.NewBuffer(data)
 }
 
-func readObject[T any](t *testing.T, recorder *httptest.ResponseRecorder) T {
+func readTestResponse[T any](t *testing.T, recorder *httptest.ResponseRecorder) T {
 	body := sharedapi.BaseResponse[T]{}
 	require.NoError(t, json.NewDecoder(recorder.Body).Decode(&body))
 	return *body.Data

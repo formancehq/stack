@@ -36,7 +36,7 @@ func TestCreateScope(t *testing.T) {
 
 		require.Equal(t, http.StatusCreated, res.Code)
 
-		createdScope := readObject[scope](t, res)
+		createdScope := readTestResponse[scope](t, res)
 		require.NotEmpty(t, createdScope.ID)
 		require.Equal(t, "XXX", createdScope.Label)
 
@@ -61,7 +61,7 @@ func TestUpdateScope(t *testing.T) {
 
 		require.Equal(t, http.StatusOK, res.Code)
 
-		updatedScope := readObject[scope](t, res)
+		updatedScope := readTestResponse[scope](t, res)
 		require.NotEmpty(t, updatedScope.ID)
 		require.Equal(t, "YYY", updatedScope.Label)
 
@@ -86,7 +86,7 @@ func TestListScopes(t *testing.T) {
 
 		require.Equal(t, http.StatusOK, res.Code)
 
-		scopes := readObject[[]scope](t, res)
+		scopes := readTestResponse[[]scope](t, res)
 		require.Len(t, scopes, 2)
 		require.Len(t, scopes[1].Triggers, 1)
 		require.Equal(t, scopes[1].Triggers[0], scopes[0].ID)
@@ -108,7 +108,7 @@ func TestReadScope(t *testing.T) {
 
 		require.Equal(t, http.StatusOK, res.Code)
 
-		scope := readObject[scope](t, res)
+		scope := readTestResponse[scope](t, res)
 		require.Len(t, scope.Triggers, 1)
 		require.Equal(t, scope.Triggers[0], scope1.ID)
 	})

@@ -88,7 +88,7 @@ func TestCreateClient(t *testing.T) {
 
 			require.Equal(t, http.StatusCreated, res.Code)
 
-			createdClient := readObject[client](t, res)
+			createdClient := readTestResponse[client](t, res)
 			require.NotEmpty(t, createdClient.ID)
 			require.Equal(t, tc.options, createdClient.ClientOptions)
 
@@ -166,7 +166,7 @@ func TestUpdateClient(t *testing.T) {
 
 			require.Equal(t, http.StatusOK, res.Code)
 
-			updatedClient := readObject[client](t, res)
+			updatedClient := readTestResponse[client](t, res)
 			require.NotEmpty(t, updatedClient.ID)
 			require.Equal(t, tc.options, updatedClient.ClientOptions)
 
@@ -194,22 +194,34 @@ func TestListClients(t *testing.T) {
 
 		require.Equal(t, http.StatusOK, res.Code)
 
-		clients := readObject[[]client](t, res)
+		clients := readTestResponse[[]client](t, res)
 		require.Len(t, clients, 2)
 	})
 }
 
 func TestReadClient(t *testing.T) {
 	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
-		client := auth.NewClient(auth.ClientOptions{})
-		require.NoError(t, db.Create(client).Error)
 
-		req := httptest.NewRequest(http.MethodGet, "/clients/"+client.Id, nil)
+		scope1 := auth.NewScope("XXX")
+		require.NoError(t, db.Create(scope1).Error)
+
+		client1 := auth.NewClient(auth.ClientOptions{})
+		client1.Scopes = append(client1.Scopes, *scope1)
+		require.NoError(t, db.Create(client1).Error)
+
+		req := httptest.NewRequest(http.MethodGet, "/clients/"+client1.Id, nil)
 		res := httptest.NewRecorder()
 
 		router.ServeHTTP(res, req)
 
 		require.Equal(t, http.StatusOK, res.Code)
+
+		ret := readTestResponse[client](t, res)
+		require.Equal(t, client{
+			ClientOptions: auth.ClientOptions{},
+			ID:            client1.Id,
+			Scopes:        []string{scope1.ID},
+		}, ret)
 	})
 }
 
@@ -225,7 +237,7 @@ func TestGenerateNewSecret(t *testing.T) {
 
 		router.ServeHTTP(res, req)
 
-		result := readObject[secretCreateResult](t, res)
+		result := readTestResponse[secretCreateResult](t, res)
 		require.NotEmpty(t, result.Clear)
 		require.Equal(t, result.LastDigits, result.Clear[len(result.Clear)-4:])
 		require.Equal(t, result.Name, "secret1")
