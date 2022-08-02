@@ -450,8 +450,11 @@ func (s *storage) ValidateJWTProfileScopes(ctx context.Context, userID string, s
 
 //Health implements the op.Storage interface
 func (s *storage) Health(ctx context.Context) error {
-	// TODO
-	return nil
+	db, err := s.db.DB()
+	if err != nil {
+		return err
+	}
+	return db.Ping()
 }
 
 //createRefreshToken will store a refresh_token in-memory based on the provided information
