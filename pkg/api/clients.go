@@ -66,14 +66,8 @@ type secretCreateResult struct {
 
 func deleteSecret(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		client := &auth.Client{}
-		if err := db.Find(client, "id = ?", mux.Vars(r)["clientId"]).Error; err != nil {
-			switch err {
-			case gorm.ErrRecordNotFound:
-				w.WriteHeader(http.StatusNotFound)
-			default:
-				internalServerError(w, r, err)
-			}
+		client := findById[auth.Client](w, r, db, "clientId")
+		if client == nil {
 			return
 		}
 
