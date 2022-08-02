@@ -36,8 +36,7 @@ func authorizeCallbackHandler(
 		}
 
 		idToken, err := delegatedOIDCProvider.Verifier(&oidc.Config{
-			ClientID:        "gateway",
-			SkipIssuerCheck: true, //TODO: Only on dev as url doesn't match in this case
+			ClientID: delegatedOAuth2Config.ClientID,
 		}).Verify(context.Background(), token.Extra("id_token").(string))
 		if err != nil {
 			panic(err)
@@ -60,7 +59,6 @@ func authorizeCallbackHandler(
 		}
 
 		if err := storage.MarkAuthRequestAsDone(r.Context(), authRequest.GetID(), user.Subject); err != nil {
-			//TODO: Handle error
 			panic(err)
 		}
 
