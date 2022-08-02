@@ -5,8 +5,6 @@ import (
 	"net/http"
 
 	"github.com/coreos/go-oidc"
-	"github.com/davecgh/go-spew/spew"
-	"github.com/gorilla/mux"
 	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/delegatedauth"
 	"github.com/numary/auth/pkg/storage"
@@ -26,14 +24,12 @@ func authorizeCallbackHandler(
 		if err != nil {
 			panic(err)
 		}
-		spew.Dump(state)
 
 		authRequest, err := storage.AuthRequestByID(context.Background(), state.AuthRequestID)
 		if err != nil {
 			panic(err)
 		}
 
-		spew.Dump(r.URL.Query().Get("code"))
 		token, err := delegatedOAuth2Config.Exchange(context.Background(), r.URL.Query().Get("code"))
 		if err != nil {
 			panic(err)
@@ -68,10 +64,7 @@ func authorizeCallbackHandler(
 			panic(err)
 		}
 
-		vars := mux.Vars(r)
-		vars["id"] = state.AuthRequestID
-		mux.SetURLVars(r, vars)
-
-		op.AuthorizeCallback(w, r, provider)
+		w.Header().Set("Location", op.AuthCallbackURL(provider)(state.AuthRequestID))
+		w.WriteHeader(http.StatusFound)
 	}
 }

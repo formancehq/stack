@@ -16,7 +16,7 @@ func NewRouter(provider op.OpenIDProvider, storage storage.Storage, healthContro
 	router := provider.HttpHandler().(*mux.Router)
 	router.Use(otelmux.Middleware("auth"))
 	router.Path("/_healthcheck").HandlerFunc(healthController.Check)
-	router.Path("/authorize/callback").Handler(authorizeCallbackHandler(
+	router.Path("/delegatedoidc/callback").Handler(authorizeCallbackHandler(
 		provider, storage, delegatedOAuth2Config, delegatedOIDCProvider))
 	return router
 }

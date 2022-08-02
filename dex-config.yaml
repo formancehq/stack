@@ -22,7 +22,7 @@ oauth2:
 staticClients:
   - id: gateway
     redirectURIs:
-      - 'http://127.0.0.1:8080/authorize/callback'
+      - 'http://127.0.0.1:8080/delegatedoidc/callback'
     name: 'Auth Gateway'
     secret: ZXhhbXBsZS1hcHAtc2VjcmV0
 

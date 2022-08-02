@@ -77,7 +77,7 @@ var serveCmd = &cobra.Command{
 				delegatedIssuer,
 				delegatedClientID,
 				delegatedClientSecret,
-				fmt.Sprintf("%s/authorize/callback", baseUrl),
+				fmt.Sprintf("%s/delegatedoidc/callback", baseUrl),
 			),
 			sharedotlptraces.CLITracesModule(viper.GetViper()),
 			fx.Invoke(func() {
