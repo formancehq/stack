@@ -76,7 +76,7 @@ func TestListScopes(t *testing.T) {
 		scope1 := auth.NewScope("XXX")
 		require.NoError(t, db.Create(scope1).Error)
 
-		scope2 := auth.NewScope("YYY").AddTrigger(scope1)
+		scope2 := auth.NewScope("YYY").AddTransientScope(scope1)
 		require.NoError(t, db.Create(scope2).Error)
 
 		req := httptest.NewRequest(http.MethodGet, "/scopes", nil)
@@ -88,8 +88,8 @@ func TestListScopes(t *testing.T) {
 
 		scopes := readTestResponse[[]scope](t, res)
 		require.Len(t, scopes, 2)
-		require.Len(t, scopes[1].Triggers, 1)
-		require.Equal(t, scopes[1].Triggers[0], scopes[0].ID)
+		require.Len(t, scopes[1].Transient, 1)
+		require.Equal(t, scopes[1].Transient[0], scopes[0].ID)
 	})
 }
 
@@ -98,7 +98,7 @@ func TestReadScope(t *testing.T) {
 		scope1 := auth.NewScope("XXX")
 		require.NoError(t, db.Create(scope1).Error)
 
-		scope2 := auth.NewScope("YYY").AddTrigger(scope1)
+		scope2 := auth.NewScope("YYY").AddTransientScope(scope1)
 		require.NoError(t, db.Create(scope2).Error)
 
 		req := httptest.NewRequest(http.MethodGet, "/scopes/"+scope2.ID, nil)
@@ -109,8 +109,8 @@ func TestReadScope(t *testing.T) {
 		require.Equal(t, http.StatusOK, res.Code)
 
 		scope := readTestResponse[scope](t, res)
-		require.Len(t, scope.Triggers, 1)
-		require.Equal(t, scope.Triggers[0], scope1.ID)
+		require.Len(t, scope.Transient, 1)
+		require.Equal(t, scope.Transient[0], scope1.ID)
 	})
 }
 
@@ -122,7 +122,7 @@ func TestAddTriggeredScope(t *testing.T) {
 		scope2 := auth.NewScope("YYY")
 		require.NoError(t, db.Create(scope2).Error)
 
-		req := httptest.NewRequest(http.MethodPut, "/scopes/"+scope1.ID+"/triggers/"+scope2.ID, nil)
+		req := httptest.NewRequest(http.MethodPut, "/scopes/"+scope1.ID+"/transient/"+scope2.ID, nil)
 		res := httptest.NewRecorder()
 
 		router.ServeHTTP(res, req)
@@ -130,10 +130,10 @@ func TestAddTriggeredScope(t *testing.T) {
 		require.Equal(t, http.StatusNoContent, res.Code)
 
 		scopeFromDatabase := auth.Scope{}
-		require.NoError(t, db.Preload("Triggers").Find(&scopeFromDatabase, "id = ?", scope1.ID).Error)
+		require.NoError(t, db.Preload("TransientScopes").Find(&scopeFromDatabase, "id = ?", scope1.ID).Error)
 		require.Equal(t, scopeFromDatabase.Label, scope1.Label)
-		require.Len(t, scopeFromDatabase.Triggers, 1)
-		require.Equal(t, scopeFromDatabase.Triggers[0], *scope2)
+		require.Len(t, scopeFromDatabase.TransientScopes, 1)
+		require.Equal(t, scopeFromDatabase.TransientScopes[0], *scope2)
 	})
 }
 
@@ -142,10 +142,10 @@ func TestDeleteTriggeredScope(t *testing.T) {
 		scope1 := auth.NewScope("XXX")
 		require.NoError(t, db.Create(scope1).Error)
 
-		scope2 := auth.NewScope("YYY").AddTrigger(scope1)
+		scope2 := auth.NewScope("YYY").AddTransientScope(scope1)
 		require.NoError(t, db.Create(scope2).Error)
 
-		req := httptest.NewRequest(http.MethodDelete, "/scopes/"+scope2.ID+"/triggers/"+scope1.ID, nil)
+		req := httptest.NewRequest(http.MethodDelete, "/scopes/"+scope2.ID+"/transient/"+scope1.ID, nil)
 		res := httptest.NewRecorder()
 
 		router.ServeHTTP(res, req)
@@ -153,8 +153,8 @@ func TestDeleteTriggeredScope(t *testing.T) {
 		require.Equal(t, http.StatusNoContent, res.Code)
 
 		scopeFromDatabase := auth.Scope{}
-		require.NoError(t, db.Preload("Triggers").Find(&scopeFromDatabase, "id = ?", scope2.ID).Error)
+		require.NoError(t, db.Preload("TransientScopes").Find(&scopeFromDatabase, "id = ?", scope2.ID).Error)
 		require.Equal(t, scopeFromDatabase.Label, scope2.Label)
-		require.Len(t, scopeFromDatabase.Triggers, 0)
+		require.Len(t, scopeFromDatabase.TransientScopes, 0)
 	})
 }

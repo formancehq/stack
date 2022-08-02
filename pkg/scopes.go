@@ -5,13 +5,13 @@ import (
 )
 
 type Scope struct {
-	ID       string  `gorm:"primarykey" json:"id"`
-	Label    string  `json:"label" gorm:"unique"`
-	Triggers []Scope `json:"triggers" gorm:"many2many:scopes_triggers;"`
+	ID              string  `json:"id" gorm:"primarykey"`
+	Label           string  `json:"label" gorm:"unique"`
+	TransientScopes []Scope `json:"transient" gorm:"many2many:transient_scopes;"`
 }
 
-func (s *Scope) AddTrigger(scope *Scope) *Scope {
-	s.Triggers = append(s.Triggers, *scope)
+func (s *Scope) AddTransientScope(scope *Scope) *Scope {
+	s.TransientScopes = append(s.TransientScopes, *scope)
 	return s
 }
 

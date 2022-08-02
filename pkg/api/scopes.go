@@ -13,23 +13,23 @@ func addScopeRoutes(db *gorm.DB, router *mux.Router) {
 	router.Path("/scopes").Methods(http.MethodGet).HandlerFunc(listScopes(db))
 	router.Path("/scopes/{scopeId}").Methods(http.MethodPut).HandlerFunc(updateScope(db))
 	router.Path("/scopes/{scopeId}").Methods(http.MethodGet).HandlerFunc(readScope(db))
-	router.Path("/scopes/{scopeId}/triggers/{triggeredScopeId}").Methods(http.MethodPut).HandlerFunc(addTriggerToScope(db))
-	router.Path("/scopes/{scopeId}/triggers/{triggeredScopeId}").Methods(http.MethodDelete).HandlerFunc(deleteTriggerFromScope(db))
+	router.Path("/scopes/{scopeId}/transient/{transientScopeId}").Methods(http.MethodPut).HandlerFunc(addTriggerToScope(db))
+	router.Path("/scopes/{scopeId}/transient/{transientScopeId}").Methods(http.MethodDelete).HandlerFunc(deleteTriggerFromScope(db))
 }
 
 type scope struct {
-	ID       string   `json:"id"`
-	Label    string   `json:"label"`
-	Triggers []string `json:"triggers"`
+	ID        string   `json:"id"`
+	Label     string   `json:"label"`
+	Transient []string `json:"transient"`
 }
 
 func mapBusinessScope(businessScope auth.Scope) scope {
 	return scope{
 		ID:    businessScope.ID,
 		Label: businessScope.Label,
-		Triggers: func() []string {
+		Transient: func() []string {
 			ret := make([]string, 0)
-			for _, trigger := range businessScope.Triggers {
+			for _, trigger := range businessScope.TransientScopes {
 				ret = append(ret, trigger.ID)
 			}
 			return ret
@@ -43,16 +43,16 @@ func deleteTriggerFromScope(db *gorm.DB) http.HandlerFunc {
 		if scope == nil {
 			return
 		}
-		triggered := findById[auth.Scope](w, r, db, "triggeredScopeId")
+		triggered := findById[auth.Scope](w, r, db, "transientScopeId")
 		if triggered == nil {
 			return
 		}
-		if err := loadAssociation(w, r, db, scope, "Triggers", &scope.Triggers); err != nil {
+		if err := loadAssociation(w, r, db, scope, "TransientScopes", &scope.TransientScopes); err != nil {
 			return
 		}
-		for _, t := range scope.Triggers {
+		for _, t := range scope.TransientScopes {
 			if t.ID == triggered.ID {
-				if err := removeFromAssociation(w, r, db, scope, "Triggers", triggered); err != nil {
+				if err := removeFromAssociation(w, r, db, scope, "TransientScopes", triggered); err != nil {
 					return
 				}
 				w.WriteHeader(http.StatusNoContent)
@@ -69,11 +69,11 @@ func addTriggerToScope(db *gorm.DB) http.HandlerFunc {
 		if scope == nil {
 			return
 		}
-		triggered := findById[auth.Scope](w, r, db, "triggeredScopeId")
+		triggered := findById[auth.Scope](w, r, db, "transientScopeId")
 		if triggered == nil {
 			return
 		}
-		if err := appendToAssociation(w, r, db, scope, "Triggers", triggered); err != nil {
+		if err := appendToAssociation(w, r, db, scope, "TransientScopes", triggered); err != nil {
 			return
 		}
 		w.WriteHeader(http.StatusNoContent)
@@ -86,7 +86,7 @@ func readScope(db *gorm.DB) http.HandlerFunc {
 		if scope == nil {
 			return
 		}
-		if err := loadAssociation(w, r, db, scope, "Triggers", &scope.Triggers); err != nil {
+		if err := loadAssociation(w, r, db, scope, "TransientScopes", &scope.TransientScopes); err != nil {
 			return
 		}
 		writeJSONObject(w, r, mapBusinessScope(*scope))
@@ -117,7 +117,7 @@ func listScopes(db *gorm.DB) http.HandlerFunc {
 		scopes := make([]auth.Scope, 0)
 		if err := db.
 			WithContext(r.Context()).
-			Preload("Triggers").
+			Preload("TransientScopes").
 			Find(&scopes).Error; err != nil {
 			internalServerError(w, r, err)
 			return

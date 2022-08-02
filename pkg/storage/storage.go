@@ -70,7 +70,7 @@ l:
 			if err := s.db.
 				WithContext(ctx).
 				Model(clientScope).
-				Association("Triggers").
+				Association("TransientScopes").
 				Find(&triggeredScopes); err != nil {
 				return nil, err
 			}
