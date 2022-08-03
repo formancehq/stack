@@ -3,7 +3,6 @@ package auth
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -27,14 +26,11 @@ type ClientSecret struct {
 }
 
 func (s ClientSecret) Check(clear string) bool {
-	fmt.Println("check secret", clear, s.Hash, newHash(clear))
 	return s.Hash == newHash(clear)
 }
 
-func newSecret(name, clear string) (ClientSecret, string) {
-	if clear == "" {
-		clear = uuid.NewString()
-	}
+func newSecret(name string) (ClientSecret, string) {
+	clear := uuid.NewString()
 	return ClientSecret{
 		ID:         uuid.NewString(),
 		Hash:       newHash(clear),
@@ -58,7 +54,7 @@ type Client struct {
 	PostLogoutRedirectUris         Array[string] `gorm:"type:text"`
 	Scopes                         []Scope       `gorm:"many2many:client_scopes;"`
 	Description                    string
-	Name                           string
+	Name                           string `gorm:"unique"`
 }
 
 func (c *Client) Update(opts ClientOptions) {
@@ -78,14 +74,7 @@ func (c *Client) Update(opts ClientOptions) {
 }
 
 func (c *Client) GenerateNewSecret(name string) (ClientSecret, string) {
-	secret, clear := newSecret(name, "")
-	c.Secrets = append(c.Secrets, secret)
-
-	return secret, clear
-}
-
-func (c *Client) GenerateNewSecretWithClear(name, clear string) (ClientSecret, string) {
-	secret, clear := newSecret(name, clear)
+	secret, clear := newSecret(name)
 	c.Secrets = append(c.Secrets, secret)
 
 	return secret, clear

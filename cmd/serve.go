@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/api"
 	"github.com/numary/auth/pkg/delegatedauth"
 	"github.com/numary/auth/pkg/storage"
@@ -15,11 +14,7 @@ import (
 	"github.com/numary/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
 	"go.uber.org/fx"
-	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 const (
@@ -81,45 +76,6 @@ var serveCmd = &cobra.Command{
 			sharedotlptraces.CLITracesModule(viper.GetViper()),
 			fx.Invoke(func() {
 				sharedlogging.Infof("App started.")
-			}),
-			fx.Invoke(func(lc fx.Lifecycle, db *gorm.DB) {
-				lc.Append(fx.Hook{
-					OnStart: func(ctx context.Context) error {
-						client := &auth.Client{
-							Id: "demo",
-							RedirectURIs: auth.Array[string]{
-								"http://localhost:3000/auth-callback",
-							},
-							ApplicationType: op.ApplicationTypeWeb,
-							AuthMethod:      oidc.AuthMethodNone,
-							ResponseTypes:   []oidc.ResponseType{oidc.ResponseTypeCode},
-							GrantTypes: []oidc.GrantType{
-								oidc.GrantTypeCode,
-								oidc.GrantTypeRefreshToken,
-								oidc.GrantTypeClientCredentials,
-							},
-							AccessTokenType:        op.AccessTokenTypeJWT,
-							PostLogoutRedirectUris: auth.Array[string]{"http://localhost:3000/"},
-						}
-						secret, _ := client.GenerateNewSecretWithClear("default", "1234")
-						return db.
-							WithContext(ctx).
-							Clauses(clause.OnConflict{
-								Columns: []clause.Column{{Name: "id"}},
-								DoUpdates: clause.Assignments(map[string]interface{}{
-									"grant_types": auth.Array[oidc.GrantType]{
-										oidc.GrantTypeCode,
-										oidc.GrantTypeRefreshToken,
-										oidc.GrantTypeClientCredentials,
-									},
-									"post_logout_redirect_uris": `["http://localhost:3000/"]`,
-									"access_token_type":         op.AccessTokenTypeJWT,
-									"secrets":                   fmt.Sprintf(`[{"hash": "%s"}]`, secret.Hash),
-								}),
-							}).
-							Create(client).Error
-					},
-				})
 			}),
 			fx.NopLogger,
 		)
