@@ -8,6 +8,9 @@ tasks:
   lint:
     cmds:
     - golangci-lint run -v --fix
+  tests:
+    cmds:
+    - go test ./...
   build:
     cmds:
     - go build
@@ -27,7 +30,7 @@ tasks:
     openapitools/openapi-generator-cli:latest generate 
     -i swagger.yaml 
     -g go 
-    -o ./pkg/client 
+    -o ./authclient 
     --git-user-id=numary 
     --git-repo-id=auth 
     -p packageVersion=latest 

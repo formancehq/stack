@@ -1,5 +1,23 @@
 # Auth server
 
+## Generate client code
+
+```
+task generate-client
+```
+
+## Tests
+
+```
+task tests
+```
+
+## Lint
+
+```
+task lint
+```
+
 ## Run the demo
 
 Execute command : 
