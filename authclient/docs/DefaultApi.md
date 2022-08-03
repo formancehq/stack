@@ -915,7 +915,7 @@ import (
 
 func main() {
     scopeId := "scopeId_example" // string | Scope ID
-    body := ClientOptions(987) // ClientOptions |  (optional)
+    body := ScopeOptions(987) // ScopeOptions |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -945,7 +945,7 @@ Other parameters are passed through a pointer to a apiUpdateScopeRequest struct 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **body** | **ClientOptions** |  | 
+ **body** | **ScopeOptions** |  | 
 
 ### Return type
 

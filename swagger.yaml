@@ -350,6 +350,6 @@ components:
     ReadScopeResponse:
       $ref: '#/components/schemas/CreateScopeResponse'
     UpdateScopeRequest:
-      $ref: '#/components/schemas/ClientOptions'
+      $ref: '#/components/schemas/ScopeOptions'
     UpdateScopeResponse:
       $ref: '#/components/schemas/CreateScopeResponse'

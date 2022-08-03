@@ -1310,10 +1310,10 @@ type ApiUpdateScopeRequest struct {
 	ctx context.Context
 	ApiService *DefaultApiService
 	scopeId string
-	body *ClientOptions
+	body *ScopeOptions
 }
 
-func (r ApiUpdateScopeRequest) Body(body ClientOptions) ApiUpdateScopeRequest {
+func (r ApiUpdateScopeRequest) Body(body ScopeOptions) ApiUpdateScopeRequest {
 	r.body = &body
 	return r
 }
