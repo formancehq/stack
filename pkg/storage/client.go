@@ -101,7 +101,7 @@ func (c *clientFacade) RestrictAdditionalAccessTokenScopes() func(scopes []strin
 //IsScopeAllowed enables Client specific custom scopes validation
 func (c *clientFacade) IsScopeAllowed(scope string) bool {
 	scopes := make([]auth.Scope, 0)
-	if err := c.db.First(&scopes, "string_value = ?", scope).Error; err != nil {
+	if err := c.db.First(&scopes, "label = ?", scope).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return false

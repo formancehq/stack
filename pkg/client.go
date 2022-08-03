@@ -3,6 +3,7 @@ package auth
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -26,17 +27,20 @@ type ClientSecret struct {
 }
 
 func (s ClientSecret) Check(clear string) bool {
+	fmt.Println("check secret", clear, s.Hash, newHash(clear))
 	return s.Hash == newHash(clear)
 }
 
-func newSecret(name string) (ClientSecret, string) {
-	secret := uuid.NewString()
+func newSecret(name, clear string) (ClientSecret, string) {
+	if clear == "" {
+		clear = uuid.NewString()
+	}
 	return ClientSecret{
 		ID:         uuid.NewString(),
-		Hash:       newHash(secret),
-		LastDigits: secret[len(secret)-4:],
+		Hash:       newHash(clear),
+		LastDigits: clear[len(clear)-4:],
 		Name:       name,
-	}, secret
+	}, clear
 }
 
 type Client struct {
@@ -74,10 +78,26 @@ func (c *Client) Update(opts ClientOptions) {
 }
 
 func (c *Client) GenerateNewSecret(name string) (ClientSecret, string) {
-	secret, clear := newSecret(name)
+	secret, clear := newSecret(name, "")
 	c.Secrets = append(c.Secrets, secret)
 
 	return secret, clear
+}
+
+func (c *Client) GenerateNewSecretWithClear(name, clear string) (ClientSecret, string) {
+	secret, clear := newSecret(name, clear)
+	c.Secrets = append(c.Secrets, secret)
+
+	return secret, clear
+}
+
+func (c *Client) HasSecret(clear string) bool {
+	for _, secret := range c.Secrets {
+		if secret.Check(clear) {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Client) DeleteSecret(id string) bool {

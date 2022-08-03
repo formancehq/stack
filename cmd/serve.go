@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/google/uuid"
 	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/api"
 	"github.com/numary/auth/pkg/delegatedauth"
@@ -86,6 +85,23 @@ var serveCmd = &cobra.Command{
 			fx.Invoke(func(lc fx.Lifecycle, db *gorm.DB) {
 				lc.Append(fx.Hook{
 					OnStart: func(ctx context.Context) error {
+						client := &auth.Client{
+							Id: "demo",
+							RedirectURIs: auth.Array[string]{
+								"http://localhost:3000/auth-callback",
+							},
+							ApplicationType: op.ApplicationTypeWeb,
+							AuthMethod:      oidc.AuthMethodNone,
+							ResponseTypes:   []oidc.ResponseType{oidc.ResponseTypeCode},
+							GrantTypes: []oidc.GrantType{
+								oidc.GrantTypeCode,
+								oidc.GrantTypeRefreshToken,
+								oidc.GrantTypeClientCredentials,
+							},
+							AccessTokenType:        op.AccessTokenTypeJWT,
+							PostLogoutRedirectUris: auth.Array[string]{"http://localhost:3000/"},
+						}
+						secret, _ := client.GenerateNewSecretWithClear("default", "1234")
 						return db.
 							WithContext(ctx).
 							Clauses(clause.OnConflict{
@@ -98,31 +114,10 @@ var serveCmd = &cobra.Command{
 									},
 									"post_logout_redirect_uri": `["http://localhost:3000/"]`,
 									"access_token_type":        op.AccessTokenTypeJWT,
-									"secrets":                  `[{"value": "1234"}]`,
+									"secrets":                  fmt.Sprintf(`[{"hash": "%s"}]`, secret.Hash),
 								}),
 							}).
-							Create(&auth.Client{
-								Id: "demo",
-								Secrets: auth.Array[auth.ClientSecret]{
-									{
-										ID:   uuid.NewString(),
-										Hash: "1234",
-									},
-								},
-								RedirectURIs: auth.Array[string]{
-									"http://localhost:3000/auth-callback",
-								},
-								ApplicationType: op.ApplicationTypeWeb,
-								AuthMethod:      oidc.AuthMethodNone,
-								ResponseTypes:   []oidc.ResponseType{oidc.ResponseTypeCode},
-								GrantTypes: []oidc.GrantType{
-									oidc.GrantTypeCode,
-									oidc.GrantTypeRefreshToken,
-									oidc.GrantTypeClientCredentials,
-								},
-								AccessTokenType:        op.AccessTokenTypeJWT,
-								PostLogoutRedirectUris: auth.Array[string]{"http://localhost:3000/"},
-							}).Error
+							Create(client).Error
 					},
 				})
 			}),

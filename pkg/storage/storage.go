@@ -355,11 +355,10 @@ func (s *storage) AuthorizeClientIDSecret(ctx context.Context, clientID, clientS
 		return err
 	}
 
-	for _, secret := range client.Secrets {
-		if secret.Hash == clientSecret {
-			return nil
-		}
+	if client.HasSecret(clientSecret) {
+		return nil
 	}
+
 	return fmt.Errorf("invalid secret")
 }
 
