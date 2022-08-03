@@ -321,10 +321,10 @@ func (a *DefaultApiService) CreateClientExecute(r ApiCreateClientRequest) (*Crea
 type ApiCreateScopeRequest struct {
 	ctx context.Context
 	ApiService *DefaultApiService
-	body *ClientOptions
+	body *ScopeOptions
 }
 
-func (r ApiCreateScopeRequest) Body(body ClientOptions) ApiCreateScopeRequest {
+func (r ApiCreateScopeRequest) Body(body ScopeOptions) ApiCreateScopeRequest {
 	r.body = &body
 	return r
 }

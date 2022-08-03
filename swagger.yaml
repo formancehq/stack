@@ -341,7 +341,7 @@ components:
           items:
             $ref: '#/components/schemas/Scope'
     CreateScopeRequest:
-      $ref: '#/components/schemas/ClientOptions'
+      $ref: '#/components/schemas/ScopeOptions'
     CreateScopeResponse:
       type: object
       properties:

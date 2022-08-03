@@ -318,6 +318,8 @@ components:
       - $ref: '#/components/schemas/ClientOptions'
       - $ref: '#/components/schemas/Client_allOf'
     ScopeOptions:
+      example:
+        label: label
       properties:
         label:
           type: string
@@ -371,7 +373,7 @@ components:
           type: array
       type: object
     CreateScopeRequest:
-      $ref: '#/components/schemas/ClientOptions'
+      $ref: '#/components/schemas/ScopeOptions'
     CreateScopeResponse:
       example:
         data: null
