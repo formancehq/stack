@@ -112,9 +112,9 @@ var serveCmd = &cobra.Command{
 										oidc.GrantTypeRefreshToken,
 										oidc.GrantTypeClientCredentials,
 									},
-									"post_logout_redirect_uri": `["http://localhost:3000/"]`,
-									"access_token_type":        op.AccessTokenTypeJWT,
-									"secrets":                  fmt.Sprintf(`[{"hash": "%s"}]`, secret.Hash),
+									"post_logout_redirect_uris": `["http://localhost:3000/"]`,
+									"access_token_type":         op.AccessTokenTypeJWT,
+									"secrets":                   fmt.Sprintf(`[{"hash": "%s"}]`, secret.Hash),
 								}),
 							}).
 							Create(client).Error

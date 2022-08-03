@@ -30,6 +30,9 @@ services:
     build:
       context: .
       dockerfile: reflex.Dockerfile
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/_healthcheck"]
+      interval: 1s
     entrypoint:
     - reflex
     - -r
