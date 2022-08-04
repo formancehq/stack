@@ -66,6 +66,10 @@ func (c *Client) Update(opts ClientOptions) {
 	if !opts.Public {
 		grantTypes = append(grantTypes, oidc.GrantTypeClientCredentials)
 	}
+	authMethod := oidc.AuthMethodNone
+	if !opts.Public {
+		authMethod = oidc.AuthMethodBasic
+	}
 
 	c.GrantTypes = grantTypes
 	c.RedirectURIs = opts.RedirectUris
@@ -73,6 +77,7 @@ func (c *Client) Update(opts ClientOptions) {
 	c.Description = opts.Description
 	c.Name = opts.Name
 	c.Metadata = opts.Metadata
+	c.AuthMethod = authMethod
 }
 
 func (c *Client) GenerateNewSecret(name string) (ClientSecret, string) {
@@ -127,7 +132,6 @@ func NewClient(opts ClientOptions) *Client {
 	client := &Client{
 		Id:              uuid.NewString(),
 		ApplicationType: op.ApplicationTypeWeb,
-		AuthMethod:      oidc.AuthMethodNone,
 		ResponseTypes:   []oidc.ResponseType{oidc.ResponseTypeCode},
 		AccessTokenType: op.AccessTokenTypeJWT,
 	}
