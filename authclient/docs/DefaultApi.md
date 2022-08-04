@@ -8,9 +8,11 @@ Method | HTTP request | Description
 [**AddTransientScope**](DefaultApi.md#AddTransientScope) | **Put** /scopes/{scopeId}/transient/{transientScopeId} | Add a transient scope to a scope
 [**CreateClient**](DefaultApi.md#CreateClient) | **Post** /clients | Create client
 [**CreateScope**](DefaultApi.md#CreateScope) | **Post** /scopes | Create scope
+[**CreateSecret**](DefaultApi.md#CreateSecret) | **Post** /clients/{clientId}/secrets | Add a secret to a client
 [**DeleteClient**](DefaultApi.md#DeleteClient) | **Delete** /clients/{clientId} | Delete client
 [**DeleteScope**](DefaultApi.md#DeleteScope) | **Delete** /scopes/{scopeId} | Delete scope
 [**DeleteScopeFromClient**](DefaultApi.md#DeleteScopeFromClient) | **Delete** /clients/{clientId}/scopes/{scopeId} | Delete scope from client
+[**DeleteSecret**](DefaultApi.md#DeleteSecret) | **Delete** /clients/{clientId}/secrets/{secretId} | Delete a secret from a client
 [**DeleteTransientScope**](DefaultApi.md#DeleteTransientScope) | **Delete** /scopes/{scopeId}/transient/{transientScopeId} | Delete a transient scope from a scope
 [**ListClients**](DefaultApi.md#ListClients) | **Get** /clients | List clients
 [**ListScopes**](DefaultApi.md#ListScopes) | **Get** /scopes | List scopes
@@ -291,6 +293,76 @@ No authorization required
 [[Back to README]](../README.md)
 
 
+## CreateSecret
+
+> CreateSecretResponse CreateSecret(ctx, clientId).Body(body).Execute()
+
+Add a secret to a client
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "./openapi"
+)
+
+func main() {
+    clientId := "clientId_example" // string | Client ID
+    body := SecretOptions(987) // SecretOptions |  (optional)
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.DefaultApi.CreateSecret(context.Background(), clientId).Body(body).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.CreateSecret``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `CreateSecret`: CreateSecretResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.CreateSecret`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**clientId** | **string** | Client ID | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCreateSecretRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **body** | **SecretOptions** |  | 
+
+### Return type
+
+[**CreateSecretResponse**](CreateSecretResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
 ## DeleteClient
 
 > DeleteClient(ctx, clientId).Execute()
@@ -469,6 +541,75 @@ Name | Type | Description  | Notes
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiDeleteScopeFromClientRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## DeleteSecret
+
+> DeleteSecret(ctx, clientId, secretId).Execute()
+
+Delete a secret from a client
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "./openapi"
+)
+
+func main() {
+    clientId := "clientId_example" // string | Client ID
+    secretId := "secretId_example" // string | Secret ID
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.DefaultApi.DeleteSecret(context.Background(), clientId, secretId).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeleteSecret``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**clientId** | **string** | Client ID | 
+**secretId** | **string** | Secret ID | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiDeleteSecretRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes

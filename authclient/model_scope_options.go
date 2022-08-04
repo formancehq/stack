@@ -17,6 +17,7 @@ import (
 // ScopeOptions struct for ScopeOptions
 type ScopeOptions struct {
 	Label string `json:"label"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
 }
 
 // NewScopeOptions instantiates a new ScopeOptions object
@@ -61,10 +62,45 @@ func (o *ScopeOptions) SetLabel(v string) {
 	o.Label = v
 }
 
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *ScopeOptions) GetMetadata() map[string]string {
+	if o == nil || o.Metadata == nil {
+		var ret map[string]string
+		return ret
+	}
+	return *o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ScopeOptions) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil || o.Metadata == nil {
+		return nil, false
+	}
+	return o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *ScopeOptions) HasMetadata() bool {
+	if o != nil && o.Metadata != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *ScopeOptions) SetMetadata(v map[string]string) {
+	o.Metadata = &v
+}
+
 func (o ScopeOptions) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["label"] = o.Label
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
 	}
 	return json.Marshal(toSerialize)
 }

@@ -92,6 +92,49 @@ paths:
       responses:
         "204":
           description: Client deleted
+  /clients/{clientId}/secrets:
+    post:
+      summary: Add a secret to a client
+      operationId: createSecret
+      parameters:
+      - description: Client ID
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSecretRequest'
+      responses:
+        200:
+          description: Created secret
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSecretResponse'
+  /clients/{clientId}/secrets/{secretId}:
+    delete:
+      summary: Delete a secret from a client
+      operationId: deleteSecret
+      parameters:
+      - description: Client ID
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+      - description: Secret ID
+        in: path
+        name: secretId
+        required: true
+        schema:
+          type: string
+      responses:
+        204:
+          description: Secret deleted
   /clients/{clientId}/scopes/{scopeId}:
     put:
       summary: Add scope to client
@@ -258,6 +301,10 @@ paths:
           description: "Transient scope deleted"
 components:
   schemas:
+    Metadata:
+      type: object
+      additionalProperties:
+        type: string
     ClientOptions:
       type: object
       properties:
@@ -275,6 +322,8 @@ components:
           type: array
           items:
             type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
       required:
       - name
     Client:
@@ -295,6 +344,8 @@ components:
       properties:
         label:
           type: string
+        metadata:
+          $ref: '#/components/schemas/Metadata'
       required:
       - label
     Scope:
@@ -310,6 +361,26 @@ components:
               type: string
         required:
         - id
+    SecretOptions:
+      type: object
+      properties:
+        name:
+          type: string
+    Secret:
+      allOf:
+      - $ref: '#/components/schemas/SecretOptions'
+      - type: object
+        properties:
+          id:
+            type: string
+          lastDigits:
+            type: string
+          clear:
+            type: string
+        required:
+        - id
+        - lastDigits
+        - clear
     CreateClientRequest:
       $ref: '#/components/schemas/ClientOptions'
     CreateClientResponse:
@@ -353,3 +424,10 @@ components:
       $ref: '#/components/schemas/ScopeOptions'
     UpdateScopeResponse:
       $ref: '#/components/schemas/CreateScopeResponse'
+    CreateSecretRequest:
+      $ref: '#/components/schemas/SecretOptions'
+    CreateSecretResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Secret'

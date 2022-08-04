@@ -96,6 +96,55 @@ paths:
                 $ref: '#/components/schemas/UpdateClientResponse'
           description: Updated client
       summary: Update client
+  /clients/{clientId}/secrets:
+    post:
+      operationId: createSecret
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSecretRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSecretResponse'
+          description: Created secret
+      summary: Add a secret to a client
+  /clients/{clientId}/secrets/{secretId}:
+    delete:
+      operationId: deleteSecret
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Secret ID
+        explode: false
+        in: path
+        name: secretId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Secret deleted
+      summary: Delete a secret from a client
   /clients/{clientId}/scopes/{scopeId}:
     delete:
       operationId: deleteScopeFromClient
@@ -284,8 +333,14 @@ paths:
       summary: Add a transient scope to a scope
 components:
   schemas:
+    Metadata:
+      additionalProperties:
+        type: string
+      type: object
     ClientOptions:
       example:
+        metadata:
+          key: metadata
         public: true
         postLogoutRedirectUris:
         - postLogoutRedirectUris
@@ -310,6 +365,10 @@ components:
           items:
             type: string
           type: array
+        metadata:
+          additionalProperties:
+            type: string
+          type: object
       required:
       - name
       type: object
@@ -319,10 +378,16 @@ components:
       - $ref: '#/components/schemas/Client_allOf'
     ScopeOptions:
       example:
+        metadata:
+          key: metadata
         label: label
       properties:
         label:
           type: string
+        metadata:
+          additionalProperties:
+            type: string
+          type: object
       required:
       - label
       type: object
@@ -330,6 +395,17 @@ components:
       allOf:
       - $ref: '#/components/schemas/ScopeOptions'
       - $ref: '#/components/schemas/Scope_allOf'
+    SecretOptions:
+      example:
+        name: name
+      properties:
+        name:
+          type: string
+      type: object
+    Secret:
+      allOf:
+      - $ref: '#/components/schemas/SecretOptions'
+      - $ref: '#/components/schemas/Secret_allOf'
     CreateClientRequest:
       $ref: '#/components/schemas/ClientOptions'
     CreateClientResponse:
@@ -387,6 +463,15 @@ components:
       $ref: '#/components/schemas/ScopeOptions'
     UpdateScopeResponse:
       $ref: '#/components/schemas/CreateScopeResponse'
+    CreateSecretRequest:
+      $ref: '#/components/schemas/SecretOptions'
+    CreateSecretResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/Secret'
+      type: object
     Client_allOf:
       properties:
         id:
@@ -408,4 +493,17 @@ components:
           type: array
       required:
       - id
+      type: object
+    Secret_allOf:
+      properties:
+        id:
+          type: string
+        lastDigits:
+          type: string
+        clear:
+          type: string
+      required:
+      - clear
+      - id
+      - lastDigits
       type: object

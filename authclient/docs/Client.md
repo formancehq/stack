@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **Description** | Pointer to **string** |  | [optional] 
 **Name** | **string** |  | 
 **PostLogoutRedirectUris** | Pointer to **[]string** |  | [optional] 
+**Metadata** | Pointer to **map[string]string** |  | [optional] 
 **Id** | **string** |  | 
 **Scopes** | Pointer to **[]string** |  | [optional] 
 
@@ -150,6 +151,31 @@ SetPostLogoutRedirectUris sets PostLogoutRedirectUris field to given value.
 `func (o *Client) HasPostLogoutRedirectUris() bool`
 
 HasPostLogoutRedirectUris returns a boolean if a field has been set.
+
+### GetMetadata
+
+`func (o *Client) GetMetadata() map[string]string`
+
+GetMetadata returns the Metadata field if non-nil, zero value otherwise.
+
+### GetMetadataOk
+
+`func (o *Client) GetMetadataOk() (*map[string]string, bool)`
+
+GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetMetadata
+
+`func (o *Client) SetMetadata(v map[string]string)`
+
+SetMetadata sets Metadata field to given value.
+
+### HasMetadata
+
+`func (o *Client) HasMetadata() bool`
+
+HasMetadata returns a boolean if a field has been set.
 
 ### GetId
 

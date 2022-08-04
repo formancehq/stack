@@ -82,9 +82,11 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**AddTransientScope**](docs/DefaultApi.md#addtransientscope) | **Put** /scopes/{scopeId}/transient/{transientScopeId} | Add a transient scope to a scope
 *DefaultApi* | [**CreateClient**](docs/DefaultApi.md#createclient) | **Post** /clients | Create client
 *DefaultApi* | [**CreateScope**](docs/DefaultApi.md#createscope) | **Post** /scopes | Create scope
+*DefaultApi* | [**CreateSecret**](docs/DefaultApi.md#createsecret) | **Post** /clients/{clientId}/secrets | Add a secret to a client
 *DefaultApi* | [**DeleteClient**](docs/DefaultApi.md#deleteclient) | **Delete** /clients/{clientId} | Delete client
 *DefaultApi* | [**DeleteScope**](docs/DefaultApi.md#deletescope) | **Delete** /scopes/{scopeId} | Delete scope
 *DefaultApi* | [**DeleteScopeFromClient**](docs/DefaultApi.md#deletescopefromclient) | **Delete** /clients/{clientId}/scopes/{scopeId} | Delete scope from client
+*DefaultApi* | [**DeleteSecret**](docs/DefaultApi.md#deletesecret) | **Delete** /clients/{clientId}/secrets/{secretId} | Delete a secret from a client
 *DefaultApi* | [**DeleteTransientScope**](docs/DefaultApi.md#deletetransientscope) | **Delete** /scopes/{scopeId}/transient/{transientScopeId} | Delete a transient scope from a scope
 *DefaultApi* | [**ListClients**](docs/DefaultApi.md#listclients) | **Get** /clients | List clients
 *DefaultApi* | [**ListScopes**](docs/DefaultApi.md#listscopes) | **Get** /scopes | List scopes
@@ -101,12 +103,16 @@ Class | Method | HTTP request | Description
  - [ClientOptions](docs/ClientOptions.md)
  - [CreateClientResponse](docs/CreateClientResponse.md)
  - [CreateScopeResponse](docs/CreateScopeResponse.md)
+ - [CreateSecretResponse](docs/CreateSecretResponse.md)
  - [ListClientsResponse](docs/ListClientsResponse.md)
  - [ListScopesResponse](docs/ListScopesResponse.md)
  - [ReadClientResponse](docs/ReadClientResponse.md)
  - [Scope](docs/Scope.md)
  - [ScopeAllOf](docs/ScopeAllOf.md)
  - [ScopeOptions](docs/ScopeOptions.md)
+ - [Secret](docs/Secret.md)
+ - [SecretAllOf](docs/SecretAllOf.md)
+ - [SecretOptions](docs/SecretOptions.md)
 
 
 ## Documentation For Authorization

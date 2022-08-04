@@ -17,6 +17,7 @@ import (
 // Scope struct for Scope
 type Scope struct {
 	Label string `json:"label"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
 	Id string `json:"id"`
 	Transient []string `json:"transient,omitempty"`
 }
@@ -62,6 +63,38 @@ func (o *Scope) GetLabelOk() (*string, bool) {
 // SetLabel sets field value
 func (o *Scope) SetLabel(v string) {
 	o.Label = v
+}
+
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *Scope) GetMetadata() map[string]string {
+	if o == nil || o.Metadata == nil {
+		var ret map[string]string
+		return ret
+	}
+	return *o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Scope) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil || o.Metadata == nil {
+		return nil, false
+	}
+	return o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *Scope) HasMetadata() bool {
+	if o != nil && o.Metadata != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *Scope) SetMetadata(v map[string]string) {
+	o.Metadata = &v
 }
 
 // GetId returns the Id field value
@@ -124,6 +157,9 @@ func (o Scope) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["label"] = o.Label
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
 	}
 	if true {
 		toSerialize["id"] = o.Id

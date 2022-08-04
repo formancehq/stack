@@ -10,6 +10,7 @@ docs/ClientAllOf.md
 docs/ClientOptions.md
 docs/CreateClientResponse.md
 docs/CreateScopeResponse.md
+docs/CreateSecretResponse.md
 docs/DefaultApi.md
 docs/ListClientsResponse.md
 docs/ListScopesResponse.md
@@ -17,6 +18,9 @@ docs/ReadClientResponse.md
 docs/Scope.md
 docs/ScopeAllOf.md
 docs/ScopeOptions.md
+docs/Secret.md
+docs/SecretAllOf.md
+docs/SecretOptions.md
 git_push.sh
 go.mod
 go.sum
@@ -25,11 +29,15 @@ model_client_all_of.go
 model_client_options.go
 model_create_client_response.go
 model_create_scope_response.go
+model_create_secret_response.go
 model_list_clients_response.go
 model_list_scopes_response.go
 model_read_client_response.go
 model_scope.go
 model_scope_all_of.go
 model_scope_options.go
+model_secret.go
+model_secret_all_of.go
+model_secret_options.go
 response.go
 utils.go
