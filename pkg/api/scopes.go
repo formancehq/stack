@@ -99,11 +99,11 @@ func updateScope(db *gorm.DB) http.HandlerFunc {
 		if scope == nil {
 			return
 		}
-		opts := readJSONObject[scopeOptions](w, r)
+		opts := readJSONObject[auth.ScopeOptions](w, r)
 		if opts == nil {
 			return
 		}
-		scope.Label = opts.Label
+		scope.Update(*opts)
 
 		if err := saveObject(w, r, db, scope); err != nil {
 			return
@@ -126,17 +126,13 @@ func listScopes(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-type scopeOptions struct {
-	Label string `json:"label"`
-}
-
 func createScope(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		opts := readJSONObject[scopeOptions](w, r)
+		opts := readJSONObject[auth.ScopeOptions](w, r)
 		if opts == nil {
 			return
 		}
-		scope := auth.NewScope(opts.Label)
+		scope := auth.NewScope(*opts)
 		if err := createObject(w, r, db, scope); err != nil {
 			return
 		}

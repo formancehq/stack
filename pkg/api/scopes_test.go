@@ -27,7 +27,7 @@ func withDbAndScopesRouter(t *testing.T, callback func(router *mux.Router, db *g
 
 func TestCreateScope(t *testing.T) {
 	withDbAndScopesRouter(t, func(router *mux.Router, db *gorm.DB) {
-		req := httptest.NewRequest(http.MethodPost, "/scopes", createJSONBuffer(t, scopeOptions{
+		req := httptest.NewRequest(http.MethodPost, "/scopes", createJSONBuffer(t, auth.ScopeOptions{
 			Label: "XXX",
 		}))
 		res := httptest.NewRecorder()
@@ -49,10 +49,10 @@ func TestCreateScope(t *testing.T) {
 func TestUpdateScope(t *testing.T) {
 	withDbAndScopesRouter(t, func(router *mux.Router, db *gorm.DB) {
 
-		scope1 := auth.NewScope("XXX")
+		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
 		require.NoError(t, db.Create(scope1).Error)
 
-		req := httptest.NewRequest(http.MethodPut, "/scopes/"+scope1.ID, createJSONBuffer(t, scopeOptions{
+		req := httptest.NewRequest(http.MethodPut, "/scopes/"+scope1.ID, createJSONBuffer(t, auth.ScopeOptions{
 			Label: "YYY",
 		}))
 		res := httptest.NewRecorder()
@@ -73,10 +73,10 @@ func TestUpdateScope(t *testing.T) {
 
 func TestListScopes(t *testing.T) {
 	withDbAndScopesRouter(t, func(router *mux.Router, db *gorm.DB) {
-		scope1 := auth.NewScope("XXX")
+		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
 		require.NoError(t, db.Create(scope1).Error)
 
-		scope2 := auth.NewScope("YYY").AddTransientScope(scope1)
+		scope2 := auth.NewScope(auth.ScopeOptions{Label: "YYY"}).AddTransientScope(scope1)
 		require.NoError(t, db.Create(scope2).Error)
 
 		req := httptest.NewRequest(http.MethodGet, "/scopes", nil)
@@ -95,10 +95,10 @@ func TestListScopes(t *testing.T) {
 
 func TestReadScope(t *testing.T) {
 	withDbAndScopesRouter(t, func(router *mux.Router, db *gorm.DB) {
-		scope1 := auth.NewScope("XXX")
+		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
 		require.NoError(t, db.Create(scope1).Error)
 
-		scope2 := auth.NewScope("YYY").AddTransientScope(scope1)
+		scope2 := auth.NewScope(auth.ScopeOptions{Label: "YYY"}).AddTransientScope(scope1)
 		require.NoError(t, db.Create(scope2).Error)
 
 		req := httptest.NewRequest(http.MethodGet, "/scopes/"+scope2.ID, nil)
@@ -116,10 +116,10 @@ func TestReadScope(t *testing.T) {
 
 func TestAddTriggeredScope(t *testing.T) {
 	withDbAndScopesRouter(t, func(router *mux.Router, db *gorm.DB) {
-		scope1 := auth.NewScope("XXX")
+		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
 		require.NoError(t, db.Create(scope1).Error)
 
-		scope2 := auth.NewScope("YYY")
+		scope2 := auth.NewScope(auth.ScopeOptions{Label: "YYY"})
 		require.NoError(t, db.Create(scope2).Error)
 
 		req := httptest.NewRequest(http.MethodPut, "/scopes/"+scope1.ID+"/transient/"+scope2.ID, nil)
@@ -139,10 +139,10 @@ func TestAddTriggeredScope(t *testing.T) {
 
 func TestDeleteTriggeredScope(t *testing.T) {
 	withDbAndScopesRouter(t, func(router *mux.Router, db *gorm.DB) {
-		scope1 := auth.NewScope("XXX")
+		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
 		require.NoError(t, db.Create(scope1).Error)
 
-		scope2 := auth.NewScope("YYY").AddTransientScope(scope1)
+		scope2 := auth.NewScope(auth.ScopeOptions{Label: "YYY"}).AddTransientScope(scope1)
 		require.NoError(t, db.Create(scope2).Error)
 
 		req := httptest.NewRequest(http.MethodDelete, "/scopes/"+scope2.ID+"/transient/"+scope1.ID, nil)

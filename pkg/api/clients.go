@@ -41,6 +41,7 @@ func mapBusinessClient(c auth.Client) client {
 			Description:            c.Description,
 			Name:                   c.Name,
 			PostLogoutRedirectUris: c.PostLogoutRedirectUris,
+			Metadata:               c.Metadata,
 		},
 		ID: c.Id,
 		Scopes: func() []string {

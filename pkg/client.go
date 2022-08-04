@@ -54,7 +54,8 @@ type Client struct {
 	PostLogoutRedirectUris         Array[string] `gorm:"type:text"`
 	Scopes                         []Scope       `gorm:"many2many:client_scopes;"`
 	Description                    string
-	Name                           string `gorm:"unique"`
+	Name                           string
+	Metadata                       Metadata `gorm:"type:text"`
 }
 
 func (c *Client) Update(opts ClientOptions) {
@@ -71,6 +72,7 @@ func (c *Client) Update(opts ClientOptions) {
 	c.PostLogoutRedirectUris = opts.PostLogoutRedirectUris
 	c.Description = opts.Description
 	c.Name = opts.Name
+	c.Metadata = opts.Metadata
 }
 
 func (c *Client) GenerateNewSecret(name string) (ClientSecret, string) {
@@ -118,6 +120,7 @@ type ClientOptions struct {
 	Description            string   `json:"description"`
 	Name                   string   `json:"name"`
 	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris"`
+	Metadata               Metadata `json:"metadata"`
 }
 
 func NewClient(opts ClientOptions) *Client {

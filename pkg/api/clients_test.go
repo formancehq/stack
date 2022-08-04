@@ -42,6 +42,9 @@ func TestCreateClient(t *testing.T) {
 				RedirectUris:           []string{"http://localhost:8080"},
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
 			},
 			expectedClient: auth.Client{
 				GrantTypes: auth.Array[oidc.GrantType]{
@@ -58,6 +61,9 @@ func TestCreateClient(t *testing.T) {
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
 				Name:                   "confidential client",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
 			},
 		},
 		{
@@ -116,6 +122,9 @@ func TestUpdateClient(t *testing.T) {
 				RedirectUris:           []string{"http://localhost:8080"},
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
 			},
 			expectedClient: auth.Client{
 				GrantTypes: auth.Array[oidc.GrantType]{
@@ -132,6 +141,9 @@ func TestUpdateClient(t *testing.T) {
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
 				Name:                   "confidential client",
+				Metadata: map[string]string{
+					"foo": "bar",
+				},
 			},
 		},
 		{
@@ -184,7 +196,11 @@ func TestListClients(t *testing.T) {
 		client1 := auth.NewClient(auth.ClientOptions{})
 		require.NoError(t, db.Create(client1).Error)
 
-		client2 := auth.NewClient(auth.ClientOptions{})
+		client2 := auth.NewClient(auth.ClientOptions{
+			Metadata: map[string]string{
+				"foo": "bar",
+			},
+		})
 		require.NoError(t, db.Create(client2).Error)
 
 		req := httptest.NewRequest(http.MethodGet, "/clients", nil)
@@ -196,16 +212,23 @@ func TestListClients(t *testing.T) {
 
 		clients := readTestResponse[[]client](t, res)
 		require.Len(t, clients, 2)
+		require.Len(t, clients[1].Metadata, 1)
+		require.Equal(t, clients[1].Metadata["foo"], "bar")
 	})
 }
 
 func TestReadClient(t *testing.T) {
 	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
 
-		scope1 := auth.NewScope("XXX")
+		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
 		require.NoError(t, db.Create(scope1).Error)
 
-		client1 := auth.NewClient(auth.ClientOptions{})
+		opts := auth.ClientOptions{
+			Metadata: map[string]string{
+				"foo": "bar",
+			},
+		}
+		client1 := auth.NewClient(opts)
 		client1.Scopes = append(client1.Scopes, *scope1)
 		require.NoError(t, db.Create(client1).Error)
 
@@ -218,7 +241,7 @@ func TestReadClient(t *testing.T) {
 
 		ret := readTestResponse[client](t, res)
 		require.Equal(t, client{
-			ClientOptions: auth.ClientOptions{},
+			ClientOptions: opts,
 			ID:            client1.Id,
 			Scopes:        []string{scope1.ID},
 		}, ret)
@@ -271,7 +294,7 @@ func TestAddScope(t *testing.T) {
 		client := auth.NewClient(auth.ClientOptions{})
 		require.NoError(t, db.Create(client).Error)
 
-		scope := auth.NewScope("XXX")
+		scope := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
 		require.NoError(t, db.Create(scope).Error)
 
 		req := httptest.NewRequest(http.MethodPut, "/clients/"+client.Id+"/scopes/"+scope.ID, nil)
@@ -290,7 +313,7 @@ func TestAddScope(t *testing.T) {
 func TestRemoveScope(t *testing.T) {
 	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
 
-		scope := auth.NewScope("XXX")
+		scope := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
 		require.NoError(t, db.Create(scope).Error)
 
 		client := auth.NewClient(auth.ClientOptions{})
