@@ -22,7 +22,7 @@ type ClientSecret struct {
 	ID         string `json:"id"`
 	Hash       string `json:"hash"`
 	LastDigits string `json:"lastDigits"`
-	Name       string `json:"lastDigits"`
+	Name       string `json:"name"`
 }
 
 func (s ClientSecret) Check(clear string) bool {

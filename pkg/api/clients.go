@@ -171,14 +171,6 @@ func createClient(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		grantTypes := []oidc.GrantType{
-			oidc.GrantTypeCode,
-			oidc.GrantTypeRefreshToken,
-		}
-		if !opts.Public {
-			grantTypes = append(grantTypes, oidc.GrantTypeClientCredentials)
-		}
-
 		c := auth.NewClient(*opts)
 		if err := createObject(w, r, db, c); err != nil {
 			return

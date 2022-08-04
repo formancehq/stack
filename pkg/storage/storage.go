@@ -8,14 +8,13 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/numary/auth/pkg"
+	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/delegatedauth"
+	"github.com/zitadel/oidc/pkg/oidc"
+	"github.com/zitadel/oidc/pkg/op"
 	"golang.org/x/text/language"
 	"gopkg.in/square/go-jose.v2"
 	"gorm.io/gorm"
-
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
 )
 
 type Storage interface {
@@ -474,14 +473,6 @@ func (s *storage) createRefreshToken(tx *gorm.DB, accessToken *auth.Token, amr [
 		Error
 }
 
-//renewRefreshToken checks the provided refresh_token and creates a new one based on the current
-func (s *storage) renewRefreshToken(tx *gorm.DB, currentRefreshToken string, newToken string) error {
-	return tx.
-		Model(&auth.RefreshToken{}).
-		Where("id = ?", currentRefreshToken).
-		Update("token", newToken).Error
-}
-
 //accessToken will store an access_token in-memory based on the provided information
 func (s *storage) saveAccessToken(tx *gorm.DB, applicationID, subject string, audience, scopes []string) (*auth.Token, error) {
 	token := &auth.Token{
@@ -495,10 +486,6 @@ func (s *storage) saveAccessToken(tx *gorm.DB, applicationID, subject string, au
 	return token, tx.
 		Create(token).
 		Error
-}
-
-func (s *storage) deleteAccessToken(tx *gorm.DB, id string) error {
-	return tx.Where("id = ?", id).Delete(&auth.Token{}).Error
 }
 
 //setUserinfo sets the info based on the user, scopes and if necessary the clientID

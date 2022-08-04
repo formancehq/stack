@@ -3,7 +3,7 @@ package storage
 import (
 	"time"
 
-	"github.com/numary/auth/pkg"
+	auth "github.com/numary/auth/pkg"
 )
 
 type RefreshTokenRequest struct {

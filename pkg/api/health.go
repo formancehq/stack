@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/numary/auth/pkg/delegatedauth"
-	"github.com/numary/go-libs/sharedhealth/pkg"
+	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
 )
 
 func delegatedOIDCServerAvailability(issuer delegatedauth.Issuer) sharedhealth.NamedCheck {
