@@ -66,7 +66,7 @@ var serveCmd = &cobra.Command{
 			return err
 		}
 
-		app := fx.New(
+		options := []fx.Option{
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
 			api.Module(baseUrl, ":8080"),
 			storage.Module(viper.GetString(postgresUriFlag), key),
@@ -76,12 +76,16 @@ var serveCmd = &cobra.Command{
 				delegatedClientSecret,
 				fmt.Sprintf("%s/delegatedoidc/callback", baseUrl),
 			),
-			sharedotlptraces.CLITracesModule(viper.GetViper()),
 			fx.Invoke(func() {
 				sharedlogging.Infof("App started.")
 			}),
 			fx.NopLogger,
-		)
+		}
+		if tm := sharedotlptraces.CLITracesModule(viper.GetViper()); tm != nil {
+			options = append(options, tm)
+		}
+
+		app := fx.New(options...)
 		err = app.Start(cmd.Context())
 		if err != nil {
 			return err
