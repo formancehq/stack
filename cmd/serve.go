@@ -58,6 +58,9 @@ var serveCmd = &cobra.Command{
 			return errors.New("signing key must be defined")
 		}
 		block, _ := pem.Decode([]byte(signingKey))
+		if block == nil {
+			return errors.New("invalid signing key, cannot parse as PEM")
+		}
 		key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 		if err != nil {
 			return err
