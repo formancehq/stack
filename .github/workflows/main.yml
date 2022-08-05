@@ -19,14 +19,14 @@ jobs:
   test:
     uses: numary/gh-workflows/.github/workflows/golang-test.yml@main
 
-  build:
+  goreleaser-build:
     if: github.event_name != 'release'
     uses: numary/gh-workflows/.github/workflows/goreleaser-build.yml@main
     needs:
       - lint
       - test
 
-  release:
+  goreleaser-release:
     if: github.event_name == 'release'
     uses: numary/gh-workflows/.github/workflows/goreleaser-release.yml@main
     secrets:
@@ -36,7 +36,7 @@ jobs:
       - lint
       - test
 
-  docker:
+  docker-build-push:
     runs-on: ubuntu-latest
     needs:
       - lint
