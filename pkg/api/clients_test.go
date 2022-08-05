@@ -56,7 +56,7 @@ func TestCreateClient(t *testing.T) {
 				ResponseTypes: auth.Array[oidc.ResponseType]{
 					oidc.ResponseTypeCode,
 				},
-				AuthMethod:             oidc.AuthMethodNone,
+				AuthMethod:             oidc.AuthMethodBasic,
 				RedirectURIs:           []string{"http://localhost:8080"},
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
@@ -136,7 +136,7 @@ func TestUpdateClient(t *testing.T) {
 				ResponseTypes: auth.Array[oidc.ResponseType]{
 					oidc.ResponseTypeCode,
 				},
-				AuthMethod:             oidc.AuthMethodNone,
+				AuthMethod:             oidc.AuthMethodBasic,
 				RedirectURIs:           []string{"http://localhost:8080"},
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
