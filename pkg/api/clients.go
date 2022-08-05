@@ -21,20 +21,20 @@ func addClientRoutes(db *gorm.DB, router *mux.Router) {
 	router.Path("/clients/{clientId}/scopes/{scopeId}").Methods(http.MethodDelete).HandlerFunc(deleteScopeOfClient(db))
 }
 
-type client struct {
+type clientView struct {
 	auth.ClientOptions
 	ID     string   `json:"id"`
 	Scopes []string `json:"scopes"`
 }
 
-func mapBusinessClient(c auth.Client) client {
+func mapBusinessClient(c auth.Client) clientView {
 	public := true
 	for _, grantType := range c.GrantTypes {
 		if grantType == oidc.GrantTypeClientCredentials {
 			public = false
 		}
 	}
-	return client{
+	return clientView{
 		ClientOptions: auth.ClientOptions{
 			Public:                 public,
 			RedirectUris:           c.RedirectURIs,

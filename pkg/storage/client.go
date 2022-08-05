@@ -5,23 +5,23 @@ import (
 
 	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/delegatedauth"
+	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
-	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 )
 
 type clientFacade struct {
-	Client              *auth.Client
-	delegatedAuthConfig delegatedauth.OAuth2Config
-	db                  *gorm.DB
+	Client       *auth.Client
+	relyingParty rp.RelyingParty
+	db           *gorm.DB
 }
 
-func newClientFacade(client *auth.Client, delegatedAuthConfig delegatedauth.OAuth2Config, db *gorm.DB) *clientFacade {
+func newClientFacade(client *auth.Client, relyingParty rp.RelyingParty, db *gorm.DB) *clientFacade {
 	return &clientFacade{
-		Client:              client,
-		delegatedAuthConfig: delegatedAuthConfig,
-		db:                  db,
+		Client:       client,
+		relyingParty: relyingParty,
+		db:           db,
 	}
 }
 
@@ -64,9 +64,9 @@ func (c *clientFacade) GrantTypes() []oidc.GrantType {
 //LoginURL will be called to redirect the user (agent) to the login UI
 //you could implement some logic here to redirect the users to different login UIs depending on the client
 func (c *clientFacade) LoginURL(id string) string {
-	return c.delegatedAuthConfig.AuthCodeURL(delegatedauth.DelegatedState{
+	return rp.AuthURL(delegatedauth.DelegatedState{
 		AuthRequestID: id,
-	}.EncodeAsUrlParam(), oauth2.SetAuthURLParam("scope", "openid email"))
+	}.EncodeAsUrlParam(), c.relyingParty)
 }
 
 //AccessTokenType must return the type of access token the client uses (Bearer (opaque) or JWT)

@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	auth "github.com/numary/auth/pkg"
-	"github.com/numary/auth/pkg/delegatedauth"
+	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
 	"golang.org/x/text/language"
@@ -28,9 +28,9 @@ type Storage interface {
 var _ Storage = (*storage)(nil)
 
 type storage struct {
-	signingKey          signingKey
-	db                  *gorm.DB
-	delegatedAuthConfig delegatedauth.OAuth2Config
+	signingKey   signingKey
+	db           *gorm.DB
+	relyingParty rp.RelyingParty
 }
 
 func (s *storage) ClientCredentialsTokenRequest(ctx context.Context, clientID string, scopes []string) (op.TokenRequest, error) {
@@ -102,9 +102,9 @@ type signingKey struct {
 	Key       *rsa.PrivateKey
 }
 
-func New(db *gorm.DB, config delegatedauth.OAuth2Config, key *rsa.PrivateKey) *storage {
+func New(db *gorm.DB, relyingParty rp.RelyingParty, key *rsa.PrivateKey) *storage {
 	return &storage{
-		delegatedAuthConfig: config,
+		relyingParty: relyingParty,
 		signingKey: signingKey{
 			ID:        "id",
 			Algorithm: "RS256",
@@ -343,7 +343,7 @@ func (s *storage) GetClientByClientID(ctx context.Context, clientID string) (op.
 	if err != nil {
 		return nil, err
 	}
-	return newClientFacade(client, s.delegatedAuthConfig, s.db), nil
+	return newClientFacade(client, s.relyingParty, s.db), nil
 }
 
 //AuthorizeClientIDSecret implements the op.Storage interface

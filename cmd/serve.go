@@ -70,12 +70,12 @@ var serveCmd = &cobra.Command{
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
 			api.Module(baseUrl, ":8080"),
 			storage.Module(viper.GetString(postgresUriFlag), key),
-			delegatedauth.Module(
-				delegatedIssuer,
-				delegatedClientID,
-				delegatedClientSecret,
-				fmt.Sprintf("%s/delegatedoidc/callback", baseUrl),
-			),
+			delegatedauth.Module(delegatedauth.Config{
+				Issuer:       delegatedIssuer,
+				ClientID:     delegatedClientID,
+				ClientSecret: delegatedClientSecret,
+				RedirectURL:  fmt.Sprintf("%s/delegatedoidc/callback", baseUrl),
+			}),
 			fx.Invoke(func() {
 				sharedlogging.Infof("App started.")
 			}),

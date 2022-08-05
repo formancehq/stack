@@ -94,7 +94,7 @@ func TestCreateClient(t *testing.T) {
 
 			require.Equal(t, http.StatusCreated, res.Code)
 
-			createdClient := readTestResponse[client](t, res)
+			createdClient := readTestResponse[clientView](t, res)
 			require.NotEmpty(t, createdClient.ID)
 			require.Equal(t, tc.options, createdClient.ClientOptions)
 
@@ -178,7 +178,7 @@ func TestUpdateClient(t *testing.T) {
 
 			require.Equal(t, http.StatusOK, res.Code)
 
-			updatedClient := readTestResponse[client](t, res)
+			updatedClient := readTestResponse[clientView](t, res)
 			require.NotEmpty(t, updatedClient.ID)
 			require.Equal(t, tc.options, updatedClient.ClientOptions)
 
@@ -210,7 +210,7 @@ func TestListClients(t *testing.T) {
 
 		require.Equal(t, http.StatusOK, res.Code)
 
-		clients := readTestResponse[[]client](t, res)
+		clients := readTestResponse[[]clientView](t, res)
 		require.Len(t, clients, 2)
 		require.Len(t, clients[1].Metadata, 1)
 		require.Equal(t, clients[1].Metadata["foo"], "bar")
@@ -239,8 +239,8 @@ func TestReadClient(t *testing.T) {
 
 		require.Equal(t, http.StatusOK, res.Code)
 
-		ret := readTestResponse[client](t, res)
-		require.Equal(t, client{
+		ret := readTestResponse[clientView](t, res)
+		require.Equal(t, clientView{
 			ClientOptions: opts,
 			ID:            client1.Id,
 			Scopes:        []string{scope1.ID},

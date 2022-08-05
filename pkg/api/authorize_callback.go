@@ -4,19 +4,17 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/coreos/go-oidc"
 	auth "github.com/numary/auth/pkg"
 	"github.com/numary/auth/pkg/delegatedauth"
 	"github.com/numary/auth/pkg/storage"
+	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/op"
-	"golang.org/x/oauth2"
 )
 
 func authorizeCallbackHandler(
 	provider op.OpenIDProvider,
 	storage storage.Storage,
-	delegatedOAuth2Config oauth2.Config,
-	delegatedOIDCProvider *oidc.Provider,
+	relyingParty rp.RelyingParty,
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -30,28 +28,21 @@ func authorizeCallbackHandler(
 			panic(err)
 		}
 
-		token, err := delegatedOAuth2Config.Exchange(context.Background(), r.URL.Query().Get("code"))
+		tokens, err := rp.CodeExchange(context.Background(), r.URL.Query().Get("code"), relyingParty)
 		if err != nil {
 			panic(err)
 		}
 
-		idToken, err := delegatedOIDCProvider.Verifier(&oidc.Config{
-			ClientID: delegatedOAuth2Config.ClientID,
-		}).Verify(context.Background(), token.Extra("id_token").(string))
+		userInfo, err := rp.Userinfo(tokens.AccessToken, "Bearer", tokens.IDTokenClaims.GetSubject(), relyingParty)
 		if err != nil {
 			panic(err)
 		}
 
-		claims := &delegatedauth.Claims{}
-		if err := idToken.Claims(&claims); err != nil {
-			panic(err)
-		}
-
-		user, err := storage.FindUserByEmail(r.Context(), claims.Email)
+		user, err := storage.FindUserByEmail(r.Context(), userInfo.GetEmail())
 		if err != nil {
 			user = &auth.User{
-				Subject: claims.Subject,
-				Email:   claims.Email,
+				Subject: userInfo.GetSubject(),
+				Email:   userInfo.GetEmail(),
 			}
 			if err := storage.CreateUser(r.Context(), user); err != nil {
 				panic(err)
