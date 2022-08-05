@@ -1,8 +1,0 @@
-env = "staging"
-app_env_name = "app-staging-webhooks"
-vpc_id = "vpc-0404a45704851e75d"
-vpc_cidr = "10.0.0.0/16"
-subnet_a = "subnet-0d1ac20ee029cec6a"
-subnet_b = "subnet-016eed76661032cc5"
-subnet_c = "subnet-043b1993c33c54efd"
-atlas_project_id = "61d6b520a08122263a590cca"

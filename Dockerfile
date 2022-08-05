@@ -1,19 +1,26 @@
-ARG VERSION=latest
+FROM --platform=$BUILDPLATFORM golang:1.18 AS builder
+# 1. Precompile the entire go standard library into the first Docker cache layer: useful for other projects too!
+ARG APP_SHA
+ARG VERSION
+WORKDIR /go/src/github.com/numary/webhooks
+# get deps first so it's cached
+COPY go.mod .
+COPY go.sum .
+RUN --mount=type=cache,id=gomod,target=/go/bridge/mod \
+    --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+    go mod download
+COPY . .
+RUN --mount=type=cache,id=gomod,target=/go/bridge/mod \
+    --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=linux \
+    go build -o webhooks \
+    -ldflags="-X github.com/numary/webhooks/cmd.Version=${VERSION} \
+    -X github.com/numary/webhooks/cmd.BuildDate=$(date +%s) \
+    -X github.com/numary/webhooks/cmd.Commit=${APP_SHA}" ./
 
-FROM golang:1.18-buster as src
-COPY . /app
-WORKDIR /app
-
-FROM src as dev
-RUN apt-get update && apt-get install -y ca-certificates git-core ssh
-RUN go install github.com/cespare/reflex@latest
-RUN git config --global url.ssh://git@github.com/numary.insteadOf https://github.com/numary
-
-FROM src as compiler
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-X main.Version=${VERSION}" .
-
-FROM alpine as app
-RUN apk add --no-cache ca-certificates curl
-COPY --from=compiler /app/webhooks-cloud /usr/local/bin/webhooks
+FROM ubuntu:jammy
+RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /go/src/github.com/numary/webhooks/webhooks /usr/local/bin/webhooks
 EXPOSE 8080
-CMD ["webhooks"]
+ENTRYPOINT ["webhooks"]
+CMD ["server"]

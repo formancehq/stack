@@ -1,5 +1,10 @@
 version: '3'
 
+env:
+  KAFKA_TOPIC: test-topic
+  SVIX_TOKEN: testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb
+  SVIX_APP_ID: app_2CqvO4XINy9ucWhqGPFXj4EkNS7
+
 vars:
   SERVICE: webhooks
   APP_VERSION: develop
@@ -12,17 +17,20 @@ vars:
 
 tasks:
   default:
-    deps: [lint, tests:local:go, tests:benthos]
+    cmds:
+      - task: lint
+      - task: tests:local
 
   lint:
     cmds:
       - golangci-lint run -v --fix
 
-  tests:local:go:
-    deps: [mongo]
+  tests:local:
     cmds:
+      - task: mongo
+      - task: kafka
       - >
-        go test {{.TAGS}} -v {{.FAILFAST}} -coverpkg {{.PKG}} -coverprofile coverage.out -covermode atomic
+        go test -v -p 1 {{.FAILFAST}} -coverpkg {{.PKG}} -coverprofile coverage.out -covermode atomic
         -run {{.RUN}} -timeout {{.TIMEOUT}} {{.PKG}} |
         sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' |
         sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/'' |
@@ -30,16 +38,10 @@ tasks:
       - task: coverage
 
   tests:
-    deps: [tests:benthos, tests:go]
-
-  tests:benthos:
     cmds:
-      - benthos test --log OFF .cloud/helm/benthos/*
-
-  tests:go:
-    deps: [mongo]
-    cmds:
-      - go test -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
+      - task: mongo
+      - task: kafka
+      - go test -p 1 -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
 
   ci:
     cmds:
@@ -72,23 +74,24 @@ tasks:
       - cp {{.SERVICE}} $(go env GOPATH)/bin
 
   install:
-    deps: [install:golangci-lint, install:benthos]
+    deps: [install:golangci-lint]
 
   install:golangci-lint:
     cmds:
+      - golangci-lint --version
       - >
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh |
         sh -s -- -b $(go env GOPATH)/bin latest
       - golangci-lint --version
 
-  install:benthos:
-    cmds:
-      - curl -Lsf https://sh.benthos.dev | bash
-      - benthos --version
-
   mongo:
     cmds:
       - docker compose up -d mongo
+
+  kafka:
+    cmds:
+      - docker compose up -d redpanda redpanda-ui
+      - docker compose exec -ti redpanda rpk topic create {{.KAFKA_TOPIC}} || exit 0
 
   coverage:
     cmds:

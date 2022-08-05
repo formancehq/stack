@@ -1,46 +1,49 @@
 package cmd
 
 import (
-	"github.com/numary/webhooks-cloud/cmd/internal"
+	"fmt"
 	"os"
 
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/go-libs/sharedlogging/sharedlogginglogrus"
-	"github.com/numary/webhooks-cloud/api/server"
-	"github.com/numary/webhooks-cloud/cmd/constants"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var Version = "develop"
+const (
+	debugFlag = "debug"
+)
+
+var rootCmd = &cobra.Command{
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+		if err := viper.BindPFlags(cmd.Flags()); err != nil {
+			return err
+		}
+
+		logger := logrus.New()
+		if viper.GetBool(debugFlag) {
+			logger.SetLevel(logrus.DebugLevel)
+			logger.Infof("logger debug mode enabled")
+		}
+
+		sharedlogging.SetFactory(
+			sharedlogging.StaticLoggerFactory(
+				sharedlogginglogrus.New(logger)))
+
+		return nil
+	},
+}
 
 func Execute() {
-	logger := logrus.New()
-	loggerFactory := sharedlogging.StaticLoggerFactory(sharedlogginglogrus.New(logger))
-	sharedlogging.SetFactory(loggerFactory)
-
-	viper.SetDefault("version", Version)
-
-	rootCmd := &cobra.Command{
-		Use:  "webhooks",
-		RunE: server.Start,
-	}
-
-	rootCmd.PersistentFlags().String(constants.ServerHttpBindAddressFlag,
-		constants.DefaultBindAddress, "API bind address")
-	rootCmd.PersistentFlags().String(constants.StorageMongoConnStringFlag,
-		constants.DefaultMongoConnString, "Mongo connection string")
-
-	if err := viper.BindPFlags(rootCmd.PersistentFlags()); err != nil {
-		sharedlogging.Errorf("viper.BindFlags: %s", err)
-		os.Exit(1)
-	}
-
-	internal.BindEnv(viper.GetViper())
-
 	if err := rootCmd.Execute(); err != nil {
+		_, _ = fmt.Fprintln(os.Stdout, err)
 		sharedlogging.Errorf("cobra.Command.Execute: %s", err)
 		os.Exit(1)
 	}
+}
+
+func init() {
+	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().BoolP(debugFlag, "d", false, "Debug mode")
 }

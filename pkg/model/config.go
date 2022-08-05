@@ -7,14 +7,14 @@ import (
 
 type Config struct {
 	Active     bool     `json:"active" bson:"active"`
-	EventTypes []string `json:"eventTypes,omitempty" bson:"eventTypes,omitempty"`
-	Endpoints  []string `json:"endpoints,omitempty" bson:"endpoints,omitempty"`
+	EventTypes []string `json:"eventTypes" bson:"eventTypes"`
+	Endpoints  []string `json:"endpoints" bson:"endpoints"`
 }
 
 type ConfigInserted struct {
 	Config     `bson:"inline"`
 	ID         string `json:"_id" bson:"_id"`
-	InsertedAt int64  `json:"insertedAt" bson:"insertedAt"`
+	InsertedAt int    `json:"insertedAt" bson:"insertedAt"`
 }
 
 func (c Config) Validate() error {

@@ -9,6 +9,7 @@ import (
 
 type Store interface {
 	FindAllConfigs(ctx context.Context) (sharedapi.Cursor[model.ConfigInserted], error)
+	FindLastConfig(ctx context.Context) (*model.ConfigInserted, error)
 	InsertOneConfig(ctx context.Context, config model.Config) (string, error)
 	DropConfigsCollection(ctx context.Context) error
 	Close(ctx context.Context) error

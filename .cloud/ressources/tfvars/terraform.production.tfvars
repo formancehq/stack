@@ -1,8 +1,0 @@
-env = "prod"
-app_env_name = "app-production-webhooks"
-vpc_id = "vpc-0b23591d5729a5fc3"
-vpc_cidr = "10.100.0.0/16"
-subnet_a = "subnet-026a619205e8921f0"
-subnet_b = "subnet-0dee852a2fceabc2a"
-subnet_c = "subnet-042a1ca63141dd24c"
-atlas_project_id = "620a702a916ab431a837d347"
