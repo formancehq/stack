@@ -9,7 +9,7 @@ const (
 
 	KafkaBrokersFlag               = "kafka-brokers"
 	KafkaGroupIDFlag               = "kafka-consumer-group"
-	KafkaTopicFlag                 = "kafka-topic"
+	KafkaTopicsFlag                = "kafka-topics"
 	KafkaTLSEnabledFlag            = "kafka-tls-enabled"
 	KafkaTLSInsecureSkipVerifyFlag = "kafka-tls-insecure-skip-verify"
 	KafkaSASLEnabledFlag           = "kafka-sasl-enabled"

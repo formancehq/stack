@@ -19,14 +19,23 @@ type Event struct {
 	Payload map[string]any `json:"payload"`
 }
 
-type Engine struct {
+type Worker struct {
 	reader     Reader
 	store      storage.Store
 	svixClient *svix.Svix
 	svixAppId  string
 }
 
-func (e *Engine) Run(ctx context.Context) (fetchedMsgs, sentWebhooks int, err error) {
+func NewWorker(reader Reader, store storage.Store, svixClient *svix.Svix, svixAppId string) *Worker {
+	return &Worker{
+		reader:     reader,
+		store:      store,
+		svixClient: svixClient,
+		svixAppId:  svixAppId,
+	}
+}
+
+func (e *Worker) Run(ctx context.Context) (fetchedMsgs, sentWebhooks int, err error) {
 	sharedlogging.GetLogger(ctx).Infof("starting to read messages")
 
 	for {
@@ -82,10 +91,12 @@ func (e *Engine) Run(ctx context.Context) (fetchedMsgs, sentWebhooks int, err er
 			}
 			return fetchedMsgs, sentWebhooks, err
 		}
+
 		sharedlogging.GetLogger(ctx).Infof(
 			"last config: %+v", cfg)
 		sharedlogging.GetLogger(ctx).Infof(
 			"event: %+v", ev)
+
 		for _, eventType := range cfg.EventTypes {
 			if eventType == ev.Type {
 				id := uuid.New().String()
@@ -103,14 +114,5 @@ func (e *Engine) Run(ctx context.Context) (fetchedMsgs, sentWebhooks int, err er
 				sentWebhooks++
 			}
 		}
-	}
-}
-
-func NewEngine(reader Reader, store storage.Store, svixClient *svix.Svix, svixAppId string) *Engine {
-	return &Engine{
-		reader:     reader,
-		store:      store,
-		svixClient: svixClient,
-		svixAppId:  svixAppId,
 	}
 }

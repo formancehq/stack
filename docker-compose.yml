@@ -61,8 +61,7 @@ services:
         - 8080:8080
     environment:
       STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
-      KAFKA_TOPIC: "default"
+      KAFKA_TOPICS: "default"
       KAFKA_BROKERS: "redpanda:29092"
       SVIX_TOKEN: "testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb"
       SVIX_APP_ID: "app_2CqvO4XINy9ucWhqGPFXj4EkNS7"
-

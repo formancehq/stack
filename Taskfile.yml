@@ -1,7 +1,7 @@
 version: '3'
 
 env:
-  KAFKA_TOPIC: test-topic
+  KAFKA_TOPICS: test-topic
   SVIX_TOKEN: testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb
   SVIX_APP_ID: app_2CqvO4XINy9ucWhqGPFXj4EkNS7
 
@@ -91,7 +91,7 @@ tasks:
   kafka:
     cmds:
       - docker compose up -d redpanda redpanda-ui
-      - docker compose exec -ti redpanda rpk topic create {{.KAFKA_TOPIC}} || exit 0
+      - docker compose exec -ti redpanda rpk topic create {{.KAFKA_TOPICS}} || exit 0
 
   coverage:
     cmds:

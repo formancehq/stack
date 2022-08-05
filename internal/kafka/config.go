@@ -41,9 +41,9 @@ func NewKafkaReaderConfig() (kafka.ReaderConfig, error) {
 		brokers = []string{constants.DefaultKafkaBroker}
 	}
 
-	topic := viper.GetString(constants.KafkaTopicFlag)
-	if topic == "" {
-		topic = constants.DefaultKafkaTopic
+	topics := viper.GetStringSlice(constants.KafkaTopicsFlag)
+	if len(topics) == 0 {
+		topics = []string{constants.DefaultKafkaTopic}
 	}
 
 	groupID := viper.GetString(constants.KafkaGroupIDFlag)
@@ -52,11 +52,11 @@ func NewKafkaReaderConfig() (kafka.ReaderConfig, error) {
 	}
 
 	return kafka.ReaderConfig{
-		Brokers:  brokers,
-		GroupID:  groupID,
-		Topic:    topic,
-		MinBytes: 1,
-		MaxBytes: 10e5,
-		Dialer:   dialer,
+		Brokers:     brokers,
+		GroupID:     groupID,
+		GroupTopics: topics,
+		MinBytes:    1,
+		MaxBytes:    10e5,
+		Dialer:      dialer,
 	}, nil
 }

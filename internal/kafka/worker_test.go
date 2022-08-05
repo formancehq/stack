@@ -3,11 +3,9 @@ package kafka
 import (
 	"context"
 	"encoding/json"
-	"os"
 	"testing"
 	"time"
 
-	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks-cloud/cmd/constants"
 	"github.com/numary/webhooks-cloud/internal/env"
 	"github.com/numary/webhooks-cloud/internal/storage/mongo"
@@ -15,6 +13,7 @@ import (
 	"github.com/numary/webhooks-cloud/pkg/model"
 	kafkago "github.com/segmentio/kafka-go"
 	"github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -37,14 +36,13 @@ func newEventMessage(t *testing.T, eventType string) kafkago.Message {
 	}
 }
 
-func TestEngine(t *testing.T) {
-	ctx, cancel := context.WithTimeout(
-		context.Background(), 15*time.Second)
-	defer cancel()
-	sharedlogging.GetLogger(ctx).Infof("started TestEngine")
-
-	flagSet := pflag.NewFlagSet("TestEngine", pflag.ContinueOnError)
+func TestWorker(t *testing.T) {
+	flagSet := pflag.NewFlagSet("TestWorker", pflag.ContinueOnError)
 	require.NoError(t, env.Init(flagSet))
+
+	ctx, cancel := context.WithTimeout(
+		context.Background(), 10*time.Second)
+	defer cancel()
 
 	store, err := mongo.NewConfigStore()
 	require.NoError(t, err)
@@ -54,11 +52,11 @@ func TestEngine(t *testing.T) {
 
 	require.NoError(t, store.DropConfigsCollection(ctx))
 
-	topic := os.Getenv("KAFKA_TOPIC")
 	conn, err := kafkago.DialLeader(context.Background(),
-		"tcp", constants.DefaultKafkaBroker, topic, 0)
+		"tcp",
+		viper.GetStringSlice(constants.KafkaBrokersFlag)[0],
+		viper.GetStringSlice(constants.KafkaTopicsFlag)[0], 0)
 	require.NoError(t, err)
-	require.NoError(t, conn.SetWriteDeadline(time.Now().Add(10*time.Second)))
 
 	eventType := "COMMITTED_TRANSACTIONS"
 	i, err := conn.WriteMessages(newEventMessage(t, eventType))
@@ -88,8 +86,7 @@ func TestEngine(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, svix.CreateEndpoint(svixClient, svixAppId, endpoint))
 
-	e := NewEngine(reader, store, svixClient, svixAppId)
-	fetchedMsgs, sentWebhooks, err := e.Run(ctx)
+	fetchedMsgs, sentWebhooks, err := NewWorker(reader, store, svixClient, svixAppId).Run(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, 1, fetchedMsgs)
 	assert.Equal(t, 1, sentWebhooks)

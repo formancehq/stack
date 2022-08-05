@@ -22,7 +22,7 @@ func Init(flagSet *pflag.FlagSet) error {
 
 	flagSet.StringSlice(constants.KafkaBrokersFlag, []string{constants.DefaultKafkaBroker}, "Kafka brokers")
 	flagSet.String(constants.KafkaGroupIDFlag, constants.DefaultKafkaGroupID, "Kafka consumer group")
-	flagSet.String(constants.KafkaTopicFlag, constants.DefaultKafkaTopic, "Kafka topic")
+	flagSet.StringSlice(constants.KafkaTopicsFlag, []string{constants.DefaultKafkaTopic}, "Kafka topics")
 	flagSet.Bool(constants.KafkaTLSEnabledFlag, false, "Kafka TLS enabled")
 	flagSet.Bool(constants.KafkaTLSInsecureSkipVerifyFlag, false, "Kafka TLS insecure skip verify")
 	flagSet.Bool(constants.KafkaSASLEnabledFlag, false, "Kafka SASL enabled")

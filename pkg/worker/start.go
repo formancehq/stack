@@ -25,17 +25,17 @@ func Start(*cobra.Command, []string) error {
 }
 
 func StartModule() fx.Option {
-	return fx.Module("webhooks-module",
+	return fx.Module("webhooks worker module",
 		fx.Provide(
 			mongo.NewConfigStore,
 			svix.New,
-			newKafkaEngine,
+			newKafkaWorker,
 		),
-		fx.Invoke(runKafkaEngine),
+		fx.Invoke(run),
 	)
 }
 
-func newKafkaEngine(lc fx.Lifecycle, store storage.Store, svixClient *svixgo.Svix, svixAppId string) (*kafka.Engine, error) {
+func newKafkaWorker(lc fx.Lifecycle, store storage.Store, svixClient *svixgo.Svix, svixAppId string) (*kafka.Worker, error) {
 	cfg, err := kafka.NewKafkaReaderConfig()
 	if err != nil {
 		return nil, err
@@ -48,13 +48,13 @@ func newKafkaEngine(lc fx.Lifecycle, store storage.Store, svixClient *svixgo.Svi
 		},
 	})
 
-	return kafka.NewEngine(reader, store, svixClient, svixAppId), nil
+	return kafka.NewWorker(reader, store, svixClient, svixAppId), nil
 }
 
-func runKafkaEngine(e *kafka.Engine) {
+func run(w *kafka.Worker) {
 	go func() {
-		if _, _, err := e.Run(context.Background()); err != nil {
-			sharedlogging.Errorf("Engine.Run: %s", err)
+		if _, _, err := w.Run(context.Background()); err != nil {
+			sharedlogging.Errorf("Worker.Run: %s", err)
 		}
 	}()
 }
