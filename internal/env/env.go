@@ -31,7 +31,8 @@ func Init(flagSet *pflag.FlagSet) error {
 	flagSet.String(constants.KafkaPasswordFlag, "", "Kafka password")
 
 	flagSet.String(constants.SvixTokenFlag, "", "Svix auth token")
-	flagSet.String(constants.SvixAppIdFlag, "", "Svix app ID")
+	flagSet.String(constants.SvixOrganizationNameFlag, "", "Svix Organization Name")
+	flagSet.String(constants.SvixServerUrlFlag, "", "Svix Server URL")
 
 	if err := viper.BindPFlags(flagSet); err != nil {
 		return err

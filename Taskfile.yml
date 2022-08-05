@@ -2,8 +2,9 @@ version: '3'
 
 env:
   KAFKA_TOPICS: test-topic
-  SVIX_TOKEN: testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb
-  SVIX_APP_ID: app_2CqvO4XINy9ucWhqGPFXj4EkNS7
+  SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
+  SVIX_SERVER_URL: "http://127.0.0.1:8071"
+  SVIX_ORGANIZATION_NAME: "webhooks"
 
 vars:
   SERVICE: webhooks
@@ -28,7 +29,7 @@ tasks:
   tests:local:
     cmds:
       - task: mongo
-      - task: kafka
+      - task: docker:deps
       - >
         go test -v -p 1 {{.FAILFAST}} -coverpkg {{.PKG}} -coverprofile coverage.out -covermode atomic
         -run {{.RUN}} -timeout {{.TIMEOUT}} {{.PKG}} |
@@ -40,7 +41,7 @@ tasks:
   tests:
     cmds:
       - task: mongo
-      - task: kafka
+      - task: docker:deps
       - go test -p 1 -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
 
   ci:
@@ -88,9 +89,9 @@ tasks:
     cmds:
       - docker compose up -d mongo
 
-  kafka:
+  docker:deps:
     cmds:
-      - docker compose up -d redpanda redpanda-ui
+      - docker compose up -d redpanda redpanda-ui postgres redis svix
       - docker compose exec -ti redpanda rpk topic create {{.KAFKA_TOPICS}} || exit 0
 
   coverage:

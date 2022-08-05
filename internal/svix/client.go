@@ -2,6 +2,7 @@ package svix
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/numary/webhooks-cloud/cmd/constants"
 	"github.com/spf13/viper"
@@ -10,13 +11,30 @@ import (
 
 func New() (*svix.Svix, string, error) {
 	token := viper.GetString(constants.SvixTokenFlag)
-	appId := viper.GetString(constants.SvixAppIdFlag)
+	organizationName := viper.GetString(constants.SvixOrganizationNameFlag)
+	serverUrl := viper.GetString(constants.SvixServerUrlFlag)
 
-	svixClient := svix.New(token, nil)
-	_, err := svixClient.Application.Get(appId)
-	if err != nil {
-		return nil, "", fmt.Errorf("could not get svix app %s: %w", appId, err)
+	urlForServer, _ := url.Parse(serverUrl)
+	opt := svix.SvixOptions{
+		ServerUrl: urlForServer,
+	}
+	svixClient := svix.New(token, &opt)
+
+	ApplicationListOptions := svix.ApplicationListOptions{}
+	list, _ := svixClient.Application.List(&ApplicationListOptions)
+	for _, s := range list.Data {
+		if s.Id == organizationName {
+			return svixClient, s.Id, nil
+		}
 	}
 
-	return svixClient, appId, nil
+	optApp := svix.ApplicationIn{
+		Name: organizationName,
+	}
+	app, err := svixClient.Application.Create(&optApp)
+	if err != nil {
+		return nil, "", fmt.Errorf("error creating svix application: %s", err)
+	}
+
+	return svixClient, app.Id, nil
 }

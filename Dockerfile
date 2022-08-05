@@ -1,3 +1,8 @@
+FROM golang:1.18-buster as dev
+RUN apt-get update && apt-get install -y ca-certificates git-core ssh
+RUN go install github.com/cespare/reflex@latest
+WORKDIR /app
+
 FROM --platform=$BUILDPLATFORM golang:1.18 AS builder
 # 1. Precompile the entire go standard library into the first Docker cache layer: useful for other projects too!
 ARG APP_SHA

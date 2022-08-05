@@ -17,8 +17,9 @@ const (
 	KafkaUsernameFlag              = "kafka-username"
 	KafkaPasswordFlag              = "kafka-password"
 
-	SvixTokenFlag = "svix-token"
-	SvixAppIdFlag = "svix-app-id"
+	SvixTokenFlag            = "svix-token"
+	SvixOrganizationNameFlag = "svix-organization-name"
+	SvixServerUrlFlag        = "svix-server-url"
 )
 
 const (
