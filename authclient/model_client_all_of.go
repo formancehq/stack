@@ -16,7 +16,7 @@ import (
 
 // ClientAllOf struct for ClientAllOf
 type ClientAllOf struct {
-	Id string `json:"id"`
+	Id     string   `json:"id"`
 	Scopes []string `json:"scopes,omitempty"`
 }
 
@@ -140,5 +140,3 @@ func (v *NullableClientAllOf) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

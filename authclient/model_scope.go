@@ -16,10 +16,10 @@ import (
 
 // Scope struct for Scope
 type Scope struct {
-	Label string `json:"label"`
-	Metadata *map[string]string `json:"metadata,omitempty"`
-	Id string `json:"id"`
-	Transient []string `json:"transient,omitempty"`
+	Label     string             `json:"label"`
+	Metadata  *map[string]string `json:"metadata,omitempty"`
+	Id        string             `json:"id"`
+	Transient []string           `json:"transient,omitempty"`
 }
 
 // NewScope instantiates a new Scope object
@@ -205,5 +205,3 @@ func (v *NullableScope) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -77,9 +77,9 @@ type ServerVariable struct {
 
 // ServerConfiguration stores the information about a server
 type ServerConfiguration struct {
-	URL string
+	URL         string
 	Description string
-	Variables map[string]ServerVariable
+	Variables   map[string]ServerVariable
 }
 
 // ServerConfigurations stores multiple ServerConfiguration items
@@ -100,23 +100,22 @@ type Configuration struct {
 // NewConfiguration returns a new Configuration object
 func NewConfiguration() *Configuration {
 	cfg := &Configuration{
-		DefaultHeader:    make(map[string]string),
-		UserAgent:        "OpenAPI-Generator/latest/go",
-		Debug:            false,
-		Servers:          ServerConfigurations{
+		DefaultHeader: make(map[string]string),
+		UserAgent:     "OpenAPI-Generator/latest/go",
+		Debug:         false,
+		Servers: ServerConfigurations{
 			{
-				URL: "https://{organization}.o.numary.cloud/auth",
+				URL:         "https://{organization}.o.numary.cloud/auth",
 				Description: "Production server",
 				Variables: map[string]ServerVariable{
-					"organization": ServerVariable{
-						Description: "The organization on which the auth server is located",
+					"organization": {
+						Description:  "The organization on which the auth server is located",
 						DefaultValue: "",
 					},
 				},
 			},
 		},
-		OperationServers: map[string]ServerConfigurations{
-		},
+		OperationServers: map[string]ServerConfigurations{},
 	}
 	return cfg
 }

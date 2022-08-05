@@ -16,7 +16,7 @@ import (
 
 // ScopeOptions struct for ScopeOptions
 type ScopeOptions struct {
-	Label string `json:"label"`
+	Label    string             `json:"label"`
 	Metadata *map[string]string `json:"metadata,omitempty"`
 }
 
@@ -140,5 +140,3 @@ func (v *NullableScopeOptions) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

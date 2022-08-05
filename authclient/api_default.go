@@ -19,15 +19,14 @@ import (
 	"strings"
 )
 
-
 // DefaultApiService DefaultApi service
 type DefaultApiService service
 
 type ApiAddScopeToClientRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	clientId string
-	scopeId string
+	clientId   string
+	scopeId    string
 }
 
 func (r ApiAddScopeToClientRequest) Execute() (*http.Response, error) {
@@ -45,18 +44,18 @@ AddScopeToClient Add scope to client
 func (a *DefaultApiService) AddScopeToClient(ctx context.Context, clientId string, scopeId string) ApiAddScopeToClientRequest {
 	return ApiAddScopeToClientRequest{
 		ApiService: a,
-		ctx: ctx,
-		clientId: clientId,
-		scopeId: scopeId,
+		ctx:        ctx,
+		clientId:   clientId,
+		scopeId:    scopeId,
 	}
 }
 
 // Execute executes the request
 func (a *DefaultApiService) AddScopeToClientExecute(r ApiAddScopeToClientRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPut
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.AddScopeToClient")
@@ -118,9 +117,9 @@ func (a *DefaultApiService) AddScopeToClientExecute(r ApiAddScopeToClientRequest
 }
 
 type ApiAddTransientScopeRequest struct {
-	ctx context.Context
-	ApiService *DefaultApiService
-	scopeId string
+	ctx              context.Context
+	ApiService       *DefaultApiService
+	scopeId          string
 	transientScopeId string
 }
 
@@ -140,9 +139,9 @@ Add a transient scope to a scope
 */
 func (a *DefaultApiService) AddTransientScope(ctx context.Context, scopeId string, transientScopeId string) ApiAddTransientScopeRequest {
 	return ApiAddTransientScopeRequest{
-		ApiService: a,
-		ctx: ctx,
-		scopeId: scopeId,
+		ApiService:       a,
+		ctx:              ctx,
+		scopeId:          scopeId,
 		transientScopeId: transientScopeId,
 	}
 }
@@ -150,9 +149,9 @@ func (a *DefaultApiService) AddTransientScope(ctx context.Context, scopeId strin
 // Execute executes the request
 func (a *DefaultApiService) AddTransientScopeExecute(r ApiAddTransientScopeRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodPut
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.AddTransientScope")
@@ -214,9 +213,9 @@ func (a *DefaultApiService) AddTransientScopeExecute(r ApiAddTransientScopeReque
 }
 
 type ApiCreateClientRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	body *ClientOptions
+	body       *ClientOptions
 }
 
 func (r ApiCreateClientRequest) Body(body ClientOptions) ApiCreateClientRequest {
@@ -237,7 +236,7 @@ CreateClient Create client
 func (a *DefaultApiService) CreateClient(ctx context.Context) ApiCreateClientRequest {
 	return ApiCreateClientRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
@@ -245,10 +244,10 @@ func (a *DefaultApiService) CreateClient(ctx context.Context) ApiCreateClientReq
 //  @return CreateClientResponse
 func (a *DefaultApiService) CreateClientExecute(r ApiCreateClientRequest) (*CreateClientResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateClientResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateClientResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.CreateClient")
@@ -319,9 +318,9 @@ func (a *DefaultApiService) CreateClientExecute(r ApiCreateClientRequest) (*Crea
 }
 
 type ApiCreateScopeRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	body *ScopeOptions
+	body       *ScopeOptions
 }
 
 func (r ApiCreateScopeRequest) Body(body ScopeOptions) ApiCreateScopeRequest {
@@ -344,7 +343,7 @@ Create scope
 func (a *DefaultApiService) CreateScope(ctx context.Context) ApiCreateScopeRequest {
 	return ApiCreateScopeRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
@@ -352,10 +351,10 @@ func (a *DefaultApiService) CreateScope(ctx context.Context) ApiCreateScopeReque
 //  @return CreateScopeResponse
 func (a *DefaultApiService) CreateScopeExecute(r ApiCreateScopeRequest) (*CreateScopeResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateScopeResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateScopeResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.CreateScope")
@@ -426,10 +425,10 @@ func (a *DefaultApiService) CreateScopeExecute(r ApiCreateScopeRequest) (*Create
 }
 
 type ApiCreateSecretRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	clientId string
-	body *SecretOptions
+	clientId   string
+	body       *SecretOptions
 }
 
 func (r ApiCreateSecretRequest) Body(body SecretOptions) ApiCreateSecretRequest {
@@ -451,8 +450,8 @@ CreateSecret Add a secret to a client
 func (a *DefaultApiService) CreateSecret(ctx context.Context, clientId string) ApiCreateSecretRequest {
 	return ApiCreateSecretRequest{
 		ApiService: a,
-		ctx: ctx,
-		clientId: clientId,
+		ctx:        ctx,
+		clientId:   clientId,
 	}
 }
 
@@ -460,10 +459,10 @@ func (a *DefaultApiService) CreateSecret(ctx context.Context, clientId string) A
 //  @return CreateSecretResponse
 func (a *DefaultApiService) CreateSecretExecute(r ApiCreateSecretRequest) (*CreateSecretResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateSecretResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateSecretResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.CreateSecret")
@@ -535,9 +534,9 @@ func (a *DefaultApiService) CreateSecretExecute(r ApiCreateSecretRequest) (*Crea
 }
 
 type ApiDeleteClientRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	clientId string
+	clientId   string
 }
 
 func (r ApiDeleteClientRequest) Execute() (*http.Response, error) {
@@ -554,17 +553,17 @@ DeleteClient Delete client
 func (a *DefaultApiService) DeleteClient(ctx context.Context, clientId string) ApiDeleteClientRequest {
 	return ApiDeleteClientRequest{
 		ApiService: a,
-		ctx: ctx,
-		clientId: clientId,
+		ctx:        ctx,
+		clientId:   clientId,
 	}
 }
 
 // Execute executes the request
 func (a *DefaultApiService) DeleteClientExecute(r ApiDeleteClientRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.DeleteClient")
@@ -625,9 +624,9 @@ func (a *DefaultApiService) DeleteClientExecute(r ApiDeleteClientRequest) (*http
 }
 
 type ApiDeleteScopeRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	scopeId string
+	scopeId    string
 }
 
 func (r ApiDeleteScopeRequest) Execute() (*http.Response, error) {
@@ -646,17 +645,17 @@ Delete scope
 func (a *DefaultApiService) DeleteScope(ctx context.Context, scopeId string) ApiDeleteScopeRequest {
 	return ApiDeleteScopeRequest{
 		ApiService: a,
-		ctx: ctx,
-		scopeId: scopeId,
+		ctx:        ctx,
+		scopeId:    scopeId,
 	}
 }
 
 // Execute executes the request
 func (a *DefaultApiService) DeleteScopeExecute(r ApiDeleteScopeRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.DeleteScope")
@@ -717,10 +716,10 @@ func (a *DefaultApiService) DeleteScopeExecute(r ApiDeleteScopeRequest) (*http.R
 }
 
 type ApiDeleteScopeFromClientRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	clientId string
-	scopeId string
+	clientId   string
+	scopeId    string
 }
 
 func (r ApiDeleteScopeFromClientRequest) Execute() (*http.Response, error) {
@@ -738,18 +737,18 @@ DeleteScopeFromClient Delete scope from client
 func (a *DefaultApiService) DeleteScopeFromClient(ctx context.Context, clientId string, scopeId string) ApiDeleteScopeFromClientRequest {
 	return ApiDeleteScopeFromClientRequest{
 		ApiService: a,
-		ctx: ctx,
-		clientId: clientId,
-		scopeId: scopeId,
+		ctx:        ctx,
+		clientId:   clientId,
+		scopeId:    scopeId,
 	}
 }
 
 // Execute executes the request
 func (a *DefaultApiService) DeleteScopeFromClientExecute(r ApiDeleteScopeFromClientRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.DeleteScopeFromClient")
@@ -811,10 +810,10 @@ func (a *DefaultApiService) DeleteScopeFromClientExecute(r ApiDeleteScopeFromCli
 }
 
 type ApiDeleteSecretRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	clientId string
-	secretId string
+	clientId   string
+	secretId   string
 }
 
 func (r ApiDeleteSecretRequest) Execute() (*http.Response, error) {
@@ -832,18 +831,18 @@ DeleteSecret Delete a secret from a client
 func (a *DefaultApiService) DeleteSecret(ctx context.Context, clientId string, secretId string) ApiDeleteSecretRequest {
 	return ApiDeleteSecretRequest{
 		ApiService: a,
-		ctx: ctx,
-		clientId: clientId,
-		secretId: secretId,
+		ctx:        ctx,
+		clientId:   clientId,
+		secretId:   secretId,
 	}
 }
 
 // Execute executes the request
 func (a *DefaultApiService) DeleteSecretExecute(r ApiDeleteSecretRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.DeleteSecret")
@@ -905,9 +904,9 @@ func (a *DefaultApiService) DeleteSecretExecute(r ApiDeleteSecretRequest) (*http
 }
 
 type ApiDeleteTransientScopeRequest struct {
-	ctx context.Context
-	ApiService *DefaultApiService
-	scopeId string
+	ctx              context.Context
+	ApiService       *DefaultApiService
+	scopeId          string
 	transientScopeId string
 }
 
@@ -927,9 +926,9 @@ Delete a transient scope from a scope
 */
 func (a *DefaultApiService) DeleteTransientScope(ctx context.Context, scopeId string, transientScopeId string) ApiDeleteTransientScopeRequest {
 	return ApiDeleteTransientScopeRequest{
-		ApiService: a,
-		ctx: ctx,
-		scopeId: scopeId,
+		ApiService:       a,
+		ctx:              ctx,
+		scopeId:          scopeId,
 		transientScopeId: transientScopeId,
 	}
 }
@@ -937,9 +936,9 @@ func (a *DefaultApiService) DeleteTransientScope(ctx context.Context, scopeId st
 // Execute executes the request
 func (a *DefaultApiService) DeleteTransientScopeExecute(r ApiDeleteTransientScopeRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.DeleteTransientScope")
@@ -1001,7 +1000,7 @@ func (a *DefaultApiService) DeleteTransientScopeExecute(r ApiDeleteTransientScop
 }
 
 type ApiListClientsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
 }
 
@@ -1018,7 +1017,7 @@ ListClients List clients
 func (a *DefaultApiService) ListClients(ctx context.Context) ApiListClientsRequest {
 	return ApiListClientsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
@@ -1026,10 +1025,10 @@ func (a *DefaultApiService) ListClients(ctx context.Context) ApiListClientsReque
 //  @return ListClientsResponse
 func (a *DefaultApiService) ListClientsExecute(r ApiListClientsRequest) (*ListClientsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListClientsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListClientsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.ListClients")
@@ -1098,7 +1097,7 @@ func (a *DefaultApiService) ListClientsExecute(r ApiListClientsRequest) (*ListCl
 }
 
 type ApiListScopesRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
 }
 
@@ -1117,7 +1116,7 @@ List Scopes
 func (a *DefaultApiService) ListScopes(ctx context.Context) ApiListScopesRequest {
 	return ApiListScopesRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
@@ -1125,10 +1124,10 @@ func (a *DefaultApiService) ListScopes(ctx context.Context) ApiListScopesRequest
 //  @return ListScopesResponse
 func (a *DefaultApiService) ListScopesExecute(r ApiListScopesRequest) (*ListScopesResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListScopesResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListScopesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.ListScopes")
@@ -1197,9 +1196,9 @@ func (a *DefaultApiService) ListScopesExecute(r ApiListScopesRequest) (*ListScop
 }
 
 type ApiReadClientRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	clientId string
+	clientId   string
 }
 
 func (r ApiReadClientRequest) Execute() (*ReadClientResponse, *http.Response, error) {
@@ -1216,8 +1215,8 @@ ReadClient Read client
 func (a *DefaultApiService) ReadClient(ctx context.Context, clientId string) ApiReadClientRequest {
 	return ApiReadClientRequest{
 		ApiService: a,
-		ctx: ctx,
-		clientId: clientId,
+		ctx:        ctx,
+		clientId:   clientId,
 	}
 }
 
@@ -1225,10 +1224,10 @@ func (a *DefaultApiService) ReadClient(ctx context.Context, clientId string) Api
 //  @return ReadClientResponse
 func (a *DefaultApiService) ReadClientExecute(r ApiReadClientRequest) (*ReadClientResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ReadClientResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ReadClientResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.ReadClient")
@@ -1298,9 +1297,9 @@ func (a *DefaultApiService) ReadClientExecute(r ApiReadClientRequest) (*ReadClie
 }
 
 type ApiReadScopeRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	scopeId string
+	scopeId    string
 }
 
 func (r ApiReadScopeRequest) Execute() (*CreateScopeResponse, *http.Response, error) {
@@ -1319,8 +1318,8 @@ Read scope
 func (a *DefaultApiService) ReadScope(ctx context.Context, scopeId string) ApiReadScopeRequest {
 	return ApiReadScopeRequest{
 		ApiService: a,
-		ctx: ctx,
-		scopeId: scopeId,
+		ctx:        ctx,
+		scopeId:    scopeId,
 	}
 }
 
@@ -1328,10 +1327,10 @@ func (a *DefaultApiService) ReadScope(ctx context.Context, scopeId string) ApiRe
 //  @return CreateScopeResponse
 func (a *DefaultApiService) ReadScopeExecute(r ApiReadScopeRequest) (*CreateScopeResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateScopeResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateScopeResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.ReadScope")
@@ -1401,10 +1400,10 @@ func (a *DefaultApiService) ReadScopeExecute(r ApiReadScopeRequest) (*CreateScop
 }
 
 type ApiUpdateClientRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	clientId string
-	body *ClientOptions
+	clientId   string
+	body       *ClientOptions
 }
 
 func (r ApiUpdateClientRequest) Body(body ClientOptions) ApiUpdateClientRequest {
@@ -1426,8 +1425,8 @@ UpdateClient Update client
 func (a *DefaultApiService) UpdateClient(ctx context.Context, clientId string) ApiUpdateClientRequest {
 	return ApiUpdateClientRequest{
 		ApiService: a,
-		ctx: ctx,
-		clientId: clientId,
+		ctx:        ctx,
+		clientId:   clientId,
 	}
 }
 
@@ -1435,10 +1434,10 @@ func (a *DefaultApiService) UpdateClient(ctx context.Context, clientId string) A
 //  @return CreateClientResponse
 func (a *DefaultApiService) UpdateClientExecute(r ApiUpdateClientRequest) (*CreateClientResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateClientResponse
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateClientResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.UpdateClient")
@@ -1510,10 +1509,10 @@ func (a *DefaultApiService) UpdateClientExecute(r ApiUpdateClientRequest) (*Crea
 }
 
 type ApiUpdateScopeRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DefaultApiService
-	scopeId string
-	body *ScopeOptions
+	scopeId    string
+	body       *ScopeOptions
 }
 
 func (r ApiUpdateScopeRequest) Body(body ScopeOptions) ApiUpdateScopeRequest {
@@ -1537,8 +1536,8 @@ Update scope
 func (a *DefaultApiService) UpdateScope(ctx context.Context, scopeId string) ApiUpdateScopeRequest {
 	return ApiUpdateScopeRequest{
 		ApiService: a,
-		ctx: ctx,
-		scopeId: scopeId,
+		ctx:        ctx,
+		scopeId:    scopeId,
 	}
 }
 
@@ -1546,10 +1545,10 @@ func (a *DefaultApiService) UpdateScope(ctx context.Context, scopeId string) Api
 //  @return CreateScopeResponse
 func (a *DefaultApiService) UpdateScopeExecute(r ApiUpdateScopeRequest) (*CreateScopeResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *CreateScopeResponse
+		localVarHTTPMethod  = http.MethodPut
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreateScopeResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.UpdateScope")

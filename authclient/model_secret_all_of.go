@@ -16,9 +16,9 @@ import (
 
 // SecretAllOf struct for SecretAllOf
 type SecretAllOf struct {
-	Id string `json:"id"`
+	Id         string `json:"id"`
 	LastDigits string `json:"lastDigits"`
-	Clear string `json:"clear"`
+	Clear      string `json:"clear"`
 }
 
 // NewSecretAllOf instantiates a new SecretAllOf object
@@ -162,5 +162,3 @@ func (v *NullableSecretAllOf) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

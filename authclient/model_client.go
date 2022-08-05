@@ -16,14 +16,14 @@ import (
 
 // Client struct for Client
 type Client struct {
-	Public *bool `json:"public,omitempty"`
-	RedirectUris []string `json:"redirectUris,omitempty"`
-	Description *string `json:"description,omitempty"`
-	Name string `json:"name"`
-	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris,omitempty"`
-	Metadata *map[string]string `json:"metadata,omitempty"`
-	Id string `json:"id"`
-	Scopes []string `json:"scopes,omitempty"`
+	Public                 *bool              `json:"public,omitempty"`
+	RedirectUris           []string           `json:"redirectUris,omitempty"`
+	Description            *string            `json:"description,omitempty"`
+	Name                   string             `json:"name"`
+	PostLogoutRedirectUris []string           `json:"postLogoutRedirectUris,omitempty"`
+	Metadata               *map[string]string `json:"metadata,omitempty"`
+	Id                     string             `json:"id"`
+	Scopes                 []string           `json:"scopes,omitempty"`
 }
 
 // NewClient instantiates a new Client object
@@ -349,5 +349,3 @@ func (v *NullableClient) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-
