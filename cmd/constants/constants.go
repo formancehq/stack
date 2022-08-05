@@ -1,8 +1,11 @@
 package constants
 
 const (
-	StorageMongoConnStringFlag = "storage-mongo-conn-string"
-	ServerHttpBindAddressFlag  = "server-http-bind-address"
+	LogLevelFlag              = "log-level"
+	ServerHttpBindAddressFlag = "server-http-bind-address"
+
+	StorageMongoConnStringFlag   = "storage-mongo-conn-string"
+	StorageMongoDatabaseNameFlag = "storage-mongo-database-name"
 
 	KafkaBrokersFlag               = "kafka-brokers"
 	KafkaGroupIDFlag               = "kafka-consumer-group"
@@ -19,8 +22,10 @@ const (
 )
 
 const (
-	DefaultMongoConnString = "mongodb://admin:admin@localhost:27017/"
-	DefaultBindAddress     = ":8080"
+	DefaultBindAddress = ":8080"
+
+	DefaultMongoConnString   = "mongodb://admin:admin@localhost:27017/"
+	DefaultMongoDatabaseName = "webhooks"
 
 	DefaultKafkaTopic   = "default"
 	DefaultKafkaBroker  = "localhost:9092"

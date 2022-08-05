@@ -30,9 +30,6 @@ func NewConfigStore() (storage.Store, error) {
 	defer cancel()
 
 	mongoDBUri := viper.GetString(constants.StorageMongoConnStringFlag)
-	if mongoDBUri == "" {
-		mongoDBUri = constants.DefaultMongoConnString
-	}
 	sharedlogging.Infof("connecting to mongoDB URI: %s", mongoDBUri)
 	sharedlogging.Infof("env: %+v", os.Environ())
 
@@ -45,9 +42,11 @@ func NewConfigStore() (storage.Store, error) {
 	}
 
 	return Store{
-		uri:        mongoDBUri,
-		client:     client,
-		collection: client.Database("webhooks").Collection("configs"),
+		uri:    mongoDBUri,
+		client: client,
+		collection: client.Database(
+			viper.GetString(constants.StorageMongoDatabaseNameFlag)).
+			Collection("configs"),
 	}, nil
 }
 

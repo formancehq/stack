@@ -4,12 +4,17 @@ import (
 	"context"
 	"testing"
 
+	"github.com/numary/webhooks-cloud/internal/env"
 	"github.com/numary/webhooks-cloud/pkg/model"
+	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestStore_FindLastConfig(t *testing.T) {
+	flagSet := pflag.NewFlagSet("TestStore", pflag.ContinueOnError)
+	require.NoError(t, env.Init(flagSet))
+
 	ctx := context.Background()
 	s, err := NewConfigStore()
 	require.NoError(t, err)
