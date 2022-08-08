@@ -2,40 +2,65 @@ package svix
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/numary/go-libs/sharedlogging"
+	"github.com/numary/webhooks-cloud/pkg/model"
 	svixgo "github.com/svix/svix-webhooks/go"
 )
 
-func CreateEndpoint(svixClient *svixgo.Svix, svixAppId, url string) error {
-	out, err := svixClient.Endpoint.Create(svixAppId, &svixgo.EndpointIn{
-		Url:     url,
-		Version: 1,
-	})
-	if err != nil {
-		return fmt.Errorf("svix.Endpoint.Create: appId: %s: url: %s: %w",
-			svixAppId, url, err)
+func CreateEndpoint(endpointId string, cfg model.Config, svixClient *svixgo.Svix, svixAppId string) error {
+	var list *svixgo.ListResponseEventTypeOut
+	var err error
+	if list, err = svixClient.EventType.List(&svixgo.EventTypeListOptions{}); err != nil {
+		return fmt.Errorf("svix.EventType.List: %w", err)
 	}
 
-	sharedlogging.Infof("svix endpoint created: url: %s id: %s createdAt: %s",
-		url, out.Id, out.CreatedAt.Format(time.RFC3339))
+	for _, newEventType := range cfg.EventTypes {
+		alreadyCreated := false
+		for _, eventType := range list.Data {
+			if eventType.Name == newEventType {
+				alreadyCreated = true
+			}
+		}
+		if !alreadyCreated {
+			eventTypeIn := svixgo.EventTypeIn{}
+			var archived = false
+			eventTypeIn.Archived = &archived
+			eventTypeIn.Name = newEventType
+			if _, err := svixClient.EventType.Create(&eventTypeIn); err != nil {
+				return fmt.Errorf("svix.EventType.Create: %w", err)
+			}
+		}
+	}
+
+	endpointIn := &svixgo.EndpointIn{
+		FilterTypes: cfg.EventTypes,
+		Uid:         *svixgo.NullableString(endpointId),
+		Url:         cfg.Endpoint,
+		Version:     1,
+	}
+	opts := &svixgo.PostOptions{IdempotencyKey: &endpointId}
+	if _, err := svixClient.Endpoint.CreateWithOptions(svixAppId, endpointIn, opts); err != nil {
+		return fmt.Errorf("svix.Endpoint.CreateWithOptions: %w", err)
+	}
+
 	return nil
 }
 
-func DeleteAllEndpoints(svixClient *svixgo.Svix, svixAppId string) error {
-	endpointList, err := svixClient.Endpoint.List(svixAppId, &svixgo.EndpointListOptions{})
-	if err != nil {
-		return fmt.Errorf("svix.Endpoint.List: appId: %s: %w", svixAppId, err)
-	}
+func DeleteEndpoint(endpointId string, svixClient *svixgo.Svix, svixAppId string) error {
+	return svixClient.Endpoint.Delete(svixAppId, endpointId)
+}
 
-	for _, endpoint := range endpointList.Data {
-		if err := svixClient.Endpoint.Delete(svixAppId, endpoint.Id); err != nil {
-			return fmt.Errorf("svix.Endpoint.Delete: app: %s: endpointId: %s: %w",
-				svixAppId, endpoint.Id, err)
-		}
-		sharedlogging.Infof("svix endpoint deleted: url: %s id: %s createdAt: %s",
-			endpoint.Url, endpoint.Id, endpoint.CreatedAt.Format(time.RFC3339))
+func ToggleEndpoint(endpointId string, updatedCfg model.ConfigInserted, svixClient *svixgo.Svix, svixAppId string) error {
+	disabled := !updatedCfg.Active
+	_, err := svixClient.Endpoint.Update(svixAppId, endpointId, &svixgo.EndpointUpdate{
+		Disabled:    &disabled,
+		FilterTypes: updatedCfg.EventTypes,
+		Uid:         *svixgo.NullableString(updatedCfg.ID),
+		Url:         updatedCfg.Endpoint,
+		Version:     1,
+	})
+	if err != nil {
+		return fmt.Errorf("svix.Endpoint.Update: %w", err)
 	}
 
 	return nil

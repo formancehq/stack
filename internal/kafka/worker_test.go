@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/numary/webhooks-cloud/cmd/constants"
 	"github.com/numary/webhooks-cloud/internal/env"
 	"github.com/numary/webhooks-cloud/internal/storage/mongo"
@@ -40,17 +41,11 @@ func TestWorker(t *testing.T) {
 	flagSet := pflag.NewFlagSet("TestWorker", pflag.ContinueOnError)
 	require.NoError(t, env.Init(flagSet))
 
-	ctx, cancel := context.WithTimeout(
-		context.Background(), 10*time.Second)
-	defer cancel()
-
 	store, err := mongo.NewConfigStore()
 	require.NoError(t, err)
 	defer func() {
-		require.NoError(t, store.Close(ctx))
+		require.NoError(t, store.Close(context.Background()))
 	}()
-
-	require.NoError(t, store.DropConfigsCollection(ctx))
 
 	conn, err := kafkago.DialLeader(context.Background(),
 		"tcp",
@@ -59,19 +54,18 @@ func TestWorker(t *testing.T) {
 	require.NoError(t, err)
 
 	eventType := "COMMITTED_TRANSACTIONS"
-	i, err := conn.WriteMessages(newEventMessage(t, eventType))
+	nbBytes, err := conn.WriteMessages(newEventMessage(t, eventType))
 	require.NoError(t, err)
-	require.NotEqual(t, 0, i)
+	require.NotEqual(t, 0, nbBytes)
 
 	endpoint := "https://example.com"
 	cfg := model.Config{
-		Active:     true,
+		Endpoint:   endpoint,
 		EventTypes: []string{eventType},
-		Endpoints:  []string{endpoint},
 	}
 	require.NoError(t, cfg.Validate())
 
-	_, err = store.InsertOneConfig(ctx, cfg)
+	id, err := store.InsertOneConfig(context.Background(), cfg)
 	require.NoError(t, err)
 
 	kcfg, err := NewKafkaReaderConfig()
@@ -84,12 +78,23 @@ func TestWorker(t *testing.T) {
 
 	svixClient, svixAppId, err := svix.New()
 	require.NoError(t, err)
-	require.NoError(t, svix.CreateEndpoint(svixClient, svixAppId, endpoint))
+	require.NoError(t, svix.CreateEndpoint(id, cfg, svixClient, svixAppId))
 
+	ctx, cancel := context.WithTimeout(
+		context.Background(), 10*time.Second)
+	defer cancel()
 	fetchedMsgs, sentWebhooks, err := NewWorker(reader, store, svixClient, svixAppId).Run(ctx)
 	require.NoError(t, err)
 	assert.Equal(t, 1, fetchedMsgs)
 	assert.Equal(t, 1, sentWebhooks)
 
-	require.NoError(t, svix.DeleteAllEndpoints(svixClient, svixAppId))
+	cur, err := store.FindAllConfigs(context.Background())
+	require.NoError(t, err)
+	spew.Dump(cur)
+
+	deletedCount, err := store.DeleteOneConfig(context.Background(), id)
+	assert.Equal(t, int64(1), deletedCount)
+	require.NoError(t, err)
+
+	require.NoError(t, svix.DeleteEndpoint(id, svixClient, svixAppId))
 }

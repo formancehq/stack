@@ -51,7 +51,7 @@ func NewConfigStore() (storage.Store, error) {
 }
 
 func (s Store) FindAllConfigs(ctx context.Context) (sharedapi.Cursor[model.ConfigInserted], error) {
-	opts := options.Find().SetSort(bson.M{"insertedAt": -1})
+	opts := options.Find().SetSort(bson.M{"updatedAt": -1})
 	cur, err := s.collection.Find(ctx, bson.M{}, opts)
 	if err != nil {
 		return sharedapi.Cursor[model.ConfigInserted]{}, fmt.Errorf("mongo.Collection.Find: %w", err)
@@ -72,24 +72,13 @@ func (s Store) FindAllConfigs(ctx context.Context) (sharedapi.Cursor[model.Confi
 	}, nil
 }
 
-func (s Store) FindLastConfig(ctx context.Context) (*model.ConfigInserted, error) {
-	res := model.ConfigInserted{}
-	opts := options.FindOne().SetSort(bson.M{"insertedAt": -1})
-	if err := s.collection.FindOne(ctx, bson.M{}, opts).Decode(&res); err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return &res, nil
-}
-
-func (s Store) InsertOneConfig(ctx context.Context, config model.Config) (string, error) {
+func (s Store) InsertOneConfig(ctx context.Context, cfg model.Config) (string, error) {
 	configInserted := model.ConfigInserted{
-		Config:     config,
-		ID:         uuid.New().String(),
-		InsertedAt: int(time.Now().UnixNano()),
+		Config:    cfg,
+		ID:        uuid.New().String(),
+		Active:    true,
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 	}
 
 	res, err := s.collection.InsertOne(ctx, configInserted)
@@ -100,12 +89,37 @@ func (s Store) InsertOneConfig(ctx context.Context, config model.Config) (string
 	return res.InsertedID.(string), nil
 }
 
-func (s Store) DropConfigsCollection(ctx context.Context) error {
-	if err := s.collection.Drop(ctx); err != nil {
-		return err
+func (s Store) DeleteOneConfig(ctx context.Context, id string) (int64, error) {
+	res, err := s.collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
+	if err != nil {
+		return 0, err
 	}
 
-	return nil
+	return res.DeletedCount, nil
+}
+
+func (s Store) ToggleOneConfig(ctx context.Context, id string) (model.ConfigInserted, int64, error) {
+	filter := bson.D{{Key: "_id", Value: id}}
+	resFind := s.collection.FindOne(ctx, filter)
+	var err error
+	if err = resFind.Err(); err != nil {
+		return model.ConfigInserted{}, 0, fmt.Errorf("mongo.Collection.FindOne: %w", err)
+	}
+
+	var cfg model.ConfigInserted
+	if err = resFind.Decode(&cfg); err != nil {
+		return model.ConfigInserted{}, 0, fmt.Errorf("mongo.SingleResult.Decode: %w", err)
+	}
+
+	cfg.Active = !cfg.Active
+
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "active", Value: cfg.Active}}}}
+	resUpdate, err := s.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return model.ConfigInserted{}, 0, fmt.Errorf("mongo.Collection.UpdateOne: %w", err)
+	}
+
+	return cfg, resUpdate.ModifiedCount, nil
 }
 
 func (s Store) Close(ctx context.Context) error {
