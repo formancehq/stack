@@ -81,38 +81,20 @@ func (e *Worker) Run(ctx context.Context) (fetchedMsgs, sentWebhooks int, err er
 			"new message read: %s %s", ev.Date.Format(time.RFC3339), ev.Type)
 		fetchedMsgs++
 
-		cfg, err := e.store.FindLastConfig(ctx)
-		if err != nil {
-			err = fmt.Errorf("unable to find last config: %s", err)
-			sharedlogging.GetLogger(ctx).Errorf(err.Error())
-			if <-ctx.Done(); true {
-				sharedlogging.GetLogger(ctx).Infof("context deadline exceeded")
-				return fetchedMsgs, sentWebhooks, nil
+		if _, err := e.svixClient.EventType.Get(ev.Type); err == nil {
+			id := uuid.New().String()
+			if _, err := e.svixClient.Message.CreateWithOptions(e.svixAppId, &svix.MessageIn{
+				EventType: ev.Type,
+				EventId:   *svix.NullableString(id),
+				Payload:   ev.Payload,
+			}, &svix.PostOptions{IdempotencyKey: &id}); err != nil {
+				err = fmt.Errorf("unable to send message to %s: %s", e.svixAppId, err)
+				sharedlogging.GetLogger(ctx).Errorf(err.Error())
+				return fetchedMsgs, sentWebhooks, err
 			}
-			return fetchedMsgs, sentWebhooks, err
-		}
-
-		sharedlogging.GetLogger(ctx).Infof(
-			"last config: %+v", cfg)
-		sharedlogging.GetLogger(ctx).Infof(
-			"event: %+v", ev)
-
-		for _, eventType := range cfg.EventTypes {
-			if eventType == ev.Type {
-				id := uuid.New().String()
-				create, err := e.svixClient.Message.CreateWithOptions(e.svixAppId, &svix.MessageIn{
-					EventType: ev.Type,
-					EventId:   *svix.NullableString(id),
-					Payload:   ev.Payload,
-				}, &svix.PostOptions{IdempotencyKey: &id})
-				if err != nil {
-					err = fmt.Errorf("unable to send message to %s: %s", e.svixAppId, err)
-					sharedlogging.GetLogger(ctx).Errorf(err.Error())
-					return fetchedMsgs, sentWebhooks, err
-				}
-				spew.Dump(create)
-				sentWebhooks++
-			}
+			sharedlogging.GetLogger(ctx).Infof(
+				"new webhook sent: %s %s", ev.Date.Format(time.RFC3339), ev.Type)
+			sentWebhooks++
 		}
 	}
 }

@@ -36,88 +36,65 @@ func TestServer(t *testing.T) {
 	})
 
 	t.Run("no configs", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodDelete, baseURL+server.ConfigsPath, nil)
-		require.NoError(t, err)
-		resp, err := c.Do(req)
+		resp, err := http.Get(baseURL + server.ConfigsPath)
 		require.NoError(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		cur := decodeCursorResponse[model.ConfigInserted](t, resp.Body)
+		for _, cfg := range cur.Data {
+			req, err := http.NewRequest(http.MethodDelete, baseURL+server.ConfigsPath+"/"+cfg.ID, nil)
+			require.NoError(t, err)
+			resp, err := c.Do(req)
+			require.NoError(t, err)
+			assert.Equal(t, http.StatusOK, resp.StatusCode)
+		}
 
 		resp, err = http.Get(baseURL + server.ConfigsPath)
 		require.NoError(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		cur := decodeCursorResponse[model.ConfigInserted](t, resp.Body)
+		cur = decodeCursorResponse[model.ConfigInserted](t, resp.Body)
 		assert.Equal(t, 0, len(cur.Data))
 	})
 
 	req, err := http.NewRequest(http.MethodPost, baseURL+server.ConfigsPath,
 		buffer(t, model.Config{
-			Active:     true,
+			Endpoint:   "https://www.site1.com",
 			EventTypes: []string{"COMMITTED_TRANSACTIONS", "SAVED_METADATA"},
-			Endpoints:  []string{"https://www.site1.com", "https://www.site2.com"},
 		}))
 	require.NoError(t, err)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := c.Do(req)
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	insertedId1 := ""
+	assert.NoError(t, json.NewDecoder(resp.Body).Decode(&insertedId1))
 
-	req, err = http.NewRequest(http.MethodPost, baseURL+server.ConfigsPath,
-		buffer(t, model.Config{
-			Active:     false,
-			EventTypes: []string{},
-			Endpoints:  []string{},
-		}))
+	req, err = http.NewRequest(http.MethodPost, baseURL+server.ConfigsPath+server.TogglePath+"/"+insertedId1, nil)
 	require.NoError(t, err)
-	req.Header.Set("Content-Type", "application/json")
 	resp, err = c.Do(req)
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	req, err = http.NewRequest(http.MethodPost, baseURL+server.ConfigsPath,
 		buffer(t, model.Config{
-			Active:     true,
+			Endpoint:   "https://www.site3.com",
 			EventTypes: []string{"COMMITTED_TRANSACTIONS"},
-			Endpoints:  []string{"https://www.site3.com"},
 		}))
 	require.NoError(t, err)
 	req.Header.Set("Content-Type", "application/json")
 	resp, err = c.Do(req)
 	require.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	insertedId2 := ""
+	assert.NoError(t, json.NewDecoder(resp.Body).Decode(&insertedId2))
 
 	t.Run("get all configs", func(t *testing.T) {
 		resp, err = http.Get(baseURL + server.ConfigsPath)
 		require.NoError(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 		cur := decodeCursorResponse[model.ConfigInserted](t, resp.Body)
-		assert.Equal(t, 3, len(cur.Data))
-		assert.Equal(t, true, cur.Data[0].Active)
+		assert.Equal(t, 2, len(cur.Data))
 		assert.Equal(t, 1, len(cur.Data[0].EventTypes))
 		assert.Equal(t, "COMMITTED_TRANSACTIONS", cur.Data[0].EventTypes[0])
-	})
-
-	t.Run("invalid config", func(t *testing.T) {
-		req, err = http.NewRequest(http.MethodPost, baseURL+server.ConfigsPath,
-			buffer(t, model.Config{
-				Active:    false,
-				Endpoints: []string{"https://www.site1.com"},
-			}))
-		require.NoError(t, err)
-		req.Header.Set("Content-Type", "application/json")
-		resp, err = c.Do(req)
-		require.NoError(t, err)
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-
-		req, err = http.NewRequest(http.MethodPost, baseURL+server.ConfigsPath,
-			buffer(t, model.Config{
-				Active:     false,
-				EventTypes: []string{"TYPE"},
-			}))
-		require.NoError(t, err)
-		req.Header.Set("Content-Type", "application/json")
-		resp, err = c.Do(req)
-		require.NoError(t, err)
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
 
 	t.Run("invalid Content-Type", func(t *testing.T) {
@@ -170,19 +147,9 @@ func TestServer(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 	})
 
-	t.Run("invalid body invalid value", func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, baseURL+server.ConfigsPath,
-			bytes.NewBuffer([]byte("{\"active\":1}")))
-		require.NoError(t, err)
-		req.Header.Set("Content-Type", "application/json")
-		resp, err = c.Do(req)
-		require.NoError(t, err)
-		assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	})
-
 	t.Run("invalid body syntax", func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodPost, baseURL+server.ConfigsPath,
-			bytes.NewBuffer([]byte("{\"active\":true,}")))
+			bytes.NewBuffer([]byte("{\"endpoint\":\"example.com\",}")))
 		require.NoError(t, err)
 		req.Header.Set("Content-Type", "application/json")
 		resp, err = c.Do(req)

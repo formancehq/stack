@@ -16,7 +16,7 @@ paths:
 
   /configs:
     get:
-      summary: Get all configs, ordered by inserted date descending.
+      summary: Get all configs, sorted by modification date descending.
       operationId: getAllConfigs
       tags:
         - Configs
@@ -42,19 +42,9 @@ paths:
                         required:
                           - data
 
-    delete:
-      summary: Delete all configs.
-      operationId: deleteAllConfigs
-      tags:
-        - Configs
-      responses:
-        "200":
-          description: OK
-          content: {}
-
     post:
       summary: Insert a new config.
-      operationId: insertConfig
+      operationId: insertOneConfig
       tags:
         - Configs
       requestBody:
@@ -92,18 +82,55 @@ paths:
                 type: string
                 example: endpoints should be valid urls
 
+    delete:
+      summary: Delete one config by ID.
+      operationId: deleteOneConfig
+      tags:
+        - Configs
+      parameters:
+        - name: id
+          in: path
+          description: Config ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      responses:
+        "200":
+          description: OK
+          content: {}
+
+  /configs/toggle:
+    post:
+      summary: Toggle on/off config activation by ID.
+      operationId: toggleOneConfig
+      tags:
+        - Configs
+      parameters:
+        - name: id
+          in: path
+          description: Config ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      responses:
+        "200":
+          description: OK
+          content: {}
+
 components:
   schemas:
     Config:
       type: object
       additionalProperties:
         type: object
-      example: {"active":true,"event_types":["TYPE"],"endpoints":["https://www.site.com"]}
+      example: {"endpoint":"https://www.site.com","eventTypes":["TYPE1", "TYPE2"]}
     ConfigInserted:
       type: object
       additionalProperties:
         type: object
-      example: {"active":true,"event_types":["TYPE"],"endpoints":["https://www.site.com"],"inserted_at":"2022-07-20T07:31:40.9Z"}
+      example: {"endpoint":"https://www.site.com","eventTypes":["TYPE1", "TYPE2"],"active":true,"createdAt":"2022-07-20T07:31:40.9Z","modifiedAt":"2022-07-20T07:32:00Z"}
     Cursor:
       type: object
       properties:
