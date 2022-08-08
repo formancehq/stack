@@ -2,6 +2,34 @@ services:
   collector:
     image: otel/opentelemetry-collector
 
+  redis:
+    image: "redis:6.2-alpine"
+    # Enable persistence
+    command: "--save 60 500 --appendonly yes --appendfsync everysec"
+
+  svix:
+    image: svix/svix-server:v0.65
+    ports:
+      - 8071:8071
+    environment:
+      WAIT_FOR: "true"  # We want to wait for the default services
+      SVIX_REDIS_DSN: "redis://redis:6379"
+      SVIX_DB_DSN: "postgresql://postgres:postgres@postgres/postgres"
+      SVIX_JWT_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
+      JWT_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
+      SVIX_JWT_SECRET: "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
+      SVIX_LOG_LEVEL: "trace"
+
+  postgres:
+    image: postgres:13.4
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ledger" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_PASSWORD: postgres
+
   mongo:
     image: mongo
     ports:
@@ -58,10 +86,25 @@ services:
     volumes:
       - .:/app
     ports:
-        - 8080:8080
+      - 8080:8080
     environment:
       STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
-      KAFKA_TOPICS: "default"
+      KAFKA_TOPIC: "default"
       KAFKA_BROKERS: "redpanda:29092"
-      SVIX_TOKEN: "testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb"
-      SVIX_APP_ID: "app_2CqvO4XINy9ucWhqGPFXj4EkNS7"
+      SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
+      SVIX_SERVER_URL: "http://svix:8071"
+      SVIX_ORGANIZATION_NAME: "webhooks"
+
+  worker:
+    command: reflex -r '\.go' -s -- sh -c "go run ./ worker"
+    build:
+      target: dev
+    volumes:
+      - .:/app
+    environment:
+      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
+      KAFKA_TOPIC: "default"
+      KAFKA_BROKERS: "redpanda:29092"
+      SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
+      SVIX_SERVER_URL: "http://svix:8071"
+      SVIX_ORGANIZATION_NAME: "webhooks"
