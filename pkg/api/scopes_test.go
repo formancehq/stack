@@ -114,7 +114,21 @@ func TestReadScope(t *testing.T) {
 	})
 }
 
-func TestAddTriggeredScope(t *testing.T) {
+func TestDeleteScope(t *testing.T) {
+	withDbAndScopesRouter(t, func(router *mux.Router, db *gorm.DB) {
+		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
+		require.NoError(t, db.Create(scope1).Error)
+
+		req := httptest.NewRequest(http.MethodDelete, "/scopes/"+scope1.ID, nil)
+		res := httptest.NewRecorder()
+
+		router.ServeHTTP(res, req)
+
+		require.Equal(t, http.StatusNoContent, res.Code)
+	})
+}
+
+func TestAddTransientScope(t *testing.T) {
 	withDbAndScopesRouter(t, func(router *mux.Router, db *gorm.DB) {
 		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
 		require.NoError(t, db.Create(scope1).Error)
@@ -137,7 +151,7 @@ func TestAddTriggeredScope(t *testing.T) {
 	})
 }
 
-func TestDeleteTriggeredScope(t *testing.T) {
+func TestDeleteTransientScope(t *testing.T) {
 	withDbAndScopesRouter(t, func(router *mux.Router, db *gorm.DB) {
 		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
 		require.NoError(t, db.Create(scope1).Error)

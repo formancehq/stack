@@ -114,8 +114,8 @@ func New(db *gorm.DB, relyingParty rp.RelyingParty, key *rsa.PrivateKey) *storag
 	}
 }
 
-//CreateAuthRequest implements the op.Storage interface
-//it will be called after parsing and validation of the authentication request
+// CreateAuthRequest implements the op.Storage interface
+// it will be called after parsing and validation of the authentication request
 func (s *storage) CreateAuthRequest(ctx context.Context, authReq *oidc.AuthRequest, userID string) (op.AuthRequest, error) {
 	request := &auth.Request{
 		CreatedAt:     time.Now(),
@@ -149,8 +149,8 @@ func (s *storage) MarkAuthRequestAsDone(ctx context.Context, id, subject string)
 		Error
 }
 
-//AuthRequestByID implements the op.Storage interface
-//it will be called after the Login UI redirects back to the OIDC endpoint
+// AuthRequestByID implements the op.Storage interface
+// it will be called after the Login UI redirects back to the OIDC endpoint
 func (s *storage) AuthRequestByID(ctx context.Context, id string) (op.AuthRequest, error) {
 	request := &auth.Request{}
 	return request, s.db.
@@ -197,8 +197,8 @@ func (s *storage) CreateAccessToken(ctx context.Context, request op.TokenRequest
 	return token.ID, token.Expiration, nil
 }
 
-//CreateAccessAndRefreshTokens implements the op.Storage interface
-//it will be called for all requests able to return an access and refresh token (Authorization Code Flow, Refresh Token Request)
+// CreateAccessAndRefreshTokens implements the op.Storage interface
+// it will be called for all requests able to return an access and refresh token (Authorization Code Flow, Refresh Token Request)
 func (s *storage) CreateAccessAndRefreshTokens(ctx context.Context, request op.TokenRequest, currentRefreshToken string) (accessTokenID string, newRefreshToken string, expiration time.Time, err error) {
 	//get the information depending on the request type / implementation
 	applicationID, authTime, amr := getInfoFromRequest(request)
@@ -257,8 +257,8 @@ func (s *storage) CreateAccessAndRefreshTokens(ctx context.Context, request op.T
 	return accessToken.ID, refreshToken.ID, accessToken.Expiration, nil
 }
 
-//TokenRequestByRefreshToken implements the op.Storage interface
-//it will be called after parsing and validation of the refresh token request
+// TokenRequestByRefreshToken implements the op.Storage interface
+// it will be called after parsing and validation of the refresh token request
 func (s *storage) TokenRequestByRefreshToken(ctx context.Context, refreshToken string) (op.RefreshTokenRequest, error) {
 	refresh := &auth.RefreshToken{}
 	return newRefreshTokenRequest(refresh), s.db.
@@ -267,8 +267,8 @@ func (s *storage) TokenRequestByRefreshToken(ctx context.Context, refreshToken s
 		Error
 }
 
-//TerminateSession implements the op.Storage interface
-//it will be called after the user signed out, therefore the access and refresh token of the user of this client must be removed
+// TerminateSession implements the op.Storage interface
+// it will be called after the user signed out, therefore the access and refresh token of the user of this client must be removed
 func (s *storage) TerminateSession(ctx context.Context, userID string, clientID string) error {
 	return s.db.
 		WithContext(ctx).
@@ -277,8 +277,8 @@ func (s *storage) TerminateSession(ctx context.Context, userID string, clientID 
 		Error
 }
 
-//RevokeToken implements the op.Storage interface
-//it will be called after parsing and validation of the token revocation request
+// RevokeToken implements the op.Storage interface
+// it will be called after parsing and validation of the token revocation request
 func (s *storage) RevokeToken(ctx context.Context, token string, userID string, clientID string) *oidc.Error {
 	err := s.db.
 		WithContext(ctx).
@@ -291,8 +291,8 @@ func (s *storage) RevokeToken(ctx context.Context, token string, userID string, 
 	return nil
 }
 
-//GetSigningKey implements the op.Storage interface
-//it will be called when creating the OpenID Provider
+// GetSigningKey implements the op.Storage interface
+// it will be called when creating the OpenID Provider
 func (s *storage) GetSigningKey(ctx context.Context, keyCh chan<- jose.SigningKey) {
 	//in this example the signing key is a static rsa.PrivateKey and the algorithm used is RS256
 	//you would obviously have a more complex implementation and store / retrieve the key from your database as well
@@ -308,8 +308,8 @@ func (s *storage) GetSigningKey(ctx context.Context, keyCh chan<- jose.SigningKe
 	}
 }
 
-//GetKeySet implements the op.Storage interface
-//it will be called to get the current (public) keys, among others for the keys_endpoint or for validating access_tokens on the userinfo_endpoint, ...
+// GetKeySet implements the op.Storage interface
+// it will be called to get the current (public) keys, among others for the keys_endpoint or for validating access_tokens on the userinfo_endpoint, ...
 func (s *storage) GetKeySet(ctx context.Context) (*jose.JSONWebKeySet, error) {
 	//as mentioned above, this example only has a single signing key without key rotation,
 	//so it will directly use its public key
@@ -326,8 +326,8 @@ func (s *storage) GetKeySet(ctx context.Context) (*jose.JSONWebKeySet, error) {
 	}, nil
 }
 
-//GetClientByClientID implements the op.Storage interface
-//it will be called whenever information (type, redirect_uris, ...) about the client behind the client_id is needed
+// GetClientByClientID implements the op.Storage interface
+// it will be called whenever information (type, redirect_uris, ...) about the client behind the client_id is needed
 func (s *storage) getClientByClientID(ctx context.Context, clientID string) (*auth.Client, error) {
 	client := &auth.Client{}
 	return client, s.db.
@@ -336,8 +336,8 @@ func (s *storage) getClientByClientID(ctx context.Context, clientID string) (*au
 		Error
 }
 
-//GetClientByClientID implements the op.Storage interface
-//it will be called whenever information (type, redirect_uris, ...) about the client behind the client_id is needed
+// GetClientByClientID implements the op.Storage interface
+// it will be called whenever information (type, redirect_uris, ...) about the client behind the client_id is needed
 func (s *storage) GetClientByClientID(ctx context.Context, clientID string) (op.Client, error) {
 	client, err := s.getClientByClientID(ctx, clientID)
 	if err != nil {
@@ -346,8 +346,8 @@ func (s *storage) GetClientByClientID(ctx context.Context, clientID string) (op.
 	return newClientFacade(client, s.relyingParty, s.db), nil
 }
 
-//AuthorizeClientIDSecret implements the op.Storage interface
-//it will be called for validating the client_id, client_secret on token or introspection requests
+// AuthorizeClientIDSecret implements the op.Storage interface
+// it will be called for validating the client_id, client_secret on token or introspection requests
 func (s *storage) AuthorizeClientIDSecret(ctx context.Context, clientID, clientSecret string) error {
 	client, err := s.getClientByClientID(ctx, clientID)
 	if err != nil {
@@ -361,14 +361,14 @@ func (s *storage) AuthorizeClientIDSecret(ctx context.Context, clientID, clientS
 	return fmt.Errorf("invalid secret")
 }
 
-//SetUserinfoFromScopes implements the op.Storage interface
-//it will be called for the creation of an id_token, so we'll just pass it to the private function without any further check
+// SetUserinfoFromScopes implements the op.Storage interface
+// it will be called for the creation of an id_token, so we'll just pass it to the private function without any further check
 func (s *storage) SetUserinfoFromScopes(ctx context.Context, userinfo oidc.UserInfoSetter, userID, clientID string, scopes []string) error {
 	return s.setUserinfo(ctx, userinfo, userID, clientID, scopes)
 }
 
-//SetUserinfoFromToken implements the op.Storage interface
-//it will be called for the userinfo endpoint, so we read the token and pass the information from that to the private function
+// SetUserinfoFromToken implements the op.Storage interface
+// it will be called for the userinfo endpoint, so we read the token and pass the information from that to the private function
 func (s *storage) SetUserinfoFromToken(ctx context.Context, userinfo oidc.UserInfoSetter, tokenID, subject, origin string) error {
 	token := &auth.Token{}
 	if err := s.db.Find(token, "id = ?", tokenID).Error; err != nil {
@@ -391,8 +391,8 @@ func (s *storage) SetUserinfoFromToken(ctx context.Context, userinfo oidc.UserIn
 	return s.setUserinfo(ctx, userinfo, token.Subject, token.ApplicationID, token.Scopes)
 }
 
-//SetIntrospectionFromToken implements the op.Storage interface
-//it will be called for the introspection endpoint, so we read the token and pass the information from that to the private function
+// SetIntrospectionFromToken implements the op.Storage interface
+// it will be called for the introspection endpoint, so we read the token and pass the information from that to the private function
 func (s *storage) SetIntrospectionFromToken(ctx context.Context, introspection oidc.IntrospectionResponse, tokenID, subject, clientID string) error {
 	token := &auth.Token{}
 	if err := s.db.Find(token, "id = ?", tokenID).Error; err != nil {
@@ -420,22 +420,22 @@ func (s *storage) SetIntrospectionFromToken(ctx context.Context, introspection o
 	return fmt.Errorf("token is not valid for this client")
 }
 
-//GetPrivateClaimsFromScopes implements the op.Storage interface
-//it will be called for the creation of a JWT access token to assert claims for custom scopes
+// GetPrivateClaimsFromScopes implements the op.Storage interface
+// it will be called for the creation of a JWT access token to assert claims for custom scopes
 func (s *storage) GetPrivateClaimsFromScopes(ctx context.Context, userID, clientID string, scopes []string) (claims map[string]interface{}, err error) {
 	return map[string]any{
 		"scp": scopes,
 	}, nil
 }
 
-//GetKeyByIDAndUserID implements the op.Storage interface
-//it will be called to validate the signatures of a JWT (JWT Profile Grant and Authentication)
+// GetKeyByIDAndUserID implements the op.Storage interface
+// it will be called to validate the signatures of a JWT (JWT Profile Grant and Authentication)
 func (s *storage) GetKeyByIDAndUserID(ctx context.Context, keyID, userID string) (*jose.JSONWebKey, error) {
 	return nil, errors.New("not implemented")
 }
 
-//ValidateJWTProfileScopes implements the op.Storage interface
-//it will be called to validate the scopes of a JWT Profile Authorization Grant request
+// ValidateJWTProfileScopes implements the op.Storage interface
+// it will be called to validate the scopes of a JWT Profile Authorization Grant request
 func (s *storage) ValidateJWTProfileScopes(ctx context.Context, userID string, scopes []string) ([]string, error) {
 	allowedScopes := make([]string, 0)
 	for _, scope := range scopes {
@@ -446,7 +446,7 @@ func (s *storage) ValidateJWTProfileScopes(ctx context.Context, userID string, s
 	return allowedScopes, nil
 }
 
-//Health implements the op.Storage interface
+// Health implements the op.Storage interface
 func (s *storage) Health(ctx context.Context) error {
 	db, err := s.db.DB()
 	if err != nil {
@@ -455,7 +455,7 @@ func (s *storage) Health(ctx context.Context) error {
 	return db.Ping()
 }
 
-//createRefreshToken will store a refresh_token in-memory based on the provided information
+// createRefreshToken will store a refresh_token in-memory based on the provided information
 func (s *storage) createRefreshToken(tx *gorm.DB, accessToken *auth.Token, amr []string, authTime time.Time) (*auth.RefreshToken, error) {
 	token := &auth.RefreshToken{
 		ID:            uuid.NewString(),
@@ -473,7 +473,7 @@ func (s *storage) createRefreshToken(tx *gorm.DB, accessToken *auth.Token, amr [
 		Error
 }
 
-//accessToken will store an access_token in-memory based on the provided information
+// accessToken will store an access_token in-memory based on the provided information
 func (s *storage) saveAccessToken(tx *gorm.DB, applicationID, subject string, audience, scopes []string) (*auth.Token, error) {
 	token := &auth.Token{
 		ID:            uuid.NewString(),
@@ -488,7 +488,7 @@ func (s *storage) saveAccessToken(tx *gorm.DB, applicationID, subject string, au
 		Error
 }
 
-//setUserinfo sets the info based on the user, scopes and if necessary the clientID
+// setUserinfo sets the info based on the user, scopes and if necessary the clientID
 func (s *storage) setUserinfo(ctx context.Context, userInfo oidc.UserInfoSetter, userID, clientID string, scopes []string) (err error) {
 
 	user := &auth.User{}
@@ -512,7 +512,7 @@ func (s *storage) setUserinfo(ctx context.Context, userInfo oidc.UserInfoSetter,
 	return nil
 }
 
-//getInfoFromRequest returns the clientID, authTime and amr depending on the op.TokenRequest type / implementation
+// getInfoFromRequest returns the clientID, authTime and amr depending on the op.TokenRequest type / implementation
 func getInfoFromRequest(req op.TokenRequest) (clientID string, authTime time.Time, amr []string) {
 	authReq, ok := req.(*auth.Request) //Code Flow (with scope offline_access)
 	if ok {

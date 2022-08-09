@@ -13,6 +13,7 @@ func addScopeRoutes(db *gorm.DB, router *mux.Router) {
 	router.Path("/scopes").Methods(http.MethodGet).HandlerFunc(listScopes(db))
 	router.Path("/scopes/{scopeId}").Methods(http.MethodPut).HandlerFunc(updateScope(db))
 	router.Path("/scopes/{scopeId}").Methods(http.MethodGet).HandlerFunc(readScope(db))
+	router.Path("/scopes/{scopeId}").Methods(http.MethodDelete).HandlerFunc(deleteScope(db))
 	router.Path("/scopes/{scopeId}/transient/{transientScopeId}").Methods(http.MethodPut).HandlerFunc(addTriggerToScope(db))
 	router.Path("/scopes/{scopeId}/transient/{transientScopeId}").Methods(http.MethodDelete).HandlerFunc(deleteTriggerFromScope(db))
 }
@@ -109,6 +110,20 @@ func updateScope(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 		writeJSONObject(w, r, scope)
+	}
+}
+
+func deleteScope(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := db.
+			WithContext(r.Context()).
+			Delete(&auth.Scope{}, "id = ?", mux.Vars(r)["scopeId"]).
+			Error
+		if err != nil {
+			internalServerError(w, r, err)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 

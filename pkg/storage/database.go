@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-//TODO: Replace by sharedlogging
+// TODO: Replace by sharedlogging
 func newLogger() logger.Interface {
 	return logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
