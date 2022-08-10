@@ -8,10 +8,9 @@ import (
 )
 
 func CreateEndpoint(endpointId string, cfg model.Config, svixClient *svixgo.Svix, svixAppId string) error {
-	var list *svixgo.ListResponseEventTypeOut
-	var err error
-	if list, err = svixClient.EventType.List(&svixgo.EventTypeListOptions{}); err != nil {
-		return fmt.Errorf("svix.EventType.List: %w", err)
+	list, err := ListEventTypes(svixClient)
+	if err != nil {
+		return fmt.Errorf("svix.ListEventTypes: %w", err)
 	}
 
 	for _, newEventType := range cfg.EventTypes {
@@ -44,6 +43,10 @@ func CreateEndpoint(endpointId string, cfg model.Config, svixClient *svixgo.Svix
 	}
 
 	return nil
+}
+
+func ListEventTypes(svixClient *svixgo.Svix) (*svixgo.ListResponseEventTypeOut, error) {
+	return svixClient.EventType.List(&svixgo.EventTypeListOptions{})
 }
 
 func DeleteEndpoint(endpointId string, svixClient *svixgo.Svix, svixAppId string) error {

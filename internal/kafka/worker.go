@@ -3,10 +3,11 @@ package kafka
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/google/uuid"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks-cloud/internal/storage"
@@ -41,10 +42,8 @@ func (e *Worker) Run(ctx context.Context) (fetchedMsgs, sentWebhooks int, err er
 	for {
 		m, err := e.reader.FetchMessage(ctx)
 		if err != nil {
-			sharedlogging.GetLogger(ctx).Errorf("unable to fetch messages: %s", err)
-			if <-ctx.Done(); true {
-				sharedlogging.GetLogger(ctx).Infof("context deadline exceeded")
-				return fetchedMsgs, sentWebhooks, nil
+			if !errors.Is(err, io.EOF) {
+				sharedlogging.GetLogger(ctx).Errorf("unable to fetch messages: %s", err)
 			}
 			continue
 		}
@@ -66,14 +65,8 @@ func (e *Worker) Run(ctx context.Context) (fetchedMsgs, sentWebhooks int, err er
 			continue
 		}
 
-		spew.Dump("EVENT", ev)
-
 		if err = e.reader.CommitMessages(ctx, m); err != nil {
 			sharedlogging.GetLogger(ctx).Errorf("unable to commit event: %s", err)
-			if <-ctx.Done(); true {
-				sharedlogging.GetLogger(ctx).Infof("context deadline exceeded")
-				return fetchedMsgs, sentWebhooks, nil
-			}
 			continue
 		}
 

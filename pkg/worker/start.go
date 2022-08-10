@@ -54,7 +54,7 @@ func newKafkaWorker(lc fx.Lifecycle, store storage.Store, svixClient *svixgo.Svi
 func run(w *kafka.Worker) {
 	go func() {
 		if _, _, err := w.Run(context.Background()); err != nil {
-			sharedlogging.Errorf("Worker.Run: %s", err)
+			sharedlogging.Errorf("kafka.Worker.Run: %s", err)
 		}
 	}()
 }

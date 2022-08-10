@@ -1,34 +1,38 @@
 services:
-  collector:
-    image: otel/opentelemetry-collector
-
-  redis:
-    image: "redis:6.2-alpine"
-    # Enable persistence
-    command: "--save 60 500 --appendonly yes --appendfsync everysec"
-
-  svix:
-    image: svix/svix-server:v0.65
-    ports:
-      - 8071:8071
-    environment:
-      WAIT_FOR: "true"  # We want to wait for the default services
-      SVIX_REDIS_DSN: "redis://redis:6379"
-      SVIX_DB_DSN: "postgresql://postgres:postgres@postgres/postgres"
-      SVIX_JWT_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
-      JWT_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
-      SVIX_JWT_SECRET: "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
-      SVIX_LOG_LEVEL: "trace"
-
-  postgres:
-    image: postgres:13.4
+  server:
+    command: reflex -r '\.go' -s -- sh -c "go run . server"
+    build:
+      target: dev
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ledger" ]
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - .:/app
+    ports:
+      - "8080:8080"
     environment:
-      POSTGRES_PASSWORD: postgres
+      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
+      SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
+      SVIX_SERVER_URL: "http://svix:8071"
+      SVIX_APP_NAME: "webhooks"
+      SVIX_APP_ID: "84a0dabe-71d3-453d-a089-f9f6dbe3402e"
+
+  worker:
+    command: reflex -r '\.go' -s -- sh -c "go run . worker"
+    build:
+      target: dev
+    volumes:
+      - .:/app
+    environment:
+      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
+      KAFKA_DEFAULT_TOPIC: "default"
+      KAFKA_BROKERS: "redpanda:29092"
+      SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
+      SVIX_SERVER_URL: "http://svix:8071"
+      SVIX_APP_NAME: "webhooks"
+      SVIX_APP_ID: "84a0dabe-71d3-453d-a089-f9f6dbe3402e"
 
   mongo:
     image: mongo
@@ -37,9 +41,12 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: "admin"
       MONGO_INITDB_ROOT_PASSWORD: "admin"
+    depends_on:
+      redpanda:
+        condition: service_healthy
 
   redpanda:
-    image: docker.vectorized.io/vectorized/redpanda:latest
+    image: docker.vectorized.io/vectorized/redpanda
     command:
       - redpanda
       - start
@@ -60,51 +67,44 @@ services:
       timeout: 10s
       retries: 5
     ports:
-      - 9092:9092
-      - 29092:29092
-      - 9644:9644
+      - "9092:9092"
+      - "9644:9644"
 
-  redpanda-ui:
-    image: docker.redpanda.com/vectorized/console:master-0a8fce8
+  svix:
+    image: svix/svix-server
     ports:
-      - 8081:8080
-    depends_on:
-      redpanda:
-        condition: service_healthy
+      - "8071:8071"
     environment:
-      KAFKA_BROKERS: redpanda:29092
+      WAIT_FOR: "true"  # We want to wait for the default services
+      SVIX_REDIS_DSN: "redis://redis:6379"
+      SVIX_DB_DSN: "postgresql://webhooks:webhooks@postgres/webhooks"
+      SVIX_JWT_SECRET: "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
+      SVIX_LOG_LEVEL: "trace"
 
-  webhooks:
-    command: reflex -r '\.go' -s -- sh -c "go run ./ server"
-    build:
-      target: dev
+  postgres:
+    image: postgres
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
+      test: [ "CMD-SHELL", "pg_isready -U ledger" ]
       interval: 10s
       timeout: 5s
       retries: 5
     volumes:
-      - .:/app
-    ports:
-      - 8080:8080
+      - "postgres-data:/var/lib/postgresql/data/"
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
-      KAFKA_TOPIC: "default"
-      KAFKA_BROKERS: "redpanda:29092"
-      SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
-      SVIX_SERVER_URL: "http://svix:8071"
-      SVIX_ORGANIZATION_NAME: "webhooks"
+      POSTGRES_USER: "webhooks"
+      POSTGRES_PASSWORD: "webhooks"
+      POSTGRES_DB: "webhooks"
 
-  worker:
-    command: reflex -r '\.go' -s -- sh -c "go run ./ worker"
-    build:
-      target: dev
+  redis:
+    image: redis:alpine
+    # Enable persistence
+    command: "--save 60 500 --appendonly yes --appendfsync everysec"
     volumes:
-      - .:/app
-    environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
-      KAFKA_TOPIC: "default"
-      KAFKA_BROKERS: "redpanda:29092"
-      SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
-      SVIX_SERVER_URL: "http://svix:8071"
-      SVIX_ORGANIZATION_NAME: "webhooks"
+      - "redis-data:/data"
+
+  collector:
+    image: otel/opentelemetry-collector
+
+volumes:
+  postgres-data:
+  redis-data:

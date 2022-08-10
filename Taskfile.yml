@@ -1,15 +1,16 @@
 version: '3'
 
 env:
-  KAFKA_TOPICS: test-topic
+  KAFKA_DEFAULT_TOPIC: "default"
   SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
   SVIX_SERVER_URL: "http://127.0.0.1:8071"
-  SVIX_ORGANIZATION_NAME: "webhooks"
+  SVIX_APP_NAME: "webhooks"
+  SVIX_APP_ID: "84a0dabe-71d3-453d-a089-f9f6dbe3402e"
 
 vars:
-  SERVICE: webhooks
-  APP_VERSION: develop
-  APP_SHA: ksjfsldkf
+  SERVICE: "webhooks"
+  APP_VERSION: "develop"
+  APP_SHA: "ksjfsldkf"
 
   PKG: "./..."
   FAILFAST: "-failfast"
@@ -28,10 +29,9 @@ tasks:
 
   tests:local:
     cmds:
-      - task: mongo
-      - task: docker:deps
+      - task: docker
       - >
-        go test -v -p 1 {{.FAILFAST}} -coverpkg {{.PKG}} -coverprofile coverage.out -covermode atomic
+        go test -v {{.FAILFAST}} -coverpkg {{.PKG}} -coverprofile coverage.out -covermode atomic
         -run {{.RUN}} -timeout {{.TIMEOUT}} {{.PKG}} |
         sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' |
         sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/'' |
@@ -40,9 +40,8 @@ tasks:
 
   tests:
     cmds:
-      - task: mongo
-      - task: docker:deps
-      - go test -p 1 -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
+      - task: docker
+      - go test -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
 
   ci:
     cmds:
@@ -75,9 +74,6 @@ tasks:
       - cp {{.SERVICE}} $(go env GOPATH)/bin
 
   install:
-    deps: [install:golangci-lint]
-
-  install:golangci-lint:
     cmds:
       - golangci-lint --version
       - >
@@ -85,14 +81,10 @@ tasks:
         sh -s -- -b $(go env GOPATH)/bin latest
       - golangci-lint --version
 
-  mongo:
+  docker:
     cmds:
-      - docker compose up -d mongo
-
-  docker:deps:
-    cmds:
-      - docker compose up -d redpanda redpanda-ui postgres redis svix
-      - docker compose exec -ti redpanda rpk topic create {{.KAFKA_TOPICS}} || exit 0
+      - docker compose up -d mongo redpanda postgres redis svix
+      - docker compose exec -ti redpanda rpk topic create {{.KAFKA_DEFAULT_TOPIC}} || exit 0
 
   coverage:
     cmds:

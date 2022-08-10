@@ -11,29 +11,25 @@ import (
 
 func New() (*svix.Svix, string, error) {
 	token := viper.GetString(constants.SvixTokenFlag)
-	organizationName := viper.GetString(constants.SvixOrganizationNameFlag)
+	appName := viper.GetString(constants.SvixAppNameFlag)
+	appId := viper.GetString(constants.SvixAppIdFlag)
 	serverUrl := viper.GetString(constants.SvixServerUrlFlag)
 
-	urlForServer, _ := url.Parse(serverUrl)
-	opt := svix.SvixOptions{
-		ServerUrl: urlForServer,
-	}
-	svixClient := svix.New(token, &opt)
-
-	ApplicationListOptions := svix.ApplicationListOptions{}
-	list, _ := svixClient.Application.List(&ApplicationListOptions)
-	for _, s := range list.Data {
-		if s.Id == organizationName {
-			return svixClient, s.Id, nil
-		}
-	}
-
-	optApp := svix.ApplicationIn{
-		Name: organizationName,
-	}
-	app, err := svixClient.Application.Create(&optApp)
+	u, err := url.Parse(serverUrl)
 	if err != nil {
-		return nil, "", fmt.Errorf("error creating svix application: %s", err)
+		return nil, "", fmt.Errorf("url.Parse: %w", err)
+	}
+
+	svixClient := svix.New(token, &svix.SvixOptions{
+		ServerUrl: u,
+	})
+
+	app, err := svixClient.Application.GetOrCreate(&svix.ApplicationIn{
+		Name: appName,
+		Uid:  *svix.NullableString(appId),
+	})
+	if err != nil {
+		return nil, "", fmt.Errorf("svix.Application.GetOrCreate: %w", err)
 	}
 
 	return svixClient, app.Id, nil
