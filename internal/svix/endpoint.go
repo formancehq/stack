@@ -3,7 +3,7 @@ package svix
 import (
 	"fmt"
 
-	"github.com/numary/webhooks-cloud/pkg/model"
+	"github.com/numary/webhooks/pkg/model"
 	svixgo "github.com/svix/svix-webhooks/go"
 )
 

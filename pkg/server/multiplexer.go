@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks-cloud/cmd/constants"
+	"github.com/numary/webhooks/cmd/constants"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )

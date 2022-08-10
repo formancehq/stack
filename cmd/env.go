@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/numary/webhooks-cloud/internal/env"
+	"github.com/numary/webhooks/internal/env"
 	"github.com/spf13/viper"
 )
 

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/numary/webhooks-cloud/pkg/worker"
+	"github.com/numary/webhooks/pkg/worker"
 	"github.com/spf13/cobra"
 )
 

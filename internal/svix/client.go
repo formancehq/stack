@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/numary/webhooks-cloud/cmd/constants"
+	"github.com/numary/webhooks/cmd/constants"
 	"github.com/spf13/viper"
 	svix "github.com/svix/svix-webhooks/go"
 )
