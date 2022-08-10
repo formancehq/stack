@@ -15,6 +15,7 @@ func addClientRoutes(db *gorm.DB, router *mux.Router) {
 	router.Path("/clients").Methods(http.MethodGet).HandlerFunc(listClients(db))
 	router.Path("/clients/{clientId}").Methods(http.MethodPut).HandlerFunc(updateClient(db))
 	router.Path("/clients/{clientId}").Methods(http.MethodGet).HandlerFunc(readClient(db))
+	router.Path("/clients/{clientId}").Methods(http.MethodDelete).HandlerFunc(deleteClient(db))
 	router.Path("/clients/{clientId}/secrets").Methods(http.MethodPost).HandlerFunc(createSecret(db))
 	router.Path("/clients/{clientId}/secrets/{secretId}").Methods(http.MethodDelete).HandlerFunc(deleteSecret(db))
 	router.Path("/clients/{clientId}/scopes/{scopeId}").Methods(http.MethodPut).HandlerFunc(addScopeToClient(db))
@@ -121,6 +122,20 @@ func readClient(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 		writeJSONObject(w, r, mapBusinessClient(*client))
+	}
+}
+
+func deleteClient(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := db.
+			WithContext(r.Context()).
+			Delete(&auth.Client{}, "id = ?", mux.Vars(r)["clientId"]).
+			Error
+		if err != nil {
+			internalServerError(w, r, err)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 

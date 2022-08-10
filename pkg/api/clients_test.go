@@ -248,6 +248,30 @@ func TestReadClient(t *testing.T) {
 	})
 }
 
+func TestDeleteClient(t *testing.T) {
+	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
+
+		scope1 := auth.NewScope(auth.ScopeOptions{Label: "XXX"})
+		require.NoError(t, db.Create(scope1).Error)
+
+		opts := auth.ClientOptions{
+			Metadata: map[string]string{
+				"foo": "bar",
+			},
+		}
+		client1 := auth.NewClient(opts)
+		client1.Scopes = append(client1.Scopes, *scope1)
+		require.NoError(t, db.Create(client1).Error)
+
+		req := httptest.NewRequest(http.MethodDelete, "/clients/"+client1.Id, nil)
+		res := httptest.NewRecorder()
+
+		router.ServeHTTP(res, req)
+
+		require.Equal(t, http.StatusNoContent, res.Code)
+	})
+}
+
 func TestGenerateNewSecret(t *testing.T) {
 	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
 		client := auth.NewClient(auth.ClientOptions{})
