@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**LastDigits** | **float32** |  | 
+**LastDigits** | **string** |  | 
 **Name** | **string** |  | 
 **Id** | **string** |  | 
 
@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 
 ### NewClientSecret
 
-`func NewClientSecret(lastDigits float32, name string, id string, ) *ClientSecret`
+`func NewClientSecret(lastDigits string, name string, id string, ) *ClientSecret`
 
 NewClientSecret instantiates a new ClientSecret object
 This constructor will assign default values to properties that have it defined,
@@ -29,20 +29,20 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetLastDigits
 
-`func (o *ClientSecret) GetLastDigits() float32`
+`func (o *ClientSecret) GetLastDigits() string`
 
 GetLastDigits returns the LastDigits field if non-nil, zero value otherwise.
 
 ### GetLastDigitsOk
 
-`func (o *ClientSecret) GetLastDigitsOk() (*float32, bool)`
+`func (o *ClientSecret) GetLastDigitsOk() (*string, bool)`
 
 GetLastDigitsOk returns a tuple with the LastDigits field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetLastDigits
 
-`func (o *ClientSecret) SetLastDigits(v float32)`
+`func (o *ClientSecret) SetLastDigits(v string)`
 
 SetLastDigits sets LastDigits field to given value.
 

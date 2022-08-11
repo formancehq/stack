@@ -375,7 +375,7 @@ components:
     ClientSecret:
       properties:
         lastDigits:
-          type: number
+          type: string
         name:
           type: string
         id:
@@ -414,6 +414,8 @@ components:
       properties:
         name:
           type: string
+      required:
+      - name
       type: object
     Secret:
       allOf:

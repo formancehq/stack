@@ -16,7 +16,7 @@ import (
 
 // ClientSecret struct for ClientSecret
 type ClientSecret struct {
-	LastDigits float32 `json:"lastDigits"`
+	LastDigits string `json:"lastDigits"`
 	Name string `json:"name"`
 	Id string `json:"id"`
 }
@@ -25,7 +25,7 @@ type ClientSecret struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewClientSecret(lastDigits float32, name string, id string) *ClientSecret {
+func NewClientSecret(lastDigits string, name string, id string) *ClientSecret {
 	this := ClientSecret{}
 	this.LastDigits = lastDigits
 	this.Name = name
@@ -42,9 +42,9 @@ func NewClientSecretWithDefaults() *ClientSecret {
 }
 
 // GetLastDigits returns the LastDigits field value
-func (o *ClientSecret) GetLastDigits() float32 {
+func (o *ClientSecret) GetLastDigits() string {
 	if o == nil {
-		var ret float32
+		var ret string
 		return ret
 	}
 
@@ -53,7 +53,7 @@ func (o *ClientSecret) GetLastDigits() float32 {
 
 // GetLastDigitsOk returns a tuple with the LastDigits field value
 // and a boolean to check if the value has been set.
-func (o *ClientSecret) GetLastDigitsOk() (*float32, bool) {
+func (o *ClientSecret) GetLastDigitsOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -61,7 +61,7 @@ func (o *ClientSecret) GetLastDigitsOk() (*float32, bool) {
 }
 
 // SetLastDigits sets field value
-func (o *ClientSecret) SetLastDigits(v float32) {
+func (o *ClientSecret) SetLastDigits(v string) {
 	o.LastDigits = v
 }
 
