@@ -16,10 +16,10 @@ import (
 
 // Secret struct for Secret
 type Secret struct {
-	Name       *string `json:"name,omitempty"`
-	Id         string  `json:"id"`
-	LastDigits string  `json:"lastDigits"`
-	Clear      string  `json:"clear"`
+	Name *string `json:"name,omitempty"`
+	Id string `json:"id"`
+	LastDigits string `json:"lastDigits"`
+	Clear string `json:"clear"`
 }
 
 // NewSecret instantiates a new Secret object
@@ -198,3 +198,5 @@ func (v *NullableSecret) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

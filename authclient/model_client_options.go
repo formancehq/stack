@@ -16,12 +16,12 @@ import (
 
 // ClientOptions struct for ClientOptions
 type ClientOptions struct {
-	Public                 *bool              `json:"public,omitempty"`
-	RedirectUris           []string           `json:"redirectUris,omitempty"`
-	Description            *string            `json:"description,omitempty"`
-	Name                   string             `json:"name"`
-	PostLogoutRedirectUris []string           `json:"postLogoutRedirectUris,omitempty"`
-	Metadata               *map[string]string `json:"metadata,omitempty"`
+	Public *bool `json:"public,omitempty"`
+	RedirectUris []string `json:"redirectUris,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Name string `json:"name"`
+	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris,omitempty"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
 }
 
 // NewClientOptions instantiates a new ClientOptions object
@@ -284,3 +284,5 @@ func (v *NullableClientOptions) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

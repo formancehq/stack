@@ -372,6 +372,19 @@ components:
       required:
       - name
       type: object
+    ClientSecret:
+      properties:
+        lastDigits:
+          type: number
+        name:
+          type: string
+        id:
+          type: string
+      required:
+      - id
+      - lastDigits
+      - name
+      type: object
     Client:
       allOf:
       - $ref: '#/components/schemas/ClientOptions'
@@ -479,6 +492,10 @@ components:
         scopes:
           items:
             type: string
+          type: array
+        secrets:
+          items:
+            $ref: '#/components/schemas/ClientSecret'
           type: array
       required:
       - id

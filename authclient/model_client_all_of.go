@@ -16,8 +16,9 @@ import (
 
 // ClientAllOf struct for ClientAllOf
 type ClientAllOf struct {
-	Id     string   `json:"id"`
+	Id string `json:"id"`
 	Scopes []string `json:"scopes,omitempty"`
+	Secrets []ClientSecret `json:"secrets,omitempty"`
 }
 
 // NewClientAllOf instantiates a new ClientAllOf object
@@ -94,6 +95,38 @@ func (o *ClientAllOf) SetScopes(v []string) {
 	o.Scopes = v
 }
 
+// GetSecrets returns the Secrets field value if set, zero value otherwise.
+func (o *ClientAllOf) GetSecrets() []ClientSecret {
+	if o == nil || o.Secrets == nil {
+		var ret []ClientSecret
+		return ret
+	}
+	return o.Secrets
+}
+
+// GetSecretsOk returns a tuple with the Secrets field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ClientAllOf) GetSecretsOk() ([]ClientSecret, bool) {
+	if o == nil || o.Secrets == nil {
+		return nil, false
+	}
+	return o.Secrets, true
+}
+
+// HasSecrets returns a boolean if a field has been set.
+func (o *ClientAllOf) HasSecrets() bool {
+	if o != nil && o.Secrets != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetSecrets gets a reference to the given []ClientSecret and assigns it to the Secrets field.
+func (o *ClientAllOf) SetSecrets(v []ClientSecret) {
+	o.Secrets = v
+}
+
 func (o ClientAllOf) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -101,6 +134,9 @@ func (o ClientAllOf) MarshalJSON() ([]byte, error) {
 	}
 	if o.Scopes != nil {
 		toSerialize["scopes"] = o.Scopes
+	}
+	if o.Secrets != nil {
+		toSerialize["secrets"] = o.Secrets
 	}
 	return json.Marshal(toSerialize)
 }
@@ -140,3 +176,5 @@ func (v *NullableClientAllOf) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

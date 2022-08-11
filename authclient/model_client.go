@@ -16,14 +16,15 @@ import (
 
 // Client struct for Client
 type Client struct {
-	Public                 *bool              `json:"public,omitempty"`
-	RedirectUris           []string           `json:"redirectUris,omitempty"`
-	Description            *string            `json:"description,omitempty"`
-	Name                   string             `json:"name"`
-	PostLogoutRedirectUris []string           `json:"postLogoutRedirectUris,omitempty"`
-	Metadata               *map[string]string `json:"metadata,omitempty"`
-	Id                     string             `json:"id"`
-	Scopes                 []string           `json:"scopes,omitempty"`
+	Public *bool `json:"public,omitempty"`
+	RedirectUris []string `json:"redirectUris,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Name string `json:"name"`
+	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris,omitempty"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
+	Id string `json:"id"`
+	Scopes []string `json:"scopes,omitempty"`
+	Secrets []ClientSecret `json:"secrets,omitempty"`
 }
 
 // NewClient instantiates a new Client object
@@ -285,6 +286,38 @@ func (o *Client) SetScopes(v []string) {
 	o.Scopes = v
 }
 
+// GetSecrets returns the Secrets field value if set, zero value otherwise.
+func (o *Client) GetSecrets() []ClientSecret {
+	if o == nil || o.Secrets == nil {
+		var ret []ClientSecret
+		return ret
+	}
+	return o.Secrets
+}
+
+// GetSecretsOk returns a tuple with the Secrets field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Client) GetSecretsOk() ([]ClientSecret, bool) {
+	if o == nil || o.Secrets == nil {
+		return nil, false
+	}
+	return o.Secrets, true
+}
+
+// HasSecrets returns a boolean if a field has been set.
+func (o *Client) HasSecrets() bool {
+	if o != nil && o.Secrets != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetSecrets gets a reference to the given []ClientSecret and assigns it to the Secrets field.
+func (o *Client) SetSecrets(v []ClientSecret) {
+	o.Secrets = v
+}
+
 func (o Client) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Public != nil {
@@ -310,6 +343,9 @@ func (o Client) MarshalJSON() ([]byte, error) {
 	}
 	if o.Scopes != nil {
 		toSerialize["scopes"] = o.Scopes
+	}
+	if o.Secrets != nil {
+		toSerialize["secrets"] = o.Secrets
 	}
 	return json.Marshal(toSerialize)
 }
@@ -349,3 +385,5 @@ func (v *NullableClient) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

@@ -230,6 +230,7 @@ func TestReadClient(t *testing.T) {
 		}
 		client1 := auth.NewClient(opts)
 		client1.Scopes = append(client1.Scopes, *scope1)
+		secret, _ := client1.GenerateNewSecret("testing")
 		require.NoError(t, db.Create(client1).Error)
 
 		req := httptest.NewRequest(http.MethodGet, "/clients/"+client1.Id, nil)
@@ -244,6 +245,9 @@ func TestReadClient(t *testing.T) {
 			ClientOptions: opts,
 			ID:            client1.Id,
 			Scopes:        []string{scope1.ID},
+			Secrets: []clientSecretView{{
+				ClientSecret: secret,
+			}},
 		}, ret)
 	})
 }

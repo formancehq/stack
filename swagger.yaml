@@ -326,6 +326,19 @@ components:
           $ref: '#/components/schemas/Metadata'
       required:
       - name
+    ClientSecret:
+      type: object
+      properties:
+        lastDigits:
+          type: number
+        name:
+          type: string
+        id:
+          type: string
+      required:
+      - id
+      - lastDigits
+      - name
     Client:
       allOf:
       - $ref: '#/components/schemas/ClientOptions'
@@ -337,6 +350,10 @@ components:
             type: array
             items:
               type: string
+          secrets:
+            type: array
+            items:
+              $ref: '#/components/schemas/ClientSecret'
         required:
         - id
     ScopeOptions:

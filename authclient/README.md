@@ -101,6 +101,7 @@ Class | Method | HTTP request | Description
  - [Client](docs/Client.md)
  - [ClientAllOf](docs/ClientAllOf.md)
  - [ClientOptions](docs/ClientOptions.md)
+ - [ClientSecret](docs/ClientSecret.md)
  - [CreateClientResponse](docs/CreateClientResponse.md)
  - [CreateScopeResponse](docs/CreateScopeResponse.md)
  - [CreateSecretResponse](docs/CreateSecretResponse.md)

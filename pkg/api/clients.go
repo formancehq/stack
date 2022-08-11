@@ -22,10 +22,16 @@ func addClientRoutes(db *gorm.DB, router *mux.Router) {
 	router.Path("/clients/{clientId}/scopes/{scopeId}").Methods(http.MethodDelete).HandlerFunc(deleteScopeOfClient(db))
 }
 
+type clientSecretView struct {
+	auth.ClientSecret
+	Hash string `json:"-"`
+}
+
 type clientView struct {
 	auth.ClientOptions
-	ID     string   `json:"id"`
-	Scopes []string `json:"scopes"`
+	ID      string                       `json:"id"`
+	Scopes  []string                     `json:"scopes"`
+	Secrets auth.Array[clientSecretView] `gorm:"type:text"`
 }
 
 func mapBusinessClient(c auth.Client) clientView {
@@ -52,6 +58,11 @@ func mapBusinessClient(c auth.Client) clientView {
 			}
 			return ret
 		}(),
+		Secrets: mapList(c.Secrets, func(i auth.ClientSecret) clientSecretView {
+			return clientSecretView{
+				ClientSecret: i,
+			}
+		}),
 	}
 }
 

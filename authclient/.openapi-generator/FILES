@@ -8,6 +8,7 @@ configuration.go
 docs/Client.md
 docs/ClientAllOf.md
 docs/ClientOptions.md
+docs/ClientSecret.md
 docs/CreateClientResponse.md
 docs/CreateScopeResponse.md
 docs/CreateSecretResponse.md
@@ -27,6 +28,7 @@ go.sum
 model_client.go
 model_client_all_of.go
 model_client_options.go
+model_client_secret.go
 model_create_client_response.go
 model_create_scope_response.go
 model_create_secret_response.go
