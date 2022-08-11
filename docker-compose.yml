@@ -46,8 +46,7 @@ services:
       - traefik.http.routers.swagger.middlewares=cors@docker
 
   control:
-    image: "ghcr.io/numary/control:453966ae8cd59a48e10989324f76f149e1f54fd6"
-    command: yarn run remix-serve build
+    image: "ghcr.io/numary/control:f5e16a9ce598f6793fa1e4e25d7b1fb3123e7c95"
     environment:
       API_URL_BACK: "http://proxy/api"
       API_URL_FRONT: "http://localhost/api"
