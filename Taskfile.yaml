@@ -3,26 +3,37 @@
 version: '3'
 
 vars:
-  COMPOSE_FILE: -f docker-compose.proxy.yml -f docker-compose.ledger.yml -f docker-compose.payments.yml -f docker-compose.core.yml -f docker-compose.search.yml
+  COMMUNITY_COMPOSE_FILE: -f docker-compose.yml
+  ENTERPRISE_COMPOSE_FILE: -f docker-compose.yml -f docker-compose.enterprise.yml
 
 tasks:
-  run:
+  community:run:
     cmds:
-      - docker compose {{.COMPOSE_FILE}} up -d --remove-orphans
-      - docker compose {{.COMPOSE_FILE}} logs -f
-
-  stop:
+      - docker-compose {{.COMMUNITY_COMPOSE_FILE}} up -d --remove-orphans
+  community:stop:
     cmds:
-      - docker compose {{.COMPOSE_FILE}} stop
-
-  ps:
+      - docker-compose {{.COMMUNITY_COMPOSE_FILE}} stop
+  community:ps:
     cmds:
-      - docker compose {{.COMPOSE_FILE}} ps
-  rm:
+      - docker-compose {{.COMMUNITY_COMPOSE_FILE}} ps
+  community:rm:
     deps:
-      - stop
+      - community:stop
     cmds:
-      - docker compose {{.COMPOSE_FILE}} rm -f
-      - docker volume remove stack_postgres_data
-      - docker volume remove stack_mongodb_data
-      - docker volume remove stack_kafka_data
+      - docker-compose {{.COMMUNITY_COMPOSE_FILE}} rm -f
+      - docker volume prune -f
+  enterprise:run:
+    cmds:
+      - docker-compose {{.ENTERPRISE_COMPOSE_FILE}} up -d --remove-orphans
+  enterprise:stop:
+    cmds:
+      - docker-compose {{.ENTERPRISE_COMPOSE_FILE}} stop
+  enterprise:ps:
+    cmds:
+      - docker-compose {{.ENTERPRISE_COMPOSE_FILE}} ps
+  enterprise:rm:
+    deps:
+      - enterprise:stop
+    cmds:
+      - docker-compose {{.ENTERPRISE_COMPOSE_FILE}} rm -f
+      - docker volume prune -f

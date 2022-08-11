@@ -1,0 +1,265 @@
+---
+version: '3.9'
+volumes:
+  postgres_data:
+  mongodb_data:
+  opensearch_data:
+services:
+  proxy:
+    image: "traefik:v2.8"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./config/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH
+      - traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*
+      - traefik.http.middlewares.cors.headers.accessControlAllowHeaders=content-type
+      - traefik.http.middlewares.cors.headers.accesscontrolmaxage=100
+      - traefik.http.middlewares.cors.headers.addvaryheader=true
+
+  version:
+    build:
+      context: version
+      dockerfile: Dockerfile
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.version.rule=(Host(`localhost`) || Host(`proxy`)) &&  PathPrefix(`/info`)
+      - traefik.http.routers.version.entrypoints=web
+      - traefik.http.services.version.loadbalancer.server.port=3333
+      - traefik.http.routers.version.middlewares=version@docker,cors@docker
+      - traefik.http.middlewares.version.stripprefix.prefixes=/info
+
+  swagger:
+    image: "swaggerapi/swagger-ui:latest"
+    environment:
+      SWAGGER_JSON_URL: "https://api.numary.cloud/swagger.json"
+      BASE_URL: "/api"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.swagger.rule=(Host(`localhost`) || Host(`proxy`)) &&  PathPrefix(`/api`)
+      - traefik.http.routers.swagger.entrypoints=web
+      - traefik.http.services.swagger.loadbalancer.server.port=8080
+      - traefik.http.routers.swagger.middlewares=cors@docker
+
+  control:
+    image: "ghcr.io/numary/control:453966ae8cd59a48e10989324f76f149e1f54fd6"
+    command: yarn run remix-serve build
+    environment:
+      API_URL_BACK: "http://proxy/api"
+      API_URL_FRONT: "http://localhost/api"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.control.rule=Host(`localhost`)
+      - traefik.http.routers.control.entrypoints=web
+      - traefik.http.services.control.loadbalancer.server.port=3000
+      - traefik.http.routers.control.middlewares=cors@docker
+
+  redpanda:
+    image: docker.vectorized.io/vectorized/redpanda:latest
+    command:
+      - redpanda
+      - start
+      - --smp
+      - '1'
+      - --reserve-memory
+      - 0M
+      - --overprovisioned
+      - --node-id
+      - '0'
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - PLAINTEXT://redpanda:29092,OUTSIDE://localhost:9092
+    healthcheck:
+      test: curl -s -f -k http://127.0.0.1:9644/metrics >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 9092:9092
+      - 29092:29092
+      - 9644:9644
+
+  redpanda-config:
+    image: docker.vectorized.io/vectorized/redpanda:latest
+    command:
+      - cluster
+      - config
+      - import
+      - --filename
+      - /etc/redpanda/redpanda.yaml
+      - --api-urls
+      - redpanda:9644
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    volumes:
+      - ./config/redpanda/config.yaml:/etc/redpanda/redpanda.yaml:ro
+
+  redpanda-ui:
+    image: docker.redpanda.com/vectorized/console:master-0a8fce8
+    ports:
+      - 8081:8080
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKERS: redpanda:29092
+
+  postgres:
+    image: "postgres:13-alpine"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ledger" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "ledger"
+      POSTGRES_PASSWORD: "ledger"
+      POSTGRES_DB: "ledger"
+      PGDATA: /data/postgres
+    volumes:
+      - postgres_data:/data/postgres
+
+  ledger:
+    image: "ghcr.io/numary/ledger:v1.6.1"
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+    environment:
+      NUMARY_STORAGE_DRIVER: "postgres"
+      NUMARY_STORAGE_POSTGRES_CONN_STRING: "postgresql://ledger:ledger@postgres/ledger"
+      NUMARY_SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
+      NUMARY_PUBLISHER_KAFKA_ENABLED: true
+      NUMARY_PUBLISHER_KAFKA_BROKER: redpanda:29092
+      NUMARY_PUBLISHER_TOPIC_MAPPING: "*:ledger"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ledger.rule=(Host(`localhost`) || Host(`proxy`)) && PathPrefix(`/api/ledger`)
+      - traefik.http.routers.ledger.entrypoints=web
+      - traefik.http.services.ledger.loadbalancer.server.port=3068
+      - traefik.http.routers.ledger.middlewares=ledger@docker,cors@docker
+      - traefik.http.middlewares.ledger.stripprefix.prefixes=/api/ledger
+
+  mongodb:
+    image: mongo:5.0
+    command: "mongod --bind_ip_all --replSet replicaSet01 --keyFile /data/replica.key"
+    entrypoint:
+      - bash
+      - -c
+      - |
+        openssl rand -base64 700 > /data/replica.key
+        chmod 400 /data/replica.key
+        chown 999:999 /data/replica.key
+        exec docker-entrypoint.sh $$@
+#    healthcheck:
+#      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet) -eq 1
+#      interval: 10s
+#      timeout: 10s
+#      retries: 5
+#      start_period: 40s
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: formance
+      MONGO_INITDB_DATABASE: payments
+      MONGO_REPLICA_SET_NAME: primary
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017/tcp"
+
+  payments:
+    image: "ghcr.io/numary/payments:v0.1.0"
+    restart: always
+    depends_on:
+#      mongodb:
+#        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: "mongodb://admin:formance@mongodb:27017"
+      PUBLISHER_KAFKA_ENABLED: true
+      PUBLISHER_KAFKA_BROKER: redpanda:29092
+      PUBLISHER_TOPIC_MAPPING: "*:payments"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.payments.rule=(Host(`localhost`) || Host(`proxy`)) &&  PathPrefix(`/api/payments`)
+      - traefik.http.routers.payments.entrypoints=web
+      - traefik.http.services.payments.loadbalancer.server.port=8080
+      - traefik.http.middlewares.payments.stripprefix.prefixes=/api/payments
+      - traefik.http.routers.payments.middlewares=payments@docker,cors@docker
+
+  opensearch:
+    image: opensearchproject/opensearch:2.1.0
+    environment:
+      discovery.type: single-node
+      plugins.security.disabled: true
+    healthcheck:
+      test: curl -s -f -k http://opensearch:9200/_cat/health >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:2.1.0
+    environment:
+      OPENSEARCH_HOSTS: '["http://opensearch:9200"]' # must be a string with no spaces when specified as an environment variable
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: true
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    ports:
+      - "5601:5601"
+
+  search-ingester:
+    image: "ghcr.io/numary/search-ingester:v0.2.1"
+    depends_on:
+      opensearch:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+      search:
+        condition: service_healthy
+    environment:
+      KAFKA_ADDRESS: redpanda:29092
+      KAFKA_TOPIC: ledger,payments
+      KAFKA_VERSION: 1.0.0
+      KAFKA_CONSUMER_GROUP: search-ingester
+      OPENSEARCH_URL: http://opensearch:9200
+      OPENSEARCH_INDEX: "formance"
+      OPENSEARCH_TLS_ENABLED: "true"
+      OPENSEARCH_TLS_SKIP_CERT_VERIFY: "true"
+      OPENSEARCH_BASIC_AUTH_ENABLED: "false"
+
+  search:
+    image: "ghcr.io/numary/search:v0.2.1"
+    healthcheck:
+      test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    environment:
+      OPEN_SEARCH_SCHEME: http
+      OPEN_SEARCH_SERVICE: "opensearch:9200"
+      ES_INDICES: "formance"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.search.rule=(Host(`localhost`) || Host(`proxy`)) &&  PathPrefix(`/api/search`)
+      - traefik.http.routers.search.entrypoints=web
+      - traefik.http.services.search.loadbalancer.server.port=8080
+      - traefik.http.middlewares.search.stripprefix.prefixes=/api/search
+      - traefik.http.routers.search.middlewares=search@docker,cors@docker

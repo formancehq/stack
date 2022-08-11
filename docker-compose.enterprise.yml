@@ -1,0 +1,34 @@
+---
+version: '3.9'
+services:
+  webhooks:
+    image: "numary/webhooks:2"
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017/"
+      KAFKA_TOPIC: ledger
+      KAFKA_BROKERS: redpanda:29092
+      SVIX_TOKEN: "testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb"
+      SVIX_APP_ID: "app_2CqvO4XINy9ucWhqGPFXj4EkNS7"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webhooks.rule=Host(`localhost`) && PathPrefix(`/api/webhooks`)
+      - traefik.http.routers.webhooks.entrypoints=web
+      - traefik.http.services.webhooks.loadbalancer.server.port=8080
+      - traefik.http.middlewares.webhooks.stripprefix.prefixes=/api/webhooks
+      - traefik.http.routers.webhooks.middlewares=webhooks@docker,cors@docker
+
+  webhooks_worker:
+    image: "numary/webhooks:2"
+    command: worker
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017/"
+      KAFKA_TOPIC: ledger
+      KAFKA_BROKERS: redpanda:29092
+      SVIX_TOKEN: "testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb"
+      SVIX_APP_ID: "app_2CqvO4XINy9ucWhqGPFXj4EkNS7"
