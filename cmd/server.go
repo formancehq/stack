@@ -132,7 +132,10 @@ func NewServer() *cobra.Command {
 	cmd.Flags().String(authBearerIntrospectUrlFlag, "", "OAuth2 introspect URL")
 	cmd.Flags().String(authBearerAudienceFlag, "", "OAuth2 audience template")
 
-	viper.BindPFlags(cmd.Flags())
+	err := viper.BindPFlags(cmd.Flags())
+	if err != nil {
+		return nil
+	}
 
 	return cmd
 }
