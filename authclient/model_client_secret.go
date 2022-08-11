@@ -19,6 +19,7 @@ type ClientSecret struct {
 	LastDigits string `json:"lastDigits"`
 	Name string `json:"name"`
 	Id string `json:"id"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
 }
 
 // NewClientSecret instantiates a new ClientSecret object
@@ -113,6 +114,38 @@ func (o *ClientSecret) SetId(v string) {
 	o.Id = v
 }
 
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *ClientSecret) GetMetadata() map[string]string {
+	if o == nil || o.Metadata == nil {
+		var ret map[string]string
+		return ret
+	}
+	return *o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ClientSecret) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil || o.Metadata == nil {
+		return nil, false
+	}
+	return o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *ClientSecret) HasMetadata() bool {
+	if o != nil && o.Metadata != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *ClientSecret) SetMetadata(v map[string]string) {
+	o.Metadata = &v
+}
+
 func (o ClientSecret) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -123,6 +156,9 @@ func (o ClientSecret) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["id"] = o.Id
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
 	}
 	return json.Marshal(toSerialize)
 }

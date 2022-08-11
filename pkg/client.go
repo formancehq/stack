@@ -19,23 +19,25 @@ func newHash(v string) string {
 }
 
 type ClientSecret struct {
-	ID         string `json:"id"`
-	Hash       string `json:"hash"`
-	LastDigits string `json:"lastDigits"`
-	Name       string `json:"name"`
+	ID         string   `json:"id"`
+	Hash       string   `json:"hash"`
+	LastDigits string   `json:"lastDigits"`
+	Name       string   `json:"name"`
+	Metadata   Metadata `json:"metadata" gorm:"type:text"`
 }
 
 func (s ClientSecret) Check(clear string) bool {
 	return s.Hash == newHash(clear)
 }
 
-func newSecret(name string) (ClientSecret, string) {
+func newSecret(opts SecretCreate) (ClientSecret, string) {
 	clear := uuid.NewString()
 	return ClientSecret{
 		ID:         uuid.NewString(),
 		Hash:       newHash(clear),
 		LastDigits: clear[len(clear)-4:],
-		Name:       name,
+		Name:       opts.Name,
+		Metadata:   opts.Metadata,
 	}, clear
 }
 
@@ -80,8 +82,8 @@ func (c *Client) Update(opts ClientOptions) {
 	c.AuthMethod = authMethod
 }
 
-func (c *Client) GenerateNewSecret(name string) (ClientSecret, string) {
-	secret, clear := newSecret(name)
+func (c *Client) GenerateNewSecret(opts SecretCreate) (ClientSecret, string) {
+	secret, clear := newSecret(opts)
 	c.Secrets = append(c.Secrets, secret)
 
 	return secret, clear
@@ -137,4 +139,9 @@ func NewClient(opts ClientOptions) *Client {
 	}
 	client.Update(opts)
 	return client
+}
+
+type SecretCreate struct {
+	Name     string   `json:"name"`
+	Metadata Metadata `json:"metadata"`
 }

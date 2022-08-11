@@ -380,6 +380,10 @@ components:
           type: string
         id:
           type: string
+        metadata:
+          additionalProperties:
+            type: string
+          type: object
       required:
       - id
       - lastDigits
@@ -410,10 +414,16 @@ components:
       - $ref: '#/components/schemas/Scope_allOf'
     SecretOptions:
       example:
+        metadata:
+          key: metadata
         name: name
       properties:
         name:
           type: string
+        metadata:
+          additionalProperties:
+            type: string
+          type: object
       required:
       - name
       type: object

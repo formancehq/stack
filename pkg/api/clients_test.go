@@ -230,7 +230,9 @@ func TestReadClient(t *testing.T) {
 		}
 		client1 := auth.NewClient(opts)
 		client1.Scopes = append(client1.Scopes, *scope1)
-		secret, _ := client1.GenerateNewSecret("testing")
+		secret, _ := client1.GenerateNewSecret(auth.SecretCreate{
+			Name: "testing",
+		})
 		require.NoError(t, db.Create(client1).Error)
 
 		req := httptest.NewRequest(http.MethodGet, "/clients/"+client1.Id, nil)
@@ -281,7 +283,7 @@ func TestGenerateNewSecret(t *testing.T) {
 		client := auth.NewClient(auth.ClientOptions{})
 		require.NoError(t, db.Create(client).Error)
 
-		req := httptest.NewRequest(http.MethodPost, "/clients/"+client.Id+"/secrets", createJSONBuffer(t, secretCreate{
+		req := httptest.NewRequest(http.MethodPost, "/clients/"+client.Id+"/secrets", createJSONBuffer(t, auth.SecretCreate{
 			Name: "secret1",
 		}))
 		res := httptest.NewRecorder()
@@ -303,7 +305,9 @@ func TestGenerateNewSecret(t *testing.T) {
 func TestDeleteSecret(t *testing.T) {
 	withDbAndClientRouter(t, func(router *mux.Router, db *gorm.DB) {
 		client := auth.NewClient(auth.ClientOptions{})
-		secret, _ := client.GenerateNewSecret("testing")
+		secret, _ := client.GenerateNewSecret(auth.SecretCreate{
+			Name: "testing",
+		})
 		require.NoError(t, db.Create(client).Error)
 
 		req := httptest.NewRequest(http.MethodDelete, "/clients/"+client.Id+"/secrets/"+secret.ID, nil)

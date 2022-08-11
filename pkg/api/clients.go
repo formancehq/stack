@@ -66,10 +66,6 @@ func mapBusinessClient(c auth.Client) clientView {
 	}
 }
 
-type secretCreate struct {
-	Name string `json:"name"`
-}
-
 type secretCreateResult struct {
 	ID         string `json:"id"`
 	LastDigits string `json:"lastDigits"`
@@ -103,12 +99,12 @@ func createSecret(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 
-		sc := readJSONObject[secretCreate](w, r)
+		sc := readJSONObject[auth.SecretCreate](w, r)
 		if sc == nil {
 			return
 		}
 
-		secret, clear := client.GenerateNewSecret(sc.Name)
+		secret, clear := client.GenerateNewSecret(*sc)
 
 		if err := saveObject(w, r, db, client); err != nil {
 			return

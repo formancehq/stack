@@ -17,6 +17,7 @@ import (
 // Secret struct for Secret
 type Secret struct {
 	Name string `json:"name"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
 	Id string `json:"id"`
 	LastDigits string `json:"lastDigits"`
 	Clear string `json:"clear"`
@@ -65,6 +66,38 @@ func (o *Secret) GetNameOk() (*string, bool) {
 // SetName sets field value
 func (o *Secret) SetName(v string) {
 	o.Name = v
+}
+
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *Secret) GetMetadata() map[string]string {
+	if o == nil || o.Metadata == nil {
+		var ret map[string]string
+		return ret
+	}
+	return *o.Metadata
+}
+
+// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Secret) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil || o.Metadata == nil {
+		return nil, false
+	}
+	return o.Metadata, true
+}
+
+// HasMetadata returns a boolean if a field has been set.
+func (o *Secret) HasMetadata() bool {
+	if o != nil && o.Metadata != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *Secret) SetMetadata(v map[string]string) {
+	o.Metadata = &v
 }
 
 // GetId returns the Id field value
@@ -143,6 +176,9 @@ func (o Secret) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["name"] = o.Name
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
 	}
 	if true {
 		toSerialize["id"] = o.Id
