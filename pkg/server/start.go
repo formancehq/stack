@@ -7,6 +7,7 @@ import (
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks/internal/storage/mongo"
 	"github.com/numary/webhooks/internal/svix"
+	"github.com/numary/webhooks/pkg/mux"
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
 )
@@ -25,8 +26,8 @@ func StartModule() fx.Option {
 		fx.Provide(
 			mongo.NewConfigStore,
 			svix.New,
-			newConfigHandler,
-			newHttpServeMux,
+			newServerHandler,
+			mux.NewServer,
 		),
 		fx.Invoke(register),
 	)

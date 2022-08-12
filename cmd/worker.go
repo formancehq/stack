@@ -8,7 +8,7 @@ import (
 var workerCmd = &cobra.Command{
 	Use:   "worker",
 	Short: "Start worker",
-	RunE:  worker.Start,
+	Run:   worker.Start,
 }
 
 func init() {

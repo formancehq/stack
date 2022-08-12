@@ -1,6 +1,7 @@
 version: '3'
 
 env:
+  LOG_LEVEL: "debug"
   KAFKA_DEFAULT_TOPIC: "default"
   SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
   SVIX_SERVER_URL: "http://127.0.0.1:8071"
@@ -31,7 +32,7 @@ tasks:
     cmds:
       - task: docker
       - >
-        go test -v {{.FAILFAST}} -coverpkg {{.PKG}} -coverprofile coverage.out -covermode atomic
+        go test -v -p 1 {{.FAILFAST}} -coverpkg {{.PKG}} -race -coverprofile coverage.out -covermode atomic
         -run {{.RUN}} -timeout {{.TIMEOUT}} {{.PKG}} |
         sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' |
         sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/'' |
@@ -41,7 +42,7 @@ tasks:
   tests:
     cmds:
       - task: docker
-      - go test -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
+      - go test -p 1 -coverpkg ./... -race -coverprofile coverage.out -covermode atomic ./...
 
   ci:
     cmds:

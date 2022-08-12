@@ -9,20 +9,21 @@ import (
 	"github.com/numary/go-libs/sharedapi"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks/internal/storage"
-	"github.com/numary/webhooks/internal/svix"
 	"github.com/numary/webhooks/pkg/model"
+	"github.com/numary/webhooks/pkg/service"
 	svixgo "github.com/svix/svix-webhooks/go"
 )
 
 const (
-	HealthCheckPath = "/_healthcheck"
-	ConfigsPath     = "/configs"
-	TogglePath      = "/toggle"
-	IdPath          = "/:" + IdPathParam
-	IdPathParam     = "id"
+	PathHealthCheck = "/_healthcheck"
+	PathConfigs     = "/configs"
+	PathActivate    = "/activate"
+	PathDeactivate  = "/deactivate"
+	PathId          = "/:" + PathParamId
+	PathParamId     = "id"
 )
 
-type webhooksHandler struct {
+type serverHandler struct {
 	*httprouter.Router
 
 	store      storage.Store
@@ -30,28 +31,29 @@ type webhooksHandler struct {
 	svixAppId  string
 }
 
-func newConfigHandler(store storage.Store, svixClient *svixgo.Svix, svixAppId string) http.Handler {
-	h := &webhooksHandler{
+func newServerHandler(store storage.Store, svixClient *svixgo.Svix, svixAppId string) http.Handler {
+	h := &serverHandler{
 		Router:     httprouter.New(),
 		store:      store,
 		svixClient: svixClient,
 		svixAppId:  svixAppId,
 	}
 
-	h.Router.GET(HealthCheckPath, h.healthCheckHandle)
-	h.Router.GET(ConfigsPath, h.getAllConfigsHandle)
-	h.Router.POST(ConfigsPath, h.insertOneConfigHandle)
-	h.Router.DELETE(ConfigsPath+IdPath, h.deleteOneConfigHandle)
-	h.Router.POST(ConfigsPath+TogglePath+IdPath, h.toggleOneConfigHandle)
+	h.Router.GET(PathHealthCheck, h.healthCheckHandle)
+	h.Router.GET(PathConfigs, h.getAllConfigsHandle)
+	h.Router.POST(PathConfigs, h.insertOneConfigHandle)
+	h.Router.DELETE(PathConfigs+PathId, h.deleteOneConfigHandle)
+	h.Router.PUT(PathConfigs+PathId+PathActivate, h.activateOneConfigHandle)
+	h.Router.PUT(PathConfigs+PathId+PathDeactivate, h.deactivateOneConfigHandle)
 
 	return h
 }
 
-func (h *webhooksHandler) healthCheckHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (h *serverHandler) healthCheckHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	sharedlogging.GetLogger(r.Context()).Infof("health check OK")
 }
 
-func (h *webhooksHandler) getAllConfigsHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (h *serverHandler) getAllConfigsHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	cursor, err := h.store.FindAllConfigs(r.Context())
 	if err != nil {
 		sharedlogging.GetLogger(r.Context()).Errorf("storage.Store.FindAllConfigs: %s", err)
@@ -72,7 +74,7 @@ func (h *webhooksHandler) getAllConfigsHandle(w http.ResponseWriter, r *http.Req
 	sharedlogging.GetLogger(r.Context()).Infof("GET /configs: %d results", len(cursor.Data))
 }
 
-func (h *webhooksHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	cfg := model.Config{}
 	if err := decodeJSONBody(r, &cfg); err != nil {
 		var errIB *errInvalidBody
@@ -91,74 +93,54 @@ func (h *webhooksHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	var err error
-	var id string
-	if id, err = h.store.InsertOneConfig(r.Context(), cfg); err != nil {
-		sharedlogging.GetLogger(r.Context()).Errorf("storage.Store.InsertOneConfig: %s", err)
+	if id, err := service.InsertOneConfig(cfg, r.Context(), h.store, h.svixClient, h.svixAppId); err != nil {
+		sharedlogging.GetLogger(r.Context()).Errorf("POST %s: %s", PathConfigs, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
-	}
-
-	if err := svix.CreateEndpoint(id, cfg, h.svixClient, h.svixAppId); err != nil {
-		sharedlogging.GetLogger(r.Context()).Errorf("svix.CreateEndpoint: %s", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	if err := json.NewEncoder(w).Encode(id); err != nil {
+	} else if err := json.NewEncoder(w).Encode(id); err != nil {
 		sharedlogging.GetLogger(r.Context()).Errorf("json.Encoder.Encode: %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
+	} else {
+		sharedlogging.GetLogger(r.Context()).Infof("POST %s: inserted id %s", PathConfigs, id)
 	}
-
-	sharedlogging.GetLogger(r.Context()).Infof("POST /configs: inserted %s", id)
 }
 
-func (h *webhooksHandler) deleteOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	var deletedCount int64
-	var err error
-	if deletedCount, err = h.store.DeleteOneConfig(r.Context(), p.ByName(IdPathParam)); err != nil {
-		sharedlogging.GetLogger(r.Context()).Errorf("DELETE %s/%s: %s", ConfigsPath, p.ByName(IdPathParam), err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	if deletedCount != 1 {
-		sharedlogging.GetLogger(r.Context()).Errorf("DELETE %s/%s: not found", ConfigsPath, p.ByName(IdPathParam))
+func (h *serverHandler) deleteOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	switch err := service.DeleteOneConfig(r.Context(), p.ByName(PathParamId), h.store, h.svixClient, h.svixAppId); err {
+	case nil:
+		sharedlogging.GetLogger(r.Context()).Infof("DELETE %s/%s", PathConfigs, p.ByName(PathParamId))
+	case service.ErrConfigNotFound:
+		sharedlogging.GetLogger(r.Context()).Infof("DELETE %s/%s: %s", PathConfigs, p.ByName(PathParamId), service.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	if err := svix.DeleteEndpoint(p.ByName(IdPathParam), h.svixClient, h.svixAppId); err != nil {
-		sharedlogging.GetLogger(r.Context()).Errorf("svix.DeleteEndpoint: %s", err)
+	default:
+		sharedlogging.GetLogger(r.Context()).Errorf("DELETE %s/%s: %s", PathConfigs, p.ByName(PathParamId), err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
 	}
-
-	sharedlogging.GetLogger(r.Context()).Infof("DELETE %s/%s", ConfigsPath, p.ByName(IdPathParam))
 }
 
-func (h *webhooksHandler) toggleOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	var updatedCfg model.ConfigInserted
-	var modifiedCount int64
-	var err error
-	if updatedCfg, modifiedCount, err = h.store.ToggleOneConfig(r.Context(), p.ByName(IdPathParam)); err != nil {
-		sharedlogging.GetLogger(r.Context()).Errorf("POST %s%s/%s: %s", ConfigsPath, TogglePath, p.ByName(IdPathParam), err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	if modifiedCount != 1 {
-		sharedlogging.GetLogger(r.Context()).Errorf("POST %s%s/%s: not found", ConfigsPath, TogglePath, p.ByName(IdPathParam))
+func (h *serverHandler) activateOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	switch err := service.ActivateOneConfig(true, r.Context(), p.ByName(PathParamId), h.store, h.svixClient, h.svixAppId); err {
+	case nil:
+		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathActivate)
+	case service.ErrConfigNotFound:
+		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathActivate, service.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	if err := svix.ToggleEndpoint(p.ByName(IdPathParam), updatedCfg, h.svixClient, h.svixAppId); err != nil {
-		sharedlogging.GetLogger(r.Context()).Errorf("svix.ToggleEndpoint: %s", err)
+	default:
+		sharedlogging.GetLogger(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathActivate, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
 	}
+}
 
-	sharedlogging.GetLogger(r.Context()).Infof("POST %s%s/%s", ConfigsPath, TogglePath, p.ByName(IdPathParam))
+func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	switch err := service.ActivateOneConfig(false, r.Context(), p.ByName(PathParamId), h.store, h.svixClient, h.svixAppId); err {
+	case nil:
+		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathDeactivate)
+	case service.ErrConfigNotFound:
+		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathDeactivate, service.ErrConfigNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	default:
+		sharedlogging.GetLogger(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathDeactivate, err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 }

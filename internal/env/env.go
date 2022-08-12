@@ -7,7 +7,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/go-libs/sharedlogging/sharedlogginglogrus"
-	"github.com/numary/webhooks/cmd/constants"
+	"github.com/numary/webhooks/constants"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -16,7 +16,8 @@ import (
 func Init(flagSet *pflag.FlagSet) error {
 	flagSet.String(constants.LogLevelFlag, logrus.InfoLevel.String(), "Log level")
 
-	flagSet.String(constants.ServerHttpBindAddressFlag, constants.DefaultBindAddress, "API bind address")
+	flagSet.String(constants.HttpBindAddressServerFlag, constants.DefaultBindAddressServer, "server HTTP bind address")
+	flagSet.String(constants.HttpBindAddressWorkerFlag, constants.DefaultBindAddressWorker, "worker HTTP bind address")
 	flagSet.String(constants.StorageMongoConnStringFlag, constants.DefaultMongoConnString, "Mongo connection string")
 	flagSet.String(constants.StorageMongoDatabaseNameFlag, constants.DefaultMongoDatabaseName, "Mongo database name")
 

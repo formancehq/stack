@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/numary/go-libs/sharedapi"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/cmd/constants"
+	"github.com/numary/webhooks/constants"
 	"github.com/numary/webhooks/internal/storage"
 	"github.com/numary/webhooks/pkg/model"
 	"github.com/spf13/viper"
@@ -98,22 +98,19 @@ func (s Store) DeleteOneConfig(ctx context.Context, id string) (int64, error) {
 	return res.DeletedCount, nil
 }
 
-func (s Store) ToggleOneConfig(ctx context.Context, id string) (model.ConfigInserted, int64, error) {
+func (s Store) UpdateOneConfig(ctx context.Context, id string, active bool) (model.ConfigInserted, int64, error) {
 	filter := bson.D{{Key: "_id", Value: id}}
 	resFind := s.collection.FindOne(ctx, filter)
-	var err error
-	if err = resFind.Err(); err != nil {
+	if err := resFind.Err(); err != nil {
 		return model.ConfigInserted{}, 0, fmt.Errorf("mongo.Collection.FindOne: %w", err)
 	}
 
 	var cfg model.ConfigInserted
-	if err = resFind.Decode(&cfg); err != nil {
+	if err := resFind.Decode(&cfg); err != nil {
 		return model.ConfigInserted{}, 0, fmt.Errorf("mongo.SingleResult.Decode: %w", err)
 	}
 
-	cfg.Active = !cfg.Active
-
-	update := bson.D{{Key: "$set", Value: bson.D{{Key: "active", Value: cfg.Active}}}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "active", Value: active}}}}
 	resUpdate, err := s.collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return model.ConfigInserted{}, 0, fmt.Errorf("mongo.Collection.UpdateOne: %w", err)

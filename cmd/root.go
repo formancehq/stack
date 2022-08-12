@@ -17,7 +17,7 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		_, _ = fmt.Fprintln(os.Stdout, err)
+		_, _ = fmt.Fprintln(os.Stderr, err)
 		sharedlogging.Errorf("cobra.Command.Execute: %s", err)
 		os.Exit(1)
 	}

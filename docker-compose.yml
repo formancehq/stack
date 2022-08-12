@@ -5,8 +5,8 @@ services:
       target: dev
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
-      interval: 10s
-      timeout: 5s
+      interval: 20s
+      timeout: 10s
       retries: 5
     volumes:
       - .:/app
@@ -23,6 +23,11 @@ services:
     command: reflex -r '\.go' -s -- sh -c "go run . worker"
     build:
       target: dev
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8081/_healthcheck" ]
+      interval: 20s
+      timeout: 10s
+      retries: 5
     volumes:
       - .:/app
     environment:
@@ -84,7 +89,7 @@ services:
   postgres:
     image: postgres
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ledger" ]
+      test: [ "CMD-SHELL", "pg_isready -U webhooks" ]
       interval: 10s
       timeout: 5s
       retries: 5

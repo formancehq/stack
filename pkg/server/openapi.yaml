@@ -100,10 +100,29 @@ paths:
           description: OK
           content: {}
 
-  /configs/toggle:
-    post:
-      summary: Toggle on/off config activation by ID.
-      operationId: toggleOneConfig
+  /configs/{id}/activate:
+    put:
+      summary: Activate one config by ID.
+      operationId: activateOneConfig
+      tags:
+        - Configs
+      parameters:
+        - name: id
+          in: path
+          description: Config ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      responses:
+        "200":
+          description: OK
+          content: {}
+
+  /configs/{id}/deactivate:
+    put:
+      summary: Deactivate one config by ID.
+      operationId: deactivateOneConfig
       tags:
         - Configs
       parameters:
