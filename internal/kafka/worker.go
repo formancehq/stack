@@ -26,50 +26,32 @@ type Worker struct {
 	store      storage.Store
 	svixClient *svixgo.Svix
 	svixAppId  string
-
-	eventChan   chan *Event
-	messageChan chan *svixgo.MessageOut
-	errChan     chan error
-	stopChan    chan chan struct{}
 }
 
 func NewWorker(reader Reader, store storage.Store, svixClient *svixgo.Svix, svixAppId string) *Worker {
 	return &Worker{
-		reader:      reader,
-		store:       store,
-		svixClient:  svixClient,
-		svixAppId:   svixAppId,
-		eventChan:   make(chan *Event),
-		messageChan: make(chan *svixgo.MessageOut),
-		errChan:     make(chan error),
-		stopChan:    make(chan chan struct{}),
+		reader:     reader,
+		store:      store,
+		svixClient: svixClient,
+		svixAppId:  svixAppId,
 	}
 }
 
-func (w *Worker) Start(ctx context.Context) {
-	sharedlogging.GetLogger(ctx).Debug("worker started")
-
+func (w *Worker) Run(ctx context.Context) error {
 	for {
 		select {
-		case ch := <-w.stopChan:
-			sharedlogging.GetLogger(ctx).Debug("stopping worker...")
-			close(ch)
-			w.closeChannels()
-			return
 		case <-ctx.Done():
 			sharedlogging.GetLogger(ctx).Debug("worker: context done")
-			w.errChan <- ctx.Err()
-			w.closeChannels()
-			return
+			return nil
 		default:
-			sharedlogging.GetLogger(ctx).Debug("worker: fetching message...")
 		}
 
 		m, err := w.reader.FetchMessage(ctx)
 		if err != nil {
 			if !errors.Is(err, io.EOF) {
-				w.errChan <- err
-				sharedlogging.GetLogger(ctx).Errorf("kafka.Reader.FetchMessage: %s", err)
+				err := fmt.Errorf("kafka.Reader.FetchMessage: %w", err)
+				sharedlogging.GetLogger(ctx).Errorf(err.Error())
+				return err
 			}
 			continue
 		}
@@ -87,18 +69,14 @@ func (w *Worker) Start(ctx context.Context) {
 
 		ev := Event{}
 		if err := json.Unmarshal(m.Value, &ev); err != nil {
-			w.errChan <- err
 			sharedlogging.GetLogger(ctx).Errorf("json.Unmarshal: %s", err)
 			continue
 		}
 
-		sharedlogging.GetLogger(ctx).Debug("event sent in the channel")
-		w.eventChan <- &ev
-
 		if out, err := w.svixClient.EventType.Get(ev.Type); err == nil {
-			dumpOut := spew.Sdump(out)
 			sharedlogging.GetLogger(ctx).Debug("svix.Svix.EventType.Get: ",
-				"ev.Type: ", ev.Type, "dumpOut: ", dumpOut)
+				"ev.Type: ", ev.Type, "dumpOut: ", spew.Sdump(out))
+
 			id := uuid.New().String()
 			messageIn := &svixgo.MessageIn{
 				EventType: ev.Type,
@@ -110,39 +88,26 @@ func (w *Worker) Start(ctx context.Context) {
 				"svix appId: ", w.svixAppId,
 				"svix.MessageIn: ", messageIn,
 				"svix.PostOptions: ", options)
+
 			if out, err := w.svixClient.Message.CreateWithOptions(
 				w.svixAppId, messageIn, options); err != nil {
-				w.errChan <- err
-				err = fmt.Errorf(
-					"svix.Svix.Message.CreateWithOptions: %s: dumpIn: %s", err, dumpIn)
+				err = fmt.Errorf("svix.Svix.Message.CreateWithOptions: %s: dumpIn: %s",
+					err, dumpIn)
 				sharedlogging.GetLogger(ctx).Errorf(err.Error())
+				continue
 			} else {
-				w.messageChan <- out
-				dumpOut := spew.Sdump(out)
 				sharedlogging.GetLogger(ctx).Debug("new webhook sent: ",
-					"dumpIn: ", dumpIn, "dumpOut: ", dumpOut)
+					"dumpIn: ", dumpIn, "dumpOut: ", spew.Sdump(out))
 			}
 		} else {
-			sharedlogging.GetLogger(ctx).Debug("svix.Svix.EventType.Get: ", "ev: ", ev, "err: ", err)
+			sharedlogging.GetLogger(ctx).Debug("svix.Svix.EventType.Get: ",
+				"ev: ", ev, "err: ", err)
 		}
 
-		if err = w.reader.CommitMessages(ctx, m); err != nil {
-			w.errChan <- err
-			sharedlogging.GetLogger(ctx).Errorf("kafka.Reader.CommitMessages: %s", err)
-			continue
+		if err := w.reader.CommitMessages(ctx, m); err != nil {
+			err := fmt.Errorf("kafka.Reader.CommitMessages: %w", err)
+			sharedlogging.GetLogger(ctx).Errorf(err.Error())
+			return err
 		}
 	}
-}
-
-func (w *Worker) Stop(ctx context.Context) {
-	ch := make(chan struct{})
-	w.stopChan <- ch
-	sharedlogging.GetLogger(ctx).Debug("worker stopped")
-}
-
-func (w *Worker) closeChannels() {
-	close(w.stopChan)
-	close(w.eventChan)
-	close(w.messageChan)
-	close(w.errChan)
 }

@@ -15,15 +15,16 @@ import (
 func Start(*cobra.Command, []string) error {
 	sharedlogging.Infof("env: %+v", syscall.Environ())
 
-	app := fx.New(StartModule())
+	app := fx.New(StartModule(http.DefaultClient))
 	app.Run()
 
 	return nil
 }
 
-func StartModule() fx.Option {
+func StartModule(httpClient *http.Client) fx.Option {
 	return fx.Module("webhooks server module",
 		fx.Provide(
+			func() *http.Client { return httpClient },
 			mongo.NewConfigStore,
 			svix.New,
 			newServerHandler,

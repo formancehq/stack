@@ -15,7 +15,7 @@ vars:
 
   PKG: "./..."
   FAILFAST: "-failfast"
-  TIMEOUT: "2m"
+  TIMEOUT: "1m"
   RUN: "''"
 
 tasks:

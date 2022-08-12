@@ -7,8 +7,6 @@ import (
 	"io"
 	"net/http"
 	"strings"
-
-	"github.com/golang/gddo/httputil/header"
 )
 
 type errInvalidBody struct {
@@ -21,12 +19,9 @@ func (e *errInvalidBody) Error() string {
 }
 
 func decodeJSONBody(r *http.Request, dst interface{}) error {
-	if r.Header.Get("Content-Type") != "" {
-		value, _ := header.ParseValueAndParams(r.Header, "Content-Type")
-		if value != "application/json" {
-			msg := "Content-Type header should be application/json"
-			return &errInvalidBody{status: http.StatusUnsupportedMediaType, msg: msg}
-		}
+	if r.Header.Get("Content-Type") != "application/json" {
+		msg := "Content-Type header should be application/json"
+		return &errInvalidBody{status: http.StatusUnsupportedMediaType, msg: msg}
 	}
 
 	dec := json.NewDecoder(r.Body)

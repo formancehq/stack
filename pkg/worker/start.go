@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"syscall"
 
@@ -20,19 +21,20 @@ import (
 func Start(cmd *cobra.Command, args []string) {
 	sharedlogging.Infof("env: %+v", syscall.Environ())
 
-	app := fx.New(StartModule(cmd.Context()))
+	app := fx.New(StartModule(cmd.Context(), http.DefaultClient))
 	app.Run()
 }
 
-func StartModule(ctx context.Context) fx.Option {
+func StartModule(ctx context.Context, httpClient *http.Client) fx.Option {
 	return fx.Module("webhooks worker module",
 		fx.Provide(
+			func() context.Context { return ctx },
+			func() *http.Client { return httpClient },
 			mongo.NewConfigStore,
 			svix.New,
 			newKafkaWorker,
 			newWorkerHandler,
 			mux.NewWorker,
-			func() context.Context { return ctx },
 		),
 		fx.Invoke(register),
 	)
@@ -43,18 +45,27 @@ func newKafkaWorker(lc fx.Lifecycle, store storage.Store, svixClient *svixgo.Svi
 	if err != nil {
 		return nil, err
 	}
+
 	reader := kafkago.NewReader(cfg)
 
 	lc.Append(fx.Hook{
 		OnStop: func(ctx context.Context) error {
-			return reader.Close()
+			err1 := store.Close(ctx)
+			err2 := reader.Close()
+			if err1 != nil || err2 != nil {
+				return fmt.Errorf("[closing store: %s] [closing reader: %s]", err1, err2)
+			}
+			return nil
 		},
 	})
 
 	return kafka.NewWorker(reader, store, svixClient, svixAppId), nil
 }
 
-func register(w *kafka.Worker, mux *http.ServeMux, h http.Handler, ctx context.Context) {
-	go w.Start(ctx)
+func register(w *kafka.Worker, mux *http.ServeMux, h http.Handler, ctx context.Context) (err error) {
+	go func() {
+		err = w.Run(ctx)
+	}()
 	mux.Handle("/", h)
+	return
 }

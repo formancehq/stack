@@ -2,6 +2,7 @@ package svix
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 
 	"github.com/numary/webhooks/constants"
@@ -9,7 +10,7 @@ import (
 	svix "github.com/svix/svix-webhooks/go"
 )
 
-func New() (*svix.Svix, string, error) {
+func New(httpClient *http.Client) (*svix.Svix, string, error) {
 	token := viper.GetString(constants.SvixTokenFlag)
 	appName := viper.GetString(constants.SvixAppNameFlag)
 	appId := viper.GetString(constants.SvixAppIdFlag)
@@ -21,7 +22,8 @@ func New() (*svix.Svix, string, error) {
 	}
 
 	svixClient := svix.New(token, &svix.SvixOptions{
-		ServerUrl: u,
+		ServerUrl:  u,
+		HTTPClient: httpClient,
 	})
 
 	app, err := svixClient.Application.GetOrCreate(&svix.ApplicationIn{
