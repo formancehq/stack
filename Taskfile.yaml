@@ -8,21 +8,21 @@ vars:
 tasks:
   run:
     cmds:
-      - docker-compose {{.COMPOSE_FILE}} up -d --remove-orphans
-      - docker-compose {{.COMPOSE_FILE}} logs -f
+      - docker compose {{.COMPOSE_FILE}} up -d --remove-orphans
+      - docker compose {{.COMPOSE_FILE}} logs -f
 
   stop:
     cmds:
-      - docker-compose {{.COMPOSE_FILE}} stop
+      - docker compose {{.COMPOSE_FILE}} stop
 
   ps:
     cmds:
-      - docker-compose {{.COMPOSE_FILE}} ps
+      - docker compose {{.COMPOSE_FILE}} ps
   rm:
     deps:
       - stop
     cmds:
-      - docker-compose {{.COMPOSE_FILE}} rm -f
+      - docker compose {{.COMPOSE_FILE}} rm -f
       - docker volume remove stack_postgres_data
       - docker volume remove stack_mongodb_data
       - docker volume remove stack_kafka_data
