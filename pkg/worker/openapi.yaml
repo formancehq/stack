@@ -1,0 +1,15 @@
+openapi: 3.0.3
+info:
+  title: Webhooks worker
+  version: 0.0.0
+paths:
+  /_healthcheck:
+    get:
+      summary: Health check of the worker.
+      operationId: healthCheck
+      tags:
+        - Health check
+      responses:
+        "200":
+          description: The worker is healthy.
+          content: {}

@@ -56,11 +56,11 @@ func (s Store) FindAllConfigs(ctx context.Context) (sharedapi.Cursor[model.Confi
 	if err != nil {
 		return sharedapi.Cursor[model.ConfigInserted]{}, fmt.Errorf("mongo.Collection.Find: %w", err)
 	}
-	defer func(cur *mongo.Cursor, ctx context.Context) {
+	defer func() {
 		if err := cur.Close(ctx); err != nil {
 			sharedlogging.GetLogger(ctx).Errorf("mongo.Cursor.Close: %s", err)
 		}
-	}(cur, ctx)
+	}()
 
 	var results []model.ConfigInserted
 	if err := cur.All(ctx, &results); err != nil {
@@ -98,7 +98,7 @@ func (s Store) DeleteOneConfig(ctx context.Context, id string) (int64, error) {
 	return res.DeletedCount, nil
 }
 
-func (s Store) UpdateOneConfig(ctx context.Context, id string, active bool) (model.ConfigInserted, int64, error) {
+func (s Store) UpdateOneConfigActive(ctx context.Context, id string, active bool) (model.ConfigInserted, int64, error) {
 	filter := bson.D{{Key: "_id", Value: id}}
 	resFind := s.collection.FindOne(ctx, filter)
 	if err := resFind.Err(); err != nil {
@@ -117,6 +117,37 @@ func (s Store) UpdateOneConfig(ctx context.Context, id string, active bool) (mod
 	}
 
 	return cfg, resUpdate.ModifiedCount, nil
+}
+
+func (s Store) UpdateOneConfigSecret(ctx context.Context, id, secret string) (int64, error) {
+	filter := bson.D{{Key: "_id", Value: id}}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "secret", Value: secret}}}}
+	resUpdate, err := s.collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return 0, fmt.Errorf("mongo.Collection.UpdateOne: %w", err)
+	}
+
+	return resUpdate.ModifiedCount, nil
+}
+
+func (s Store) FindEventType(ctx context.Context, eventType string) (bool, error) {
+	filter := bson.D{{Key: "eventTypes", Value: eventType}}
+	cur, err := s.collection.Find(ctx, filter)
+	if err != nil {
+		return false, fmt.Errorf("mongo.Collection.Find: %w", err)
+	}
+	defer func() {
+		if err := cur.Close(ctx); err != nil {
+			sharedlogging.GetLogger(ctx).Errorf("mongo.Cursor.Close: %s", err)
+		}
+	}()
+
+	var results []model.ConfigInserted
+	if err := cur.All(ctx, &results); err != nil {
+		return false, fmt.Errorf("mongo.Cursor.All: %w", err)
+	}
+
+	return len(results) > 0, nil
 }
 
 func (s Store) Close(ctx context.Context) error {

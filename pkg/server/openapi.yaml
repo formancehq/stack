@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Webhooks
+  title: Webhooks server
   version: 0.0.0
 paths:
   /_healthcheck:
@@ -43,7 +43,14 @@ paths:
                           - data
 
     post:
-      summary: Insert a new config.
+      summary: |
+        Insert a new config.
+      description: |
+        Insert a new config. 
+        
+        The secret is the endpoint's verification secret. 
+        If not passed or empty, a secret is automatically generated. 
+        The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
       operationId: insertOneConfig
       tags:
         - Configs
@@ -83,7 +90,7 @@ paths:
                 example: endpoints should be valid urls
 
     delete:
-      summary: Delete one config by ID.
+      summary: Delete one config.
       operationId: deleteOneConfig
       tags:
         - Configs
@@ -102,7 +109,7 @@ paths:
 
   /configs/{id}/activate:
     put:
-      summary: Activate one config by ID.
+      summary: Activate one config.
       operationId: activateOneConfig
       tags:
         - Configs
@@ -121,7 +128,7 @@ paths:
 
   /configs/{id}/deactivate:
     put:
-      summary: Deactivate one config by ID.
+      summary: Deactivate one config.
       operationId: deactivateOneConfig
       tags:
         - Configs
@@ -138,18 +145,83 @@ paths:
           description: OK
           content: {}
 
+  /configs/{id}/secret/rotate:
+    put:
+      summary: Rotates the config's endpoint's signing secret.
+      description: |
+        Rotates the config's endpoint's signing secret. The previous secret will be valid for the next 24 hours.
+        
+        If not passed or empty, a secret is automatically generated. 
+        The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
+      operationId: rotateOneConfigSecret
+      tags:
+        - Configs
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                secret:
+                  type: string
+                  example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+                  required: false
+      parameters:
+        - name: id
+          in: path
+          description: Config ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      responses:
+        "200":
+          description: OK
+          content: {}
+
 components:
   schemas:
     Config:
-      type: object
-      additionalProperties:
-        type: object
-      example: {"endpoint":"https://www.site.com","eventTypes":["TYPE1", "TYPE2"]}
+      properties:
+        endpoint:
+          type: string
+          example: "https://example.com"
+        secret:
+          type: string
+          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+        eventTypes:
+          type: array
+          items:
+            type: string
+            example: "TYPE1"
+          example: ["TYPE1", "TYPE2"]
+
     ConfigInserted:
-      type: object
-      additionalProperties:
-        type: object
-      example: {"endpoint":"https://www.site.com","eventTypes":["TYPE1", "TYPE2"],"active":true,"createdAt":"2022-07-20T07:31:40.9Z","modifiedAt":"2022-07-20T07:32:00Z"}
+      properties:
+        endpoint:
+          type: string
+          example: "https://example.com"
+        secret:
+          type: string
+          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+        eventTypes:
+          type: array
+          items:
+            type: string
+            example: "TYPE1"
+          example: ["TYPE1", "TYPE2"]
+        active:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2022-07-20T07:31:40Z"
+        modifiedAt:
+          type: string
+          format: date-time
+          example: "2022-07-20T08:32:59Z"
+
     Cursor:
       type: object
       properties:

@@ -18,12 +18,7 @@ func (e *errInvalidBody) Error() string {
 	return e.msg
 }
 
-func decodeJSONBody(r *http.Request, dst interface{}) error {
-	if r.Header.Get("Content-Type") != "application/json" {
-		msg := "Content-Type header should be application/json"
-		return &errInvalidBody{status: http.StatusUnsupportedMediaType, msg: msg}
-	}
-
+func decodeJSONBody(r *http.Request, dst interface{}, allowEmpty bool) error {
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
 
@@ -50,6 +45,9 @@ func decodeJSONBody(r *http.Request, dst interface{}) error {
 			return &errInvalidBody{status: http.StatusBadRequest, msg: msg}
 
 		case errors.Is(err, io.EOF):
+			if allowEmpty {
+				return nil
+			}
 			msg := "Request body must not be empty"
 			return &errInvalidBody{status: http.StatusBadRequest, msg: msg}
 
@@ -61,6 +59,11 @@ func decodeJSONBody(r *http.Request, dst interface{}) error {
 	if err := dec.Decode(&struct{}{}); err != io.EOF {
 		msg := "Request body must only contain a single JSON object"
 		return &errInvalidBody{status: http.StatusBadRequest, msg: msg}
+	}
+
+	if r.Header.Get("Content-Type") != "application/json" {
+		msg := "Content-Type header should be application/json"
+		return &errInvalidBody{status: http.StatusUnsupportedMediaType, msg: msg}
 	}
 
 	return nil

@@ -73,10 +73,14 @@ func (w *Worker) Run(ctx context.Context) error {
 			continue
 		}
 
-		if out, err := w.svixClient.EventType.Get(ev.Type); err == nil {
-			sharedlogging.GetLogger(ctx).Debug("svix.Svix.EventType.Get: ",
-				"ev.Type: ", ev.Type, "dumpOut: ", spew.Sdump(out))
+		toSend, err := w.store.FindEventType(ctx, ev.Type)
+		if err != nil {
+			err := fmt.Errorf("store.FindEventType: %w", err)
+			sharedlogging.GetLogger(ctx).Errorf(err.Error())
+			return err
+		}
 
+		if toSend {
 			id := uuid.New().String()
 			messageIn := &svixgo.MessageIn{
 				EventType: ev.Type,
@@ -100,8 +104,7 @@ func (w *Worker) Run(ctx context.Context) error {
 					"dumpIn: ", dumpIn, "dumpOut: ", spew.Sdump(out))
 			}
 		} else {
-			sharedlogging.GetLogger(ctx).Debug("svix.Svix.EventType.Get: ",
-				"ev: ", ev, "err: ", err)
+			sharedlogging.GetLogger(ctx).Debugf("message ignored of type: %s", ev.Type)
 		}
 
 		if err := w.reader.CommitMessages(ctx, m); err != nil {

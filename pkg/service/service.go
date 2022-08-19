@@ -22,6 +22,9 @@ func InsertOneConfig(cfg model.Config, ctx context.Context, store storage.Store,
 	}
 
 	if err := svix.CreateEndpoint(ctx, id, cfg, svixClient, svixAppId); err != nil {
+		if _, err = store.DeleteOneConfig(ctx, id); err != nil {
+			return "", fmt.Errorf("store.DeleteOneConfig: %w", err)
+		}
 		return "", fmt.Errorf("svix.CreateEndpoint: %w", err)
 	}
 
@@ -45,15 +48,30 @@ func DeleteOneConfig(ctx context.Context, id string, store storage.Store, svixCl
 }
 
 func ActivateOneConfig(active bool, ctx context.Context, id string, store storage.Store, svixClient *svixgo.Svix, svixAppId string) error {
-	updatedCfg, modifiedCount, err := store.UpdateOneConfig(ctx, id, active)
+	updatedCfg, modifiedCount, err := store.UpdateOneConfigActive(ctx, id, active)
 	if err != nil {
-		return fmt.Errorf("store.UpdateOneConfig: %w", err)
+		return fmt.Errorf("store.UpdateOneConfigActive: %w", err)
 	} else if modifiedCount == 0 {
 		return ErrConfigNotFound
 	}
 
 	if err := svix.UpdateOneEndpoint(ctx, id, updatedCfg, svixClient, svixAppId); err != nil {
 		return fmt.Errorf("svix.UpdateOneEndpoint: %w", err)
+	}
+
+	return nil
+}
+
+func RotateOneConfigSecret(ctx context.Context, id string, secret string, store storage.Store, svixClient *svixgo.Svix, svixAppId string) error {
+	if err := svix.RotateOneEndpointSecret(ctx, id, secret, svixClient, svixAppId); err != nil {
+		return fmt.Errorf("svix.RotateOneEndpointSecret: %w", err)
+	}
+
+	modifiedCount, err := store.UpdateOneConfigSecret(ctx, id, secret)
+	if err != nil {
+		return fmt.Errorf("store.UpdateOneConfigSecret: %w", err)
+	} else if modifiedCount == 0 {
+		return ErrConfigNotFound
 	}
 
 	return nil

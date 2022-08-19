@@ -17,6 +17,7 @@ func CreateEndpoint(ctx context.Context, endpointId string, cfg model.Config, sv
 
 	endpointIn := &svixgo.EndpointIn{
 		FilterTypes: cfg.EventTypes,
+		Secret:      *svixgo.NullableString("whsec_" + cfg.Secret),
 		Uid:         *svixgo.NullableString(endpointId),
 		Url:         cfg.Endpoint,
 		Version:     1,
@@ -26,7 +27,7 @@ func CreateEndpoint(ctx context.Context, endpointId string, cfg model.Config, sv
 		return fmt.Errorf("svix.Svix.Endpoint.CreateWithOptions: %w", err)
 	} else {
 		dumpOut := spew.Sdump(out)
-		sharedlogging.GetLogger(ctx).Debug("svix.Svix.Endpoint.CreateWithOptions", dumpOut)
+		sharedlogging.GetLogger(ctx).Debug("svix.Svix.Endpoint.CreateWithOptions: ", dumpOut)
 	}
 
 	return nil
@@ -60,7 +61,7 @@ func makeSureEventTypesFromCfgAreCreated(ctx context.Context, svixClient *svixgo
 				return fmt.Errorf("svix.Svix.EventType.Create: %w", err)
 			} else {
 				dumpOut := spew.Sdump(out)
-				sharedlogging.GetLogger(ctx).Debug("svix.Svix.EventType.Create", dumpOut)
+				sharedlogging.GetLogger(ctx).Debug("svix.Svix.EventType.Create: ", dumpOut)
 			}
 		}
 	}
@@ -84,7 +85,20 @@ func UpdateOneEndpoint(ctx context.Context, endpointId string, updatedCfg model.
 	if out, err := svixClient.Endpoint.Update(svixAppId, endpointId, &endpointUpdate); err != nil {
 		return fmt.Errorf("svix.Svix.Endpoint.Update: %w", err)
 	} else {
-		sharedlogging.GetLogger(ctx).Debug("svix.Svix.Endpoint.Update", spew.Sdump(out))
+		sharedlogging.GetLogger(ctx).Debug("svix.Svix.Endpoint.Update: ", spew.Sdump(out))
+	}
+
+	return nil
+}
+
+func RotateOneEndpointSecret(ctx context.Context, endpointId, secret string, svixClient *svixgo.Svix, svixAppId string) error {
+	endpointSecretRotateIn := &svixgo.EndpointSecretRotateIn{
+		Key: *svixgo.NullableString("whsec_" + secret),
+	}
+	if err := svixClient.Endpoint.RotateSecret(svixAppId, endpointId, endpointSecretRotateIn); err != nil {
+		return fmt.Errorf("svix.Svix.Endpoint.RotateSecret: %w", err)
+	} else {
+		sharedlogging.GetLogger(ctx).Debug("svix.Svix.Endpoint.RotateSecret: OK")
 	}
 
 	return nil

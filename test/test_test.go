@@ -103,6 +103,7 @@ func TestServer(t *testing.T) {
 		},
 		{
 			Endpoint:   "https://www.site3.com",
+			Secret:     model.NewSecret(),
 			EventTypes: []string{"TYPE1"},
 		},
 	}
@@ -152,16 +153,6 @@ func TestServer(t *testing.T) {
 			assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
 		})
 
-		t.Run("invalid body double json", func(t *testing.T) {
-			req, err := http.NewRequest(http.MethodPost, serverBaseURL+server.PathConfigs,
-				bytes.NewBuffer([]byte("{\"active\":false}{\"active\":false}")))
-			require.NoError(t, err)
-			req.Header.Set("Content-Type", "application/json")
-			resp, err := httpClient.Do(req)
-			require.NoError(t, err)
-			assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-		})
-
 		t.Run("invalid body unknown field", func(t *testing.T) {
 			req, err := http.NewRequest(http.MethodPost, serverBaseURL+server.PathConfigs,
 				bytes.NewBuffer([]byte("{\"field\":false}")))
@@ -190,36 +181,77 @@ func TestServer(t *testing.T) {
 		cur := decodeCursorResponse[model.ConfigInserted](t, resp.Body)
 		assert.Equal(t, len(validConfigs), len(cur.Data))
 		for i, cfg := range validConfigs {
-			assert.Equal(t, cfg, cur.Data[len(validConfigs)-i-1].Config)
+			assert.Equal(t, cfg.Endpoint, cur.Data[len(validConfigs)-i-1].Config.Endpoint)
+			assert.Equal(t, cfg.EventTypes, cur.Data[len(validConfigs)-i-1].Config.EventTypes)
 		}
 	})
 
 	t.Run("PUT "+server.PathConfigs, func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPut, serverBaseURL+server.PathConfigs+"/"+insertedIds[0]+server.PathDeactivate, nil)
-		require.NoError(t, err)
-		resp, err := httpClient.Do(req)
-		require.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		t.Run(server.PathDeactivate, func(t *testing.T) {
+			req, err := http.NewRequest(http.MethodPut, serverBaseURL+server.PathConfigs+
+				"/"+insertedIds[0]+server.PathDeactivate, nil)
+			require.NoError(t, err)
+			resp, err := httpClient.Do(req)
+			require.NoError(t, err)
+			assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		resp, err = http.Get(serverBaseURL + server.PathConfigs)
-		require.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		cur := decodeCursorResponse[model.ConfigInserted](t, resp.Body)
-		assert.Equal(t, len(validConfigs), len(cur.Data))
-		assert.Equal(t, false, cur.Data[len(cur.Data)-1].Active)
+			resp, err = http.Get(serverBaseURL + server.PathConfigs)
+			require.NoError(t, err)
+			assert.Equal(t, http.StatusOK, resp.StatusCode)
+			cur := decodeCursorResponse[model.ConfigInserted](t, resp.Body)
+			assert.Equal(t, len(validConfigs), len(cur.Data))
+			assert.Equal(t, false, cur.Data[len(cur.Data)-1].Active)
+		})
 
-		req, err = http.NewRequest(http.MethodPut, serverBaseURL+server.PathConfigs+"/"+insertedIds[0]+server.PathActivate, nil)
-		require.NoError(t, err)
-		resp, err = httpClient.Do(req)
-		require.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		t.Run(server.PathActivate, func(t *testing.T) {
+			req, err := http.NewRequest(http.MethodPut, serverBaseURL+server.PathConfigs+
+				"/"+insertedIds[0]+server.PathActivate, nil)
+			require.NoError(t, err)
+			resp, err := httpClient.Do(req)
+			require.NoError(t, err)
+			assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-		resp, err = http.Get(serverBaseURL + server.PathConfigs)
-		require.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		cur = decodeCursorResponse[model.ConfigInserted](t, resp.Body)
-		assert.Equal(t, len(validConfigs), len(cur.Data))
-		assert.Equal(t, true, cur.Data[len(cur.Data)-1].Active)
+			resp, err = http.Get(serverBaseURL + server.PathConfigs)
+			require.NoError(t, err)
+			require.Equal(t, http.StatusOK, resp.StatusCode)
+			cur := decodeCursorResponse[model.ConfigInserted](t, resp.Body)
+			assert.Equal(t, len(validConfigs), len(cur.Data))
+			assert.Equal(t, true, cur.Data[len(cur.Data)-1].Active)
+		})
+
+		t.Run(server.PathRotateSecret, func(t *testing.T) {
+			req, err := http.NewRequest(http.MethodPut, serverBaseURL+server.PathConfigs+
+				"/"+insertedIds[0]+server.PathRotateSecret, nil)
+			require.NoError(t, err)
+			resp, err := httpClient.Do(req)
+			require.NoError(t, err)
+			assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+			sec := model.Secret{Secret: model.NewSecret()}
+			req, err = http.NewRequest(http.MethodPut, serverBaseURL+server.PathConfigs+
+				"/"+insertedIds[0]+server.PathRotateSecret, buffer(t, sec))
+			req.Header.Set("Content-Type", "application/json")
+			require.NoError(t, err)
+			resp, err = httpClient.Do(req)
+			require.NoError(t, err)
+			assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+			sec = model.Secret{Secret: "invalid"}
+			req, err = http.NewRequest(http.MethodPut, serverBaseURL+server.PathConfigs+
+				"/"+insertedIds[0]+server.PathRotateSecret, buffer(t, sec))
+			req.Header.Set("Content-Type", "application/json")
+			require.NoError(t, err)
+			resp, err = httpClient.Do(req)
+			require.NoError(t, err)
+			assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+
+			req, err = http.NewRequest(http.MethodPut, serverBaseURL+server.PathConfigs+
+				"/"+insertedIds[0]+server.PathRotateSecret, buffer(t, validConfigs[0]))
+			require.NoError(t, err)
+			resp, err = httpClient.Do(req)
+			require.NoError(t, err)
+			assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+		})
 	})
 
 	t.Run("DELETE "+server.PathConfigs, func(t *testing.T) {
@@ -274,14 +306,6 @@ func TestWorker(t *testing.T) {
 		require.NoError(t, conn.Close())
 	}()
 
-	eventType := "TYPE"
-	endpoint := "https://example.com"
-	cfg := model.Config{
-		Endpoint:   endpoint,
-		EventTypes: []string{eventType},
-	}
-	require.NoError(t, cfg.Validate())
-
 	t.Run("clean existing configs", func(t *testing.T) {
 		resp, err := http.Get(serverBaseURL + server.PathConfigs)
 		require.NoError(t, err)
@@ -292,9 +316,18 @@ func TestWorker(t *testing.T) {
 			require.NoError(t, err)
 			resp, err := httpClient.Do(req)
 			require.NoError(t, err)
-			assert.Equal(t, http.StatusOK, resp.StatusCode)
+			require.Equal(t, http.StatusOK, resp.StatusCode)
 		}
 	})
+
+	eventType := "TYPE_TO_SEND"
+	endpoint := "https://example.com"
+	cfg := model.Config{
+		Endpoint:   endpoint,
+		Secret:     model.NewSecret(),
+		EventTypes: []string{"OTHER_TYPE", eventType},
+	}
+	require.NoError(t, cfg.Validate())
 
 	var insertedId string
 
@@ -304,8 +337,8 @@ func TestWorker(t *testing.T) {
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := httpClient.Do(req)
 		require.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		assert.NoError(t, json.NewDecoder(resp.Body).Decode(&insertedId))
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		require.NoError(t, json.NewDecoder(resp.Body).Decode(&insertedId))
 	})
 
 	n := 3
@@ -313,6 +346,7 @@ func TestWorker(t *testing.T) {
 	for i := 0; i < n; i++ {
 		messages = append(messages, newEventMessage(t, eventType, i))
 	}
+	messages = append(messages, newEventMessage(t, "TYPE_NOT_TO_SEND", n))
 	nbBytes, err := conn.WriteMessages(messages...)
 	require.NoError(t, err)
 	require.NotEqual(t, 0, nbBytes)
@@ -329,12 +363,14 @@ func TestWorker(t *testing.T) {
 		time.Sleep(time.Second)
 	}
 
+	assert.Equal(t, n, msgs)
+
 	t.Run("DELETE "+server.PathConfigs, func(t *testing.T) {
 		req, err := http.NewRequest(http.MethodDelete, serverBaseURL+server.PathConfigs+"/"+insertedId, nil)
 		require.NoError(t, err)
 		resp, err := httpClient.Do(req)
 		require.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		require.Equal(t, http.StatusOK, resp.StatusCode)
 	})
 
 	require.NoError(t, mongoClient.Database(
@@ -388,13 +424,13 @@ func (i Interceptor) RoundTrip(r *http.Request) (*http.Response, error) {
 
 func buffer(t *testing.T, v any) *bytes.Buffer {
 	data, err := json.Marshal(v)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	return bytes.NewBuffer(data)
 }
 
 func decodeCursorResponse[T any](t *testing.T, reader io.Reader) *sharedapi.Cursor[T] {
 	res := sharedapi.BaseResponse[T]{}
 	err := json.NewDecoder(reader).Decode(&res)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	return res.Cursor
 }

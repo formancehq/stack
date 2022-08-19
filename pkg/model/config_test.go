@@ -1,24 +1,42 @@
 package model
 
 import (
+	"encoding/base64"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestConfig_Validate(t *testing.T) {
-	assert.NoError(t, Config{
+	cfg := Config{
 		Endpoint:   "https://example.com",
 		EventTypes: []string{"TYPE1", "TYPE2"},
-	}.Validate())
+	}
+	assert.NoError(t, cfg.Validate())
 
-	assert.Error(t, Config{
+	cfg = Config{
+		Endpoint:   "https://example.com",
+		Secret:     NewSecret(),
+		EventTypes: []string{"TYPE1", "TYPE2"},
+	}
+	assert.NoError(t, cfg.Validate())
+
+	cfg = Config{
 		Endpoint:   " http://invalid",
 		EventTypes: []string{"TYPE1", "TYPE2"},
-	}.Validate())
+	}
+	assert.Error(t, cfg.Validate())
 
-	assert.Error(t, Config{
+	cfg = Config{
 		Endpoint:   "https://example.com",
 		EventTypes: []string{"TYPE1", ""},
-	}.Validate())
+	}
+	assert.Error(t, cfg.Validate())
+
+	cfg = Config{
+		Endpoint:   "https://example.com",
+		Secret:     base64.StdEncoding.EncodeToString([]byte(`invalid`)),
+		EventTypes: []string{"TYPE1", "TYPE2"},
+	}
+	assert.Error(t, cfg.Validate())
 }

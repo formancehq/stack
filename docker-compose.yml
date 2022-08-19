@@ -85,6 +85,8 @@ services:
       SVIX_DB_DSN: "postgresql://webhooks:webhooks@postgres/webhooks"
       SVIX_JWT_SECRET: "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
       SVIX_LOG_LEVEL: "trace"
+      SVIX_WHITELABEL_HEADERS: "true"
+      SVIX_ENDPOINT_HTTPS_ONLY: "true"
 
   postgres:
     image: postgres
@@ -93,8 +95,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    volumes:
-      - "postgres-data:/var/lib/postgresql/data/"
     environment:
       POSTGRES_USER: "webhooks"
       POSTGRES_PASSWORD: "webhooks"
@@ -104,12 +104,6 @@ services:
     image: redis:alpine
     # Enable persistence
     command: "--save 60 500 --appendonly yes --appendfsync everysec"
-    volumes:
-      - "redis-data:/data"
 
   collector:
     image: otel/opentelemetry-collector
-
-volumes:
-  postgres-data:
-  redis-data:
