@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/go-libs/sharedlogging/sharedlogginglogrus"
 	"github.com/numary/webhooks/constants"
@@ -37,7 +36,7 @@ func Init(flagSet *pflag.FlagSet) error {
 	flagSet.String(constants.SvixServerUrlFlag, "", "Svix Server URL")
 
 	if err := viper.BindPFlags(flagSet); err != nil {
-		return err
+		return fmt.Errorf("viper.BinPFlags: %w", err)
 	}
 
 	LoadEnv(viper.GetViper())
@@ -53,7 +52,6 @@ func Init(flagSet *pflag.FlagSet) error {
 		sharedlogging.StaticLoggerFactory(
 			sharedlogginglogrus.New(logger)))
 
-	spew.Dump("env.Init", viper.AllSettings())
 	return nil
 }
 

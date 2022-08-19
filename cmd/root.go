@@ -10,9 +10,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		return env.Init(cmd.Flags())
-	},
+	Use: "webhooks",
 }
 
 func Execute() {
@@ -21,4 +19,8 @@ func Execute() {
 		sharedlogging.Errorf("cobra.Command.Execute: %s", err)
 		os.Exit(1)
 	}
+}
+
+func init() {
+	cobra.CheckErr(env.Init(rootCmd.PersistentFlags()))
 }

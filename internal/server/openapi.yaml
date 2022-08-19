@@ -147,9 +147,9 @@ paths:
 
   /configs/{id}/secret/rotate:
     put:
-      summary: Rotates the config's endpoint's signing secret.
+      summary: Rotate the config's endpoint's signing secret.
       description: |
-        Rotates the config's endpoint's signing secret. The previous secret will be valid for the next 24 hours.
+        Rotate the config's endpoint's signing secret. The previous secret will be valid for the next 24 hours.
         
         If not passed or empty, a secret is automatically generated. 
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)

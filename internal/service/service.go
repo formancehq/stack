@@ -6,9 +6,9 @@ import (
 	"fmt"
 
 	"github.com/numary/go-libs/sharedlogging"
+	"github.com/numary/webhooks/internal/model"
 	"github.com/numary/webhooks/internal/storage"
 	"github.com/numary/webhooks/internal/svix"
-	"github.com/numary/webhooks/pkg/model"
 	svixgo "github.com/svix/svix-webhooks/go"
 )
 

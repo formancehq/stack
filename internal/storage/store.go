@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/numary/go-libs/sharedapi"
-	"github.com/numary/webhooks/pkg/model"
+	"github.com/numary/webhooks/internal/model"
 )
 
 type Store interface {

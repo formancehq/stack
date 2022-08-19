@@ -8,9 +8,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/numary/go-libs/sharedapi"
 	"github.com/numary/go-libs/sharedlogging"
+	"github.com/numary/webhooks/internal/model"
+	"github.com/numary/webhooks/internal/service"
 	"github.com/numary/webhooks/internal/storage"
-	"github.com/numary/webhooks/pkg/model"
-	"github.com/numary/webhooks/pkg/service"
 	svixgo "github.com/svix/svix-webhooks/go"
 )
 

@@ -6,7 +6,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/pkg/model"
+	"github.com/numary/webhooks/internal/model"
 	svixgo "github.com/svix/svix-webhooks/go"
 )
 

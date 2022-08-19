@@ -10,7 +10,7 @@ import (
 	svix "github.com/svix/svix-webhooks/go"
 )
 
-func New(httpClient *http.Client) (*svix.Svix, string, error) {
+func New(httpClient *http.Client) (svixClient *svix.Svix, svixAppId string, err error) {
 	token := viper.GetString(constants.SvixTokenFlag)
 	appName := viper.GetString(constants.SvixAppNameFlag)
 	appId := viper.GetString(constants.SvixAppIdFlag)
@@ -21,7 +21,7 @@ func New(httpClient *http.Client) (*svix.Svix, string, error) {
 		return nil, "", fmt.Errorf("url.Parse: %w", err)
 	}
 
-	svixClient := svix.New(token, &svix.SvixOptions{
+	svixClient = svix.New(token, &svix.SvixOptions{
 		ServerUrl:  u,
 		HTTPClient: httpClient,
 	})

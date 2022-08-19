@@ -28,18 +28,18 @@ func newHttpServeMux(lc fx.Lifecycle, addr string) *http.ServeMux {
 	}
 
 	lc.Append(fx.Hook{
-		OnStart: func(context.Context) error {
+		OnStart: func(ctx context.Context) error {
 			sharedlogging.Infof(fmt.Sprintf("starting HTTP listening on %s", addr))
 			go func() {
 				if err := server.ListenAndServe(); err != nil &&
 					!errors.Is(err, http.ErrServerClosed) {
-					sharedlogging.Errorf("http.Server.ListenAndServe: %s", err)
+					sharedlogging.GetLogger(ctx).Errorf("http.Server.ListenAndServe: %s", err)
 				}
 			}()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			sharedlogging.Infof("stopping HTTP listening")
+			sharedlogging.GetLogger(ctx).Infof("stopping HTTP listening")
 			return server.Shutdown(ctx)
 		},
 	})

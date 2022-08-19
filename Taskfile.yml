@@ -32,7 +32,7 @@ tasks:
     cmds:
       - task: docker
       - >
-        go test -v -p 1 {{.FAILFAST}} -coverpkg {{.PKG}} -race -coverprofile coverage.out -covermode atomic
+        go test -v {{.FAILFAST}} -race -coverpkg {{.PKG}} -coverprofile coverage.out
         -run {{.RUN}} -timeout {{.TIMEOUT}} {{.PKG}} |
         sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' |
         sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/'' |
@@ -42,45 +42,17 @@ tasks:
   tests:
     cmds:
       - task: docker
-      - go test -p 1 -coverpkg ./... -race -coverprofile coverage.out -covermode atomic ./...
+      - go test -race -coverpkg {{.PKG}} -coverprofile coverage.out {{.PKG}}
 
-  ci:
-    cmds:
-      - go env -w GOPRIVATE=github.com/numary/go-libs-cloud
-      - go mod vendor
-
-  build:
-    run: once
-    cmds:
-      - docker build -t numary:{{.SERVICE}}-{{.APP_SHA}} --target app --build-arg APP_SHA={{.APP_SHA}} --build-arg APP_VERSION={{.APP_VERSION}} .
-
-  push-staging:
-    cmds:
-      - docker tag numary:{{.SERVICE}}-{{.APP_SHA}} 955332203423.dkr.ecr.eu-west-1.amazonaws.com/numary:pull-{{.SERVICE}}-{{.APP_SHA}}
-      - docker push 955332203423.dkr.ecr.eu-west-1.amazonaws.com/numary:pull-{{.SERVICE}}-{{.APP_SHA}}
-
-  push-main:
-    cmds:
-      - docker tag numary:{{.SERVICE}}-{{.APP_SHA}} 955332203423.dkr.ecr.eu-west-1.amazonaws.com/numary:{{.SERVICE}}-main
-      - docker push 955332203423.dkr.ecr.eu-west-1.amazonaws.com/numary:{{.SERVICE}}-main
-
-  push-prod:
-    cmds:
-      - docker tag numary:{{.SERVICE}}-{{.APP_SHA}} 288350113309.dkr.ecr.eu-west-1.amazonaws.com/numary:{{.SERVICE}}-{{.APP_VERSION}}
-      - docker push 288350113309.dkr.ecr.eu-west-1.amazonaws.com/numary:{{.SERVICE}}-{{.APP_VERSION}}
-
-  build-and-install-binary:
+  build:local:
     cmds:
       - go build -o {{.SERVICE}}
-      - cp {{.SERVICE}} $(go env GOPATH)/bin
 
-  install:
+  install:lint:
     cmds:
-      - golangci-lint --version
       - >
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh |
         sh -s -- -b $(go env GOPATH)/bin latest
-      - golangci-lint --version
 
   docker:
     cmds:
@@ -100,3 +72,8 @@ tasks:
       - go clean
       - rm -f {{.SERVICE}} coverage.out coverage.html
       - docker compose down -v
+
+  build:
+    run: once
+    cmds:
+      - docker build -t numary:{{.SERVICE}}-{{.APP_SHA}} --target app --build-arg APP_SHA={{.APP_SHA}} --build-arg APP_VERSION={{.APP_VERSION}} .

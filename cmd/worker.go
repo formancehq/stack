@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"github.com/numary/webhooks/pkg/worker"
+	"github.com/numary/webhooks/internal/worker"
 	"github.com/spf13/cobra"
 )
 
 var workerCmd = &cobra.Command{
 	Use:   "worker",
-	Short: "Start worker",
-	Run:   worker.Start,
+	Short: "Run webhooks worker",
+	RunE:  worker.Run,
 }
 
 func init() {
