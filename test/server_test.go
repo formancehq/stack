@@ -2,7 +2,6 @@ package test_test
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"net/http"
 	"testing"
@@ -15,7 +14,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	serverApp := fxtest.New(t, server.StartModule(context.Background(), httpClient))
+	serverApp := fxtest.New(t, server.StartModule(httpClient))
 
 	t.Run("start", func(t *testing.T) {
 		serverApp.RequireStart()

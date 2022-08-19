@@ -22,8 +22,8 @@ import (
 )
 
 func TestWorker(t *testing.T) {
-	serverApp := fxtest.New(t, server.StartModule(context.Background(), httpClient))
-	workerApp := fxtest.New(t, worker.StartModule(context.Background(), httpClient))
+	serverApp := fxtest.New(t, server.StartModule(httpClient))
+	workerApp := fxtest.New(t, worker.StartModule(httpClient))
 
 	require.NoError(t, serverApp.Start(context.Background()))
 	require.NoError(t, workerApp.Start(context.Background()))

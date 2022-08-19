@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"syscall"
 
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks/internal/kafka"
@@ -13,33 +12,11 @@ import (
 	"github.com/numary/webhooks/internal/storage/mongo"
 	"github.com/numary/webhooks/internal/svix"
 	kafkago "github.com/segmentio/kafka-go"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	svixgo "github.com/svix/svix-webhooks/go"
 	"go.uber.org/fx"
 )
 
-func Run(cmd *cobra.Command, args []string) error {
-	app := fx.New(StartModule(cmd.Context(), http.DefaultClient))
-
-	if err := app.Start(cmd.Context()); err != nil {
-		return err
-	}
-
-	<-app.Done()
-
-	if err := app.Stop(cmd.Context()); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func StartModule(ctx context.Context, httpClient *http.Client) fx.Option {
-	sharedlogging.GetLogger(ctx).Debugf(
-		"starting webhooks worker module: env variables: %+v viper keys: %+v",
-		syscall.Environ(), viper.AllKeys())
-
+func StartModule(httpClient *http.Client) fx.Option {
 	return fx.Module("webhooks worker",
 		fx.Provide(
 			func() *http.Client { return httpClient },
