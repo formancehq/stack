@@ -41,7 +41,7 @@ tests:
     - json_equals: [
         {
           "index": {
-            "_id": "TRANSACTION-foo-test-22",
+            "_id": "TRANSACTION-test-22",
             "_index": "ledger"
           }
         },
@@ -83,7 +83,7 @@ tests:
         },
         {
           "index": {
-            "_id": "ASSET-foo-test-bank-USD",
+            "_id": "ASSET-test-bank-USD",
             "_index": "ledger"
           }
         },
@@ -104,7 +104,7 @@ tests:
         },
         {
           "index": {
-            "_id": "ASSET-foo-test-world-USD",
+            "_id": "ASSET-test-world-USD",
             "_index": "ledger"
           }
         },
@@ -125,7 +125,7 @@ tests:
         },
       {
         "update": {
-          "_id": "ACCOUNT-foo-test-bank",
+          "_id": "ACCOUNT-test-bank",
           "_index": "ledger"
         }
       },
@@ -164,7 +164,7 @@ tests:
       },
       {
         "update": {
-          "_id": "ACCOUNT-foo-test-world",
+          "_id": "ACCOUNT-test-world",
           "_index": "ledger"
         }
       },
