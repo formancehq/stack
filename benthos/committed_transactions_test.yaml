@@ -41,7 +41,7 @@ tests:
     - json_equals: [
         {
           "index": {
-            "_id": "TRANSACTION-foo-test-22",
+            "_id": "TRANSACTION-test-22",
             "_index": "ledger"
           }
         },
@@ -58,7 +58,8 @@ tests:
             ],
             "reference": "",
             "timestamp": "2022-03-16T13:11:38Z",
-            "txid": 22
+            "txid": 22,
+            "ledger": "test"
           },
           "indexed": {
             "amount": [
@@ -83,7 +84,7 @@ tests:
         },
         {
           "index": {
-            "_id": "ASSET-foo-test-bank-USD",
+            "_id": "ASSET-test-bank-USD",
             "_index": "ledger"
           }
         },
@@ -93,6 +94,7 @@ tests:
             "input": 1000,
             "name": "USD",
             "output": 0,
+            "ledger": "test"
           },
           "indexed": {
             "name": "USD",
@@ -104,7 +106,7 @@ tests:
         },
         {
           "index": {
-            "_id": "ASSET-foo-test-world-USD",
+            "_id": "ASSET-test-world-USD",
             "_index": "ledger"
           }
         },
@@ -114,6 +116,7 @@ tests:
             "input": 0,
             "name": "USD",
             "output": 1000,
+            "ledger": "test"
           },
           "indexed": {
             "name": "USD",
@@ -125,7 +128,7 @@ tests:
         },
       {
         "update": {
-          "_id": "ACCOUNT-foo-test-bank",
+          "_id": "ACCOUNT-test-bank",
           "_index": "ledger"
         }
       },
@@ -152,7 +155,8 @@ tests:
                 "input": 1000,
                 "output": 0
               }
-            }
+            },
+            "ledger": "test"
           },
           "indexed": {
             "address": "bank"
@@ -164,7 +168,7 @@ tests:
       },
       {
         "update": {
-          "_id": "ACCOUNT-foo-test-world",
+          "_id": "ACCOUNT-test-world",
           "_index": "ledger"
         }
       },
@@ -191,7 +195,8 @@ tests:
                 "input": 0,
                 "output": 1000
               }
-            }
+            },
+            "ledger": "test"
           },
           "indexed": {
             "address": "world"

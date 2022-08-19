@@ -21,7 +21,8 @@ map savedMetadata {
             "address": this.payload.targetId,
             "volumes": {},
             "balances": {},
-            "metadata": this.payload.metadata
+            "metadata": this.payload.metadata,
+            "ledger": this.ledger
           },
           "indexed": {
             "address": this.payload.targetId

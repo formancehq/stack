@@ -79,7 +79,7 @@ map committedTransactions {
 					"_index": env("OPENSEARCH_INDEX"),
 					"_id": "TRANSACTION-%s-%s".format(this.ledger, t.data.txid)
 				}
-			}, t.merge({
+			}, t.assign({"data": {"ledger": this.ledger}}).merge({
 				"when": this.date,
 				"ledger": this.ledger
 			})]).
@@ -91,7 +91,7 @@ map committedTransactions {
 					"_index": env("OPENSEARCH_INDEX"),
 					"_id": "ASSET-%s-%s-%s".format(this.ledger, t.data.account, t.data.name)
 				}
-			}, t.merge({
+			}, t.assign({"data": {"ledger": this.ledger}}).merge({
                 "when": this.date,
                 "ledger": this.ledger
             })]).
@@ -109,7 +109,7 @@ map committedTransactions {
                     "_index": env("OPENSEARCH_INDEX"),
                     "_id": "ACCOUNT-%s-%s".format(this.ledger, t.upsert.data.address)
                 }
-            }, t]).
+            }, t.assign({"upsert": {"data": {"ledger": this.ledger}}})]).
             flatten(),
 	].flatten()
 }
