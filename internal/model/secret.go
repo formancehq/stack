@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"math/rand"
+	"time"
 )
 
 type Secret struct {
@@ -29,6 +30,7 @@ func (s *Secret) Validate() error {
 
 func NewSecret() string {
 	token := make([]byte, 24)
+	rand.Seed(time.Now().UnixNano())
 	rand.Read(token)
 	return base64.StdEncoding.EncodeToString(token)
 }

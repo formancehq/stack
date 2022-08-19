@@ -1,9 +1,21 @@
 # Webhooks
 
-This service has two starting modes, for two responsibilities:
+Webhooks is a service used to manage configs and to send webhooks to their endpoints.
+A config is made of the following information:
+- Endpoint: a single URL where messages are sent to.
+- EventTypes: an array of string identifiers denoting the type of message being sent and are the primary way for webhook consumers to configure what events they are interested in receiving.
+- Secret: a string used to verify received webhooks. Every webhook and its metadata is signed with a unique key for each endpoint. This signature can then be used to verify the webhook indeed comes from this service.
+  The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
 
-- server: RESTful web service API managing webhooks configs for users.
-- worker: background service consuming kafka events on selected topics and sending webhooks for each matching event type in configs.
+Webhooks has two starting modes, split into two separate commands:
+
+- `server`: REST web service API managing webhooks configs for users.
+- `worker`: background service consuming kafka events on selected topics and sending webhooks for each configs.
+
+## Run the stack locally
+```
+docker compose up
+```
 
 ## Run linters and tests locally
 
