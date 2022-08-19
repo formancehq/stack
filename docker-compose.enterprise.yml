@@ -8,10 +8,11 @@ services:
         condition: service_healthy
     environment:
       STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017/"
-      KAFKA_TOPIC: ledger
+      KAFKA_TOPICS: ledger
       KAFKA_BROKERS: redpanda:29092
       SVIX_TOKEN: "testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb"
       SVIX_APP_ID: "app_2CqvO4XINy9ucWhqGPFXj4EkNS7"
+      SVIX_APP_NAME: "webhooks"
     labels:
       - traefik.enable=true
       - traefik.http.routers.webhooks.rule=Host(`localhost`) && PathPrefix(`/api/webhooks`)
@@ -28,7 +29,8 @@ services:
         condition: service_healthy
     environment:
       STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017/"
-      KAFKA_TOPIC: ledger
+      KAFKA_TOPICS: ledger
       KAFKA_BROKERS: redpanda:29092
       SVIX_TOKEN: "testsk_CSkhagouqu-JXgZznr35dG2TYTmsCPnb"
       SVIX_APP_ID: "app_2CqvO4XINy9ucWhqGPFXj4EkNS7"
+      SVIX_APP_NAME: "webhooks"
