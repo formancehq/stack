@@ -77,7 +77,11 @@ func (w *Worker) fetchMessages(ctx context.Context, msgChan chan kafka.Message, 
 			msg, err := w.reader.FetchMessage(ctx)
 			if err != nil {
 				if !errors.Is(err, io.EOF) && ctx.Err() == nil {
-					errChan <- fmt.Errorf("kafka.Reader.FetchMessage: %w", err)
+					select {
+					case errChan <- fmt.Errorf("kafka.Reader.FetchMessage: %w", err):
+					case <-ctx.Done():
+						return
+					}
 				}
 				continue
 			}
