@@ -22,7 +22,7 @@ tests:
   -
     - json_equals: [{
         "update": {
-          "_id": "TRANSACTION-foo-test-22",
+          "_id": "TRANSACTION-test-22",
           "_index": "ledger"
         }
       },
@@ -39,7 +39,8 @@ tests:
               "foo": "bar",
               "test": "\"quoted-field\""
             },
-            "volumes": { }
+            "volumes": { },
+            "ledger": "test"
           },
           "indexed": {
             "address": "22"

@@ -58,7 +58,8 @@ tests:
             ],
             "reference": "",
             "timestamp": "2022-03-16T13:11:38Z",
-            "txid": 22
+            "txid": 22,
+            "ledger": "test"
           },
           "indexed": {
             "amount": [
@@ -93,6 +94,7 @@ tests:
             "input": 1000,
             "name": "USD",
             "output": 0,
+            "ledger": "test"
           },
           "indexed": {
             "name": "USD",
@@ -114,6 +116,7 @@ tests:
             "input": 0,
             "name": "USD",
             "output": 1000,
+            "ledger": "test"
           },
           "indexed": {
             "name": "USD",
@@ -152,7 +155,8 @@ tests:
                 "input": 1000,
                 "output": 0
               }
-            }
+            },
+            "ledger": "test"
           },
           "indexed": {
             "address": "bank"
@@ -191,7 +195,8 @@ tests:
                 "input": 0,
                 "output": 1000
               }
-            }
+            },
+            "ledger": "test"
           },
           "indexed": {
             "address": "world"
