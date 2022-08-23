@@ -35,10 +35,10 @@ func NewConfigStore() (storage.Store, error) {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDBUri))
 	if err != nil {
-		return Store{}, err
+		return Store{}, fmt.Errorf("mongo.Connect: %w", err)
 	}
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
-		return Store{}, err
+		return Store{}, fmt.Errorf("mongo.Client.Ping: %w", err)
 	}
 
 	return Store{
@@ -83,7 +83,7 @@ func (s Store) InsertOneConfig(ctx context.Context, cfg model.Config) (string, e
 
 	res, err := s.collection.InsertOne(ctx, configInserted)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("store.Collection.InsertOne: %w", err)
 	}
 
 	return res.InsertedID.(string), nil
@@ -92,7 +92,7 @@ func (s Store) InsertOneConfig(ctx context.Context, cfg model.Config) (string, e
 func (s Store) DeleteOneConfig(ctx context.Context, id string) (int64, error) {
 	res, err := s.collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("momgo.Collection.DeleteOne: %w", err)
 	}
 
 	return res.DeletedCount, nil
@@ -155,5 +155,8 @@ func (s Store) Close(ctx context.Context) error {
 		return nil
 	}
 
-	return s.client.Disconnect(ctx)
+	if err := s.client.Disconnect(ctx); err != nil {
+		return fmt.Errorf("mongo.Client.Disconnect: %w", err)
+	}
+	return nil
 }

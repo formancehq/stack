@@ -52,11 +52,11 @@ func decodeJSONBody(r *http.Request, dst interface{}, allowEmpty bool) error {
 			return &errInvalidBody{status: http.StatusBadRequest, msg: msg}
 
 		default:
-			return err
+			return fmt.Errorf("json.Decoder.Decode: %w", err)
 		}
 	}
 
-	if err := dec.Decode(&struct{}{}); err != io.EOF {
+	if err := dec.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
 		msg := "Request body must only contain a single JSON object"
 		return &errInvalidBody{status: http.StatusBadRequest, msg: msg}
 	}

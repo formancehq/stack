@@ -61,7 +61,6 @@ Flags:
       --kafka-sasl-enabled                   Kafka SASL enabled
       --kafka-sasl-mechanism string          Kafka SASL mechanism
       --kafka-tls-enabled                    Kafka TLS enabled
-      --kafka-tls-insecure-skip-verify       Kafka TLS insecure skip verify
       --kafka-topics strings                 Kafka topics (default [default])
       --kafka-username string                Kafka username
       --log-level string                     Log level (default "info")

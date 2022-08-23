@@ -52,32 +52,45 @@ func TestWorker(t *testing.T) {
 	}()
 
 	t.Run("health check server", func(t *testing.T) {
-		resp, err := http.Get(serverBaseURL + server.PathHealthCheck)
+		req, err := http.NewRequestWithContext(context.Background(),
+			http.MethodGet, serverBaseURL+server.PathHealthCheck, nil)
+		require.NoError(t, err)
+		resp, err := httpClient.Do(req)
 		require.NoError(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		require.NoError(t, resp.Body.Close())
 	})
 
 	t.Run("health check worker", func(t *testing.T) {
-		resp, err := http.Get(workerBaseURL + server.PathHealthCheck)
+		req, err := http.NewRequestWithContext(context.Background(),
+			http.MethodGet, workerBaseURL+server.PathHealthCheck, nil)
+		require.NoError(t, err)
+		resp, err := httpClient.Do(req)
 		require.NoError(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
+		require.NoError(t, resp.Body.Close())
 	})
 
 	t.Run("clean existing configs", func(t *testing.T) {
-		resp, err := http.Get(serverBaseURL + server.PathConfigs)
+		req, err := http.NewRequestWithContext(context.Background(),
+			http.MethodGet, serverBaseURL+server.PathConfigs, nil)
+		require.NoError(t, err)
+		resp, err := httpClient.Do(req)
 		require.NoError(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 		cur := decodeCursorResponse[model.ConfigInserted](t, resp.Body)
 		for _, cfg := range cur.Data {
-			req, err := http.NewRequest(http.MethodDelete, serverBaseURL+server.PathConfigs+"/"+cfg.ID, nil)
+			req, err := http.NewRequestWithContext(context.Background(), http.MethodDelete, serverBaseURL+server.PathConfigs+"/"+cfg.ID, nil)
 			require.NoError(t, err)
 			resp, err := httpClient.Do(req)
 			require.NoError(t, err)
 			require.Equal(t, http.StatusOK, resp.StatusCode)
+			require.NoError(t, resp.Body.Close())
 		}
+		require.NoError(t, resp.Body.Close())
 	})
 
-	eventType := "TYPE_TO_SEND"
+	eventType := "TYPE"
 	endpoint := "https://example.com"
 	cfg := model.Config{
 		Endpoint:   endpoint,
@@ -89,13 +102,15 @@ func TestWorker(t *testing.T) {
 	var insertedId string
 
 	t.Run("POST "+server.PathConfigs, func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodPost, serverBaseURL+server.PathConfigs, buffer(t, cfg))
+		req, err := http.NewRequestWithContext(context.Background(),
+			http.MethodPost, serverBaseURL+server.PathConfigs, buffer(t, cfg))
 		require.NoError(t, err)
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := httpClient.Do(req)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.NoError(t, json.NewDecoder(resp.Body).Decode(&insertedId))
+		require.NoError(t, resp.Body.Close())
 	})
 
 	n := 3
@@ -103,7 +118,6 @@ func TestWorker(t *testing.T) {
 	for i := 0; i < n; i++ {
 		messages = append(messages, newEventMessage(t, eventType, i))
 	}
-	messages = append(messages, newEventMessage(t, "TYPE_NOT_TO_SEND", n))
 	nbBytes, err := conn.WriteMessages(messages...)
 	require.NoError(t, err)
 	require.NotEqual(t, 0, nbBytes)
@@ -123,11 +137,13 @@ func TestWorker(t *testing.T) {
 	assert.Equal(t, n, msgs)
 
 	t.Run("DELETE "+server.PathConfigs, func(t *testing.T) {
-		req, err := http.NewRequest(http.MethodDelete, serverBaseURL+server.PathConfigs+"/"+insertedId, nil)
+		req, err := http.NewRequestWithContext(context.Background(),
+			http.MethodDelete, serverBaseURL+server.PathConfigs+"/"+insertedId, nil)
 		require.NoError(t, err)
 		resp, err := httpClient.Do(req)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.StatusCode)
+		require.NoError(t, resp.Body.Close())
 	})
 
 	require.NoError(t, mongoClient.Database(
@@ -143,7 +159,8 @@ func newEventMessage(t *testing.T, eventType string, id int) kafkago.Message {
 		Date: time.Now().UTC(),
 		Type: eventType,
 		Payload: map[string]any{
-			"id": id,
+			"id":   id,
+			"type": eventType,
 		},
 	}
 

@@ -22,31 +22,34 @@ type ConfigInserted struct {
 	UpdatedAt time.Time `json:"updatedAt" bson:"updatedAt"`
 }
 
+var (
+	ErrInvalidEndpoint   = errors.New("endpoint should be a valid url")
+	ErrInvalidEventTypes = errors.New("eventTypes should be filled")
+	ErrInvalidSecret     = errors.New("decoded secret should be of size 24")
+)
+
 func (c *Config) Validate() error {
 	if u, err := url.Parse(c.Endpoint); err != nil || len(u.String()) == 0 {
-		return errors.New("endpoint should be a valid url")
+		return ErrInvalidEndpoint
 	}
 
 	if c.Secret == "" {
 		c.Secret = NewSecret()
 	} else {
-		var decoded []byte
-		var err error
-		if decoded, err = base64.StdEncoding.DecodeString(c.Secret); err != nil {
+		if decoded, err := base64.StdEncoding.DecodeString(c.Secret); err != nil {
 			return fmt.Errorf("secret should be base64 encoded: %w", err)
-		}
-		if len(decoded) != 24 {
-			return fmt.Errorf("decoded secret should be of size 24: actual size %d", len(decoded))
+		} else if len(decoded) != 24 {
+			return ErrInvalidSecret
 		}
 	}
 
 	if len(c.EventTypes) == 0 {
-		return errors.New("eventTypes should be filled")
+		return ErrInvalidEventTypes
 	}
 
 	for _, t := range c.EventTypes {
 		if len(t) == 0 {
-			return errors.New("eventTypes should be filled")
+			return ErrInvalidEventTypes
 		}
 	}
 

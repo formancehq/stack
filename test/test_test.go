@@ -56,7 +56,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// Interceptor intercepts every http request from httpClient to store webhooks sent
+// Interceptor intercepts every http request from httpClient to store webhooks sent.
 type Interceptor struct {
 	core http.RoundTripper
 }
@@ -65,7 +65,7 @@ type message struct {
 	Url string `json:"url" bson:"url"`
 }
 
-// Intercept the message requests to the Svix API and store them in a 'messages' Mongo collection
+// Intercept the message requests to the Svix API and store them in a 'messages' Mongo collection.
 func (i Interceptor) RoundTrip(req *http.Request) (*http.Response, error) {
 	if strings.Contains(req.URL.String(), "/msg/") {
 		sharedlogging.Debugf("request intercepted: %s", req.URL.String())
@@ -78,7 +78,11 @@ func (i Interceptor) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	// send the request using the DefaultTransport
-	return i.core.RoundTrip(req)
+	httpResponse, err := i.core.RoundTrip(req)
+	if err != nil {
+		return nil, fmt.Errorf("http.RoundTripper.RoundTrip: %w", err)
+	}
+	return httpResponse, nil
 }
 
 func buffer(t *testing.T, v any) *bytes.Buffer {

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"net/http"
 	"syscall"
 
@@ -22,7 +23,7 @@ func init() {
 	rootCmd.AddCommand(serverCmd)
 }
 
-func RunServer(cmd *cobra.Command, args []string) error {
+func RunServer(cmd *cobra.Command, _ []string) error {
 	sharedlogging.GetLogger(cmd.Context()).Debugf(
 		"starting webhooks server module: env variables: %+v viper keys: %+v",
 		syscall.Environ(), viper.AllKeys())
@@ -32,13 +33,13 @@ func RunServer(cmd *cobra.Command, args []string) error {
 			http.DefaultClient, viper.GetString(constants.HttpBindAddressServerFlag)))
 
 	if err := app.Start(cmd.Context()); err != nil {
-		return err
+		return fmt.Errorf("fx.App.Start: %w", err)
 	}
 
 	<-app.Done()
 
 	if err := app.Stop(cmd.Context()); err != nil {
-		return err
+		return fmt.Errorf("fx.App.Stop: %w", err)
 	}
 
 	return nil

@@ -49,11 +49,11 @@ func newServerHandler(store storage.Store, svixApp svix.App) http.Handler {
 	return h
 }
 
-func (h *serverHandler) healthCheckHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (h *serverHandler) healthCheckHandle(_ http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	sharedlogging.GetLogger(r.Context()).Infof("health check OK")
 }
 
-func (h *serverHandler) getAllConfigsHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (h *serverHandler) getAllConfigsHandle(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	cursor, err := h.store.FindAllConfigs(r.Context())
 	if err != nil {
 		sharedlogging.GetLogger(r.Context()).Errorf("storage.Store.FindAllConfigs: %s", err)
@@ -74,7 +74,7 @@ func (h *serverHandler) getAllConfigsHandle(w http.ResponseWriter, r *http.Reque
 	sharedlogging.GetLogger(r.Context()).Infof("GET /configs: %d results", len(cursor.Data))
 }
 
-func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	cfg := model.Config{}
 	if err := decodeJSONBody(r, &cfg, false); err != nil {
 		var errIB *errInvalidBody
@@ -107,39 +107,39 @@ func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Req
 }
 
 func (h *serverHandler) deleteOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	switch err := service.DeleteOneConfig(r.Context(), p.ByName(PathParamId), h.store, h.svixApp.Client, h.svixApp.AppId); err {
-	case nil:
+	err := service.DeleteOneConfig(r.Context(), p.ByName(PathParamId), h.store, h.svixApp.Client, h.svixApp.AppId)
+	if err == nil {
 		sharedlogging.GetLogger(r.Context()).Infof("DELETE %s/%s", PathConfigs, p.ByName(PathParamId))
-	case service.ErrConfigNotFound:
+	} else if errors.Is(err, service.ErrConfigNotFound) {
 		sharedlogging.GetLogger(r.Context()).Infof("DELETE %s/%s: %s", PathConfigs, p.ByName(PathParamId), service.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	default:
+	} else {
 		sharedlogging.GetLogger(r.Context()).Errorf("DELETE %s/%s: %s", PathConfigs, p.ByName(PathParamId), err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
 
 func (h *serverHandler) activateOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	switch err := service.ActivateOneConfig(true, r.Context(), p.ByName(PathParamId), h.store, h.svixApp.Client, h.svixApp.AppId); err {
-	case nil:
+	err := service.ActivateOneConfig(true, r.Context(), p.ByName(PathParamId), h.store, h.svixApp.Client, h.svixApp.AppId)
+	if err == nil {
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathActivate)
-	case service.ErrConfigNotFound:
+	} else if errors.Is(err, service.ErrConfigNotFound) {
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathActivate, service.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	default:
+	} else {
 		sharedlogging.GetLogger(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathActivate, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
 
 func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	switch err := service.ActivateOneConfig(false, r.Context(), p.ByName(PathParamId), h.store, h.svixApp.Client, h.svixApp.AppId); err {
-	case nil:
+	err := service.ActivateOneConfig(false, r.Context(), p.ByName(PathParamId), h.store, h.svixApp.Client, h.svixApp.AppId)
+	if err == nil {
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathDeactivate)
-	case service.ErrConfigNotFound:
+	} else if errors.Is(err, service.ErrConfigNotFound) {
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathDeactivate, service.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	default:
+	} else {
 		sharedlogging.GetLogger(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathDeactivate, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
@@ -164,13 +164,13 @@ func (h *serverHandler) rotateOneConfigSecretHandle(w http.ResponseWriter, r *ht
 		return
 	}
 
-	switch err := service.RotateOneConfigSecret(r.Context(), p.ByName(PathParamId), sec.Secret, h.store, h.svixApp.Client, h.svixApp.AppId); err {
-	case nil:
+	err := service.RotateOneConfigSecret(r.Context(), p.ByName(PathParamId), sec.Secret, h.store, h.svixApp.Client, h.svixApp.AppId)
+	if err == nil {
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathRotateSecret)
-	case service.ErrConfigNotFound:
+	} else if errors.Is(err, service.ErrConfigNotFound) {
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathRotateSecret, service.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	default:
+	} else {
 		sharedlogging.GetLogger(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathRotateSecret, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/numary/go-libs/sharedlogging"
 	"go.uber.org/fx"
@@ -13,8 +14,9 @@ import (
 func NewMuxServer(addr string) (*http.ServeMux, *http.Server) {
 	mux := http.NewServeMux()
 	server := &http.Server{
-		Addr:    addr,
-		Handler: mux,
+		Addr:              addr,
+		Handler:           mux,
+		ReadHeaderTimeout: time.Second,
 	}
 	return mux, server
 }
@@ -37,7 +39,10 @@ func Run(lc fx.Lifecycle, server *http.Server, addr string) {
 		},
 		OnStop: func(ctx context.Context) error {
 			sharedlogging.GetLogger(ctx).Infof("stopping HTTP listening")
-			return server.Shutdown(ctx)
+			if err := server.Shutdown(ctx); err != nil {
+				return fmt.Errorf("http.Server.Shutdown: %w", err)
+			}
+			return nil
 		},
 	})
 }

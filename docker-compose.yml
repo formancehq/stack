@@ -5,7 +5,7 @@ services:
       target: dev
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
-      interval: 20s
+      interval: 30s
       timeout: 10s
       retries: 5
     volumes:
@@ -25,11 +25,13 @@ services:
       target: dev
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8081/_healthcheck" ]
-      interval: 20s
+      interval: 30s
       timeout: 10s
       retries: 5
     volumes:
       - .:/app
+    ports:
+      - "8081:8081"
     environment:
       STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
       KAFKA_DEFAULT_TOPIC: "default"
@@ -67,7 +69,7 @@ services:
       - --advertise-kafka-addr
       - PLAINTEXT://redpanda:29092,OUTSIDE://localhost:9092
     healthcheck:
-      test: curl -s -f -k http://127.0.0.1:9644/metrics >/dev/null || exit 1
+      test: curl -s -f -k http://127.0.0.1:9644/metrics > /dev/null || exit 1
       interval: 30s
       timeout: 10s
       retries: 5

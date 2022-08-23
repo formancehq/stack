@@ -52,7 +52,7 @@ func makeSureEventTypesFromCfgAreCreated(ctx context.Context, svixClient *svixgo
 			}
 		}
 		if !alreadyCreated {
-			var archived = false
+			archived := false
 			eventTypeIn := svixgo.EventTypeIn{
 				Archived: &archived,
 				Name:     newEventType,
@@ -70,7 +70,10 @@ func makeSureEventTypesFromCfgAreCreated(ctx context.Context, svixClient *svixgo
 }
 
 func DeleteOneEndpoint(endpointId string, svixClient *svixgo.Svix, svixAppId string) error {
-	return svixClient.Endpoint.Delete(svixAppId, endpointId)
+	if err := svixClient.Endpoint.Delete(svixAppId, endpointId); err != nil {
+		return fmt.Errorf("svix.Svix.Endpoint.Delete: %w", err)
+	}
+	return nil
 }
 
 func UpdateOneEndpoint(ctx context.Context, endpointId string, updatedCfg model.ConfigInserted, svixClient *svixgo.Svix, svixAppId string) error {

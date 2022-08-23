@@ -1,10 +1,9 @@
 package model
 
 import (
+	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"math/rand"
-	"time"
 )
 
 type Secret struct {
@@ -21,7 +20,7 @@ func (s *Secret) Validate() error {
 			return fmt.Errorf("secret should be base64 encoded: %w", err)
 		}
 		if len(decoded) != 24 {
-			return fmt.Errorf("decoded secret should be of size 24: actual size %d", len(decoded))
+			return ErrInvalidSecret
 		}
 	}
 
@@ -30,7 +29,9 @@ func (s *Secret) Validate() error {
 
 func NewSecret() string {
 	token := make([]byte, 24)
-	rand.Seed(time.Now().UnixNano())
-	rand.Read(token)
+	_, err := rand.Read(token)
+	if err != nil {
+		panic(err)
+	}
 	return base64.StdEncoding.EncodeToString(token)
 }

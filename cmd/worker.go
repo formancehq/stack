@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"net/http"
 	"syscall"
 
@@ -18,7 +19,7 @@ var workerCmd = &cobra.Command{
 	RunE:  RunWorker,
 }
 
-func RunWorker(cmd *cobra.Command, args []string) error {
+func RunWorker(cmd *cobra.Command, _ []string) error {
 	sharedlogging.GetLogger(cmd.Context()).Debugf(
 		"starting webhooks worker module: env variables: %+v viper keys: %+v",
 		syscall.Environ(), viper.AllKeys())
@@ -28,13 +29,13 @@ func RunWorker(cmd *cobra.Command, args []string) error {
 			http.DefaultClient, viper.GetString(constants.HttpBindAddressWorkerFlag)))
 
 	if err := app.Start(cmd.Context()); err != nil {
-		return err
+		return fmt.Errorf("fx.App.Start: %w", err)
 	}
 
 	<-app.Done()
 
 	if err := app.Stop(cmd.Context()); err != nil {
-		return err
+		return fmt.Errorf("fx.App.Stop: %w", err)
 	}
 
 	return nil

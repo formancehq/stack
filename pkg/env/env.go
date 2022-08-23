@@ -24,7 +24,6 @@ func Init(flagSet *pflag.FlagSet) error {
 	flagSet.String(constants.KafkaGroupIDFlag, constants.DefaultKafkaGroupID, "Kafka consumer group")
 	flagSet.StringSlice(constants.KafkaTopicsFlag, []string{constants.DefaultKafkaTopic}, "Kafka topics")
 	flagSet.Bool(constants.KafkaTLSEnabledFlag, false, "Kafka TLS enabled")
-	flagSet.Bool(constants.KafkaTLSInsecureSkipVerifyFlag, false, "Kafka TLS insecure skip verify")
 	flagSet.Bool(constants.KafkaSASLEnabledFlag, false, "Kafka SASL enabled")
 	flagSet.String(constants.KafkaSASLMechanismFlag, "", "Kafka SASL mechanism")
 	flagSet.String(constants.KafkaUsernameFlag, "", "Kafka username")

@@ -1,11 +1,12 @@
 package model
 
 import (
+	"crypto/rand"
 	"encoding/base64"
-	"math/rand"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSecret_Validate(t *testing.T) {
@@ -22,13 +23,15 @@ func TestSecret_Validate(t *testing.T) {
 	assert.Error(t, sec.Validate())
 
 	token := make([]byte, 23)
-	rand.Read(token)
+	_, err := rand.Read(token)
+	require.NoError(t, err)
 	tooShort := base64.StdEncoding.EncodeToString(token)
 	sec = Secret{Secret: tooShort}
 	assert.Error(t, sec.Validate())
 
 	token = make([]byte, 25)
-	rand.Read(token)
+	_, err = rand.Read(token)
+	require.NoError(t, err)
 	tooLong := base64.StdEncoding.EncodeToString(token)
 	sec = Secret{Secret: tooLong}
 	assert.Error(t, sec.Validate())

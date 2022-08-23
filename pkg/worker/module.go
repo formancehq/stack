@@ -46,7 +46,7 @@ func run(lc fx.Lifecycle, w *kafka.Worker) {
 			err1 := w.Store.Close(ctx)
 			err2 := w.Reader.Close()
 			if err1 != nil || err2 != nil {
-				return fmt.Errorf("[closing store: %s] [closing reader: %s]", err1, err2)
+				return fmt.Errorf("[closing store: %s] [closing reader: %w]", err1, err2)
 			}
 			return nil
 		},
