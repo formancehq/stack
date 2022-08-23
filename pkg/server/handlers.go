@@ -8,10 +8,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/numary/go-libs/sharedapi"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/internal/model"
-	"github.com/numary/webhooks/internal/service"
-	"github.com/numary/webhooks/internal/storage"
-	svixgo "github.com/svix/svix-webhooks/go"
+	"github.com/numary/webhooks/pkg/model"
+	"github.com/numary/webhooks/pkg/service"
+	"github.com/numary/webhooks/pkg/storage"
+	"github.com/numary/webhooks/pkg/svix"
 )
 
 const (
@@ -27,17 +27,15 @@ const (
 type serverHandler struct {
 	*httprouter.Router
 
-	store      storage.Store
-	svixClient *svixgo.Svix
-	svixAppId  string
+	store   storage.Store
+	svixApp svix.App
 }
 
-func newServerHandler(store storage.Store, svixClient *svixgo.Svix, svixAppId string) http.Handler {
+func newServerHandler(store storage.Store, svixApp svix.App) http.Handler {
 	h := &serverHandler{
-		Router:     httprouter.New(),
-		store:      store,
-		svixClient: svixClient,
-		svixAppId:  svixAppId,
+		Router:  httprouter.New(),
+		store:   store,
+		svixApp: svixApp,
 	}
 
 	h.Router.GET(PathHealthCheck, h.healthCheckHandle)
@@ -95,7 +93,7 @@ func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if id, err := service.InsertOneConfig(cfg, r.Context(), h.store, h.svixClient, h.svixAppId); err != nil {
+	if id, err := service.InsertOneConfig(cfg, r.Context(), h.store, h.svixApp.Client, h.svixApp.AppId); err != nil {
 		sharedlogging.GetLogger(r.Context()).Errorf("POST %s: %s", PathConfigs, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
@@ -109,7 +107,7 @@ func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Req
 }
 
 func (h *serverHandler) deleteOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	switch err := service.DeleteOneConfig(r.Context(), p.ByName(PathParamId), h.store, h.svixClient, h.svixAppId); err {
+	switch err := service.DeleteOneConfig(r.Context(), p.ByName(PathParamId), h.store, h.svixApp.Client, h.svixApp.AppId); err {
 	case nil:
 		sharedlogging.GetLogger(r.Context()).Infof("DELETE %s/%s", PathConfigs, p.ByName(PathParamId))
 	case service.ErrConfigNotFound:
@@ -122,7 +120,7 @@ func (h *serverHandler) deleteOneConfigHandle(w http.ResponseWriter, r *http.Req
 }
 
 func (h *serverHandler) activateOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	switch err := service.ActivateOneConfig(true, r.Context(), p.ByName(PathParamId), h.store, h.svixClient, h.svixAppId); err {
+	switch err := service.ActivateOneConfig(true, r.Context(), p.ByName(PathParamId), h.store, h.svixApp.Client, h.svixApp.AppId); err {
 	case nil:
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathActivate)
 	case service.ErrConfigNotFound:
@@ -135,7 +133,7 @@ func (h *serverHandler) activateOneConfigHandle(w http.ResponseWriter, r *http.R
 }
 
 func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	switch err := service.ActivateOneConfig(false, r.Context(), p.ByName(PathParamId), h.store, h.svixClient, h.svixAppId); err {
+	switch err := service.ActivateOneConfig(false, r.Context(), p.ByName(PathParamId), h.store, h.svixApp.Client, h.svixApp.AppId); err {
 	case nil:
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathDeactivate)
 	case service.ErrConfigNotFound:
@@ -166,7 +164,7 @@ func (h *serverHandler) rotateOneConfigSecretHandle(w http.ResponseWriter, r *ht
 		return
 	}
 
-	switch err := service.RotateOneConfigSecret(r.Context(), p.ByName(PathParamId), sec.Secret, h.store, h.svixClient, h.svixAppId); err {
+	switch err := service.RotateOneConfigSecret(r.Context(), p.ByName(PathParamId), sec.Secret, h.store, h.svixApp.Client, h.svixApp.AppId); err {
 	case nil:
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathRotateSecret)
 	case service.ErrConfigNotFound:

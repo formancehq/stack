@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,38 +12,93 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/google/uuid"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/internal/storage"
-	"github.com/segmentio/kafka-go"
+	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/pkg/storage"
+	"github.com/numary/webhooks/pkg/svix"
+	kafkago "github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/sasl/scram"
+	"github.com/spf13/viper"
 	svixgo "github.com/svix/svix-webhooks/go"
 )
 
-type Event struct {
-	Date    time.Time      `json:"date"`
-	Type    string         `json:"type"`
-	Payload map[string]any `json:"payload"`
-}
-
 type Worker struct {
-	reader     Reader
-	store      storage.Store
+	Reader Reader
+	Store  storage.Store
+
 	svixClient *svixgo.Svix
 	svixAppId  string
 
 	stopChan chan chan struct{}
 }
 
-func NewWorker(reader Reader, store storage.Store, svixClient *svixgo.Svix, svixAppId string) *Worker {
-	return &Worker{
-		reader:     reader,
-		store:      store,
-		svixClient: svixClient,
-		svixAppId:  svixAppId,
-		stopChan:   make(chan chan struct{}),
+func NewWorker(store storage.Store, svixApp svix.App) (*Worker, error) {
+	cfg, err := NewKafkaReaderConfig()
+	if err != nil {
+		return nil, fmt.Errorf("kafka.NewKafkaReaderConfig: %w", err)
 	}
+
+	return &Worker{
+		Reader:     kafkago.NewReader(cfg),
+		Store:      store,
+		svixClient: svixApp.Client,
+		svixAppId:  svixApp.AppId,
+		stopChan:   make(chan chan struct{}),
+	}, nil
+}
+
+func NewKafkaReaderConfig() (kafkago.ReaderConfig, error) {
+	dialer := kafkago.DefaultDialer
+	if viper.GetBool(constants.KafkaTLSEnabledFlag) {
+		dialer.TLS = &tls.Config{
+			InsecureSkipVerify: viper.GetBool(constants.KafkaTLSInsecureSkipVerifyFlag),
+		}
+	}
+
+	if viper.GetBool(constants.KafkaSASLEnabledFlag) {
+		var alg scram.Algorithm
+		switch mechanism := viper.GetString(constants.KafkaSASLMechanismFlag); mechanism {
+		case "SCRAM-SHA-512":
+			alg = scram.SHA512
+		case "SCRAM-SHA-256":
+			alg = scram.SHA256
+		default:
+			return kafkago.ReaderConfig{}, fmt.Errorf("unrecognized SASL mechanism: %s", mechanism)
+		}
+		mechanism, err := scram.Mechanism(alg,
+			viper.GetString(constants.KafkaUsernameFlag), viper.GetString(constants.KafkaPasswordFlag))
+		if err != nil {
+			return kafkago.ReaderConfig{}, err
+		}
+		dialer.SASLMechanism = mechanism
+	}
+
+	brokers := viper.GetStringSlice(constants.KafkaBrokersFlag)
+	if len(brokers) == 0 {
+		brokers = []string{constants.DefaultKafkaBroker}
+	}
+
+	topics := viper.GetStringSlice(constants.KafkaTopicsFlag)
+	if len(topics) == 0 {
+		topics = []string{constants.DefaultKafkaTopic}
+	}
+
+	groupID := viper.GetString(constants.KafkaGroupIDFlag)
+	if groupID == "" {
+		groupID = constants.DefaultKafkaGroupID
+	}
+
+	return kafkago.ReaderConfig{
+		Brokers:     brokers,
+		GroupID:     groupID,
+		GroupTopics: topics,
+		MinBytes:    1,
+		MaxBytes:    10e5,
+		Dialer:      dialer,
+	}, nil
 }
 
 func (w *Worker) Run(ctx context.Context) error {
-	msgChan := make(chan kafka.Message)
+	msgChan := make(chan kafkago.Message)
 	errChan := make(chan error)
 	ctxWithCancel, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -68,13 +124,13 @@ func (w *Worker) Run(ctx context.Context) error {
 	}
 }
 
-func (w *Worker) fetchMessages(ctx context.Context, msgChan chan kafka.Message, errChan chan error) {
+func (w *Worker) fetchMessages(ctx context.Context, msgChan chan kafkago.Message, errChan chan error) {
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		default:
-			msg, err := w.reader.FetchMessage(ctx)
+			msg, err := w.Reader.FetchMessage(ctx)
 			if err != nil {
 				if !errors.Is(err, io.EOF) && ctx.Err() == nil {
 					select {
@@ -95,7 +151,13 @@ func (w *Worker) fetchMessages(ctx context.Context, msgChan chan kafka.Message, 
 	}
 }
 
-func (w *Worker) processMessage(ctx context.Context, msg kafka.Message) error {
+type Event struct {
+	Date    time.Time      `json:"date"`
+	Type    string         `json:"type"`
+	Payload map[string]any `json:"payload"`
+}
+
+func (w *Worker) processMessage(ctx context.Context, msg kafkago.Message) error {
 	ctx = sharedlogging.ContextWithLogger(ctx,
 		sharedlogging.GetLogger(ctx).WithFields(map[string]any{
 			"offset": msg.Offset,
@@ -112,7 +174,7 @@ func (w *Worker) processMessage(ctx context.Context, msg kafka.Message) error {
 		return fmt.Errorf("json.Unmarshal: %w", err)
 	}
 
-	toSend, err := w.store.FindEventType(ctx, ev.Type)
+	toSend, err := w.Store.FindEventType(ctx, ev.Type)
 	if err != nil {
 		return fmt.Errorf("store.FindEventType: %w", err)
 	}
@@ -142,7 +204,7 @@ func (w *Worker) processMessage(ctx context.Context, msg kafka.Message) error {
 		sharedlogging.GetLogger(ctx).Debugf("message ignored of type: %s", ev.Type)
 	}
 
-	if err := w.reader.CommitMessages(ctx, msg); err != nil {
+	if err := w.Reader.CommitMessages(ctx, msg); err != nil {
 		return fmt.Errorf("kafka.Reader.CommitMessages: %w", err)
 	}
 

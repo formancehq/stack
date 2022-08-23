@@ -6,9 +6,9 @@ import (
 	"fmt"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/internal/model"
-	"github.com/numary/webhooks/internal/storage"
-	"github.com/numary/webhooks/internal/svix"
+	"github.com/numary/webhooks/pkg/model"
+	"github.com/numary/webhooks/pkg/storage"
+	"github.com/numary/webhooks/pkg/svix"
 	svixgo "github.com/svix/svix-webhooks/go"
 )
 
@@ -48,9 +48,9 @@ func DeleteOneConfig(ctx context.Context, id string, store storage.Store, svixCl
 }
 
 func ActivateOneConfig(active bool, ctx context.Context, id string, store storage.Store, svixClient *svixgo.Svix, svixAppId string) error {
-	updatedCfg, modifiedCount, err := store.UpdateOneConfigActive(ctx, id, active)
+	updatedCfg, modifiedCount, err := store.UpdateOneConfigActivation(ctx, id, active)
 	if err != nil {
-		return fmt.Errorf("store.UpdateOneConfigActive: %w", err)
+		return fmt.Errorf("store.UpdateOneConfigActivation: %w", err)
 	} else if modifiedCount == 0 {
 		return ErrConfigNotFound
 	}

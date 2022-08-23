@@ -10,8 +10,8 @@ import (
 	"github.com/numary/go-libs/sharedapi"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks/constants"
-	"github.com/numary/webhooks/internal/model"
-	"github.com/numary/webhooks/internal/storage"
+	"github.com/numary/webhooks/pkg/model"
+	"github.com/numary/webhooks/pkg/storage"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -98,7 +98,7 @@ func (s Store) DeleteOneConfig(ctx context.Context, id string) (int64, error) {
 	return res.DeletedCount, nil
 }
 
-func (s Store) UpdateOneConfigActive(ctx context.Context, id string, active bool) (model.ConfigInserted, int64, error) {
+func (s Store) UpdateOneConfigActivation(ctx context.Context, id string, active bool) (model.ConfigInserted, int64, error) {
 	filter := bson.D{{Key: "_id", Value: id}}
 	resFind := s.collection.FindOne(ctx, filter)
 	if err := resFind.Err(); err != nil {

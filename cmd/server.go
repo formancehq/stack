@@ -5,7 +5,8 @@ import (
 	"syscall"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/internal/server"
+	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/pkg/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
@@ -26,7 +27,9 @@ func RunServer(cmd *cobra.Command, args []string) error {
 		"starting webhooks server module: env variables: %+v viper keys: %+v",
 		syscall.Environ(), viper.AllKeys())
 
-	app := fx.New(server.StartModule(http.DefaultClient))
+	app := fx.New(
+		server.StartModule(
+			http.DefaultClient, viper.GetString(constants.HttpBindAddressServerFlag)))
 
 	if err := app.Start(cmd.Context()); err != nil {
 		return err

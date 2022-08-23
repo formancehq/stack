@@ -9,10 +9,10 @@ import (
 
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks/constants"
-	"github.com/numary/webhooks/internal/kafka"
-	"github.com/numary/webhooks/internal/model"
-	"github.com/numary/webhooks/internal/server"
-	"github.com/numary/webhooks/internal/worker"
+	"github.com/numary/webhooks/pkg/kafka"
+	"github.com/numary/webhooks/pkg/model"
+	"github.com/numary/webhooks/pkg/server"
+	"github.com/numary/webhooks/pkg/worker"
 	kafkago "github.com/segmentio/kafka-go"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -22,8 +22,12 @@ import (
 )
 
 func TestWorker(t *testing.T) {
-	serverApp := fxtest.New(t, server.StartModule(httpClient))
-	workerApp := fxtest.New(t, worker.StartModule(httpClient))
+	serverApp := fxtest.New(t,
+		server.StartModule(
+			httpClient, viper.GetString(constants.HttpBindAddressServerFlag)))
+	workerApp := fxtest.New(t,
+		worker.StartModule(
+			httpClient, viper.GetString(constants.HttpBindAddressWorkerFlag)))
 
 	require.NoError(t, serverApp.Start(context.Background()))
 	require.NoError(t, workerApp.Start(context.Background()))
@@ -47,8 +51,14 @@ func TestWorker(t *testing.T) {
 		require.NoError(t, conn.Close())
 	}()
 
-	t.Run("health check", func(t *testing.T) {
+	t.Run("health check server", func(t *testing.T) {
 		resp, err := http.Get(serverBaseURL + server.PathHealthCheck)
+		require.NoError(t, err)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+
+	t.Run("health check worker", func(t *testing.T) {
+		resp, err := http.Get(workerBaseURL + server.PathHealthCheck)
 		require.NoError(t, err)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	})

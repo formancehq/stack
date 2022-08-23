@@ -9,4 +9,5 @@ import (
 type Reader interface {
 	FetchMessage(ctx context.Context) (kafkago.Message, error)
 	CommitMessages(ctx context.Context, msgs ...kafkago.Message) error
+	Close() error
 }

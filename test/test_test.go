@@ -15,7 +15,7 @@ import (
 	"github.com/numary/go-libs/sharedapi"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks/constants"
-	"github.com/numary/webhooks/internal/env"
+	"github.com/numary/webhooks/pkg/env"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
@@ -26,6 +26,7 @@ import (
 var (
 	httpClient    *http.Client
 	serverBaseURL string
+	workerBaseURL string
 	mongoClient   *mongo.Client
 )
 
@@ -40,6 +41,8 @@ func TestMain(m *testing.M) {
 	}
 	serverBaseURL = fmt.Sprintf("http://localhost%s",
 		viper.GetString(constants.HttpBindAddressServerFlag))
+	workerBaseURL = fmt.Sprintf("http://localhost%s",
+		viper.GetString(constants.HttpBindAddressWorkerFlag))
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

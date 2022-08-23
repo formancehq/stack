@@ -1,4 +1,4 @@
-package mux
+package httpserver
 
 import (
 	"context"
@@ -7,26 +7,23 @@ import (
 	"net/http"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/constants"
-	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
-func NewServer(lc fx.Lifecycle) *http.ServeMux {
-	return newHttpServeMux(lc, viper.GetString(constants.HttpBindAddressServerFlag))
-}
-
-func NewWorker(lc fx.Lifecycle) *http.ServeMux {
-	return newHttpServeMux(lc, viper.GetString(constants.HttpBindAddressWorkerFlag))
-}
-
-func newHttpServeMux(lc fx.Lifecycle, addr string) *http.ServeMux {
+func NewMuxServer(addr string) (*http.ServeMux, *http.Server) {
 	mux := http.NewServeMux()
 	server := &http.Server{
 		Addr:    addr,
 		Handler: mux,
 	}
+	return mux, server
+}
 
+func RegisterHandler(mux *http.ServeMux, h http.Handler) {
+	mux.Handle("/", h)
+}
+
+func Run(lc fx.Lifecycle, server *http.Server, addr string) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			sharedlogging.Infof(fmt.Sprintf("starting HTTP listening on %s", addr))
@@ -43,6 +40,4 @@ func newHttpServeMux(lc fx.Lifecycle, addr string) *http.ServeMux {
 			return server.Shutdown(ctx)
 		},
 	})
-
-	return mux
 }

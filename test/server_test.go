@@ -6,15 +6,19 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/numary/webhooks/internal/model"
-	"github.com/numary/webhooks/internal/server"
+	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/pkg/model"
+	"github.com/numary/webhooks/pkg/server"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx/fxtest"
 )
 
 func TestServer(t *testing.T) {
-	serverApp := fxtest.New(t, server.StartModule(httpClient))
+	serverApp := fxtest.New(t,
+		server.StartModule(
+			httpClient, viper.GetString(constants.HttpBindAddressServerFlag)))
 
 	t.Run("start", func(t *testing.T) {
 		serverApp.RequireStart()

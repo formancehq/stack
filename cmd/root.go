@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/internal/env"
+	"github.com/numary/webhooks/pkg/env"
 	"github.com/spf13/cobra"
 )
 
