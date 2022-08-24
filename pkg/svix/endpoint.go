@@ -10,8 +10,8 @@ import (
 	svixgo "github.com/svix/svix-webhooks/go"
 )
 
-func CreateEndpoint(ctx context.Context, endpointId string, cfg model.Config, svixClient *svixgo.Svix, svixAppId string) error {
-	if err := makeSureEventTypesFromCfgAreCreated(ctx, svixClient, cfg); err != nil {
+func CreateEndpoint(ctx context.Context, endpointId string, cfg model.Config, svixApp App) error {
+	if err := makeSureEventTypesFromCfgAreCreated(ctx, cfg, svixApp); err != nil {
 		return fmt.Errorf("makeSureEventTypesFromCfgAreCreated: %w", err)
 	}
 
@@ -23,7 +23,7 @@ func CreateEndpoint(ctx context.Context, endpointId string, cfg model.Config, sv
 		Version:     1,
 	}
 	opts := &svixgo.PostOptions{IdempotencyKey: &endpointId}
-	if out, err := svixClient.Endpoint.CreateWithOptions(svixAppId, endpointIn, opts); err != nil {
+	if out, err := svixApp.Client.Endpoint.CreateWithOptions(svixApp.AppId, endpointIn, opts); err != nil {
 		return fmt.Errorf("svix.Svix.Endpoint.CreateWithOptions: %w", err)
 	} else {
 		dumpOut := spew.Sdump(out)
@@ -33,13 +33,13 @@ func CreateEndpoint(ctx context.Context, endpointId string, cfg model.Config, sv
 	return nil
 }
 
-func makeSureEventTypesFromCfgAreCreated(ctx context.Context, svixClient *svixgo.Svix, cfg model.Config) error {
+func makeSureEventTypesFromCfgAreCreated(ctx context.Context, cfg model.Config, svixApp App) error {
 	includeArchived, withContent := true, true
 	eventTypeListOptions := svixgo.EventTypeListOptions{
 		IncludeArchived: &includeArchived,
 		WithContent:     &withContent,
 	}
-	list, err := svixClient.EventType.List(&eventTypeListOptions)
+	list, err := svixApp.Client.EventType.List(&eventTypeListOptions)
 	if err != nil {
 		return fmt.Errorf("svix.Svix.EventType.List: %w", err)
 	}
@@ -57,7 +57,7 @@ func makeSureEventTypesFromCfgAreCreated(ctx context.Context, svixClient *svixgo
 				Archived: &archived,
 				Name:     newEventType,
 			}
-			if out, err := svixClient.EventType.Create(&eventTypeIn); err != nil {
+			if out, err := svixApp.Client.EventType.Create(&eventTypeIn); err != nil {
 				return fmt.Errorf("svix.Svix.EventType.Create: %w", err)
 			} else {
 				dumpOut := spew.Sdump(out)
@@ -69,14 +69,14 @@ func makeSureEventTypesFromCfgAreCreated(ctx context.Context, svixClient *svixgo
 	return nil
 }
 
-func DeleteOneEndpoint(endpointId string, svixClient *svixgo.Svix, svixAppId string) error {
-	if err := svixClient.Endpoint.Delete(svixAppId, endpointId); err != nil {
+func DeleteOneEndpoint(endpointId string, svixApp App) error {
+	if err := svixApp.Client.Endpoint.Delete(svixApp.AppId, endpointId); err != nil {
 		return fmt.Errorf("svix.Svix.Endpoint.Delete: %w", err)
 	}
 	return nil
 }
 
-func UpdateOneEndpoint(ctx context.Context, endpointId string, updatedCfg model.ConfigInserted, svixClient *svixgo.Svix, svixAppId string) error {
+func UpdateOneEndpoint(ctx context.Context, endpointId string, updatedCfg *model.ConfigInserted, svixApp App) error {
 	disabled := !updatedCfg.Active
 	endpointUpdate := svixgo.EndpointUpdate{
 		Disabled:    &disabled,
@@ -85,7 +85,7 @@ func UpdateOneEndpoint(ctx context.Context, endpointId string, updatedCfg model.
 		Url:         updatedCfg.Endpoint,
 		Version:     1,
 	}
-	if out, err := svixClient.Endpoint.Update(svixAppId, endpointId, &endpointUpdate); err != nil {
+	if out, err := svixApp.Client.Endpoint.Update(svixApp.AppId, endpointId, &endpointUpdate); err != nil {
 		return fmt.Errorf("svix.Svix.Endpoint.Update: %w", err)
 	} else {
 		sharedlogging.GetLogger(ctx).Debug("svix.Svix.Endpoint.Update: ", spew.Sdump(out))
@@ -94,11 +94,11 @@ func UpdateOneEndpoint(ctx context.Context, endpointId string, updatedCfg model.
 	return nil
 }
 
-func RotateOneEndpointSecret(ctx context.Context, endpointId, secret string, svixClient *svixgo.Svix, svixAppId string) error {
+func RotateOneEndpointSecret(ctx context.Context, endpointId, secret string, svixApp App) error {
 	endpointSecretRotateIn := &svixgo.EndpointSecretRotateIn{
 		Key: *svixgo.NullableString("whsec_" + secret),
 	}
-	if err := svixClient.Endpoint.RotateSecret(svixAppId, endpointId, endpointSecretRotateIn); err != nil {
+	if err := svixApp.Client.Endpoint.RotateSecret(svixApp.AppId, endpointId, endpointSecretRotateIn); err != nil {
 		return fmt.Errorf("svix.Svix.Endpoint.RotateSecret: %w", err)
 	} else {
 		sharedlogging.GetLogger(ctx).Debug("svix.Svix.Endpoint.RotateSecret: OK")

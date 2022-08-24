@@ -9,19 +9,21 @@ import (
 	"github.com/numary/webhooks/pkg/model"
 	"github.com/numary/webhooks/pkg/storage"
 	"github.com/numary/webhooks/pkg/svix"
-	svixgo "github.com/svix/svix-webhooks/go"
 )
 
-var ErrConfigNotFound = errors.New("config not found")
+var (
+	ErrConfigNotFound    = errors.New("config not found")
+	ErrConfigNotModified = errors.New("config not modified")
+)
 
-func InsertOneConfig(cfg model.Config, ctx context.Context, store storage.Store, svixClient *svixgo.Svix, svixAppId string) (string, error) {
+func InsertOneConfig(cfg model.Config, ctx context.Context, store storage.Store, svixApp svix.App) (string, error) {
 	var id string
 	var err error
 	if id, err = store.InsertOneConfig(ctx, cfg); err != nil {
 		return "", fmt.Errorf("store.InsertOneConfig: %w", err)
 	}
 
-	if err := svix.CreateEndpoint(ctx, id, cfg, svixClient, svixAppId); err != nil {
+	if err := svix.CreateEndpoint(ctx, id, cfg, svixApp); err != nil {
 		if _, err = store.DeleteOneConfig(ctx, id); err != nil {
 			return "", fmt.Errorf("store.DeleteOneConfig: %w", err)
 		}
@@ -32,14 +34,14 @@ func InsertOneConfig(cfg model.Config, ctx context.Context, store storage.Store,
 	return id, nil
 }
 
-func DeleteOneConfig(ctx context.Context, id string, store storage.Store, svixClient *svixgo.Svix, svixAppId string) error {
+func DeleteOneConfig(ctx context.Context, id string, store storage.Store, svixApp svix.App) error {
 	if deletedCount, err := store.DeleteOneConfig(ctx, id); err != nil {
 		return fmt.Errorf("store.DeleteOneConfig: %w", err)
 	} else if deletedCount == 0 {
 		return ErrConfigNotFound
 	}
 
-	if err := svix.DeleteOneEndpoint(id, svixClient, svixAppId); err != nil {
+	if err := svix.DeleteOneEndpoint(id, svixApp); err != nil {
 		return fmt.Errorf("svix.DeleteOneEndpoint: %w", err)
 	}
 
@@ -47,23 +49,25 @@ func DeleteOneConfig(ctx context.Context, id string, store storage.Store, svixCl
 	return nil
 }
 
-func ActivateOneConfig(active bool, ctx context.Context, id string, store storage.Store, svixClient *svixgo.Svix, svixAppId string) error {
+func ActivateOneConfig(active bool, ctx context.Context, id string, store storage.Store, svixApp svix.App) error {
 	updatedCfg, modifiedCount, err := store.UpdateOneConfigActivation(ctx, id, active)
 	if err != nil {
 		return fmt.Errorf("store.UpdateOneConfigActivation: %w", err)
-	} else if modifiedCount == 0 {
+	} else if updatedCfg == nil {
 		return ErrConfigNotFound
+	} else if modifiedCount == 0 {
+		return ErrConfigNotModified
 	}
 
-	if err := svix.UpdateOneEndpoint(ctx, id, updatedCfg, svixClient, svixAppId); err != nil {
+	if err := svix.UpdateOneEndpoint(ctx, id, updatedCfg, svixApp); err != nil {
 		return fmt.Errorf("svix.UpdateOneEndpoint: %w", err)
 	}
 
 	return nil
 }
 
-func RotateOneConfigSecret(ctx context.Context, id string, secret string, store storage.Store, svixClient *svixgo.Svix, svixAppId string) error {
-	if err := svix.RotateOneEndpointSecret(ctx, id, secret, svixClient, svixAppId); err != nil {
+func RotateOneConfigSecret(ctx context.Context, id string, secret string, store storage.Store, svixApp svix.App) error {
+	if err := svix.RotateOneEndpointSecret(ctx, id, secret, svixApp); err != nil {
 		return fmt.Errorf("svix.RotateOneEndpointSecret: %w", err)
 	}
 

@@ -51,44 +51,12 @@ func TestWorker(t *testing.T) {
 		require.NoError(t, conn.Close())
 	}()
 
-	t.Run("health check server", func(t *testing.T) {
-		req, err := http.NewRequestWithContext(context.Background(),
-			http.MethodGet, serverBaseURL+server.PathHealthCheck, nil)
-		require.NoError(t, err)
-		resp, err := httpClient.Do(req)
-		require.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		require.NoError(t, resp.Body.Close())
-	})
-
-	t.Run("health check worker", func(t *testing.T) {
-		req, err := http.NewRequestWithContext(context.Background(),
-			http.MethodGet, workerBaseURL+server.PathHealthCheck, nil)
-		require.NoError(t, err)
-		resp, err := httpClient.Do(req)
-		require.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		require.NoError(t, resp.Body.Close())
-	})
-
-	t.Run("clean existing configs", func(t *testing.T) {
-		req, err := http.NewRequestWithContext(context.Background(),
-			http.MethodGet, serverBaseURL+server.PathConfigs, nil)
-		require.NoError(t, err)
-		resp, err := httpClient.Do(req)
-		require.NoError(t, err)
-		assert.Equal(t, http.StatusOK, resp.StatusCode)
-		cur := decodeCursorResponse[model.ConfigInserted](t, resp.Body)
-		for _, cfg := range cur.Data {
-			req, err := http.NewRequestWithContext(context.Background(), http.MethodDelete, serverBaseURL+server.PathConfigs+"/"+cfg.ID, nil)
-			require.NoError(t, err)
-			resp, err := httpClient.Do(req)
-			require.NoError(t, err)
-			require.Equal(t, http.StatusOK, resp.StatusCode)
-			require.NoError(t, resp.Body.Close())
-		}
-		require.NoError(t, resp.Body.Close())
-	})
+	resBody := requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
+	cur := decodeCursorResponse[model.ConfigInserted](t, resBody)
+	for _, cfg := range cur.Data {
+		requestServer(t, http.MethodDelete, server.PathConfigs+"/"+cfg.ID, http.StatusOK)
+	}
+	require.NoError(t, resBody.Close())
 
 	eventType := "TYPE"
 	endpoint := "https://example.com"
@@ -100,18 +68,9 @@ func TestWorker(t *testing.T) {
 	require.NoError(t, cfg.Validate())
 
 	var insertedId string
-
-	t.Run("POST "+server.PathConfigs, func(t *testing.T) {
-		req, err := http.NewRequestWithContext(context.Background(),
-			http.MethodPost, serverBaseURL+server.PathConfigs, buffer(t, cfg))
-		require.NoError(t, err)
-		req.Header.Set("Content-Type", "application/json")
-		resp, err := httpClient.Do(req)
-		require.NoError(t, err)
-		require.Equal(t, http.StatusOK, resp.StatusCode)
-		require.NoError(t, json.NewDecoder(resp.Body).Decode(&insertedId))
-		require.NoError(t, resp.Body.Close())
-	})
+	resBody = requestServer(t, http.MethodPost, server.PathConfigs, http.StatusOK, cfg)
+	require.NoError(t, json.NewDecoder(resBody).Decode(&insertedId))
+	require.NoError(t, resBody.Close())
 
 	n := 3
 	var messages []kafkago.Message
@@ -122,29 +81,27 @@ func TestWorker(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEqual(t, 0, nbBytes)
 
-	msgs := 0
-	for msgs != n {
-		cur, err := mongoClient.Database(
-			viper.GetString(constants.StorageMongoDatabaseNameFlag)).
-			Collection("messages").Find(context.Background(), bson.M{}, nil)
-		require.NoError(t, err)
-		var results []message
-		require.NoError(t, cur.All(context.Background(), &results))
-		msgs = len(results)
-		time.Sleep(time.Second)
-	}
-
-	assert.Equal(t, n, msgs)
-
-	t.Run("DELETE "+server.PathConfigs, func(t *testing.T) {
-		req, err := http.NewRequestWithContext(context.Background(),
-			http.MethodDelete, serverBaseURL+server.PathConfigs+"/"+insertedId, nil)
-		require.NoError(t, err)
-		resp, err := httpClient.Do(req)
-		require.NoError(t, err)
-		require.Equal(t, http.StatusOK, resp.StatusCode)
-		require.NoError(t, resp.Body.Close())
+	t.Run("health check", func(t *testing.T) {
+		requestWorker(t, http.MethodGet, server.PathHealthCheck, http.StatusOK)
 	})
+
+	t.Run("messages", func(t *testing.T) {
+		msgs := 0
+		for msgs != n {
+			cur, err := mongoClient.Database(
+				viper.GetString(constants.StorageMongoDatabaseNameFlag)).
+				Collection("messages").Find(context.Background(), bson.M{}, nil)
+			require.NoError(t, err)
+			var results []message
+			require.NoError(t, cur.All(context.Background(), &results))
+			msgs = len(results)
+			time.Sleep(time.Second)
+		}
+		time.Sleep(time.Second)
+		assert.Equal(t, n, msgs)
+	})
+
+	requestServer(t, http.MethodDelete, server.PathConfigs+"/"+insertedId, http.StatusOK)
 
 	require.NoError(t, mongoClient.Database(
 		viper.GetString(constants.StorageMongoDatabaseNameFlag)).

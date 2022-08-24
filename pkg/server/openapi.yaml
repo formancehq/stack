@@ -8,7 +8,7 @@ paths:
       summary: Health check of the server.
       operationId: healthCheck
       tags:
-        - Health check
+        - Health
       responses:
         "200":
           description: The server is healthy.
@@ -16,10 +16,25 @@ paths:
 
   /configs:
     get:
-      summary: Get all configs, sorted by modification date descending.
-      operationId: getAllConfigs
+      summary: Get many configs, sorted by updated date descending.
+      operationId: getManyConfigs
       tags:
         - Configs
+      parameters:
+        - name: id
+          in: query
+          description: Optional filter by Config ID
+          required: false
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+        - name: endpoint
+          in: query
+          description: Optional filter by endpoint URL
+          required: false
+          schema:
+            type: string
+            example: https://example.com
       responses:
         "200":
           description: OK
@@ -48,6 +63,8 @@ paths:
       description: |
         Insert a new config. 
         
+        The endpoint should be a valid https URL and be unique.
+        
         The secret is the endpoint's verification secret. 
         If not passed or empty, a secret is automatically generated. 
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
@@ -62,25 +79,14 @@ paths:
         required: true
       responses:
         "200":
-          description: OK
+          description: Config created successfully, returns its ID.
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                required:
-                  - cursor
-                properties:
-                  cursor:
-                    allOf:
-                      - $ref: '#/components/schemas/Cursor'
-                      - type: object
-                        properties:
-                          data:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/ConfigInserted'
-                        required:
-                          - data
+                type: string
+                description: Config ID
+                example: 4997257d-dfb6-445b-929c-cbe2ab182818
+
         "400":
           description: Bad Request
           content:
@@ -123,7 +129,10 @@ paths:
             example: 4997257d-dfb6-445b-929c-cbe2ab182818
       responses:
         "200":
-          description: OK
+          description: Config successfully activated.
+          content: {}
+        "304":
+          description: Config not modified, was already activated.
           content: {}
 
   /configs/{id}/deactivate:
@@ -142,7 +151,10 @@ paths:
             example: 4997257d-dfb6-445b-929c-cbe2ab182818
       responses:
         "200":
-          description: OK
+          description: Config successfully deactivated.
+          content: {}
+        "304":
+          description: Config not modified, was already deactivated.
           content: {}
 
   /configs/{id}/secret/rotate:
