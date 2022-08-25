@@ -5,7 +5,8 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/numary/webhooks/pkg/storage"
-	"github.com/numary/webhooks/pkg/svix"
+	"github.com/numary/webhooks/pkg/webhooks"
+	"github.com/numary/webhooks/pkg/webhooks/svix"
 )
 
 const (
@@ -21,15 +22,15 @@ const (
 type serverHandler struct {
 	*httprouter.Router
 
-	store   storage.Store
-	svixApp svix.App
+	store  storage.Store
+	engine webhooks.Engine
 }
 
-func newServerHandler(store storage.Store, svixApp svix.App) http.Handler {
+func newServerHandler(store storage.Store, engine svix.Engine) http.Handler {
 	h := &serverHandler{
-		Router:  httprouter.New(),
-		store:   store,
-		svixApp: svixApp,
+		Router: httprouter.New(),
+		store:  store,
+		engine: engine,
 	}
 
 	h.Router.GET(PathHealthCheck, h.healthCheckHandle)

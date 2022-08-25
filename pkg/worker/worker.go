@@ -1,95 +1,41 @@
-package kafka
+package worker
 
 import (
 	"context"
-	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"time"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/pkg/model"
 	"github.com/numary/webhooks/pkg/storage"
-	"github.com/numary/webhooks/pkg/svix"
+	"github.com/numary/webhooks/pkg/webhooks"
+	"github.com/numary/webhooks/pkg/webhooks/svix"
 	kafkago "github.com/segmentio/kafka-go"
-	"github.com/segmentio/kafka-go/sasl/scram"
-	"github.com/spf13/viper"
 )
 
 type Worker struct {
 	Reader Reader
 	Store  storage.Store
 
-	svixApp svix.App
+	engine webhooks.Engine
 
 	stopChan chan chan struct{}
 }
 
-func NewWorker(store storage.Store, svixApp svix.App) (*Worker, error) {
+func NewWorker(store storage.Store, engine svix.Engine) (*Worker, error) {
 	cfg, err := NewKafkaReaderConfig()
 	if err != nil {
-		return nil, fmt.Errorf("kafka.NewKafkaReaderConfig: %w", err)
+		return nil, fmt.Errorf("NewKafkaReaderConfig: %w", err)
 	}
 
 	return &Worker{
 		Reader:   kafkago.NewReader(cfg),
 		Store:    store,
-		svixApp:  svixApp,
+		engine:   engine,
 		stopChan: make(chan chan struct{}),
-	}, nil
-}
-
-var ErrMechanism = errors.New("unrecognized SASL mechanism")
-
-func NewKafkaReaderConfig() (kafkago.ReaderConfig, error) {
-	dialer := kafkago.DefaultDialer
-	if viper.GetBool(constants.KafkaTLSEnabledFlag) {
-		dialer.TLS = &tls.Config{
-			MinVersion: tls.VersionTLS12,
-		}
-	}
-
-	if viper.GetBool(constants.KafkaSASLEnabledFlag) {
-		var alg scram.Algorithm
-		switch mechanism := viper.GetString(constants.KafkaSASLMechanismFlag); mechanism {
-		case "SCRAM-SHA-512":
-			alg = scram.SHA512
-		case "SCRAM-SHA-256":
-			alg = scram.SHA256
-		default:
-			return kafkago.ReaderConfig{}, ErrMechanism
-		}
-		mechanism, err := scram.Mechanism(alg,
-			viper.GetString(constants.KafkaUsernameFlag), viper.GetString(constants.KafkaPasswordFlag))
-		if err != nil {
-			return kafkago.ReaderConfig{}, fmt.Errorf("scram.Mechanism: %w", err)
-		}
-		dialer.SASLMechanism = mechanism
-	}
-
-	brokers := viper.GetStringSlice(constants.KafkaBrokersFlag)
-	if len(brokers) == 0 {
-		brokers = []string{constants.DefaultKafkaBroker}
-	}
-
-	topics := viper.GetStringSlice(constants.KafkaTopicsFlag)
-	if len(topics) == 0 {
-		topics = []string{constants.DefaultKafkaTopic}
-	}
-
-	groupID := viper.GetString(constants.KafkaGroupIDFlag)
-	if groupID == "" {
-		groupID = constants.DefaultKafkaGroupID
-	}
-
-	return kafkago.ReaderConfig{
-		Brokers:     brokers,
-		GroupID:     groupID,
-		GroupTopics: topics,
-		MinBytes:    1,
-		MaxBytes:    10e5,
-		Dialer:      dialer,
 	}, nil
 }
 
@@ -124,8 +70,17 @@ func (w *Worker) Run(ctx context.Context) error {
 				"headers":   msg.Headers,
 			}).Debug("worker: new kafka message fetched")
 
-			if err := processEventMessage(ctx, msg.Value, w.svixApp); err != nil {
-				return fmt.Errorf("processEventMessage: %w", err)
+			ev := model.KafkaEvent{}
+			if err := json.Unmarshal(msg.Value, &ev); err != nil {
+				return fmt.Errorf("json.Unmarshal: %w", err)
+			}
+
+			if err := ev.Validate(); err != nil {
+				return fmt.Errorf("model.KafkaEvent.Validate: %w", err)
+			}
+
+			if err := w.engine.ProcessKafkaEvent(ctx, ev); err != nil {
+				return fmt.Errorf("engine.ProcessKafkaEvent: %w", err)
 			}
 
 			if err := w.Reader.CommitMessages(ctx, msg); err != nil {

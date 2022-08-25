@@ -7,9 +7,8 @@ import (
 
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks/pkg/httpserver"
-	"github.com/numary/webhooks/pkg/kafka"
 	"github.com/numary/webhooks/pkg/storage/mongo"
-	"github.com/numary/webhooks/pkg/svix"
+	"github.com/numary/webhooks/pkg/webhooks/svix"
 	"go.uber.org/fx"
 )
 
@@ -19,8 +18,8 @@ func StartModule(httpClient *http.Client, addr string) fx.Option {
 			func() (*http.Client, string) { return httpClient, addr },
 			httpserver.NewMuxServer,
 			mongo.NewConfigStore,
-			svix.New,
-			kafka.NewWorker,
+			svix.NewEngine,
+			NewWorker,
 			newWorkerHandler,
 		),
 		fx.Invoke(httpserver.RegisterHandler),
@@ -29,7 +28,7 @@ func StartModule(httpClient *http.Client, addr string) fx.Option {
 	)
 }
 
-func run(lc fx.Lifecycle, w *kafka.Worker) {
+func run(lc fx.Lifecycle, w *Worker) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			sharedlogging.GetLogger(ctx).Debugf("starting worker...")

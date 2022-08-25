@@ -75,7 +75,7 @@ func (s Store) FindManyConfigs(ctx context.Context, filter map[string]any) (shar
 func (s Store) InsertOneConfig(ctx context.Context, cfg model.Config) (string, error) {
 	configInserted := model.ConfigInserted{
 		Config:    cfg,
-		ID:        uuid.New().String(),
+		ID:        uuid.NewString(),
 		Active:    true,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),

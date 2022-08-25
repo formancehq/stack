@@ -9,7 +9,6 @@ import (
 
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks/constants"
-	"github.com/numary/webhooks/pkg/kafka"
 	"github.com/numary/webhooks/pkg/model"
 	"github.com/numary/webhooks/pkg/server"
 	"github.com/numary/webhooks/pkg/worker"
@@ -112,7 +111,7 @@ func TestWorker(t *testing.T) {
 }
 
 func newEventMessage(t *testing.T, eventType string, id int) kafkago.Message {
-	ev := kafka.Event{
+	ev := model.KafkaEvent{
 		Date: time.Now().UTC(),
 		Type: eventType,
 		Payload: map[string]any{

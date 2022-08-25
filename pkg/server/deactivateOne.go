@@ -10,7 +10,7 @@ import (
 )
 
 func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	err := service.ActivateOneConfig(false, r.Context(), p.ByName(PathParamId), h.store, h.svixApp)
+	err := service.ActivateOneConfig(r.Context(), false, p.ByName(PathParamId), h.store, h.engine)
 	if err == nil {
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathDeactivate)
 	} else if errors.Is(err, service.ErrConfigNotFound) {

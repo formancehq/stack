@@ -32,7 +32,7 @@ func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if id, err := service.InsertOneConfig(cfg, r.Context(), h.store, h.svixApp); err != nil {
+	if id, err := service.InsertOneConfig(r.Context(), cfg, h.store, h.engine); err != nil {
 		sharedlogging.GetLogger(r.Context()).Errorf("POST %s: %s", PathConfigs, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return

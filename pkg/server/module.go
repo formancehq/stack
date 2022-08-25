@@ -5,7 +5,7 @@ import (
 
 	"github.com/numary/webhooks/pkg/httpserver"
 	"github.com/numary/webhooks/pkg/storage/mongo"
-	"github.com/numary/webhooks/pkg/svix"
+	"github.com/numary/webhooks/pkg/webhooks/svix"
 	"go.uber.org/fx"
 )
 
@@ -15,7 +15,7 @@ func StartModule(httpClient *http.Client, addr string) fx.Option {
 			func() (*http.Client, string) { return httpClient, addr },
 			httpserver.NewMuxServer,
 			mongo.NewConfigStore,
-			svix.New,
+			svix.NewEngine,
 			newServerHandler,
 		),
 		fx.Invoke(httpserver.RegisterHandler),
