@@ -88,7 +88,6 @@ services:
       SVIX_JWT_SECRET: "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
       SVIX_LOG_LEVEL: "trace"
       SVIX_WHITELABEL_HEADERS: "true"
-      SVIX_ENDPOINT_HTTPS_ONLY: "true"
 
   postgres:
     image: postgres

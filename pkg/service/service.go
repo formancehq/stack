@@ -6,9 +6,9 @@ import (
 	"fmt"
 
 	"github.com/numary/go-libs/sharedlogging"
+	"github.com/numary/webhooks/pkg/engine"
 	"github.com/numary/webhooks/pkg/model"
 	"github.com/numary/webhooks/pkg/storage"
-	"github.com/numary/webhooks/pkg/webhooks"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 	ErrConfigNotModified = errors.New("config not modified")
 )
 
-func InsertOneConfig(ctx context.Context, cfg model.Config, store storage.Store, engine webhooks.Engine) (string, error) {
+func InsertOneConfig(ctx context.Context, cfg model.Config, store storage.Store, engine engine.Engine) (string, error) {
 	var id string
 	var err error
 	if id, err = store.InsertOneConfig(ctx, cfg); err != nil {
@@ -34,7 +34,7 @@ func InsertOneConfig(ctx context.Context, cfg model.Config, store storage.Store,
 	return id, nil
 }
 
-func DeleteOneConfig(ctx context.Context, id string, store storage.Store, engine webhooks.Engine) error {
+func DeleteOneConfig(ctx context.Context, id string, store storage.Store, engine engine.Engine) error {
 	var cfg model.Config
 	if cur, err := store.FindManyConfigs(ctx, map[string]any{"_id": id}); err != nil {
 		return fmt.Errorf("sotre.FindManyConfigs: %w", err)
@@ -61,7 +61,7 @@ func DeleteOneConfig(ctx context.Context, id string, store storage.Store, engine
 	return nil
 }
 
-func ActivateOneConfig(ctx context.Context, active bool, id string, store storage.Store, engine webhooks.Engine) error {
+func ActivateOneConfig(ctx context.Context, active bool, id string, store storage.Store, engine engine.Engine) error {
 	if cur, err := store.FindManyConfigs(ctx, map[string]any{"_id": id}); err != nil {
 		return fmt.Errorf("sotre.FindManyConfigs: %w", err)
 	} else if len(cur.Data) == 0 {
@@ -87,7 +87,7 @@ func ActivateOneConfig(ctx context.Context, active bool, id string, store storag
 	return nil
 }
 
-func RotateOneConfigSecret(ctx context.Context, id, secret string, store storage.Store, engine webhooks.Engine) error {
+func RotateOneConfigSecret(ctx context.Context, id, secret string, store storage.Store, engine engine.Engine) error {
 	var currentSecret string
 	if cur, err := store.FindManyConfigs(ctx, map[string]any{"_id": id}); err != nil {
 		return fmt.Errorf("sotre.FindManyConfigs: %w", err)

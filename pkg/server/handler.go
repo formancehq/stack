@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/numary/webhooks/pkg/engine"
+	"github.com/numary/webhooks/pkg/engine/svix"
 	"github.com/numary/webhooks/pkg/storage"
-	"github.com/numary/webhooks/pkg/webhooks"
-	"github.com/numary/webhooks/pkg/webhooks/svix"
 )
 
 const (
@@ -23,7 +23,7 @@ type serverHandler struct {
 	*httprouter.Router
 
 	store  storage.Store
-	engine webhooks.Engine
+	engine engine.Engine
 }
 
 func newServerHandler(store storage.Store, engine svix.Engine) http.Handler {

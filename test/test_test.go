@@ -65,13 +65,13 @@ type message struct {
 	Url string `json:"url" bson:"url"`
 }
 
-// Intercept the message requests to the Svix API and store them in a 'messages' Mongo collection.
+// Intercept the message requests to the Svix API and store them in a 'testMessages' Mongo collection.
 func (i Interceptor) RoundTrip(req *http.Request) (*http.Response, error) {
 	if strings.Contains(req.URL.String(), "/msg/") {
 		sharedlogging.Debugf("request intercepted: %s", req.URL.String())
 		_, err := mongoClient.Database(
 			viper.GetString(constants.StorageMongoDatabaseNameFlag)).
-			Collection("messages").InsertOne(context.Background(), message{req.URL.String()})
+			Collection("testMessages").InsertOne(context.Background(), message{req.URL.String()})
 		if err != nil {
 			return nil, fmt.Errorf("Interceptor.RoundTrip: %w", err)
 		}

@@ -3,9 +3,9 @@ package server
 import (
 	"net/http"
 
+	"github.com/numary/webhooks/pkg/engine/svix"
 	"github.com/numary/webhooks/pkg/httpserver"
 	"github.com/numary/webhooks/pkg/storage/mongo"
-	"github.com/numary/webhooks/pkg/webhooks/svix"
 	"go.uber.org/fx"
 )
 

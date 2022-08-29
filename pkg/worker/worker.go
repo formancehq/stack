@@ -2,17 +2,15 @@ package worker
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"time"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/pkg/model"
+	"github.com/numary/webhooks/pkg/engine"
+	"github.com/numary/webhooks/pkg/engine/svix"
 	"github.com/numary/webhooks/pkg/storage"
-	"github.com/numary/webhooks/pkg/webhooks"
-	"github.com/numary/webhooks/pkg/webhooks/svix"
 	kafkago "github.com/segmentio/kafka-go"
 )
 
@@ -20,7 +18,7 @@ type Worker struct {
 	Reader Reader
 	Store  storage.Store
 
-	engine webhooks.Engine
+	engine engine.Engine
 
 	stopChan chan chan struct{}
 }
@@ -66,21 +64,16 @@ func (w *Worker) Run(ctx context.Context) error {
 			sharedlogging.GetLogger(ctx).WithFields(map[string]any{
 				"time":      msg.Time.UTC().Format(time.RFC3339),
 				"partition": msg.Partition,
-				"data":      string(msg.Value),
 				"headers":   msg.Headers,
 			}).Debug("worker: new kafka message fetched")
 
-			ev := model.KafkaEvent{}
-			if err := json.Unmarshal(msg.Value, &ev); err != nil {
-				return fmt.Errorf("json.Unmarshal: %w", err)
+			eventType, err := FilterMessage(msg.Value)
+			if err != nil {
+				return err
 			}
 
-			if err := ev.Validate(); err != nil {
-				return fmt.Errorf("model.KafkaEvent.Validate: %w", err)
-			}
-
-			if err := w.engine.ProcessKafkaEvent(ctx, ev); err != nil {
-				return fmt.Errorf("engine.ProcessKafkaEvent: %w", err)
+			if err := w.engine.ProcessKafkaMessage(ctx, eventType, msg.Value); err != nil {
+				return fmt.Errorf("engine.ProcessKafkaMessage: %w", err)
 			}
 
 			if err := w.Reader.CommitMessages(ctx, msg); err != nil {

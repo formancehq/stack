@@ -25,6 +25,8 @@ type Store struct {
 	collection *mongo.Collection
 }
 
+var _ storage.Store = &Store{}
+
 func NewConfigStore() (storage.Store, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -83,7 +85,7 @@ func (s Store) InsertOneConfig(ctx context.Context, cfg model.Config) (string, e
 
 	res, err := s.collection.InsertOne(ctx, configInserted)
 	if err != nil {
-		return "", fmt.Errorf("store.Collection.InsertOne: %w", err)
+		return "", fmt.Errorf("Store.Collection.InsertOne: %w", err)
 	}
 
 	return res.InsertedID.(string), nil

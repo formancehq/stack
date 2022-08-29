@@ -1,0 +1,463 @@
+[
+  {
+    "date": "2022-06-30T08:59:23.295278218Z",
+    "ledger": "dott-557ce57d",
+    "payload": {
+      "postCommitVolumes": {
+        "dott": {
+          "EUR/2": {
+            "balance": 22766,
+            "input": 22766,
+            "output": 0
+          }
+        },
+        "world": {
+          "EUR/2": {
+            "balance": -378283,
+            "input": 0,
+            "output": 378283
+          }
+        }
+      },
+      "preCommitVolumes": {
+        "dott": {
+          "EUR/2": {
+            "balance": 21930,
+            "input": 21930,
+            "output": 0
+          }
+        },
+        "world": {
+          "EUR/2": {
+            "balance": -378137,
+            "input": 0,
+            "output": 378137
+          }
+        }
+      },
+      "transactions": [
+        {
+          "metadata": {},
+          "postCommitVolumes": {
+            "dott": {
+              "EUR/2": {
+                "balance": 22766,
+                "input": 22766,
+                "output": 0
+              }
+            },
+            "world": {
+              "EUR/2": {
+                "balance": -378283,
+                "input": 0,
+                "output": 378283
+              }
+            }
+          },
+          "postings": [
+            {
+              "amount": 690,
+              "asset": "EUR/2",
+              "destination": "pass:pending",
+              "source": "passes:zv4l8rs6l50sp3bc"
+            },
+            {
+              "amount": 836,
+              "asset": "EUR/2",
+              "destination": "dott",
+              "source": "rides:zv4l8rs6l50sp7e8"
+            }
+          ],
+          "preCommitVolumes": {
+            "dott": {
+              "EUR/2": {
+                "balance": 21930,
+                "input": 21930,
+                "output": 0
+              }
+            },
+            "world": {
+              "EUR/2": {
+                "balance": -378137,
+                "input": 0,
+                "output": 378137
+              }
+            }
+          },
+          "reference": "",
+          "timestamp": "2022-06-30T08:59:23Z",
+          "txid": 49
+        }
+      ],
+      "volumes": {
+        "dott": {
+          "EUR/2": {
+            "balance": 22766,
+            "input": 22766,
+            "output": 0
+          }
+        },
+        "world": {
+          "EUR/2": {
+            "balance": -378283,
+            "input": 0,
+            "output": 378283
+          }
+        }
+      }
+    },
+    "type": "COMMITTED_TRANSACTIONS"
+  },
+  {
+    "date": "2022-06-30T08:59:23.600079012Z",
+    "ledger": "dott-557ce57d",
+    "payload": {
+      "metadata": {
+        "date": "2022-06-30T08:59:23.232Z",
+        "minutes": 32,
+        "prices": {"ppm": 23,"unlock": 100}
+      },
+      "targetId": "49",
+      "targetType": "TRANSACTION"
+    },
+    "type": "SAVED_METADATA"
+  },
+  {
+    "date":"2022-07-06T21:16:35.92770476Z",
+    "payload":{
+      "adjustments":[
+        {
+          "absolute":false,
+          "amount":18750,
+          "date":"2022-07-06T21:15:04Z",
+          "raw":{
+            "amount":-18750,
+            "apiresource":{
+              "lastresponse":null
+            },
+            "availableon":1657142104,
+            "created":1657142104,
+            "currency":"eur",
+            "description":"paiement produit #224Y2AG9",
+            "exchangerate":0,
+            "fee":0,
+            "feedetails":[
+
+            ],
+            "id":"txn_1LIfYqFqW03ZYiNnZxQBtlqO",
+            "net":-18750,
+            "object":"balance_transaction",
+            "reportingcategory":"transfer",
+            "source":{
+              "applicationfee":null,
+              "charge":null,
+              "connectcollectiontransfer":null,
+              "dispute":null,
+              "feerefund":null,
+              "id":"tr_1LIfYqFqW03ZYiNncguRMbhm",
+              "issuingauthorization":null,
+              "issuingdispute":null,
+              "issuingtransaction":null,
+              "payout":null,
+              "refund":null,
+              "reversal":null,
+              "topup":null,
+              "transfer":{
+                "amount":18750,
+                "amountreversed":0,
+                "apiresource":{
+                  "lastresponse":null
+                },
+                "balancetransaction":{
+                  "amount":0,
+                  "apiresource":{
+                    "lastresponse":null
+                  },
+                  "availableon":0,
+                  "created":0,
+                  "currency":"",
+                  "description":"",
+                  "exchangerate":0,
+                  "fee":0,
+                  "feedetails":null,
+                  "id":"txn_1LIfYqFqW03ZYiNnZxQBtlqO",
+                  "net":0,
+                  "object":"",
+                  "reportingcategory":"",
+                  "source":null,
+                  "status":"",
+                  "type":""
+                },
+                "created":1657142104,
+                "currency":"eur",
+                "description":"paiement produit #224Y2AG9",
+                "destination":{
+                  "account":null,
+                  "id":"acct_1LIZgL2Ei4QFVvrY"
+                },
+                "destinationpayment":{
+                  "amount":0,
+                  "amountcaptured":0,
+                  "amountrefunded":0,
+                  "apiresource":{
+                    "lastresponse":null
+                  },
+                  "application":null,
+                  "applicationfee":null,
+                  "applicationfeeamount":0,
+                  "authorizationcode":"",
+                  "balancetransaction":null,
+                  "billingdetails":null,
+                  "calculatedstatementdescriptor":"",
+                  "captured":false,
+                  "created":0,
+                  "currency":"",
+                  "customer":null,
+                  "description":"",
+                  "destination":null,
+                  "dispute":null,
+                  "disputed":false,
+                  "failurebalancetransaction":null,
+                  "failurecode":"",
+                  "failuremessage":"",
+                  "frauddetails":null,
+                  "id":"py_1LIfYq2Ei4QFVvrYlv34VH1m",
+                  "invoice":null,
+                  "level3":{
+                    "customerreference":"",
+                    "lineitems":null,
+                    "merchantreference":"",
+                    "shippingaddresszip":"",
+                    "shippingamount":0,
+                    "shippingfromzip":""
+                  },
+                  "livemode":false,
+                  "metadata":null,
+                  "object":"",
+                  "onbehalfof":null,
+                  "order":null,
+                  "outcome":null,
+                  "paid":false,
+                  "paymentintent":null,
+                  "paymentmethod":"",
+                  "paymentmethoddetails":null,
+                  "receiptemail":"",
+                  "receiptnumber":"",
+                  "receipturl":"",
+                  "refunded":false,
+                  "refunds":null,
+                  "review":null,
+                  "shipping":null,
+                  "source":null,
+                  "sourcetransfer":null,
+                  "statementdescriptor":"",
+                  "statementdescriptorsuffix":"",
+                  "status":"",
+                  "transfer":null,
+                  "transferdata":null,
+                  "transfergroup":""
+                },
+                "id":"tr_1LIfYqFqW03ZYiNncguRMbhm",
+                "livemode":true,
+                "metadata":{
+                  "cashoutPayment":"62c59157110c00814d8b4568",
+                  "orderProduct":"62aa0ab93da8eee6468b4748"
+                },
+                "object":"transfer",
+                "reversals":{
+                  "apiresource":{
+                    "lastresponse":null
+                  },
+                  "data":[
+
+                  ],
+                  "listmeta":{
+                    "hasmore":false,
+                    "totalcount":0,
+                    "url":"/v1/transfers/tr_1LIfYqFqW03ZYiNncguRMbhm/reversals"
+                  }
+                },
+                "reversed":false,
+                "sourcetransaction":null,
+                "sourcetype":"card",
+                "transfergroup":"order_UjG1nz6"
+              },
+              "type":"transfer"
+            },
+            "status":"available",
+            "type":"transfer"
+          },
+          "status":"succeeded"
+        }
+      ],
+      "amount":18750,
+      "asset":"EUR/2",
+      "createdAt":"2022-07-06T21:15:04Z",
+      "id":"eyJwcm92aWRlciI6InN0cmlwZSIsInJlZmVyZW5jZSI6InRyXzFMSWZZcUZxVzAzWllpTm5jZ3VSTWJobSIsInR5cGUiOiJwYXlvdXQifQ==",
+      "initialAmount":18750,
+      "provider":"stripe",
+      "raw":{
+        "amount":-18750,
+        "apiresource":{
+          "lastresponse":null
+        },
+        "availableon":1657142104,
+        "created":1657142104,
+        "currency":"eur",
+        "description":"paiement produit #224Y2AG9",
+        "exchangerate":0,
+        "fee":0,
+        "feedetails":[
+
+        ],
+        "id":"txn_1LIfYqFqW03ZYiNnZxQBtlqO",
+        "net":-18750,
+        "object":"balance_transaction",
+        "reportingcategory":"transfer",
+        "source":{
+          "applicationfee":null,
+          "charge":null,
+          "connectcollectiontransfer":null,
+          "dispute":null,
+          "feerefund":null,
+          "id":"tr_1LIfYqFqW03ZYiNncguRMbhm",
+          "issuingauthorization":null,
+          "issuingdispute":null,
+          "issuingtransaction":null,
+          "payout":null,
+          "refund":null,
+          "reversal":null,
+          "topup":null,
+          "transfer":{
+            "amount":18750,
+            "amountreversed":0,
+            "apiresource":{
+              "lastresponse":null
+            },
+            "balancetransaction":{
+              "amount":0,
+              "apiresource":{
+                "lastresponse":null
+              },
+              "availableon":0,
+              "created":0,
+              "currency":"",
+              "description":"",
+              "exchangerate":0,
+              "fee":0,
+              "feedetails":null,
+              "id":"txn_1LIfYqFqW03ZYiNnZxQBtlqO",
+              "net":0,
+              "object":"",
+              "reportingcategory":"",
+              "source":null,
+              "status":"",
+              "type":""
+            },
+            "created":1657142104,
+            "currency":"eur",
+            "description":"paiement produit #224Y2AG9",
+            "destination":{
+              "account":null,
+              "id":"acct_1LIZgL2Ei4QFVvrY"
+            },
+            "destinationpayment":{
+              "amount":0,
+              "amountcaptured":0,
+              "amountrefunded":0,
+              "apiresource":{
+                "lastresponse":null
+              },
+              "application":null,
+              "applicationfee":null,
+              "applicationfeeamount":0,
+              "authorizationcode":"",
+              "balancetransaction":null,
+              "billingdetails":null,
+              "calculatedstatementdescriptor":"",
+              "captured":false,
+              "created":0,
+              "currency":"",
+              "customer":null,
+              "description":"",
+              "destination":null,
+              "dispute":null,
+              "disputed":false,
+              "failurebalancetransaction":null,
+              "failurecode":"",
+              "failuremessage":"",
+              "frauddetails":null,
+              "id":"py_1LIfYq2Ei4QFVvrYlv34VH1m",
+              "invoice":null,
+              "level3":{
+                "customerreference":"",
+                "lineitems":null,
+                "merchantreference":"",
+                "shippingaddresszip":"",
+                "shippingamount":0,
+                "shippingfromzip":""
+              },
+              "livemode":false,
+              "metadata":null,
+              "object":"",
+              "onbehalfof":null,
+              "order":null,
+              "outcome":null,
+              "paid":false,
+              "paymentintent":null,
+              "paymentmethod":"",
+              "paymentmethoddetails":null,
+              "receiptemail":"",
+              "receiptnumber":"",
+              "receipturl":"",
+              "refunded":false,
+              "refunds":null,
+              "review":null,
+              "shipping":null,
+              "source":null,
+              "sourcetransfer":null,
+              "statementdescriptor":"",
+              "statementdescriptorsuffix":"",
+              "status":"",
+              "transfer":null,
+              "transferdata":null,
+              "transfergroup":""
+            },
+            "id":"tr_1LIfYqFqW03ZYiNncguRMbhm",
+            "livemode":true,
+            "metadata":{
+              "cashoutPayment":"62c59157110c00814d8b4568",
+              "orderProduct":"62aa0ab93da8eee6468b4748"
+            },
+            "object":"transfer",
+            "reversals":{
+              "apiresource":{
+                "lastresponse":null
+              },
+              "data":[
+
+              ],
+              "listmeta":{
+                "hasmore":false,
+                "totalcount":0,
+                "url":"/v1/transfers/tr_1LIfYqFqW03ZYiNncguRMbhm/reversals"
+              }
+            },
+            "reversed":false,
+            "sourcetransaction":null,
+            "sourcetype":"card",
+            "transfergroup":"order_UjG1nz6"
+          },
+          "type":"transfer"
+        },
+        "status":"available",
+        "type":"transfer"
+      },
+      "reference":"tr_1LIfYqFqW03ZYiNncguRMbhm",
+      "scheme":"other",
+      "status":"succeeded",
+      "type":"payout"
+    },
+    "type":"SAVED_PAYMENT"
+  }
+]
