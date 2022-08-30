@@ -28,12 +28,12 @@ const (
 	PrefixPayments = "payments"
 )
 
-func FilterMessage(msgValue []byte) (eventType string, err error) {
+func FilterMessage(msgValue []byte) (string, error) {
 	var ev EventMessage
 	if err := json.Unmarshal(msgValue, &ev); err != nil {
 		return "", fmt.Errorf("json.Unmarshal event message: %w", err)
 	}
-	eventType = strcase.ToSnake(ev.Type)
+	eventType := strcase.ToSnake(ev.Type)
 
 	switch ev.Type {
 	case ledger.EventTypeCommittedTransactions:
@@ -75,5 +75,5 @@ func FilterMessage(msgValue []byte) (eventType string, err error) {
 		return "", fmt.Errorf("%w: %s", ErrUnknownEventType, ev.Type)
 	}
 
-	return eventType, nil
+	return ev.Type, nil
 }
