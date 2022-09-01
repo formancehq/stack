@@ -21,32 +21,8 @@ services:
       - traefik.http.middlewares.cors.headers.accesscontrolmaxage=100
       - traefik.http.middlewares.cors.headers.addvaryheader=true
 
-  version:
-    build:
-      context: version
-      dockerfile: Dockerfile
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.version.rule=(Host(`localhost`) || Host(`proxy`)) &&  PathPrefix(`/info`)
-      - traefik.http.routers.version.entrypoints=web
-      - traefik.http.services.version.loadbalancer.server.port=3333
-      - traefik.http.routers.version.middlewares=version@docker,cors@docker
-      - traefik.http.middlewares.version.stripprefix.prefixes=/info
-
-  swagger:
-    image: "swaggerapi/swagger-ui:latest"
-    environment:
-      SWAGGER_JSON_URL: "https://api.numary.cloud/swagger.json"
-      BASE_URL: "/api"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.swagger.rule=(Host(`localhost`) || Host(`proxy`)) &&  PathPrefix(`/api`)
-      - traefik.http.routers.swagger.entrypoints=web
-      - traefik.http.services.swagger.loadbalancer.server.port=8080
-      - traefik.http.routers.swagger.middlewares=cors@docker
-
   control:
-    image: "ghcr.io/numary/control:f5e16a9ce598f6793fa1e4e25d7b1fb3123e7c95"
+    image: "ghcr.io/numary/control:ea34c57d139a8798504a499de9a52823c4713b4a"
     environment:
       API_URL_BACK: "http://proxy/api"
       API_URL_FRONT: "http://localhost/api"
@@ -177,7 +153,7 @@ services:
       - "27017:27017/tcp"
 
   payments:
-    image: "ghcr.io/numary/payments:v0.1.0"
+    image: "ghcr.io/numary/payments:v0.1.3"
     restart: always
     depends_on:
 #      mongodb:
