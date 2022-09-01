@@ -3,26 +3,21 @@
 version: '3'
 
 vars:
-  COMPOSE_FILE: -f docker-compose.proxy.yml -f docker-compose.ledger.yml -f docker-compose.payments.yml -f docker-compose.core.yml -f docker-compose.search.yml
+  COMPOSE_FILE: -f docker-compose.yml
 
 tasks:
   run:
     cmds:
-      - docker compose {{.COMPOSE_FILE}} up -d --remove-orphans
-      - docker compose {{.COMPOSE_FILE}} logs -f
-
+      - docker-compose {{.COMPOSE_FILE}} up -d --remove-orphans
   stop:
     cmds:
-      - docker compose {{.COMPOSE_FILE}} stop
-
+      - docker-compose {{.COMPOSE_FILE}} stop
   ps:
     cmds:
-      - docker compose {{.COMPOSE_FILE}} ps
+      - docker-compose {{.COMPOSE_FILE}} ps
   rm:
     deps:
       - stop
     cmds:
-      - docker compose {{.COMPOSE_FILE}} rm -f
-      - docker volume remove stack_postgres_data
-      - docker volume remove stack_mongodb_data
-      - docker volume remove stack_kafka_data
+      - docker-compose {{.COMPOSE_FILE}} rm -f
+      - docker volume prune -f
