@@ -1,5 +1,7 @@
 # Stack
 
+Launch stack with `task run` of `docker-compose up -d`
+
 ## Base URL
 - Ledger: http://localhost/ledger
 - Payments: http://localhost/payments
