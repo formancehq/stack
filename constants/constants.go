@@ -16,11 +16,6 @@ const (
 	KafkaSASLMechanismFlag = "kafka-sasl-mechanism"
 	KafkaUsernameFlag      = "kafka-username"
 	KafkaPasswordFlag      = "kafka-password"
-
-	SvixTokenFlag     = "svix-token"
-	SvixAppNameFlag   = "svix-app-name"
-	SvixAppIdFlag     = "svix-app-id"
-	SvixServerUrlFlag = "svix-server-url"
 )
 
 const (
@@ -29,6 +24,9 @@ const (
 
 	DefaultMongoConnString   = "mongodb://admin:admin@localhost:27017/"
 	DefaultMongoDatabaseName = "webhooks"
+
+	MongoCollectionConfigs  = "configs"
+	MongoCollectionRequests = "requests"
 
 	DefaultKafkaTopic   = "default"
 	DefaultKafkaBroker  = "localhost:9092"

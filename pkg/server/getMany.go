@@ -9,7 +9,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/numary/go-libs/sharedapi"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/pkg/model"
+	webhooks "github.com/numary/webhooks/pkg"
 )
 
 func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -21,12 +21,12 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 
 	cursor, err := h.store.FindManyConfigs(r.Context(), filter)
 	if err != nil {
-		sharedlogging.GetLogger(r.Context()).Errorf("storage.Store.FindManyConfigs: %s", err)
+		sharedlogging.GetLogger(r.Context()).Errorf("storage.store.FindManyConfigs: %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	resp := sharedapi.BaseResponse[model.ConfigInserted]{
+	resp := sharedapi.BaseResponse[webhooks.Config]{
 		Cursor: &cursor,
 	}
 

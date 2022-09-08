@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"net/http"
 	"syscall"
 
 	"github.com/numary/go-libs/sharedlogging"
@@ -30,7 +29,7 @@ func RunServer(cmd *cobra.Command, _ []string) error {
 
 	app := fx.New(
 		server.StartModule(
-			http.DefaultClient, viper.GetString(constants.HttpBindAddressServerFlag)))
+			viper.GetString(constants.HttpBindAddressServerFlag)))
 
 	if err := app.Start(cmd.Context()); err != nil {
 		return fmt.Errorf("fx.App.Start: %w", err)

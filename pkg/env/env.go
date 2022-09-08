@@ -29,11 +29,6 @@ func Init(flagSet *pflag.FlagSet) error {
 	flagSet.String(constants.KafkaUsernameFlag, "", "Kafka username")
 	flagSet.String(constants.KafkaPasswordFlag, "", "Kafka password")
 
-	flagSet.String(constants.SvixTokenFlag, "", "Svix auth token")
-	flagSet.String(constants.SvixAppNameFlag, "", "Svix App Name")
-	flagSet.String(constants.SvixAppIdFlag, "", "Svix App ID")
-	flagSet.String(constants.SvixServerUrlFlag, "", "Svix Server URL")
-
 	if err := viper.BindPFlags(flagSet); err != nil {
 		return fmt.Errorf("viper.BinPFlags: %w", err)
 	}

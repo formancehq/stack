@@ -14,10 +14,6 @@ services:
       - "8080:8080"
     environment:
       STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
-      SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
-      SVIX_SERVER_URL: "http://svix:8071"
-      SVIX_APP_NAME: "webhooks"
-      SVIX_APP_ID: "84a0dabe-71d3-453d-a089-f9f6dbe3402e"
 
   worker:
     command: reflex -r '\.go' -s -- sh -c "go run . worker"
@@ -34,12 +30,7 @@ services:
       - "8081:8081"
     environment:
       STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
-      KAFKA_DEFAULT_TOPIC: "default"
       KAFKA_BROKERS: "redpanda:29092"
-      SVIX_TOKEN: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NTk3MzMwMDUsImV4cCI6MTk3NTA5MzAwNSwibmJmIjoxNjU5NzMzMDA1LCJpc3MiOiJzdml4LXNlcnZlciIsInN1YiI6Im9yZ18yM3JiOFlkR3FNVDBxSXpwZ0d3ZFhmSGlyTXUifQ.qVZYqK6s5Srk19LXwQj0TlulRD97jsJ73N2Ti6TJU68"
-      SVIX_SERVER_URL: "http://svix:8071"
-      SVIX_APP_NAME: "webhooks"
-      SVIX_APP_ID: "84a0dabe-71d3-453d-a089-f9f6dbe3402e"
 
   mongo:
     image: mongo
@@ -53,7 +44,7 @@ services:
         condition: service_healthy
 
   redpanda:
-    image: docker.vectorized.io/vectorized/redpanda
+    image: docker.vectorized.io/vectorized/redpanda:v22.2.2
     command:
       - redpanda
       - start
@@ -75,36 +66,34 @@ services:
       retries: 5
     ports:
       - "9092:9092"
+      - "29092:29092"
       - "9644:9644"
 
-  svix:
-    image: svix/svix-server
+  redpanda-config:
+    image: docker.vectorized.io/vectorized/redpanda:v22.2.2
+    command:
+      - cluster
+      - config
+      - import
+      - --filename
+      - /etc/redpanda/redpanda.yaml
+      - --api-urls
+      - redpanda:9644
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    volumes:
+      - ./config/redpanda/config.yaml:/etc/redpanda/redpanda.yaml:ro
+
+  redpanda-ui:
+    image: docker.redpanda.com/vectorized/console:v2.0.2
     ports:
-      - "8071:8071"
+      - "8082:8080"
+    depends_on:
+      redpanda:
+        condition: service_healthy
     environment:
-      WAIT_FOR: "true"  # We want to wait for the default services
-      SVIX_REDIS_DSN: "redis://redis:6379"
-      SVIX_DB_DSN: "postgresql://webhooks:webhooks@postgres/webhooks"
-      SVIX_JWT_SECRET: "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
-      SVIX_LOG_LEVEL: "trace"
-      SVIX_WHITELABEL_HEADERS: "true"
-
-  postgres:
-    image: postgres
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U webhooks" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    environment:
-      POSTGRES_USER: "webhooks"
-      POSTGRES_PASSWORD: "webhooks"
-      POSTGRES_DB: "webhooks"
-
-  redis:
-    image: redis:alpine
-    # Enable persistence
-    command: "--save 60 500 --appendonly yes --appendfsync everysec"
+      KAFKA_BROKERS: redpanda:29092
 
   collector:
     image: otel/opentelemetry-collector

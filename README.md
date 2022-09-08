@@ -66,10 +66,6 @@ Flags:
       --log-level string                     Log level (default "info")
       --storage-mongo-conn-string string     Mongo connection string (default "mongodb://admin:admin@localhost:27017/")
       --storage-mongo-database-name string   Mongo database name (default "webhooks")
-      --svix-app-id string                   Svix App ID
-      --svix-app-name string                 Svix App Name
-      --svix-server-url string               Svix Server URL
-      --svix-token string                    Svix auth token
 
 Use "webhooks [command] --help" for more information about a command. 
 ```

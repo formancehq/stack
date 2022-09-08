@@ -1,4 +1,4 @@
-package model
+package webhooks
 
 import (
 	"encoding/base64"
@@ -8,32 +8,32 @@ import (
 )
 
 func TestConfig_Validate(t *testing.T) {
-	cfg := Config{
+	cfg := ConfigUser{
 		Endpoint:   "https://example.com",
 		EventTypes: []string{"TYPE1", "TYPE2"},
 	}
 	assert.NoError(t, cfg.Validate())
 
-	cfg = Config{
+	cfg = ConfigUser{
 		Endpoint:   "https://example.com",
 		Secret:     NewSecret(),
 		EventTypes: []string{"TYPE1", "TYPE2"},
 	}
 	assert.NoError(t, cfg.Validate())
 
-	cfg = Config{
+	cfg = ConfigUser{
 		Endpoint:   " http://invalid",
 		EventTypes: []string{"TYPE1", "TYPE2"},
 	}
 	assert.Error(t, cfg.Validate())
 
-	cfg = Config{
+	cfg = ConfigUser{
 		Endpoint:   "https://example.com",
 		EventTypes: []string{"TYPE1", ""},
 	}
 	assert.Error(t, cfg.Validate())
 
-	cfg = Config{
+	cfg = ConfigUser{
 		Endpoint:   "https://example.com",
 		Secret:     base64.StdEncoding.EncodeToString([]byte(`invalid`)),
 		EventTypes: []string{"TYPE1", "TYPE2"},

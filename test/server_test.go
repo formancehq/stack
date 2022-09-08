@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/numary/webhooks/constants"
-	"github.com/numary/webhooks/pkg/model"
+	webhooks "github.com/numary/webhooks/pkg"
 	"github.com/numary/webhooks/pkg/server"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -19,7 +20,7 @@ import (
 func TestServer(t *testing.T) {
 	serverApp := fxtest.New(t,
 		server.StartModule(
-			httpClient, viper.GetString(constants.HttpBindAddressServerFlag)))
+			viper.GetString(constants.HttpBindAddressServerFlag)))
 
 	t.Run("start", func(t *testing.T) {
 		serverApp.RequireStart()
@@ -31,19 +32,19 @@ func TestServer(t *testing.T) {
 
 	t.Run("clean existing configs", func(t *testing.T) {
 		resBody := requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
-		cur := decodeCursorResponse[model.ConfigInserted](t, resBody)
+		cur := decodeCursorResponse[webhooks.Config](t, resBody)
 		for _, cfg := range cur.Data {
 			requestServer(t, http.MethodDelete, server.PathConfigs+"/"+cfg.ID, http.StatusOK)
 		}
 		require.NoError(t, resBody.Close())
 
 		resBody = requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
-		cur = decodeCursorResponse[model.ConfigInserted](t, resBody)
+		cur = decodeCursorResponse[webhooks.Config](t, resBody)
 		assert.Equal(t, 0, len(cur.Data))
 		require.NoError(t, resBody.Close())
 	})
 
-	validConfigs := []model.Config{
+	validConfigs := []webhooks.ConfigUser{
 		{
 			Endpoint:   "https://www.site1.com",
 			EventTypes: []string{"TYPE1", "TYPE2"},
@@ -54,7 +55,7 @@ func TestServer(t *testing.T) {
 		},
 		{
 			Endpoint:   "https://www.site3.com",
-			Secret:     model.NewSecret(),
+			Secret:     webhooks.NewSecret(),
 			EventTypes: []string{"TYPE1"},
 		},
 	}
@@ -101,26 +102,31 @@ func TestServer(t *testing.T) {
 
 	t.Run("GET "+server.PathConfigs, func(t *testing.T) {
 		resBody := requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
-		cur := decodeCursorResponse[model.ConfigInserted](t, resBody)
+		cur := decodeCursorResponse[webhooks.Config](t, resBody)
 		assert.Equal(t, len(validConfigs), len(cur.Data))
 		for i, cfg := range validConfigs {
-			assert.Equal(t, cfg.Endpoint, cur.Data[len(validConfigs)-i-1].Config.Endpoint)
-			assert.Equal(t, cfg.EventTypes, cur.Data[len(validConfigs)-i-1].Config.EventTypes)
+			assert.Equal(t, cfg.Endpoint, cur.Data[len(validConfigs)-i-1].Endpoint)
+			assert.Equal(t, len(cfg.EventTypes), len(cur.Data[len(validConfigs)-i-1].EventTypes))
+			for j, typ := range cfg.EventTypes {
+				assert.Equal(t,
+					strings.ToLower(typ),
+					strings.ToLower(cur.Data[len(validConfigs)-i-1].EventTypes[j]))
+			}
 		}
 		require.NoError(t, resBody.Close())
 
 		cfg := validConfigs[0]
-		endpoint := url.QueryEscape(cfg.Endpoint)
-		resBody = requestServer(t, http.MethodGet, server.PathConfigs+"?endpoint="+endpoint, http.StatusOK)
-		cur = decodeCursorResponse[model.ConfigInserted](t, resBody)
+		ep := url.QueryEscape(cfg.Endpoint)
+		resBody = requestServer(t, http.MethodGet, server.PathConfigs+"?endpoint="+ep, http.StatusOK)
+		cur = decodeCursorResponse[webhooks.Config](t, resBody)
 		assert.Equal(t, 1, len(cur.Data))
-		assert.Equal(t, cfg.Endpoint, cur.Data[0].Config.Endpoint)
+		assert.Equal(t, cfg.Endpoint, cur.Data[0].Endpoint)
 		require.NoError(t, resBody.Close())
 
 		resBody = requestServer(t, http.MethodGet, server.PathConfigs+"?id="+insertedIds[0], http.StatusOK)
-		cur = decodeCursorResponse[model.ConfigInserted](t, resBody)
+		cur = decodeCursorResponse[webhooks.Config](t, resBody)
 		assert.Equal(t, 1, len(cur.Data))
-		assert.Equal(t, cfg.Endpoint, cur.Data[0].Config.Endpoint)
+		assert.Equal(t, cfg.Endpoint, cur.Data[0].Endpoint)
 		require.NoError(t, resBody.Close())
 	})
 
@@ -129,9 +135,9 @@ func TestServer(t *testing.T) {
 			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathDeactivate, http.StatusOK)
 
 			resBody := requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
-			cur := decodeCursorResponse[model.ConfigInserted](t, resBody)
+			cur := decodeCursorResponse[webhooks.Config](t, resBody)
 			assert.Equal(t, len(validConfigs), len(cur.Data))
-			assert.Equal(t, false, cur.Data[len(cur.Data)-1].Active)
+			assert.Equal(t, false, cur.Data[0].Active)
 			require.NoError(t, resBody.Close())
 
 			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathDeactivate, http.StatusNotModified)
@@ -141,7 +147,7 @@ func TestServer(t *testing.T) {
 			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathActivate, http.StatusOK)
 
 			resBody := requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
-			cur := decodeCursorResponse[model.ConfigInserted](t, resBody)
+			cur := decodeCursorResponse[webhooks.Config](t, resBody)
 			assert.Equal(t, len(validConfigs), len(cur.Data))
 			assert.Equal(t, true, cur.Data[len(cur.Data)-1].Active)
 			require.NoError(t, resBody.Close())
@@ -152,10 +158,10 @@ func TestServer(t *testing.T) {
 		t.Run(server.PathRotateSecret, func(t *testing.T) {
 			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathRotateSecret, http.StatusOK)
 
-			validSecret := model.Secret{Secret: model.NewSecret()}
+			validSecret := webhooks.Secret{Secret: webhooks.NewSecret()}
 			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathRotateSecret, http.StatusOK, validSecret)
 
-			invalidSecret := model.Secret{Secret: "invalid"}
+			invalidSecret := webhooks.Secret{Secret: "invalid"}
 			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathRotateSecret, http.StatusBadRequest, invalidSecret)
 
 			invalidSecret2 := validConfigs[0]
@@ -172,7 +178,7 @@ func TestServer(t *testing.T) {
 
 	t.Run("GET "+server.PathConfigs+" after delete", func(t *testing.T) {
 		resBody := requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
-		cur := decodeCursorResponse[model.ConfigInserted](t, resBody)
+		cur := decodeCursorResponse[webhooks.Config](t, resBody)
 		assert.Equal(t, 0, len(cur.Data))
 		require.NoError(t, resBody.Close())
 	})

@@ -10,7 +10,7 @@ import (
 )
 
 func (h *serverHandler) activateOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	err := service.ActivateOneConfig(r.Context(), true, p.ByName(PathParamId), h.store, h.engine)
+	err := service.UpdateOneConfigActivation(r.Context(), true, p.ByName(PathParamId), h.store)
 	if err == nil {
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathActivate)
 	} else if errors.Is(err, service.ErrConfigNotFound) {

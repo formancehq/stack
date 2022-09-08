@@ -53,7 +53,7 @@ paths:
                           data:
                             type: array
                             items:
-                              $ref: '#/components/schemas/ConfigInserted'
+                              $ref: '#/components/schemas/Config'
                         required:
                           - data
 
@@ -68,6 +68,8 @@ paths:
         The secret is the endpoint's verification secret. 
         If not passed or empty, a secret is automatically generated. 
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
+        
+        All eventTypes are converted to lower-case when inserted.
       operationId: insertOneConfig
       tags:
         - Configs
@@ -75,7 +77,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Config'
+              $ref: '#/components/schemas/ConfigUser'
         required: true
       responses:
         "200":
@@ -193,7 +195,7 @@ paths:
 
 components:
   schemas:
-    Config:
+    ConfigUser:
       properties:
         endpoint:
           type: string
@@ -208,7 +210,7 @@ components:
             example: "TYPE1"
           example: ["TYPE1", "TYPE2"]
 
-    ConfigInserted:
+    Config:
       properties:
         endpoint:
           type: string

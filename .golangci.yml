@@ -12,5 +12,8 @@ linters:
     - import
     - unused
 
+  disable:
+    - contextcheck
+
 run:
   timeout: 5m

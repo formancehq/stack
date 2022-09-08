@@ -4,8 +4,6 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
-	"github.com/numary/webhooks/pkg/engine"
-	"github.com/numary/webhooks/pkg/engine/svix"
 	"github.com/numary/webhooks/pkg/storage"
 )
 
@@ -22,15 +20,13 @@ const (
 type serverHandler struct {
 	*httprouter.Router
 
-	store  storage.Store
-	engine engine.Engine
+	store storage.Store
 }
 
-func newServerHandler(store storage.Store, engine svix.Engine) http.Handler {
+func newServerHandler(store storage.Store) http.Handler {
 	h := &serverHandler{
 		Router: httprouter.New(),
 		store:  store,
-		engine: engine,
 	}
 
 	h.Router.GET(PathHealthCheck, h.healthCheckHandle)

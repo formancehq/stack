@@ -6,19 +6,17 @@ import (
 	"net/http"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/pkg/engine/svix"
 	"github.com/numary/webhooks/pkg/httpserver"
 	"github.com/numary/webhooks/pkg/storage/mongo"
 	"go.uber.org/fx"
 )
 
-func StartModule(httpClient *http.Client, addr string) fx.Option {
+func StartModule(addr string, httpClient *http.Client) fx.Option {
 	return fx.Module("webhooks worker",
 		fx.Provide(
-			func() (*http.Client, string) { return httpClient, addr },
+			func() (string, *http.Client) { return addr, httpClient },
 			httpserver.NewMuxServer,
-			mongo.NewConfigStore,
-			svix.NewEngine,
+			mongo.NewStore,
 			NewWorker,
 			newWorkerHandler,
 		),
@@ -42,10 +40,9 @@ func run(lc fx.Lifecycle, w *Worker) {
 		OnStop: func(ctx context.Context) error {
 			sharedlogging.GetLogger(ctx).Debugf("stopping worker...")
 			w.Stop(ctx)
-			err1 := w.Store.Close(ctx)
-			err2 := w.Reader.Close()
-			if err1 != nil || err2 != nil {
-				return fmt.Errorf("[closing store: %s] [closing reader: %w]", err1, err2)
+			w.kafkaClient.Close()
+			if err := w.store.Close(ctx); err != nil {
+				return fmt.Errorf("storage.Store.Close: %w", err)
 			}
 			return nil
 		},

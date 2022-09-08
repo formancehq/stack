@@ -10,7 +10,7 @@ import (
 )
 
 func (h *serverHandler) deleteOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	err := service.DeleteOneConfig(r.Context(), p.ByName(PathParamId), h.store, h.engine)
+	err := service.DeleteOneConfig(r.Context(), p.ByName(PathParamId), h.store)
 	if err == nil {
 		sharedlogging.GetLogger(r.Context()).Infof("DELETE %s/%s", PathConfigs, p.ByName(PathParamId))
 	} else if errors.Is(err, service.ErrConfigNotFound) {
