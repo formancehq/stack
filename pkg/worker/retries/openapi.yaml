@@ -1,11 +1,11 @@
 openapi: 3.0.3
 info:
-  title: Webhooks worker
+  title: Webhooks worker retries
   version: 0.0.0
 paths:
   /_healthcheck:
     get:
-      summary: Health check of the worker.
+      summary: Health check of the worker retries.
       operationId: healthCheck
       tags:
         - Health check

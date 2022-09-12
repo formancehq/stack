@@ -29,7 +29,7 @@ func newServerHandler(store storage.Store) http.Handler {
 		store:  store,
 	}
 
-	h.Router.GET(PathHealthCheck, h.healthCheckHandle)
+	h.Router.GET(PathHealthCheck, h.HealthCheckHandle)
 	h.Router.GET(PathConfigs, h.getManyConfigsHandle)
 	h.Router.POST(PathConfigs, h.insertOneConfigHandle)
 	h.Router.DELETE(PathConfigs+PathId, h.deleteOneConfigHandle)

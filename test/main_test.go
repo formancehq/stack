@@ -24,27 +24,34 @@ import (
 var (
 	httpClient = http.DefaultClient
 
-	serverBaseURL string
-	workerBaseURL string
+	serverBaseURL         string
+	workerMessagesBaseURL string
+	workerRetriesBaseURL  string
 
 	secret = webhooks.NewSecret()
 
 	topic = strings.ReplaceAll(
 		time.Now().UTC().Format(time.RFC3339Nano), ":", "-")
+
+	retriesSchedule []time.Duration
 )
 
 func TestMain(m *testing.M) {
 	flagSet := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	if err := env.Init(flagSet); err != nil {
-		panic(err)
+	var errInit error
+	if _, errInit = env.Init(flagSet); errInit != nil {
+		panic(errInit)
 	}
 
 	viper.Set(constants.KafkaTopicsFlag, []string{topic})
+	viper.Set(constants.RetriesCronFlag, time.Second)
 
 	serverBaseURL = fmt.Sprintf("http://localhost%s",
 		viper.GetString(constants.HttpBindAddressServerFlag))
-	workerBaseURL = fmt.Sprintf("http://localhost%s",
-		viper.GetString(constants.HttpBindAddressWorkerFlag))
+	workerMessagesBaseURL = fmt.Sprintf("http://localhost%s",
+		viper.GetString(constants.HttpBindAddressWorkerMessagesFlag))
+	workerRetriesBaseURL = fmt.Sprintf("http://localhost%s",
+		viper.GetString(constants.HttpBindAddressWorkerRetriesFlag))
 
 	os.Exit(m.Run())
 }
@@ -53,8 +60,12 @@ func requestServer(t *testing.T, method, url string, expectedCode int, body ...a
 	return request(t, method, serverBaseURL+url, body, expectedCode)
 }
 
-func requestWorker(t *testing.T, method, url string, expectedCode int, body ...any) {
-	request(t, method, workerBaseURL+url, body, expectedCode)
+func requestWorkerMessages(t *testing.T, method, url string, expectedCode int, body ...any) {
+	request(t, method, workerMessagesBaseURL+url, body, expectedCode)
+}
+
+func requestWorkerRetries(t *testing.T, method, url string, expectedCode int, body ...any) {
+	request(t, method, workerRetriesBaseURL+url, body, expectedCode)
 }
 
 func request(t *testing.T, method, url string, body []any, expectedCode int) io.ReadCloser {

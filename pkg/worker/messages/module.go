@@ -1,9 +1,10 @@
-package worker
+package messages
 
 import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks/pkg/httpserver"
@@ -11,14 +12,16 @@ import (
 	"go.uber.org/fx"
 )
 
-func StartModule(addr string, httpClient *http.Client) fx.Option {
-	return fx.Module("webhooks worker",
+func StartModule(addr string, httpClient *http.Client, retriesSchedule []time.Duration) fx.Option {
+	return fx.Module("webhooks worker messages",
 		fx.Provide(
-			func() (string, *http.Client) { return addr, httpClient },
+			func() (string, *http.Client, []time.Duration) {
+				return addr, httpClient, retriesSchedule
+			},
 			httpserver.NewMuxServer,
 			mongo.NewStore,
-			NewWorker,
-			newWorkerHandler,
+			NewWorkerMessages,
+			newWorkerMessagesHandler,
 		),
 		fx.Invoke(httpserver.RegisterHandler),
 		fx.Invoke(httpserver.Run),
@@ -26,19 +29,19 @@ func StartModule(addr string, httpClient *http.Client) fx.Option {
 	)
 }
 
-func run(lc fx.Lifecycle, w *Worker) {
+func run(lc fx.Lifecycle, w *WorkerMessages) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			sharedlogging.GetLogger(ctx).Debugf("starting worker...")
+			sharedlogging.GetLogger(ctx).Debugf("starting worker messages...")
 			go func() {
 				if err := w.Run(ctx); err != nil {
-					sharedlogging.GetLogger(ctx).Errorf("kafka.Worker.Run: %s", err)
+					sharedlogging.GetLogger(ctx).Errorf("kafka.WorkerMessages.Run: %s", err)
 				}
 			}()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			sharedlogging.GetLogger(ctx).Debugf("stopping worker...")
+			sharedlogging.GetLogger(ctx).Debugf("stopping worker messages...")
 			w.Stop(ctx)
 			w.kafkaClient.Close()
 			if err := w.store.Close(ctx); err != nil {

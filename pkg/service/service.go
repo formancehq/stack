@@ -13,12 +13,12 @@ import (
 var (
 	ErrConfigNotFound    = errors.New("config not found")
 	ErrConfigNotModified = errors.New("config not modified")
+	ErrConfigNotDeleted  = errors.New("config not deleted")
 )
 
 func InsertOneConfig(ctx context.Context, cfg webhooks.ConfigUser, store storage.Store) (string, error) {
-	var id string
-	var err error
-	if id, err = store.InsertOneConfig(ctx, cfg); err != nil {
+	id, err := store.InsertOneConfig(ctx, cfg)
+	if err != nil {
 		return "", fmt.Errorf("store.InsertOneConfig: %w", err)
 	}
 
@@ -27,16 +27,14 @@ func InsertOneConfig(ctx context.Context, cfg webhooks.ConfigUser, store storage
 }
 
 func DeleteOneConfig(ctx context.Context, id string, store storage.Store) error {
-	if cur, err := store.FindManyConfigs(ctx, map[string]any{"_id": id}); err != nil {
-		return fmt.Errorf("store.FindManyConfigs: %w", err)
-	} else if len(cur.Data) == 0 {
-		return ErrConfigNotFound
+	if err := findConfig(ctx, store, id); err != nil {
+		return err
 	}
 
 	if deletedCount, err := store.DeleteOneConfig(ctx, id); err != nil {
 		return fmt.Errorf("store.DeleteOneConfig: %w", err)
 	} else if deletedCount == 0 {
-		return ErrConfigNotFound
+		return ErrConfigNotDeleted
 	}
 
 	sharedlogging.GetLogger(ctx).Debug("service.DeleteOneConfig: id: ", id)
@@ -44,17 +42,12 @@ func DeleteOneConfig(ctx context.Context, id string, store storage.Store) error 
 }
 
 func UpdateOneConfigActivation(ctx context.Context, active bool, id string, store storage.Store) error {
-	if cur, err := store.FindManyConfigs(ctx, map[string]any{"_id": id}); err != nil {
-		return fmt.Errorf("store.FindManyConfigs: %w", err)
-	} else if len(cur.Data) == 0 {
-		return ErrConfigNotFound
+	if err := findConfig(ctx, store, id); err != nil {
+		return err
 	}
 
-	updatedCfg, modifiedCount, err := store.UpdateOneConfigActivation(ctx, id, active)
-	if err != nil {
+	if _, modifiedCount, _, _, err := store.UpdateOneConfigActivation(ctx, id, active); err != nil {
 		return fmt.Errorf("store.UpdateOneConfigActivation: %w", err)
-	} else if updatedCfg == nil {
-		return ErrConfigNotFound
 	} else if modifiedCount == 0 {
 		return ErrConfigNotModified
 	}
@@ -63,15 +56,23 @@ func UpdateOneConfigActivation(ctx context.Context, active bool, id string, stor
 }
 
 func RotateOneConfigSecret(ctx context.Context, id, secret string, store storage.Store) error {
-	if cur, err := store.FindManyConfigs(ctx, map[string]any{"_id": id}); err != nil {
-		return fmt.Errorf("store.FindManyConfigs: %w", err)
-	} else if len(cur.Data) == 0 {
-		return ErrConfigNotFound
+	if err := findConfig(ctx, store, id); err != nil {
+		return err
 	}
 
-	if modifiedCount, err := store.UpdateOneConfigSecret(ctx, id, secret); err != nil {
+	if _, modifiedCount, _, _, err := store.UpdateOneConfigSecret(ctx, id, secret); err != nil {
 		return fmt.Errorf("store.UpdateOneConfigSecret: %w", err)
 	} else if modifiedCount == 0 {
+		return ErrConfigNotModified
+	}
+
+	return nil
+}
+
+func findConfig(ctx context.Context, store storage.Store, id string) error {
+	if cur, err := store.FindManyConfigs(ctx, map[string]any{webhooks.KeyID: id}); err != nil {
+		return fmt.Errorf("store.FindManyConfigs: %w", err)
+	} else if len(cur.Data) == 0 {
 		return ErrConfigNotFound
 	}
 

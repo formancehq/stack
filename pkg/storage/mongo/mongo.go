@@ -12,6 +12,7 @@ import (
 	"github.com/numary/webhooks/constants"
 	webhooks "github.com/numary/webhooks/pkg"
 	"github.com/numary/webhooks/pkg/storage"
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -24,7 +25,7 @@ type Store struct {
 	uri                string
 	client             *mongo.Client
 	configsCollection  *mongo.Collection
-	requestsCollection *mongo.Collection
+	attemptsCollection *mongo.Collection
 }
 
 var _ storage.Store = &Store{}
@@ -51,9 +52,9 @@ func NewStore() (storage.Store, error) {
 		configsCollection: client.Database(
 			viper.GetString(constants.StorageMongoDatabaseNameFlag)).
 			Collection(constants.MongoCollectionConfigs),
-		requestsCollection: client.Database(
+		attemptsCollection: client.Database(
 			viper.GetString(constants.StorageMongoDatabaseNameFlag)).
-			Collection(constants.MongoCollectionRequests),
+			Collection(constants.MongoCollectionAttempts),
 	}, nil
 }
 
@@ -81,7 +82,7 @@ func (s Store) FindManyConfigs(ctx context.Context, filter map[string]any) (shar
 	}, nil
 }
 
-func (s Store) InsertOneConfig(ctx context.Context, cfgUser webhooks.ConfigUser) (string, error) {
+func (s Store) InsertOneConfig(ctx context.Context, cfgUser webhooks.ConfigUser) (insertedID string, err error) {
 	cfg := webhooks.Config{
 		ConfigUser: cfgUser,
 		ID:         uuid.NewString(),
@@ -98,7 +99,7 @@ func (s Store) InsertOneConfig(ctx context.Context, cfgUser webhooks.ConfigUser)
 	return res.InsertedID.(string), nil
 }
 
-func (s Store) DeleteOneConfig(ctx context.Context, id string) (int64, error) {
+func (s Store) DeleteOneConfig(ctx context.Context, id string) (deletedCount int64, err error) {
 	res, err := s.configsCollection.DeleteOne(ctx, bson.D{
 		{Key: webhooks.KeyID, Value: id},
 	})
@@ -109,55 +110,112 @@ func (s Store) DeleteOneConfig(ctx context.Context, id string) (int64, error) {
 	return res.DeletedCount, nil
 }
 
-func (s Store) UpdateOneConfigActivation(ctx context.Context, id string, active bool) (*webhooks.Config, int64, error) {
-	filter := bson.D{{Key: webhooks.KeyID, Value: id}}
-	resFind := s.configsCollection.FindOne(ctx, filter)
-	if err := resFind.Err(); err != nil {
-		return nil, 0, fmt.Errorf("mongo.Collection.FindOne: %w", err)
-	}
-
-	var cfg webhooks.Config
-	if err := resFind.Decode(&cfg); err != nil {
-		return nil, 0, fmt.Errorf("mongo.SingleResult.Decode: %w", err)
-	}
-
-	if cfg.Active == active {
-		return &cfg, 0, nil
+func (s Store) UpdateOneConfigActivation(ctx context.Context, id string, active bool,
+) (matchedCount, modifiedCount, upsertedCount int64, upsertedID any, err error) {
+	filter := bson.D{
+		{Key: webhooks.KeyID, Value: id},
+		{Key: webhooks.KeyActive, Value: !active},
 	}
 
 	update := bson.D{{Key: "$set", Value: bson.D{
 		{Key: webhooks.KeyActive, Value: active},
 		{Key: webhooks.KeyUpdatedAt, Value: time.Now().UTC()},
 	}}}
-	resUpdate, err := s.configsCollection.UpdateOne(ctx, filter, update)
+
+	res, err := s.configsCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return nil, 0, fmt.Errorf("mongo.Collection.UpdateOne: %w", err)
+		return 0, 0, 0, nil, errors.Wrap(err, "mongo.Collection.UpdateOne")
 	}
 
-	return &cfg, resUpdate.ModifiedCount, nil
+	return res.MatchedCount, res.ModifiedCount, res.UpsertedCount, res.UpsertedID, nil
 }
 
-func (s Store) UpdateOneConfigSecret(ctx context.Context, id, secret string) (int64, error) {
-	filter := bson.D{{Key: webhooks.KeyID, Value: id}}
+func (s Store) UpdateOneConfigSecret(ctx context.Context, id, secret string,
+) (matchedCount, modifiedCount, upsertedCount int64, upsertedID any, err error) {
+	filter := bson.D{
+		{Key: webhooks.KeyID, Value: id},
+		{Key: webhooks.KeySecret, Value: bson.D{
+			{Key: "$ne", Value: secret},
+		}},
+	}
 	update := bson.D{{Key: "$set", Value: bson.D{
 		{Key: webhooks.KeySecret, Value: secret},
 		{Key: webhooks.KeyUpdatedAt, Value: time.Now().UTC()},
 	}}}
-	resUpdate, err := s.configsCollection.UpdateOne(ctx, filter, update)
+
+	res, err := s.configsCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return 0, fmt.Errorf("mongo.Collection.UpdateOne: %w", err)
+		return 0, 0, 0, nil, fmt.Errorf("mongo.Collection.UpdateOne: %w", err)
 	}
 
-	return resUpdate.ModifiedCount, nil
+	return res.MatchedCount, res.ModifiedCount, res.UpsertedCount, res.UpsertedID, nil
 }
 
-func (s Store) InsertOneRequest(ctx context.Context, req webhooks.Request) (primitive.ObjectID, error) {
-	res, err := s.requestsCollection.InsertOne(ctx, req)
+func (s Store) FindManyAttempts(ctx context.Context, filter map[string]any) (sharedapi.Cursor[webhooks.Attempt], error) {
+	opts := options.Find().SetSort(bson.M{webhooks.KeyID: -1})
+	cur, err := s.attemptsCollection.Find(ctx, filter, opts)
 	if err != nil {
-		return primitive.ObjectID{}, fmt.Errorf("store.Collection.InsertOne: %w", err)
+		return sharedapi.Cursor[webhooks.Attempt]{},
+			fmt.Errorf("mongo.Collection.Find: %w", err)
+	}
+	defer func() {
+		if err := cur.Close(ctx); err != nil {
+			sharedlogging.GetLogger(ctx).Errorf("mongo.Cursor.Close: %s", err)
+		}
+	}()
+
+	var res []webhooks.Attempt
+	if err := cur.All(ctx, &res); err != nil {
+		return sharedapi.Cursor[webhooks.Attempt]{},
+			fmt.Errorf("mongo.Cursor.All: %w", err)
 	}
 
-	return res.InsertedID.(primitive.ObjectID), nil
+	return sharedapi.Cursor[webhooks.Attempt]{
+		Data: res,
+	}, nil
+}
+
+func (s Store) FindDistinctWebhookIDs(ctx context.Context, filter map[string]any) ([]string, error) {
+	dis, err := s.attemptsCollection.Distinct(ctx, webhooks.KeyWebhookID, filter, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "mongo.Collection.Distinct")
+	}
+
+	res := make([]string, len(dis))
+	for i, d := range dis {
+		res[i] = d.(string)
+	}
+
+	return res, nil
+}
+
+func (s Store) UpdateManyAttemptsStatus(ctx context.Context, webhookID string, status string,
+) (matchedCount, modifiedCount, upsertedCount int64, upsertedID any, err error) {
+	filter := bson.D{
+		{Key: webhooks.KeyWebhookID, Value: webhookID},
+		{Key: webhooks.KeyStatus, Value: bson.D{
+			{Key: "$ne", Value: status},
+		}},
+	}
+	update := bson.D{{Key: "$set", Value: bson.D{
+		{Key: webhooks.KeyStatus, Value: status},
+	}}}
+
+	res, err := s.attemptsCollection.UpdateMany(ctx, filter, update)
+	if err != nil {
+		return 0, 0, 0, nil, fmt.Errorf("mongo.Collection.UpdateMany: %w", err)
+	}
+
+	return res.MatchedCount, res.ModifiedCount, res.UpsertedCount, res.UpsertedID, nil
+}
+
+func (s Store) InsertOneAttempt(ctx context.Context, att webhooks.Attempt) (insertedID string, err error) {
+	res, err := s.attemptsCollection.InsertOne(ctx, att)
+	if err != nil {
+		return "", fmt.Errorf("store.Collection.InsertOne: %w", err)
+	}
+
+	return res.InsertedID.(primitive.ObjectID).String(), nil
 }
 
 func (s Store) Close(ctx context.Context) error {

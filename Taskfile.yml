@@ -51,7 +51,7 @@ tasks:
 
   docker:
     cmds:
-      - docker compose up -d mongo redpanda redpanda-config redpanda-ui
+      - docker compose up -d --remove-orphans mongo redpanda redpanda-config redpanda-ui
 
   coverage:
     cmds:

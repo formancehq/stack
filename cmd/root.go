@@ -3,15 +3,19 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/webhooks/pkg/env"
 	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
-	Use: "webhooks",
-}
+var (
+	rootCmd = &cobra.Command{
+		Use: "webhooks",
+	}
+	retriesSchedule []time.Duration
+)
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
@@ -22,5 +26,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.CheckErr(env.Init(rootCmd.PersistentFlags()))
+	var err error
+	retriesSchedule, err = env.Init(rootCmd.PersistentFlags())
+	cobra.CheckErr(err)
 }
