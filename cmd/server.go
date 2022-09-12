@@ -14,7 +14,7 @@ import (
 	"github.com/numary/go-libs/sharedauth"
 	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/go-libs/sharedotlp/sharedotlptraces"
+	"github.com/numary/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/numary/search/pkg/searchengine"
 	"github.com/numary/search/pkg/searchhttp"
 	"github.com/opensearch-project/opensearch-go"
