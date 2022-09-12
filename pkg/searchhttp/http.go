@@ -117,6 +117,8 @@ func resolveQuery(r *http.Request) (*cursorTokenInfo, interface{}, error) {
 				qq.WithSort("address", esquery.OrderDesc)
 			case "TRANSACTION":
 				qq.WithSort("txid", esquery.OrderDesc)
+			case "PAYMENT":
+				qq.WithSort("reference", esquery.OrderDesc)
 			}
 		}
 	}
