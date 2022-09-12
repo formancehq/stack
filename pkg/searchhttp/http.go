@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"math"
 	"net/http"
 	"strconv"
@@ -36,7 +35,7 @@ func resolveQuery(r *http.Request) (*cursorTokenInfo, interface{}, error) {
 		if err != nil {
 			return nil, nil, errors.Wrap(err, "first phase decoding")
 		}
-		r.Body = ioutil.NopCloser(buf)
+		r.Body = io.NopCloser(buf)
 		target = rq.Target
 		cursorToken = rq.CursorToken
 	} else {
