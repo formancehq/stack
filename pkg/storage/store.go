@@ -7,6 +7,11 @@ import (
 	webhooks "github.com/numary/webhooks/pkg"
 )
 
+const (
+	DBConfigs  = "configs"
+	DBAttempts = "attempts"
+)
+
 type Store interface {
 	FindManyConfigs(ctx context.Context, filter map[string]any) (sharedapi.Cursor[webhooks.Config], error)
 	InsertOneConfig(ctx context.Context, cfg webhooks.ConfigUser) (string, error)

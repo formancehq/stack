@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/numary/go-libs/sharedapi"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/cmd/flag"
 	webhooks "github.com/numary/webhooks/pkg"
 	"github.com/numary/webhooks/pkg/storage"
 	"github.com/pkg/errors"
@@ -34,7 +34,7 @@ func NewStore() (storage.Store, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	mongoDBUri := viper.GetString(constants.StorageMongoConnStringFlag)
+	mongoDBUri := viper.GetString(flag.StorageMongoConnString)
 	sharedlogging.Infof("connecting to mongoDB URI: %s", mongoDBUri)
 	sharedlogging.Infof("env: %+v", os.Environ())
 
@@ -50,11 +50,11 @@ func NewStore() (storage.Store, error) {
 		uri:    mongoDBUri,
 		client: client,
 		configsCollection: client.Database(
-			viper.GetString(constants.StorageMongoDatabaseNameFlag)).
-			Collection(constants.MongoCollectionConfigs),
+			viper.GetString(flag.StorageMongoDatabaseName)).
+			Collection(storage.DBConfigs),
 		attemptsCollection: client.Database(
-			viper.GetString(constants.StorageMongoDatabaseNameFlag)).
-			Collection(constants.MongoCollectionAttempts),
+			viper.GetString(flag.StorageMongoDatabaseName)).
+			Collection(storage.DBAttempts),
 	}, nil
 }
 

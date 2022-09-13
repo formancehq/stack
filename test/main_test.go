@@ -13,9 +13,8 @@ import (
 	"time"
 
 	"github.com/numary/go-libs/sharedapi"
-	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/cmd/flag"
 	webhooks "github.com/numary/webhooks/pkg"
-	"github.com/numary/webhooks/pkg/env"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
@@ -39,19 +38,19 @@ var (
 func TestMain(m *testing.M) {
 	flagSet := pflag.NewFlagSet("test", pflag.ContinueOnError)
 	var errInit error
-	if _, errInit = env.Init(flagSet); errInit != nil {
+	if _, errInit = flag.Init(flagSet); errInit != nil {
 		panic(errInit)
 	}
 
-	viper.Set(constants.KafkaTopicsFlag, []string{topic})
-	viper.Set(constants.RetriesCronFlag, time.Second)
+	viper.Set(flag.KafkaTopics, []string{topic})
+	viper.Set(flag.RetriesCron, time.Second)
 
 	serverBaseURL = fmt.Sprintf("http://localhost%s",
-		viper.GetString(constants.HttpBindAddressServerFlag))
+		viper.GetString(flag.HttpBindAddressServer))
 	workerMessagesBaseURL = fmt.Sprintf("http://localhost%s",
-		viper.GetString(constants.HttpBindAddressWorkerMessagesFlag))
+		viper.GetString(flag.HttpBindAddressWorkerMessages))
 	workerRetriesBaseURL = fmt.Sprintf("http://localhost%s",
-		viper.GetString(constants.HttpBindAddressWorkerRetriesFlag))
+		viper.GetString(flag.HttpBindAddressWorkerRetries))
 
 	os.Exit(m.Run())
 }

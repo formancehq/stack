@@ -9,10 +9,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/cmd/flag"
 	webhooks "github.com/numary/webhooks/pkg"
 	"github.com/numary/webhooks/pkg/kafka"
 	"github.com/numary/webhooks/pkg/server"
+	"github.com/numary/webhooks/pkg/storage"
 	"github.com/numary/webhooks/pkg/worker/messages"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
@@ -29,13 +30,13 @@ func TestWorkerMessages(t *testing.T) {
 
 	mongoClient, err := mongo.Connect(ctx,
 		options.Client().ApplyURI(
-			viper.GetString(constants.StorageMongoConnStringFlag)))
+			viper.GetString(flag.StorageMongoConnString)))
 	require.NoError(t, err)
 
 	// Cleanup collections
 	require.NoError(t, mongoClient.Database(
-		viper.GetString(constants.StorageMongoDatabaseNameFlag)).
-		Collection(constants.MongoCollectionConfigs).Drop(context.Background()))
+		viper.GetString(flag.StorageMongoDatabaseName)).
+		Collection(storage.DBConfigs).Drop(context.Background()))
 
 	// New test server with success handler
 	httpServerSuccess := httptest.NewServer(http.HandlerFunc(webhooksSuccessHandler))
@@ -53,7 +54,7 @@ func TestWorkerMessages(t *testing.T) {
 
 	serverApp := fxtest.New(t,
 		server.StartModule(
-			viper.GetString(constants.HttpBindAddressServerFlag)))
+			viper.GetString(flag.HttpBindAddressServer)))
 	require.NoError(t, serverApp.Start(context.Background()))
 
 	cfgSuccess := webhooks.ConfigUser{
@@ -75,15 +76,15 @@ func TestWorkerMessages(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		require.NoError(t, mongoClient.Database(
-			viper.GetString(constants.StorageMongoDatabaseNameFlag)).
-			Collection(constants.MongoCollectionAttempts).Drop(context.Background()))
+			viper.GetString(flag.StorageMongoDatabaseName)).
+			Collection(storage.DBAttempts).Drop(context.Background()))
 
 		retriesSchedule = []time.Duration{time.Second}
-		viper.Set(constants.RetriesScheduleFlag, retriesSchedule)
+		viper.Set(flag.RetriesSchedule, retriesSchedule)
 
 		workerMessagesApp := fxtest.New(t,
 			messages.StartModule(
-				viper.GetString(constants.HttpBindAddressWorkerMessagesFlag),
+				viper.GetString(flag.HttpBindAddressWorkerMessages),
 				httpServerSuccess.Client(),
 				retriesSchedule,
 			))
@@ -115,8 +116,8 @@ func TestWorkerMessages(t *testing.T) {
 			msgs := 0
 			for msgs != expectedSentWebhooks {
 				cur, err := mongoClient.Database(
-					viper.GetString(constants.StorageMongoDatabaseNameFlag)).
-					Collection(constants.MongoCollectionAttempts).
+					viper.GetString(flag.StorageMongoDatabaseName)).
+					Collection(storage.DBAttempts).
 					Find(context.Background(), bson.M{}, nil)
 				require.NoError(t, err)
 				var results []webhooks.Attempt
@@ -140,15 +141,15 @@ func TestWorkerMessages(t *testing.T) {
 
 	t.Run("failure", func(t *testing.T) {
 		require.NoError(t, mongoClient.Database(
-			viper.GetString(constants.StorageMongoDatabaseNameFlag)).
-			Collection(constants.MongoCollectionAttempts).Drop(context.Background()))
+			viper.GetString(flag.StorageMongoDatabaseName)).
+			Collection(storage.DBAttempts).Drop(context.Background()))
 
 		retriesSchedule = []time.Duration{time.Second}
-		viper.Set(constants.RetriesScheduleFlag, retriesSchedule)
+		viper.Set(flag.RetriesSchedule, retriesSchedule)
 
 		workerMessagesApp := fxtest.New(t,
 			messages.StartModule(
-				viper.GetString(constants.HttpBindAddressWorkerMessagesFlag),
+				viper.GetString(flag.HttpBindAddressWorkerMessages),
 				httpServerFail.Client(),
 				retriesSchedule,
 			))
@@ -180,8 +181,8 @@ func TestWorkerMessages(t *testing.T) {
 			msgs := 0
 			for msgs != expectedSentWebhooks {
 				cur, err := mongoClient.Database(
-					viper.GetString(constants.StorageMongoDatabaseNameFlag)).
-					Collection(constants.MongoCollectionAttempts).
+					viper.GetString(flag.StorageMongoDatabaseName)).
+					Collection(storage.DBAttempts).
 					Find(context.Background(), bson.M{}, nil)
 				require.NoError(t, err)
 				var results []webhooks.Attempt

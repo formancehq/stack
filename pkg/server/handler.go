@@ -12,7 +12,7 @@ const (
 	PathConfigs      = "/configs"
 	PathActivate     = "/activate"
 	PathDeactivate   = "/deactivate"
-	PathRotateSecret = "/secret/rotate"
+	PathChangeSecret = "/secret/change"
 	PathId           = "/:" + PathParamId
 	PathParamId      = "id"
 )
@@ -35,7 +35,7 @@ func newServerHandler(store storage.Store) http.Handler {
 	h.Router.DELETE(PathConfigs+PathId, h.deleteOneConfigHandle)
 	h.Router.PUT(PathConfigs+PathId+PathActivate, h.activateOneConfigHandle)
 	h.Router.PUT(PathConfigs+PathId+PathDeactivate, h.deactivateOneConfigHandle)
-	h.Router.PUT(PathConfigs+PathId+PathRotateSecret, h.rotateSecretHandle)
+	h.Router.PUT(PathConfigs+PathId+PathChangeSecret, h.changeSecretHandle)
 
 	return h
 }

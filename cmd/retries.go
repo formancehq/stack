@@ -6,7 +6,7 @@ import (
 	"syscall"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/cmd/flag"
 	"github.com/numary/webhooks/pkg/worker/retries"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -26,9 +26,9 @@ func RunWorkerRetries(cmd *cobra.Command, _ []string) error {
 
 	app := fx.New(
 		retries.StartModule(
-			viper.GetString(constants.HttpBindAddressWorkerRetriesFlag),
+			viper.GetString(flag.HttpBindAddressWorkerRetries),
 			http.DefaultClient,
-			viper.GetDuration(constants.RetriesCronFlag),
+			viper.GetDuration(flag.RetriesCron),
 			retriesSchedule,
 		))
 

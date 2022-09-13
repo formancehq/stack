@@ -6,7 +6,7 @@ import (
 	"syscall"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/cmd/flag"
 	"github.com/numary/webhooks/pkg/worker/messages"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -26,7 +26,7 @@ func RunWorkerMessages(cmd *cobra.Command, _ []string) error {
 
 	app := fx.New(
 		messages.StartModule(
-			viper.GetString(constants.HttpBindAddressWorkerMessagesFlag),
+			viper.GetString(flag.HttpBindAddressWorkerMessages),
 			http.DefaultClient,
 			retriesSchedule))
 

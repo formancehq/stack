@@ -1,4 +1,4 @@
-package service
+package server
 
 import (
 	"context"
@@ -16,46 +16,47 @@ var (
 	ErrConfigNotDeleted  = errors.New("config not deleted")
 )
 
-func InsertOneConfig(ctx context.Context, cfg webhooks.ConfigUser, store storage.Store) (string, error) {
+func insertOneConfig(ctx context.Context, cfg webhooks.ConfigUser, store storage.Store) (string, error) {
 	id, err := store.InsertOneConfig(ctx, cfg)
 	if err != nil {
-		return "", fmt.Errorf("store.InsertOneConfig: %w", err)
+		return "", fmt.Errorf("store.insertOneConfig: %w", err)
 	}
 
-	sharedlogging.GetLogger(ctx).Debug("service.InsertOneConfig: id: ", id)
+	sharedlogging.GetLogger(ctx).Debug("insertOneConfig: id: ", id)
 	return id, nil
 }
 
-func DeleteOneConfig(ctx context.Context, id string, store storage.Store) error {
+func deleteOneConfig(ctx context.Context, id string, store storage.Store) error {
 	if err := findConfig(ctx, store, id); err != nil {
 		return err
 	}
 
 	if deletedCount, err := store.DeleteOneConfig(ctx, id); err != nil {
-		return fmt.Errorf("store.DeleteOneConfig: %w", err)
+		return fmt.Errorf("store.deleteOneConfig: %w", err)
 	} else if deletedCount == 0 {
 		return ErrConfigNotDeleted
 	}
 
-	sharedlogging.GetLogger(ctx).Debug("service.DeleteOneConfig: id: ", id)
+	sharedlogging.GetLogger(ctx).Debug("deleteOneConfig: id: ", id)
 	return nil
 }
 
-func UpdateOneConfigActivation(ctx context.Context, active bool, id string, store storage.Store) error {
+func updateOneConfigActivation(ctx context.Context, active bool, id string, store storage.Store) error {
 	if err := findConfig(ctx, store, id); err != nil {
 		return err
 	}
 
 	if _, modifiedCount, _, _, err := store.UpdateOneConfigActivation(ctx, id, active); err != nil {
-		return fmt.Errorf("store.UpdateOneConfigActivation: %w", err)
+		return fmt.Errorf("store.updateOneConfigActivation: %w", err)
 	} else if modifiedCount == 0 {
 		return ErrConfigNotModified
 	}
 
+	sharedlogging.GetLogger(ctx).Debug("updateOneConfigActivation (%v): id: ", active, id)
 	return nil
 }
 
-func RotateOneConfigSecret(ctx context.Context, id, secret string, store storage.Store) error {
+func changeOneConfigSecret(ctx context.Context, id, secret string, store storage.Store) error {
 	if err := findConfig(ctx, store, id); err != nil {
 		return err
 	}
@@ -66,6 +67,7 @@ func RotateOneConfigSecret(ctx context.Context, id, secret string, store storage
 		return ErrConfigNotModified
 	}
 
+	sharedlogging.GetLogger(ctx).Debug("changeOneConfigSecret: id: ", id)
 	return nil
 }
 

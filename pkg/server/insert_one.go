@@ -9,7 +9,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/numary/go-libs/sharedlogging"
 	webhooks "github.com/numary/webhooks/pkg"
-	"github.com/numary/webhooks/pkg/service"
 )
 
 func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -32,7 +31,7 @@ func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if id, err := service.InsertOneConfig(r.Context(), cfg, h.store); err != nil {
+	if id, err := insertOneConfig(r.Context(), cfg, h.store); err != nil {
 		sharedlogging.GetLogger(r.Context()).Errorf("POST %s: %s", PathConfigs, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return

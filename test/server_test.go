@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/cmd/flag"
 	webhooks "github.com/numary/webhooks/pkg"
 	"github.com/numary/webhooks/pkg/server"
 	"github.com/spf13/viper"
@@ -20,7 +20,7 @@ import (
 func TestServer(t *testing.T) {
 	serverApp := fxtest.New(t,
 		server.StartModule(
-			viper.GetString(constants.HttpBindAddressServerFlag)))
+			viper.GetString(flag.HttpBindAddressServer)))
 
 	t.Run("start", func(t *testing.T) {
 		serverApp.RequireStart()
@@ -155,17 +155,17 @@ func TestServer(t *testing.T) {
 			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathActivate, http.StatusNotModified)
 		})
 
-		t.Run(server.PathRotateSecret, func(t *testing.T) {
-			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathRotateSecret, http.StatusOK)
+		t.Run(server.PathChangeSecret, func(t *testing.T) {
+			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathChangeSecret, http.StatusOK)
 
 			validSecret := webhooks.Secret{Secret: webhooks.NewSecret()}
-			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathRotateSecret, http.StatusOK, validSecret)
+			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathChangeSecret, http.StatusOK, validSecret)
 
 			invalidSecret := webhooks.Secret{Secret: "invalid"}
-			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathRotateSecret, http.StatusBadRequest, invalidSecret)
+			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathChangeSecret, http.StatusBadRequest, invalidSecret)
 
 			invalidSecret2 := validConfigs[0]
-			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathRotateSecret, http.StatusBadRequest, invalidSecret2)
+			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathChangeSecret, http.StatusBadRequest, invalidSecret2)
 		})
 	})
 

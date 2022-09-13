@@ -5,7 +5,7 @@ import (
 	"syscall"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/cmd/flag"
 	"github.com/numary/webhooks/pkg/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,7 +29,7 @@ func RunServer(cmd *cobra.Command, _ []string) error {
 
 	app := fx.New(
 		server.StartModule(
-			viper.GetString(constants.HttpBindAddressServerFlag)))
+			viper.GetString(flag.HttpBindAddressServer)))
 
 	if err := app.Start(cmd.Context()); err != nil {
 		return fmt.Errorf("fx.App.Start: %w", err)

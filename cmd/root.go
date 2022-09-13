@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/pkg/env"
+	"github.com/numary/webhooks/cmd/flag"
 	"github.com/spf13/cobra"
 )
 
@@ -27,6 +27,6 @@ func Execute() {
 
 func init() {
 	var err error
-	retriesSchedule, err = env.Init(rootCmd.PersistentFlags())
+	retriesSchedule, err = flag.Init(rootCmd.PersistentFlags())
 	cobra.CheckErr(err)
 }

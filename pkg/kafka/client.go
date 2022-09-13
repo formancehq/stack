@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/constants"
+	"github.com/numary/webhooks/cmd/flag"
 	"github.com/spf13/viper"
 	"github.com/twmb/franz-go/pkg/kgo"
 	"github.com/twmb/franz-go/pkg/sasl/scram"
@@ -26,18 +26,18 @@ var ErrMechanism = errors.New("unrecognized SASL mechanism")
 func NewClient() (*kgo.Client, []string, error) {
 	sharedlogging.Infof("connecting to new kafka client...")
 	var opts []kgo.Opt
-	if viper.GetBool(constants.KafkaTLSEnabledFlag) {
+	if viper.GetBool(flag.KafkaTLSEnabled) {
 		opts = append(opts, kgo.DialTLSConfig(&tls.Config{
 			MinVersion: tls.VersionTLS12,
 		}))
 	}
 
-	if viper.GetBool(constants.KafkaSASLEnabledFlag) {
+	if viper.GetBool(flag.KafkaSASLEnabled) {
 		a := scram.Auth{
-			User: viper.GetString(constants.KafkaUsernameFlag),
-			Pass: viper.GetString(constants.KafkaPasswordFlag),
+			User: viper.GetString(flag.KafkaUsername),
+			Pass: viper.GetString(flag.KafkaPassword),
 		}
-		switch mechanism := viper.GetString(constants.KafkaSASLMechanismFlag); mechanism {
+		switch mechanism := viper.GetString(flag.KafkaSASLMechanism); mechanism {
 		case "SCRAM-SHA-512":
 			opts = append(opts, kgo.SASL(a.AsSha512Mechanism()))
 		case "SCRAM-SHA-256":
@@ -47,13 +47,13 @@ func NewClient() (*kgo.Client, []string, error) {
 		}
 	}
 
-	brokers := viper.GetStringSlice(constants.KafkaBrokersFlag)
+	brokers := viper.GetStringSlice(flag.KafkaBrokers)
 	opts = append(opts, kgo.SeedBrokers(brokers...))
 
-	groupID := viper.GetString(constants.KafkaGroupIDFlag)
+	groupID := viper.GetString(flag.KafkaGroupID)
 	opts = append(opts, kgo.ConsumerGroup(groupID))
 
-	topics := viper.GetStringSlice(constants.KafkaTopicsFlag)
+	topics := viper.GetStringSlice(flag.KafkaTopics)
 	opts = append(opts, kgo.ConsumeTopics(topics...))
 
 	opts = append(opts, kgo.AllowAutoTopicCreation())
