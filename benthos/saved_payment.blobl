@@ -13,7 +13,8 @@ map savedPayment {
           "scheme": this.payload.scheme,
           "type": this.payload.type,
           "status": this.payload.status,
-          "id": this.payload.id
+          "id": this.payload.id,
+          "initialAmount": this.payload.initialAmount
         },
         "kind": "PAYMENT",
         "when": this.date

@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"strings"
 
@@ -14,7 +15,7 @@ import (
 	"github.com/numary/go-libs/sharedauth"
 	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/go-libs/sharedotlp/sharedotlptraces"
+	"github.com/numary/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/numary/search/pkg/searchengine"
 	"github.com/numary/search/pkg/searchhttp"
 	"github.com/opensearch-project/opensearch-go"
@@ -145,6 +146,33 @@ func exitWithError(logger *logrus.Logger, msg string) {
 	os.Exit(1)
 }
 
+type debugRoundTripper struct {
+	http.RoundTripper
+}
+
+func (d debugRoundTripper) RoundTrip(request *http.Request) (*http.Response, error) {
+	body, err := httputil.DumpRequest(request, true)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(body))
+
+	rsp, err := d.RoundTripper.RoundTrip(request)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err = httputil.DumpResponse(rsp, true)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(body))
+
+	return rsp, nil
+}
+
+var _ http.RoundTripper = (*debugRoundTripper)(nil)
+
 func opensearchClientModule(openSearchServiceHost string, esIndices ...string) fx.Option {
 	return fx.Options(
 		fx.Provide(func() (*opensearch.Client, error) {
@@ -155,7 +183,9 @@ func opensearchClientModule(openSearchServiceHost string, esIndices ...string) f
 
 			return opensearch.NewClient(opensearch.Config{
 				Addresses: []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
-				Transport: httpTransport,
+				Transport: &debugRoundTripper{
+					RoundTripper: httpTransport,
+				},
 			})
 		}),
 		fx.Invoke(func(lc fx.Lifecycle, client *opensearch.Client) {

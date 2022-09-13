@@ -80,6 +80,9 @@ func (e *DefaultEngine) doRequest(ctx context.Context, m map[string]interface{})
 	defer httpResponse.Body.Close()
 
 	if httpResponse.IsError() {
+		if httpResponse.StatusCode == 404 {
+			return &es.Response{}, nil
+		}
 		return nil, errors.New(httpResponse.Status())
 	}
 
