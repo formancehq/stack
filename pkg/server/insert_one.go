@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"net/http"
 
+	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/julienschmidt/httprouter"
 	"github.com/numary/go-libs/sharedlogging"
-	webhooks "github.com/numary/webhooks/pkg"
 )
 
 func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/numary/webhooks/cmd"
+import "github.com/formancehq/webhooks/cmd"
 
 func main() {
 	cmd.Execute()

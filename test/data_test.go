@@ -3,7 +3,7 @@ package test_test
 import (
 	"time"
 
-	webhooks "github.com/numary/webhooks/pkg"
+	webhooks "github.com/formancehq/webhooks/pkg"
 )
 
 var (

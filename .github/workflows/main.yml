@@ -56,7 +56,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/webhooks:latest,ghcr.io/numary/webhooks:${{ github.event.release.tag_name }}
+          tags: ghcr.io/formancehq/webhooks:latest,ghcr.io/formancehq/webhooks:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
@@ -66,7 +66,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/webhooks:${{ github.event.release.tag_name }}
+          tags: ghcr.io/formancehq/webhooks:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
@@ -76,7 +76,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/webhooks:${{ github.sha }}
+          tags: ghcr.io/formancehq/webhooks:${{ github.sha }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=develop

@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/numary/webhooks/cmd/flag"
-	webhooks "github.com/numary/webhooks/pkg"
-	"github.com/numary/webhooks/pkg/server"
+	"github.com/formancehq/webhooks/cmd/flag"
+	webhooks "github.com/formancehq/webhooks/pkg"
+	"github.com/formancehq/webhooks/pkg/server"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

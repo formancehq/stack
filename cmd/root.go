@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/cmd/flag"
 	"github.com/spf13/cobra"
 )
 

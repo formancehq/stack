@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/webhooks/cmd/flag"
 	"github.com/spf13/viper"
 	"github.com/twmb/franz-go/pkg/kgo"
 	"github.com/twmb/franz-go/pkg/sasl/scram"

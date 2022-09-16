@@ -10,9 +10,9 @@ builds:
   - binary: webhooks
     id: webhooks
     ldflags:
-      - -X github.com/numary/webhooks/cmd.BuildDate={{ .Date }}
-      - -X github.com/numary/webhooks/cmd.Version={{ .Version }}
-      - -X github.com/numary/webhooks/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/webhooks/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/webhooks/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/webhooks/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
@@ -66,6 +66,6 @@ changelog:
 release:
   prerelease: auto
   footer: |
-    **Full Changelog**: https://github.com/numary/webhooks/compare/{{ .PreviousTag }}...{{ .Tag }}
+    **Full Changelog**: https://github.com/formancehq/webhooks/compare/{{ .PreviousTag }}...{{ .Tag }}
     ## What to do next?
     - Join our [Discord server](https://discord.gg/xyHvcbzk4w)

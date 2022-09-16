@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"net/url"
 
+	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/julienschmidt/httprouter"
 	"github.com/numary/go-libs/sharedapi"
 	"github.com/numary/go-libs/sharedlogging"
-	webhooks "github.com/numary/webhooks/pkg"
 )
 
 func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
