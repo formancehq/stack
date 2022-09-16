@@ -87,6 +87,9 @@ func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
 		return nil, fmt.Errorf("logrus.ParseLevel: %w", err)
 	}
 	logger.SetLevel(lvl)
+	if logger.GetLevel() < logrus.DebugLevel {
+		logger.SetFormatter(&logrus.JSONFormatter{})
+	}
 
 	retriesSchedule, err = flagSet.GetDurationSlice(RetriesSchedule)
 	if err != nil {
