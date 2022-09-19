@@ -3,8 +3,8 @@ package storage
 import (
 	"time"
 
-	auth "github.com/numary/auth/pkg"
-	"github.com/numary/auth/pkg/delegatedauth"
+	auth "github.com/formancehq/auth/pkg"
+	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"

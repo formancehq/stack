@@ -10,9 +10,9 @@ builds:
   - binary: auth
     id: auth
     ldflags:
-      - -X github.com/numary/auth/cmd.BuildDate={{ .Date }}
-      - -X github.com/numary/auth/cmd.Version={{ .Version }}
-      - -X github.com/numary/auth/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/auth/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/auth/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/auth/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
@@ -68,14 +68,14 @@ changelog:
 release:
   prerelease: auto
   footer: |
-    **Full Changelog**: https://github.com/numary/auth/compare/{{ .PreviousTag }}...{{ .Tag }}
+    **Full Changelog**: https://github.com/formancehq/auth/compare/{{ .PreviousTag }}...{{ .Tag }}
     ## What to do next?
     - Read the [documentation](https://docs.formance.com/)
     - Join our [Discord server](https://discord.gg/xyHvcbzk4w)
 
 brews:
   - tap:
-      owner: numary
+      owner: formancehq
       name: homebrew-tap
     name: auth
     folder: Formula
@@ -103,4 +103,4 @@ publishers:
     ids:
       - packages
     dir: "{{ dir .ArtifactPath }}"
-    cmd: curl -F package=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/numary/
+    cmd: curl -F package=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/formancehq/

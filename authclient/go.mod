@@ -1,4 +1,4 @@
-module github.com/numary/auth/authclient
+module github.com/formancehq/auth/authclient
 
 go 1.13
 

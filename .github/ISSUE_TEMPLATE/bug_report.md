@@ -21,7 +21,7 @@ If applicable, add logs to help explain your problem.
 
 **Environment (please complete the following information):**
  - OS: [e.g. ubuntu 20.04]
- - Numary Version [e.g. 1.0.0-beta.4]
+ - Formance Version [e.g. 1.0.0-beta.4]
 
 **Additional context**
 Add any other context about the problem here.

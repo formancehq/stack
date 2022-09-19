@@ -7,9 +7,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/numary/auth/pkg/api"
-	"github.com/numary/auth/pkg/delegatedauth"
-	"github.com/numary/auth/pkg/storage"
+	"github.com/formancehq/auth/pkg/api"
+	"github.com/formancehq/auth/pkg/delegatedauth"
+	"github.com/formancehq/auth/pkg/storage"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/spf13/cobra"

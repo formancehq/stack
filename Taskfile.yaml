@@ -2,26 +2,36 @@ version: '3'
 
 vars:
   COMPONENT:
-    sh: cat go.mod |head -1|cut -d \  -f2|cut -d / -f 3
+    sh: cat go.mod | head -1 | cut -d \  -f2 | cut -d / -f 3
 
 tasks:
+  default:
+    cmds:
+      - task: lint
+      - task: tests
+
   lint:
     cmds:
     - golangci-lint run -v --fix
+
   tests:
     cmds:
     - go test ./...
+
   build:
     cmds:
     - go build
+
   build-image:
     cmds:
-    - docker build -t github.com/numary/{{.COMPONENT}} .
+    - docker build -t github.com/formancehq/{{.COMPONENT}} .
+
   run-image:
     deps:
     - build-image
     cmds:
-    - docker run --rm github.com/numary/{{.COMPONENT}}
+    - docker run --rm github.com/formancehq/{{.COMPONENT}}
+
   generate-client:
   - >
     docker run --rm 
@@ -31,18 +41,23 @@ tasks:
     -i swagger.yaml 
     -g go 
     -o ./authclient 
-    --git-user-id=numary 
+    --git-user-id=formancehq 
     --git-repo-id=auth 
     -p packageVersion=latest 
     -p isGoSubmodule=true 
     -p packageName=authclient
+
+  install-deps-demo-client:
+    cmds:
+      - cd demo && rm package-lock.json && yarn install
+
   create-demo-client:
     vars:
       CLIENT_ID:
         sh: >
           curl -X POST 'http://localhost:8080/clients' 
           -H 'Content-Type: application/json' 
-          -d '{"public": true, "name": "demo", "postLogoutRedirectUris": ["http://localhost:3000/"], "redirectUris": ["http://localhost:3000/auth-callback"]}'|jq -r .data.id
+          -d '{"public": true, "name": "demo", "postLogoutRedirectUris": ["http://localhost:3000/"], "redirectUris": ["http://localhost:3000/auth-callback"]}' | jq -r .data.id
     preconditions:
     - sh: '[ "{{.CLIENT_ID}}" != "null" ]'
     cmds:
