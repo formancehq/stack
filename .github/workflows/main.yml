@@ -11,24 +11,24 @@ name: Main
 jobs:
   Pr:
     if: github.event_name == 'pull_request'
-    uses: numary/gh-workflows/.github/workflows/pr-style.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/pr-style.yml@main
 
   Lint:
-    uses: numary/gh-workflows/.github/workflows/golang-lint.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/golang-lint.yml@main
 
   Test:
-    uses: numary/gh-workflows/.github/workflows/golang-test.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/golang-test.yml@main
 
   Build:
     if: github.event_name != 'release'
-    uses: numary/gh-workflows/.github/workflows/goreleaser-build.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/goreleaser-build.yml@main
     needs:
       - Lint
       - Test
 
   Release:
     if: github.event_name == 'release'
-    uses: numary/gh-workflows/.github/workflows/goreleaser-release.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/goreleaser-release.yml@main
     secrets:
       FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
@@ -61,7 +61,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/auth:latest,ghcr.io/numary/auth:${{ github.event.release.tag_name }}
+          tags: ghcr.io/formancehq/auth:latest,ghcr.io/formancehq/auth:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
@@ -72,7 +72,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/auth:${{ github.event.release.tag_name }}
+          tags: ghcr.io/formancehq/auth:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
@@ -83,7 +83,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/auth:${{ github.sha }}
+          tags: ghcr.io/formancehq/auth:${{ github.sha }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=develop

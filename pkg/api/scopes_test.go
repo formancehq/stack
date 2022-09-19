@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	auth "github.com/formancehq/auth/pkg"
+	"github.com/formancehq/auth/pkg/storage"
 	"github.com/gorilla/mux"
-	auth "github.com/numary/auth/pkg"
-	"github.com/numary/auth/pkg/storage"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"

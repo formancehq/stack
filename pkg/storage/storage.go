@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
+	auth "github.com/formancehq/auth/pkg"
 	"github.com/google/uuid"
-	auth "github.com/numary/auth/pkg"
 	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"

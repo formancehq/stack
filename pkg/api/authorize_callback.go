@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	auth "github.com/numary/auth/pkg"
-	"github.com/numary/auth/pkg/delegatedauth"
-	"github.com/numary/auth/pkg/storage"
+	auth "github.com/formancehq/auth/pkg"
+	"github.com/formancehq/auth/pkg/delegatedauth"
+	"github.com/formancehq/auth/pkg/storage"
 	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/op"
 )

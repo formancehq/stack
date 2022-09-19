@@ -5,27 +5,30 @@ services:
   jaeger:
     image: jaegertracing/opentelemetry-all-in-one
     ports:
-    - "16686:16686/tcp"
+    - '16686:16686/tcp'
+
   dex:
-    image: ghcr.io/dexidp/dex:latest
+    image: ghcr.io/dexidp/dex:latest-distroless
     volumes:
       - ./dex-config.yaml:/etc/dex/config.docker.yaml
     ports:
-      - "5556:5556/tcp"
-      - "8080:8080/tcp"
+      - '5556:5556/tcp'
+      - '8080:8080/tcp'
+
   postgres:
-    image: 'postgres:13-alpine'
+    image: postgres:alpine
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U auth']
       interval: 10s
       timeout: 5s
       retries: 5
     ports:
-      - '5432:5432'
+      - '5432:5432/tcp'
     environment:
       POSTGRES_USER: 'auth'
       POSTGRES_PASSWORD: 'auth'
       POSTGRES_DB: 'auth'
+
   auth:
     build:
       context: .
@@ -46,7 +49,7 @@ services:
       DEBUG: 1
       POSTGRES_URI: "host=postgres user=auth password=auth dbname=auth port=5432 sslmode=disable"
       CAOS_OIDC_DEV: 1
-      OTEL_TRACES: "true"
+      OTEL_TRACES: true
       OTEL_TRACES_EXPORTER: jaeger
       OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
       DELEGATED_CLIENT_ID: gateway
@@ -89,10 +92,11 @@ services:
     volumes:
     - .:/src
     working_dir: /src
+
   frontend:
     image: node:alpine
     ports:
-      - 3000:3000/tcp
+      - '3000:3000/tcp'
     volumes:
       - ./demo:/src
     working_dir: /src

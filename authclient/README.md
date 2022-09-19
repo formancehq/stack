@@ -22,7 +22,7 @@ go get golang.org/x/net/context
 Put the package under your project folder and add the following in import:
 
 ```golang
-import authclient "github.com/numary/auth/authclient"
+import authclient "github.com/formancehq/auth/authclient"
 ```
 
 To use a proxy, set the environment variable `HTTP_PROXY`:
@@ -61,7 +61,7 @@ Each operation can use different server URL defined using `OperationServers` map
 An operation is uniquely identified by `"{classname}Service.{nickname}"` string.
 Similar rules for overriding default operation server index and variables applies by using `sw.ContextOperationServerIndices` and `sw.ContextOperationServerVariables` context maps.
 
-```
+```golang
 ctx := context.WithValue(context.Background(), authclient.ContextOperationServerIndices, map[string]int{
 	"{classname}Service.{nickname}": 2,
 })
@@ -74,7 +74,7 @@ ctx = context.WithValue(context.Background(), authclient.ContextOperationServerV
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *https://.o.numary.cloud/auth*
+All URIs are relative to *https://.o.formance.cloud/auth*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------

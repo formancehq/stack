@@ -5,7 +5,7 @@ info:
   version: "AUTH_VERSION"
 
 servers:
-- url: https://{organization}.o.numary.cloud/auth
+- url: https://{organization}.o.formance.cloud/auth
   description: Production server
   variables:
     organization:

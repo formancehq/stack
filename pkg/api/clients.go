@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
+	auth "github.com/formancehq/auth/pkg"
 	"github.com/gorilla/mux"
-	auth "github.com/numary/auth/pkg"
 	_ "github.com/numary/go-libs/sharedapi"
 	"github.com/zitadel/oidc/pkg/oidc"
 	"gorm.io/gorm"

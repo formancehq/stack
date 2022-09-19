@@ -1,6 +1,6 @@
 # \DefaultApi
 
-All URIs are relative to *https://.o.numary.cloud/auth*
+All URIs are relative to *https://.o.formance.cloud/auth*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

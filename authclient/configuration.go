@@ -105,7 +105,7 @@ func NewConfiguration() *Configuration {
 		Debug:            false,
 		Servers:          ServerConfigurations{
 			{
-				URL: "https://{organization}.o.numary.cloud/auth",
+				URL: "https://{organization}.o.formance.cloud/auth",
 				Description: "Production server",
 				Variables: map[string]ServerVariable{
 					"organization": ServerVariable{

@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/formancehq/auth/pkg/storage"
 	"github.com/gorilla/mux"
-	"github.com/numary/auth/pkg/storage"
 	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
 	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/op"

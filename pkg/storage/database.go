@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	auth "github.com/numary/auth/pkg"
+	auth "github.com/formancehq/auth/pkg"
 	"github.com/numary/go-libs/sharedlogging"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
