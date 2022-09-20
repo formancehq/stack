@@ -97,12 +97,7 @@ func Test3LeggedFlow(t *testing.T) {
 
 		// Trigger an authentication request
 		authUrl := rp.AuthURL("", clientRelyingParty)
-		rsp, err := (&http.Client{
-			CheckRedirect: func(req *http.Request, via []*http.Request) error {
-				fmt.Println(req.URL.String())
-				return nil
-			},
-		}).Get(authUrl)
+		rsp, err := http.Get(authUrl)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, rsp.StatusCode)
 
