@@ -140,7 +140,12 @@ func (w *WorkerMessages) processMessage(ctx context.Context, msgValue []byte) er
 
 	eventApp := strings.ToLower(ev.App)
 	eventType := strings.ToLower(ev.Type)
-	ev.Type = strings.Join([]string{eventApp, eventType}, ".")
+
+	if eventApp == "" {
+		ev.Type = eventType
+	} else {
+		ev.Type = strings.Join([]string{eventApp, eventType}, ".")
+	}
 
 	cur, err := w.store.FindManyConfigs(ctx, map[string]any{webhooks.KeyEventTypes: ev.Type})
 	if err != nil {
