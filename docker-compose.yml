@@ -103,7 +103,7 @@ services:
       - postgres_data:/data/postgres
 
   ledger:
-    image: "ghcr.io/formancehq/ledger:v1.7.4"
+    image: "ghcr.io/formancehq/ledger:v1.8.0-beta.4"
     restart: always
     depends_on:
       postgres:
@@ -127,15 +127,15 @@ services:
 
   mongodb:
     image: mongo:5.0
-    command: "mongod --bind_ip_all --replSet replicaSet01 --keyFile /data/replica.key"
-    entrypoint:
-      - bash
-      - -c
-      - |
-        openssl rand -base64 700 > /data/replica.key
-        chmod 400 /data/replica.key
-        chown 999:999 /data/replica.key
-        exec docker-entrypoint.sh $$@
+#    command: "mongod --bind_ip_all --replSet replicaSet01 --keyFile /data/replica.key"
+#    entrypoint:
+#      - bash
+#      - -c
+#      - |
+#        openssl rand -base64 700 > /data/replica.key
+#        chmod 400 /data/replica.key
+#        chown 999:999 /data/replica.key
+#        exec docker-entrypoint.sh $$@
 #    healthcheck:
 #      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet) -eq 1
 #      interval: 10s
@@ -238,3 +238,58 @@ services:
       - traefik.http.services.search.loadbalancer.server.port=8080
       - traefik.http.middlewares.search.stripprefix.prefixes=/api/search
       - traefik.http.routers.search.middlewares=search@docker,cors@docker
+
+  webhooks:
+    image: "ghcr.io/formancehq/webhooks:v0.2.1"
+    healthcheck:
+      test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.webhooks.rule=(Host(`localhost`) || Host(`proxy`)) &&  PathPrefix(`/api/webhooks`)
+      - traefik.http.routers.webhooks.entrypoints=web
+      - traefik.http.services.webhooks.loadbalancer.server.port=8080
+      - traefik.http.middlewares.webhooks.stripprefix.prefixes=/api/webhooks
+      - traefik.http.routers.webhooks.middlewares=webhooks@docker,cors@docker
+
+  webhooks-worker:
+    image: "ghcr.io/formancehq/webhooks:v0.2.1"
+    command: worker messages
+    healthcheck:
+      test: curl -s -f -k http://127.0.0.1:8081/_healthcheck >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017"
+      KAFKA_BROKERS: "redpanda:29092"
+      KAFKA_TOPICS: "ledger,payments"
+      LOG_LEVEL: "debug"
+    labels:
+      - traefik.enable=false
+
+  webhooks-retries:
+    image: "ghcr.io/formancehq/webhooks:v0.2.1"
+    command: worker retries
+    healthcheck:
+      test: curl -s -f -k http://127.0.0.1:8082/_healthcheck >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017"
+    labels:
+      - traefik.enable=false
