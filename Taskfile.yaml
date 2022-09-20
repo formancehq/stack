@@ -50,16 +50,3 @@ tasks:
   install-deps-demo-client:
     cmds:
       - cd demo && rm package-lock.json && yarn install
-
-  create-demo-client:
-    vars:
-      CLIENT_ID:
-        sh: >
-          curl -X POST 'http://localhost:8080/clients' 
-          -H 'Content-Type: application/json' 
-          -d '{"public": true, "name": "demo", "postLogoutRedirectUris": ["http://localhost:3000/"], "redirectUris": ["http://localhost:3000/auth-callback"]}' | jq -r .data.id
-    preconditions:
-    - sh: '[ "{{.CLIENT_ID}}" != "null" ]'
-    cmds:
-    - |
-      echo export const REACT_APP_CLIENT_ID=\'{{.CLIENT_ID}}\' > demo/src/config.js

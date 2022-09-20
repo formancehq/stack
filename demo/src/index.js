@@ -4,10 +4,9 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import {OidcProvider, OidcSecure} from "@axa-fr/react-oidc";
 import {Info} from "./Info";
-import {REACT_APP_CLIENT_ID} from "./config";
 
 const configuration = {
-    client_id: REACT_APP_CLIENT_ID,
+    client_id: 'demo',
     redirect_uri: 'http://localhost:3000/auth-callback',
     silent_redirect_uri: 'http://localhost:3000/silent-auth-callback',
     scope: 'openid offline_access email',

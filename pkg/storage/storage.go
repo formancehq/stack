@@ -28,9 +28,10 @@ type Storage interface {
 var _ Storage = (*storage)(nil)
 
 type storage struct {
-	signingKey   signingKey
-	db           *gorm.DB
-	relyingParty rp.RelyingParty
+	signingKey    signingKey
+	db            *gorm.DB
+	relyingParty  rp.RelyingParty
+	staticClients []*auth.Client
 }
 
 func (s *storage) ClientCredentialsTokenRequest(ctx context.Context, clientID string, scopes []string) (op.TokenRequest, error) {
@@ -102,7 +103,12 @@ type signingKey struct {
 	Key       *rsa.PrivateKey
 }
 
-func New(db *gorm.DB, relyingParty rp.RelyingParty, key *rsa.PrivateKey) *storage {
+func New(db *gorm.DB, relyingParty rp.RelyingParty, key *rsa.PrivateKey, opts []auth.ClientOptions) *storage {
+	var staticClients []*auth.Client
+	for _, c := range opts {
+		staticClients = append(staticClients, auth.NewClient(c))
+	}
+
 	return &storage{
 		relyingParty: relyingParty,
 		signingKey: signingKey{
@@ -110,7 +116,8 @@ func New(db *gorm.DB, relyingParty rp.RelyingParty, key *rsa.PrivateKey) *storag
 			Algorithm: "RS256",
 			Key:       key,
 		},
-		db: db,
+		staticClients: staticClients,
+		db:            db,
 	}
 }
 
@@ -329,6 +336,12 @@ func (s *storage) GetKeySet(ctx context.Context) (*jose.JSONWebKeySet, error) {
 // GetClientByClientID implements the op.Storage interface
 // it will be called whenever information (type, redirect_uris, ...) about the client behind the client_id is needed
 func (s *storage) getClientByClientID(ctx context.Context, clientID string) (*auth.Client, error) {
+	for _, c := range s.staticClients {
+		if c.Id == clientID {
+			return c, nil
+		}
+	}
+
 	client := &auth.Client{}
 	return client, s.db.
 		WithContext(ctx).

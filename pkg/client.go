@@ -122,17 +122,22 @@ func (c *Client) HasScope(id string) bool {
 }
 
 type ClientOptions struct {
-	Public                 bool     `json:"public"`
-	RedirectUris           []string `json:"redirectUris"`
-	Description            string   `json:"description"`
-	Name                   string   `json:"name"`
-	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris"`
-	Metadata               Metadata `json:"metadata"`
+	ID                     string   `json:"id" yaml:"id"`
+	Public                 bool     `json:"public" yaml:"public"`
+	RedirectUris           []string `json:"redirectUris" yaml:"redirectUris"`
+	Description            string   `json:"description" yaml:"description"`
+	Name                   string   `json:"name" yaml:"name"`
+	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris" yaml:"postLogoutRedirectUris"`
+	Metadata               Metadata `json:"metadata" yaml:"metadata"`
 }
 
 func NewClient(opts ClientOptions) *Client {
+	if opts.ID == "" {
+		opts.ID = uuid.NewString()
+	}
+
 	client := &Client{
-		Id:              uuid.NewString(),
+		Id:              opts.ID,
 		ApplicationType: op.ApplicationTypeWeb,
 		ResponseTypes:   []oidc.ResponseType{oidc.ResponseTypeCode},
 		AccessTokenType: op.AccessTokenTypeJWT,

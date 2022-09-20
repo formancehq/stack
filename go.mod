@@ -8,6 +8,7 @@ require (
 	github.com/numary/go-libs v1.0.1
 	github.com/numary/go-libs/sharedhealth v0.0.0-20220905094731-f6d6d1cf83f3
 	github.com/numary/go-libs/sharedotlp v0.0.0-20220905094731-f6d6d1cf83f3
+	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.13.0
