@@ -45,6 +45,7 @@ services:
     - serve
     environment:
       DEBUG: 1
+      CONFIG: ./config.yaml
       POSTGRES_URI: "host=postgres user=auth password=auth dbname=auth port=5432 sslmode=disable"
       CAOS_OIDC_DEV: 1
       OTEL_TRACES: true

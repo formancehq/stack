@@ -61,21 +61,20 @@ var serveCmd = &cobra.Command{
 		if signingKey == "" {
 			return errors.New("signing key must be defined")
 		}
+
 		block, _ := pem.Decode([]byte(signingKey))
 		if block == nil {
 			return errors.New("invalid signing key, cannot parse as PEM")
 		}
+
 		key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 		if err != nil {
 			return err
 		}
 
-		viper.SetConfigName(viper.GetString(configFlag))
-		viper.AddConfigPath(".")
-		if err := viper.ReadInConfig(); err != nil {
-			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-				sharedlogging.GetLogger(cmd.Context()).Infof("no viper config file found")
-			} else {
+		if viper.GetString(configFlag) != "" {
+			viper.SetConfigFile(viper.GetString(configFlag))
+			if err := viper.ReadInConfig(); err != nil {
 				return errors.Wrap(err, "reading viper config file")
 			}
 		}
