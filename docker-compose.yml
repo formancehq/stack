@@ -11,9 +11,7 @@ services:
     image: ghcr.io/dexidp/dex:latest-distroless
     volumes:
       - ./dex-config.yaml:/etc/dex/config.docker.yaml
-    ports:
-      - '5556:5556/tcp'
-      - '8080:8080/tcp'
+    network_mode: service:auth
 
   postgres:
     image: postgres:alpine
@@ -84,14 +82,15 @@ services:
         Cv6TRZPe2y6Bbgg4Q3FuF0DMqx6ongFKQAWo3DkqNFCGRgjJMQ9JbcfOnGySq4U+
         EL/wy5C80pa3jahniqVgO5L6zz0ZLtRIRE7aCtCIu826gctJ1+ShIso=
         -----END RSA PRIVATE KEY-----
-    network_mode: service:dex
     depends_on:
-    - dex
     - postgres
     - jaeger
     volumes:
     - .:/src
     working_dir: /src
+    ports:
+    - '5556:5556/tcp'
+    - '8080:8080/tcp'
 
   frontend:
     image: node:alpine

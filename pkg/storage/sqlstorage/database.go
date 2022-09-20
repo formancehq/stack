@@ -1,4 +1,4 @@
-package storage
+package sqlstorage
 
 import (
 	"context"
@@ -40,9 +40,9 @@ func LoadGorm(d gorm.Dialector) (*gorm.DB, error) {
 func MigrateTables(ctx context.Context, db *gorm.DB) error {
 	return db.WithContext(ctx).AutoMigrate(
 		&auth.Client{},
-		&auth.Request{},
-		&auth.Token{},
-		&auth.Request{},
+		&auth.AuthRequest{},
+		&auth.AccessToken{},
+		&auth.AuthRequest{},
 		&auth.RefreshToken{},
 		&auth.User{},
 		&auth.Scope{},

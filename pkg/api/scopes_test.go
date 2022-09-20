@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	auth "github.com/formancehq/auth/pkg"
-	"github.com/formancehq/auth/pkg/storage"
+	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/sqlite"
@@ -15,9 +15,9 @@ import (
 )
 
 func withDbAndScopesRouter(t *testing.T, callback func(router *mux.Router, db *gorm.DB)) {
-	db, err := storage.LoadGorm(sqlite.Open(":memory:"))
+	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"))
 	require.NoError(t, err)
-	require.NoError(t, storage.MigrateTables(context.Background(), db))
+	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 
 	router := mux.NewRouter()
 	addScopeRoutes(db, router)

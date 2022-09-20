@@ -37,6 +37,11 @@ func (a *Array[T]) Contains(t T) bool {
 	return false
 }
 
+func (a *Array[T]) Append(t T) *Array[T] {
+	*a = append(*a, t)
+	return a
+}
+
 // Value implements the driver.Valuer interface.
 func (a Array[T]) Value() (driver.Value, error) {
 	if a == nil {

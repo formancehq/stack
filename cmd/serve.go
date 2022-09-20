@@ -9,7 +9,10 @@ import (
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/api"
 	"github.com/formancehq/auth/pkg/delegatedauth"
-	"github.com/formancehq/auth/pkg/storage"
+	"github.com/formancehq/auth/pkg/oidc"
+	"github.com/formancehq/auth/pkg/storage/sqlstorage"
+	"github.com/gorilla/mux"
+	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/pkg/errors"
@@ -87,13 +90,17 @@ var serveCmd = &cobra.Command{
 
 		options := []fx.Option{
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-			api.Module(baseUrl, ":8080"),
-			storage.Module(viper.GetString(postgresUriFlag), key, o.Clients),
+			oidc.Module(":8080", baseUrl),
+			api.Module(),
+			fx.Invoke(func(router *mux.Router, healthController *sharedhealth.HealthController) {
+				router.Path("/_healthcheck").HandlerFunc(healthController.Check)
+			}),
+			sqlstorage.Module(viper.GetString(postgresUriFlag), key, o.Clients),
 			delegatedauth.Module(delegatedauth.Config{
 				Issuer:       delegatedIssuer,
 				ClientID:     delegatedClientID,
 				ClientSecret: delegatedClientSecret,
-				RedirectURL:  fmt.Sprintf("%s/delegatedoidc/callback", baseUrl),
+				RedirectURL:  fmt.Sprintf("%s/authorize/callback", baseUrl),
 			}),
 			fx.Invoke(func() {
 				sharedlogging.Infof("App started.")

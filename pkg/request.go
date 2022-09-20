@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type Request struct {
+type AuthRequest struct {
 	ID            string `gorm:"primarykey"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
@@ -24,69 +24,69 @@ type Request struct {
 	ResponseType  oidc.ResponseType
 	Nonce         string
 	CodeChallenge *OIDCCodeChallenge `gorm:"embedded"`
-	Subject       string
+	UserID        string
 	AuthTime      time.Time
 	Code          string
 }
 
-func (a *Request) GetID() string {
+func (a *AuthRequest) GetID() string {
 	return a.ID
 }
 
-func (a *Request) GetACR() string {
+func (a *AuthRequest) GetACR() string {
 	return "" //we won't handle acr in this example
 }
 
-func (a *Request) GetAMR() []string {
+func (a *AuthRequest) GetAMR() []string {
 	return nil
 }
 
-func (a *Request) GetAudience() []string {
+func (a *AuthRequest) GetAudience() []string {
 	return []string{a.ApplicationID}
 }
 
-func (a *Request) GetAuthTime() time.Time {
+func (a *AuthRequest) GetAuthTime() time.Time {
 	return a.AuthTime
 }
 
-func (a *Request) GetClientID() string {
+func (a *AuthRequest) GetClientID() string {
 	return a.ApplicationID
 }
 
-func (a *Request) GetCodeChallenge() *oidc.CodeChallenge {
+func (a *AuthRequest) GetCodeChallenge() *oidc.CodeChallenge {
 	return CodeChallengeToOIDC(a.CodeChallenge)
 }
 
-func (a *Request) GetNonce() string {
+func (a *AuthRequest) GetNonce() string {
 	return a.Nonce
 }
 
-func (a *Request) GetRedirectURI() string {
+func (a *AuthRequest) GetRedirectURI() string {
 	return a.CallbackURI
 }
 
-func (a *Request) GetResponseType() oidc.ResponseType {
+func (a *AuthRequest) GetResponseType() oidc.ResponseType {
 	return a.ResponseType
 }
 
-func (a *Request) GetResponseMode() oidc.ResponseMode {
+func (a *AuthRequest) GetResponseMode() oidc.ResponseMode {
 	return "" //we won't handle response mode in this example
 }
 
-func (a *Request) GetScopes() []string {
+func (a *AuthRequest) GetScopes() []string {
 	return a.Scopes
 }
 
-func (a *Request) GetState() string {
+func (a *AuthRequest) GetState() string {
 	return a.TransferState
 }
 
-func (a *Request) GetSubject() string {
-	return a.Subject
+func (a *AuthRequest) GetSubject() string {
+	return a.UserID
 }
 
-func (a *Request) Done() bool {
-	return a.Subject != ""
+func (a *AuthRequest) Done() bool {
+	return a.UserID != ""
 }
 
 func PromptToInternal(oidcPrompt oidc.SpaceDelimitedArray) []string {
