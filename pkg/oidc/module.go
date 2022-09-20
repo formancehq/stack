@@ -2,6 +2,7 @@ package oidc
 
 import (
 	"context"
+	"crypto/rsa"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/gorilla/mux"
@@ -10,7 +11,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(addr, issuer string) fx.Option {
+func Module(addr, issuer string, privateKey *rsa.PrivateKey) fx.Option {
 	return fx.Options(
 		fx.Provide(NewRouter),
 		fx.Provide(fx.Annotate(func(storage Storage, relyingParty rp.RelyingParty, opts []auth.ClientOptions) *storageFacade {
@@ -18,7 +19,7 @@ func Module(addr, issuer string) fx.Option {
 			for _, c := range opts {
 				staticClients = append(staticClients, *auth.NewClient(c))
 			}
-			return NewStorageFacade(storage, relyingParty, staticClients...)
+			return NewStorageFacade(storage, relyingParty, privateKey, staticClients...)
 		}, fx.As(new(op.Storage)))),
 		fx.Provide(func(storage op.Storage) (op.OpenIDProvider, error) {
 			return NewOpenIDProvider(context.TODO(), storage, issuer)

@@ -2,6 +2,8 @@ package oidc_test
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
 	"fmt"
 	"net"
 	"net/http"
@@ -50,7 +52,9 @@ func withServer(t *testing.T, fn func(storage *sqlstorage.Storage, provider op.O
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 
 	storage := sqlstorage.New(db)
-	storageFacade := oidc.NewStorageFacade(storage, serverRelyingParty)
+
+	key, _ := rsa.GenerateKey(rand.Reader, 2048)
+	storageFacade := oidc.NewStorageFacade(storage, serverRelyingParty, key)
 
 	// Construct our oidc provider
 	provider, err := oidc.NewOpenIDProvider(context.TODO(), storageFacade, serverUrl)

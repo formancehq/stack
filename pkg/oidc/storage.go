@@ -2,7 +2,6 @@ package oidc
 
 import (
 	"context"
-	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
 	"math/big"
@@ -525,9 +524,7 @@ var (
 	}
 )
 
-func NewStorageFacade(storage Storage, rp rp.RelyingParty, staticClients ...auth.Client) *storageFacade {
-	// TODO: Pass from config
-	key, _ := rsa.GenerateKey(rand.Reader, 2048)
+func NewStorageFacade(storage Storage, rp rp.RelyingParty, privateKey *rsa.PrivateKey, staticClients ...auth.Client) *storageFacade {
 	return &storageFacade{
 		Storage: storage,
 		services: map[string]Service{
@@ -540,7 +537,7 @@ func NewStorageFacade(storage Storage, rp rp.RelyingParty, staticClients ...auth
 		signingKey: signingKey{
 			ID:        "id",
 			Algorithm: "RS256",
-			Key:       key,
+			Key:       privateKey,
 		},
 		relyingParty:  rp,
 		staticClients: staticClients,

@@ -90,7 +90,7 @@ var serveCmd = &cobra.Command{
 
 		options := []fx.Option{
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-			oidc.Module(":8080", baseUrl),
+			oidc.Module(":8080", baseUrl, key),
 			api.Module(),
 			fx.Invoke(func(router *mux.Router, healthController *sharedhealth.HealthController) {
 				router.Path("/_healthcheck").HandlerFunc(healthController.Check)
