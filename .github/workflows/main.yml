@@ -11,24 +11,24 @@ name: Main
 jobs:
   Pr:
     if: github.event_name == 'pull_request'
-    uses: numary/gh-workflows/.github/workflows/pr-style.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/pr-style.yml@main
 
   Lint:
-    uses: numary/gh-workflows/.github/workflows/golang-lint.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/golang-lint.yml@main
 
   Test:
-    uses: numary/gh-workflows/.github/workflows/golang-test.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/golang-test.yml@main
 
   Build:
     if: github.event_name != 'release'
-    uses: numary/gh-workflows/.github/workflows/goreleaser-build.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/goreleaser-build.yml@main
     needs:
       - Lint
       - Test
 
   Release:
     if: github.event_name == 'release'
-    uses: numary/gh-workflows/.github/workflows/goreleaser-release.yml@main
+    uses: formancehq/gh-workflows/.github/workflows/goreleaser-release.yml@main
     secrets:
       FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
@@ -61,7 +61,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/search:latest,ghcr.io/numary/search:${{ github.event.release.tag_name }}
+          tags: ghcr.io/formancehq/search:latest,ghcr.io/formancehq/search:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
@@ -72,7 +72,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/search:${{ github.event.release.tag_name }}
+          tags: ghcr.io/formancehq/search:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
@@ -83,7 +83,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/numary/search:${{ github.sha }}
+          tags: ghcr.io/formancehq/search:${{ github.sha }}
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=develop
@@ -115,7 +115,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           file: benthos.Dockerfile
           push: true
-          tags: ghcr.io/numary/search-ingester:latest,ghcr.io/numary/search-ingester:${{ github.event.release.tag_name }}
+          tags: ghcr.io/formancehq/search-ingester:latest,ghcr.io/formancehq/search-ingester:${{ github.event.release.tag_name }}
       - name: Build and push PreReleased
         if: github.event.action == 'prereleased'
         uses: docker/build-push-action@v2
@@ -124,7 +124,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           file: benthos.Dockerfile
           push: true
-          tags: ghcr.io/numary/search-ingester:${{ github.event.release.tag_name }}
+          tags: ghcr.io/formancehq/search-ingester:${{ github.event.release.tag_name }}
       - name: Build and push
         if: github.event.action != 'released' || github.event.action != 'prereleased'
         uses: docker/build-push-action@v2
@@ -133,4 +133,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           file: benthos.Dockerfile
           push: true
-          tags: ghcr.io/numary/search-ingester:${{ github.sha }}
+          tags: ghcr.io/formancehq/search-ingester:${{ github.sha }}
