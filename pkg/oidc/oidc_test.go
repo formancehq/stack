@@ -17,6 +17,7 @@ import (
 	"github.com/oauth2-proxy/mockoidc"
 	"github.com/stretchr/testify/require"
 	"github.com/zitadel/oidc/pkg/client/rp"
+	"github.com/zitadel/oidc/pkg/client/rs"
 	"github.com/zitadel/oidc/pkg/op"
 	"gorm.io/driver/sqlite"
 )
@@ -109,8 +110,22 @@ func Test3LeggedFlow(t *testing.T) {
 		// As the mock automatically accept login response, we should have received a code
 		case code := <-code:
 			// And this code is used to get a token
-			_, err := rp.CodeExchange(context.TODO(), code, clientRelyingParty)
+			tokens, err := rp.CodeExchange(context.TODO(), code, clientRelyingParty)
 			require.NoError(t, err)
+
+			// Create a OAuth2 client which represent our client application
+			secondaryClient := auth.NewClient(auth.ClientOptions{
+				Trusted: true,
+			})
+			_, clear = secondaryClient.GenerateNewSecret(auth.SecretCreate{}) // Need to generate a secret
+			require.NoError(t, storage.SaveClient(context.TODO(), *secondaryClient))
+
+			resourceServer, err := rs.NewResourceServerClientCredentials(provider.Issuer(), secondaryClient.Id, clear)
+			require.NoError(t, err)
+
+			introspection, err := rs.Introspect(context.TODO(), resourceServer, tokens.AccessToken)
+			require.NoError(t, err)
+			require.True(t, introspection.IsActive())
 		default:
 			require.Fail(t, "code was expected")
 		}

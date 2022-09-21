@@ -58,6 +58,7 @@ type Client struct {
 	Description                    string
 	Name                           string
 	Metadata                       Metadata `gorm:"type:text"`
+	Trusted                        bool
 }
 
 func (c *Client) Update(opts ClientOptions) {
@@ -80,6 +81,7 @@ func (c *Client) Update(opts ClientOptions) {
 	c.Name = opts.Name
 	c.Metadata = opts.Metadata
 	c.AuthMethod = authMethod
+	c.Trusted = opts.Trusted
 }
 
 func (c *Client) GenerateNewSecret(opts SecretCreate) (ClientSecret, string) {
@@ -129,6 +131,7 @@ type ClientOptions struct {
 	Name                   string   `json:"name" yaml:"name"`
 	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris" yaml:"postLogoutRedirectUris"`
 	Metadata               Metadata `json:"metadata" yaml:"metadata"`
+	Trusted                bool     `json:"trusted" yaml:"trusted"`
 }
 
 func NewClient(opts ClientOptions) *Client {

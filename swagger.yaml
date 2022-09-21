@@ -318,6 +318,8 @@ components:
           type: string
         name:
           type: string
+        trusted:
+          type: boolean
         postLogoutRedirectUris:
           type: array
           items:

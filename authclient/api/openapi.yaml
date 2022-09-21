@@ -342,6 +342,7 @@ components:
         metadata:
           key: metadata
         public: true
+        trusted: true
         postLogoutRedirectUris:
         - postLogoutRedirectUris
         - postLogoutRedirectUris
@@ -361,6 +362,8 @@ components:
           type: string
         name:
           type: string
+        trusted:
+          type: boolean
         postLogoutRedirectUris:
           items:
             type: string

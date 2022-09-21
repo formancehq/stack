@@ -20,6 +20,7 @@ type ClientOptions struct {
 	RedirectUris []string `json:"redirectUris,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Name string `json:"name"`
+	Trusted *bool `json:"trusted,omitempty"`
 	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris,omitempty"`
 	Metadata *map[string]string `json:"metadata,omitempty"`
 }
@@ -162,6 +163,38 @@ func (o *ClientOptions) SetName(v string) {
 	o.Name = v
 }
 
+// GetTrusted returns the Trusted field value if set, zero value otherwise.
+func (o *ClientOptions) GetTrusted() bool {
+	if o == nil || o.Trusted == nil {
+		var ret bool
+		return ret
+	}
+	return *o.Trusted
+}
+
+// GetTrustedOk returns a tuple with the Trusted field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ClientOptions) GetTrustedOk() (*bool, bool) {
+	if o == nil || o.Trusted == nil {
+		return nil, false
+	}
+	return o.Trusted, true
+}
+
+// HasTrusted returns a boolean if a field has been set.
+func (o *ClientOptions) HasTrusted() bool {
+	if o != nil && o.Trusted != nil {
+		return true
+	}
+
+	return false
+}
+
+// SetTrusted gets a reference to the given bool and assigns it to the Trusted field.
+func (o *ClientOptions) SetTrusted(v bool) {
+	o.Trusted = &v
+}
+
 // GetPostLogoutRedirectUris returns the PostLogoutRedirectUris field value if set, zero value otherwise.
 func (o *ClientOptions) GetPostLogoutRedirectUris() []string {
 	if o == nil || o.PostLogoutRedirectUris == nil {
@@ -239,6 +272,9 @@ func (o ClientOptions) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["name"] = o.Name
+	}
+	if o.Trusted != nil {
+		toSerialize["trusted"] = o.Trusted
 	}
 	if o.PostLogoutRedirectUris != nil {
 		toSerialize["postLogoutRedirectUris"] = o.PostLogoutRedirectUris

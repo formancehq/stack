@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **RedirectUris** | Pointer to **[]string** |  | [optional] 
 **Description** | Pointer to **string** |  | [optional] 
 **Name** | **string** |  | 
+**Trusted** | Pointer to **bool** |  | [optional] 
 **PostLogoutRedirectUris** | Pointer to **[]string** |  | [optional] 
 **Metadata** | Pointer to **map[string]string** |  | [optional] 
 **Id** | **string** |  | 
@@ -127,6 +128,31 @@ and a boolean to check if the value has been set.
 
 SetName sets Name field to given value.
 
+
+### GetTrusted
+
+`func (o *Client) GetTrusted() bool`
+
+GetTrusted returns the Trusted field if non-nil, zero value otherwise.
+
+### GetTrustedOk
+
+`func (o *Client) GetTrustedOk() (*bool, bool)`
+
+GetTrustedOk returns a tuple with the Trusted field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTrusted
+
+`func (o *Client) SetTrusted(v bool)`
+
+SetTrusted sets Trusted field to given value.
+
+### HasTrusted
+
+`func (o *Client) HasTrusted() bool`
+
+HasTrusted returns a boolean if a field has been set.
 
 ### GetPostLogoutRedirectUris
 

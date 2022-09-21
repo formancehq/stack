@@ -321,18 +321,31 @@ func (s *storageFacade) SetIntrospectionFromToken(ctx context.Context, introspec
 	if err != nil {
 		return err
 	}
+	ok := false
 	for _, aud := range token.Audience {
 		if aud == clientID {
-			err := s.setUserinfo(ctx, introspection, subject, clientID, token.Scopes)
-			if err != nil {
-				return err
-			}
-			introspection.SetScopes(token.Scopes)
-			introspection.SetClientID(token.ApplicationID)
-			return nil
+			ok = true
+			break
 		}
 	}
-	return fmt.Errorf("token is not valid for this client")
+	if !ok {
+		client, err := s.Storage.FindClient(ctx, clientID)
+		if err != nil {
+			return err
+		}
+		ok = client.Trusted
+	}
+
+	if !ok {
+		return fmt.Errorf("token is not valid for this client")
+	}
+
+	if err := s.setUserinfo(ctx, introspection, subject, clientID, token.Scopes); err != nil {
+		return err
+	}
+	introspection.SetScopes(token.Scopes)
+	introspection.SetClientID(token.ApplicationID)
+	return nil
 }
 
 // GetPrivateClaimsFromScopes implements the op.Storage interface
