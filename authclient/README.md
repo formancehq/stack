@@ -90,8 +90,10 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**DeleteTransientScope**](docs/DefaultApi.md#deletetransientscope) | **Delete** /scopes/{scopeId}/transient/{transientScopeId} | Delete a transient scope from a scope
 *DefaultApi* | [**ListClients**](docs/DefaultApi.md#listclients) | **Get** /clients | List clients
 *DefaultApi* | [**ListScopes**](docs/DefaultApi.md#listscopes) | **Get** /scopes | List scopes
+*DefaultApi* | [**ListUsers**](docs/DefaultApi.md#listusers) | **Get** /users | List users
 *DefaultApi* | [**ReadClient**](docs/DefaultApi.md#readclient) | **Get** /clients/{clientId} | Read client
 *DefaultApi* | [**ReadScope**](docs/DefaultApi.md#readscope) | **Get** /scopes/{scopeId} | Read scope
+*DefaultApi* | [**ReadUser**](docs/DefaultApi.md#readuser) | **Get** /users/{userId} | Read user
 *DefaultApi* | [**UpdateClient**](docs/DefaultApi.md#updateclient) | **Put** /clients/{clientId} | Update client
 *DefaultApi* | [**UpdateScope**](docs/DefaultApi.md#updatescope) | **Put** /scopes/{scopeId} | Update scope
 
@@ -107,13 +109,16 @@ Class | Method | HTTP request | Description
  - [CreateSecretResponse](docs/CreateSecretResponse.md)
  - [ListClientsResponse](docs/ListClientsResponse.md)
  - [ListScopesResponse](docs/ListScopesResponse.md)
+ - [ListUsersResponse](docs/ListUsersResponse.md)
  - [ReadClientResponse](docs/ReadClientResponse.md)
+ - [ReadUserResponse](docs/ReadUserResponse.md)
  - [Scope](docs/Scope.md)
  - [ScopeAllOf](docs/ScopeAllOf.md)
  - [ScopeOptions](docs/ScopeOptions.md)
  - [Secret](docs/Secret.md)
  - [SecretAllOf](docs/SecretAllOf.md)
  - [SecretOptions](docs/SecretOptions.md)
+ - [User](docs/User.md)
 
 
 ## Documentation For Authorization

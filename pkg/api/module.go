@@ -12,6 +12,7 @@ func Module() fx.Option {
 		fx.Invoke(
 			addClientRoutes,
 			addScopeRoutes,
+			addUserRoutes,
 		),
 	)
 }
