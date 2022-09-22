@@ -11,6 +11,7 @@ services:
     image: ghcr.io/dexidp/dex:latest-distroless
     volumes:
       - ./dex-config.yaml:/etc/dex/config.docker.yaml
+      - ./pkg/web:/app/web
     network_mode: service:auth
 
   postgres:
