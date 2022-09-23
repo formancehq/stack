@@ -51,4 +51,4 @@ tasks:
 
   install-deps-demo-client:
     cmds:
-      - cd demo && rm package-lock.json && yarn install
+      - cd demo && yarn install
