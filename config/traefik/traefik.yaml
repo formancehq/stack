@@ -21,3 +21,5 @@ log:
 entryPoints:
   web:
     address: ':80'
+  traefik:
+    address: ':8081'
