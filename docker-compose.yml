@@ -8,7 +8,9 @@ services:
     - '16686:16686/tcp'
 
   dex:
-    image: ghcr.io/dexidp/dex:latest-distroless
+    build:
+      context: .
+      dockerfile: dex.Dockerfile
     volumes:
       - ./dex-config.yaml:/etc/dex/config.docker.yaml
       - ./pkg/web:/app/web
