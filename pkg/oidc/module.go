@@ -3,6 +3,7 @@ package oidc
 import (
 	"context"
 	"crypto/rsa"
+	"net/url"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/gorilla/mux"
@@ -11,9 +12,11 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(addr, issuer string, privateKey *rsa.PrivateKey) fx.Option {
+func Module(privateKey *rsa.PrivateKey, baseUrl *url.URL) fx.Option {
 	return fx.Options(
-		fx.Provide(NewRouter),
+		fx.Invoke(func(router *mux.Router, provider op.OpenIDProvider, storage Storage, relyingParty rp.RelyingParty) {
+			AddRoutes(router, provider, storage, relyingParty, baseUrl)
+		}),
 		fx.Provide(fx.Annotate(func(storage Storage, relyingParty rp.RelyingParty, opts []auth.ClientOptions) *storageFacade {
 			var staticClients []auth.Client
 			for _, c := range opts {
@@ -22,14 +25,7 @@ func Module(addr, issuer string, privateKey *rsa.PrivateKey) fx.Option {
 			return NewStorageFacade(storage, relyingParty, privateKey, staticClients...)
 		}, fx.As(new(op.Storage)))),
 		fx.Provide(func(storage op.Storage) (op.OpenIDProvider, error) {
-			return NewOpenIDProvider(context.TODO(), storage, issuer)
-		}),
-		fx.Invoke(func(lc fx.Lifecycle, router *mux.Router) {
-			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					return StartServer(addr, router)
-				},
-			})
+			return NewOpenIDProvider(context.TODO(), storage, baseUrl.String())
 		}),
 	)
 }

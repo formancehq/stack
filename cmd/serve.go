@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"net/url"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/api"
@@ -67,9 +68,12 @@ var serveCmd = &cobra.Command{
 		return bindFlagsToViper(cmd)
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		baseUrl := viper.GetString(baseUrlFlag)
-		if baseUrl == "" {
+		if viper.GetString(baseUrlFlag) == "" {
 			return errors.New("base url must be defined")
+		}
+		baseUrl, err := url.Parse(viper.GetString(baseUrlFlag))
+		if err != nil {
+			return errors.Wrap(err, "parsing base url")
 		}
 
 		delegatedClientID := viper.GetString(delegatedClientIDFlag)
@@ -119,8 +123,8 @@ var serveCmd = &cobra.Command{
 
 		options := []fx.Option{
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-			oidc.Module(":8080", baseUrl, key),
-			api.Module(),
+			api.Module(":8080", baseUrl),
+			oidc.Module(key, baseUrl),
 			fx.Invoke(func(router *mux.Router, healthController *sharedhealth.HealthController) {
 				router.Path("/_healthcheck").HandlerFunc(healthController.Check)
 			}),
@@ -129,7 +133,7 @@ var serveCmd = &cobra.Command{
 				Issuer:       delegatedIssuer,
 				ClientID:     delegatedClientID,
 				ClientSecret: delegatedClientSecret,
-				RedirectURL:  fmt.Sprintf("%s/authorize/callback", baseUrl),
+				RedirectURL:  fmt.Sprintf("%s/authorize/callback", baseUrl.String()),
 			}),
 			fx.Invoke(func() {
 				sharedlogging.Infof("App started.")

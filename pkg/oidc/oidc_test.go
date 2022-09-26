@@ -8,12 +8,14 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"testing"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
+	"github.com/gorilla/mux"
 	"github.com/oauth2-proxy/mockoidc"
 	"github.com/stretchr/testify/require"
 	"github.com/zitadel/oidc/pkg/client/rp"
@@ -61,8 +63,12 @@ func withServer(t *testing.T, fn func(storage *sqlstorage.Storage, provider op.O
 	provider, err := oidc.NewOpenIDProvider(context.TODO(), storageFacade, serverUrl)
 	require.NoError(t, err)
 
+	u, err := url.Parse(serverUrl)
+	require.NoError(t, err)
+
 	// Create the router
-	router := oidc.NewRouter(provider, storage, serverRelyingParty)
+	router := mux.NewRouter()
+	oidc.AddRoutes(router, provider, storage, serverRelyingParty, u)
 
 	// Create our http server for our oidc provider
 	providerHttpServer := &http.Server{
@@ -102,7 +108,12 @@ func Test3LeggedFlow(t *testing.T) {
 
 		// Trigger an authentication request
 		authUrl := rp.AuthURL("", clientRelyingParty)
-		rsp, err := http.Get(authUrl)
+		rsp, err := (&http.Client{
+			CheckRedirect: func(req *http.Request, via []*http.Request) error {
+				fmt.Println(req.URL.String())
+				return nil
+			},
+		}).Get(authUrl)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, rsp.StatusCode)
 

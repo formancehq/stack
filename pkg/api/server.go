@@ -1,4 +1,4 @@
-package oidc
+package api
 
 import (
 	"net"
