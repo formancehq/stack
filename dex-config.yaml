@@ -6,7 +6,6 @@ storage:
 frontend:
   issuer: Formance
   dir: /app/web
-  theme: formance
 
 web:
   http: 0.0.0.0:5556

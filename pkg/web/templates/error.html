@@ -1,8 +1,15 @@
 {{ template "header.html" . }}
 
-<div class="theme-panel">
-  <h2 class="theme-heading">{{ .ErrType }}</h2>
-  <p>{{ .ErrMsg }}</p>
+<h1>That's an error</h1>
+<div class="card">
+  <span class="neutral500">
+   Unfortunately, our machines reported the following error while attempting to sign you in:
+  </span>
+  <div class="error_shell">
+    <p>{{ .ErrType }}</p>
+    <p>{{ .ErrMsg }}</p>
+  </div>
+  <span class="neutral300 ta--center">You can re-attempt to sign in, and should this error persist, contact admin@domain.com</span>
 </div>
 
 {{ template "footer.html" . }}
