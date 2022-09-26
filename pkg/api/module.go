@@ -19,6 +19,7 @@ func Module(addr string, baseUrl *url.URL) fx.Option {
 		fx.Invoke(
 			addClientRoutes,
 			addScopeRoutes,
+			addUserRoutes,
 		),
 		fx.Invoke(func(lc fx.Lifecycle, router *mux.Router) {
 			lc.Append(fx.Hook{

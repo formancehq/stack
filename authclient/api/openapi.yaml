@@ -331,6 +331,39 @@ paths:
         "204":
           description: Scope added
       summary: Add a transient scope to a scope
+  /users:
+    get:
+      description: List users
+      operationId: listUsers
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListUsersResponse'
+          description: List of users
+      summary: List users
+  /users/{userId}:
+    get:
+      description: Read user
+      operationId: readUser
+      parameters:
+      - description: User ID
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadUserResponse'
+          description: Retrieved user
+      summary: Read user
 components:
   schemas:
     Metadata:
@@ -434,6 +467,22 @@ components:
       allOf:
       - $ref: '#/components/schemas/SecretOptions'
       - $ref: '#/components/schemas/Secret_allOf'
+    User:
+      example:
+        subject: Jane Doe
+        id: 3bb03708-312f-48a0-821a-e765837dc2c4
+        email: user1@orga1.com
+      properties:
+        id:
+          example: 3bb03708-312f-48a0-821a-e765837dc2c4
+          type: string
+        subject:
+          example: Jane Doe
+          type: string
+        email:
+          example: user1@orga1.com
+          type: string
+      type: object
     CreateClientRequest:
       $ref: '#/components/schemas/ClientOptions'
     CreateClientResponse:
@@ -499,6 +548,31 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/Secret'
+      type: object
+    ReadUserResponse:
+      example:
+        data:
+          subject: Jane Doe
+          id: 3bb03708-312f-48a0-821a-e765837dc2c4
+          email: user1@orga1.com
+      properties:
+        data:
+          $ref: '#/components/schemas/User'
+      type: object
+    ListUsersResponse:
+      example:
+        data:
+        - subject: Jane Doe
+          id: 3bb03708-312f-48a0-821a-e765837dc2c4
+          email: user1@orga1.com
+        - subject: Jane Doe
+          id: 3bb03708-312f-48a0-821a-e765837dc2c4
+          email: user1@orga1.com
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/User'
+          type: array
       type: object
     Client_allOf:
       properties:

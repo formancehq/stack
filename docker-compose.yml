@@ -8,9 +8,12 @@ services:
     - '16686:16686/tcp'
 
   dex:
-    image: ghcr.io/dexidp/dex:latest-distroless
+    build:
+      context: .
+      dockerfile: dex.Dockerfile
     volumes:
       - ./dex-config.yaml:/etc/dex/config.docker.yaml
+      - ./pkg/web:/app/web
     network_mode: service:auth
 
   postgres:
@@ -32,8 +35,10 @@ services:
       context: .
       dockerfile: reflex.Dockerfile
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/_healthcheck"]
-      interval: 1s
+      test: curl -s -f -k http://localhost:8080/_healthcheck > /dev/null || exit 1
+      interval: 3s
+      timeout: 10s
+      retries: 10
     entrypoint:
     - reflex
     - -r
@@ -46,7 +51,7 @@ services:
     environment:
       DEBUG: 1
       CONFIG: ./config.yaml
-      POSTGRES_URI: "host=postgres user=auth password=auth dbname=auth port=5432 sslmode=disable"
+      POSTGRES_URI: host=postgres user=auth password=auth dbname=auth port=5432 sslmode=disable
       CAOS_OIDC_DEV: 1
       OTEL_TRACES: true
       OTEL_TRACES_EXPORTER: jaeger
@@ -54,7 +59,7 @@ services:
       DELEGATED_CLIENT_ID: gateway
       DELEGATED_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
       DELEGATED_ISSUER: http://localhost:5556/dex
-      BASE_URL: http://127.0.0.1:8080
+      BASE_URL: http://localhost:8080
     depends_on:
     - postgres
     - jaeger
@@ -75,3 +80,6 @@ services:
     entrypoint:
       - npm
       - start
+    depends_on:
+      auth:
+        condition: service_healthy
