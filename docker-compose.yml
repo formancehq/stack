@@ -9,7 +9,7 @@ services:
     image: "traefik:v2.8"
     ports:
       - "80:80"
-      - "8080:8080"
+      - "8091:8081"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./config/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
@@ -21,10 +21,54 @@ services:
       - traefik.http.middlewares.cors.headers.accesscontrolmaxage=100
       - traefik.http.middlewares.cors.headers.addvaryheader=true
 
+  auth-dex:
+    image: "ghcr.io/formancehq/auth-dex:43849eebe1f6612b7957d8bd82d1588946f35202"
+    network_mode: service:proxy
+    volumes:
+      - ./config/dex/dex-config.yaml:/etc/dex/config.docker.yaml
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dex.rule=Host(`localhost`) && PathPrefix(`/api/auth/dex`)
+      - traefik.http.routers.dex.entrypoints=web
+      - traefik.http.services.dex.loadbalancer.server.port=5556
+      - traefik.http.routers.dex.middlewares=cors@docker
+
+  auth:
+    image: "ghcr.io/formancehq/auth:43849eebe1f6612b7957d8bd82d1588946f35202"
+    network_mode: service:proxy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/_healthcheck" ]
+      interval: 1s
+    command: serve
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DEBUG: 1
+      CONFIG: ./config.yaml
+      POSTGRES_URI: host=postgres user=formance password=formance dbname=auth port=5432 sslmode=disable
+      CAOS_OIDC_DEV: 1
+      DELEGATED_CLIENT_ID: gateway
+      DELEGATED_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
+      DELEGATED_ISSUER: http://localhost/api/auth/dex
+      BASE_URL: http://localhost/api/auth
+    volumes:
+      - ./config/auth/config.yaml:/config.yaml
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.auth.rule=Host(`localhost`) && PathPrefix(`/api/auth`)
+      - traefik.http.routers.auth.entrypoints=web
+      - traefik.http.services.auth.loadbalancer.server.port=8080
+      - traefik.http.routers.auth.middlewares=cors@docker
+
   control:
     image: "ghcr.io/formancehq/control:v1.3.0-beta.1"
+    network_mode: service:proxy
     environment:
-      API_URL_BACK: "http://proxy/api"
+      API_URL_BACK: "http://localhost/api"
       API_URL_FRONT: "http://localhost/api"
     labels:
       - traefik.enable=true
@@ -95,12 +139,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: "ledger"
-      POSTGRES_PASSWORD: "ledger"
-      POSTGRES_DB: "ledger"
+      POSTGRES_USER: "formance"
+      POSTGRES_PASSWORD: "formance"
+      POSTGRES_MULTIPLE_DATABASES: "auth,ledger"
       PGDATA: /data/postgres
     volumes:
       - postgres_data:/data/postgres
+      - ./config/postgres:/docker-entrypoint-initdb.d
 
   ledger:
     image: "ghcr.io/formancehq/ledger:v1.8.0-beta.4"
@@ -112,14 +157,14 @@ services:
         condition: service_healthy
     environment:
       NUMARY_STORAGE_DRIVER: "postgres"
-      NUMARY_STORAGE_POSTGRES_CONN_STRING: "postgresql://ledger:ledger@postgres/ledger"
+      NUMARY_STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger"
       NUMARY_SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
       NUMARY_PUBLISHER_KAFKA_ENABLED: "true"
       NUMARY_PUBLISHER_KAFKA_BROKER: redpanda:29092
       NUMARY_PUBLISHER_TOPIC_MAPPING: "*:ledger"
     labels:
       - traefik.enable=true
-      - traefik.http.routers.ledger.rule=(Host(`localhost`) || Host(`proxy`)) && PathPrefix(`/api/ledger`)
+      - traefik.http.routers.ledger.rule=Host(`localhost`) && PathPrefix(`/api/ledger`)
       - traefik.http.routers.ledger.entrypoints=web
       - traefik.http.services.ledger.loadbalancer.server.port=3068
       - traefik.http.routers.ledger.middlewares=ledger@docker,cors@docker
@@ -167,7 +212,7 @@ services:
       PUBLISHER_TOPIC_MAPPING: "*:payments"
     labels:
       - traefik.enable=true
-      - traefik.http.routers.payments.rule=(Host(`localhost`) || Host(`proxy`)) &&  PathPrefix(`/api/payments`)
+      - traefik.http.routers.payments.rule=Host(`localhost`) &&  PathPrefix(`/api/payments`)
       - traefik.http.routers.payments.entrypoints=web
       - traefik.http.services.payments.loadbalancer.server.port=8080
       - traefik.http.middlewares.payments.stripprefix.prefixes=/api/payments
@@ -233,7 +278,7 @@ services:
       ES_INDICES: "formance"
     labels:
       - traefik.enable=true
-      - traefik.http.routers.search.rule=(Host(`localhost`) || Host(`proxy`)) &&  PathPrefix(`/api/search`)
+      - traefik.http.routers.search.rule=Host(`localhost`) &&  PathPrefix(`/api/search`)
       - traefik.http.routers.search.entrypoints=web
       - traefik.http.services.search.loadbalancer.server.port=8080
       - traefik.http.middlewares.search.stripprefix.prefixes=/api/search
@@ -253,7 +298,7 @@ services:
       STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017"
     labels:
       - traefik.enable=true
-      - traefik.http.routers.webhooks.rule=(Host(`localhost`) || Host(`proxy`)) &&  PathPrefix(`/api/webhooks`)
+      - traefik.http.routers.webhooks.rule=Host(`localhost`) &&  PathPrefix(`/api/webhooks`)
       - traefik.http.routers.webhooks.entrypoints=web
       - traefik.http.services.webhooks.loadbalancer.server.port=8080
       - traefik.http.middlewares.webhooks.stripprefix.prefixes=/api/webhooks
