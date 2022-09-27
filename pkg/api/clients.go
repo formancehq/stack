@@ -6,7 +6,6 @@ import (
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/gorilla/mux"
 	_ "github.com/numary/go-libs/sharedapi"
-	"github.com/zitadel/oidc/pkg/oidc"
 	"gorm.io/gorm"
 )
 
@@ -35,16 +34,10 @@ type clientView struct {
 }
 
 func mapBusinessClient(c auth.Client) clientView {
-	public := true
-	for _, grantType := range c.GrantTypes {
-		if grantType == oidc.GrantTypeClientCredentials {
-			public = false
-		}
-	}
 	return clientView{
 		ClientOptions: auth.ClientOptions{
-			Public:                 public,
-			RedirectUris:           c.RedirectURIs,
+			Public:                 c.Public,
+			RedirectURIs:           c.RedirectURIs,
 			Description:            c.Description,
 			Name:                   c.Name,
 			PostLogoutRedirectUris: c.PostLogoutRedirectUris,

@@ -2,8 +2,8 @@ package sqlstorage
 
 import (
 	"context"
+	"io"
 	"log"
-	"os"
 	"time"
 
 	auth "github.com/formancehq/auth/pkg"
@@ -17,7 +17,7 @@ import (
 // TODO: Replace by sharedlogging
 func newLogger() logger.Interface {
 	return logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+		log.New(io.Discard, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold:             time.Second, // Slow SQL threshold
 			LogLevel:                  logger.Info, // Log level

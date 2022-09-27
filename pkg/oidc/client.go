@@ -39,23 +39,34 @@ func (c *clientFacade) PostLogoutRedirectURIs() []string {
 
 // ApplicationType must return the type of the client (app, native, user agent)
 func (c *clientFacade) ApplicationType() op.ApplicationType {
-	return c.Client.ApplicationType
+	return op.ApplicationTypeWeb
 }
 
 // AuthMethod must return the authentication method (client_secret_basic, client_secret_post, none, private_key_jwt)
 func (c *clientFacade) AuthMethod() oidc.AuthMethod {
-	return c.Client.AuthMethod
+	authMethod := oidc.AuthMethodNone
+	if !c.Client.Public {
+		authMethod = oidc.AuthMethodBasic
+	}
+	return authMethod
 }
 
 // ResponseTypes must return all allowed response types (code, id_token token, id_token)
 // these must match with the allowed grant types
 func (c *clientFacade) ResponseTypes() []oidc.ResponseType {
-	return c.Client.ResponseTypes
+	return []oidc.ResponseType{oidc.ResponseTypeCode}
 }
 
 // GrantTypes must return all allowed grant types (authorization_code, refresh_token, urn:ietf:params:oauth:grant-type:jwt-bearer)
 func (c *clientFacade) GrantTypes() []oidc.GrantType {
-	return c.Client.GrantTypes
+	grantTypes := []oidc.GrantType{
+		oidc.GrantTypeCode,
+		oidc.GrantTypeRefreshToken,
+	}
+	if !c.Client.Public {
+		grantTypes = append(grantTypes, oidc.GrantTypeClientCredentials)
+	}
+	return grantTypes
 }
 
 // LoginURL will be called to redirect the user (agent) to the login UI
@@ -68,7 +79,7 @@ func (c *clientFacade) LoginURL(id string) string {
 
 // AccessTokenType must return the type of access token the client uses (Bearer (opaque) or JWT)
 func (c *clientFacade) AccessTokenType() op.AccessTokenType {
-	return c.Client.AccessTokenType
+	return op.AccessTokenTypeJWT
 }
 
 // IDTokenLifetime must return the lifetime of the client's id_tokens
@@ -78,7 +89,7 @@ func (c *clientFacade) IDTokenLifetime() time.Duration {
 
 // DevMode enables the use of non-compliant configs such as redirect_uris (e.g. http schema for user agent client)
 func (c *clientFacade) DevMode() bool {
-	return c.Client.DevMode
+	return false
 }
 
 // RestrictAdditionalIdTokenScopes allows specifying which custom scopes shall be asserted into the id_token
@@ -110,11 +121,11 @@ func (c *clientFacade) IsScopeAllowed(label string) bool {
 // (5.4. Requesting Claims using Scope Values: https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims)
 // some clients though require that e.g. email is always in the id_token when requested even if an access_token is issued
 func (c *clientFacade) IDTokenUserinfoClaimsAssertion() bool {
-	return c.Client.IdTokenUserinfoClaimsAssertion
+	return false
 }
 
 // ClockSkew enables clients to instruct the OP to apply a clock skew on the various times and expirations
 // (subtract from issued_at, add to expiration, ...)
 func (c *clientFacade) ClockSkew() time.Duration {
-	return c.Client.ClockSkew
+	return 0
 }

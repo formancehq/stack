@@ -3,11 +3,8 @@ package auth
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"time"
 
 	"github.com/google/uuid"
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
 )
 
 func newHash(v string) string {
@@ -41,47 +38,14 @@ func newSecret(opts SecretCreate) (ClientSecret, string) {
 	}, clear
 }
 
-type Client struct {
-	Id                             string              `gorm:"primarykey"`
-	Secrets                        Array[ClientSecret] `gorm:"type:text"`
-	RedirectURIs                   Array[string]       `gorm:"type:text"`
-	ApplicationType                op.ApplicationType
-	AuthMethod                     oidc.AuthMethod
-	ResponseTypes                  Array[oidc.ResponseType] `gorm:"type:text"`
-	GrantTypes                     Array[oidc.GrantType]    `gorm:"type:text"`
-	AccessTokenType                op.AccessTokenType
-	DevMode                        bool
-	IdTokenUserinfoClaimsAssertion bool
-	ClockSkew                      time.Duration
-	PostLogoutRedirectUris         Array[string] `gorm:"type:text"`
-	Scopes                         []Scope       `gorm:"many2many:client_scopes;"`
-	Description                    string
-	Name                           string
-	Metadata                       Metadata `gorm:"type:text"`
-	Trusted                        bool
-}
-
 func (c *Client) Update(opts ClientOptions) {
-	grantTypes := []oidc.GrantType{
-		oidc.GrantTypeCode,
-		oidc.GrantTypeRefreshToken,
-	}
-	if !opts.Public {
-		grantTypes = append(grantTypes, oidc.GrantTypeClientCredentials)
-	}
-	authMethod := oidc.AuthMethodNone
-	if !opts.Public {
-		authMethod = oidc.AuthMethodBasic
-	}
-
-	c.GrantTypes = grantTypes
-	c.RedirectURIs = opts.RedirectUris
+	c.RedirectURIs = opts.RedirectURIs
 	c.PostLogoutRedirectUris = opts.PostLogoutRedirectUris
 	c.Description = opts.Description
 	c.Name = opts.Name
 	c.Metadata = opts.Metadata
-	c.AuthMethod = authMethod
 	c.Trusted = opts.Trusted
+	c.Public = opts.Public
 }
 
 func (c *Client) GenerateNewSecret(opts SecretCreate) (ClientSecret, string) {
@@ -123,27 +87,30 @@ func (c *Client) HasScope(id string) bool {
 	return false
 }
 
+type Client struct {
+	ClientOptions
+	Secrets Array[ClientSecret] `gorm:"type:text" json:"secrets"`
+	Scopes  []Scope             `gorm:"many2many:client_scopes;" json:"scopes"`
+}
+
 type ClientOptions struct {
-	ID                     string   `json:"id" yaml:"id"`
-	Public                 bool     `json:"public" yaml:"public"`
-	RedirectUris           []string `json:"redirectUris" yaml:"redirectUris"`
-	Description            string   `json:"description" yaml:"description"`
-	Name                   string   `json:"name" yaml:"name"`
-	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris" yaml:"postLogoutRedirectUris"`
-	Metadata               Metadata `json:"metadata" yaml:"metadata"`
-	Trusted                bool     `json:"trusted" yaml:"trusted"`
+	Id                     string        `json:"id" yaml:"id"`
+	Public                 bool          `json:"public" yaml:"public"`
+	RedirectURIs           Array[string] `json:"redirectUris" yaml:"redirectUris" gorm:"type:text"`
+	Description            string        `json:"description" yaml:"description"`
+	Name                   string        `json:"name" yaml:"name"`
+	PostLogoutRedirectUris Array[string] `json:"postLogoutRedirectUris" yaml:"postLogoutRedirectUris" gorm:"type:text"`
+	Metadata               Metadata      `json:"metadata" yaml:"metadata" gorm:"type:text"`
+	Trusted                bool          `json:"trusted" yaml:"trusted"`
 }
 
 func NewClient(opts ClientOptions) *Client {
-	if opts.ID == "" {
-		opts.ID = uuid.NewString()
+	if opts.Id == "" {
+		opts.Id = uuid.NewString()
 	}
 
 	client := &Client{
-		Id:              opts.ID,
-		ApplicationType: op.ApplicationTypeWeb,
-		ResponseTypes:   []oidc.ResponseType{oidc.ResponseTypeCode},
-		AccessTokenType: op.AccessTokenTypeJWT,
+		ClientOptions: opts,
 	}
 	client.Update(opts)
 	return client

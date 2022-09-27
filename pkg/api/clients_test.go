@@ -10,8 +10,6 @@ import (
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -30,37 +28,17 @@ func withDbAndClientRouter(t *testing.T, callback func(router *mux.Router, db *g
 func TestCreateClient(t *testing.T) {
 
 	type testCase struct {
-		name           string
-		options        auth.ClientOptions
-		expectedClient auth.Client
+		name    string
+		options auth.ClientOptions
 	}
 	for _, tc := range []testCase{
 		{
 			name: "confidential client",
 			options: auth.ClientOptions{
 				Name:                   "confidential client",
-				RedirectUris:           []string{"http://localhost:8080"},
-				Description:            "abc",
-				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
-				Metadata: map[string]string{
-					"foo": "bar",
-				},
-			},
-			expectedClient: auth.Client{
-				GrantTypes: auth.Array[oidc.GrantType]{
-					oidc.GrantTypeCode,
-					oidc.GrantTypeRefreshToken,
-					oidc.GrantTypeClientCredentials,
-				},
-				AccessTokenType: op.AccessTokenTypeJWT,
-				ResponseTypes: auth.Array[oidc.ResponseType]{
-					oidc.ResponseTypeCode,
-				},
-				AuthMethod:             oidc.AuthMethodBasic,
 				RedirectURIs:           []string{"http://localhost:8080"},
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
-				Name:                   "confidential client",
 				Metadata: map[string]string{
 					"foo": "bar",
 				},
@@ -71,18 +49,6 @@ func TestCreateClient(t *testing.T) {
 			options: auth.ClientOptions{
 				Name:   "public client",
 				Public: true,
-			},
-			expectedClient: auth.Client{
-				GrantTypes: auth.Array[oidc.GrantType]{
-					oidc.GrantTypeCode,
-					oidc.GrantTypeRefreshToken,
-				},
-				AccessTokenType: op.AccessTokenTypeJWT,
-				ResponseTypes: auth.Array[oidc.ResponseType]{
-					oidc.ResponseTypeCode,
-				},
-				AuthMethod: oidc.AuthMethodNone,
-				Name:       "public client",
 			},
 		},
 	} {
@@ -98,11 +64,13 @@ func TestCreateClient(t *testing.T) {
 			require.NotEmpty(t, createdClient.ID)
 			require.Equal(t, tc.options, createdClient.ClientOptions)
 
-			tc.expectedClient.Id = createdClient.ID
+			tc.options.Id = createdClient.ID
 
 			clientFromDatabase := auth.Client{}
 			require.NoError(t, db.Find(&clientFromDatabase, "id = ?", createdClient.ID).Error)
-			require.Equal(t, tc.expectedClient, clientFromDatabase)
+			require.Equal(t, auth.Client{
+				ClientOptions: tc.options,
+			}, clientFromDatabase)
 		})
 	}
 }
@@ -110,37 +78,17 @@ func TestCreateClient(t *testing.T) {
 func TestUpdateClient(t *testing.T) {
 
 	type testCase struct {
-		name           string
-		options        auth.ClientOptions
-		expectedClient auth.Client
+		name    string
+		options auth.ClientOptions
 	}
 	for _, tc := range []testCase{
 		{
 			name: "confidential client",
 			options: auth.ClientOptions{
 				Name:                   "confidential client",
-				RedirectUris:           []string{"http://localhost:8080"},
-				Description:            "abc",
-				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
-				Metadata: map[string]string{
-					"foo": "bar",
-				},
-			},
-			expectedClient: auth.Client{
-				GrantTypes: auth.Array[oidc.GrantType]{
-					oidc.GrantTypeCode,
-					oidc.GrantTypeRefreshToken,
-					oidc.GrantTypeClientCredentials,
-				},
-				AccessTokenType: op.AccessTokenTypeJWT,
-				ResponseTypes: auth.Array[oidc.ResponseType]{
-					oidc.ResponseTypeCode,
-				},
-				AuthMethod:             oidc.AuthMethodBasic,
 				RedirectURIs:           []string{"http://localhost:8080"},
 				Description:            "abc",
 				PostLogoutRedirectUris: []string{"http://localhost:8080/logout"},
-				Name:                   "confidential client",
 				Metadata: map[string]string{
 					"foo": "bar",
 				},
@@ -151,18 +99,6 @@ func TestUpdateClient(t *testing.T) {
 			options: auth.ClientOptions{
 				Name:   "public client",
 				Public: true,
-			},
-			expectedClient: auth.Client{
-				GrantTypes: auth.Array[oidc.GrantType]{
-					oidc.GrantTypeCode,
-					oidc.GrantTypeRefreshToken,
-				},
-				AccessTokenType: op.AccessTokenTypeJWT,
-				ResponseTypes: auth.Array[oidc.ResponseType]{
-					oidc.ResponseTypeCode,
-				},
-				AuthMethod: oidc.AuthMethodNone,
-				Name:       "public client",
 			},
 		},
 	} {
@@ -182,11 +118,13 @@ func TestUpdateClient(t *testing.T) {
 			require.NotEmpty(t, updatedClient.ID)
 			require.Equal(t, tc.options, updatedClient.ClientOptions)
 
-			tc.expectedClient.Id = updatedClient.ID
+			tc.options.Id = updatedClient.ID
 
 			clientFromDatabase := auth.Client{}
 			require.NoError(t, db.Find(&clientFromDatabase, "id = ?", updatedClient.ID).Error)
-			require.Equal(t, tc.expectedClient, clientFromDatabase)
+			require.Equal(t, auth.Client{
+				ClientOptions: tc.options,
+			}, clientFromDatabase)
 		})
 	}
 }
