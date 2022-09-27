@@ -22,7 +22,7 @@ services:
       - traefik.http.middlewares.cors.headers.addvaryheader=true
 
   auth-dex:
-    image: "ghcr.io/formancehq/auth-dex:43849eebe1f6612b7957d8bd82d1588946f35202"
+    image: "ghcr.io/formancehq/auth-dex:196e3771412b2ab54590db82d7d7fefa0e842ac4"
     network_mode: service:proxy
     volumes:
       - ./config/dex/dex-config.yaml:/etc/dex/config.docker.yaml
@@ -37,11 +37,11 @@ services:
       - traefik.http.routers.dex.middlewares=cors@docker
 
   auth:
-    image: "ghcr.io/formancehq/auth:43849eebe1f6612b7957d8bd82d1588946f35202"
+    image: "ghcr.io/formancehq/auth:196e3771412b2ab54590db82d7d7fefa0e842ac4"
     network_mode: service:proxy
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/_healthcheck" ]
-      interval: 1s
+#    healthcheck:
+#      test: [ "CMD", "curl", "-f", "http://localhost:8080/_healthcheck" ]
+#      interval: 1s
     command: serve
     depends_on:
       postgres:
