@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	auth "github.com/formancehq/auth/pkg"
+	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/gorilla/mux"
 	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/op"
@@ -24,8 +25,13 @@ func Module(privateKey *rsa.PrivateKey, baseUrl *url.URL) fx.Option {
 			}
 			return NewStorageFacade(storage, relyingParty, privateKey, staticClients...)
 		}, fx.As(new(op.Storage)))),
-		fx.Provide(func(storage op.Storage) (op.OpenIDProvider, error) {
-			return NewOpenIDProvider(context.TODO(), storage, baseUrl.String())
+		fx.Provide(func(storage op.Storage, configuration delegatedauth.Config) (op.OpenIDProvider, error) {
+			keySet, err := ReadKeySet(context.TODO(), configuration)
+			if err != nil {
+				return nil, err
+			}
+
+			return NewOpenIDProvider(context.TODO(), storage, baseUrl.String(), configuration.Issuer, *keySet)
 		}),
 	)
 }

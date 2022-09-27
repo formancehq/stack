@@ -377,7 +377,7 @@ func (s *storageFacade) GetKeyByIDAndUserID(ctx context.Context, keyID, userID s
 func (s *storageFacade) ValidateJWTProfileScopes(ctx context.Context, userID string, scopes []string) ([]string, error) {
 	allowedScopes := make([]string, 0)
 	for _, scope := range scopes {
-		if scope == oidc.ScopeOpenID {
+		if scope == oidc.ScopeOpenID || scope == oidc.ScopeEmail {
 			allowedScopes = append(allowedScopes, scope)
 		}
 	}

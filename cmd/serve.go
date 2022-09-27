@@ -123,18 +123,19 @@ var serveCmd = &cobra.Command{
 
 		options := []fx.Option{
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
+			fx.Supply(delegatedauth.Config{
+				Issuer:       delegatedIssuer,
+				ClientID:     delegatedClientID,
+				ClientSecret: delegatedClientSecret,
+				RedirectURL:  fmt.Sprintf("%s/authorize/callback", baseUrl.String()),
+			}),
 			api.Module(":8080", baseUrl),
 			oidc.Module(key, baseUrl),
 			fx.Invoke(func(router *mux.Router, healthController *sharedhealth.HealthController) {
 				router.Path("/_healthcheck").HandlerFunc(healthController.Check)
 			}),
 			sqlstorage.Module(viper.GetString(postgresUriFlag), key, o.Clients),
-			delegatedauth.Module(delegatedauth.Config{
-				Issuer:       delegatedIssuer,
-				ClientID:     delegatedClientID,
-				ClientSecret: delegatedClientSecret,
-				RedirectURL:  fmt.Sprintf("%s/authorize/callback", baseUrl.String()),
-			}),
+			delegatedauth.Module(),
 			fx.Invoke(func() {
 				sharedlogging.Infof("App started.")
 			}),

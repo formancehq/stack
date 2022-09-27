@@ -5,14 +5,11 @@ import (
 
 	"github.com/zitadel/oidc/pkg/oidc"
 	"golang.org/x/text/language"
-	"gorm.io/gorm"
 )
 
 type AuthRequest struct {
 	ID            string `gorm:"primarykey"`
 	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	DeletedAt     gorm.DeletedAt `gorm:"index"`
 	ApplicationID string
 	CallbackURI   string
 	TransferState string
