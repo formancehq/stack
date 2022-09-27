@@ -6,7 +6,6 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -15,7 +14,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
@@ -174,12 +172,6 @@ func TestJWTAssertions(t *testing.T) {
 			"iss": m.Issuer(),
 		})
 		require.NoError(t, err)
-		//claims := zoidc.NewAccessTokenClaims(m.Issuer(), uuid.NewString(), []string{provider.Issuer()},
-		//	time.Now().Add(5*time.Minute), uuid.NewString(), uuid.NewString(), 0)
-		//token, err := crypto.Sign(claims, provider.Signer().Signer())
-		//require.NoError(t, err)
-
-		spew.Dump(token)
 
 		// Create a OAuth2 client which represent our client application
 		form := url.Values{
@@ -193,12 +185,7 @@ func TestJWTAssertions(t *testing.T) {
 		req.SetBasicAuth(client.Id, clear)
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-		rsp, err := http.DefaultClient.Do(req)
+		_, err = http.DefaultClient.Do(req)
 		require.NoError(t, err)
-
-		data, err := io.ReadAll(rsp.Body)
-		require.NoError(t, err)
-		fmt.Println(string(data))
-
 	})
 }
