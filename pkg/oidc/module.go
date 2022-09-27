@@ -13,16 +13,12 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(privateKey *rsa.PrivateKey, baseUrl *url.URL) fx.Option {
+func Module(privateKey *rsa.PrivateKey, baseUrl *url.URL, staticClients ...auth.StaticClient) fx.Option {
 	return fx.Options(
 		fx.Invoke(func(router *mux.Router, provider op.OpenIDProvider, storage Storage, relyingParty rp.RelyingParty) {
 			AddRoutes(router, provider, storage, relyingParty, baseUrl)
 		}),
-		fx.Provide(fx.Annotate(func(storage Storage, relyingParty rp.RelyingParty, opts []auth.ClientOptions) *storageFacade {
-			var staticClients []auth.Client
-			for _, c := range opts {
-				staticClients = append(staticClients, *auth.NewClient(c))
-			}
+		fx.Provide(fx.Annotate(func(storage Storage, relyingParty rp.RelyingParty) *storageFacade {
 			return NewStorageFacade(storage, relyingParty, privateKey, staticClients...)
 		}, fx.As(new(op.Storage)))),
 		fx.Provide(func(storage op.Storage, configuration delegatedauth.Config) (op.OpenIDProvider, error) {

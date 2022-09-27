@@ -93,6 +93,24 @@ type Client struct {
 	Scopes  []Scope             `gorm:"many2many:client_scopes;" json:"scopes"`
 }
 
+func (c *Client) GetScopes() []string {
+	ret := make([]string, 0)
+	for _, s := range c.Scopes {
+		ret = append(ret, s.Label)
+	}
+	return ret
+}
+
+type StaticClient struct {
+	ClientOptions `mapstructure:",squash"`
+	Secrets       []string `json:"secrets" yaml:"secrets"`
+	Scopes        []string `json:"scopes" yaml:"scopes"`
+}
+
+func (s StaticClient) GetScopes() []string {
+	return s.Scopes
+}
+
 type ClientOptions struct {
 	Id                     string        `json:"id" yaml:"id"`
 	Public                 bool          `json:"public" yaml:"public"`
@@ -102,6 +120,22 @@ type ClientOptions struct {
 	PostLogoutRedirectUris Array[string] `json:"postLogoutRedirectUris" yaml:"postLogoutRedirectUris" gorm:"type:text"`
 	Metadata               Metadata      `json:"metadata" yaml:"metadata" gorm:"type:text"`
 	Trusted                bool          `json:"trusted" yaml:"trusted"`
+}
+
+func (c *ClientOptions) GetID() string {
+	return c.Id
+}
+
+func (c *ClientOptions) GetRedirectURIs() []string {
+	return c.RedirectURIs
+}
+
+func (c *ClientOptions) GetPostLogoutRedirectUris() []string {
+	return c.PostLogoutRedirectUris
+}
+
+func (c *ClientOptions) IsPublic() bool {
+	return c.Public
 }
 
 func NewClient(opts ClientOptions) *Client {

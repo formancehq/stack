@@ -113,10 +113,10 @@ var serveCmd = &cobra.Command{
 			}
 		}
 
-		type clientOptions struct {
-			Clients []auth.ClientOptions `json:"clients" yaml:"clients"`
+		type configuration struct {
+			Clients []auth.StaticClient `json:"clients" yaml:"clients"`
 		}
-		o := clientOptions{}
+		o := configuration{}
 		if err := viper.Unmarshal(&o); err != nil {
 			return errors.Wrap(err, "unmarshal viper config")
 		}
@@ -130,11 +130,11 @@ var serveCmd = &cobra.Command{
 				RedirectURL:  fmt.Sprintf("%s/authorize/callback", baseUrl.String()),
 			}),
 			api.Module(":8080", baseUrl),
-			oidc.Module(key, baseUrl),
+			oidc.Module(key, baseUrl, o.Clients...),
 			fx.Invoke(func(router *mux.Router, healthController *sharedhealth.HealthController) {
 				router.Path("/_healthcheck").HandlerFunc(healthController.Check)
 			}),
-			sqlstorage.Module(viper.GetString(postgresUriFlag), key, o.Clients),
+			sqlstorage.Module(viper.GetString(postgresUriFlag), viper.GetBool(debugFlag), key, o.Clients),
 			delegatedauth.Module(),
 			fx.Invoke(func() {
 				sharedlogging.Infof("App started.")

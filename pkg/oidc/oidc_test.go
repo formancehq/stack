@@ -56,7 +56,7 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	require.NoError(t, err)
 
 	// Construct our storage
-	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"))
+	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"), testing.Verbose())
 	require.NoError(t, err)
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 

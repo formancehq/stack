@@ -3,8 +3,8 @@ package oidc
 import (
 	"context"
 	"crypto/rsa"
+	"errors"
 	"fmt"
-	"math/big"
 	"time"
 
 	auth "github.com/formancehq/auth/pkg"
@@ -70,8 +70,7 @@ type storageFacade struct {
 	Storage
 	signingKey    signingKey
 	relyingParty  rp.RelyingParty
-	services      map[string]Service
-	staticClients []auth.Client
+	staticClients []auth.StaticClient
 }
 
 // CreateAuthRequest implements the op.Storage interface
@@ -259,8 +258,7 @@ func (s *storageFacade) GetClientByClientID(ctx context.Context, clientID string
 	var client *auth.Client
 	for _, staticClient := range s.staticClients {
 		if staticClient.Id == clientID {
-			client = &staticClient
-			break
+			return NewClientFacade(&staticClient, s.relyingParty), nil
 		}
 	}
 	if client == nil {
@@ -271,25 +269,25 @@ func (s *storageFacade) GetClientByClientID(ctx context.Context, clientID string
 		}
 	}
 
-	return NewClientFacade(*client, s.relyingParty), nil
+	return NewClientFacade(client, s.relyingParty), nil
 }
 
 // AuthorizeClientIDSecret implements the op.Storage interface
 // it will be called for validating the client_id, client_secret on token or introspection requests
 func (s *storageFacade) AuthorizeClientIDSecret(ctx context.Context, clientID, clientSecret string) error {
-	var client *auth.Client
 	for _, staticClient := range s.staticClients {
 		if staticClient.Id == clientID {
-			client = &staticClient
-			break
+			for _, secret := range staticClient.Secrets {
+				if secret == clientSecret {
+					return nil
+				}
+			}
+			return fmt.Errorf("invalid secret")
 		}
 	}
-	if client == nil {
-		var err error
-		client, err = s.Storage.FindClient(ctx, clientID)
-		if err != nil {
-			return err
-		}
+	client, err := s.Storage.FindClient(ctx, clientID)
+	if err != nil {
+		return err
 	}
 
 	if !client.HasSecret(clientSecret) {
@@ -357,19 +355,7 @@ func (s *storageFacade) GetPrivateClaimsFromScopes(ctx context.Context, userID, 
 // GetKeyByIDAndUserID implements the op.Storage interface
 // it will be called to validate the signatures of a JWT (JWT Profile Grant and Authentication)
 func (s *storageFacade) GetKeyByIDAndUserID(ctx context.Context, keyID, userID string) (*jose.JSONWebKey, error) {
-	service, ok := s.services[userID]
-	if !ok {
-		return nil, fmt.Errorf("user not found")
-	}
-	key, ok := service.Keys[keyID]
-	if !ok {
-		return nil, fmt.Errorf("key not found")
-	}
-	return &jose.JSONWebKey{
-		KeyID: keyID,
-		Use:   "sig",
-		Key:   key,
-	}, nil
+	return nil, errors.New("not supported")
 }
 
 // ValidateJWTProfileScopes implements the op.Storage interface
@@ -525,28 +511,9 @@ l:
 
 var _ op.Storage = (*storageFacade)(nil)
 
-var (
-	//serviceKey1 is a public key which will be used for the JWT Profile Authorization Grant
-	//the corresponding private key is in the service-key1.json (for demonstration purposes)
-	serviceKey1 = &rsa.PublicKey{
-		N: func() *big.Int {
-			n, _ := new(big.Int).SetString("00f6d44fb5f34ac2033a75e73cb65ff24e6181edc58845e75a560ac21378284977bb055b1a75b714874e2a2641806205681c09abec76efd52cf40984edcf4c8ca09717355d11ac338f280d3e4c905b00543bdb8ee5a417496cb50cb0e29afc5a0d0471fd5a2fa625bd5281f61e6b02067d4fe7a5349eeae6d6a4300bcd86eef331", 16)
-			return n
-		}(),
-		E: 65537,
-	}
-)
-
-func NewStorageFacade(storage Storage, rp rp.RelyingParty, privateKey *rsa.PrivateKey, staticClients ...auth.Client) *storageFacade {
+func NewStorageFacade(storage Storage, rp rp.RelyingParty, privateKey *rsa.PrivateKey, staticClients ...auth.StaticClient) *storageFacade {
 	return &storageFacade{
 		Storage: storage,
-		services: map[string]Service{
-			"service": {
-				Keys: map[string]*rsa.PublicKey{
-					"key1": serviceKey1,
-				},
-			},
-		},
 		signingKey: signingKey{
 			ID:        "id",
 			Algorithm: "RS256",

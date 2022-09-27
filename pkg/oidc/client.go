@@ -3,19 +3,26 @@ package oidc
 import (
 	"time"
 
-	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
 )
 
+type Client interface {
+	GetID() string
+	GetRedirectURIs() []string
+	GetPostLogoutRedirectUris() []string
+	IsPublic() bool
+	GetScopes() []string
+}
+
 type clientFacade struct {
-	Client       auth.Client
+	Client       Client
 	relyingParty rp.RelyingParty
 }
 
-func NewClientFacade(client auth.Client, relyingParty rp.RelyingParty) *clientFacade {
+func NewClientFacade(client Client, relyingParty rp.RelyingParty) *clientFacade {
 	return &clientFacade{
 		Client:       client,
 		relyingParty: relyingParty,
@@ -24,17 +31,17 @@ func NewClientFacade(client auth.Client, relyingParty rp.RelyingParty) *clientFa
 
 // GetID must return the client_id
 func (c *clientFacade) GetID() string {
-	return c.Client.Id
+	return c.Client.GetID()
 }
 
 // RedirectURIs must return the registered redirect_uris for Code and Implicit Flow
 func (c *clientFacade) RedirectURIs() []string {
-	return c.Client.RedirectURIs
+	return c.Client.GetRedirectURIs()
 }
 
 // PostLogoutRedirectURIs must return the registered post_logout_redirect_uris for sign-outs
 func (c *clientFacade) PostLogoutRedirectURIs() []string {
-	return c.Client.PostLogoutRedirectUris
+	return c.Client.GetPostLogoutRedirectUris()
 }
 
 // ApplicationType must return the type of the client (app, native, user agent)
@@ -45,7 +52,7 @@ func (c *clientFacade) ApplicationType() op.ApplicationType {
 // AuthMethod must return the authentication method (client_secret_basic, client_secret_post, none, private_key_jwt)
 func (c *clientFacade) AuthMethod() oidc.AuthMethod {
 	authMethod := oidc.AuthMethodNone
-	if !c.Client.Public {
+	if !c.Client.IsPublic() {
 		authMethod = oidc.AuthMethodBasic
 	}
 	return authMethod
@@ -63,7 +70,7 @@ func (c *clientFacade) GrantTypes() []oidc.GrantType {
 		oidc.GrantTypeCode,
 		oidc.GrantTypeRefreshToken,
 	}
-	if !c.Client.Public {
+	if !c.Client.IsPublic() {
 		grantTypes = append(grantTypes, oidc.GrantTypeClientCredentials)
 	}
 	return grantTypes
@@ -108,8 +115,8 @@ func (c *clientFacade) RestrictAdditionalAccessTokenScopes() func(scopes []strin
 
 // IsScopeAllowed enables Client specific custom scopes validation
 func (c *clientFacade) IsScopeAllowed(label string) bool {
-	for _, scope := range c.Client.Scopes {
-		if scope.Label == label {
+	for _, scope := range c.Client.GetScopes() {
+		if scope == label {
 			return true
 		}
 	}

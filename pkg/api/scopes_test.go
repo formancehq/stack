@@ -15,7 +15,7 @@ import (
 )
 
 func withDbAndScopesRouter(t *testing.T, callback func(router *mux.Router, db *gorm.DB)) {
-	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"))
+	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"), testing.Verbose())
 	require.NoError(t, err)
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 
