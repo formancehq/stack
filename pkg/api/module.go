@@ -13,8 +13,8 @@ func Module(addr string, baseUrl *url.URL) fx.Option {
 	return fx.Options(
 		sharedhealth.Module(),
 		sharedhealth.ProvideHealthCheck(delegatedOIDCServerAvailability),
-		fx.Provide(func() *mux.Router {
-			return NewRouter(baseUrl)
+		fx.Provide(func(healthController *sharedhealth.HealthController) *mux.Router {
+			return NewRouter(baseUrl, healthController)
 		}),
 		fx.Invoke(
 			addClientRoutes,
