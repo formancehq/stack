@@ -1,4 +1,4 @@
-issuer: http://localhost:5556/dex
+issuer: http://localhost:5556
 
 storage:
   type: memory
@@ -49,31 +49,3 @@ staticPasswords:
     hash: '$2y$10$VDnbwmixVIV9ZG3Z8BkomOgakiJ6WyYDQY.x3Tpxu2.qHrWCFaU6q' # user2
     username: 'user2'
     userID: '00000000-0000-0000-0000-000000000022'
-
-connectors:
-  - type: github
-    # Required field for connector id.
-    id: github
-    # Required field for connector name.
-    name: GitHub
-    config:
-      # Credentials can be string literals or pulled from the environment.
-      clientID: $GITHUB_CLIENT_ID
-      clientSecret: $GITHUB_CLIENT_SECRET
-      redirectURI: http://localhost:5556/dex/callback
-  - type: oidc
-    id: Formance
-    name: Formance
-    config:
-      # Canonical URL of the provider, also used for configuration discovery.
-      # This value MUST match the value returned in the provider config discovery.
-      #
-      # See: https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
-      issuer: https://accounts.google.com
-
-      # Connector config values starting with a "$" will read from the environment.
-      clientID: $GOOGLE_CLIENT_ID
-      clientSecret: $GOOGLE_CLIENT_SECRET
-
-      # Dex's issuer URL + "/callback"
-      redirectURI: http://localhost:5556/dex/callback

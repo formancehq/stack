@@ -58,7 +58,7 @@ services:
       OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
       DELEGATED_CLIENT_ID: gateway
       DELEGATED_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
-      DELEGATED_ISSUER: http://localhost:5556/dex
+      DELEGATED_ISSUER: http://localhost:5556
       BASE_URL: http://localhost:8080
     depends_on:
     - postgres
