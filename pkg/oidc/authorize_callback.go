@@ -18,6 +18,7 @@ func authorizeCallbackHandler(
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
+		// TODO: error handling
 		state, err := delegatedauth.DecodeDelegatedState(r.URL.Query().Get("state"))
 		if err != nil {
 			panic(err)

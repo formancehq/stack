@@ -30,7 +30,7 @@ type clientView struct {
 	auth.ClientOptions
 	ID      string                       `json:"id"`
 	Scopes  []string                     `json:"scopes"`
-	Secrets auth.Array[clientSecretView] `gorm:"type:text"`
+	Secrets auth.Array[clientSecretView] `json:"secrets" gorm:"type:text"`
 }
 
 func mapBusinessClient(c auth.Client) clientView {

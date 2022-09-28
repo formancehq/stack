@@ -9,6 +9,7 @@ import (
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/api"
+	"github.com/formancehq/auth/pkg/api/authorization"
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
@@ -71,6 +72,7 @@ var serveCmd = &cobra.Command{
 		if viper.GetString(baseUrlFlag) == "" {
 			return errors.New("base url must be defined")
 		}
+
 		baseUrl, err := url.Parse(viper.GetString(baseUrlFlag))
 		if err != nil {
 			return errors.Wrap(err, "parsing base url")
@@ -131,6 +133,7 @@ var serveCmd = &cobra.Command{
 			}),
 			api.Module(":8080", baseUrl),
 			oidc.Module(key, baseUrl, o.Clients...),
+			authorization.Module(),
 			fx.Invoke(func(router *mux.Router, healthController *sharedhealth.HealthController) {
 				router.Path("/_healthcheck").HandlerFunc(healthController.Check)
 			}),
