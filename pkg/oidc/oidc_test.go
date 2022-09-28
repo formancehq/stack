@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"testing"
@@ -51,8 +52,10 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 
 	// As our oidc provider, is also a relying party (it delegates authentication), we need to construct a relying party
 	// with information from the mock
+	cl := http.DefaultClient
+	cl.Transport = RoundTripper{http.DefaultTransport}
 	serverRelyingParty, err := rp.NewRelyingPartyOIDC(mockOIDC.Issuer(), mockOIDC.ClientID, mockOIDC.ClientSecret,
-		fmt.Sprintf("%s/authorize/callback", serverUrl), []string{"openid", "email"})
+		fmt.Sprintf("%s/authorize/callback", serverUrl), []string{"openid", "email"}, rp.WithHTTPClient(cl))
 	require.NoError(t, err)
 
 	// Construct our storage
@@ -99,12 +102,11 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 }
 
 func Test3LeggedFlow(t *testing.T) {
-
 	withServer(t, func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, provider op.OpenIDProvider) {
 		// Create ou http server for our client (a web application for example)
-		code := make(chan string, 1) // Just store codes coming from our provider inside a chan
+		codeChan := make(chan string, 1) // Just store codes coming from our provider inside a chan
 		clientHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			code <- r.URL.Query().Get("code")
+			codeChan <- r.URL.Query().Get("code")
 		})
 		clientHttpServer := httptest.NewServer(clientHandler)
 		defer clientHttpServer.Close()
@@ -121,6 +123,9 @@ func Test3LeggedFlow(t *testing.T) {
 
 		// Trigger an authentication request
 		authUrl := rp.AuthURL("", clientRelyingParty)
+		if testing.Verbose() {
+			fmt.Printf("URL:%s\n", authUrl)
+		}
 		rsp, err := (&http.Client{
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
 				fmt.Println(req.URL.String())
@@ -132,7 +137,7 @@ func Test3LeggedFlow(t *testing.T) {
 
 		select {
 		// As the mock automatically accept login response, we should have received a code
-		case code := <-code:
+		case code := <-codeChan:
 			// And this code is used to get a token
 			tokens, err := rp.CodeExchange(context.TODO(), code, clientRelyingParty)
 			require.NoError(t, err)
@@ -155,6 +160,34 @@ func Test3LeggedFlow(t *testing.T) {
 		}
 	})
 }
+
+type RoundTripper struct {
+	http.RoundTripper
+}
+
+func (r RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	by, err := httputil.DumpRequest(req, true)
+	if err != nil {
+		return nil, err
+	}
+	if testing.Verbose() {
+		fmt.Printf("REQ:%s\n", string(by))
+	}
+	resp, err := r.RoundTripper.RoundTrip(req)
+	if err != nil {
+		return nil, err
+	}
+	by, err = httputil.DumpResponse(resp, true)
+	if err != nil {
+		return nil, err
+	}
+	if testing.Verbose() {
+		fmt.Printf("RESP:%s\n", string(by))
+	}
+	return resp, err
+}
+
+var _ http.RoundTripper = RoundTripper{}
 
 func TestJWTAssertions(t *testing.T) {
 	withServer(t, func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, provider op.OpenIDProvider) {

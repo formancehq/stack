@@ -5,7 +5,7 @@ services:
   jaeger:
     image: jaegertracing/opentelemetry-all-in-one
     ports:
-    - '16686:16686/tcp'
+      - '16686:16686/tcp'
 
   dex:
     build:
@@ -40,14 +40,14 @@ services:
       timeout: 10s
       retries: 10
     entrypoint:
-    - reflex
-    - -r
-    - \.go$$
-    - -s
-    - go
-    - run
-    - main.go
-    - serve
+      - reflex
+      - -r
+      - \.go$$
+      - -s
+      - go
+      - run
+      - main.go
+      - serve
     environment:
 #      DEBUG: 1
       CONFIG: ./config.yaml
@@ -61,14 +61,14 @@ services:
       DELEGATED_ISSUER: http://localhost:5556/dex
       BASE_URL: http://localhost:8080
     depends_on:
-    - postgres
-    - jaeger
+      - postgres
+      - jaeger
     volumes:
-    - .:/src
+      - .:/src
     working_dir: /src
     ports:
-    - '5556:5556/tcp'
-    - '8080:8080/tcp'
+      - '5556:5556/tcp'
+      - '8080:8080/tcp'
 
   frontend:
     image: node:alpine

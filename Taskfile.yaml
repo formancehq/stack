@@ -4,19 +4,45 @@ vars:
   COMPONENT:
     sh: cat go.mod | head -1 | cut -d \  -f2 | cut -d / -f 3
 
+  PKG: "./..."
+  FAILFAST: "-failfast"
+  TIMEOUT: "1m"
+  RUN: "''"
+
+env:
+  CAOS_OIDC_DEV: true
+
 tasks:
   default:
     cmds:
       - task: lint
-      - task: tests
+      - task: tests:local
 
   lint:
     cmds:
       - golangci-lint run -v --fix
 
+  tests:local:
+    cmds:
+      - >
+        go test -v {{.FAILFAST}} -race -coverpkg {{.PKG}} -coverprofile coverage.out
+        -run {{.RUN}} -timeout {{.TIMEOUT}} {{.PKG}} |
+        sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' |
+        sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/'' |
+        sed ''/RUN/s//$(printf "\033[34mRUN\033[0m")/''
+      - task: coverage
+
   tests:
     cmds:
-      - go test ./...
+      - go test -race -coverpkg {{.PKG}} -coverprofile coverage.out {{.PKG}}
+
+  coverage:
+    cmds:
+      - go tool cover -html=coverage.out -o coverage.html
+      - echo "To open the html coverage file, use one of the following commands:"
+      - echo "open coverage.html on mac"
+      - echo "xdg-open coverage.html on linux"
+    silent: true
 
   build:
     cmds:
