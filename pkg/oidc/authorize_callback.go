@@ -2,6 +2,8 @@ package oidc
 
 import (
 	"context"
+	"embed"
+	"html/template"
 	"net/http"
 
 	auth "github.com/formancehq/auth/pkg"
@@ -11,6 +13,23 @@ import (
 	"github.com/zitadel/oidc/pkg/op"
 )
 
+//go:embed templates
+var templateFs embed.FS
+
+func authorizeErrorHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		authError := r.URL.Query().Get("error")
+		tpl := template.Must(template.New("error.tmpl").
+			ParseFS(templateFs, "templates/error.tmpl"))
+		if err := tpl.Execute(w, map[string]interface{}{
+			"Error":            authError,
+			"ErrorDescription": r.URL.Query().Get("error_description"),
+		}); err != nil {
+			panic(err)
+		}
+	}
+}
+
 func authorizeCallbackHandler(
 	provider op.OpenIDProvider,
 	storage Storage,
@@ -18,7 +37,6 @@ func authorizeCallbackHandler(
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		// TODO: error handling
 		state, err := delegatedauth.DecodeDelegatedState(r.URL.Query().Get("state"))
 		if err != nil {
 			panic(err)
