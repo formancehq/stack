@@ -14,7 +14,9 @@ services:
     volumes:
       - ./dex-config.yaml:/etc/dex/config.docker.yaml
       - ./pkg/web:/app/web
-    network_mode: service:auth
+    ports:
+    - '5556:5556/tcp'
+    - '8080:8080/tcp'
 
   postgres:
     image: postgres:alpine
@@ -34,6 +36,7 @@ services:
     build:
       context: .
       dockerfile: reflex.Dockerfile
+    network_mode: service:dex
     healthcheck:
       test: curl -s -f -k http://localhost:8080/_healthcheck > /dev/null || exit 1
       interval: 3s
@@ -50,6 +53,7 @@ services:
       - serve
     environment:
 #      DEBUG: 1
+      CGO_ENABLED: 0
       CONFIG: ./config.yaml
       POSTGRES_URI: host=postgres user=auth password=auth dbname=auth port=5432 sslmode=disable
       CAOS_OIDC_DEV: 1
@@ -63,12 +67,10 @@ services:
     depends_on:
       - postgres
       - jaeger
+      - dex
     volumes:
       - .:/src
     working_dir: /src
-    ports:
-      - '5556:5556/tcp'
-      - '8080:8080/tcp'
 
   frontend:
     image: node:alpine

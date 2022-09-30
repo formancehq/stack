@@ -15,6 +15,10 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+const (
+	KindPostgres = "postgres"
+)
+
 // TODO: Replace by sharedlogging
 func newLogger(debug bool) logger.Interface {
 	out := io.Discard
@@ -54,11 +58,18 @@ func MigrateTables(ctx context.Context, db *gorm.DB) error {
 	)
 }
 
-func gormModule(uri string, debug bool) fx.Option {
+var drivers = map[string]func(string) gorm.Dialector{}
+
+func registerDriverConstructor(kind string, constructor func(string) gorm.Dialector) {
+	drivers[kind] = constructor
+}
+
+func init() {
+	registerDriverConstructor(KindPostgres, OpenPostgresDatabase)
+}
+
+func gormModule(kind, uri string, debug bool) fx.Option {
 	return fx.Options(
-		fx.Provide(func() gorm.Dialector {
-			return OpenPostgresDatabase(uri)
-		}),
 		fx.Provide(func(d gorm.Dialector) (*gorm.DB, error) {
 			return LoadGorm(d, debug)
 		}),
@@ -69,6 +80,9 @@ func gormModule(uri string, debug bool) fx.Option {
 					return MigrateTables(ctx, db)
 				},
 			})
+		}),
+		fx.Provide(func() gorm.Dialector {
+			return drivers[kind](uri)
 		}),
 	)
 }

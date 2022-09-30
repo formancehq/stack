@@ -15,9 +15,9 @@ import (
 
 func Module(privateKey *rsa.PrivateKey, baseUrl *url.URL, staticClients ...auth.StaticClient) fx.Option {
 	return fx.Options(
-		fx.Invoke(func(router *mux.Router, provider op.OpenIDProvider, storage Storage, relyingParty rp.RelyingParty) {
+		fx.Invoke(fx.Annotate(func(router *mux.Router, provider op.OpenIDProvider, storage Storage, relyingParty rp.RelyingParty) {
 			AddRoutes(router, provider, storage, relyingParty, baseUrl)
-		}),
+		}, fx.ParamTags(`name:"rootRouter"`))),
 		fx.Provide(fx.Annotate(func(storage Storage, relyingParty rp.RelyingParty) *storageFacade {
 			return NewStorageFacade(storage, relyingParty, privateKey, staticClients...)
 		}, fx.As(new(op.Storage)))),

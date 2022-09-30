@@ -13,8 +13,6 @@ import (
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
-	"github.com/gorilla/mux"
-	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/pkg/errors"
@@ -134,10 +132,8 @@ var serveCmd = &cobra.Command{
 			api.Module(":8080", baseUrl),
 			oidc.Module(key, baseUrl, o.Clients...),
 			authorization.Module(),
-			fx.Invoke(func(router *mux.Router, healthController *sharedhealth.HealthController) {
-				router.Path("/_healthcheck").HandlerFunc(healthController.Check)
-			}),
-			sqlstorage.Module(viper.GetString(postgresUriFlag), viper.GetBool(debugFlag), key, o.Clients),
+			sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag),
+				viper.GetBool(debugFlag), key, o.Clients...),
 			delegatedauth.Module(),
 			fx.Invoke(func() {
 				sharedlogging.Infof("App started.")

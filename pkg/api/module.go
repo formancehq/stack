@@ -1,32 +1,21 @@
 package api
 
 import (
-	"context"
 	"net/url"
 
-	"github.com/gorilla/mux"
+	"github.com/formancehq/auth/pkg/api/routing"
 	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
 	"go.uber.org/fx"
 )
 
 func Module(addr string, baseUrl *url.URL) fx.Option {
 	return fx.Options(
-		sharedhealth.Module(),
 		sharedhealth.ProvideHealthCheck(delegatedOIDCServerAvailability),
-		fx.Provide(func(healthController *sharedhealth.HealthController) *mux.Router {
-			return NewRouter(baseUrl, healthController)
-		}),
+		routing.Module(addr, baseUrl),
 		fx.Invoke(
-			addClientRoutes,
-			addScopeRoutes,
-			addUserRoutes,
+			fx.Annotate(addClientRoutes, fx.ParamTags(``, `name:"prefixedRouter"`)),
+			fx.Annotate(addScopeRoutes, fx.ParamTags(``, `name:"prefixedRouter"`)),
+			fx.Annotate(addUserRoutes, fx.ParamTags(``, `name:"prefixedRouter"`)),
 		),
-		fx.Invoke(func(lc fx.Lifecycle, router *mux.Router) {
-			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					return StartServer(addr, router)
-				},
-			})
-		}),
 	)
 }

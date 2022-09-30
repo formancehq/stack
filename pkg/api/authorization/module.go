@@ -11,14 +11,14 @@ import (
 
 func Module() fx.Option {
 	return fx.Options(
-		fx.Invoke(func(router *mux.Router, o op.OpenIDProvider) error {
+		fx.Invoke(fx.Annotate(func(router *mux.Router, o op.OpenIDProvider) error {
 			return router.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
 				route.Handler(
 					middleware(o)(route.GetHandler()),
 				)
 				return nil
 			})
-		}),
+		}, fx.ParamTags(`name:"prefixedRouter"`))),
 	)
 }
 
