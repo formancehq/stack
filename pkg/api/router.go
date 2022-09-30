@@ -18,6 +18,7 @@ func NewRouter(baseUrl *url.URL, healthController *sharedhealth.HealthController
 			handler.ServeHTTP(w, r)
 		})
 	})
+	router.Path("/_healthcheck").HandlerFunc(healthController.Check)
 	subRouter := router.PathPrefix(baseUrl.Path).Subrouter()
 	subRouter.Path("/_healthcheck").HandlerFunc(healthController.Check)
 	return subRouter
