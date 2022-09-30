@@ -328,10 +328,19 @@ func (s *storageFacade) SetIntrospectionFromToken(ctx context.Context, introspec
 	}
 	if !ok {
 		client, err := s.Storage.FindClient(ctx, clientID)
-		if err != nil {
+		if err != nil && err != storage.ErrNotFound {
 			return err
 		}
-		ok = client.Trusted
+		if err == storage.ErrNotFound {
+			for _, staticClient := range s.staticClients {
+				if staticClient.Id == clientID {
+					ok = client.Trusted
+					break
+				}
+			}
+		} else {
+			ok = client.Trusted
+		}
 	}
 
 	if !ok {
