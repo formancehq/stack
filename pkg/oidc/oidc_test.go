@@ -77,12 +77,9 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	provider, err := oidc.NewOpenIDProvider(context.TODO(), storageFacade, serverUrl, mockOIDC.Issuer(), *keySet)
 	require.NoError(t, err)
 
-	u, err := url.Parse(serverUrl)
-	require.NoError(t, err)
-
 	// Create the router
 	router := mux.NewRouter()
-	oidc.AddRoutes(router, provider, storage, serverRelyingParty, u)
+	oidc.AddRoutes(router, provider, storage, serverRelyingParty)
 
 	// Create our http server for our oidc provider
 	providerHttpServer := &http.Server{

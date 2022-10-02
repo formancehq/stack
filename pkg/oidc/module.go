@@ -3,7 +3,6 @@ package oidc
 import (
 	"context"
 	"crypto/rsa"
-	"net/url"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
@@ -13,11 +12,11 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(privateKey *rsa.PrivateKey, baseUrl *url.URL, staticClients ...auth.StaticClient) fx.Option {
+func Module(privateKey *rsa.PrivateKey, issuer string, staticClients ...auth.StaticClient) fx.Option {
 	return fx.Options(
-		fx.Invoke(fx.Annotate(func(router *mux.Router, provider op.OpenIDProvider, storage Storage, relyingParty rp.RelyingParty) {
-			AddRoutes(router, provider, storage, relyingParty, baseUrl)
-		}, fx.ParamTags(`name:"rootRouter"`))),
+		fx.Invoke(func(router *mux.Router, provider op.OpenIDProvider, storage Storage, relyingParty rp.RelyingParty) {
+			AddRoutes(router, provider, storage, relyingParty)
+		}),
 		fx.Provide(fx.Annotate(func(storage Storage, relyingParty rp.RelyingParty) *storageFacade {
 			return NewStorageFacade(storage, relyingParty, privateKey, staticClients...)
 		}, fx.As(new(op.Storage)))),
@@ -27,7 +26,7 @@ func Module(privateKey *rsa.PrivateKey, baseUrl *url.URL, staticClients ...auth.
 				return nil, err
 			}
 
-			return NewOpenIDProvider(context.TODO(), storage, baseUrl.String(), configuration.Issuer, *keySet)
+			return NewOpenIDProvider(context.TODO(), storage, issuer, configuration.Issuer, *keySet)
 		}),
 	)
 }

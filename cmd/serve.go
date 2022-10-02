@@ -5,7 +5,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"net/url"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/api"
@@ -71,11 +70,6 @@ var serveCmd = &cobra.Command{
 			return errors.New("base url must be defined")
 		}
 
-		baseUrl, err := url.Parse(viper.GetString(baseUrlFlag))
-		if err != nil {
-			return errors.Wrap(err, "parsing base url")
-		}
-
 		delegatedClientID := viper.GetString(delegatedClientIDFlag)
 		if delegatedClientID == "" {
 			return errors.New("delegated client id must be defined")
@@ -127,10 +121,10 @@ var serveCmd = &cobra.Command{
 				Issuer:       delegatedIssuer,
 				ClientID:     delegatedClientID,
 				ClientSecret: delegatedClientSecret,
-				RedirectURL:  fmt.Sprintf("%s/authorize/callback", baseUrl.String()),
+				RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
 			}),
-			api.Module(":8080", baseUrl),
-			oidc.Module(key, baseUrl, o.Clients...),
+			api.Module(":8080"),
+			oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
 			authorization.Module(),
 			sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag),
 				viper.GetBool(debugFlag), key, o.Clients...),
