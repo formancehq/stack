@@ -33,7 +33,6 @@ services:
       - traefik.http.middlewares.cors.headers.accessControlAllowHeaders=content-type
       - traefik.http.middlewares.cors.headers.accesscontrolmaxage=100
       - traefik.http.middlewares.cors.headers.addvaryheader=true
-      - traefik.http.middlewares.stripprefixregex.stripprefixregex.regex="/api/[^/]+"
       - traefik.http.middlewares.jwt.plugin.auth.Issuer=http://localhost/api/auth
 
   auth:
@@ -212,8 +211,8 @@ services:
       - traefik.http.routers.payments.rule=Host(`localhost`) &&  PathPrefix(`/api/payments`)
       - traefik.http.routers.payments.entrypoints=web
       - traefik.http.services.payments.loadbalancer.server.port=8080
-      - traefik.http.routers.payments.middlewares=stripprefixregex@docker,cors@docker
-#      - traefik.http.middlewares.payments.stripprefix.prefixes=/api/payments
+      - traefik.http.routers.payments.middlewares=jwt@docker,payments@docker,cors@docker
+      - traefik.http.middlewares.payments.stripprefix.prefixes=/api/payments
 
 #  opensearch:
 #    image: opensearchproject/opensearch:2.1.0
