@@ -26,5 +26,5 @@ entryPoints:
 
 experimental:
   localPlugins:
-    example:
+    auth:
       moduleName: "github.com/formancehq/gateway-plugin-auth"

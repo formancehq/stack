@@ -11,6 +11,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./config/traefik:/etc/traefik:ro"
+      - "./plugins-local:/plugins-local"
 
   auth-dex:
     image: "ghcr.io/formancehq/auth-dex:v0.2.1"
