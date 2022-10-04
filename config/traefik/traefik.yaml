@@ -25,7 +25,6 @@ entryPoints:
     address: ':8081'
 
 experimental:
-  plugins:
-    auth:
+  localPlugins:
+    example:
       moduleName: "github.com/formancehq/gateway-plugin-auth"
-      version: "v0.1.7"
