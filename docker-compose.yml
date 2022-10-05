@@ -37,7 +37,7 @@ services:
       - traefik.http.routers.dex.middlewares=cors@docker
 
   auth:
-    image: "ghcr.io/formancehq/auth:196e3771412b2ab54590db82d7d7fefa0e842ac4"
+    image: "ghcr.io/formancehq/auth:08a08324572693e44b8cdad61849139f1b896fd9"
     network_mode: service:proxy
 #    healthcheck:
 #      test: [ "CMD", "curl", "-f", "http://localhost:8080/_healthcheck" ]
