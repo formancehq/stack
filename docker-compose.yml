@@ -5,49 +5,46 @@ volumes:
   mongodb_data:
   opensearch_data:
 services:
-  proxy:
+  gateway:
     image: "traefik:v2.8"
-    ports:
-      - "80:80"
-      - "8091:8081"
+    network_mode: service:auth-dex
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./config/traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro"
-    labels:
-      - traefik.enable=true
-      - traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH
-      - traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*
-      - traefik.http.middlewares.cors.headers.accessControlAllowHeaders=content-type
-      - traefik.http.middlewares.cors.headers.accesscontrolmaxage=100
-      - traefik.http.middlewares.cors.headers.addvaryheader=true
+      - "./config/traefik:/etc/traefik:ro"
 
   auth-dex:
-    image: "ghcr.io/formancehq/auth-dex:196e3771412b2ab54590db82d7d7fefa0e842ac4"
-    network_mode: service:proxy
+    image: "ghcr.io/formancehq/auth-dex:v0.2.1"
     volumes:
       - ./config/dex/dex-config.yaml:/etc/dex/config.docker.yaml
     depends_on:
       postgres:
         condition: service_healthy
+    ports:
+      - "80:80"
+      - "8091:8081"
+      - "8080:8080"
     labels:
       - traefik.enable=true
       - traefik.http.routers.dex.rule=Host(`localhost`) && PathPrefix(`/api/auth/dex`)
       - traefik.http.routers.dex.entrypoints=web
       - traefik.http.services.dex.loadbalancer.server.port=5556
-      - traefik.http.routers.dex.middlewares=cors@docker
+      - traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH
+      - traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*
+      - traefik.http.middlewares.cors.headers.accessControlAllowHeaders=content-type
+      - traefik.http.middlewares.cors.headers.accesscontrolmaxage=100
+      - traefik.http.middlewares.cors.headers.addvaryheader=true
+      - traefik.http.middlewares.jwt.plugin.auth.Issuer=http://localhost/api/auth
 
   auth:
-    image: "ghcr.io/formancehq/auth:196e3771412b2ab54590db82d7d7fefa0e842ac4"
-    network_mode: service:proxy
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://localhost:8080/_healthcheck" ]
-#      interval: 1s
+    image: "ghcr.io/formancehq/auth:5cf1ee9427b9d86763b3049af14ec8ebf374e482"
+    restart: always
+    network_mode: service:auth-dex
     command: serve
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      DEBUG: 1
+      DEBUG: false
       CONFIG: ./config.yaml
       POSTGRES_URI: host=postgres user=formance password=formance dbname=auth port=5432 sslmode=disable
       CAOS_OIDC_DEV: 1
@@ -62,11 +59,10 @@ services:
       - traefik.http.routers.auth.rule=Host(`localhost`) && PathPrefix(`/api/auth`)
       - traefik.http.routers.auth.entrypoints=web
       - traefik.http.services.auth.loadbalancer.server.port=8080
-      - traefik.http.routers.auth.middlewares=cors@docker
 
   control:
     image: "ghcr.io/formancehq/control:v1.3.0-beta.1"
-    network_mode: service:proxy
+    network_mode: service:gateway
     environment:
       API_URL_BACK: "http://localhost/api"
       API_URL_FRONT: "http://localhost/api"
@@ -167,7 +163,7 @@ services:
       - traefik.http.routers.ledger.rule=Host(`localhost`) && PathPrefix(`/api/ledger`)
       - traefik.http.routers.ledger.entrypoints=web
       - traefik.http.services.ledger.loadbalancer.server.port=3068
-      - traefik.http.routers.ledger.middlewares=ledger@docker,cors@docker
+      - traefik.http.routers.ledger.middlewares=jwt@docker,ledger@docker,cors@docker
       - traefik.http.middlewares.ledger.stripprefix.prefixes=/api/ledger
 
   mongodb:
@@ -215,8 +211,8 @@ services:
       - traefik.http.routers.payments.rule=Host(`localhost`) &&  PathPrefix(`/api/payments`)
       - traefik.http.routers.payments.entrypoints=web
       - traefik.http.services.payments.loadbalancer.server.port=8080
+      - traefik.http.routers.payments.middlewares=jwt@docker,payments@docker,cors@docker
       - traefik.http.middlewares.payments.stripprefix.prefixes=/api/payments
-      - traefik.http.routers.payments.middlewares=payments@docker,cors@docker
 
   opensearch:
     image: opensearchproject/opensearch:2.1.0
@@ -281,8 +277,7 @@ services:
       - traefik.http.routers.search.rule=Host(`localhost`) &&  PathPrefix(`/api/search`)
       - traefik.http.routers.search.entrypoints=web
       - traefik.http.services.search.loadbalancer.server.port=8080
-      - traefik.http.middlewares.search.stripprefix.prefixes=/api/search
-      - traefik.http.routers.search.middlewares=search@docker,cors@docker
+      - traefik.http.routers.search.middlewares=stripprefixregex@docker,cors@docker
 
   webhooks:
     image: "ghcr.io/formancehq/webhooks:v0.2.1"
@@ -301,8 +296,7 @@ services:
       - traefik.http.routers.webhooks.rule=Host(`localhost`) &&  PathPrefix(`/api/webhooks`)
       - traefik.http.routers.webhooks.entrypoints=web
       - traefik.http.services.webhooks.loadbalancer.server.port=8080
-      - traefik.http.middlewares.webhooks.stripprefix.prefixes=/api/webhooks
-      - traefik.http.routers.webhooks.middlewares=webhooks@docker,cors@docker
+      - traefik.http.routers.webhooks.middlewares=stripprefixregex@docker,cors@docker
 
   webhooks-worker:
     image: "ghcr.io/formancehq/webhooks:v0.2.1"
