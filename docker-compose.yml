@@ -277,7 +277,9 @@ services:
       - traefik.http.routers.search.rule=Host(`localhost`) &&  PathPrefix(`/api/search`)
       - traefik.http.routers.search.entrypoints=web
       - traefik.http.services.search.loadbalancer.server.port=8080
-      - traefik.http.routers.search.middlewares=stripprefixregex@docker,cors@docker
+      - traefik.http.routers.search.middlewares=jwt@docker,search@docker,cors@docker
+      - traefik.http.middlewares.search.stripprefix.prefixes=/api/search
+
 
   webhooks:
     image: "ghcr.io/formancehq/webhooks:v0.2.1"
@@ -296,7 +298,8 @@ services:
       - traefik.http.routers.webhooks.rule=Host(`localhost`) &&  PathPrefix(`/api/webhooks`)
       - traefik.http.routers.webhooks.entrypoints=web
       - traefik.http.services.webhooks.loadbalancer.server.port=8080
-      - traefik.http.routers.webhooks.middlewares=stripprefixregex@docker,cors@docker
+      - traefik.http.routers.webhooks.middlewares=jwt@docker,webhooks@docker,cors@docker
+      - traefik.http.middlewares.webhooks.stripprefix.prefixes=/api/webhooks
 
   webhooks-worker:
     image: "ghcr.io/formancehq/webhooks:v0.2.1"
