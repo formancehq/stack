@@ -26,7 +26,8 @@ oauth2:
 staticClients:
   - id: gateway
     redirectURIs:
-      - 'http://localhost/api/auth/dex/authorize/callback'
+      - 'http://localhost:3000/auth/login'
+      - 'http://localhost/api/auth/authorize/callback'
     name: 'Auth Gateway'
     secret: ZXhhbXBsZS1hcHAtc2VjcmV0
 
@@ -58,9 +59,9 @@ connectors:
     name: GitHub
     config:
       # Credentials can be string literals or pulled from the environment.
-      clientID: $GITHUB_CLIENT_ID
-      clientSecret: $GITHUB_CLIENT_SECRET
-      redirectURI: http://localhost:5556/dex/callback
+      clientID: 47b0a0145f1879ccc5b0
+      clientSecret: a52667786dfa5e2576679467711c7a97c5f3f1ae
+      redirectURI: http://localhost/api/auth/dex/callback
   - type: oidc
     id: Formance
     name: Formance
@@ -76,4 +77,4 @@ connectors:
       clientSecret: $GOOGLE_CLIENT_SECRET
 
       # Dex's issuer URL + "/callback"
-      redirectURI: http://localhost:5556/dex/callback
+      redirectURI: http://localhost:5556/api/auth/dex/callback

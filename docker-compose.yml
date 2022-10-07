@@ -6,14 +6,14 @@ volumes:
   opensearch_data:
 services:
   gateway:
-    image: "traefik:v2.8"
+    image: "traefik:v2.9"
     network_mode: service:auth-dex
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./config/traefik:/etc/traefik:ro"
 
   auth-dex:
-    image: "ghcr.io/formancehq/auth-dex:v0.2.1"
+    image: "ghcr.io/formancehq/auth-dex:20761562e41e83ce4f77e294506ec5e320da5b16"
     volumes:
       - ./config/dex/dex-config.yaml:/etc/dex/config.docker.yaml
     depends_on:
@@ -36,7 +36,7 @@ services:
       - traefik.http.middlewares.jwt.plugin.auth.Issuer=http://localhost/api/auth
 
   auth:
-    image: "ghcr.io/formancehq/auth:5cf1ee9427b9d86763b3049af14ec8ebf374e482"
+    image: "ghcr.io/formancehq/auth:20761562e41e83ce4f77e294506ec5e320da5b16"
     restart: always
     network_mode: service:auth-dex
     command: serve
@@ -44,7 +44,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      DEBUG: false
+      DEBUG: true
       CONFIG: ./config.yaml
       POSTGRES_URI: host=postgres user=formance password=formance dbname=auth port=5432 sslmode=disable
       CAOS_OIDC_DEV: 1
@@ -59,13 +59,18 @@ services:
       - traefik.http.routers.auth.rule=Host(`localhost`) && PathPrefix(`/api/auth`)
       - traefik.http.routers.auth.entrypoints=web
       - traefik.http.services.auth.loadbalancer.server.port=8080
+      - traefik.http.middlewares.auth.stripprefix.prefixes=/api/auth
+      - traefik.http.routers.auth.middlewares=cors@docker,auth@docker
 
   control:
-    image: "ghcr.io/formancehq/control:v1.3.0-beta.1"
+    image: "ghcr.io/formancehq/control:ed702f7891dfd85bbbaafa35f16a4998bd564583"
     network_mode: service:gateway
     environment:
+      API_URL: "http://localhost/api"
       API_URL_BACK: "http://localhost/api"
       API_URL_FRONT: "http://localhost/api"
+      CLIENT_ID: "control"
+      CLIENT_SECRET: "mysupersecret"
     labels:
       - traefik.enable=true
       - traefik.http.routers.control.rule=Host(`localhost`)
