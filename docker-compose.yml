@@ -4,13 +4,15 @@ volumes:
   postgres_data:
   mongodb_data:
   opensearch_data:
+
 services:
   gateway:
-    image: "traefik:v2.8"
+    image: "traefik:v2.9.1"
     network_mode: service:auth-dex
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./config/traefik:/etc/traefik:ro"
+      #- "./plugins-local:/plugins-local"
 
   auth-dex:
     image: "ghcr.io/formancehq/auth-dex:v0.2.1"
@@ -34,6 +36,8 @@ services:
       - traefik.http.middlewares.cors.headers.accesscontrolmaxage=100
       - traefik.http.middlewares.cors.headers.addvaryheader=true
       - traefik.http.middlewares.jwt.plugin.auth.Issuer=http://localhost/api/auth
+      - traefik.http.middlewares.jwt.plugin.auth.RefreshTime=5m
+      - traefik.http.middlewares.jwt.plugin.auth.RefreshTimeError=10s
 
   auth:
     image: "ghcr.io/formancehq/auth:5cf1ee9427b9d86763b3049af14ec8ebf374e482"
