@@ -63,7 +63,7 @@ services:
       - traefik.http.routers.auth.middlewares=cors@docker,auth@docker
 
   control:
-    image: "ghcr.io/formancehq/control:ed702f7891dfd85bbbaafa35f16a4998bd564583"
+    image: "ghcr.io/formancehq/control:local"
     network_mode: service:gateway
     environment:
       API_URL: "http://localhost/api"
@@ -71,6 +71,8 @@ services:
       API_URL_FRONT: "http://localhost/api"
       CLIENT_ID: "control"
       CLIENT_SECRET: "mysupersecret"
+      ENCRYPTION_KEY: "mysuperencryptionkey"
+      ENCRYPTION_IV: "6f0c77c78a624022"
     labels:
       - traefik.enable=true
       - traefik.http.routers.control.rule=Host(`localhost`)
