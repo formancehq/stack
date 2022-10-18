@@ -9,6 +9,22 @@ ports:
   - port: 8091
     onOpen: open-preview
 
+jetbrains:
+  plugins:
+    - mobi.hsz.idea.gitignore
+    - org.intellij.plugins.markdown
+    - com.mallowigi
+    - com.github.copilot
+    - com.alex.tokyonight
+    - org.intellij.plugins.hcl
+    - lechuck.intellij-plugin.task
+    - com.nekofar.milad.intellij.remix
+    - mdx.js
+    - name.kropp.intellij.makefile
+    - com.intellij.kubernetes
+    - org.jetbrains.plugins.go-template
+    - org.jetbrains.plugins.go
+
 github:
   prebuilds:
     # enable for the master/default branch (defaults to true)
