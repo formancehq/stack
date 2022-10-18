@@ -6,7 +6,7 @@ volumes:
   opensearch_data:
 services:
   otlp-exporter:
-    image: otel/opentelemetry-collector
+    image: "otel/opentelemetry-collector"
 
   gateway:
     image: "traefik:v2.9"
@@ -84,7 +84,7 @@ services:
       - traefik.http.routers.control.middlewares=cors@docker
 
   redpanda:
-    image: docker.vectorized.io/vectorized/redpanda:latest
+    image: "docker.vectorized.io/vectorized/redpanda:latest"
     command:
       - redpanda
       - start
@@ -110,7 +110,7 @@ services:
       - "9644:9644"
 
   redpanda-config:
-    image: docker.vectorized.io/vectorized/redpanda:latest
+    image: "docker.vectorized.io/vectorized/redpanda:latest"
     command:
       - cluster
       - config
@@ -126,7 +126,7 @@ services:
       - ./config/redpanda/config.yaml:/etc/redpanda/redpanda.yaml:ro
 
   redpanda-ui:
-    image: docker.redpanda.com/vectorized/console:master-0a8fce8
+    image: "docker.redpanda.com/vectorized/console:master-0a8fce8"
     ports:
       - "8081:8080"
     depends_on:
@@ -177,7 +177,7 @@ services:
       - traefik.http.middlewares.ledger.stripprefix.prefixes=/api/ledger
 
   mongodb:
-    image: mongo:5.0
+    image: "mongo:5.0"
 #    command: "mongod --bind_ip_all --replSet replicaSet01 --keyFile /data/replica.key"
 #    entrypoint:
 #      - bash
@@ -225,7 +225,7 @@ services:
       - traefik.http.middlewares.payments.stripprefix.prefixes=/api/payments
 
   opensearch:
-    image: opensearchproject/opensearch:2.1.0
+    image: "opensearchproject/opensearch:2.1.0"
     environment:
       discovery.type: single-node
       plugins.security.disabled: "true"
@@ -238,7 +238,7 @@ services:
       - opensearch_data:/usr/share/opensearch/data
 
   opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:2.1.0
+    image: "opensearchproject/opensearch-dashboards:2.1.0"
     environment:
       OPENSEARCH_HOSTS: '["http://opensearch:9200"]' # must be a string with no spaces when specified as an environment variable
       DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"
