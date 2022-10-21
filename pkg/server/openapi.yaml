@@ -1,22 +1,32 @@
 openapi: 3.0.3
 info:
   title: Webhooks server
-  version: 0.0.0
+  version: v0.2.1
+
+servers:
+  - url: https://{organization}.o.formance.cloud/webhooks
+    description: Production server
+    variables:
+      organization:
+        description: The organization on which the webhooks server is located
+        default: ""
+
 paths:
   /_healthcheck:
     get:
-      summary: Health check of the server.
+      summary: Health check of the server
       operationId: healthCheck
       tags:
         - Health
       responses:
         "200":
-          description: The server is healthy.
+          description: The server is healthy
           content: {}
 
   /configs:
     get:
-      summary: Get many configs, sorted by updated date descending.
+      summary: Get many configs
+      description: Sorted by updated date descending
       operationId: getManyConfigs
       tags:
         - Configs
@@ -59,9 +69,9 @@ paths:
 
     post:
       summary: |
-        Insert a new config.
+        Insert a new config
       description: |
-        Insert a new config. 
+        Insert a new config.
         
         The endpoint should be a valid https URL and be unique.
         
@@ -98,7 +108,7 @@ paths:
                 example: endpoints should be valid urls
 
     delete:
-      summary: Delete one config.
+      summary: Delete one config
       operationId: deleteOneConfig
       tags:
         - Configs
@@ -117,7 +127,7 @@ paths:
 
   /configs/{id}/activate:
     put:
-      summary: Activate one config.
+      summary: Activate one config
       operationId: activateOneConfig
       tags:
         - Configs
@@ -139,7 +149,7 @@ paths:
 
   /configs/{id}/deactivate:
     put:
-      summary: Deactivate one config.
+      summary: Deactivate one config
       operationId: deactivateOneConfig
       tags:
         - Configs
@@ -161,9 +171,9 @@ paths:
 
   /configs/{id}/secret/change:
     put:
-      summary: Change the config's endpoint's signing secret.
+      summary: Change the signing secret of a config
       description: |
-        Change the config's endpoint's signing secret. The previous secret will be valid for the next 24 hours.
+        Change the signing secret of the endpoint of a config. The previous secret will be valid for the next 24 hours.
         
         If not passed or empty, a secret is automatically generated. 
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
