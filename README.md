@@ -1,7 +1,7 @@
 # Webhooks
 
-Webhooks is a service used to manage configs and to send webhooks to their endpoints.
-A config is made of the following information:
+Webhooks is a service used to manage user configs and send webhooks to endpoints.
+A user config is made of the following information:
 - Endpoint: a single URL where messages are sent to.
 - EventTypes: an array of string identifiers denoting the type of message being sent and are the primary way for webhook consumers to configure what events they are interested in receiving. Are stored in lower-case format.
 - Secret: a string used to verify received webhooks. Every webhook and its metadata is signed with a unique key for each endpoint. This signature can then be used to verify the webhook indeed comes from this service.
@@ -10,8 +10,8 @@ A config is made of the following information:
 The service has 3 starting modes, split into 3 separate commands:
 
 - `server`: REST web service API managing webhooks configs for users.
-- `worker messages`: background service consuming kafka events on selected topics and sending webhooks based on users configs.
-- `worker retries`: background service periodically finding webhooks requests to retry and sending new attempts.
+- `worker messages`: background service consuming kafka events on selected topics and sending webhooks based on user configs.
+- `worker retries`: background service periodically finding failed webhooks requests to retry and sending new attempts.
 
 ## Run the stack locally
 ```
@@ -48,8 +48,8 @@ Usage:
 
 Available Commands:
   help                 Help about any command
-  server               Start webhooks server
   version              Get webhooks version
+  server               Start webhooks server
   worker messages      Start webhooks worker messages
   worker retries       Start webhooks worker retries
 
