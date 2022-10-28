@@ -243,7 +243,7 @@ services:
       - "5601:5601"
 
   search-ingester:
-    image: "ghcr.io/formancehq/search-ingester:v0.2.1"
+    image: "ghcr.io/formancehq/search-ingester:v0.2.4"
     depends_on:
       opensearch:
         condition: service_healthy
@@ -263,7 +263,7 @@ services:
       OPENSEARCH_BASIC_AUTH_ENABLED: "false"
 
   search:
-    image: "ghcr.io/formancehq/search:v0.2.1"
+    image: "ghcr.io/formancehq/search:v0.2.4"
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
       interval: 30s
