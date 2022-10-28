@@ -172,7 +172,8 @@ services:
 
   mongodb:
     image: mongo:5.0
-    #command: mongo --host mongodb:27017 --eval rs.initiate()
+    #command: |
+      #  mongo --host mongodb:27017 --eval rs.initiate()
 #    entrypoint:
 #      - bash
 #      - -c
@@ -193,7 +194,7 @@ services:
       MONGO_INITDB_DATABASE: payments
       MONGO_REPLICA_SET_NAME: primary
     volumes:
-      - ./config/mongodb/mongodb.conf:/etc/mongo.conf
+      - ./config/mongodb/mongod.conf:/etc/mongo.conf
       - mongodb_data:/data/db
     ports:
       - "27017:27017/tcp"
