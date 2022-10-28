@@ -198,7 +198,7 @@ services:
       - "27017:27017/tcp"
 
   payments:
-    image: "ghcr.io/formancehq/payments:cddea5e7190459e9296e62b9c6951e3b17f26805"
+    image: "ghcr.io/formancehq/payments:891d658aec9670420cafe0c822cd3750a6cb9531"
     restart: always
     depends_on:
 #      mongodb:
