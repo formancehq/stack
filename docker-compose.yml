@@ -43,6 +43,7 @@ services:
 #      test: [ "CMD", "curl", "-f", "http://localhost:8080/_healthcheck" ]
 #      interval: 1s
     command: serve
+    restart: always
     depends_on:
       postgres:
         condition: service_healthy
@@ -171,44 +172,36 @@ services:
       - traefik.http.middlewares.ledger.stripprefix.prefixes=/api/ledger
 
   mongodb:
-    image: mongo:5.0
-    #command: |
-      #  mongo --host mongodb:27017 --eval rs.initiate()
-#    entrypoint:
-#      - bash
-#      - -c
-#      - |
-#        openssl rand -base64 700 > /data/replica.key
-#        chmod 400 /data/replica.key
-#        chown 999:999 /data/replica.key
-#        exec docker-entrypoint.sh $$@
-#    healthcheck:
-#      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet) -eq 1
-#      interval: 10s
-#      timeout: 10s
-#      retries: 5
-#      start_period: 40s
+    image: bitnami/mongodb:4.4
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: formance
-      MONGO_INITDB_DATABASE: payments
-      MONGO_REPLICA_SET_NAME: primary
+      MONGODB_ROOT_PASSWORD: root
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_KEY: abcdef
+      MONGODB_ADVERTISED_HOSTNAME: mongodb
     volumes:
-      - ./config/mongodb/mongod.conf:/etc/mongo.conf
-      - mongodb_data:/data/db
+      - 'mongodb_data:/bitnami/mongodb'
     ports:
-      - "27017:27017/tcp"
-
+      - "27017:27017"
+    healthcheck:
+      test:
+      - CMD
+      - mongo
+      - --eval
+      - "db.adminCommand('ping')"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
   payments:
-    image: "ghcr.io/formancehq/payments:891d658aec9670420cafe0c822cd3750a6cb9531"
+    image: "ghcr.io/formancehq/payments:bba945880799d06efbb087c6512fd82f4b0a9555"
     restart: always
     depends_on:
-#      mongodb:
-#        condition: service_healthy
       redpanda:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
     environment:
-      MONGODB_URI: "mongodb://admin:formance@mongodb:27017"
+      MONGODB_URI: "mongodb://root:root@mongodb:27017"
       PUBLISHER_KAFKA_ENABLED: "true"
       PUBLISHER_KAFKA_BROKER: redpanda:29092
       PUBLISHER_TOPIC_MAPPING: "*:payments"
@@ -222,6 +215,7 @@ services:
 
   opensearch:
     image: opensearchproject/opensearch:2.1.0
+    restart: always
     environment:
       discovery.type: single-node
       plugins.security.disabled: "true"
@@ -235,6 +229,7 @@ services:
 
   opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:2.1.0
+    restart: always
     environment:
       OPENSEARCH_HOSTS: '["http://opensearch:9200"]' # must be a string with no spaces when specified as an environment variable
       DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"
@@ -246,6 +241,7 @@ services:
 
   search-ingester:
     image: "ghcr.io/formancehq/search-ingester:v0.2.4"
+    restart: always
     depends_on:
       opensearch:
         condition: service_healthy
@@ -266,6 +262,7 @@ services:
 
   search:
     image: "ghcr.io/formancehq/search:v0.2.4"
+    restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
       interval: 30s
@@ -288,6 +285,7 @@ services:
 
   webhooks:
     image: "ghcr.io/formancehq/webhooks:v0.2.1"
+    restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
       interval: 30s
@@ -296,8 +294,10 @@ services:
     depends_on:
       redpanda:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017"
+      STORAGE_MONGO_CONN_STRING: "mongodb://root:root@mongodb:27017"
     labels:
       - traefik.enable=true
       - traefik.http.routers.webhooks.rule=Host(`localhost`) &&  PathPrefix(`/api/webhooks`)
@@ -309,6 +309,7 @@ services:
   webhooks-worker:
     image: "ghcr.io/formancehq/webhooks:v0.2.1"
     command: worker messages
+    restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8081/_healthcheck >/dev/null || exit 1
       interval: 30s
@@ -317,8 +318,10 @@ services:
     depends_on:
       redpanda:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017"
+      STORAGE_MONGO_CONN_STRING: "mongodb://root:root@mongodb:27017"
       KAFKA_BROKERS: "redpanda:29092"
       KAFKA_TOPICS: "ledger,payments"
       LOG_LEVEL: "debug"
@@ -328,6 +331,7 @@ services:
   webhooks-retries:
     image: "ghcr.io/formancehq/webhooks:v0.2.1"
     command: worker retries
+    restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8082/_healthcheck >/dev/null || exit 1
       interval: 30s
@@ -336,7 +340,9 @@ services:
     depends_on:
       redpanda:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017"
+      STORAGE_MONGO_CONN_STRING: "mongodb://root:root@mongodb:27017"
     labels:
       - traefik.enable=false
