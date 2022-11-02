@@ -193,7 +193,7 @@ services:
       retries: 5
     
   payments:
-    image: "ghcr.io/formancehq/payments:b5478306fcc14432756bfee847c803e6e693cf96"
+    image: "ghcr.io/formancehq/payments:fd89636dc7b414182713d51de6a96daf016d584e"
     restart: always
     depends_on:
       redpanda:
