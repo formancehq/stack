@@ -173,7 +173,7 @@ paths:
     put:
       summary: Change the signing secret of a config
       description: |
-        Change the signing secret of the endpoint of a config. The previous secret will be valid for the next 24 hours.
+        Change the signing secret of the endpoint of a config.
         
         If not passed or empty, a secret is automatically generated. 
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
