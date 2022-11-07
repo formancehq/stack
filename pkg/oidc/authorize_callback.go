@@ -52,12 +52,17 @@ func authorizeCallbackHandler(
 			panic(err)
 		}
 
+		userInfos, err := rp.Userinfo(tokens.AccessToken, "Bearer", tokens.IDTokenClaims.GetSubject(), relyingParty)
+		if err != nil {
+			panic(err)
+		}
+
 		user, err := storage.FindUserBySubject(r.Context(), tokens.IDTokenClaims.GetSubject())
 		if err != nil {
 			user = &auth.User{
 				ID:      uuid.NewString(),
-				Subject: tokens.IDTokenClaims.GetSubject(),
-				Email:   tokens.IDTokenClaims.GetEmail(),
+				Subject: userInfos.GetSubject(),
+				Email:   userInfos.GetEmail(),
 			}
 			if err := storage.SaveUser(r.Context(), *user); err != nil {
 				panic(err)
