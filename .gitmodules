@@ -13,6 +13,6 @@
 [submodule "services/webhooks"]
 	path = services/webhooks
 	url = https://github.com/formancehq/webhooks
-[submodule "services/control"]
-	path = services/control
+[submodule "services/ui"]
+	path = services/ui
 	url = https://github.com/formancehq/control

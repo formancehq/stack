@@ -16,7 +16,7 @@ services:
       - "./config/traefik:/etc/traefik:ro"
 
   auth-dex:
-    image: "ghcr.io/formancehq/auth-dex:20761562e41e83ce4f77e294506ec5e320da5b16"
+    image: "ghcr.io/formancehq/auth-dex:v0.2.2"
     volumes:
       - ./config/dex/dex-config.yaml:/etc/dex/config.docker.yaml
     depends_on:
@@ -39,7 +39,7 @@ services:
       - traefik.http.middlewares.jwt.plugin.auth.Issuer=http://localhost/api/auth
 
   auth:
-    image: "ghcr.io/formancehq/auth:20761562e41e83ce4f77e294506ec5e320da5b16"
+    image: "ghcr.io/formancehq/auth:v0.2.2"
     restart: always
     network_mode: service:auth-dex
     command: serve
@@ -66,12 +66,10 @@ services:
       - traefik.http.routers.auth.middlewares=cors@docker,auth@docker
 
   control:
-    image: "ghcr.io/formancehq/control:latest"
+    image: "ghcr.io/formancehq/control:v1.3.0-beta.3"
     network_mode: service:gateway
     environment:
       API_URL: "http://localhost/api"
-      API_URL_BACK: "http://localhost/api"
-      API_URL_FRONT: "http://localhost/api"
       CLIENT_ID: "control"
       CLIENT_SECRET: "mysupersecret"
       ENCRYPTION_KEY: "mysuperencryptionkey"
@@ -84,7 +82,7 @@ services:
       - traefik.http.routers.control.middlewares=cors@docker
 
   redpanda:
-    image: "docker.vectorized.io/vectorized/redpanda:latest"
+    image: "docker.vectorized.io/vectorized/redpanda:v22.2.7"
     command:
       - redpanda
       - start
@@ -110,7 +108,7 @@ services:
       - "9644:9644"
 
   redpanda-config:
-    image: "docker.vectorized.io/vectorized/redpanda:latest"
+    image: "docker.vectorized.io/vectorized/redpanda:v22.2.7"
     command:
       - cluster
       - config
@@ -154,7 +152,7 @@ services:
       - ./config/postgres:/docker-entrypoint-initdb.d
 
   ledger:
-    image: "ghcr.io/formancehq/ledger:v1.8.0-beta.4"
+    image: "ghcr.io/formancehq/ledger:v1.8.0"
     restart: always
     depends_on:
       postgres:
@@ -177,42 +175,32 @@ services:
       - traefik.http.middlewares.ledger.stripprefix.prefixes=/api/ledger
 
   mongodb:
-    image: "mongo:5.0"
-#    command: "mongod --bind_ip_all --replSet replicaSet01 --keyFile /data/replica.key"
-#    entrypoint:
-#      - bash
-#      - -c
-#      - |
-#        openssl rand -base64 700 > /data/replica.key
-#        chmod 400 /data/replica.key
-#        chown 999:999 /data/replica.key
-#        exec docker-entrypoint.sh $$@
-#    healthcheck:
-#      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet) -eq 1
-#      interval: 10s
-#      timeout: 10s
-#      retries: 5
-#      start_period: 40s
+    image: bitnami/mongodb:4.4
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: formance
-      MONGO_INITDB_DATABASE: payments
-      MONGO_REPLICA_SET_NAME: primary
+      MONGODB_ROOT_PASSWORD: root
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_KEY: abcdef
+      MONGODB_ADVERTISED_HOSTNAME: mongodb
     volumes:
-      - mongodb_data:/data/db
+      - 'mongodb_data:/bitnami/mongodb'
     ports:
-      - "27017:27017/tcp"
+      - "27017:27017"
+    healthcheck:
+      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   payments:
     image: "ghcr.io/formancehq/payments:v0.1.3"
     restart: always
     depends_on:
-#      mongodb:
-#        condition: service_healthy
+      mongodb:
+        condition: service_healthy
       redpanda:
         condition: service_healthy
     environment:
-      MONGODB_URI: "mongodb://admin:formance@mongodb:27017"
+      MONGODB_URI: "mongodb://root:root@mongodb:27017"
       PUBLISHER_KAFKA_ENABLED: "true"
       PUBLISHER_KAFKA_BROKER: redpanda:29092
       PUBLISHER_TOPIC_MAPPING: "*:payments"
@@ -301,8 +289,10 @@ services:
     depends_on:
       redpanda:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017"
+      STORAGE_MONGO_CONN_STRING: "mongodb://root:root@mongodb:27017"
     labels:
       - traefik.enable=true
       - traefik.http.routers.webhooks.rule=Host(`localhost`) &&  PathPrefix(`/api/webhooks`)
@@ -322,8 +312,10 @@ services:
     depends_on:
       redpanda:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017"
+      STORAGE_MONGO_CONN_STRING: "mongodb://root:root@mongodb:27017"
       KAFKA_BROKERS: "redpanda:29092"
       KAFKA_TOPICS: "ledger,payments"
       LOG_LEVEL: "debug"
@@ -341,7 +333,9 @@ services:
     depends_on:
       redpanda:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:formance@mongodb:27017"
+      STORAGE_MONGO_CONN_STRING: "mongodb://root:root@mongodb:27017"
     labels:
       - traefik.enable=false
