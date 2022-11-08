@@ -42,7 +42,7 @@ To start using Formance Stack, run the following commands in a shell:
 # Get the code
 git clone https://github.com/formancehq/stack.git
 
-# Go to Lago folder
+# Go to Stack folder
 cd stack
 
 # Start
