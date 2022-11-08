@@ -59,27 +59,22 @@ func NewStore() (storage.Store, error) {
 }
 
 func (s Store) FindManyConfigs(ctx context.Context, filter map[string]any) (sharedapi.Cursor[webhooks.Config], error) {
+	res := sharedapi.Cursor[webhooks.Config]{
+		Data: []webhooks.Config{},
+	}
 	opts := options.Find().SetSort(bson.M{webhooks.KeyUpdatedAt: -1})
 	cur, err := s.configsCollection.Find(ctx, filter, opts)
 	if err != nil {
-		return sharedapi.Cursor[webhooks.Config]{},
-			fmt.Errorf("mongo.Collection.Find: %w", err)
+		return res, fmt.Errorf("mongo.Collection.Find: %w", err)
 	}
-	defer func() {
-		if err := cur.Close(ctx); err != nil {
-			sharedlogging.GetLogger(ctx).Errorf("mongo.Cursor.Close: %s", err)
-		}
-	}()
+	defer cur.Close(ctx)
 
-	var res []webhooks.Config
-	if err := cur.All(ctx, &res); err != nil {
+	if err := cur.All(ctx, &res.Data); err != nil {
 		return sharedapi.Cursor[webhooks.Config]{},
 			fmt.Errorf("mongo.Cursor.All: %w", err)
 	}
 
-	return sharedapi.Cursor[webhooks.Config]{
-		Data: res,
-	}, nil
+	return res, nil
 }
 
 func (s Store) InsertOneConfig(ctx context.Context, cfgUser webhooks.ConfigUser) (insertedID string, err error) {
@@ -154,27 +149,21 @@ func (s Store) UpdateOneConfigSecret(ctx context.Context, id, secret string,
 }
 
 func (s Store) FindManyAttempts(ctx context.Context, filter map[string]any) (sharedapi.Cursor[webhooks.Attempt], error) {
+	res := sharedapi.Cursor[webhooks.Attempt]{
+		Data: []webhooks.Attempt{},
+	}
 	opts := options.Find().SetSort(bson.M{webhooks.KeyID: -1})
 	cur, err := s.attemptsCollection.Find(ctx, filter, opts)
 	if err != nil {
-		return sharedapi.Cursor[webhooks.Attempt]{},
-			fmt.Errorf("mongo.Collection.Find: %w", err)
+		return res, fmt.Errorf("mongo.Collection.Find: %w", err)
 	}
-	defer func() {
-		if err := cur.Close(ctx); err != nil {
-			sharedlogging.GetLogger(ctx).Errorf("mongo.Cursor.Close: %s", err)
-		}
-	}()
+	defer cur.Close(ctx)
 
-	var res []webhooks.Attempt
-	if err := cur.All(ctx, &res); err != nil {
-		return sharedapi.Cursor[webhooks.Attempt]{},
-			fmt.Errorf("mongo.Cursor.All: %w", err)
+	if err := cur.All(ctx, &res.Data); err != nil {
+		return res, fmt.Errorf("mongo.Cursor.All: %w", err)
 	}
 
-	return sharedapi.Cursor[webhooks.Attempt]{
-		Data: res,
-	}, nil
+	return res, nil
 }
 
 func (s Store) FindDistinctWebhookIDs(ctx context.Context, filter map[string]any) ([]string, error) {
