@@ -17,7 +17,7 @@
     <br />
     <a href="https://www.formance.com/slack">Slack</a>
     ·
-    <a href="https://www.formance.com.com">Website</a>
+    <a href="https://www.formance.com">Website</a>
   </p>
 </p>
 
