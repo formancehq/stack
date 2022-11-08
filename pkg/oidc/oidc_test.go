@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
@@ -31,6 +32,24 @@ import (
 
 func init() {
 	os.Setenv(op.OidcDevMode, "true")
+}
+
+type user struct {
+	*mockoidc.MockUser
+}
+
+func (u *user) Userinfo(scope []string) ([]byte, error) {
+	encoded, err := u.MockUser.Userinfo(scope)
+	if err != nil {
+		return nil, err
+	}
+
+	m := make(map[string]any)
+	if err := json.Unmarshal(encoded, &m); err != nil {
+		return nil, err
+	}
+	m["sub"] = u.Subject
+	return json.Marshal(m)
 }
 
 func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, provider op.OpenIDProvider)) {
@@ -116,6 +135,10 @@ func Test3LeggedFlow(t *testing.T) {
 		clientRelyingParty, err := rp.NewRelyingPartyOIDC(provider.Issuer(), client.Id, clear, client.RedirectURIs[0], []string{"openid", "email"})
 		require.NoError(t, err)
 
+		m.QueueUser(&user{
+			MockUser: mockoidc.DefaultUser(),
+		})
+
 		// Trigger an authentication request
 		authUrl := rp.AuthURL("", clientRelyingParty)
 		if testing.Verbose() {
@@ -145,6 +168,10 @@ func Test3LeggedFlow(t *testing.T) {
 			introspection, err := rs.Introspect(context.TODO(), resourceServer, tokens.AccessToken)
 			require.NoError(t, err)
 			require.True(t, introspection.IsActive())
+
+			user, err := storage.FindUser(context.TODO(), tokens.IDTokenClaims.GetSubject())
+			require.NoError(t, err)
+			require.NotEmpty(t, user.Email)
 		default:
 			require.Fail(t, "code was expected")
 		}
