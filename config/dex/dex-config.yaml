@@ -34,22 +34,10 @@ staticClients:
 enablePasswordDB: true
 
 staticPasswords:
-  - email: 'user1@orga1.com'
-    username: 'user1'
-    userID: '00000000-0000-0000-0000-000000000011'
-    hash: '$2y$10$z6QSp/RU./kG6z3IauPaF.qDjRfkOIuP2dx5xb8GGvU/uBzU7wTEC' # user1
-  - email: 'user2@orga1.com'
-    hash: '$2y$10$VDnbwmixVIV9ZG3Z8BkomOgakiJ6WyYDQY.x3Tpxu2.qHrWCFaU6q' # user2
-    username: 'user2'
-    userID: '00000000-0000-0000-0000-000000000012'
-  - email: 'user1@orga2.com'
-    username: 'user1'
-    userID: '00000000-0000-0000-0000-000000000021'
-    hash: '$2y$10$z6QSp/RU./kG6z3IauPaF.qDjRfkOIuP2dx5xb8GGvU/uBzU7wTEC' # user1
-  - email: 'user2@orga2.com'
-    hash: '$2y$10$VDnbwmixVIV9ZG3Z8BkomOgakiJ6WyYDQY.x3Tpxu2.qHrWCFaU6q' # user2
-    username: 'user2'
-    userID: '00000000-0000-0000-0000-000000000022'
+  - email: 'demo@formance.com'
+    username: 'demo'
+    userID: '00000000-0000-0000-0000-000000000111'
+    hash: '$2a$10$56t62OoAiZED5aXIsuHs3eISSbOZN0xvyUJYHElvOe.i.awnaLbom' # demo
 
 connectors:
   - type: github
@@ -62,19 +50,3 @@ connectors:
       clientID: 47b0a0145f1879ccc5b0
       clientSecret: a52667786dfa5e2576679467711c7a97c5f3f1ae
       redirectURI: http://localhost/api/auth/dex/callback
-  - type: oidc
-    id: Formance
-    name: Formance
-    config:
-      # Canonical URL of the provider, also used for configuration discovery.
-      # This value MUST match the value returned in the provider config discovery.
-      #
-      # See: https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
-      issuer: https://accounts.google.com
-
-      # Connector config values starting with a "$" will read from the environment.
-      clientID: $GOOGLE_CLIENT_ID
-      clientSecret: $GOOGLE_CLIENT_SECRET
-
-      # Dex's issuer URL + "/callback"
-      redirectURI: http://localhost:5556/api/auth/dex/callback

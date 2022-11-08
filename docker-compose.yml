@@ -17,6 +17,7 @@ services:
 
   auth-dex:
     image: "ghcr.io/formancehq/auth-dex:v0.2.2"
+    restart: always
     volumes:
       - ./config/dex/dex-config.yaml:/etc/dex/config.docker.yaml
     depends_on:
@@ -67,9 +68,11 @@ services:
 
   control:
     image: "ghcr.io/formancehq/control:v1.3.0-beta.3"
+    restart: always
     network_mode: service:gateway
     environment:
       API_URL: "http://localhost/api"
+      REDIRECT_URI: "http://localhost"
       CLIENT_ID: "control"
       CLIENT_SECRET: "mysupersecret"
       ENCRYPTION_KEY: "mysuperencryptionkey"
@@ -83,6 +86,7 @@ services:
 
   redpanda:
     image: "docker.vectorized.io/vectorized/redpanda:v22.2.7"
+    restart: always
     command:
       - redpanda
       - start
@@ -135,6 +139,7 @@ services:
 
   postgres:
     image: "postgres:13-alpine"
+    restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ledger" ]
       interval: 10s
@@ -176,6 +181,7 @@ services:
 
   mongodb:
     image: bitnami/mongodb:4.4
+    restart: always
     environment:
       MONGODB_ROOT_PASSWORD: root
       MONGODB_REPLICA_SET_MODE: primary
@@ -214,6 +220,7 @@ services:
 
   opensearch:
     image: "opensearchproject/opensearch:2.1.0"
+    restart: always
     environment:
       discovery.type: single-node
       plugins.security.disabled: "true"
@@ -238,6 +245,7 @@ services:
 
   search-ingester:
     image: "ghcr.io/formancehq/search-ingester:v0.2.4"
+    restart: always
     depends_on:
       opensearch:
         condition: service_healthy
@@ -258,6 +266,7 @@ services:
 
   search:
     image: "ghcr.io/formancehq/search:v0.2.4"
+    restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
       interval: 30s
@@ -281,6 +290,7 @@ services:
 
   webhooks:
     image: "ghcr.io/formancehq/webhooks:v0.2.1"
+    restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
       interval: 30s
@@ -304,6 +314,7 @@ services:
   webhooks-worker:
     image: "ghcr.io/formancehq/webhooks:v0.2.1"
     command: worker messages
+    restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8081/_healthcheck >/dev/null || exit 1
       interval: 30s
@@ -325,6 +336,7 @@ services:
   webhooks-retries:
     image: "ghcr.io/formancehq/webhooks:v0.2.1"
     command: worker retries
+    restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8082/_healthcheck >/dev/null || exit 1
       interval: 30s

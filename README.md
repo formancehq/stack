@@ -49,4 +49,6 @@ cd stack
 docker-compose up -d
 ```
 
-You can now open your browser and go to http://localhost to connect to the application. Stack's API is exposed at http://localhost/api.
+You can now open your browser and go to http://localhost to connect to the application. Stack's API is exposed at http://localhost/api.    
+You should use Github oAuth or User/Password to connect to the application.    
+User: demo@formance.com | Password: demo
