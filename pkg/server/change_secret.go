@@ -1,11 +1,13 @@
 package server
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/julienschmidt/httprouter"
+	"github.com/numary/go-libs/sharedapi"
 	"github.com/numary/go-libs/sharedlogging"
 )
 
@@ -28,9 +30,17 @@ func (h *serverHandler) changeSecretHandle(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err := changeOneConfigSecret(r.Context(), p.ByName(PathParamId), sec.Secret, h.store)
+	cursor, err := changeOneConfigSecret(r.Context(), p.ByName(PathParamId), sec.Secret, h.store)
 	if err == nil {
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathChangeSecret)
+		resp := sharedapi.BaseResponse[webhooks.Config]{
+			Cursor: &cursor,
+		}
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			sharedlogging.GetLogger(r.Context()).Errorf("json.Encoder.Encode: %s", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
 	} else if errors.Is(err, ErrConfigNotFound) {
 		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathChangeSecret, ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)

@@ -132,10 +132,14 @@ func TestServer(t *testing.T) {
 
 	t.Run("PUT "+server.PathConfigs, func(t *testing.T) {
 		t.Run(server.PathDeactivate, func(t *testing.T) {
-			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathDeactivate, http.StatusOK)
-
-			resBody := requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
+			resBody := requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathDeactivate, http.StatusOK)
 			cur := decodeCursorResponse[webhooks.Config](t, resBody)
+			assert.Equal(t, 1, len(cur.Data))
+			assert.Equal(t, false, cur.Data[0].Active)
+			require.NoError(t, resBody.Close())
+
+			resBody = requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
+			cur = decodeCursorResponse[webhooks.Config](t, resBody)
 			assert.Equal(t, len(validConfigs), len(cur.Data))
 			assert.Equal(t, false, cur.Data[0].Active)
 			require.NoError(t, resBody.Close())
@@ -144,10 +148,14 @@ func TestServer(t *testing.T) {
 		})
 
 		t.Run(server.PathActivate, func(t *testing.T) {
-			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathActivate, http.StatusOK)
-
-			resBody := requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
+			resBody := requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathActivate, http.StatusOK)
 			cur := decodeCursorResponse[webhooks.Config](t, resBody)
+			assert.Equal(t, 1, len(cur.Data))
+			assert.Equal(t, true, cur.Data[0].Active)
+			require.NoError(t, resBody.Close())
+
+			resBody = requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
+			cur = decodeCursorResponse[webhooks.Config](t, resBody)
 			assert.Equal(t, len(validConfigs), len(cur.Data))
 			assert.Equal(t, true, cur.Data[len(cur.Data)-1].Active)
 			require.NoError(t, resBody.Close())
@@ -156,10 +164,17 @@ func TestServer(t *testing.T) {
 		})
 
 		t.Run(server.PathChangeSecret, func(t *testing.T) {
-			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathChangeSecret, http.StatusOK)
+			resBody := requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathChangeSecret, http.StatusOK)
+			cur := decodeCursorResponse[webhooks.Config](t, resBody)
+			assert.Equal(t, 1, len(cur.Data))
+			require.NoError(t, resBody.Close())
 
 			validSecret := webhooks.Secret{Secret: webhooks.NewSecret()}
-			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathChangeSecret, http.StatusOK, validSecret)
+			resBody = requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathChangeSecret, http.StatusOK, validSecret)
+			cur = decodeCursorResponse[webhooks.Config](t, resBody)
+			assert.Equal(t, 1, len(cur.Data))
+			assert.Equal(t, validSecret.Secret, cur.Data[0].Secret)
+			require.NoError(t, resBody.Close())
 
 			invalidSecret := webhooks.Secret{Secret: "invalid"}
 			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathChangeSecret, http.StatusBadRequest, invalidSecret)

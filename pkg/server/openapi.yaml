@@ -142,7 +142,24 @@ paths:
       responses:
         "200":
           description: Config successfully activated.
-          content: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cursor
+                properties:
+                  cursor:
+                    allOf:
+                      - $ref: '#/components/schemas/Cursor'
+                      - type: object
+                        properties:
+                          data:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Config'
+                        required:
+                          - data
         "304":
           description: Config not modified, was already activated.
           content: {}
@@ -164,7 +181,24 @@ paths:
       responses:
         "200":
           description: Config successfully deactivated.
-          content: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cursor
+                properties:
+                  cursor:
+                    allOf:
+                      - $ref: '#/components/schemas/Cursor'
+                      - type: object
+                        properties:
+                          data:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Config'
+                        required:
+                          - data
         "304":
           description: Config not modified, was already deactivated.
           content: {}
@@ -201,7 +235,24 @@ paths:
       responses:
         "200":
           description: OK
-          content: {}
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - cursor
+                properties:
+                  cursor:
+                    allOf:
+                      - $ref: '#/components/schemas/Cursor'
+                      - type: object
+                        properties:
+                          data:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Config'
+                        required:
+                          - data
 
 components:
   schemas:

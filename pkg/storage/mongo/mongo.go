@@ -124,7 +124,8 @@ func (s Store) UpdateOneConfigActivation(ctx context.Context, id string, active 
 
 	res, err := s.configsCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return 0, 0, 0, nil, errors.Wrap(err, "mongo.Collection.UpdateOne")
+		return 0, 0, 0, nil,
+			errors.Wrap(err, "mongo.Collection.UpdateOne")
 	}
 
 	return res.MatchedCount, res.ModifiedCount, res.UpsertedCount, res.UpsertedID, nil
@@ -145,7 +146,8 @@ func (s Store) UpdateOneConfigSecret(ctx context.Context, id, secret string,
 
 	res, err := s.configsCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return 0, 0, 0, nil, fmt.Errorf("mongo.Collection.UpdateOne: %w", err)
+		return 0, 0, 0, nil,
+			fmt.Errorf("mongo.Collection.UpdateOne: %w", err)
 	}
 
 	return res.MatchedCount, res.ModifiedCount, res.UpsertedCount, res.UpsertedID, nil
@@ -203,7 +205,8 @@ func (s Store) UpdateManyAttemptsStatus(ctx context.Context, webhookID string, s
 
 	res, err := s.attemptsCollection.UpdateMany(ctx, filter, update)
 	if err != nil {
-		return 0, 0, 0, nil, fmt.Errorf("mongo.Collection.UpdateMany: %w", err)
+		return 0, 0, 0, nil,
+			fmt.Errorf("mongo.Collection.UpdateMany: %w", err)
 	}
 
 	return res.MatchedCount, res.ModifiedCount, res.UpsertedCount, res.UpsertedID, nil
