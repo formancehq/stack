@@ -1,0 +1,282 @@
+openapi: 3.0.3
+info:
+  title: Webhooks server
+  version: v0.2.1
+servers:
+- description: Production server
+  url: "https://{organization}.o.formance.cloud/webhooks"
+  variables:
+    organization:
+      default: ""
+      description: The organization on which the webhooks server is located
+paths:
+  /_healthcheck:
+    get:
+      operationId: healthCheck
+      responses:
+        "200":
+          content: {}
+          description: The server is healthy
+      summary: Health check of the server
+      tags:
+      - Health
+  /configs:
+    delete:
+      operationId: deleteOneConfig
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      responses:
+        "200":
+          content: {}
+          description: OK
+      summary: Delete one config
+      tags:
+      - Configs
+    get:
+      description: Sorted by updated date descending
+      operationId: getManyConfigs
+      parameters:
+      - description: Optional filter by Config ID
+        explode: true
+        in: query
+        name: id
+        required: false
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: form
+      - description: Optional filter by endpoint URL
+        explode: true
+        in: query
+        name: endpoint
+        required: false
+        schema:
+          example: https://example.com
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getManyConfigs_200_response'
+          description: OK
+      summary: Get many configs
+      tags:
+      - Configs
+    post:
+      description: |
+        Insert a new config.
+
+        The endpoint should be a valid https URL and be unique.
+
+        The secret is the endpoint's verification secret.
+        If not passed or empty, a secret is automatically generated.
+        The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
+
+        All eventTypes are converted to lower-case when inserted.
+      operationId: insertOneConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigUser'
+        required: true
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                description: Config ID
+                example: 4997257d-dfb6-445b-929c-cbe2ab182818
+                type: string
+          description: "Config created successfully, returns its ID."
+        "400":
+          content:
+            text/plain:
+              schema:
+                example: endpoints should be valid urls
+                type: string
+          description: Bad Request
+      summary: |
+        Insert a new config
+      tags:
+      - Configs
+  /configs/{id}/activate:
+    put:
+      operationId: activateOneConfig
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getManyConfigs_200_response'
+          description: Config successfully activated.
+        "304":
+          content: {}
+          description: "Config not modified, was already activated."
+      summary: Activate one config
+      tags:
+      - Configs
+  /configs/{id}/deactivate:
+    put:
+      operationId: deactivateOneConfig
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getManyConfigs_200_response'
+          description: Config successfully deactivated.
+        "304":
+          content: {}
+          description: "Config not modified, was already deactivated."
+      summary: Deactivate one config
+      tags:
+      - Configs
+  /configs/{id}/secret/change:
+    put:
+      description: |
+        Change the signing secret of the endpoint of a config.
+
+        If not passed or empty, a secret is automatically generated.
+        The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
+      operationId: changeOneConfigSecret
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/changeOneConfigSecret_request'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getManyConfigs_200_response'
+          description: OK
+      summary: Change the signing secret of a config
+      tags:
+      - Configs
+components:
+  schemas:
+    ConfigUser:
+      example:
+        endpoint: https://example.com
+        secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+        eventTypes:
+        - TYPE1
+        - TYPE2
+      properties:
+        endpoint:
+          example: https://example.com
+          type: string
+        secret:
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          type: string
+        eventTypes:
+          example:
+          - TYPE1
+          - TYPE2
+          items:
+            example: TYPE1
+            type: string
+          type: array
+    Config:
+      properties:
+        endpoint:
+          example: https://example.com
+          type: string
+        secret:
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          type: string
+        eventTypes:
+          example:
+          - TYPE1
+          - TYPE2
+          items:
+            example: TYPE1
+            type: string
+          type: array
+        active:
+          example: true
+          type: boolean
+        createdAt:
+          example: 2022-07-20T07:31:40Z
+          format: date-time
+          type: string
+        modifiedAt:
+          example: 2022-07-20T08:32:59Z
+          format: date-time
+          type: string
+    Cursor:
+      properties:
+        has_more:
+          example: false
+          type: boolean
+      type: object
+    getManyConfigs_200_response_cursor_allOf:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Config'
+          type: array
+      required:
+      - data
+      type: object
+    getManyConfigs_200_response_cursor:
+      allOf:
+      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/getManyConfigs_200_response_cursor_allOf'
+    getManyConfigs_200_response:
+      example:
+        cursor: null
+      properties:
+        cursor:
+          $ref: '#/components/schemas/getManyConfigs_200_response_cursor'
+      required:
+      - cursor
+      type: object
+    changeOneConfigSecret_request:
+      properties:
+        secret:
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          type: string
+      type: object

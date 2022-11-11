@@ -72,5 +72,5 @@ Flags:
       --storage-mongo-conn-string string              Mongo connection string (default "mongodb://admin:admin@localhost:27017/")
       --storage-mongo-database-name string            Mongo database name (default "webhooks")
 
-Use "webhooks [command] --help" for more information about a command. 
+Use "webhooks [command] --help" for more information about a command.
 ```
