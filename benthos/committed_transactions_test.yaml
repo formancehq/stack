@@ -12,17 +12,17 @@ tests:
           "volumes": {
             "world": {
               "USD": {
-                "input": 0, 
+                "input": 0,
                 "output": 1000
               }
-            }, 
+            },
             "bank": {
               "USD": {
-                "input": 1000, 
+                "input": 1000,
                 "output": 0
               }
             }
-          }, 
+          },
           "transactions": [
             {
               "postings": [{"source":"world","destination":"another","amount":1000,"asset":"USD"}],

@@ -1,0 +1,17 @@
+.gitignore
+.travis.yml
+README.md
+api/openapi.yaml
+api_default.go
+client.go
+configuration.go
+docs/DefaultApi.md
+docs/Query.md
+docs/Response.md
+git_push.sh
+go.mod
+go.sum
+model_query.go
+model_response.go
+response.go
+utils.go

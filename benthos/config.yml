@@ -9,8 +9,10 @@ tracer:
 
 input:
   kafka:
-    addresses: [ ${KAFKA_ADDRESS} ]
-    topics: [ ${KAFKA_TOPIC} ]
+    addresses:
+    - "${KAFKA_ADDRESS}"
+    topics:
+    - "${KAFKA_TOPIC}"
     target_version: ${KAFKA_VERSION}
     consumer_group: ${KAFKA_CONSUMER_GROUP}
     checkpoint_limit: 1024

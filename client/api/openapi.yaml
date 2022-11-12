@@ -1,0 +1,69 @@
+openapi: 3.0.1
+info:
+  title: Search API
+  version: latest
+servers:
+- url: /
+paths:
+  /:
+    post:
+      operationId: search
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+        description: the query
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+          description: Success
+      x-codegen-request-body-name: query
+components:
+  schemas:
+    Query:
+      example:
+        size: 0
+        terms:
+        - terms
+        - terms
+        ledgers:
+        - ledgers
+        - ledgers
+        nextToken: nextToken
+      properties:
+        ledgers:
+          items:
+            type: string
+          type: array
+        nextToken:
+          type: string
+        size:
+          type: integer
+        terms:
+          items:
+            type: string
+          type: array
+      type: object
+    Response:
+      example:
+        ledger: ledger
+        data: "{}"
+        kind: kind
+      properties:
+        data:
+          description: The payload
+          properties: {}
+          type: object
+        kind:
+          description: "The kind of the object, either \"TRANSACTION\" or \"META\""
+          type: string
+        ledger:
+          description: The ledger
+          type: string
+      type: object
+x-original-swagger-version: "2.0"
