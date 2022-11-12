@@ -35,6 +35,7 @@ components:
         - ledgers
         - ledgers
         nextToken: nextToken
+        target: target
       properties:
         ledgers:
           items:
@@ -48,6 +49,8 @@ components:
           items:
             type: string
           type: array
+        target:
+          type: string
       type: object
     Response:
       example:

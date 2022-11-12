@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **NextToken** | Pointer to **string** |  | [optional] 
 **Size** | Pointer to **int32** |  | [optional] 
 **Terms** | Pointer to **[]string** |  | [optional] 
+**Target** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -127,6 +128,31 @@ SetTerms sets Terms field to given value.
 `func (o *Query) HasTerms() bool`
 
 HasTerms returns a boolean if a field has been set.
+
+### GetTarget
+
+`func (o *Query) GetTarget() string`
+
+GetTarget returns the Target field if non-nil, zero value otherwise.
+
+### GetTargetOk
+
+`func (o *Query) GetTargetOk() (*string, bool)`
+
+GetTargetOk returns a tuple with the Target field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTarget
+
+`func (o *Query) SetTarget(v string)`
+
+SetTarget sets Target field to given value.
+
+### HasTarget
+
+`func (o *Query) HasTarget() bool`
+
+HasTarget returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

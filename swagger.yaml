@@ -17,6 +17,8 @@ definitions:
         items:
           type: string
         type: array
+      target:
+        type: string
   Response:
     properties:
       data:

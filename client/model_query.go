@@ -20,6 +20,7 @@ type Query struct {
 	NextToken *string `json:"nextToken,omitempty"`
 	Size *int32 `json:"size,omitempty"`
 	Terms []string `json:"terms,omitempty"`
+	Target *string `json:"target,omitempty"`
 }
 
 // NewQuery instantiates a new Query object
@@ -167,6 +168,38 @@ func (o *Query) SetTerms(v []string) {
 	o.Terms = v
 }
 
+// GetTarget returns the Target field value if set, zero value otherwise.
+func (o *Query) GetTarget() string {
+	if o == nil || isNil(o.Target) {
+		var ret string
+		return ret
+	}
+	return *o.Target
+}
+
+// GetTargetOk returns a tuple with the Target field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Query) GetTargetOk() (*string, bool) {
+	if o == nil || isNil(o.Target) {
+		return nil, false
+	}
+	return o.Target, true
+}
+
+// HasTarget returns a boolean if a field has been set.
+func (o *Query) HasTarget() bool {
+	if o != nil && !isNil(o.Target) {
+		return true
+	}
+
+	return false
+}
+
+// SetTarget gets a reference to the given string and assigns it to the Target field.
+func (o *Query) SetTarget(v string) {
+	o.Target = &v
+}
+
 func (o Query) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Ledgers) {
@@ -180,6 +213,9 @@ func (o Query) MarshalJSON() ([]byte, error) {
 	}
 	if !isNil(o.Terms) {
 		toSerialize["terms"] = o.Terms
+	}
+	if !isNil(o.Target) {
+		toSerialize["target"] = o.Target
 	}
 	return json.Marshal(toSerialize)
 }
