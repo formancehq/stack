@@ -246,6 +246,8 @@ components:
           example: 2022-07-20T08:32:59Z
           format: date-time
           type: string
+        _id:
+          type: string
     Cursor:
       properties:
         has_more:

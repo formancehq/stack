@@ -295,6 +295,8 @@ components:
           type: string
           format: date-time
           example: "2022-07-20T08:32:59Z"
+        _id:
+          type: string
 
     Cursor:
       type: object

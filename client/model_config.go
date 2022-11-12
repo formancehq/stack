@@ -23,6 +23,7 @@ type Config struct {
 	Active *bool `json:"active,omitempty"`
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
 	ModifiedAt *time.Time `json:"modifiedAt,omitempty"`
+	Id *string `json:"_id,omitempty"`
 }
 
 // NewConfig instantiates a new Config object
@@ -234,6 +235,38 @@ func (o *Config) SetModifiedAt(v time.Time) {
 	o.ModifiedAt = &v
 }
 
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *Config) GetId() string {
+	if o == nil || isNil(o.Id) {
+		var ret string
+		return ret
+	}
+	return *o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Config) GetIdOk() (*string, bool) {
+	if o == nil || isNil(o.Id) {
+		return nil, false
+	}
+	return o.Id, true
+}
+
+// HasId returns a boolean if a field has been set.
+func (o *Config) HasId() bool {
+	if o != nil && !isNil(o.Id) {
+		return true
+	}
+
+	return false
+}
+
+// SetId gets a reference to the given string and assigns it to the Id field.
+func (o *Config) SetId(v string) {
+	o.Id = &v
+}
+
 func (o Config) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Endpoint) {
@@ -253,6 +286,9 @@ func (o Config) MarshalJSON() ([]byte, error) {
 	}
 	if !isNil(o.ModifiedAt) {
 		toSerialize["modifiedAt"] = o.ModifiedAt
+	}
+	if !isNil(o.Id) {
+		toSerialize["_id"] = o.Id
 	}
 	return json.Marshal(toSerialize)
 }

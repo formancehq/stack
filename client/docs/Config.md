@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **Active** | Pointer to **bool** |  | [optional] 
 **CreatedAt** | Pointer to **time.Time** |  | [optional] 
 **ModifiedAt** | Pointer to **time.Time** |  | [optional] 
+**Id** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -179,6 +180,31 @@ SetModifiedAt sets ModifiedAt field to given value.
 `func (o *Config) HasModifiedAt() bool`
 
 HasModifiedAt returns a boolean if a field has been set.
+
+### GetId
+
+`func (o *Config) GetId() string`
+
+GetId returns the Id field if non-nil, zero value otherwise.
+
+### GetIdOk
+
+`func (o *Config) GetIdOk() (*string, bool)`
+
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetId
+
+`func (o *Config) SetId(v string)`
+
+SetId sets Id field to given value.
+
+### HasId
+
+`func (o *Config) HasId() bool`
+
+HasId returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
