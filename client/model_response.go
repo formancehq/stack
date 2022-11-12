@@ -14,15 +14,18 @@ import (
 	"encoding/json"
 )
 
+// checks if the Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Response{}
+
 // Response struct for Response
 type Response struct {
 	// The payload
-	Data map[string]interface{} `json:"data,omitempty"`
+	Data interface{} `json:"data,omitempty"`
 	Cursor *ResponseCursor `json:"cursor,omitempty"`
 	// The kind of the object, either \"TRANSACTION\" or \"META\"
-	Kind *string `json:"kind,omitempty"`
+	Kind interface{} `json:"kind,omitempty"`
 	// The ledger
-	Ledger *string `json:"ledger,omitempty"`
+	Ledger interface{} `json:"ledger,omitempty"`
 }
 
 // NewResponse instantiates a new Response object
@@ -42,10 +45,10 @@ func NewResponseWithDefaults() *Response {
 	return &this
 }
 
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *Response) GetData() map[string]interface{} {
-	if o == nil || isNil(o.Data) {
-		var ret map[string]interface{}
+// GetData returns the Data field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *Response) GetData() interface{} {
+	if o == nil {
+		var ret interface{}
 		return ret
 	}
 	return o.Data
@@ -53,24 +56,25 @@ func (o *Response) GetData() map[string]interface{} {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Response) GetDataOk() (map[string]interface{}, bool) {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Response) GetDataOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Data) {
-		return map[string]interface{}{}, false
+		return nil, false
 	}
-	return o.Data, true
+	return &o.Data, true
 }
 
 // HasData returns a boolean if a field has been set.
 func (o *Response) HasData() bool {
-	if o != nil && !isNil(o.Data) {
+	if o != nil && isNil(o.Data) {
 		return true
 	}
 
 	return false
 }
 
-// SetData gets a reference to the given map[string]interface{} and assigns it to the Data field.
-func (o *Response) SetData(v map[string]interface{}) {
+// SetData gets a reference to the given interface{} and assigns it to the Data field.
+func (o *Response) SetData(v interface{}) {
 	o.Data = v
 }
 
@@ -106,85 +110,95 @@ func (o *Response) SetCursor(v ResponseCursor) {
 	o.Cursor = &v
 }
 
-// GetKind returns the Kind field value if set, zero value otherwise.
-func (o *Response) GetKind() string {
-	if o == nil || isNil(o.Kind) {
-		var ret string
+// GetKind returns the Kind field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *Response) GetKind() interface{} {
+	if o == nil {
+		var ret interface{}
 		return ret
 	}
-	return *o.Kind
+	return o.Kind
 }
 
 // GetKindOk returns a tuple with the Kind field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Response) GetKindOk() (*string, bool) {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Response) GetKindOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Kind) {
 		return nil, false
 	}
-	return o.Kind, true
+	return &o.Kind, true
 }
 
 // HasKind returns a boolean if a field has been set.
 func (o *Response) HasKind() bool {
-	if o != nil && !isNil(o.Kind) {
+	if o != nil && isNil(o.Kind) {
 		return true
 	}
 
 	return false
 }
 
-// SetKind gets a reference to the given string and assigns it to the Kind field.
-func (o *Response) SetKind(v string) {
-	o.Kind = &v
+// SetKind gets a reference to the given interface{} and assigns it to the Kind field.
+func (o *Response) SetKind(v interface{}) {
+	o.Kind = v
 }
 
-// GetLedger returns the Ledger field value if set, zero value otherwise.
-func (o *Response) GetLedger() string {
-	if o == nil || isNil(o.Ledger) {
-		var ret string
+// GetLedger returns the Ledger field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *Response) GetLedger() interface{} {
+	if o == nil {
+		var ret interface{}
 		return ret
 	}
-	return *o.Ledger
+	return o.Ledger
 }
 
 // GetLedgerOk returns a tuple with the Ledger field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Response) GetLedgerOk() (*string, bool) {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Response) GetLedgerOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Ledger) {
 		return nil, false
 	}
-	return o.Ledger, true
+	return &o.Ledger, true
 }
 
 // HasLedger returns a boolean if a field has been set.
 func (o *Response) HasLedger() bool {
-	if o != nil && !isNil(o.Ledger) {
+	if o != nil && isNil(o.Ledger) {
 		return true
 	}
 
 	return false
 }
 
-// SetLedger gets a reference to the given string and assigns it to the Ledger field.
-func (o *Response) SetLedger(v string) {
-	o.Ledger = &v
+// SetLedger gets a reference to the given interface{} and assigns it to the Ledger field.
+func (o *Response) SetLedger(v interface{}) {
+	o.Ledger = v
 }
 
 func (o Response) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Data) {
+	if o.Data != nil {
 		toSerialize["data"] = o.Data
 	}
 	if !isNil(o.Cursor) {
 		toSerialize["cursor"] = o.Cursor
 	}
-	if !isNil(o.Kind) {
+	if o.Kind != nil {
 		toSerialize["kind"] = o.Kind
 	}
-	if !isNil(o.Ledger) {
+	if o.Ledger != nil {
 		toSerialize["ledger"] = o.Ledger
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableResponse struct {

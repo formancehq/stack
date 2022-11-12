@@ -2,14 +2,14 @@
 .travis.yml
 README.md
 api/openapi.yaml
-api_default.go
+api_search.go
 client.go
 configuration.go
-docs/DefaultApi.md
 docs/Query.md
 docs/Response.md
 docs/ResponseCursor.md
 docs/ResponseCursorTotal.md
+docs/SearchApi.md
 git_push.sh
 go.mod
 go.sum
@@ -18,4 +18,5 @@ model_response.go
 model_response_cursor.go
 model_response_cursor_total.go
 response.go
+test/api_search_test.go
 utils.go

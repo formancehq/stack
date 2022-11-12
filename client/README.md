@@ -78,7 +78,7 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*DefaultApi* | [**Search**](docs/DefaultApi.md#search) | **Post** / | 
+*SearchApi* | [**Search**](docs/SearchApi.md#search) | **Post** / | Search
 
 
 ## Documentation For Models

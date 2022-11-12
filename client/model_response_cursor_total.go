@@ -14,10 +14,13 @@ import (
 	"encoding/json"
 )
 
+// checks if the ResponseCursorTotal type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ResponseCursorTotal{}
+
 // ResponseCursorTotal struct for ResponseCursorTotal
 type ResponseCursorTotal struct {
-	Value *float32 `json:"value,omitempty"`
-	Relation *string `json:"relation,omitempty"`
+	Value interface{} `json:"value,omitempty"`
+	Relation interface{} `json:"relation,omitempty"`
 }
 
 // NewResponseCursorTotal instantiates a new ResponseCursorTotal object
@@ -37,79 +40,89 @@ func NewResponseCursorTotalWithDefaults() *ResponseCursorTotal {
 	return &this
 }
 
-// GetValue returns the Value field value if set, zero value otherwise.
-func (o *ResponseCursorTotal) GetValue() float32 {
-	if o == nil || isNil(o.Value) {
-		var ret float32
+// GetValue returns the Value field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ResponseCursorTotal) GetValue() interface{} {
+	if o == nil {
+		var ret interface{}
 		return ret
 	}
-	return *o.Value
+	return o.Value
 }
 
 // GetValueOk returns a tuple with the Value field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ResponseCursorTotal) GetValueOk() (*float32, bool) {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResponseCursorTotal) GetValueOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Value) {
 		return nil, false
 	}
-	return o.Value, true
+	return &o.Value, true
 }
 
 // HasValue returns a boolean if a field has been set.
 func (o *ResponseCursorTotal) HasValue() bool {
-	if o != nil && !isNil(o.Value) {
+	if o != nil && isNil(o.Value) {
 		return true
 	}
 
 	return false
 }
 
-// SetValue gets a reference to the given float32 and assigns it to the Value field.
-func (o *ResponseCursorTotal) SetValue(v float32) {
-	o.Value = &v
+// SetValue gets a reference to the given interface{} and assigns it to the Value field.
+func (o *ResponseCursorTotal) SetValue(v interface{}) {
+	o.Value = v
 }
 
-// GetRelation returns the Relation field value if set, zero value otherwise.
-func (o *ResponseCursorTotal) GetRelation() string {
-	if o == nil || isNil(o.Relation) {
-		var ret string
+// GetRelation returns the Relation field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ResponseCursorTotal) GetRelation() interface{} {
+	if o == nil {
+		var ret interface{}
 		return ret
 	}
-	return *o.Relation
+	return o.Relation
 }
 
 // GetRelationOk returns a tuple with the Relation field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ResponseCursorTotal) GetRelationOk() (*string, bool) {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ResponseCursorTotal) GetRelationOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Relation) {
 		return nil, false
 	}
-	return o.Relation, true
+	return &o.Relation, true
 }
 
 // HasRelation returns a boolean if a field has been set.
 func (o *ResponseCursorTotal) HasRelation() bool {
-	if o != nil && !isNil(o.Relation) {
+	if o != nil && isNil(o.Relation) {
 		return true
 	}
 
 	return false
 }
 
-// SetRelation gets a reference to the given string and assigns it to the Relation field.
-func (o *ResponseCursorTotal) SetRelation(v string) {
-	o.Relation = &v
+// SetRelation gets a reference to the given interface{} and assigns it to the Relation field.
+func (o *ResponseCursorTotal) SetRelation(v interface{}) {
+	o.Relation = v
 }
 
 func (o ResponseCursorTotal) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if !isNil(o.Value) {
-		toSerialize["value"] = o.Value
-	}
-	if !isNil(o.Relation) {
-		toSerialize["relation"] = o.Relation
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ResponseCursorTotal) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	if o.Value != nil {
+		toSerialize["value"] = o.Value
+	}
+	if o.Relation != nil {
+		toSerialize["relation"] = o.Relation
+	}
+	return toSerialize, nil
 }
 
 type NullableResponseCursorTotal struct {
