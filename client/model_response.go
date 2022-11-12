@@ -18,6 +18,7 @@ import (
 type Response struct {
 	// The payload
 	Data map[string]interface{} `json:"data,omitempty"`
+	Cursor *ResponseCursor `json:"cursor,omitempty"`
 	// The kind of the object, either \"TRANSACTION\" or \"META\"
 	Kind *string `json:"kind,omitempty"`
 	// The ledger
@@ -71,6 +72,38 @@ func (o *Response) HasData() bool {
 // SetData gets a reference to the given map[string]interface{} and assigns it to the Data field.
 func (o *Response) SetData(v map[string]interface{}) {
 	o.Data = v
+}
+
+// GetCursor returns the Cursor field value if set, zero value otherwise.
+func (o *Response) GetCursor() ResponseCursor {
+	if o == nil || isNil(o.Cursor) {
+		var ret ResponseCursor
+		return ret
+	}
+	return *o.Cursor
+}
+
+// GetCursorOk returns a tuple with the Cursor field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Response) GetCursorOk() (*ResponseCursor, bool) {
+	if o == nil || isNil(o.Cursor) {
+		return nil, false
+	}
+	return o.Cursor, true
+}
+
+// HasCursor returns a boolean if a field has been set.
+func (o *Response) HasCursor() bool {
+	if o != nil && !isNil(o.Cursor) {
+		return true
+	}
+
+	return false
+}
+
+// SetCursor gets a reference to the given ResponseCursor and assigns it to the Cursor field.
+func (o *Response) SetCursor(v ResponseCursor) {
+	o.Cursor = &v
 }
 
 // GetKind returns the Kind field value if set, zero value otherwise.
@@ -141,6 +174,9 @@ func (o Response) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Data) {
 		toSerialize["data"] = o.Data
+	}
+	if !isNil(o.Cursor) {
+		toSerialize["cursor"] = o.Cursor
 	}
 	if !isNil(o.Kind) {
 		toSerialize["kind"] = o.Kind

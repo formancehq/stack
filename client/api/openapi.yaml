@@ -54,6 +54,17 @@ components:
       type: object
     Response:
       example:
+        cursor:
+          next: next
+          total:
+            value: 6.027456183070403
+            relation: relation
+          previous: previous
+          data:
+          - "{}"
+          - "{}"
+          hasMore: true
+          pageSize: 0.8008281904610115
         ledger: ledger
         data: "{}"
         kind: kind
@@ -62,11 +73,54 @@ components:
           description: The payload
           properties: {}
           type: object
+        cursor:
+          $ref: '#/components/schemas/Response_cursor'
         kind:
           description: "The kind of the object, either \"TRANSACTION\" or \"META\""
           type: string
         ledger:
           description: The ledger
           type: string
+      type: object
+    Response_cursor_total:
+      example:
+        value: 6.027456183070403
+        relation: relation
+      properties:
+        value:
+          type: number
+        relation:
+          type: string
+      type: object
+    Response_cursor:
+      example:
+        next: next
+        total:
+          value: 6.027456183070403
+          relation: relation
+        previous: previous
+        data:
+        - "{}"
+        - "{}"
+        hasMore: true
+        pageSize: 0.8008281904610115
+      properties:
+        pageSize:
+          type: number
+        hasMore:
+          type: boolean
+        total:
+          $ref: '#/components/schemas/Response_cursor_total'
+        next:
+          type: string
+        previous:
+          type: string
+        data:
+          items:
+            allOf:
+            - properties: {}
+              type: object
+            type: object
+          type: array
       type: object
 x-original-swagger-version: "2.0"

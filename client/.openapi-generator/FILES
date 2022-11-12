@@ -8,10 +8,14 @@ configuration.go
 docs/DefaultApi.md
 docs/Query.md
 docs/Response.md
+docs/ResponseCursor.md
+docs/ResponseCursorTotal.md
 git_push.sh
 go.mod
 go.sum
 model_query.go
 model_response.go
+model_response_cursor.go
+model_response_cursor_total.go
 response.go
 utils.go

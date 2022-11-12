@@ -85,6 +85,8 @@ Class | Method | HTTP request | Description
 
  - [Query](docs/Query.md)
  - [Response](docs/Response.md)
+ - [ResponseCursor](docs/ResponseCursor.md)
+ - [ResponseCursorTotal](docs/ResponseCursorTotal.md)
 
 
 ## Documentation For Authorization

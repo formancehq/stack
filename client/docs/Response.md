@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Data** | Pointer to **map[string]interface{}** | The payload | [optional] 
+**Cursor** | Pointer to [**ResponseCursor**](ResponseCursor.md) |  | [optional] 
 **Kind** | Pointer to **string** | The kind of the object, either \&quot;TRANSACTION\&quot; or \&quot;META\&quot; | [optional] 
 **Ledger** | Pointer to **string** | The ledger | [optional] 
 
@@ -51,6 +52,31 @@ SetData sets Data field to given value.
 `func (o *Response) HasData() bool`
 
 HasData returns a boolean if a field has been set.
+
+### GetCursor
+
+`func (o *Response) GetCursor() ResponseCursor`
+
+GetCursor returns the Cursor field if non-nil, zero value otherwise.
+
+### GetCursorOk
+
+`func (o *Response) GetCursorOk() (*ResponseCursor, bool)`
+
+GetCursorOk returns a tuple with the Cursor field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCursor
+
+`func (o *Response) SetCursor(v ResponseCursor)`
+
+SetCursor sets Cursor field to given value.
+
+### HasCursor
+
+`func (o *Response) HasCursor() bool`
+
+HasCursor returns a boolean if a field has been set.
 
 ### GetKind
 
