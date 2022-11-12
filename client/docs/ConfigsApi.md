@@ -7,7 +7,7 @@ Method | HTTP request | Description
 [**ActivateOneConfig**](ConfigsApi.md#ActivateOneConfig) | **Put** /configs/{id}/activate | Activate one config
 [**ChangeOneConfigSecret**](ConfigsApi.md#ChangeOneConfigSecret) | **Put** /configs/{id}/secret/change | Change the signing secret of a config
 [**DeactivateOneConfig**](ConfigsApi.md#DeactivateOneConfig) | **Put** /configs/{id}/deactivate | Deactivate one config
-[**DeleteOneConfig**](ConfigsApi.md#DeleteOneConfig) | **Delete** /configs | Delete one config
+[**DeleteOneConfig**](ConfigsApi.md#DeleteOneConfig) | **Delete** /configs/{id} | Delete one config
 [**GetManyConfigs**](ConfigsApi.md#GetManyConfigs) | **Get** /configs | Get many configs
 [**InsertOneConfig**](ConfigsApi.md#InsertOneConfig) | **Post** /configs | Insert a new config 
 

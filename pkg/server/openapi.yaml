@@ -107,6 +107,7 @@ paths:
                 type: string
                 example: endpoints should be valid urls
 
+  /configs/{id}:
     delete:
       summary: Delete one config
       operationId: deleteOneConfig

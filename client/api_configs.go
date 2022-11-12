@@ -378,7 +378,7 @@ func (a *ConfigsApiService) DeleteOneConfigExecute(r ApiDeleteOneConfigRequest) 
 		return nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/configs"
+	localVarPath := localBasePath + "/configs/{id}"
 	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
 
 	localVarHeaderParams := make(map[string]string)

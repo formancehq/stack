@@ -81,7 +81,7 @@ Class | Method | HTTP request | Description
 *ConfigsApi* | [**ActivateOneConfig**](docs/ConfigsApi.md#activateoneconfig) | **Put** /configs/{id}/activate | Activate one config
 *ConfigsApi* | [**ChangeOneConfigSecret**](docs/ConfigsApi.md#changeoneconfigsecret) | **Put** /configs/{id}/secret/change | Change the signing secret of a config
 *ConfigsApi* | [**DeactivateOneConfig**](docs/ConfigsApi.md#deactivateoneconfig) | **Put** /configs/{id}/deactivate | Deactivate one config
-*ConfigsApi* | [**DeleteOneConfig**](docs/ConfigsApi.md#deleteoneconfig) | **Delete** /configs | Delete one config
+*ConfigsApi* | [**DeleteOneConfig**](docs/ConfigsApi.md#deleteoneconfig) | **Delete** /configs/{id} | Delete one config
 *ConfigsApi* | [**GetManyConfigs**](docs/ConfigsApi.md#getmanyconfigs) | **Get** /configs | Get many configs
 *ConfigsApi* | [**InsertOneConfig**](docs/ConfigsApi.md#insertoneconfig) | **Post** /configs | Insert a new config 
 *HealthApi* | [**HealthCheck**](docs/HealthApi.md#healthcheck) | **Get** /_healthcheck | Health check of the server

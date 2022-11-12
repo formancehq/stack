@@ -21,25 +21,6 @@ paths:
       tags:
       - Health
   /configs:
-    delete:
-      operationId: deleteOneConfig
-      parameters:
-      - description: Config ID
-        explode: false
-        in: path
-        name: id
-        required: true
-        schema:
-          example: 4997257d-dfb6-445b-929c-cbe2ab182818
-          type: string
-        style: simple
-      responses:
-        "200":
-          content: {}
-          description: OK
-      summary: Delete one config
-      tags:
-      - Configs
     get:
       description: Sorted by updated date descending
       operationId: getManyConfigs
@@ -108,6 +89,26 @@ paths:
           description: Bad Request
       summary: |
         Insert a new config
+      tags:
+      - Configs
+  /configs/{id}:
+    delete:
+      operationId: deleteOneConfig
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      responses:
+        "200":
+          content: {}
+          description: OK
+      summary: Delete one config
       tags:
       - Configs
   /configs/{id}/activate:
