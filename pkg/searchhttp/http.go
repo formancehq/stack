@@ -11,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/esquery"
+	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/search/pkg/searchengine"
 	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
 )

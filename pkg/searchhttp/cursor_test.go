@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/esquery"
-	"github.com/numary/search/pkg/searchengine"
+	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/stretchr/testify/assert"
 )
 
