@@ -65,8 +65,10 @@ map tx {
 	  "source": this.postings.map_each(p -> p.source),
 	  "destination": this.postings.map_each(p -> p.destination),
 	  "amount": this.postings.map_each(p -> if p.asset.contains("/") {
-		p.amount / range(0, p.asset.split("/").index(1).number()).fold(1, t -> t.tally * 10) # amount / pow(10, decimal part of asset)
-	  } else {p.amount})
+		[ p.amount, p.amount / range(0, p.asset.split("/").index(1).number()).fold(1, t -> t.tally * 10) ]
+	  } else {
+	    [ p.amount ]
+	  }).flatten()
 	},
 	"kind": "TRANSACTION"
   }
