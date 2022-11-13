@@ -2,7 +2,7 @@ tests:
 - name: Test volumes mapping
   target_mapping: './committed_transactions.blobl'
   environment:
-    INDEX: ledger
+    OPENSEARCH_INDEX: ledger
   input_batch:
   - content: |
       {
