@@ -1,4 +1,4 @@
-module github.com/numary/search
+module github.com/formancehq/search
 
 go 1.18
 

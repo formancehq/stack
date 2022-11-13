@@ -17,11 +17,38 @@ definitions:
         items:
           type: string
         type: array
+      target:
+        type: string
+
   Response:
     properties:
       data:
         description: The payload
         type: object
+      cursor:
+        type: object
+        properties:
+          pageSize:
+            type: number
+          hasMore:
+            type: boolean
+          total:
+            type: object
+            properties:
+              value:
+                type: number
+              relation:
+                type: string
+          next:
+            type: string
+          #"data":[{"ledger":"default","reference":"","metadata":{},"postings":[{"amount":100,"destination":"user2","source":"world","asset":"USD"}],"txid":20,"timestamp":"2022-11-11T23:16:54Z"},{"ledger":"default","reference":"foo","metadata":{"role":"admin","doc":"{\"role\": \"admin\"}","hello":"world"},"postings":[{"amount":100,"destination":"user1","source":"world","asset":"USD"}],"txid":18,"timestamp":"2022-11-11T22:22:50Z"},{"ledger":"default","reference":"","metadata":{},"postings":[{"amount":100,"destination":"user1","source":"world","asset":"USD"}],"txid":17,"timestamp":"2022-11-11T22:18:10Z"},{"ledger":"default","reference":"","metadata":{},"postings":[{"amount":599,"destination":"payments:001","source":"world","asset":"USD/2"}],"txid":16,"timestamp":"2022-11-11T19:55:10Z"},{"ledger":"default","reference":"","metadata":{},"postings":[{"amount":599,"destination":"payments:001","source":"world","asset":"USD/2"}],"txid":15,"timestamp":"2022-11-11T19:53:41Z"}],"previous":""}}
+          previous:
+            type: string
+          data:
+            type: array
+            items:
+              allOf:
+              - type: object
       kind:
         description: The kind of the object, either "TRANSACTION" or "META"
         type: string

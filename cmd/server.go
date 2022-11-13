@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/formancehq/search/pkg/searchengine"
+	"github.com/formancehq/search/pkg/searchhttp"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/numary/go-libs/oauth2/oauth2introspect"
@@ -16,8 +18,6 @@ import (
 	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
 	"github.com/numary/go-libs/sharedlogging"
 	"github.com/numary/go-libs/sharedotlp/pkg/sharedotlptraces"
-	"github.com/numary/search/pkg/searchengine"
-	"github.com/numary/search/pkg/searchhttp"
 	"github.com/opensearch-project/opensearch-go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

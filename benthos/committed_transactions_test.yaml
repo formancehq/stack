@@ -2,7 +2,7 @@ tests:
 - name: Test volumes mapping
   target_mapping: './committed_transactions.blobl'
   environment:
-    INDEX: ledger
+    OPENSEARCH_INDEX: ledger
   input_batch:
   - content: |
       {
@@ -11,21 +11,21 @@ tests:
         "payload": {
           "volumes": {
             "world": {
-              "USD": {
-                "input": 0, 
+              "USD/2": {
+                "input": 0,
                 "output": 1000
               }
-            }, 
+            },
             "bank": {
-              "USD": {
-                "input": 1000, 
+              "USD/2": {
+                "input": 1000,
                 "output": 0
               }
             }
-          }, 
+          },
           "transactions": [
             {
-              "postings": [{"source":"world","destination":"another","amount":1000,"asset":"USD"}],
+              "postings": [{"source":"world","destination":"another","amount":1000,"asset":"USD/2"}],
               "reference": "",
               "metadata": null,
               "txid": 22,
@@ -51,7 +51,7 @@ tests:
             "postings": [
               {
                 "amount": 1000,
-                "asset": "USD",
+                "asset": "USD/2",
                 "destination": "another",
                 "source": "world"
               }
@@ -63,10 +63,10 @@ tests:
           },
           "indexed": {
             "amount": [
-              1000
+              1000, 10
             ],
             "asset": [
-              "USD"
+              "USD/2"
             ],
             "destination": [
               "another"
@@ -76,7 +76,9 @@ tests:
               "world"
             ],
             "timestamp": "2022-03-16T13:11:38Z",
-            "txid": 22
+            "txid": 22,
+            "id": 22,
+            "ledger": "test"
           },
           "kind": "TRANSACTION",
           "ledger": "test",
@@ -84,7 +86,7 @@ tests:
         },
         {
           "index": {
-            "_id": "ASSET-test-bank-USD",
+            "_id": "ASSET-test-bank-USD/2",
             "_index": "ledger"
           }
         },
@@ -92,13 +94,14 @@ tests:
           "data": {
             "account": "bank",
             "input": 1000,
-            "name": "USD",
+            "name": "USD/2",
             "output": 0,
             "ledger": "test"
           },
           "indexed": {
-            "name": "USD",
-            "account": "bank"
+            "name": "USD/2",
+            "account": "bank",
+            "ledger": "test"
           },
           "kind": "ASSET",
           "ledger": "test",
@@ -106,7 +109,7 @@ tests:
         },
         {
           "index": {
-            "_id": "ASSET-test-world-USD",
+            "_id": "ASSET-test-world-USD/2",
             "_index": "ledger"
           }
         },
@@ -114,13 +117,14 @@ tests:
           "data": {
             "account": "world",
             "input": 0,
-            "name": "USD",
+            "name": "USD/2",
             "output": 1000,
             "ledger": "test"
           },
           "indexed": {
-            "name": "USD",
-            "account": "world"
+            "name": "USD/2",
+            "account": "world",
+            "ledger": "test"
           },
           "kind": "ASSET",
           "ledger": "test",
@@ -135,7 +139,7 @@ tests:
       {
         "script": {
           "params": {
-            "asset": "USD",
+            "asset": "USD/2",
             "input": 1000,
             "output": 0,
             "when": "2022-03-16T13:11:38.47608275Z"
@@ -147,11 +151,11 @@ tests:
           "data": {
             "address": "bank",
             "balances": {
-              "USD": 1000
+              "USD/2": 1000
             },
             "metadata": { },
             "volumes": {
-              "USD": {
+              "USD/2": {
                 "input": 1000,
                 "output": 0
               }
@@ -159,7 +163,8 @@ tests:
             "ledger": "test"
           },
           "indexed": {
-            "address": "bank"
+            "address": "bank",
+            "ledger": "test"
           },
           "kind": "ACCOUNT",
           "ledger": "test",
@@ -176,7 +181,7 @@ tests:
         "script": {
           "lang": "painless",
           "params": {
-            "asset": "USD",
+            "asset": "USD/2",
             "input": 0,
             "output": 1000,
             "when": "2022-03-16T13:11:38.47608275Z"
@@ -187,11 +192,11 @@ tests:
           "data": {
             "address": "world",
             "balances": {
-              "USD": -1000
+              "USD/2": -1000
             },
             "metadata": { },
             "volumes": {
-              "USD": {
+              "USD/2": {
                 "input": 0,
                 "output": 1000
               }
@@ -199,7 +204,8 @@ tests:
             "ledger": "test"
           },
           "indexed": {
-            "address": "world"
+            "address": "world",
+            "ledger": "test"
           },
           "kind": "ACCOUNT",
           "ledger": "test",

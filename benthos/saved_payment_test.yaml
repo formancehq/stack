@@ -11,7 +11,7 @@ tests:
         "payload":{
           "id": "XXX",
           "reference": "YYY",
-          "provider": "stripe" 
+          "provider": "stripe"
         }
       }
   output_batches:

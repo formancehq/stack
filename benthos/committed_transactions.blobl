@@ -21,7 +21,8 @@ map legacyVolumes {
         "metadata": {}
       },
       "indexed": {
-        "address": this.key
+        "address": this.key,
+        "ledger": this.ledger
       },
       "kind": "ACCOUNT",
       "ledger": this.ledger,
@@ -58,13 +59,16 @@ map tx {
 	"indexed": {
 	  "reference": this.reference,
 	  "txid": this.txid,
+	  "id": this.txid,
 	  "timestamp": this.timestamp,
 	  "asset": this.postings.map_each(p -> p.asset),
 	  "source": this.postings.map_each(p -> p.source),
 	  "destination": this.postings.map_each(p -> p.destination),
 	  "amount": this.postings.map_each(p -> if p.asset.contains("/") {
-		p.amount / range(0, p.asset.split("/").index(1).number()).fold(1, t -> t.tally * 10) # amount / pow(10, decimal part of asset)
-	  } else {p.amount})
+		[ p.amount, p.amount / range(0, p.asset.split("/").index(1).number()).fold(1, t -> t.tally * 10) ]
+	  } else {
+	    [ p.amount ]
+	  }).flatten()
 	},
 	"kind": "TRANSACTION"
   }
@@ -79,7 +83,7 @@ map committedTransactions {
 					"_index": env("OPENSEARCH_INDEX"),
 					"_id": "TRANSACTION-%s-%s".format(this.ledger, t.data.txid)
 				}
-			}, t.assign({"data": {"ledger": this.ledger}}).merge({
+			}, t.assign({"data": {"ledger": this.ledger}, "indexed": {"ledger": this.ledger}}).merge({
 				"when": this.date,
 				"ledger": this.ledger
 			})]).
@@ -91,7 +95,7 @@ map committedTransactions {
 					"_index": env("OPENSEARCH_INDEX"),
 					"_id": "ASSET-%s-%s-%s".format(this.ledger, t.data.account, t.data.name)
 				}
-			}, t.assign({"data": {"ledger": this.ledger}}).merge({
+			}, t.assign({"data": {"ledger": this.ledger}, "indexed": {"ledger": this.ledger}}).merge({
                 "when": this.date,
                 "ledger": this.ledger
             })]).
