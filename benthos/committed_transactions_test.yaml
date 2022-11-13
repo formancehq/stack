@@ -76,7 +76,8 @@ tests:
               "world"
             ],
             "timestamp": "2022-03-16T13:11:38Z",
-            "txid": 22
+            "txid": 22,
+            "ledger": "test"
           },
           "kind": "TRANSACTION",
           "ledger": "test",
