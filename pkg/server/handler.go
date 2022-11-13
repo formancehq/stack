@@ -37,5 +37,8 @@ func newServerHandler(store storage.Store) http.Handler {
 	h.Router.PUT(PathConfigs+PathId+PathDeactivate, h.deactivateOneConfigHandle)
 	h.Router.PUT(PathConfigs+PathId+PathChangeSecret, h.changeSecretHandle)
 
-	return h
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		h.ServeHTTP(w, r)
+	})
 }
