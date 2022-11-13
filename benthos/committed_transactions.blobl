@@ -59,6 +59,7 @@ map tx {
 	"indexed": {
 	  "reference": this.reference,
 	  "txid": this.txid,
+	  "id": this.txid,
 	  "timestamp": this.timestamp,
 	  "asset": this.postings.map_each(p -> p.asset),
 	  "source": this.postings.map_each(p -> p.source),
