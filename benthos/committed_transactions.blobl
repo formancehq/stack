@@ -21,7 +21,8 @@ map legacyVolumes {
         "metadata": {}
       },
       "indexed": {
-        "address": this.key
+        "address": this.key,
+        "ledger": this.ledger
       },
       "kind": "ACCOUNT",
       "ledger": this.ledger,
@@ -91,7 +92,7 @@ map committedTransactions {
 					"_index": env("OPENSEARCH_INDEX"),
 					"_id": "ASSET-%s-%s-%s".format(this.ledger, t.data.account, t.data.name)
 				}
-			}, t.assign({"data": {"ledger": this.ledger}}).merge({
+			}, t.assign({"data": {"ledger": this.ledger}, "indexed": {"ledger": this.ledger}}).merge({
                 "when": this.date,
                 "ledger": this.ledger
             })]).

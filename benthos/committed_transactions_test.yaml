@@ -99,7 +99,8 @@ tests:
           },
           "indexed": {
             "name": "USD",
-            "account": "bank"
+            "account": "bank",
+            "ledger": "test"
           },
           "kind": "ASSET",
           "ledger": "test",
@@ -121,7 +122,8 @@ tests:
           },
           "indexed": {
             "name": "USD",
-            "account": "world"
+            "account": "world",
+            "ledger": "test"
           },
           "kind": "ASSET",
           "ledger": "test",
@@ -160,7 +162,8 @@ tests:
             "ledger": "test"
           },
           "indexed": {
-            "address": "bank"
+            "address": "bank",
+            "ledger": "test"
           },
           "kind": "ACCOUNT",
           "ledger": "test",
@@ -200,7 +203,8 @@ tests:
             "ledger": "test"
           },
           "indexed": {
-            "address": "world"
+            "address": "world",
+            "ledger": "test"
           },
           "kind": "ACCOUNT",
           "ledger": "test",
