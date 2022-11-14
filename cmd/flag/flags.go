@@ -14,13 +14,12 @@ import (
 )
 
 const (
-	LogLevel                      = "log-level"
-	HttpBindAddressServer         = "http-bind-address-server"
-	HttpBindAddressWorkerMessages = "http-bind-address-worker-messages"
-	HttpBindAddressWorkerRetries  = "http-bind-address-worker-retries"
+	LogLevel              = "log-level"
+	HttpBindAddressServer = "http-bind-address-server"
+	HttpBindAddressWorker = "http-bind-address-worker"
 
-	RetriesSchedule = "retries-schedule"
-	RetriesCron     = "retries-cron"
+	RetrySchedule = "retry-schedule"
+	RetryCron     = "retry-cron"
 
 	StorageMongoConnString   = "storage-mongo-conn-string"
 	StorageMongoDatabaseName = "storage-mongo-database-name"
@@ -36,9 +35,8 @@ const (
 )
 
 const (
-	DefaultBindAddressServer         = ":8080"
-	DefaultBindAddressWorkerMessages = ":8081"
-	DefaultBindAddressWorkerRetries  = ":8082"
+	DefaultBindAddressServer = ":8080"
+	DefaultBindAddressWorker = ":8081"
 
 	DefaultMongoConnString   = "mongodb://admin:admin@localhost:27017/"
 	DefaultMongoDatabaseName = "webhooks"
@@ -49,20 +47,19 @@ const (
 )
 
 var (
-	DefaultRetriesSchedule = []time.Duration{time.Minute, 5 * time.Minute, 30 * time.Minute, 5 * time.Hour, 24 * time.Hour}
-	DefaultRetriesCron     = time.Minute
+	DefaultRetrySchedule = []time.Duration{time.Minute, 5 * time.Minute, 30 * time.Minute, 5 * time.Hour, 24 * time.Hour}
+	DefaultRetryCron     = time.Minute
 )
 
-var ErrScheduleInvalid = errors.New("the retries schedule should only contain durations of at least 1 second")
+var ErrScheduleInvalid = errors.New("the retry schedule should only contain durations of at least 1 second")
 
-func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
+func Init(flagSet *pflag.FlagSet) (retrySchedule []time.Duration, err error) {
 	flagSet.String(LogLevel, logrus.InfoLevel.String(), "Log level")
 
 	flagSet.String(HttpBindAddressServer, DefaultBindAddressServer, "server HTTP bind address")
-	flagSet.String(HttpBindAddressWorkerMessages, DefaultBindAddressWorkerMessages, "worker messages HTTP bind address")
-	flagSet.String(HttpBindAddressWorkerRetries, DefaultBindAddressWorkerRetries, "worker retries HTTP bind address")
-	flagSet.DurationSlice(RetriesSchedule, DefaultRetriesSchedule, "worker retries schedule")
-	flagSet.Duration(RetriesCron, DefaultRetriesCron, "worker retries cron")
+	flagSet.String(HttpBindAddressWorker, DefaultBindAddressWorker, "worker HTTP bind address")
+	flagSet.DurationSlice(RetrySchedule, DefaultRetrySchedule, "worker retry schedule")
+	flagSet.Duration(RetryCron, DefaultRetryCron, "worker retry cron")
 	flagSet.String(StorageMongoConnString, DefaultMongoConnString, "Mongo connection string")
 	flagSet.String(StorageMongoDatabaseName, DefaultMongoDatabaseName, "Mongo database name")
 
@@ -91,13 +88,13 @@ func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
 		logger.SetFormatter(&logrus.JSONFormatter{})
 	}
 
-	retriesSchedule, err = flagSet.GetDurationSlice(RetriesSchedule)
+	retrySchedule, err = flagSet.GetDurationSlice(RetrySchedule)
 	if err != nil {
 		return nil, errors.Wrap(err, "flagSet.GetDurationSlice")
 	}
 
 	// Check that the schedule is valid
-	for _, s := range retriesSchedule {
+	for _, s := range retrySchedule {
 		if s < time.Second {
 			return nil, ErrScheduleInvalid
 		}
@@ -107,7 +104,7 @@ func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
 		sharedlogging.StaticLoggerFactory(
 			sharedlogginglogrus.New(logger)))
 
-	return retriesSchedule, nil
+	return retrySchedule, nil
 }
 
 func LoadEnv(v *viper.Viper) {

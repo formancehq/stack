@@ -10,8 +10,7 @@ A user config is made of the following information:
 The service has 3 starting modes, split into 3 separate commands:
 
 - `server`: REST web service API managing webhooks configs for users.
-- `worker messages`: background service consuming kafka events on selected topics and sending webhooks based on user configs.
-- `worker retries`: background service periodically finding failed webhooks requests to retry and sending new attempts.
+- `worker`: background service consuming kafka events on selected topics to send webhooks based on user configs and periodically finding failed webhooks requests to retry and sending new attempts.
 
 ## Run the stack locally
 ```
@@ -50,16 +49,14 @@ Available Commands:
   help                 Help about any command
   version              Get webhooks version
   server               Start webhooks server
-  worker messages      Start webhooks worker messages
-  worker retries       Start webhooks worker retries
+  worker               Start webhooks worker
 
 Flags:
   -h, --help                                          help for webhooks
       --http-bind-address-server string               server HTTP bind address (default ":8080")
-      --http-bind-address-worker-messages string      worker messsages HTTP bind address (default ":8081")
-      --http-bind-address-worker-retries string       worker retries HTTP bind address (default ":8082")
-      --retry-schedule durations                      worker retries schedule (default [1m,5m,30m,5h,24h])
-      --retry-cron duration                           worker retries cron (default 1m)
+      --http-bind-address-worker string               worker HTTP bind address (default ":8081")
+      --retry-schedule durations                      worker retry schedule (default [1m,5m,30m,5h,24h])
+      --retry-cron duration                           worker retry cron (default 1m)
       --kafka-brokers strings                         Kafka brokers (default [localhost:9092])
       --kafka-consumer-group string                   Kafka consumer group (default "webhooks")
       --kafka-password string                         Kafka password

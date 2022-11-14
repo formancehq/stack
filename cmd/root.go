@@ -14,7 +14,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use: "webhooks",
 	}
-	retriesSchedule []time.Duration
+	retrySchedule []time.Duration
 )
 
 func Execute() {
@@ -27,6 +27,6 @@ func Execute() {
 
 func init() {
 	var err error
-	retriesSchedule, err = flag.Init(rootCmd.PersistentFlags())
+	retrySchedule, err = flag.Init(rootCmd.PersistentFlags())
 	cobra.CheckErr(err)
 }

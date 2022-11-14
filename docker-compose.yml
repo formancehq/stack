@@ -15,8 +15,8 @@ services:
     environment:
       STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
 
-  worker-messages:
-    command: reflex -r '\.go' -s -- sh -c "go run . worker messages"
+  worker:
+    command: reflex -r '\.go' -s -- sh -c "go run . worker"
     build:
       target: dev
     healthcheck:
@@ -31,22 +31,6 @@ services:
     environment:
       STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
       KAFKA_BROKERS: "redpanda:29092"
-
-  worker-retries:
-    command: reflex -r '\.go' -s -- sh -c "go run . worker retries"
-    build:
-      target: dev
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8082/_healthcheck" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    volumes:
-      - .:/app
-    ports:
-      - "8082:8082"
-    environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
 
   mongo:
     image: mongo
