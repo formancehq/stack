@@ -1,77 +1,77 @@
-swagger: "2.0"
+---
+openapi: 3.1.0
 info:
   title: Search API
   version: latest
-definitions:
-  Query:
-    properties:
-      ledgers:
-        items:
-          type: string
-        type: array
-      nextToken:
-        type: string
-      size:
-        type: integer
-      terms:
-        items:
-          type: string
-        type: array
-      target:
-        type: string
-
-  Response:
-    properties:
-      data:
-        description: The payload
-        type: object
-      cursor:
-        type: object
-        properties:
-          pageSize:
-            type: number
-          hasMore:
-            type: boolean
-          total:
-            type: object
-            properties:
-              value:
-                type: number
-              relation:
-                type: string
-          next:
-            type: string
-          #"data":[{"ledger":"default","reference":"","metadata":{},"postings":[{"amount":100,"destination":"user2","source":"world","asset":"USD"}],"txid":20,"timestamp":"2022-11-11T23:16:54Z"},{"ledger":"default","reference":"foo","metadata":{"role":"admin","doc":"{\"role\": \"admin\"}","hello":"world"},"postings":[{"amount":100,"destination":"user1","source":"world","asset":"USD"}],"txid":18,"timestamp":"2022-11-11T22:22:50Z"},{"ledger":"default","reference":"","metadata":{},"postings":[{"amount":100,"destination":"user1","source":"world","asset":"USD"}],"txid":17,"timestamp":"2022-11-11T22:18:10Z"},{"ledger":"default","reference":"","metadata":{},"postings":[{"amount":599,"destination":"payments:001","source":"world","asset":"USD/2"}],"txid":16,"timestamp":"2022-11-11T19:55:10Z"},{"ledger":"default","reference":"","metadata":{},"postings":[{"amount":599,"destination":"payments:001","source":"world","asset":"USD/2"}],"txid":15,"timestamp":"2022-11-11T19:53:41Z"}],"previous":""}}
-          previous:
-            type: string
-          data:
-            type: array
-            items:
-              allOf:
-              - type: object
-      kind:
-        description: The kind of the object, either "TRANSACTION" or "META"
-        type: string
-      ledger:
-        description: The ledger
-        type: string
 paths:
   /:
-    post:
-      consumes:
-      - application/json
-      operationId: search
-      parameters:
-      - description: the query
-        in: body
-        name: query
-        required: true
-        schema:
-          "$ref": '#/definitions/Query'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            "$ref": '#/definitions/Response'
+      post:
+        summary: Search
+        tags:
+          - Search
+        operationId: search
+        description: Search with Query
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Query'
+        responses:
+          200:
+            description: Success
+
+components:
+  schemas:
+    Query:
+      properties:
+        ledgers:
+          items:
+            type: string
+          type: array
+        nextToken:
+          type: string
+        size:
+          type: integer
+        terms:
+          items:
+            type: string
+          type: array
+        target:
+          type: string
+      type: object
+    Response:
+      properties:
+        data:
+          description: The payload
+          type: object
+        cursor:
+          type: object
+          properties:
+            pageSize:
+              type: number
+            hasMore:
+              type: boolean
+            total:
+              type: object
+              properties:
+                value:
+                  type: number
+                relation:
+                  type: string
+            next:
+              type: string
+            previous:
+              type: string
+            data:
+              type: array
+              items:
+                allOf:
+                - type: object
+        kind:
+          description: The kind of the object, either "TRANSACTION" or "META"
+          type: string
+        ledger:
+          description: The ledger
+          type: string
+      type: object
