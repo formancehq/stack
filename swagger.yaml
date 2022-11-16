@@ -1,21 +1,15 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Auth API
   contact: {}
   version: "AUTH_VERSION"
 
-servers:
-  - url: https://{organization}.o.formance.cloud/auth
-    description: Production server
-    variables:
-      organization:
-        description: The organization on which the auth server is located
-        default: ""
-
 paths:
   /clients:
     get:
       summary: List clients
+      tags:
+        - Clients
       operationId: listClients
       responses:
         "200":
@@ -26,6 +20,8 @@ paths:
                 $ref: '#/components/schemas/ListClientsResponse'
     post:
       summary: Create client
+      tags:
+        - Clients
       operationId: createClient
       requestBody:
         content:
@@ -42,6 +38,8 @@ paths:
   /clients/{clientId}:
     get:
       summary: Read client
+      tags:
+        - Clients
       operationId: readClient
       parameters:
         - description: Client ID
@@ -59,6 +57,8 @@ paths:
                 $ref: '#/components/schemas/ReadClientResponse'
     put:
       summary: Update client
+      tags:
+        - Clients
       operationId: updateClient
       requestBody:
         content:
@@ -81,6 +81,8 @@ paths:
                 $ref: '#/components/schemas/UpdateClientResponse'
     delete:
       summary: Delete client
+      tags:
+        - Clients
       operationId: deleteClient
       parameters:
         - description: Client ID
@@ -95,6 +97,8 @@ paths:
   /clients/{clientId}/secrets:
     post:
       summary: Add a secret to a client
+      tags:
+        - Clients
       operationId: createSecret
       parameters:
         - description: Client ID
@@ -118,6 +122,8 @@ paths:
   /clients/{clientId}/secrets/{secretId}:
     delete:
       summary: Delete a secret from a client
+      tags:
+        - Clients
       operationId: deleteSecret
       parameters:
         - description: Client ID
@@ -138,6 +144,8 @@ paths:
   /clients/{clientId}/scopes/{scopeId}:
     put:
       summary: Add scope to client
+      tags:
+        - Clients
       operationId: addScopeToClient
       parameters:
         - description: Client ID
@@ -157,6 +165,8 @@ paths:
           description: Scope added to client
     delete:
       summary: Delete scope from client
+      tags:
+        - Clients
       operationId: deleteScopeFromClient
       parameters:
         - description: Client ID
@@ -177,6 +187,8 @@ paths:
   /scopes:
     get:
       summary: List scopes
+      tags:
+        - Scopes
       description: List Scopes
       operationId: listScopes
       responses:
@@ -188,6 +200,8 @@ paths:
                 $ref: '#/components/schemas/ListScopesResponse'
     post:
       summary: Create scope
+      tags:
+        - Scopes
       description: Create scope
       operationId: createScope
       requestBody:
@@ -205,6 +219,8 @@ paths:
   /scopes/{scopeId}:
     get:
       summary: Read scope
+      tags:
+        - Scopes
       description: Read scope
       operationId: readScope
       parameters:
@@ -223,6 +239,8 @@ paths:
                 $ref: '#/components/schemas/ReadScopeResponse'
     put:
       summary: Update scope
+      tags:
+        - Scopes
       description: Update scope
       operationId: updateScope
       parameters:
@@ -246,6 +264,8 @@ paths:
                 $ref: '#/components/schemas/UpdateScopeResponse'
     delete:
       summary: Delete scope
+      tags:
+        - Scopes
       description: Delete scope
       operationId: deleteScope
       parameters:
@@ -261,6 +281,8 @@ paths:
   /scopes/{scopeId}/transient/{transientScopeId}:
     put:
       summary: Add a transient scope to a scope
+      tags:
+        - Scopes
       description: Add a transient scope to a scope
       operationId: addTransientScope
       parameters:
@@ -281,6 +303,8 @@ paths:
           description: "Scope added"
     delete:
       summary: Delete a transient scope from a scope
+      tags:
+        - Scopes
       description: Delete a transient scope from a scope
       operationId: deleteTransientScope
       parameters:
@@ -302,6 +326,8 @@ paths:
   /users:
     get:
       summary: List users
+      tags:
+        - Users
       description: List users
       operationId: listUsers
       responses:
@@ -314,6 +340,8 @@ paths:
   /users/{userId}:
     get:
       summary: Read user
+      tags:
+        - Users
       description: Read user
       operationId: readUser
       parameters:
