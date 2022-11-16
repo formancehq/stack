@@ -23,11 +23,25 @@ type Storage struct {
 	db *gorm.DB
 }
 
+func (s *Storage) FindTransientScopesByLabel(ctx context.Context, label string) ([]auth.Scope, error) {
+	ret := make([]auth.Scope, 0)
+	if err := s.db.
+		WithContext(ctx).
+		Model(ret).
+		Where("label = ?", label).
+		Association("TransientScopes").
+		Find(&ret); err != nil {
+		return nil, err
+	}
+	return ret, nil
+}
+
 func (s *Storage) FindTransientScopes(ctx context.Context, id string) ([]auth.Scope, error) {
 	ret := make([]auth.Scope, 0)
 	if err := s.db.
 		WithContext(ctx).
 		Model(ret).
+		Where("id = ?", id).
 		Association("TransientScopes").
 		Find(&ret); err != nil {
 		return nil, err

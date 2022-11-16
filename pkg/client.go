@@ -3,6 +3,7 @@ package auth
 import (
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 
 	"github.com/google/uuid"
 )
@@ -53,6 +54,13 @@ func (c *Client) GenerateNewSecret(opts SecretCreate) (ClientSecret, string) {
 	c.Secrets = append(c.Secrets, secret)
 
 	return secret, clear
+}
+
+func (c *Client) ValidateSecret(secret string) error {
+	if !c.HasSecret(secret) {
+		return errors.New("invalid secret")
+	}
+	return nil
 }
 
 func (c *Client) HasSecret(clear string) bool {
@@ -107,6 +115,15 @@ type StaticClient struct {
 	Scopes        []string `json:"scopes" yaml:"scopes"`
 }
 
+func (s StaticClient) ValidateSecret(secret string) error {
+	for _, clientSecret := range s.Secrets {
+		if clientSecret == secret {
+			return nil
+		}
+	}
+	return errors.New("invalid secret")
+}
+
 func (s StaticClient) GetScopes() []string {
 	return s.Scopes
 }
@@ -120,6 +137,10 @@ type ClientOptions struct {
 	PostLogoutRedirectUris Array[string] `json:"postLogoutRedirectUris" yaml:"postLogoutRedirectUris" gorm:"type:text"`
 	Metadata               Metadata      `json:"metadata" yaml:"metadata" gorm:"type:text"`
 	Trusted                bool          `json:"trusted" yaml:"trusted"`
+}
+
+func (s *ClientOptions) IsTrusted() bool {
+	return s.Trusted
 }
 
 func (c *ClientOptions) GetID() string {

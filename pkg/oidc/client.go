@@ -17,6 +17,12 @@ type Client interface {
 	GetScopes() []string
 }
 
+type ClientWithSecrets interface {
+	Client
+	ValidateSecret(secret string) error
+	IsTrusted() bool
+}
+
 type clientFacade struct {
 	Client       Client
 	relyingParty rp.RelyingParty

@@ -41,6 +41,7 @@ type Storage interface {
 
 	FindClient(ctx context.Context, id string) (*auth.Client, error)
 	FindTransientScopes(ctx context.Context, id string) ([]auth.Scope, error)
+	FindTransientScopesByLabel(ctx context.Context, label string) ([]auth.Scope, error)
 }
 
 type signingKey struct {
@@ -252,13 +253,11 @@ func (s *storageFacade) GetKeySet(ctx context.Context) (*jose.JSONWebKeySet, err
 	}, nil
 }
 
-// GetClientByClientID implements the op.Storage interface
-// it will be called whenever information (type, redirect_uris, ...) about the client behind the client_id is needed
-func (s *storageFacade) GetClientByClientID(ctx context.Context, clientID string) (op.Client, error) {
+func (s *storageFacade) findClient(ctx context.Context, clientID string) (ClientWithSecrets, error) {
 	var client *auth.Client
 	for _, staticClient := range s.staticClients {
 		if staticClient.Id == clientID {
-			return NewClientFacade(&staticClient, s.relyingParty), nil
+			return &staticClient, nil
 		}
 	}
 	if client == nil {
@@ -268,32 +267,27 @@ func (s *storageFacade) GetClientByClientID(ctx context.Context, clientID string
 			return nil, err
 		}
 	}
+	return client, nil
+}
 
+// GetClientByClientID implements the op.Storage interface
+// it will be called whenever information (type, redirect_uris, ...) about the client behind the client_id is needed
+func (s *storageFacade) GetClientByClientID(ctx context.Context, clientID string) (op.Client, error) {
+	client, err := s.findClient(ctx, clientID)
+	if err != nil {
+		return nil, err
+	}
 	return NewClientFacade(client, s.relyingParty), nil
 }
 
 // AuthorizeClientIDSecret implements the op.Storage interface
 // it will be called for validating the client_id, client_secret on token or introspection requests
 func (s *storageFacade) AuthorizeClientIDSecret(ctx context.Context, clientID, clientSecret string) error {
-	for _, staticClient := range s.staticClients {
-		if staticClient.Id == clientID {
-			for _, secret := range staticClient.Secrets {
-				if secret == clientSecret {
-					return nil
-				}
-			}
-			return fmt.Errorf("invalid secret")
-		}
-	}
-	client, err := s.Storage.FindClient(ctx, clientID)
+	client, err := s.findClient(ctx, clientID)
 	if err != nil {
 		return err
 	}
-
-	if !client.HasSecret(clientSecret) {
-		return fmt.Errorf("invalid secret")
-	}
-	return nil
+	return client.ValidateSecret(clientSecret)
 }
 
 // SetUserinfoFromScopes implements the op.Storage interface
@@ -327,20 +321,11 @@ func (s *storageFacade) SetIntrospectionFromToken(ctx context.Context, introspec
 		}
 	}
 	if !ok {
-		client, err := s.Storage.FindClient(ctx, clientID)
-		if err != nil && err != storage.ErrNotFound {
+		client, err := s.findClient(ctx, clientID)
+		if err != nil {
 			return err
 		}
-		if err == storage.ErrNotFound {
-			for _, staticClient := range s.staticClients {
-				if staticClient.Id == clientID {
-					ok = client.Trusted
-					break
-				}
-			}
-		} else {
-			ok = client.Trusted
-		}
+		ok = client.IsTrusted()
 	}
 
 	if !ok {
@@ -476,14 +461,15 @@ func (i *storageFacade) AuthRequestByID(ctx context.Context, id string) (op.Auth
 }
 
 func (s *storageFacade) ClientCredentialsTokenRequest(ctx context.Context, clientID string, scopes []string) (op.TokenRequest, error) {
-	client, err := s.Storage.FindClient(ctx, clientID)
+
+	client, err := s.findClient(ctx, clientID)
 	if err != nil {
 		return nil, err
 	}
 
 	allowedScopes := auth.Array[string]{}
 	verifiedScopes := make(map[string]any)
-	scopesToCheck := client.Scopes
+	scopesToCheck := client.GetScopes()
 
 l:
 	for _, scope := range scopes {
@@ -493,21 +479,27 @@ l:
 			}
 			clientScope := scopesToCheck[0]
 			if len(scopesToCheck) == 1 {
-				scopesToCheck = make([]auth.Scope, 0)
+				scopesToCheck = make([]string, 0)
 			} else {
 				scopesToCheck = scopesToCheck[1:]
 			}
-			if clientScope.Label == scope {
+			if clientScope == scope {
 				allowedScopes = append(allowedScopes, scope)
 				continue l
 			}
-			verifiedScopes[clientScope.ID] = struct{}{}
+			verifiedScopes[clientScope] = struct{}{}
 
-			scopes, err := s.Storage.FindTransientScopes(ctx, clientScope.ID)
+			scopes, err := s.Storage.FindTransientScopesByLabel(ctx, clientScope)
 			if err != nil {
 				return nil, err
 			}
-			scopesToCheck = append(scopesToCheck, scopes...)
+
+			scopeLabels := make([]string, 0)
+			for _, scope := range scopes {
+				scopeLabels = append(scopeLabels, scope.Label)
+			}
+
+			scopesToCheck = append(scopesToCheck, scopeLabels...)
 		}
 	}
 	return &auth.AuthRequest{

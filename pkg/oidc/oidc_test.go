@@ -27,6 +27,7 @@ import (
 	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/client/rs"
 	"github.com/zitadel/oidc/pkg/op"
+	"golang.org/x/oauth2/clientcredentials"
 	"gorm.io/driver/sqlite"
 )
 
@@ -238,6 +239,30 @@ func TestJWTAssertions(t *testing.T) {
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 		_, err = http.DefaultClient.Do(req)
+		require.NoError(t, err)
+	})
+}
+
+func TestClientCredentials(t *testing.T) {
+	withServer(t, func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, provider op.OpenIDProvider) {
+
+		// Create a OAuth2 client which represent our client application
+		client := auth.NewClient(auth.ClientOptions{})
+		_, clear := client.GenerateNewSecret(auth.SecretCreate{}) // Need to generate a secret
+		require.NoError(t, storage.SaveClient(context.TODO(), *client))
+
+		// As our client is a relying party, we can use the library to get some helpers
+		clientRelyingParty, err := rp.NewRelyingPartyOIDC(provider.Issuer(), client.Id, clear, "", []string{"openid", "email"})
+		require.NoError(t, err)
+
+		// Create a OAuth2 client which represent our client application
+		clientCredentialsConfig := clientcredentials.Config{
+			ClientID:     client.Id,
+			ClientSecret: clear,
+			TokenURL:     clientRelyingParty.OAuthConfig().Endpoint.TokenURL,
+			Scopes:       []string{},
+		}
+		_, err = clientCredentialsConfig.Token(context.Background())
 		require.NoError(t, err)
 	})
 }
