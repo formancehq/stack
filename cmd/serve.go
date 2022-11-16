@@ -26,6 +26,7 @@ const (
 	delegatedClientSecretFlag = "delegated-client-secret"
 	delegatedIssuerFlag       = "delegated-issuer"
 	baseUrlFlag               = "base-url"
+	listenFlag                = "listen"
 	signingKeyFlag            = "signing-key"
 	configFlag                = "config"
 
@@ -123,7 +124,7 @@ var serveCmd = &cobra.Command{
 				ClientSecret: delegatedClientSecret,
 				RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
 			}),
-			api.Module(":8080"),
+			api.Module(viper.GetString(listenFlag)),
 			oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
 			authorization.Module(),
 			sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag),
@@ -158,6 +159,7 @@ func init() {
 	serveCmd.Flags().String(delegatedClientSecretFlag, "", "Delegated OIDC client secret")
 	serveCmd.Flags().String(baseUrlFlag, "http://localhost:8080", "Base service url")
 	serveCmd.Flags().String(signingKeyFlag, defaultSigningKey, "Signing key")
+	serveCmd.Flags().String(listenFlag, ":8080", "Listening address")
 
 	serveCmd.Flags().String(configFlag, "config", "Config file name without extension")
 
