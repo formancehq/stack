@@ -18,5 +18,4 @@ model_response.go
 model_response_cursor.go
 model_response_cursor_total.go
 response.go
-test/api_search_test.go
 utils.go

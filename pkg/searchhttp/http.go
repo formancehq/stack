@@ -2,7 +2,6 @@ package searchhttp
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"io"
 	"math"
@@ -11,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/esquery"
+	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/search/pkg/searchengine"
-	"github.com/numary/go-libs/sharedlogging"
 	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
 )
@@ -149,7 +148,7 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 		switch qq := searchQuery.(type) {
 		case *searchengine.SingleDocTypeSearch:
 			qq.Size++
-			searchResponse, err := qq.Do(context.Background(), engine)
+			searchResponse, err := qq.Do(r.Context(), engine)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusServiceUnavailable)
 				return
@@ -251,7 +250,7 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 			}
 
 		case *searchengine.MultiDocTypeSearch:
-			searchResponse, err := qq.Do(context.Background(), engine)
+			searchResponse, err := qq.Do(r.Context(), engine)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusServiceUnavailable)
 				return

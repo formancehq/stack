@@ -1,0 +1,1 @@
+{"date":"2022-03-16T13:11:38.47608275Z","type":"COMMITTED_TRANSACTIONS","payload":{"volumes":{"world":{"USD":{"input":0,"output":1000}},"bank":{"USD":{"input":1000,"output":0}}},"transactions":[{"postings":[{"source":"world","destination":"another","amount":1099,"asset":"USD/2"}],"reference":"","metadata":null,"txid":27,"timestamp":"2022-03-16T13:11:38Z"}]},"ledger":"test"}
