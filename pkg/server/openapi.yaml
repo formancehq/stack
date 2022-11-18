@@ -1,7 +1,7 @@
-openapi: 3.1.0
+openapi: 3.0.3
 info:
   title: Webhooks server
-  version: v0.2.1
+  version: v0.2.2
 
 paths:
   /_healthcheck:
@@ -99,6 +99,7 @@ paths:
                 type: string
                 example: endpoints should be valid urls
 
+  /configs/{id}:
     delete:
       summary: Delete one config
       operationId: deleteOneConfig
@@ -215,8 +216,9 @@ paths:
                 secret:
                   type: string
                   example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
-                required:
-                  - secret
+              required:
+                - secret
+
       parameters:
         - name: id
           in: path
