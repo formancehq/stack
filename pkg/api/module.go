@@ -4,13 +4,13 @@ import (
 	"context"
 	"net/http"
 
+	sharedhealth "github.com/formancehq/go-libs/sharedhealth/pkg"
 	"github.com/gorilla/mux"
-	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 	"go.uber.org/fx"
 )
 
-func CreateRootRouter(healthController *sharedhealth.HealthController) *mux.Router {
+func CreateRootRouter() *mux.Router {
 	rootRouter := mux.NewRouter()
 	rootRouter.Use(otelmux.Middleware("auth"))
 	rootRouter.Use(func(handler http.Handler) http.Handler {
@@ -19,8 +19,6 @@ func CreateRootRouter(healthController *sharedhealth.HealthController) *mux.Rout
 			handler.ServeHTTP(w, r)
 		})
 	})
-	rootRouter.Path("/_healthcheck").HandlerFunc(healthController.Check)
-
 	return rootRouter
 }
 
@@ -28,13 +26,14 @@ func Module(addr string) fx.Option {
 	return fx.Options(
 		sharedhealth.ProvideHealthCheck(delegatedOIDCServerAvailability),
 		sharedhealth.Module(),
-		fx.Provide(func(healthController *sharedhealth.HealthController) *mux.Router {
-			return CreateRootRouter(healthController)
-		}),
-		fx.Invoke(func(lc fx.Lifecycle, router *mux.Router, healthController *sharedhealth.HealthController) {
+		fx.Provide(CreateRootRouter),
+		fx.Invoke(func(lc fx.Lifecycle, r *mux.Router, healthController *sharedhealth.HealthController) {
+			finalRouter := mux.NewRouter()
+			finalRouter.Path("/_healthcheck").HandlerFunc(healthController.Check)
+			finalRouter.PathPrefix("/").Handler(r)
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					return StartServer(ctx, addr, router)
+					return StartServer(ctx, addr, finalRouter)
 				},
 			})
 		}),

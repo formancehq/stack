@@ -1,7 +1,6 @@
 package oidc
 
 import (
-	"context"
 	"embed"
 	"html/template"
 	"net/http"
@@ -42,12 +41,12 @@ func authorizeCallbackHandler(
 			panic(err)
 		}
 
-		authRequest, err := storage.FindAuthRequest(context.Background(), state.AuthRequestID)
+		authRequest, err := storage.FindAuthRequest(r.Context(), state.AuthRequestID)
 		if err != nil {
 			panic(err)
 		}
 
-		tokens, err := rp.CodeExchange(context.Background(), r.URL.Query().Get("code"), relyingParty)
+		tokens, err := rp.CodeExchange(r.Context(), r.URL.Query().Get("code"), relyingParty)
 		if err != nil {
 			panic(err)
 		}

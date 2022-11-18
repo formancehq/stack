@@ -3,6 +3,7 @@ package oidc
 import (
 	"context"
 	"crypto/rsa"
+	"net/http"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
@@ -20,8 +21,8 @@ func Module(privateKey *rsa.PrivateKey, issuer string, staticClients ...auth.Sta
 		fx.Provide(fx.Annotate(func(storage Storage, relyingParty rp.RelyingParty) *storageFacade {
 			return NewStorageFacade(storage, relyingParty, privateKey, staticClients...)
 		}, fx.As(new(op.Storage)))),
-		fx.Provide(func(storage op.Storage, configuration delegatedauth.Config) (op.OpenIDProvider, error) {
-			keySet, err := ReadKeySet(context.TODO(), configuration)
+		fx.Provide(func(httpClient *http.Client, storage op.Storage, configuration delegatedauth.Config) (op.OpenIDProvider, error) {
+			keySet, err := ReadKeySet(httpClient, context.TODO(), configuration)
 			if err != nil {
 				return nil, err
 			}

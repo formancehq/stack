@@ -50,7 +50,7 @@ func (s *Storage) FindTransientScopes(ctx context.Context, id string) ([]auth.Sc
 }
 
 func (s *Storage) CreateUser(ctx context.Context, user *auth.User) error {
-	return s.db.Where(ctx).Create(user).Error
+	return s.db.WithContext(ctx).Create(user).Error
 }
 
 func (s *Storage) FindUserByEmail(ctx context.Context, email string) (*auth.User, error) {

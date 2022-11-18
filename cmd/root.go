@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/go-libs/sharedlogging/sharedlogginglogrus"
+	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/sharedlogging/sharedlogginglogrus"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
