@@ -215,7 +215,8 @@ paths:
                 secret:
                   type: string
                   example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
-                  required: false
+                required:
+                  - secret
       parameters:
         - name: id
           in: path
