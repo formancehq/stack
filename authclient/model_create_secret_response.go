@@ -16,7 +16,7 @@ import (
 
 // CreateSecretResponse struct for CreateSecretResponse
 type CreateSecretResponse struct {
-	Data *Secret `json:"data,omitempty"`
+	Data interface{} `json:"data,omitempty"`
 }
 
 // NewCreateSecretResponse instantiates a new CreateSecretResponse object
@@ -36,36 +36,37 @@ func NewCreateSecretResponseWithDefaults() *CreateSecretResponse {
 	return &this
 }
 
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *CreateSecretResponse) GetData() Secret {
-	if o == nil || o.Data == nil {
-		var ret Secret
+// GetData returns the Data field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *CreateSecretResponse) GetData() interface{} {
+	if o == nil {
+		var ret interface{}
 		return ret
 	}
-	return *o.Data
+	return o.Data
 }
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateSecretResponse) GetDataOk() (*Secret, bool) {
-	if o == nil || o.Data == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *CreateSecretResponse) GetDataOk() (*interface{}, bool) {
+	if o == nil || isNil(o.Data) {
 		return nil, false
 	}
-	return o.Data, true
+	return &o.Data, true
 }
 
 // HasData returns a boolean if a field has been set.
 func (o *CreateSecretResponse) HasData() bool {
-	if o != nil && o.Data != nil {
+	if o != nil && isNil(o.Data) {
 		return true
 	}
 
 	return false
 }
 
-// SetData gets a reference to the given Secret and assigns it to the Data field.
-func (o *CreateSecretResponse) SetData(v Secret) {
-	o.Data = &v
+// SetData gets a reference to the given interface{} and assigns it to the Data field.
+func (o *CreateSecretResponse) SetData(v interface{}) {
+	o.Data = v
 }
 
 func (o CreateSecretResponse) MarshalJSON() ([]byte, error) {

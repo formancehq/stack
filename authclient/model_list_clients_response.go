@@ -16,7 +16,7 @@ import (
 
 // ListClientsResponse struct for ListClientsResponse
 type ListClientsResponse struct {
-	Data []Client `json:"data,omitempty"`
+	Data interface{} `json:"data,omitempty"`
 }
 
 // NewListClientsResponse instantiates a new ListClientsResponse object
@@ -36,10 +36,10 @@ func NewListClientsResponseWithDefaults() *ListClientsResponse {
 	return &this
 }
 
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *ListClientsResponse) GetData() []Client {
-	if o == nil || o.Data == nil {
-		var ret []Client
+// GetData returns the Data field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ListClientsResponse) GetData() interface{} {
+	if o == nil {
+		var ret interface{}
 		return ret
 	}
 	return o.Data
@@ -47,24 +47,25 @@ func (o *ListClientsResponse) GetData() []Client {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListClientsResponse) GetDataOk() ([]Client, bool) {
-	if o == nil || o.Data == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ListClientsResponse) GetDataOk() (*interface{}, bool) {
+	if o == nil || isNil(o.Data) {
 		return nil, false
 	}
-	return o.Data, true
+	return &o.Data, true
 }
 
 // HasData returns a boolean if a field has been set.
 func (o *ListClientsResponse) HasData() bool {
-	if o != nil && o.Data != nil {
+	if o != nil && isNil(o.Data) {
 		return true
 	}
 
 	return false
 }
 
-// SetData gets a reference to the given []Client and assigns it to the Data field.
-func (o *ListClientsResponse) SetData(v []Client) {
+// SetData gets a reference to the given interface{} and assigns it to the Data field.
+func (o *ListClientsResponse) SetData(v interface{}) {
 	o.Data = v
 }
 

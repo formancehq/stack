@@ -62,17 +62,17 @@ tasks:
     cmds:
       - rm -rf ./authclient
       - >
-        docker run --rm 
-        -w /local 
-        -v ${PWD}:/local 
-        openapitools/openapi-generator-cli:latest generate 
-        -i swagger.yaml 
-        -g go 
-        -o ./authclient 
-        --git-user-id=formancehq 
-        --git-repo-id=auth 
-        -p packageVersion=latest 
-        -p isGoSubmodule=true 
+        docker run --rm
+        -w /local
+        -v ${PWD}:/local
+        openapitools/openapi-generator-cli:latest generate
+        -i swagger.yaml
+        -g go
+        -o ./authclient
+        --git-user-id=formancehq
+        --git-repo-id=auth
+        -p packageVersion=latest
+        -p isGoSubmodule=true
         -p packageName=authclient
 
   install-deps-demo-client:

@@ -16,7 +16,7 @@ import (
 
 // CreateClientResponse struct for CreateClientResponse
 type CreateClientResponse struct {
-	Data *Client `json:"data,omitempty"`
+	Data interface{} `json:"data,omitempty"`
 }
 
 // NewCreateClientResponse instantiates a new CreateClientResponse object
@@ -36,36 +36,37 @@ func NewCreateClientResponseWithDefaults() *CreateClientResponse {
 	return &this
 }
 
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *CreateClientResponse) GetData() Client {
-	if o == nil || o.Data == nil {
-		var ret Client
+// GetData returns the Data field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *CreateClientResponse) GetData() interface{} {
+	if o == nil {
+		var ret interface{}
 		return ret
 	}
-	return *o.Data
+	return o.Data
 }
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateClientResponse) GetDataOk() (*Client, bool) {
-	if o == nil || o.Data == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *CreateClientResponse) GetDataOk() (*interface{}, bool) {
+	if o == nil || isNil(o.Data) {
 		return nil, false
 	}
-	return o.Data, true
+	return &o.Data, true
 }
 
 // HasData returns a boolean if a field has been set.
 func (o *CreateClientResponse) HasData() bool {
-	if o != nil && o.Data != nil {
+	if o != nil && isNil(o.Data) {
 		return true
 	}
 
 	return false
 }
 
-// SetData gets a reference to the given Client and assigns it to the Data field.
-func (o *CreateClientResponse) SetData(v Client) {
-	o.Data = &v
+// SetData gets a reference to the given interface{} and assigns it to the Data field.
+func (o *CreateClientResponse) SetData(v interface{}) {
+	o.Data = v
 }
 
 func (o CreateClientResponse) MarshalJSON() ([]byte, error) {

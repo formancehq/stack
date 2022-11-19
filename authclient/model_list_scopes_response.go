@@ -16,7 +16,7 @@ import (
 
 // ListScopesResponse struct for ListScopesResponse
 type ListScopesResponse struct {
-	Data []Scope `json:"data,omitempty"`
+	Data interface{} `json:"data,omitempty"`
 }
 
 // NewListScopesResponse instantiates a new ListScopesResponse object
@@ -36,10 +36,10 @@ func NewListScopesResponseWithDefaults() *ListScopesResponse {
 	return &this
 }
 
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *ListScopesResponse) GetData() []Scope {
-	if o == nil || o.Data == nil {
-		var ret []Scope
+// GetData returns the Data field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ListScopesResponse) GetData() interface{} {
+	if o == nil {
+		var ret interface{}
 		return ret
 	}
 	return o.Data
@@ -47,24 +47,25 @@ func (o *ListScopesResponse) GetData() []Scope {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListScopesResponse) GetDataOk() ([]Scope, bool) {
-	if o == nil || o.Data == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ListScopesResponse) GetDataOk() (*interface{}, bool) {
+	if o == nil || isNil(o.Data) {
 		return nil, false
 	}
-	return o.Data, true
+	return &o.Data, true
 }
 
 // HasData returns a boolean if a field has been set.
 func (o *ListScopesResponse) HasData() bool {
-	if o != nil && o.Data != nil {
+	if o != nil && isNil(o.Data) {
 		return true
 	}
 
 	return false
 }
 
-// SetData gets a reference to the given []Scope and assigns it to the Data field.
-func (o *ListScopesResponse) SetData(v []Scope) {
+// SetData gets a reference to the given interface{} and assigns it to the Data field.
+func (o *ListScopesResponse) SetData(v interface{}) {
 	o.Data = v
 }
 

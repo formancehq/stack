@@ -20,7 +20,7 @@ task lint
 
 ## Run the demo
 
-Execute command : 
+Execute command :
 ```bash
 docker compose up
 ```
