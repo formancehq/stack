@@ -10,11 +10,14 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
+const AuthorizeCallbackPath = "/authorize/callback"
+
 func AddRoutes(router *mux.Router, provider op.OpenIDProvider, storage Storage, relyingParty rp.RelyingParty) {
-	router.NewRoute().Path("/authorize/callback").Queries("code", "{code}").
+	router.NewRoute().Path(AuthorizeCallbackPath).Queries("code", "{code}").
 		Handler(authorizeCallbackHandler(provider, storage, relyingParty))
-	router.NewRoute().Path("/authorize/callback").Queries("error", "{error}").
+	router.NewRoute().Path(AuthorizeCallbackPath).Queries("error", "{error}").
 		Handler(authorizeErrorHandler())
+
 	oidcLibRouter := router.PathPrefix("/").Subrouter()
 	oidcLibRouter.Use(func(handler http.Handler) http.Handler {
 		// The otelmux middleware does not see matching route as it is matched in a subrouter

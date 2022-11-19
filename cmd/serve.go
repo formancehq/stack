@@ -65,7 +65,6 @@ EL/wy5C80pa3jahniqVgO5L6zz0ZLtRIRE7aCtCIu826gctJ1+ShIso=
 
 func otlpHttpClientModule() fx.Option {
 	return fx.Provide(func() *http.Client {
-		otelhttp.WithSpanOptions()
 		return &http.Client{
 			Transport: otelhttp.NewTransport(http.DefaultTransport, otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
 				str := fmt.Sprintf("%s %s", r.Method, r.URL.Path)

@@ -48,7 +48,9 @@ func LoadGorm(d gorm.Dialector, debug bool) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.Use(tracing.NewPlugin())
+	if err := db.Use(tracing.NewPlugin()); err != nil {
+		return nil, err
+	}
 	return db, nil
 }
 
