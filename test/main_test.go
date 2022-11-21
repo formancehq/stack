@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/go-libs/sharedapi"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
-	"github.com/numary/go-libs/sharedapi"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"

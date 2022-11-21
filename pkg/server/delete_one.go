@@ -4,8 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/julienschmidt/httprouter"
-	"github.com/numary/go-libs/sharedlogging"
 )
 
 func (h *serverHandler) deleteOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {

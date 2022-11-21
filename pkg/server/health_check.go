@@ -3,8 +3,8 @@ package server
 import (
 	"net/http"
 
+	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/julienschmidt/httprouter"
-	"github.com/numary/go-libs/sharedlogging"
 )
 
 func (h *serverHandler) HealthCheckHandle(_ http.ResponseWriter, r *http.Request, _ httprouter.Params) {

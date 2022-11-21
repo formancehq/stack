@@ -3,10 +3,10 @@ module github.com/formancehq/webhooks
 go 1.18
 
 require (
+	github.com/formancehq/go-libs v1.1.0
+	github.com/formancehq/go-libs/sharedotlp v0.0.0-20221118095941-c137790c3362
 	github.com/google/uuid v1.3.0
 	github.com/julienschmidt/httprouter v1.3.0
-	github.com/numary/go-libs v1.0.1
-	github.com/numary/go-libs/sharedotlp v0.0.0-20220905094731-f6d6d1cf83f3
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.6.1
@@ -46,6 +46,7 @@ require (
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
+	go.opentelemetry.io/contrib/propagators/b3 v1.11.1 // indirect
 	go.opentelemetry.io/otel v1.11.1 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.11.1 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.11.1 // indirect

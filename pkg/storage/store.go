@@ -3,8 +3,8 @@ package storage
 import (
 	"context"
 
+	"github.com/formancehq/go-libs/sharedapi"
 	webhooks "github.com/formancehq/webhooks/pkg"
-	"github.com/numary/go-libs/sharedapi"
 )
 
 const (

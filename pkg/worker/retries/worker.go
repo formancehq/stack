@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/formancehq/go-libs/sharedlogging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
-	"github.com/numary/go-libs/sharedlogging"
 	"github.com/pkg/errors"
 )
 
