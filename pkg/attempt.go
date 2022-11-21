@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/webhooks/pkg/security"
-	"github.com/numary/go-libs/sharedlogging"
 	"github.com/pkg/errors"
 )
 

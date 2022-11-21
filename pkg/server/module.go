@@ -1,9 +1,9 @@
 package server
 
 import (
+	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/formancehq/webhooks/pkg/httpserver"
 	"github.com/formancehq/webhooks/pkg/storage/mongo"
-	"github.com/numary/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
@@ -11,9 +11,7 @@ import (
 func StartModule(addr string) fx.Option {
 	var options []fx.Option
 
-	if mod := sharedotlptraces.CLITracesModule(viper.GetViper()); mod != nil {
-		options = append(options, mod)
-	}
+	options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
 
 	options = append(options, fx.Provide(
 		func() string { return addr },

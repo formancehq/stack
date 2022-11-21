@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/go-libs/sharedlogging/sharedlogginglogrus"
+	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/sharedlogging/sharedlogginglogrus"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"

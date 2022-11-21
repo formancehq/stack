@@ -5,10 +5,10 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/formancehq/go-libs/sharedapi"
+	"github.com/formancehq/go-libs/sharedlogging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/julienschmidt/httprouter"
-	"github.com/numary/go-libs/sharedapi"
-	"github.com/numary/go-libs/sharedlogging"
 )
 
 func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
