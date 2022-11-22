@@ -19,6 +19,7 @@ jobs:
       run:
         working-directory: ${{ inputs.PATH }}
     steps:
+      - run: echo "GITHUB_EVENT_ACTION: ${{ inputs.GITHUB_EVENT_ACTION }}"
       - uses: actions/checkout@v3
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
