@@ -33,7 +33,7 @@ jobs:
           username: "NumaryBot"
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Released
-        if: ${{ inputs.GITHUB_EVENT_NAME }} == 'released'
+        if: inputs.GITHUB_EVENT_NAME == 'release'
         uses: docker/build-push-action@v3
         with:
           context: ${{ inputs.PATH }}
@@ -43,19 +43,8 @@ jobs:
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
-      - name: Build and push PreReleased
-        if: ${{ inputs.GITHUB_EVENT_NAME }} == 'prereleased'
-        uses: docker/build-push-action@v3
-        with:
-          context: ${{ inputs.PATH }}
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ghcr.io/formancehq/${{ inputs.NAME }}:${{ github.event.release.tag_name }}
-          build-args: |
-            APP_SHA=${{ github.sha }}
-            VERSION=${{ github.event.release.tag_name }}
       - name: Build and push
-        if: ${{ inputs.GITHUB_EVENT_NAME }} != 'released' || ${{ inputs.GITHUB_EVENT_NAME }} != 'prereleased'
+        if: inputs.GITHUB_EVENT_NAME != 'release'
         uses: docker/build-push-action@v3
         with:
           context: ${{ inputs.PATH }}
