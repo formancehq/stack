@@ -2,6 +2,9 @@
 # https://taskfile.dev
 version: "3"
 
+env:
+  VERSION: "develop"
+
 tasks:
   install:
     desc: Install all dependencies
@@ -36,14 +39,14 @@ tasks:
     dir: ./sdk
     cmds:
       - task: sdk:generate
-        vars: {CLI_ARGS: "go", VERSION: "1.0.0"}
+        vars: {CLI_ARGS: "go", VERSION: "{{.VERSION}}"}
       - task: sdk:generate
-        vars: {CLI_ARGS: "java", VERSION: "1.0.0"}
+        vars: {CLI_ARGS: "java", VERSION: "{{.VERSION}}"}
       - task: sdk:generate
-        vars: {CLI_ARGS: "php", VERSION: "1.0.0"}
+        vars: {CLI_ARGS: "php", VERSION: "{{.VERSION}}"}
       - task: sdk:generate
-        vars: {CLI_ARGS: "python", VERSION: "1.0.0"}
+        vars: {CLI_ARGS: "python", VERSION: "{{.VERSION}}"}
       - task: sdk:generate
-        vars: {CLI_ARGS: "typescript-node", VERSION: "1.0.0"}
+        vars: {CLI_ARGS: "typescript-node", VERSION: "{{.VERSION}}"}
     deps:
       - build

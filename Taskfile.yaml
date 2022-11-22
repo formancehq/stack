@@ -2,14 +2,14 @@
 
 version: '3'
 
+vars:
+  COMPOSE_FILE: -f docker-compose.yml
+
 includes:
   openapi:
     taskfile: ./services/openapi/Taskfile.yaml
     dir: ./services/openapi
     optional: true
-
-vars:
-  COMPOSE_FILE: -f docker-compose.yml
 
 tasks:
   stack:run:
