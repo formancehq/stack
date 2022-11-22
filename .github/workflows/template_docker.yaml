@@ -8,7 +8,7 @@ on:
       PATH:
         required: true
         type: string
-      GITHUB_EVENT_ACTION:
+      GITHUB_EVENT_NAME:
         required: true
         type: string
 
@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: | 
-          echo "GITHUB_EVENT_ACTION: ${{ inputs.GITHUB_EVENT_ACTION }}"
+          echo "GITHUB_EVENT_NAME: ${{ inputs.GITHUB_EVENT_NAME }}"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -33,7 +33,7 @@ jobs:
           username: "NumaryBot"
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Released
-        if: ${{ inputs.GITHUB_EVENT_ACTION }} == 'released'
+        if: ${{ inputs.GITHUB_EVENT_NAME }} == 'released'
         uses: docker/build-push-action@v3
         with:
           context: ${{ inputs.PATH }}
@@ -44,7 +44,7 @@ jobs:
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
       - name: Build and push PreReleased
-        if: ${{ inputs.GITHUB_EVENT_ACTION }} == 'prereleased'
+        if: ${{ inputs.GITHUB_EVENT_NAME }} == 'prereleased'
         uses: docker/build-push-action@v3
         with:
           context: ${{ inputs.PATH }}
@@ -55,7 +55,7 @@ jobs:
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
       - name: Build and push
-        if: ${{ inputs.GITHUB_EVENT_ACTION }} != 'released' || ${{ inputs.GITHUB_EVENT_ACTION }} != 'prereleased'
+        if: ${{ inputs.GITHUB_EVENT_NAME }} != 'released' || ${{ inputs.GITHUB_EVENT_NAME }} != 'prereleased'
         uses: docker/build-push-action@v3
         with:
           context: ${{ inputs.PATH }}

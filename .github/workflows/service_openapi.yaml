@@ -35,6 +35,6 @@ jobs:
     with:
       NAME: openapi
       PATH: "./services/openapi"
-      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+      GITHUB_EVENT_NAME: ${{ inputs.GITHUB_EVENT_NAME }}
     needs:
       - Build
