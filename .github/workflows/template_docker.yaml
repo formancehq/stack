@@ -20,8 +20,6 @@ jobs:
         working-directory: ${{ inputs.PATH }}
     steps:
       - uses: actions/checkout@v3
-      - run: | 
-          echo "GITHUB_EVENT_NAME: ${{ inputs.GITHUB_EVENT_NAME }}"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -31,7 +29,7 @@ jobs:
         with:
           registry: ghcr.io
           username: "NumaryBot"
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
       - name: Build and push Released
         if: inputs.GITHUB_EVENT_NAME == 'release'
         uses: docker/build-push-action@v3
