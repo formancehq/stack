@@ -2,20 +2,26 @@
 
 version: '3'
 
+includes:
+  openapi:
+    taskfile: ./services/openapi/Taskfile.yaml
+    dir: ./services/openapi
+    optional: true
+
 vars:
   COMPOSE_FILE: -f docker-compose.yml
 
 tasks:
-  run:
+  stack:run:
     cmds:
       - docker-compose {{.COMPOSE_FILE}} up -d --remove-orphans
-  stop:
+  stack:stop:
     cmds:
       - docker-compose {{.COMPOSE_FILE}} stop
-  ps:
+  stack:ps:
     cmds:
       - docker-compose {{.COMPOSE_FILE}} ps
-  rm:
+  stack:rm:
     deps:
       - stop
     cmds:

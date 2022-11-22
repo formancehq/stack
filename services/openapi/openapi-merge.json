@@ -1,0 +1,56 @@
+{
+  "inputs": [
+    {
+      "inputFile": "./openapi/base/base.yaml"
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/auth/main/swagger.yaml",
+      "pathModification":{
+        "prepend": "/api/auth"
+      },
+      "dispute": {
+        "prefix": "auth"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/ledger/main/pkg/api/controllers/swagger.yaml",
+      "pathModification":{
+        "prepend": "/api/ledger"
+      },
+      "dispute": {
+        "prefix": "ledger"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/payments/main/swagger.yml",
+      "pathModification":{
+        "prepend": "/api/payments"
+      },
+      "dispute": {
+        "prefix": "payments"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/search/main/swagger.yaml",
+      "pathModification":{
+        "prepend": "/api/search"
+      },
+      "dispute": {
+        "prefix": "search"
+      }
+    },
+    {
+      "inputURL": "https://raw.githubusercontent.com/formancehq/webhooks/main/pkg/server/openapi.yaml",
+      "pathModification":{
+        "prepend": "/api/webhooks"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
+      },
+      "dispute": {
+        "prefix": "webhooks"
+      }
+    }
+  ], 
+  "output": "./sdk/generate.json"
+}

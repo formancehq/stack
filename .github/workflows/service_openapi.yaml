@@ -1,0 +1,26 @@
+name: Openapi
+on:
+  workflow_call:
+    inputs:
+      GITHUB_EVENT_NAME:
+        type: string
+        required: true
+      GITHUB_EVENT_ACTION:
+        type: string
+        required: true
+
+jobs:
+  Build:
+    if: inputs.GITHUB_EVENT_NAME != 'release'
+    name: 'Build Docker'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Task
+        uses: arduino/setup-task@v1
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+          cache-dependency-path: 'services/openapi/yarn.lock'
+      - run: task openapi:sdk:generate:all
