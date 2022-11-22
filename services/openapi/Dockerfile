@@ -1,9 +1,7 @@
 FROM node:19-alpine
 ENV PORT 3000
 WORKDIR /app
-COPY package.json ./
-COPY yarn.lock ./
-COPY main.js /app/main.js
+COPY . /app
 RUN apk add --no-cache ca-certificates curl
 RUN yarn install --production
 RUN yarn run build
