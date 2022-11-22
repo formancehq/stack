@@ -8,11 +8,15 @@ on:
       GITHUB_EVENT_ACTION:
         type: string
         required: true
+      VERSION:
+        type: string
+        required: false
+        description: Version of the Stack
 
 jobs:
   Build:
     if: inputs.GITHUB_EVENT_NAME != 'release'
-    name: 'Build Docker'
+    name: 'Project Build'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,4 +27,15 @@ jobs:
           node-version: 16
           cache: 'yarn'
           cache-dependency-path: 'services/openapi/yarn.lock'
-      - run: task openapi:sdk:generate:all
+      - run: task openapi:sdk:generate:all VERSION=${{ inputs.VERSION }}
+
+  Docker:
+    uses: ./.github/workflows/template_docker.yaml
+    with:
+      NAME: openapi
+      PATH: "./services/openapi"
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+    needs:
+      - Build

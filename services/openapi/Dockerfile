@@ -7,5 +7,6 @@ COPY main.js /app/main.js
 COPY sdk/generate.json /app/sdk/generate.json
 RUN apk add --no-cache ca-certificates curl
 RUN yarn install --production
+RUN yarn run build
 EXPOSE 3000
 CMD ["yarn", "run", "start"]
