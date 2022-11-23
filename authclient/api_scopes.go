@@ -67,8 +67,8 @@ func (a *ScopesApiService) AddTransientScopeExecute(r ApiAddTransientScopeReques
 	}
 
 	localVarPath := localBasePath + "/scopes/{scopeId}/transient/{transientScopeId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"scopeId"+"}", url.PathEscape(parameterToString(r.scopeId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"transientScopeId"+"}", url.PathEscape(parameterToString(r.transientScopeId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"scopeId"+"}", url.PathEscape(parameterValueToString(r.scopeId, "scopeId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"transientScopeId"+"}", url.PathEscape(parameterValueToString(r.transientScopeId, "transientScopeId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -267,7 +267,7 @@ func (a *ScopesApiService) DeleteScopeExecute(r ApiDeleteScopeRequest) (*http.Re
 	}
 
 	localVarPath := localBasePath + "/scopes/{scopeId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"scopeId"+"}", url.PathEscape(parameterToString(r.scopeId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"scopeId"+"}", url.PathEscape(parameterValueToString(r.scopeId, "scopeId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -362,8 +362,8 @@ func (a *ScopesApiService) DeleteTransientScopeExecute(r ApiDeleteTransientScope
 	}
 
 	localVarPath := localBasePath + "/scopes/{scopeId}/transient/{transientScopeId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"scopeId"+"}", url.PathEscape(parameterToString(r.scopeId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"transientScopeId"+"}", url.PathEscape(parameterToString(r.transientScopeId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"scopeId"+"}", url.PathEscape(parameterValueToString(r.scopeId, "scopeId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"transientScopeId"+"}", url.PathEscape(parameterValueToString(r.transientScopeId, "transientScopeId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -556,7 +556,7 @@ func (a *ScopesApiService) ReadScopeExecute(r ApiReadScopeRequest) (*CreateScope
 	}
 
 	localVarPath := localBasePath + "/scopes/{scopeId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"scopeId"+"}", url.PathEscape(parameterToString(r.scopeId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"scopeId"+"}", url.PathEscape(parameterValueToString(r.scopeId, "scopeId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -665,7 +665,7 @@ func (a *ScopesApiService) UpdateScopeExecute(r ApiUpdateScopeRequest) (*CreateS
 	}
 
 	localVarPath := localBasePath + "/scopes/{scopeId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"scopeId"+"}", url.PathEscape(parameterToString(r.scopeId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"scopeId"+"}", url.PathEscape(parameterValueToString(r.scopeId, "scopeId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

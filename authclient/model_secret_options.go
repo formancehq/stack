@@ -14,6 +14,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the SecretOptions type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &SecretOptions{}
+
 // SecretOptions struct for SecretOptions
 type SecretOptions struct {
 	Name interface{} `json:"name"`
@@ -54,7 +57,7 @@ func (o *SecretOptions) GetName() interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *SecretOptions) GetNameOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return &o.Name, true
 }
@@ -98,6 +101,14 @@ func (o *SecretOptions) SetMetadata(v map[string]interface{}) {
 }
 
 func (o SecretOptions) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o SecretOptions) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
@@ -105,7 +116,7 @@ func (o SecretOptions) MarshalJSON() ([]byte, error) {
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableSecretOptions struct {

@@ -14,6 +14,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ReadClientResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ReadClientResponse{}
+
 // ReadClientResponse struct for ReadClientResponse
 type ReadClientResponse struct {
 	Data interface{} `json:"data,omitempty"`
@@ -70,11 +73,19 @@ func (o *ReadClientResponse) SetData(v interface{}) {
 }
 
 func (o ReadClientResponse) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ReadClientResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Data != nil {
 		toSerialize["data"] = o.Data
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableReadClientResponse struct {

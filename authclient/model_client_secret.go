@@ -14,6 +14,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ClientSecret type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ClientSecret{}
+
 // ClientSecret struct for ClientSecret
 type ClientSecret struct {
 	LastDigits interface{} `json:"lastDigits"`
@@ -58,7 +61,7 @@ func (o *ClientSecret) GetLastDigits() interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientSecret) GetLastDigitsOk() (*interface{}, bool) {
 	if o == nil || isNil(o.LastDigits) {
-    return nil, false
+		return nil, false
 	}
 	return &o.LastDigits, true
 }
@@ -84,7 +87,7 @@ func (o *ClientSecret) GetName() interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientSecret) GetNameOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return &o.Name, true
 }
@@ -110,7 +113,7 @@ func (o *ClientSecret) GetId() interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientSecret) GetIdOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Id) {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -154,6 +157,14 @@ func (o *ClientSecret) SetMetadata(v map[string]interface{}) {
 }
 
 func (o ClientSecret) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ClientSecret) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if o.LastDigits != nil {
 		toSerialize["lastDigits"] = o.LastDigits
@@ -167,7 +178,7 @@ func (o ClientSecret) MarshalJSON() ([]byte, error) {
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableClientSecret struct {

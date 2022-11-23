@@ -154,9 +154,7 @@ var serveCmd = &cobra.Command{
 			fx.NopLogger,
 		}
 
-		if tm := sharedotlptraces.CLITracesModule(viper.GetViper()); tm != nil {
-			options = append(options, tm)
-		}
+		options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
 
 		app := fx.New(options...)
 		err = app.Start(cmd.Context())

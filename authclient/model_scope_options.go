@@ -14,6 +14,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ScopeOptions type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ScopeOptions{}
+
 // ScopeOptions struct for ScopeOptions
 type ScopeOptions struct {
 	Label interface{} `json:"label"`
@@ -54,7 +57,7 @@ func (o *ScopeOptions) GetLabel() interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ScopeOptions) GetLabelOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Label) {
-    return nil, false
+		return nil, false
 	}
 	return &o.Label, true
 }
@@ -98,6 +101,14 @@ func (o *ScopeOptions) SetMetadata(v map[string]interface{}) {
 }
 
 func (o ScopeOptions) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ScopeOptions) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Label != nil {
 		toSerialize["label"] = o.Label
@@ -105,7 +116,7 @@ func (o ScopeOptions) MarshalJSON() ([]byte, error) {
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableScopeOptions struct {

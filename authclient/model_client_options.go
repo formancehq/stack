@@ -14,6 +14,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ClientOptions type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ClientOptions{}
+
 // ClientOptions struct for ClientOptions
 type ClientOptions struct {
 	Public interface{} `json:"public,omitempty"`
@@ -158,7 +161,7 @@ func (o *ClientOptions) GetName() interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientOptions) GetNameOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return &o.Name, true
 }
@@ -268,6 +271,14 @@ func (o *ClientOptions) SetMetadata(v map[string]interface{}) {
 }
 
 func (o ClientOptions) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ClientOptions) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Public != nil {
 		toSerialize["public"] = o.Public
@@ -290,7 +301,7 @@ func (o ClientOptions) MarshalJSON() ([]byte, error) {
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableClientOptions struct {
