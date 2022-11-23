@@ -14,6 +14,7 @@ import (
 )
 
 const (
+	Debug                         = "debug"
 	LogLevel                      = "log-level"
 	HttpBindAddressServer         = "http-bind-address-server"
 	HttpBindAddressWorkerMessages = "http-bind-address-worker-messages"
@@ -56,6 +57,7 @@ var (
 var ErrScheduleInvalid = errors.New("the retries schedule should only contain durations of at least 1 second")
 
 func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
+	flagSet.Bool(Debug, false, "Debug mode")
 	flagSet.String(LogLevel, logrus.InfoLevel.String(), "Log level")
 
 	flagSet.String(HttpBindAddressServer, DefaultBindAddressServer, "server HTTP bind address")
@@ -87,6 +89,11 @@ func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
 		return nil, fmt.Errorf("logrus.ParseLevel: %w", err)
 	}
 	logger.SetLevel(lvl)
+
+	if viper.GetBool(Debug) == true {
+		logger.SetLevel(logrus.DebugLevel)
+	}
+
 	if logger.GetLevel() < logrus.DebugLevel {
 		logger.SetFormatter(&logrus.JSONFormatter{})
 	}
