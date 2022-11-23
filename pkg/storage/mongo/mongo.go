@@ -3,7 +3,6 @@ package mongo
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/formancehq/go-libs/sharedapi"
@@ -36,7 +35,6 @@ func NewStore() (storage.Store, error) {
 
 	mongoDBUri := viper.GetString(flag.StorageMongoConnString)
 	sharedlogging.Infof("connecting to mongoDB URI: %s", mongoDBUri)
-	sharedlogging.Infof("env: %+v", os.Environ())
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDBUri))
 	if err != nil {
@@ -51,10 +49,10 @@ func NewStore() (storage.Store, error) {
 		client: client,
 		configsCollection: client.Database(
 			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.DBConfigs),
+			Collection(storage.CollectionConfigs),
 		attemptsCollection: client.Database(
 			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.DBAttempts),
+			Collection(storage.CollectionAttempts),
 	}, nil
 }
 

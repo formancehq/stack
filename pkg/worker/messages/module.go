@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/formancehq/go-libs/sharedlogging"
@@ -31,6 +32,11 @@ func StartModule(addr string, httpClient *http.Client, retriesSchedule []time.Du
 	options = append(options, fx.Invoke(httpserver.RegisterHandler))
 	options = append(options, fx.Invoke(httpserver.Run))
 	options = append(options, fx.Invoke(run))
+
+	sharedlogging.Debugf("starting worker messages with env:")
+	for _, e := range os.Environ() {
+		sharedlogging.Debugf("%s", e)
+	}
 
 	return fx.Module("webhooks worker messages", options...)
 }

@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	DBConfigs  = "configs"
-	DBAttempts = "attempts"
+	CollectionConfigs  = "configs"
+	CollectionAttempts = "attempts"
 )
 
 type Store interface {
