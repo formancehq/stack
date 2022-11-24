@@ -18,10 +18,6 @@ var workerCmd = &cobra.Command{
 	RunE:  RunWorker,
 }
 
-func init() {
-	rootCmd.AddCommand(workerCmd)
-}
-
 func RunWorker(cmd *cobra.Command, _ []string) error {
 	sharedlogging.GetLogger(cmd.Context()).Debugf(
 		"starting webhooks worker module: env variables: %+v viper keys: %+v",
