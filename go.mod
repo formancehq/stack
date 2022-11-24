@@ -7,7 +7,6 @@ require (
 	github.com/formancehq/go-libs/sharedotlp v0.0.0-20221118095941-c137790c3362
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/google/uuid v1.3.0
-	github.com/julienschmidt/httprouter v1.3.0
 	github.com/pkg/errors v0.9.1
 	github.com/riandyrn/otelchi v0.5.0
 	github.com/sirupsen/logrus v1.9.0

@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/formancehq/go-libs/sharedlogging"
-	"github.com/julienschmidt/httprouter"
+	"github.com/go-chi/chi/v5"
+	"github.com/riandyrn/otelchi"
 )
 
 const (
@@ -12,12 +13,13 @@ const (
 )
 
 func newWorkerHandler() http.Handler {
-	h := httprouter.New()
-	h.GET(PathHealthCheck, healthCheckHandle)
+	h := chi.NewRouter()
+	h.Use(otelchi.Middleware("webhooks"))
+	h.Get(PathHealthCheck, healthCheckHandle)
 
 	return h
 }
 
-func healthCheckHandle(_ http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func healthCheckHandle(_ http.ResponseWriter, r *http.Request) {
 	sharedlogging.GetLogger(r.Context()).Infof("health check OK")
 }
