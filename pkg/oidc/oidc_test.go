@@ -155,6 +155,7 @@ func Test3LeggedFlow(t *testing.T) {
 			// And this code is used to get a token
 			tokens, err := rp.CodeExchange(context.TODO(), code, clientRelyingParty)
 			require.NoError(t, err)
+			require.Equal(t, time.Until(tokens.Expiry).Round(oidc.ExpirationToken3Legged), oidc.ExpirationToken3Legged)
 
 			// Create a OAuth2 client which represent our client application
 			secondaryClient := auth.NewClient(auth.ClientOptions{
@@ -262,7 +263,8 @@ func TestClientCredentials(t *testing.T) {
 			TokenURL:     clientRelyingParty.OAuthConfig().Endpoint.TokenURL,
 			Scopes:       []string{},
 		}
-		_, err = clientCredentialsConfig.Token(context.Background())
+		token, err := clientCredentialsConfig.Token(context.Background())
 		require.NoError(t, err)
+		require.Equal(t, time.Until(token.Expiry).Round(oidc.ExpirationToken2Legged), oidc.ExpirationToken2Legged)
 	})
 }

@@ -17,6 +17,11 @@ import (
 	"gopkg.in/square/go-jose.v2"
 )
 
+const (
+	ExpirationToken2Legged = time.Hour
+	ExpirationToken3Legged = 5 * time.Minute
+)
+
 type Storage interface {
 	SaveAuthRequest(ctx context.Context, request auth.AuthRequest) error
 	FindAuthRequest(ctx context.Context, id string) (*auth.AuthRequest, error)
@@ -413,12 +418,18 @@ func (s *storageFacade) renewRefreshToken(ctx context.Context, currentRefreshTok
 
 // accessToken will store an access_token in-memory based on the provided information
 func (s *storageFacade) saveAccessToken(ctx context.Context, refreshToken *auth.RefreshToken, applicationId, subject string, audience, scopes []string) (*auth.AccessToken, error) {
+
+	expiration := ExpirationToken2Legged
+	if subject != "" {
+		expiration = ExpirationToken3Legged
+	}
+
 	token := auth.AccessToken{
 		ID:            uuid.NewString(),
 		ApplicationID: applicationId,
 		UserID:        subject,
 		Audience:      audience,
-		Expiration:    time.Now().Add(5 * time.Minute),
+		Expiration:    time.Now().Add(expiration),
 		Scopes:        scopes,
 		RefreshTokenID: func() string {
 			if refreshToken == nil {
