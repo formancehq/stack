@@ -3,15 +3,14 @@ package mongo
 import (
 	"context"
 	"fmt"
-	"os"
 	"time"
 
+	"github.com/formancehq/go-libs/sharedapi"
+	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/google/uuid"
-	"github.com/numary/go-libs/sharedapi"
-	"github.com/numary/go-libs/sharedlogging"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
@@ -19,6 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"
 )
 
 type Store struct {
@@ -36,9 +36,8 @@ func NewStore() (storage.Store, error) {
 
 	mongoDBUri := viper.GetString(flag.StorageMongoConnString)
 	sharedlogging.Infof("connecting to mongoDB URI: %s", mongoDBUri)
-	sharedlogging.Infof("env: %+v", os.Environ())
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDBUri))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDBUri).SetMonitor(otelmongo.NewMonitor()))
 	if err != nil {
 		return Store{}, fmt.Errorf("mongo.Connect: %w", err)
 	}
@@ -51,10 +50,10 @@ func NewStore() (storage.Store, error) {
 		client: client,
 		configsCollection: client.Database(
 			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.DBConfigs),
+			Collection(storage.CollectionConfigs),
 		attemptsCollection: client.Database(
 			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.DBAttempts),
+			Collection(storage.CollectionAttempts),
 	}, nil
 }
 

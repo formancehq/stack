@@ -8,11 +8,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/formancehq/go-libs/sharedlogging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/kafka"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/google/uuid"
-	"github.com/numary/go-libs/sharedlogging"
 	"github.com/pkg/errors"
 	"github.com/twmb/franz-go/pkg/kgo"
 )
@@ -114,6 +114,7 @@ func fetchMessages(ctx context.Context, kafkaClient kafka.Client, msgChan chan *
 		default:
 			fetches := kafkaClient.PollFetches(ctx)
 			if errs := fetches.Errors(); len(errs) > 0 {
+				sharedlogging.GetLogger(ctx).Errorf("POLL: %+v", errs)
 				for _, err := range errs {
 					select {
 					case <-ctx.Done():
@@ -150,25 +151,30 @@ func (w *Worker) processMessage(ctx context.Context, msgValue []byte) error {
 		ev.Type = strings.Join([]string{eventApp, eventType}, ".")
 	}
 
-	cur, err := w.store.FindManyConfigs(ctx, map[string]any{webhooks.KeyEventTypes: ev.Type})
+	filter := map[string]any{webhooks.KeyEventTypes: ev.Type}
+	sharedlogging.GetLogger(ctx).Debugf("searching configs with filter: %+v", filter)
+	cur, err := w.store.FindManyConfigs(ctx, filter)
 	if err != nil {
 		return errors.Wrap(err, "storage.store.FindManyConfigs")
 	}
 
 	for _, cfg := range cur.Data {
+		sharedlogging.GetLogger(ctx).Debugf("found one config: %+v", cfg)
 		data, err := json.Marshal(ev)
 		if err != nil {
 			return errors.Wrap(err, "json.Marshal event message")
 		}
 
-		attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retrySchedule, uuid.NewString(), 0, cfg, data)
+		attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retrySchedule,
+			uuid.NewString(), 0, cfg, data)
 		if err != nil {
 			return errors.Wrap(err, "sending webhook")
 		}
 
 		if attempt.Status == webhooks.StatusAttemptSuccess {
 			sharedlogging.GetLogger(ctx).Infof(
-				"webhook sent with ID %s to %s of type %s", attempt.WebhookID, cfg.Endpoint, ev.Type)
+				"webhook sent with ID %s to %s of type %s",
+				attempt.WebhookID, cfg.Endpoint, ev.Type)
 		}
 
 		if _, err := w.store.InsertOneAttempt(ctx, attempt); err != nil {

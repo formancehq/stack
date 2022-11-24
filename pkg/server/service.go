@@ -3,10 +3,10 @@ package server
 import (
 	"context"
 
+	"github.com/formancehq/go-libs/sharedapi"
+	"github.com/formancehq/go-libs/sharedlogging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
-	"github.com/numary/go-libs/sharedapi"
-	"github.com/numary/go-libs/sharedlogging"
 	"github.com/pkg/errors"
 )
 

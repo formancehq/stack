@@ -2,12 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"net/http"
 	"syscall"
 
+	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/worker"
-	"github.com/numary/go-libs/sharedlogging"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
@@ -31,7 +30,6 @@ func RunWorker(cmd *cobra.Command, _ []string) error {
 	app := fx.New(
 		worker.StartModule(
 			viper.GetString(flag.HttpBindAddressWorker),
-			http.DefaultClient,
 			viper.GetDuration(flag.RetryCron),
 			retrySchedule))
 

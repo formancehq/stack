@@ -3,8 +3,8 @@ package worker
 import (
 	"net/http"
 
+	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/julienschmidt/httprouter"
-	"github.com/numary/go-libs/sharedlogging"
 )
 
 const (

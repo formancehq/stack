@@ -1,15 +1,7 @@
 openapi: 3.0.3
 info:
   title: Webhooks server
-  version: v0.2.1
-
-servers:
-  - url: https://{organization}.o.formance.cloud/webhooks
-    description: Production server
-    variables:
-      organization:
-        description: The organization on which the webhooks server is located
-        default: ""
+  version: v0.2.2
 
 paths:
   /_healthcheck:
@@ -29,7 +21,7 @@ paths:
       description: Sorted by updated date descending
       operationId: getManyConfigs
       tags:
-        - Configs
+        - Webhooks
       parameters:
         - name: id
           in: query
@@ -72,17 +64,17 @@ paths:
         Insert a new config
       description: |
         Insert a new config.
-
+        
         The endpoint should be a valid https URL and be unique.
-
-        The secret is the endpoint's verification secret.
-        If not passed or empty, a secret is automatically generated.
+        
+        The secret is the endpoint's verification secret. 
+        If not passed or empty, a secret is automatically generated. 
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
-
+        
         All eventTypes are converted to lower-case when inserted.
       operationId: insertOneConfig
       tags:
-        - Configs
+        - Webhooks
       requestBody:
         content:
           application/json:
@@ -112,7 +104,7 @@ paths:
       summary: Delete one config
       operationId: deleteOneConfig
       tags:
-        - Configs
+        - Webhooks
       parameters:
         - name: id
           in: path
@@ -131,7 +123,7 @@ paths:
       summary: Activate one config
       operationId: activateOneConfig
       tags:
-        - Configs
+        - Webhooks
       parameters:
         - name: id
           in: path
@@ -170,7 +162,7 @@ paths:
       summary: Deactivate one config
       operationId: deactivateOneConfig
       tags:
-        - Configs
+        - Webhooks
       parameters:
         - name: id
           in: path
@@ -209,12 +201,12 @@ paths:
       summary: Change the signing secret of a config
       description: |
         Change the signing secret of the endpoint of a config.
-
-        If not passed or empty, a secret is automatically generated.
+        
+        If not passed or empty, a secret is automatically generated. 
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
       operationId: changeOneConfigSecret
       tags:
-        - Configs
+        - Webhooks
       requestBody:
         content:
           application/json:
@@ -224,6 +216,9 @@ paths:
                 secret:
                   type: string
                   example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+              required:
+                - secret
+
       parameters:
         - name: id
           in: path
@@ -296,8 +291,6 @@ components:
           type: string
           format: date-time
           example: "2022-07-20T08:32:59Z"
-        _id:
-          type: string
 
     Cursor:
       type: object

@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/formancehq/go-libs/sharedlogging"
 	webhooks "github.com/formancehq/webhooks/pkg"
-	"github.com/julienschmidt/httprouter"
-	"github.com/numary/go-libs/sharedlogging"
 )
 
-func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Request) {
 	cfg := webhooks.ConfigUser{}
 	if err := decodeJSONBody(r, &cfg, false); err != nil {
 		sharedlogging.GetLogger(r.Context()).Errorf("decodeJSONBody: %s", err)
