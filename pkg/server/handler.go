@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/formancehq/webhooks/pkg/storage"
-	"github.com/julienschmidt/httprouter"
+	"github.com/go-chi/chi/v5"
+	"github.com/riandyrn/otelchi"
 )
 
 const (
@@ -13,32 +14,36 @@ const (
 	PathActivate     = "/activate"
 	PathDeactivate   = "/deactivate"
 	PathChangeSecret = "/secret/change"
-	PathId           = "/:" + PathParamId
+	PathId           = "/{" + PathParamId + "}"
 	PathParamId      = "id"
 )
 
 type serverHandler struct {
-	*httprouter.Router
+	*chi.Mux
 
 	store storage.Store
 }
 
 func newServerHandler(store storage.Store) http.Handler {
 	h := &serverHandler{
-		Router: httprouter.New(),
-		store:  store,
+		Mux:   chi.NewRouter(),
+		store: store,
 	}
 
-	h.Router.GET(PathHealthCheck, h.HealthCheckHandle)
-	h.Router.GET(PathConfigs, h.getManyConfigsHandle)
-	h.Router.POST(PathConfigs, h.insertOneConfigHandle)
-	h.Router.DELETE(PathConfigs+PathId, h.deleteOneConfigHandle)
-	h.Router.PUT(PathConfigs+PathId+PathActivate, h.activateOneConfigHandle)
-	h.Router.PUT(PathConfigs+PathId+PathDeactivate, h.deactivateOneConfigHandle)
-	h.Router.PUT(PathConfigs+PathId+PathChangeSecret, h.changeSecretHandle)
-
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		h.ServeHTTP(w, r)
+	h.Mux.Use(otelchi.Middleware("webhooks"))
+	h.Mux.Use(func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			handler.ServeHTTP(w, r)
+		})
 	})
+	h.Mux.Get(PathHealthCheck, h.HealthCheckHandle)
+	h.Mux.Get(PathConfigs, h.getManyConfigsHandle)
+	h.Mux.Post(PathConfigs, h.insertOneConfigHandle)
+	h.Mux.Delete(PathConfigs+PathId, h.deleteOneConfigHandle)
+	h.Mux.Put(PathConfigs+PathId+PathActivate, h.activateOneConfigHandle)
+	h.Mux.Put(PathConfigs+PathId+PathDeactivate, h.deactivateOneConfigHandle)
+	h.Mux.Put(PathConfigs+PathId+PathChangeSecret, h.changeSecretHandle)
+
+	return h
 }

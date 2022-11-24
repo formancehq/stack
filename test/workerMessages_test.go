@@ -21,6 +21,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
 )
 
@@ -83,9 +84,9 @@ func TestWorkerMessages(t *testing.T) {
 		viper.Set(flag.RetriesSchedule, retriesSchedule)
 
 		workerMessagesApp := fxtest.New(t,
+			fx.Supply(httpServerSuccess.Client()),
 			messages.StartModule(
 				viper.GetString(flag.HttpBindAddressWorkerMessages),
-				httpServerSuccess.Client(),
 				retriesSchedule,
 			))
 		require.NoError(t, workerMessagesApp.Start(context.Background()))
@@ -148,9 +149,9 @@ func TestWorkerMessages(t *testing.T) {
 		viper.Set(flag.RetriesSchedule, retriesSchedule)
 
 		workerMessagesApp := fxtest.New(t,
+			fx.Supply(httpServerFail.Client()),
 			messages.StartModule(
 				viper.GetString(flag.HttpBindAddressWorkerMessages),
-				httpServerFail.Client(),
 				retriesSchedule,
 			))
 		require.NoError(t, workerMessagesApp.Start(context.Background()))

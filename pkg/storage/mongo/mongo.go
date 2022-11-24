@@ -18,6 +18,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"
 )
 
 type Store struct {
@@ -36,7 +37,7 @@ func NewStore() (storage.Store, error) {
 	mongoDBUri := viper.GetString(flag.StorageMongoConnString)
 	sharedlogging.Infof("connecting to mongoDB URI: %s", mongoDBUri)
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDBUri))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDBUri).SetMonitor(otelmongo.NewMonitor()))
 	if err != nil {
 		return Store{}, fmt.Errorf("mongo.Connect: %w", err)
 	}

@@ -9,10 +9,9 @@ import (
 	"github.com/formancehq/go-libs/sharedapi"
 	"github.com/formancehq/go-libs/sharedlogging"
 	webhooks "github.com/formancehq/webhooks/pkg"
-	"github.com/julienschmidt/httprouter"
 )
 
-func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Request) {
 	filter, err := buildQueryFilter(r.URL.Query())
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

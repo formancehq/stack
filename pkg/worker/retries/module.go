@@ -3,7 +3,6 @@ package retries
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"os"
 	"time"
 
@@ -15,14 +14,14 @@ import (
 	"go.uber.org/fx"
 )
 
-func StartModule(addr string, httpClient *http.Client, retriesCron time.Duration, retriesSchedule []time.Duration) fx.Option {
+func StartModule(addr string, retriesCron time.Duration, retriesSchedule []time.Duration) fx.Option {
 	var options []fx.Option
 
 	options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
 
 	options = append(options, fx.Provide(
-		func() (string, *http.Client, time.Duration, []time.Duration) {
-			return addr, httpClient, retriesCron, retriesSchedule
+		func() (string, time.Duration, []time.Duration) {
+			return addr, retriesCron, retriesSchedule
 		},
 		httpserver.NewMuxServer,
 		mongo.NewStore,

@@ -19,6 +19,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
 )
 
@@ -73,9 +74,9 @@ func TestWorkerRetries(t *testing.T) {
 		viper.Set(flag.RetriesSchedule, retriesSchedule)
 
 		workerRetriesApp := fxtest.New(t,
+			fx.Supply(httpServerSuccess.Client()),
 			retries.StartModule(
 				viper.GetString(flag.HttpBindAddressWorkerRetries),
-				httpServerSuccess.Client(),
 				viper.GetDuration(flag.RetriesCron),
 				retriesSchedule))
 		require.NoError(t, workerRetriesApp.Start(context.Background()))
@@ -151,9 +152,9 @@ func TestWorkerRetries(t *testing.T) {
 		viper.Set(flag.RetriesSchedule, retriesSchedule)
 
 		workerRetriesApp := fxtest.New(t,
+			fx.Supply(httpServerFail.Client()),
 			retries.StartModule(
 				viper.GetString(flag.HttpBindAddressWorkerRetries),
-				httpServerFail.Client(),
 				viper.GetDuration(flag.RetriesCron),
 				retriesSchedule))
 		require.NoError(t, workerRetriesApp.Start(context.Background()))
@@ -229,9 +230,9 @@ func TestWorkerRetries(t *testing.T) {
 		require.NoError(t, err)
 
 		workerRetriesApp := fxtest.New(t,
+			fx.Supply(httpServerFail.Client()),
 			retries.StartModule(
 				viper.GetString(flag.HttpBindAddressWorkerRetries),
-				httpServerFail.Client(),
 				viper.GetDuration(flag.RetriesCron),
 				retriesSchedule))
 		require.NoError(t, workerRetriesApp.Start(context.Background()))

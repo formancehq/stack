@@ -8,13 +8,14 @@ import (
 	"github.com/formancehq/go-libs/sharedapi"
 	"github.com/formancehq/go-libs/sharedlogging"
 	webhooks "github.com/formancehq/webhooks/pkg"
-	"github.com/julienschmidt/httprouter"
+	"github.com/go-chi/chi/v5"
 )
 
-func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	cursor, err := updateOneConfigActivation(r.Context(), false, p.ByName(PathParamId), h.store)
+func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, PathParamId)
+	cursor, err := updateOneConfigActivation(r.Context(), false, id, h.store)
 	if err == nil {
-		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, p.ByName(PathParamId), PathDeactivate)
+		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, id, PathDeactivate)
 		resp := sharedapi.BaseResponse[webhooks.Config]{
 			Cursor: &cursor,
 		}
@@ -24,13 +25,13 @@ func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http
 			return
 		}
 	} else if errors.Is(err, ErrConfigNotFound) {
-		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathDeactivate, ErrConfigNotFound)
+		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, id, PathDeactivate, ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	} else if errors.Is(err, ErrConfigNotModified) {
-		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathDeactivate, ErrConfigNotModified)
+		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, id, PathDeactivate, ErrConfigNotModified)
 		w.WriteHeader(http.StatusNotModified)
 	} else {
-		sharedlogging.GetLogger(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, p.ByName(PathParamId), PathDeactivate, err)
+		sharedlogging.GetLogger(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, id, PathDeactivate, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }

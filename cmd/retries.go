@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"net/http"
 	"syscall"
 
 	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/webhooks/cmd/flag"
+	"github.com/formancehq/webhooks/pkg/otlp"
 	"github.com/formancehq/webhooks/pkg/worker/retries"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -25,12 +25,13 @@ func RunWorkerRetries(cmd *cobra.Command, _ []string) error {
 		syscall.Environ(), viper.AllKeys())
 
 	app := fx.New(
+		otlp.HttpClientModule(),
 		retries.StartModule(
 			viper.GetString(flag.HttpBindAddressWorkerRetries),
-			http.DefaultClient,
 			viper.GetDuration(flag.RetriesCron),
 			retriesSchedule,
-		))
+		),
+	)
 
 	if err := app.Start(cmd.Context()); err != nil {
 		return fmt.Errorf("fx.App.Start: %w", err)

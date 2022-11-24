@@ -3,7 +3,6 @@ package messages
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"os"
 	"time"
 
@@ -15,14 +14,14 @@ import (
 	"go.uber.org/fx"
 )
 
-func StartModule(addr string, httpClient *http.Client, retriesSchedule []time.Duration) fx.Option {
+func StartModule(addr string, retriesSchedule []time.Duration) fx.Option {
 	var options []fx.Option
 
 	options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
 
 	options = append(options, fx.Provide(
-		func() (string, *http.Client, []time.Duration) {
-			return addr, httpClient, retriesSchedule
+		func() (string, []time.Duration) {
+			return addr, retriesSchedule
 		},
 		httpserver.NewMuxServer,
 		mongo.NewStore,
