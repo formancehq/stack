@@ -18,10 +18,6 @@ var serverCmd = &cobra.Command{
 	RunE:  RunServer,
 }
 
-func init() {
-	rootCmd.AddCommand(serverCmd)
-}
-
 func RunServer(cmd *cobra.Command, _ []string) error {
 	sharedlogging.GetLogger(cmd.Context()).Debugf(
 		"starting webhooks server module: env variables: %+v viper keys: %+v",

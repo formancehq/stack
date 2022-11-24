@@ -11,24 +11,29 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	rootCmd = &cobra.Command{
+var retriesSchedule []time.Duration
+
+func NewRootCommand() *cobra.Command {
+	root := &cobra.Command{
 		Use: "webhooks",
 	}
-	retriesSchedule []time.Duration
-)
+
+	var err error
+	sharedotlptraces.InitOTLPTracesFlags(root.PersistentFlags())
+	retriesSchedule, err = flag.Init(root.PersistentFlags())
+	cobra.CheckErr(err)
+
+	root.AddCommand(serverCmd)
+	root.AddCommand(workerCmd)
+	root.AddCommand(versionCmd)
+
+	return root
+}
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := NewRootCommand().Execute(); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
 		sharedlogging.Errorf("cobra.Command.Execute: %s", err)
 		os.Exit(1)
 	}
-}
-
-func init() {
-	var err error
-	sharedotlptraces.InitOTLPTracesFlags(rootCmd.PersistentFlags())
-	retriesSchedule, err = flag.Init(rootCmd.PersistentFlags())
-	cobra.CheckErr(err)
 }

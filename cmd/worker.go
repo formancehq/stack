@@ -7,7 +7,3 @@ import (
 var workerCmd = &cobra.Command{
 	Use: "worker",
 }
-
-func init() {
-	rootCmd.AddCommand(workerCmd)
-}
