@@ -1,0 +1,66 @@
+openapi: 3.1.0
+info:
+  title: Search API
+  version: latest
+servers:
+- url: /
+paths:
+  /:
+    post:
+      description: Search with Query
+      operationId: search
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+        required: true
+      responses:
+        "200":
+          description: Success
+      summary: Search
+      tags:
+      - Search
+components:
+  schemas:
+    Query:
+      example:
+        size: ""
+        terms: ""
+        ledgers: ""
+        nextToken: ""
+        target: ""
+      properties:
+        ledgers:
+          items: {}
+        nextToken: {}
+        size: {}
+        terms:
+          items: {}
+        target: {}
+    Response:
+      properties:
+        data:
+          description: The payload
+        cursor:
+          $ref: '#/components/schemas/Response_cursor'
+        kind:
+          description: "The kind of the object, either \"TRANSACTION\" or \"META\""
+        ledger:
+          description: The ledger
+    Response_cursor_total:
+      properties:
+        value: {}
+        relation: {}
+    Response_cursor:
+      properties:
+        pageSize: {}
+        hasMore: {}
+        total:
+          $ref: '#/components/schemas/Response_cursor_total'
+        next: {}
+        previous: {}
+        data:
+          items:
+            allOf:
+            - {}

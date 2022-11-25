@@ -1,4 +1,6 @@
-FROM jeffail/benthos:3.65
+FROM jeffail/benthos:4.10
 WORKDIR /config
 COPY benthos /config
-CMD ["-c", "/config/config.yml"]
+ENV ELASTICSEARCH_BATCHING_COUNT 50
+ENV ELASTICSEARCH_BATCHING_PERIOD 1s
+CMD ["-c", "config.yml", "-r", "/config/resources/*.yaml", "-t", "/config/templates/*.yaml", "streams", "/config/streams/*.yaml"]

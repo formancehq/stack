@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/aquasecurity/esquery"
+	search "github.com/formancehq/search/pkg"
+	"github.com/formancehq/search/pkg/es"
+	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/numary/ledger/pkg/core"
-	search "github.com/numary/search/pkg"
-	"github.com/numary/search/pkg/es"
-	"github.com/numary/search/pkg/searchengine"
 	"github.com/stretchr/testify/assert"
 )
 

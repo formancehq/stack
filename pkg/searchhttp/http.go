@@ -2,18 +2,16 @@ package searchhttp
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/aquasecurity/esquery"
-	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/search/pkg/searchengine"
+	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
 )
@@ -36,7 +34,7 @@ func resolveQuery(r *http.Request) (*cursorTokenInfo, interface{}, error) {
 		if err != nil {
 			return nil, nil, errors.Wrap(err, "first phase decoding")
 		}
-		r.Body = ioutil.NopCloser(buf)
+		r.Body = io.NopCloser(buf)
 		target = rq.Target
 		cursorToken = rq.CursorToken
 	} else {
@@ -118,6 +116,8 @@ func resolveQuery(r *http.Request) (*cursorTokenInfo, interface{}, error) {
 				qq.WithSort("address", esquery.OrderDesc)
 			case "TRANSACTION":
 				qq.WithSort("txid", esquery.OrderDesc)
+			case "PAYMENT":
+				qq.WithSort("reference", esquery.OrderDesc)
 			}
 		}
 	}
@@ -148,7 +148,7 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 		switch qq := searchQuery.(type) {
 		case *searchengine.SingleDocTypeSearch:
 			qq.Size++
-			searchResponse, err := qq.Do(context.Background(), engine)
+			searchResponse, err := qq.Do(r.Context(), engine)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusServiceUnavailable)
 				return
@@ -250,7 +250,7 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 			}
 
 		case *searchengine.MultiDocTypeSearch:
-			searchResponse, err := qq.Do(context.Background(), engine)
+			searchResponse, err := qq.Do(r.Context(), engine)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusServiceUnavailable)
 				return

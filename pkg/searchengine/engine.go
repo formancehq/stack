@@ -5,10 +5,13 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/numary/search/pkg/es"
+	"github.com/formancehq/search/pkg/es"
 	"github.com/opensearch-project/opensearch-go"
 	"github.com/opensearch-project/opensearch-go/opensearchapi"
 	"github.com/pkg/errors"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 )
 
 type Engine interface {
@@ -62,10 +65,27 @@ type DefaultEngine struct {
 
 func (e *DefaultEngine) doRequest(ctx context.Context, m map[string]interface{}) (*es.Response, error) {
 
+	ctx, span := otel.Tracer("com.formance.search").Start(ctx, "Search")
+	defer span.End()
+
+	recordFailingSpan := func(err error) error {
+		if err == nil {
+			return nil
+		}
+		span.RecordError(err)
+		span.SetStatus(codes.Error, err.Error())
+		return err
+	}
+
 	data, err := json.Marshal(m)
 	if err != nil {
-		return nil, errors.Wrap(err, "marshalling query")
+		return nil, recordFailingSpan(errors.Wrap(err, "marshalling query"))
 	}
+
+	span.SetAttributes(
+		attribute.String("query", string(data)),
+		attribute.StringSlice("indices", e.indices),
+	)
 
 	httpResponse, err := e.openSearchClient.Search(
 		e.openSearchClient.Search.WithBody(bytes.NewReader(data)),
@@ -75,19 +95,27 @@ func (e *DefaultEngine) doRequest(ctx context.Context, m map[string]interface{})
 		e.openSearchClient.Search.WithContext(ctx),
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "doing request")
+		return nil, recordFailingSpan(errors.Wrap(err, "doing request"))
 	}
 	defer httpResponse.Body.Close()
 
 	if httpResponse.IsError() {
-		return nil, errors.New(httpResponse.Status())
+		if httpResponse.StatusCode == 404 {
+			return &es.Response{}, nil
+		}
+		return nil, recordFailingSpan(errors.New(httpResponse.Status()))
 	}
 
 	res := &es.Response{}
 	err = json.NewDecoder(httpResponse.Body).Decode(res)
 	if err != nil {
-		return nil, errors.Wrap(err, "decoding result")
+		return nil, recordFailingSpan(errors.Wrap(err, "decoding result"))
 	}
+
+	span.SetAttributes(attribute.Int("hits.total.value", res.Hits.Total.Value))
+	span.SetAttributes(attribute.String("hits.total.relation", res.Hits.Total.Relation))
+	span.SetAttributes(attribute.Int("took", res.Took))
+
 	return res, nil
 }
 

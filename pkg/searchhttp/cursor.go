@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 
-	"github.com/numary/search/pkg/searchengine"
+	"github.com/formancehq/search/pkg/searchengine"
 )
 
 type Total struct {

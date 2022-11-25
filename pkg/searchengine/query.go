@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 
 	"github.com/aquasecurity/esquery"
-	search "github.com/numary/search/pkg"
-	"github.com/numary/search/pkg/es"
+	search "github.com/formancehq/search/pkg"
+	"github.com/formancehq/search/pkg/es"
 	"github.com/pkg/errors"
 )
 

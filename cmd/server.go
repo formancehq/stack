@@ -8,38 +8,30 @@ import (
 	"os"
 	"strings"
 
+	"github.com/formancehq/go-libs/oauth2/oauth2introspect"
+	"github.com/formancehq/go-libs/sharedauth"
+	sharedhealth "github.com/formancehq/go-libs/sharedhealth/pkg"
+	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
+	"github.com/formancehq/search/pkg/searchengine"
+	"github.com/formancehq/search/pkg/searchhttp"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/numary/go-libs/oauth2/oauth2introspect"
-	"github.com/numary/go-libs/sharedauth"
-	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
-	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/go-libs/sharedotlp/sharedotlptraces"
-	"github.com/numary/search/pkg/searchengine"
-	"github.com/numary/search/pkg/searchhttp"
 	"github.com/opensearch-project/opensearch-go"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
 )
 
 const (
-	openSearchServiceFlag                = "open-search-service"
-	openSearchSchemeFlag                 = "open-search-scheme"
-	esIndicesFlag                        = "es-indices"
-	bindFlag                             = "bind"
-	otelTracesFlag                       = "otel-traces"
-	otelTracesBatchFlag                  = "otel-traces-batch"
-	otelTracesExporterFlag               = "otel-traces-exporter"
-	otelTracesExporterJaegerEndpointFlag = "otel-traces-exporter-jaeger-endpoint"
-	otelTracesExporterJaegerUserFlag     = "otel-traces-exporter-jaeger-user"
-	otelTracesExporterJaegerPasswordFlag = "otel-traces-exporter-jaeger-password"
-	otelTracesExporterOTLPModeFlag       = "otel-traces-exporter-otlp-mode"
-	otelTracesExporterOTLPEndpointFlag   = "otel-traces-exporter-otlp-endpoint"
-	otelTracesExporterOTLPInsecureFlag   = "otel-traces-exporter-otlp-insecure"
+	openSearchServiceFlag = "open-search-service"
+	openSearchSchemeFlag  = "open-search-scheme"
+	esIndicesFlag         = "es-indices"
+	bindFlag              = "bind"
 
 	authBasicEnabledFlag        = "auth-basic-enabled"
 	authBasicCredentialsFlag    = "auth-basic-credentials"
@@ -98,9 +90,7 @@ func NewServer() *cobra.Command {
 				}),
 			)
 
-			if viper.GetBool(otelTracesFlag) {
-				options = append(options, telemetryModule())
-			}
+			options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
 			options = append(options, apiModule("search", bind, esIndices...))
 
 			app := fx.New(options...)
@@ -120,20 +110,12 @@ func NewServer() *cobra.Command {
 	cmd.Flags().StringSlice(esIndicesFlag, searchengine.DefaultEsIndices, "ES indices to look")
 	cmd.Flags().String(openSearchServiceFlag, "", "Open search service hostname")
 	cmd.Flags().String(openSearchSchemeFlag, "https", "OpenSearch scheme")
-	cmd.Flags().Bool(otelTracesFlag, false, "Enable OpenTelemetry traces support")
-	cmd.Flags().Bool(otelTracesBatchFlag, false, "Use OpenTelemetry batching")
-	cmd.Flags().String(otelTracesExporterFlag, "stdout", "OpenTelemetry traces exporter")
-	cmd.Flags().String(otelTracesExporterJaegerEndpointFlag, "", "OpenTelemetry traces Jaeger exporter endpoint")
-	cmd.Flags().String(otelTracesExporterJaegerUserFlag, "", "OpenTelemetry traces Jaeger exporter user")
-	cmd.Flags().String(otelTracesExporterJaegerPasswordFlag, "", "OpenTelemetry traces Jaeger exporter password")
-	cmd.Flags().String(otelTracesExporterOTLPModeFlag, "grpc", "OpenTelemetry traces OTLP exporter mode (grpc|http)")
-	cmd.Flags().String(otelTracesExporterOTLPEndpointFlag, "", "OpenTelemetry traces grpc endpoint")
-	cmd.Flags().Bool(otelTracesExporterOTLPInsecureFlag, false, "OpenTelemetry traces grpc insecure")
 	cmd.Flags().Bool(authBasicEnabledFlag, false, "Enable basic auth")
 	cmd.Flags().StringSlice(authBasicCredentialsFlag, []string{}, "HTTP basic auth credentials (<username>:<password>)")
 	cmd.Flags().Bool(authBearerEnabledFlag, false, "Enable bearer auth")
 	cmd.Flags().String(authBearerIntrospectUrlFlag, "", "OAuth2 introspect URL")
 	cmd.Flags().String(authBearerAudienceFlag, "", "OAuth2 audience template")
+	sharedotlptraces.InitOTLPTracesFlags(cmd.Flags())
 
 	return cmd
 }
@@ -153,7 +135,7 @@ func opensearchClientModule(openSearchServiceHost string, esIndices ...string) f
 
 			return opensearch.NewClient(opensearch.Config{
 				Addresses: []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
-				Transport: httpTransport,
+				Transport: otelhttp.NewTransport(httpTransport),
 			})
 		}),
 		fx.Invoke(func(lc fx.Lifecycle, client *opensearch.Client) {
@@ -170,13 +152,16 @@ func apiModule(serviceName, bind string, esIndices ...string) fx.Option {
 	return fx.Options(
 		fx.Provide(fx.Annotate(func(openSearchClient *opensearch.Client, tp trace.TracerProvider, healthController *sharedhealth.HealthController) (http.Handler, error) {
 			router := mux.NewRouter()
-			if viper.GetBool(otelTracesFlag) {
-				router.Use(otelmux.Middleware(serviceName, otelmux.WithTracerProvider(tp)))
-			}
+
 			router.Use(handlers.RecoveryHandler())
 			router.Handle(healthCheckPath, http.HandlerFunc(healthController.Check))
 
-			protected := router.PathPrefix("/").Subrouter()
+			routerWithTraces := router.PathPrefix("/").Subrouter()
+			if viper.GetBool(sharedotlptraces.OtelTracesFlag) {
+				routerWithTraces.Use(otelmux.Middleware(serviceName, otelmux.WithTracerProvider(tp)))
+			}
+
+			protected := routerWithTraces.PathPrefix("/").Subrouter()
 
 			methods := make([]sharedauth.Method, 0)
 			if viper.GetBool(authBasicEnabledFlag) {
@@ -203,7 +188,7 @@ func apiModule(serviceName, bind string, esIndices ...string) fx.Option {
 			if len(methods) > 0 {
 				protected.Use(sharedauth.Middleware(methods...))
 			}
-			router.PathPrefix("/").Handler(searchhttp.Handler(searchengine.NewDefaultEngine(
+			routerWithTraces.PathPrefix("/").Handler(searchhttp.Handler(searchengine.NewDefaultEngine(
 				openSearchClient,
 				searchengine.WithESIndices(esIndices...),
 			)))
@@ -226,31 +211,4 @@ func apiModule(serviceName, bind string, esIndices ...string) fx.Option {
 			})
 		}),
 	)
-}
-
-func telemetryModule() fx.Option {
-	return sharedotlptraces.TracesModule(sharedotlptraces.ModuleConfig{
-		Batch:    viper.GetBool(otelTracesBatchFlag),
-		Exporter: viper.GetString(otelTracesExporterFlag),
-		JaegerConfig: func() *sharedotlptraces.JaegerConfig {
-			if viper.GetString(otelTracesExporterFlag) != sharedotlptraces.JaegerExporter {
-				return nil
-			}
-			return &sharedotlptraces.JaegerConfig{
-				Endpoint: viper.GetString(otelTracesExporterJaegerEndpointFlag),
-				User:     viper.GetString(otelTracesExporterJaegerUserFlag),
-				Password: viper.GetString(otelTracesExporterJaegerPasswordFlag),
-			}
-		}(),
-		OTLPConfig: func() *sharedotlptraces.OTLPConfig {
-			if viper.GetString(otelTracesExporterFlag) != sharedotlptraces.OTLPExporter {
-				return nil
-			}
-			return &sharedotlptraces.OTLPConfig{
-				Mode:     viper.GetString(otelTracesExporterOTLPModeFlag),
-				Endpoint: viper.GetString(otelTracesExporterOTLPEndpointFlag),
-				Insecure: viper.GetBool(otelTracesExporterOTLPInsecureFlag),
-			}
-		}(),
-	})
 }
