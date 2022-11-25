@@ -19,7 +19,8 @@ pipeline:
                     "type": this.payload.type,
                     "status": this.payload.status,
                     "id": this.payload.id,
-                    "initialAmount": this.payload.initialAmount
+                    "initialAmount": this.payload.initialAmount,
+                    "createdAt": this.payload.createdAt
                 },
                 "kind": "PAYMENT",
                 "when": this.date
