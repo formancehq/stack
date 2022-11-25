@@ -64,6 +64,7 @@ services:
       DELEGATED_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
       DELEGATED_ISSUER: http://localhost:5556
       BASE_URL: http://localhost:8080
+      OTEL_SERVICE_NAME: auth
     depends_on:
       - postgres
       - jaeger

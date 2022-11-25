@@ -10,9 +10,9 @@ import (
 	"gopkg.in/square/go-jose.v2"
 )
 
-func ReadKeySet(ctx context.Context, configuration delegatedauth.Config) (*jose.JSONWebKeySet, error) {
+func ReadKeySet(httpClient *http.Client, ctx context.Context, configuration delegatedauth.Config) (*jose.JSONWebKeySet, error) {
 	// TODO: Inefficient, should keep public keys locally and use them instead of calling the network
-	discoveryConfiguration, err := client.Discover(configuration.Issuer, http.DefaultClient)
+	discoveryConfiguration, err := client.Discover(configuration.Issuer, httpClient)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ func ReadKeySet(ctx context.Context, configuration delegatedauth.Config) (*jose.
 		return nil, err
 	}
 
-	rsp, err := http.DefaultClient.Do(req)
+	rsp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}

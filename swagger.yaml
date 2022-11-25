@@ -362,8 +362,7 @@ components:
   schemas:
     Metadata:
       type: object
-      additionalProperties:
-        type: string
+      additionalProperties: {}
     ClientOptions:
       type: object
       properties:

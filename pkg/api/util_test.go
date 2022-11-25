@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/numary/go-libs/sharedapi"
+	"github.com/formancehq/go-libs/sharedapi"
 	"github.com/stretchr/testify/require"
 )
 

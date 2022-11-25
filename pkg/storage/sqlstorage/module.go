@@ -5,7 +5,7 @@ import (
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/oidc"
-	sharedhealth "github.com/numary/go-libs/sharedhealth/pkg"
+	sharedhealth "github.com/formancehq/go-libs/sharedhealth/pkg"
 	"github.com/zitadel/oidc/pkg/op"
 	"go.uber.org/fx"
 )

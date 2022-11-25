@@ -14,19 +14,22 @@ import (
 	"encoding/json"
 )
 
+// checks if the ClientSecret type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ClientSecret{}
+
 // ClientSecret struct for ClientSecret
 type ClientSecret struct {
-	LastDigits string `json:"lastDigits"`
-	Name string `json:"name"`
-	Id string `json:"id"`
-	Metadata *map[string]string `json:"metadata,omitempty"`
+	LastDigits interface{} `json:"lastDigits"`
+	Name interface{} `json:"name"`
+	Id interface{} `json:"id"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // NewClientSecret instantiates a new ClientSecret object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewClientSecret(lastDigits string, name string, id string) *ClientSecret {
+func NewClientSecret(lastDigits interface{}, name interface{}, id interface{}) *ClientSecret {
 	this := ClientSecret{}
 	this.LastDigits = lastDigits
 	this.Name = name
@@ -43,9 +46,10 @@ func NewClientSecretWithDefaults() *ClientSecret {
 }
 
 // GetLastDigits returns the LastDigits field value
-func (o *ClientSecret) GetLastDigits() string {
+// If the value is explicit nil, the zero value for interface{} will be returned
+func (o *ClientSecret) GetLastDigits() interface{} {
 	if o == nil {
-		var ret string
+		var ret interface{}
 		return ret
 	}
 
@@ -54,22 +58,24 @@ func (o *ClientSecret) GetLastDigits() string {
 
 // GetLastDigitsOk returns a tuple with the LastDigits field value
 // and a boolean to check if the value has been set.
-func (o *ClientSecret) GetLastDigitsOk() (*string, bool) {
-	if o == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ClientSecret) GetLastDigitsOk() (*interface{}, bool) {
+	if o == nil || isNil(o.LastDigits) {
 		return nil, false
 	}
 	return &o.LastDigits, true
 }
 
 // SetLastDigits sets field value
-func (o *ClientSecret) SetLastDigits(v string) {
+func (o *ClientSecret) SetLastDigits(v interface{}) {
 	o.LastDigits = v
 }
 
 // GetName returns the Name field value
-func (o *ClientSecret) GetName() string {
+// If the value is explicit nil, the zero value for interface{} will be returned
+func (o *ClientSecret) GetName() interface{} {
 	if o == nil {
-		var ret string
+		var ret interface{}
 		return ret
 	}
 
@@ -78,22 +84,24 @@ func (o *ClientSecret) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
-func (o *ClientSecret) GetNameOk() (*string, bool) {
-	if o == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ClientSecret) GetNameOk() (*interface{}, bool) {
+	if o == nil || isNil(o.Name) {
 		return nil, false
 	}
 	return &o.Name, true
 }
 
 // SetName sets field value
-func (o *ClientSecret) SetName(v string) {
+func (o *ClientSecret) SetName(v interface{}) {
 	o.Name = v
 }
 
 // GetId returns the Id field value
-func (o *ClientSecret) GetId() string {
+// If the value is explicit nil, the zero value for interface{} will be returned
+func (o *ClientSecret) GetId() interface{} {
 	if o == nil {
-		var ret string
+		var ret interface{}
 		return ret
 	}
 
@@ -102,65 +110,75 @@ func (o *ClientSecret) GetId() string {
 
 // GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *ClientSecret) GetIdOk() (*string, bool) {
-	if o == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ClientSecret) GetIdOk() (*interface{}, bool) {
+	if o == nil || isNil(o.Id) {
 		return nil, false
 	}
 	return &o.Id, true
 }
 
 // SetId sets field value
-func (o *ClientSecret) SetId(v string) {
+func (o *ClientSecret) SetId(v interface{}) {
 	o.Id = v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *ClientSecret) GetMetadata() map[string]string {
-	if o == nil || o.Metadata == nil {
-		var ret map[string]string
+// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ClientSecret) GetMetadata() map[string]interface{} {
+	if o == nil {
+		var ret map[string]interface{}
 		return ret
 	}
-	return *o.Metadata
+	return o.Metadata
 }
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ClientSecret) GetMetadataOk() (*map[string]string, bool) {
-	if o == nil || o.Metadata == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ClientSecret) GetMetadataOk() (*map[string]interface{}, bool) {
+	if o == nil || isNil(o.Metadata) {
 		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *ClientSecret) HasMetadata() bool {
-	if o != nil && o.Metadata != nil {
+	if o != nil && isNil(o.Metadata) {
 		return true
 	}
 
 	return false
 }
 
-// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
-func (o *ClientSecret) SetMetadata(v map[string]string) {
-	o.Metadata = &v
+// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
+func (o *ClientSecret) SetMetadata(v map[string]interface{}) {
+	o.Metadata = v
 }
 
 func (o ClientSecret) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ClientSecret) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
+	if o.LastDigits != nil {
 		toSerialize["lastDigits"] = o.LastDigits
 	}
-	if true {
+	if o.Name != nil {
 		toSerialize["name"] = o.Name
 	}
-	if true {
+	if o.Id != nil {
 		toSerialize["id"] = o.Id
 	}
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableClientSecret struct {

@@ -14,17 +14,20 @@ import (
 	"encoding/json"
 )
 
+// checks if the ScopeOptions type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ScopeOptions{}
+
 // ScopeOptions struct for ScopeOptions
 type ScopeOptions struct {
-	Label string `json:"label"`
-	Metadata *map[string]string `json:"metadata,omitempty"`
+	Label interface{} `json:"label"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // NewScopeOptions instantiates a new ScopeOptions object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewScopeOptions(label string) *ScopeOptions {
+func NewScopeOptions(label interface{}) *ScopeOptions {
 	this := ScopeOptions{}
 	this.Label = label
 	return &this
@@ -39,9 +42,10 @@ func NewScopeOptionsWithDefaults() *ScopeOptions {
 }
 
 // GetLabel returns the Label field value
-func (o *ScopeOptions) GetLabel() string {
+// If the value is explicit nil, the zero value for interface{} will be returned
+func (o *ScopeOptions) GetLabel() interface{} {
 	if o == nil {
-		var ret string
+		var ret interface{}
 		return ret
 	}
 
@@ -50,59 +54,69 @@ func (o *ScopeOptions) GetLabel() string {
 
 // GetLabelOk returns a tuple with the Label field value
 // and a boolean to check if the value has been set.
-func (o *ScopeOptions) GetLabelOk() (*string, bool) {
-	if o == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ScopeOptions) GetLabelOk() (*interface{}, bool) {
+	if o == nil || isNil(o.Label) {
 		return nil, false
 	}
 	return &o.Label, true
 }
 
 // SetLabel sets field value
-func (o *ScopeOptions) SetLabel(v string) {
+func (o *ScopeOptions) SetLabel(v interface{}) {
 	o.Label = v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *ScopeOptions) GetMetadata() map[string]string {
-	if o == nil || o.Metadata == nil {
-		var ret map[string]string
+// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *ScopeOptions) GetMetadata() map[string]interface{} {
+	if o == nil {
+		var ret map[string]interface{}
 		return ret
 	}
-	return *o.Metadata
+	return o.Metadata
 }
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ScopeOptions) GetMetadataOk() (*map[string]string, bool) {
-	if o == nil || o.Metadata == nil {
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *ScopeOptions) GetMetadataOk() (*map[string]interface{}, bool) {
+	if o == nil || isNil(o.Metadata) {
 		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *ScopeOptions) HasMetadata() bool {
-	if o != nil && o.Metadata != nil {
+	if o != nil && isNil(o.Metadata) {
 		return true
 	}
 
 	return false
 }
 
-// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
-func (o *ScopeOptions) SetMetadata(v map[string]string) {
-	o.Metadata = &v
+// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
+func (o *ScopeOptions) SetMetadata(v map[string]interface{}) {
+	o.Metadata = v
 }
 
 func (o ScopeOptions) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ScopeOptions) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
+	if o.Label != nil {
 		toSerialize["label"] = o.Label
 	}
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableScopeOptions struct {

@@ -64,7 +64,7 @@ func TestVerifyAccessToken(t *testing.T) {
 	}}
 	storageFacade := authoidc.NewStorageFacade(storage, serverRelyingParty, key, staticClients...)
 
-	keySet, err := authoidc.ReadKeySet(context.Background(), delegatedauth.Config{
+	keySet, err := authoidc.ReadKeySet(http.DefaultClient, context.Background(), delegatedauth.Config{
 		Issuer:       mockOIDC.Issuer(),
 		ClientID:     mockOIDC.ClientID,
 		ClientSecret: mockOIDC.ClientSecret,

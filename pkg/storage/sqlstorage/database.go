@@ -8,11 +8,12 @@ import (
 	"time"
 
 	auth "github.com/formancehq/auth/pkg"
-	"github.com/numary/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/sharedlogging"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/plugin/opentelemetry/tracing"
 )
 
 const (
@@ -41,9 +42,16 @@ func OpenPostgresDatabase(uri string) gorm.Dialector {
 }
 
 func LoadGorm(d gorm.Dialector, debug bool) (*gorm.DB, error) {
-	return gorm.Open(d, &gorm.Config{
+	db, err := gorm.Open(d, &gorm.Config{
 		Logger: newLogger(debug),
 	})
+	if err != nil {
+		return nil, err
+	}
+	if err := db.Use(tracing.NewPlugin()); err != nil {
+		return nil, err
+	}
+	return db, nil
 }
 
 func MigrateTables(ctx context.Context, db *gorm.DB) error {

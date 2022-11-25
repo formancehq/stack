@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"net/http"
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/api"
@@ -12,11 +13,12 @@ import (
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
-	"github.com/numary/go-libs/sharedlogging"
-	"github.com/numary/go-libs/sharedotlp/pkg/sharedotlptraces"
+	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.uber.org/fx"
 )
 
@@ -60,6 +62,21 @@ EL/wy5C80pa3jahniqVgO5L6zz0ZLtRIRE7aCtCIu826gctJ1+ShIso=
 -----END RSA PRIVATE KEY-----
 `
 )
+
+func otlpHttpClientModule() fx.Option {
+	return fx.Provide(func() *http.Client {
+		return &http.Client{
+			Transport: otelhttp.NewTransport(http.DefaultTransport, otelhttp.WithSpanNameFormatter(func(operation string, r *http.Request) string {
+				str := fmt.Sprintf("%s %s", r.Method, r.URL.Path)
+				if len(r.URL.Query()) == 0 {
+					return str
+				}
+
+				return fmt.Sprintf("%s?%s", str, r.URL.Query().Encode())
+			})),
+		}
+	})
+}
 
 var serveCmd = &cobra.Command{
 	Use: "serve",
@@ -117,6 +134,7 @@ var serveCmd = &cobra.Command{
 		}
 
 		options := []fx.Option{
+			otlpHttpClientModule(),
 			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
 			fx.Supply(delegatedauth.Config{
 				Issuer:       delegatedIssuer,
@@ -136,9 +154,7 @@ var serveCmd = &cobra.Command{
 			fx.NopLogger,
 		}
 
-		if tm := sharedotlptraces.CLITracesModule(viper.GetViper()); tm != nil {
-			options = append(options, tm)
-		}
+		options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
 
 		app := fx.New(options...)
 		err = app.Start(cmd.Context())

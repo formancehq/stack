@@ -86,7 +86,7 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	key, _ := rsa.GenerateKey(rand.Reader, 2048)
 	storageFacade := oidc.NewStorageFacade(storage, serverRelyingParty, key)
 
-	keySet, err := oidc.ReadKeySet(context.Background(), delegatedauth.Config{
+	keySet, err := oidc.ReadKeySet(http.DefaultClient, context.Background(), delegatedauth.Config{
 		Issuer:       mockOIDC.Issuer(),
 		ClientID:     mockOIDC.ClientID,
 		ClientSecret: mockOIDC.ClientSecret,
