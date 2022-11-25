@@ -49,6 +49,9 @@ func NewServer() *cobra.Command {
 		Use:          "serve",
 		Short:        "Launch the search server",
 		SilenceUsage: true,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return viper.BindPFlags(cmd.Flags())
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			debug := viper.GetBool(debugFlag)
 
@@ -113,11 +116,6 @@ func NewServer() *cobra.Command {
 	cmd.Flags().String(authBearerIntrospectUrlFlag, "", "OAuth2 introspect URL")
 	cmd.Flags().String(authBearerAudienceFlag, "", "OAuth2 audience template")
 	sharedotlptraces.InitOTLPTracesFlags(cmd.Flags())
-
-	err := viper.BindPFlags(cmd.Flags())
-	if err != nil {
-		return nil
-	}
 
 	return cmd
 }
