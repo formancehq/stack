@@ -17,6 +17,10 @@ paths:
         required: true
       responses:
         "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
           description: Success
       summary: Search
       tags:
@@ -39,6 +43,19 @@ components:
           items: {}
         target: {}
     Response:
+      example:
+        cursor:
+          next: ""
+          total:
+            value: ""
+            relation: ""
+          previous: ""
+          data: ""
+          hasMore: ""
+          pageSize: ""
+        ledger: ""
+        data: ""
+        kind: ""
       properties:
         data:
           description: The payload
@@ -49,10 +66,22 @@ components:
         ledger:
           description: The ledger
     Response_cursor_total:
+      example:
+        value: ""
+        relation: ""
       properties:
         value: {}
         relation: {}
     Response_cursor:
+      example:
+        next: ""
+        total:
+          value: ""
+          relation: ""
+        previous: ""
+        data: ""
+        hasMore: ""
+        pageSize: ""
       properties:
         pageSize: {}
         hasMore: {}
