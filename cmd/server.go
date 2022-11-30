@@ -134,8 +134,9 @@ func opensearchClientModule(openSearchServiceHost string, esIndices ...string) f
 			}
 
 			return opensearch.NewClient(opensearch.Config{
-				Addresses: []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
-				Transport: otelhttp.NewTransport(httpTransport),
+				Addresses:            []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
+				Transport:            otelhttp.NewTransport(httpTransport),
+				UseResponseCheckOnly: true,
 			})
 		}),
 		fx.Invoke(func(lc fx.Lifecycle, client *opensearch.Client) {
