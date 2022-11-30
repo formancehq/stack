@@ -28,10 +28,11 @@ import (
 )
 
 const (
-	openSearchServiceFlag = "open-search-service"
-	openSearchSchemeFlag  = "open-search-scheme"
-	esIndicesFlag         = "es-indices"
-	bindFlag              = "bind"
+	openSearchServiceFlag    = "open-search-service"
+	openSearchSchemeFlag     = "open-search-scheme"
+	esIndicesFlag            = "es-indices"
+	esDisableMappingInitFlag = "mapping-init-disabled"
+	bindFlag                 = "bind"
 
 	authBasicEnabledFlag        = "auth-basic-enabled"
 	authBasicCredentialsFlag    = "auth-basic-credentials"
@@ -79,7 +80,7 @@ func NewServer() *cobra.Command {
 			}
 
 			options := make([]fx.Option, 0)
-			options = append(options, opensearchClientModule(openSearchServiceHost, esIndices...))
+			options = append(options, opensearchClientModule(openSearchServiceHost, !viper.GetBool(esDisableMappingInitFlag), esIndices...))
 			options = append(options,
 				sharedhealth.Module(),
 				sharedhealth.ProvideHealthCheck(func(client *opensearch.Client) sharedhealth.NamedCheck {
@@ -115,6 +116,7 @@ func NewServer() *cobra.Command {
 	cmd.Flags().Bool(authBearerEnabledFlag, false, "Enable bearer auth")
 	cmd.Flags().String(authBearerIntrospectUrlFlag, "", "OAuth2 introspect URL")
 	cmd.Flags().String(authBearerAudienceFlag, "", "OAuth2 audience template")
+	cmd.Flags().Bool(esDisableMappingInitFlag, false, "Disable mapping initialization")
 	sharedotlptraces.InitOTLPTracesFlags(cmd.Flags())
 
 	return cmd
@@ -125,8 +127,8 @@ func exitWithError(logger *logrus.Logger, msg string) {
 	os.Exit(1)
 }
 
-func opensearchClientModule(openSearchServiceHost string, esIndices ...string) fx.Option {
-	return fx.Options(
+func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIndices ...string) fx.Option {
+	options := []fx.Option{
 		fx.Provide(func() (*opensearch.Client, error) {
 			httpTransport := http.DefaultTransport
 			httpTransport.(*http.Transport).TLSClientConfig = &tls.Config{
@@ -139,14 +141,17 @@ func opensearchClientModule(openSearchServiceHost string, esIndices ...string) f
 				UseResponseCheckOnly: true,
 			})
 		}),
-		fx.Invoke(func(lc fx.Lifecycle, client *opensearch.Client) {
+	}
+	if loadMapping {
+		options = append(options, fx.Invoke(func(lc fx.Lifecycle, client *opensearch.Client) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					return searchengine.LoadDefaultMapping(context.TODO(), client, esIndices...)
 				},
 			})
-		}),
-	)
+		}))
+	}
+	return fx.Options(options...)
 }
 
 func apiModule(serviceName, bind string, esIndices ...string) fx.Option {
