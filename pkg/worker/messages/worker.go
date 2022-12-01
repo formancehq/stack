@@ -163,7 +163,7 @@ func (w *WorkerMessages) processMessage(ctx context.Context, msgValue []byte) er
 		}
 
 		attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retriesSchedule,
-			uuid.NewString(), 0, cfg, data)
+			uuid.NewString(), 0, cfg, data, false)
 		if err != nil {
 			return errors.Wrap(err, "sending webhook")
 		}

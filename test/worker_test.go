@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/formancehq/webhooks/pkg/security"
 )
@@ -19,7 +18,6 @@ func webhooksSuccessHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	timestamp := time.Unix(timeInt, 0)
 
 	payload, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -27,13 +25,13 @@ func webhooksSuccessHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, err := security.Verify(signatures, id, timestamp, secret, payload)
+	ok, err := security.Verify(signatures, id, timeInt, secret, payload)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	if !ok {
-		http.Error(w, "", http.StatusBadRequest)
+		http.Error(w, "security.Verify NOK", http.StatusBadRequest)
 		return
 	}
 

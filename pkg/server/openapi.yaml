@@ -116,6 +116,30 @@ paths:
           description: Config successfully deleted.
           content: {}
 
+  /configs/{id}/test:
+    get:
+      summary: Test one config
+      description: |
+        Test one config by sending a webhook to its endpoint.
+      operationId: testOneConfig
+      tags:
+        - Webhooks
+      parameters:
+        - name: id
+          in: path
+          description: Config ID
+          required: true
+          schema:
+            type: string
+            example: 4997257d-dfb6-445b-929c-cbe2ab182818
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttemptResponse'
+
   /configs/{id}/activate:
     put:
       summary: Activate one config
@@ -284,6 +308,38 @@ components:
           type: string
           format: date-time
           example: "2022-07-20T08:32:59Z"
+
+    AttemptResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Attempt'
+
+    Attempt:
+      properties:
+        webhookID:
+          type: string
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+        date:
+          type: string
+          format: date-time
+        config:
+          $ref: '#/components/schemas/ConfigActivated'
+        payload:
+          type: string
+          example: '{"data":"test"}'
+        statusCode:
+          type: integer
+          example: 200
+        retryAttempt:
+          type: integer
+          example: 1
+        status:
+          type: string
+          example: success
+        nextRetryAfter:
+          type: string
+          format: date-time
 
     Cursor:
       type: object

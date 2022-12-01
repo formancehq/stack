@@ -106,7 +106,7 @@ func (w *WorkerRetries) attemptRetries(ctx context.Context, errChan chan error) 
 
 				newAttemptNb := atts[0].RetryAttempt + 1
 				attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retriesSchedule,
-					id, newAttemptNb, atts[0].Config, []byte(atts[0].Payload))
+					id, newAttemptNb, atts[0].Config, []byte(atts[0].Payload), false)
 				if err != nil {
 					errChan <- errors.Wrap(err, "webhooks.MakeAttempt")
 					continue

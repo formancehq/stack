@@ -54,6 +54,7 @@ func TestWorkerMessages(t *testing.T) {
 	}()
 
 	serverApp := fxtest.New(t,
+		fx.Supply(httpServerSuccess.Client()),
 		server.StartModule(
 			viper.GetString(flag.HttpBindAddressServer)))
 	require.NoError(t, serverApp.Start(context.Background()))
