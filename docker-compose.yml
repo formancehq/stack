@@ -287,9 +287,8 @@ services:
       - traefik.http.routers.search.middlewares=jwt@docker,search@docker,cors@docker
       - traefik.http.middlewares.search.stripprefix.prefixes=/api/search
 
-
   webhooks:
-    image: "ghcr.io/formancehq/webhooks:v0.2.3"
+    image: "ghcr.io/formancehq/webhooks:v0.3.0"
     restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
@@ -312,7 +311,7 @@ services:
       - traefik.http.middlewares.webhooks.stripprefix.prefixes=/api/webhooks
 
   webhooks-worker:
-    image: "ghcr.io/formancehq/webhooks:v0.2.3"
+    image: "ghcr.io/formancehq/webhooks:v0.3.0"
     command: worker messages
     restart: always
     healthcheck:
@@ -334,7 +333,7 @@ services:
       - traefik.enable=false
 
   webhooks-retries:
-    image: "ghcr.io/formancehq/webhooks:v0.2.3"
+    image: "ghcr.io/formancehq/webhooks:v0.3.0"
     command: worker retries
     restart: always
     healthcheck:
