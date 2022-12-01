@@ -8,6 +8,7 @@ output_resources:
         - ${OPENSEARCH_URL}
         id: ${!meta("id")}
         sniff: false
+        healthcheck: false
         index: ${OPENSEARCH_INDEX}
         action: ${!meta("action")}
         tls:

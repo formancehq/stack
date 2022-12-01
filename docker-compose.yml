@@ -39,6 +39,7 @@ services:
       JAEGER_COLLECTOR: "collector:6831"
       OPENSEARCH_INDEX: "ledger"
       KAFKA_ADDRESS: "redpanda:29092"
+      TOPIC_PREFIX: ""
     depends_on:
     - opensearch
     - redpanda

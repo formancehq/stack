@@ -11,7 +11,7 @@ mapping: |
   root = {
     "kafka": {
       "addresses": [ env("KAFKA_ADDRESS") ],
-      "topics": [ this.topic ],
+      "topics": [ env("TOPIC_PREFIX") + this.topic ],
       "target_version": env("KAFKA_VERSION"),
       "consumer_group": this.consumer_group,
       "checkpoint_limit": 1024,
