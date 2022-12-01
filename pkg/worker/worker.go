@@ -166,7 +166,7 @@ func (w *Worker) processMessage(ctx context.Context, msgValue []byte) error {
 		}
 
 		attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retrySchedule,
-			uuid.NewString(), 0, cfg, data)
+			uuid.NewString(), 0, cfg, data, false)
 		if err != nil {
 			return errors.Wrap(err, "sending webhook")
 		}
@@ -220,7 +220,7 @@ func (w *Worker) attemptRetries(ctx context.Context, errChan chan error) {
 
 				newAttemptNb := atts[0].RetryAttempt + 1
 				attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retrySchedule,
-					id, newAttemptNb, atts[0].Config, []byte(atts[0].Payload))
+					id, newAttemptNb, atts[0].Config, []byte(atts[0].Payload), false)
 				if err != nil {
 					errChan <- errors.Wrap(err, "webhooks.MakeAttempt")
 					continue

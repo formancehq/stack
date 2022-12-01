@@ -11,6 +11,7 @@ import (
 const (
 	PathHealthCheck  = "/_healthcheck"
 	PathConfigs      = "/configs"
+	PathTest         = "/test"
 	PathActivate     = "/activate"
 	PathDeactivate   = "/deactivate"
 	PathChangeSecret = "/secret/change"
@@ -21,13 +22,15 @@ const (
 type serverHandler struct {
 	*chi.Mux
 
-	store storage.Store
+	store      storage.Store
+	httpClient *http.Client
 }
 
-func newServerHandler(store storage.Store) http.Handler {
+func newServerHandler(store storage.Store, httpClient *http.Client) http.Handler {
 	h := &serverHandler{
-		Mux:   chi.NewRouter(),
-		store: store,
+		Mux:        chi.NewRouter(),
+		store:      store,
+		httpClient: httpClient,
 	}
 
 	h.Mux.Use(otelchi.Middleware("webhooks"))
@@ -41,6 +44,7 @@ func newServerHandler(store storage.Store) http.Handler {
 	h.Mux.Get(PathConfigs, h.getManyConfigsHandle)
 	h.Mux.Post(PathConfigs, h.insertOneConfigHandle)
 	h.Mux.Delete(PathConfigs+PathId, h.deleteOneConfigHandle)
+	h.Mux.Get(PathConfigs+PathId+PathTest, h.testOneConfigHandle)
 	h.Mux.Put(PathConfigs+PathId+PathActivate, h.activateOneConfigHandle)
 	h.Mux.Put(PathConfigs+PathId+PathDeactivate, h.deactivateOneConfigHandle)
 	h.Mux.Put(PathConfigs+PathId+PathChangeSecret, h.changeSecretHandle)

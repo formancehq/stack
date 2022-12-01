@@ -6,6 +6,7 @@ import (
 
 	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/webhooks/cmd/flag"
+	"github.com/formancehq/webhooks/pkg/otlp"
 	"github.com/formancehq/webhooks/pkg/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -24,6 +25,7 @@ func RunServer(cmd *cobra.Command, _ []string) error {
 		syscall.Environ(), viper.AllKeys())
 
 	app := fx.New(
+		otlp.HttpClientModule(),
 		server.StartModule(
 			viper.GetString(flag.HttpBindAddressServer)))
 

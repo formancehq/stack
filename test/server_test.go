@@ -3,6 +3,7 @@ package test_test
 import (
 	"context"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
@@ -13,11 +14,20 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
 )
 
 func TestServer(t *testing.T) {
+	// New test server with success handler
+	httpServerSuccess := httptest.NewServer(http.HandlerFunc(webhooksSuccessHandler))
+	defer func() {
+		httpServerSuccess.CloseClientConnections()
+		httpServerSuccess.Close()
+	}()
+
 	serverApp := fxtest.New(t,
+		fx.Supply(httpServerSuccess.Client()),
 		server.StartModule(
 			viper.GetString(flag.HttpBindAddressServer)))
 
@@ -184,6 +194,25 @@ func TestServer(t *testing.T) {
 			invalidSecret2 := validConfigs[0]
 			requestServer(t, http.MethodPut, server.PathConfigs+"/"+insertedIds[0]+server.PathChangeSecret, http.StatusBadRequest, invalidSecret2)
 		})
+	})
+
+	t.Run("GET "+server.PathConfigs+"/{id}"+server.PathTest, func(t *testing.T) {
+		resBody := requestServer(t, http.MethodPost, server.PathConfigs, http.StatusOK, webhooks.ConfigUser{
+			Endpoint:   httpServerSuccess.URL,
+			Secret:     secret,
+			EventTypes: []string{"TYPE1"},
+		})
+		c, ok := decodeSingleResponse[webhooks.Config](t, resBody)
+		assert.Equal(t, true, ok)
+		require.NoError(t, resBody.Close())
+
+		resBody = requestServer(t, http.MethodGet, server.PathConfigs+"/"+c.ID+server.PathTest, http.StatusOK)
+		attempt, ok := decodeSingleResponse[webhooks.Attempt](t, resBody)
+		assert.Equal(t, true, ok)
+		assert.Equal(t, webhooks.StatusAttemptSuccess, attempt.Status)
+		assert.Equal(t, `{"data":"test"}`, attempt.Payload)
+
+		requestServer(t, http.MethodDelete, server.PathConfigs+"/"+c.ID, http.StatusOK)
 	})
 
 	t.Run("DELETE "+server.PathConfigs, func(t *testing.T) {
