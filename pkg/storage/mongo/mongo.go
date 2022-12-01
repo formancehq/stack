@@ -2,19 +2,15 @@ package mongo
 
 import (
 	"context"
-	"fmt"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedapi"
 	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -39,10 +35,10 @@ func NewStore() (storage.Store, error) {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDBUri).SetMonitor(otelmongo.NewMonitor()))
 	if err != nil {
-		return Store{}, fmt.Errorf("mongo.Connect: %w", err)
+		return Store{}, errors.Wrap(err, "mongo.Connect")
 	}
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
-		return Store{}, fmt.Errorf("mongo.Client.Ping: %w", err)
+		return Store{}, errors.Wrap(err, "mongo.Client.Ping")
 	}
 
 	return Store{
@@ -57,77 +53,90 @@ func NewStore() (storage.Store, error) {
 	}, nil
 }
 
-func (s Store) FindManyConfigs(ctx context.Context, filter map[string]any) (sharedapi.Cursor[webhooks.Config], error) {
-	res := sharedapi.Cursor[webhooks.Config]{
-		Data: []webhooks.Config{},
-	}
+func (s Store) FindManyConfigs(ctx context.Context, filter map[string]any) ([]webhooks.Config, error) {
+	res := []webhooks.Config{}
 	opts := options.Find().SetSort(bson.M{webhooks.KeyUpdatedAt: -1})
 	cur, err := s.configsCollection.Find(ctx, filter, opts)
 	if err != nil {
-		return res, fmt.Errorf("mongo.Collection.Find: %w", err)
+		return res, errors.Wrap(err, "mongo.Collection.Find")
 	}
 	defer cur.Close(ctx)
 
-	if err := cur.All(ctx, &res.Data); err != nil {
-		return sharedapi.Cursor[webhooks.Config]{},
-			fmt.Errorf("mongo.Cursor.All: %w", err)
+	if err := cur.All(ctx, &res); err != nil {
+		return []webhooks.Config{}, errors.Wrap(err, "mongo.Cursor.All")
 	}
 
 	return res, nil
 }
 
-func (s Store) InsertOneConfig(ctx context.Context, cfgUser webhooks.ConfigUser) (insertedID string, err error) {
-	cfg := webhooks.Config{
-		ConfigUser: cfgUser,
-		ID:         uuid.NewString(),
-		Active:     true,
-		CreatedAt:  time.Now().UTC(),
-		UpdatedAt:  time.Now().UTC(),
-	}
-
-	res, err := s.configsCollection.InsertOne(ctx, cfg)
+func (s Store) InsertOneConfig(ctx context.Context, cfgUser webhooks.ConfigUser) (webhooks.Config, error) {
+	cfg := webhooks.NewConfig(cfgUser)
+	_, err := s.configsCollection.InsertOne(ctx, cfg)
 	if err != nil {
-		return "", fmt.Errorf("store.Collection.InsertOne: %w", err)
+		return webhooks.Config{}, errors.Wrap(err, "store.Collection.InsertOne")
 	}
 
-	return res.InsertedID.(string), nil
+	return cfg, nil
 }
 
-func (s Store) DeleteOneConfig(ctx context.Context, id string) (deletedCount int64, err error) {
+func (s Store) DeleteOneConfig(ctx context.Context, id string) error {
 	res, err := s.configsCollection.DeleteOne(ctx, bson.D{
 		{Key: webhooks.KeyID, Value: id},
 	})
 	if err != nil {
-		return 0, fmt.Errorf("momgo.Collection.DeleteOne: %w", err)
+		return errors.Wrap(err, "momgo.Collection.DeleteOne")
 	}
 
-	return res.DeletedCount, nil
+	if res.DeletedCount == 0 {
+		return storage.ErrConfigNotFound
+	}
+
+	return nil
 }
 
-func (s Store) UpdateOneConfigActivation(ctx context.Context, id string, active bool,
-) (matchedCount, modifiedCount, upsertedCount int64, upsertedID any, err error) {
-	filter := bson.D{
+func (s Store) UpdateOneConfigActivation(ctx context.Context, id string, active bool) (webhooks.Config, error) {
+	cfg := webhooks.Config{}
+	filter := bson.D{{Key: webhooks.KeyID, Value: id}}
+	if err := s.configsCollection.FindOne(ctx, filter).Decode(&cfg); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return webhooks.Config{}, storage.ErrConfigNotFound
+		}
+		return webhooks.Config{}, errors.Wrap(err, "decode config")
+	}
+	if cfg.Active == active {
+		return webhooks.Config{}, storage.ErrConfigNotModified
+	}
+
+	filter = bson.D{
 		{Key: webhooks.KeyID, Value: id},
 		{Key: webhooks.KeyActive, Value: !active},
 	}
-
 	update := bson.D{{Key: "$set", Value: bson.D{
 		{Key: webhooks.KeyActive, Value: active},
 		{Key: webhooks.KeyUpdatedAt, Value: time.Now().UTC()},
 	}}}
-
-	res, err := s.configsCollection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return 0, 0, 0, nil,
-			errors.Wrap(err, "mongo.Collection.UpdateOne")
+	if _, err := s.configsCollection.UpdateOne(ctx, filter, update); err != nil {
+		return webhooks.Config{}, errors.Wrap(err, "mongo.Collection.UpdateOne")
 	}
 
-	return res.MatchedCount, res.ModifiedCount, res.UpsertedCount, res.UpsertedID, nil
+	cfg.Active = active
+	return cfg, nil
 }
 
-func (s Store) UpdateOneConfigSecret(ctx context.Context, id, secret string,
-) (matchedCount, modifiedCount, upsertedCount int64, upsertedID any, err error) {
-	filter := bson.D{
+func (s Store) UpdateOneConfigSecret(ctx context.Context, id, secret string) (webhooks.Config, error) {
+	cfg := webhooks.Config{}
+	filter := bson.D{{Key: webhooks.KeyID, Value: id}}
+	if err := s.configsCollection.FindOne(ctx, filter).Decode(&cfg); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return webhooks.Config{}, storage.ErrConfigNotFound
+		}
+		return webhooks.Config{}, errors.Wrap(err, "decode updated config")
+	}
+	if cfg.Secret == secret {
+		return webhooks.Config{}, storage.ErrConfigNotModified
+	}
+
+	filter = bson.D{
 		{Key: webhooks.KeyID, Value: id},
 		{Key: webhooks.KeySecret, Value: bson.D{
 			{Key: "$ne", Value: secret},
@@ -137,29 +146,25 @@ func (s Store) UpdateOneConfigSecret(ctx context.Context, id, secret string,
 		{Key: webhooks.KeySecret, Value: secret},
 		{Key: webhooks.KeyUpdatedAt, Value: time.Now().UTC()},
 	}}}
-
-	res, err := s.configsCollection.UpdateOne(ctx, filter, update)
-	if err != nil {
-		return 0, 0, 0, nil,
-			fmt.Errorf("mongo.Collection.UpdateOne: %w", err)
+	if _, err := s.configsCollection.UpdateOne(ctx, filter, update); err != nil {
+		return webhooks.Config{}, errors.Wrap(err, "mongo.Collection.UpdateOne")
 	}
 
-	return res.MatchedCount, res.ModifiedCount, res.UpsertedCount, res.UpsertedID, nil
+	cfg.Secret = secret
+	return cfg, nil
 }
 
-func (s Store) FindManyAttempts(ctx context.Context, filter map[string]any) (sharedapi.Cursor[webhooks.Attempt], error) {
-	res := sharedapi.Cursor[webhooks.Attempt]{
-		Data: []webhooks.Attempt{},
-	}
+func (s Store) FindManyAttempts(ctx context.Context, filter map[string]any) ([]webhooks.Attempt, error) {
+	res := []webhooks.Attempt{}
 	opts := options.Find().SetSort(bson.M{webhooks.KeyID: -1})
 	cur, err := s.attemptsCollection.Find(ctx, filter, opts)
 	if err != nil {
-		return res, fmt.Errorf("mongo.Collection.Find: %w", err)
+		return res, errors.Wrap(err, "mongo.Collection.Find")
 	}
 	defer cur.Close(ctx)
 
-	if err := cur.All(ctx, &res.Data); err != nil {
-		return res, fmt.Errorf("mongo.Cursor.All: %w", err)
+	if err := cur.All(ctx, &res); err != nil {
+		return res, errors.Wrap(err, "mongo.Cursor.All")
 	}
 
 	return res, nil
@@ -179,8 +184,15 @@ func (s Store) FindDistinctWebhookIDs(ctx context.Context, filter map[string]any
 	return res, nil
 }
 
-func (s Store) UpdateManyAttemptsStatus(ctx context.Context, webhookID string, status string,
-) (matchedCount, modifiedCount, upsertedCount int64, upsertedID any, err error) {
+func (s Store) UpdateManyAttemptsStatus(ctx context.Context, webhookID, status string) ([]webhooks.Attempt, error) {
+	atts, err := s.FindManyAttempts(ctx, map[string]any{webhooks.KeyWebhookID: webhookID})
+	if err != nil {
+		return []webhooks.Attempt{}, errors.Wrap(err, "mongo.Collection.UpdateMany")
+	}
+	if len(atts) == 0 {
+		return []webhooks.Attempt{}, storage.ErrAttemptIDNotFound
+	}
+
 	filter := bson.D{
 		{Key: webhooks.KeyWebhookID, Value: webhookID},
 		{Key: webhooks.KeyStatus, Value: bson.D{
@@ -193,20 +205,25 @@ func (s Store) UpdateManyAttemptsStatus(ctx context.Context, webhookID string, s
 
 	res, err := s.attemptsCollection.UpdateMany(ctx, filter, update)
 	if err != nil {
-		return 0, 0, 0, nil,
-			fmt.Errorf("mongo.Collection.UpdateMany: %w", err)
+		return []webhooks.Attempt{}, errors.Wrap(err, "mongo.Collection.UpdateMany")
+	}
+	if res.ModifiedCount == 0 {
+		return []webhooks.Attempt{}, storage.ErrAttemptNotModified
 	}
 
-	return res.MatchedCount, res.ModifiedCount, res.UpsertedCount, res.UpsertedID, nil
+	for i := range atts {
+		atts[i].Status = status
+	}
+	return atts, nil
 }
 
-func (s Store) InsertOneAttempt(ctx context.Context, att webhooks.Attempt) (insertedID string, err error) {
-	res, err := s.attemptsCollection.InsertOne(ctx, att)
+func (s Store) InsertOneAttempt(ctx context.Context, att webhooks.Attempt) error {
+	_, err := s.attemptsCollection.InsertOne(ctx, att)
 	if err != nil {
-		return "", fmt.Errorf("store.Collection.InsertOne: %w", err)
+		return errors.Wrap(err, "store.Collection.InsertOne")
 	}
 
-	return res.InsertedID.(primitive.ObjectID).String(), nil
+	return nil
 }
 
 func (s Store) Close(ctx context.Context) error {
@@ -215,7 +232,8 @@ func (s Store) Close(ctx context.Context) error {
 	}
 
 	if err := s.client.Disconnect(ctx); err != nil {
-		return fmt.Errorf("mongo.Client.Disconnect: %w", err)
+		return errors.Wrap(err, "mongo.Client.Disconnect")
 	}
+
 	return nil
 }

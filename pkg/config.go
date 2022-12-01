@@ -7,13 +7,9 @@ import (
 	"net/url"
 	"strings"
 	"time"
-)
 
-type ConfigUser struct {
-	Endpoint   string   `json:"endpoint" bson:"endpoint"`
-	Secret     string   `json:"secret" bson:"secret"`
-	EventTypes []string `json:"eventTypes" bson:"eventTypes"`
-}
+	"github.com/google/uuid"
+)
 
 type Config struct {
 	ConfigUser `bson:"inline"`
@@ -21,6 +17,22 @@ type Config struct {
 	Active     bool      `json:"active" bson:"active"`
 	CreatedAt  time.Time `json:"createdAt" bson:"createdAt"`
 	UpdatedAt  time.Time `json:"updatedAt" bson:"updatedAt"`
+}
+
+type ConfigUser struct {
+	Endpoint   string   `json:"endpoint" bson:"endpoint"`
+	Secret     string   `json:"secret" bson:"secret"`
+	EventTypes []string `json:"eventTypes" bson:"eventTypes"`
+}
+
+func NewConfig(cfgUser ConfigUser) Config {
+	return Config{
+		ConfigUser: cfgUser,
+		ID:         uuid.NewString(),
+		Active:     true,
+		CreatedAt:  time.Now().UTC(),
+		UpdatedAt:  time.Now().UTC(),
+	}
 }
 
 const (

@@ -150,12 +150,12 @@ func (w *WorkerMessages) processMessage(ctx context.Context, msgValue []byte) er
 
 	filter := map[string]any{webhooks.KeyEventTypes: ev.Type}
 	sharedlogging.GetLogger(ctx).Debugf("searching configs with filter: %+v", filter)
-	cur, err := w.store.FindManyConfigs(ctx, filter)
+	cfgs, err := w.store.FindManyConfigs(ctx, filter)
 	if err != nil {
 		return errors.Wrap(err, "storage.store.FindManyConfigs")
 	}
 
-	for _, cfg := range cur.Data {
+	for _, cfg := range cfgs {
 		sharedlogging.GetLogger(ctx).Debugf("found one config: %+v", cfg)
 		data, err := json.Marshal(ev)
 		if err != nil {
@@ -174,7 +174,7 @@ func (w *WorkerMessages) processMessage(ctx context.Context, msgValue []byte) er
 				attempt.WebhookID, cfg.Endpoint, ev.Type)
 		}
 
-		if _, err := w.store.InsertOneAttempt(ctx, attempt); err != nil {
+		if err := w.store.InsertOneAttempt(ctx, attempt); err != nil {
 			return errors.Wrap(err, "storage.store.InsertOneAttempt")
 		}
 	}

@@ -94,30 +94,33 @@ func (w *WorkerRetries) attemptRetries(ctx context.Context, errChan chan error) 
 
 			for _, id := range ids {
 				filter[webhooks.KeyWebhookID] = id
-				res, err := w.store.FindManyAttempts(ctx, filter)
+				atts, err := w.store.FindManyAttempts(ctx, filter)
 				if err != nil {
 					errChan <- errors.Wrap(err, "storage.Store.FindManyAttempts")
 					continue
 				}
-				if len(res.Data) == 0 {
+				if len(atts) == 0 {
 					errChan <- fmt.Errorf("%w for webhookID: %s", ErrNoAttemptsFound, id)
 					continue
 				}
 
-				newAttemptNb := res.Data[0].RetryAttempt + 1
+				newAttemptNb := atts[0].RetryAttempt + 1
 				attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retriesSchedule,
-					id, newAttemptNb, res.Data[0].Config, []byte(res.Data[0].Payload))
+					id, newAttemptNb, atts[0].Config, []byte(atts[0].Payload))
 				if err != nil {
 					errChan <- errors.Wrap(err, "webhooks.MakeAttempt")
 					continue
 				}
 
-				if _, err := w.store.InsertOneAttempt(ctx, attempt); err != nil {
+				if err := w.store.InsertOneAttempt(ctx, attempt); err != nil {
 					errChan <- errors.Wrap(err, "storage.Store.InsertOneAttempt retried")
 					continue
 				}
 
-				if _, _, _, _, err := w.store.UpdateManyAttemptsStatus(ctx, id, attempt.Status); err != nil {
+				if _, err := w.store.UpdateManyAttemptsStatus(ctx, id, attempt.Status); err != nil {
+					if errors.Is(err, storage.ErrAttemptNotModified) {
+						continue
+					}
 					errChan <- errors.Wrap(err, "storage.Store.UpdateManyAttemptsStatus")
 					continue
 				}
