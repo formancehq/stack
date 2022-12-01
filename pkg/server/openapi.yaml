@@ -64,13 +64,13 @@ paths:
         Insert a new config
       description: |
         Insert a new config.
-        
+
         The endpoint should be a valid https URL and be unique.
-        
-        The secret is the endpoint's verification secret. 
-        If not passed or empty, a secret is automatically generated. 
+
+        The secret is the endpoint's verification secret.
+        If not passed or empty, a secret is automatically generated.
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
-        
+
         All eventTypes are converted to lower-case when inserted.
       operationId: insertOneConfig
       tags:
@@ -195,8 +195,8 @@ paths:
       summary: Change the signing secret of a config
       description: |
         Change the signing secret of the endpoint of a config.
-        
-        If not passed or empty, a secret is automatically generated. 
+
+        If not passed or empty, a secret is automatically generated.
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
       operationId: changeOneConfigSecret
       tags:
