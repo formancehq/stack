@@ -3,8 +3,8 @@ package storage
 import (
 	"context"
 
-	"github.com/formancehq/go-libs/sharedapi"
 	webhooks "github.com/formancehq/webhooks/pkg"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -12,15 +12,22 @@ const (
 	CollectionAttempts = "attempts"
 )
 
+var (
+	ErrConfigNotFound     = errors.New("config not found")
+	ErrConfigNotModified  = errors.New("config not modified")
+	ErrAttemptIDNotFound  = errors.New("attempt webhookID not found")
+	ErrAttemptNotModified = errors.New("attempt not modified")
+)
+
 type Store interface {
-	FindManyConfigs(ctx context.Context, filter map[string]any) (sharedapi.Cursor[webhooks.Config], error)
-	InsertOneConfig(ctx context.Context, cfg webhooks.ConfigUser) (string, error)
-	DeleteOneConfig(ctx context.Context, id string) (int64, error)
-	UpdateOneConfigActivation(ctx context.Context, id string, active bool) (matchedCount, modifiedCount, upsertedCount int64, upsertedID any, err error)
-	UpdateOneConfigSecret(ctx context.Context, id, secret string) (matchedCount, modifiedCount, upsertedCount int64, upsertedID any, err error)
-	FindManyAttempts(ctx context.Context, filter map[string]any) (sharedapi.Cursor[webhooks.Attempt], error)
+	FindManyConfigs(ctx context.Context, filter map[string]any) ([]webhooks.Config, error)
+	InsertOneConfig(ctx context.Context, cfg webhooks.ConfigUser) (webhooks.Config, error)
+	DeleteOneConfig(ctx context.Context, id string) error
+	UpdateOneConfigActivation(ctx context.Context, id string, active bool) (webhooks.Config, error)
+	UpdateOneConfigSecret(ctx context.Context, id, secret string) (webhooks.Config, error)
+	FindManyAttempts(ctx context.Context, filter map[string]any) ([]webhooks.Attempt, error)
 	FindDistinctWebhookIDs(ctx context.Context, filter map[string]any) ([]string, error)
-	UpdateManyAttemptsStatus(ctx context.Context, webhookID string, status string) (matchedCount, modifiedCount, upsertedCount int64, upsertedID any, err error)
-	InsertOneAttempt(ctx context.Context, att webhooks.Attempt) (insertedID string, err error)
+	UpdateManyAttemptsStatus(ctx context.Context, webhookID string, status string) ([]webhooks.Attempt, error)
+	InsertOneAttempt(ctx context.Context, att webhooks.Attempt) error
 	Close(ctx context.Context) error
 }

@@ -18,7 +18,7 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	cursor, err := h.store.FindManyConfigs(r.Context(), filter)
+	cfgs, err := h.store.FindManyConfigs(r.Context(), filter)
 	if err != nil {
 		sharedlogging.GetLogger(r.Context()).Errorf("storage.store.FindManyConfigs: %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -26,7 +26,9 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 	}
 
 	resp := sharedapi.BaseResponse[webhooks.Config]{
-		Cursor: &cursor,
+		Cursor: &sharedapi.Cursor[webhooks.Config]{
+			Data: cfgs,
+		},
 	}
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
@@ -35,7 +37,7 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	sharedlogging.GetLogger(r.Context()).Infof("GET /configs: %d results", len(cursor.Data))
+	sharedlogging.GetLogger(r.Context()).Infof("GET /configs: %d results", len(resp.Cursor.Data))
 }
 
 var ErrInvalidParams = errors.New("invalid params: only 'id' and 'endpoint' with a valid URL are accepted")

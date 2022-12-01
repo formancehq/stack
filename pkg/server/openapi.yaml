@@ -55,7 +55,7 @@ paths:
                           data:
                             type: array
                             items:
-                              $ref: '#/components/schemas/Config'
+                              $ref: '#/components/schemas/ConfigActivated'
                         required:
                           - data
 
@@ -83,13 +83,11 @@ paths:
         required: true
       responses:
         "200":
-          description: Config created successfully, returns its ID.
+          description: Config created successfully.
           content:
-            text/plain:
-              schema:
-                type: string
-                description: Config ID
-                example: 4997257d-dfb6-445b-929c-cbe2ab182818
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/ConfigActivatedResponse'
 
         "400":
           description: Bad Request
@@ -115,7 +113,7 @@ paths:
             example: 4997257d-dfb6-445b-929c-cbe2ab182818
       responses:
         "200":
-          description: OK
+          description: Config successfully deleted.
           content: {}
 
   /configs/{id}/activate:
@@ -138,21 +136,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - cursor
-                properties:
-                  cursor:
-                    allOf:
-                      - $ref: '#/components/schemas/Cursor'
-                      - type: object
-                        properties:
-                          data:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Config'
-                        required:
-                          - data
+                $ref: '#/components/schemas/ConfigActivatedResponse'
         "304":
           description: Config not modified, was already activated.
           content: {}
@@ -177,21 +161,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - cursor
-                properties:
-                  cursor:
-                    allOf:
-                      - $ref: '#/components/schemas/Cursor'
-                      - type: object
-                        properties:
-                          data:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Config'
-                        required:
-                          - data
+                $ref: '#/components/schemas/ConfigDeactivatedResponse'
         "304":
           description: Config not modified, was already deactivated.
           content: {}
@@ -218,7 +188,6 @@ paths:
                   example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
               required:
                 - secret
-
       parameters:
         - name: id
           in: path
@@ -229,25 +198,11 @@ paths:
             example: 4997257d-dfb6-445b-929c-cbe2ab182818
       responses:
         "200":
-          description: OK
+          description: Secret successfully changed.
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - cursor
-                properties:
-                  cursor:
-                    allOf:
-                      - $ref: '#/components/schemas/Cursor'
-                      - type: object
-                        properties:
-                          data:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Config'
-                        required:
-                          - data
+                $ref: '#/components/schemas/ConfigActivatedResponse'
 
 components:
   schemas:
@@ -266,7 +221,19 @@ components:
             example: "TYPE1"
           example: ["TYPE1", "TYPE2"]
 
-    Config:
+    ConfigActivatedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ConfigActivated'
+
+    ConfigDeactivatedResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ConfigDeactivated'
+
+    ConfigActivated:
       properties:
         endpoint:
           type: string
@@ -283,6 +250,32 @@ components:
         active:
           type: boolean
           example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2022-07-20T07:31:40Z"
+        modifiedAt:
+          type: string
+          format: date-time
+          example: "2022-07-20T08:32:59Z"
+
+    ConfigDeactivated:
+      properties:
+        endpoint:
+          type: string
+          example: "https://example.com"
+        secret:
+          type: string
+          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+        eventTypes:
+          type: array
+          items:
+            type: string
+            example: "TYPE1"
+          example: ["TYPE1", "TYPE2"]
+        active:
+          type: boolean
+          example: false
         createdAt:
           type: string
           format: date-time

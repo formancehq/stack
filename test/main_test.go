@@ -18,6 +18,7 @@ import (
 	"github.com/formancehq/webhooks/pkg/server"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -88,4 +89,18 @@ func decodeCursorResponse[T any](t *testing.T, reader io.Reader) *sharedapi.Curs
 	err := json.NewDecoder(reader).Decode(&res)
 	require.NoError(t, err)
 	return res.Cursor
+}
+
+func decodeSingleResponse[T any](t *testing.T, reader io.Reader) (T, bool) {
+	res := sharedapi.BaseResponse[T]{}
+	if !decode(t, reader, &res) {
+		var zero T
+		return zero, false
+	}
+	return *res.Data, true
+}
+
+func decode(t *testing.T, reader io.Reader, v interface{}) bool {
+	err := json.NewDecoder(reader).Decode(v)
+	return assert.NoError(t, err)
 }
