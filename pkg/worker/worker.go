@@ -24,26 +24,26 @@ type Worker struct {
 	kafkaClient kafka.Client
 	kafkaTopics []string
 
-	retryCron     time.Duration
-	retrySchedule []time.Duration
+	retriesCron     time.Duration
+	retriesSchedule []time.Duration
 
 	stopChan chan chan struct{}
 }
 
-func NewWorker(store storage.Store, httpClient *http.Client, retryCron time.Duration, retrySchedule []time.Duration) (*Worker, error) {
+func NewWorker(store storage.Store, httpClient *http.Client, retriesCron time.Duration, retriesSchedule []time.Duration) (*Worker, error) {
 	kafkaClient, kafkaTopics, err := kafka.NewClient()
 	if err != nil {
 		return nil, errors.Wrap(err, "kafka.NewClient")
 	}
 
 	return &Worker{
-		httpClient:    httpClient,
-		store:         store,
-		kafkaClient:   kafkaClient,
-		kafkaTopics:   kafkaTopics,
-		retryCron:     retryCron,
-		retrySchedule: retrySchedule,
-		stopChan:      make(chan chan struct{}),
+		httpClient:      httpClient,
+		store:           store,
+		kafkaClient:     kafkaClient,
+		kafkaTopics:     kafkaTopics,
+		retriesCron:     retriesCron,
+		retriesSchedule: retriesSchedule,
+		stopChan:        make(chan chan struct{}),
 	}, nil
 }
 
@@ -163,7 +163,7 @@ func (w *Worker) processMessage(ctx context.Context, msgValue []byte) error {
 			return errors.Wrap(err, "json.Marshal event message")
 		}
 
-		attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retrySchedule,
+		attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retriesSchedule,
 			uuid.NewString(), 0, cfg, data, false)
 		if err != nil {
 			return errors.Wrap(err, "sending webhook")
@@ -217,7 +217,7 @@ func (w *Worker) attemptRetries(ctx context.Context, errChan chan error) {
 				}
 
 				newAttemptNb := atts[0].RetryAttempt + 1
-				attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retrySchedule,
+				attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retriesSchedule,
 					id, newAttemptNb, atts[0].Config, []byte(atts[0].Payload), false)
 				if err != nil {
 					errChan <- errors.Wrap(err, "webhooks.MakeAttempt")
@@ -239,6 +239,6 @@ func (w *Worker) attemptRetries(ctx context.Context, errChan chan error) {
 			}
 		}
 
-		time.Sleep(w.retryCron)
+		time.Sleep(w.retriesCron)
 	}
 }

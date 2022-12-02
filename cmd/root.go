@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var retrySchedule []time.Duration
+var retriesSchedule []time.Duration
 
 func NewRootCommand() *cobra.Command {
 	root := &cobra.Command{
@@ -20,7 +20,7 @@ func NewRootCommand() *cobra.Command {
 
 	var err error
 	sharedotlptraces.InitOTLPTracesFlags(root.PersistentFlags())
-	retrySchedule, err = flag.Init(root.PersistentFlags())
+	retriesSchedule, err = flag.Init(root.PersistentFlags())
 	cobra.CheckErr(err)
 
 	root.AddCommand(serverCmd)

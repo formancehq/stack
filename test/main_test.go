@@ -44,7 +44,7 @@ func TestMain(m *testing.M) {
 	}
 
 	viper.Set(flag.KafkaTopics, []string{topic})
-	viper.Set(flag.RetryCron, time.Second)
+	viper.Set(flag.RetriesCron, time.Second)
 
 	serverBaseURL = fmt.Sprintf("http://localhost%s",
 		viper.GetString(flag.HttpBindAddressServer))

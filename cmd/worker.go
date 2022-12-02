@@ -26,8 +26,8 @@ func RunWorker(cmd *cobra.Command, _ []string) error {
 	app := fx.New(
 		worker.StartModule(
 			viper.GetString(flag.HttpBindAddressWorker),
-			viper.GetDuration(flag.RetryCron),
-			retrySchedule))
+			viper.GetDuration(flag.RetriesCron),
+			retriesSchedule))
 
 	if err := app.Start(cmd.Context()); err != nil {
 		return fmt.Errorf("fx.App.Start: %w", err)

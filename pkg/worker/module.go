@@ -14,14 +14,14 @@ import (
 	"go.uber.org/fx"
 )
 
-func StartModule(addr string, retryCron time.Duration, retrySchedule []time.Duration) fx.Option {
+func StartModule(addr string, retriesCron time.Duration, retriesSchedule []time.Duration) fx.Option {
 	var options []fx.Option
 
 	options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
 
 	options = append(options, fx.Provide(
 		func() (string, time.Duration, []time.Duration) {
-			return addr, retryCron, retrySchedule
+			return addr, retriesCron, retriesSchedule
 		},
 		httpserver.NewMuxServer,
 		mongo.NewStore,

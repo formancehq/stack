@@ -86,13 +86,13 @@ func TestWorkerMessages(t *testing.T) {
 			Collection(storage.CollectionAttempts).Drop(context.Background()))
 
 		retrySchedule = []time.Duration{time.Second}
-		viper.Set(flag.RetrySchedule, retrySchedule)
+		viper.Set(flag.RetriesSchedule, retrySchedule)
 
 		workerApp := fxtest.New(t,
 			fx.Supply(httpServerSuccess.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
-				viper.GetDuration(flag.RetryCron),
+				viper.GetDuration(flag.RetriesCron),
 				retrySchedule,
 			))
 		require.NoError(t, workerApp.Start(context.Background()))
@@ -150,13 +150,13 @@ func TestWorkerMessages(t *testing.T) {
 			Collection(storage.CollectionAttempts).Drop(context.Background()))
 
 		retrySchedule = []time.Duration{time.Second}
-		viper.Set(flag.RetrySchedule, retrySchedule)
+		viper.Set(flag.RetriesSchedule, retrySchedule)
 
 		workerApp := fxtest.New(t,
 			fx.Supply(httpServerFail.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
-				viper.GetDuration(flag.RetryCron),
+				viper.GetDuration(flag.RetriesCron),
 				retrySchedule,
 			))
 		require.NoError(t, workerApp.Start(context.Background()))
@@ -259,13 +259,13 @@ func TestWorkerRetries(t *testing.T) {
 		require.NoError(t, err)
 
 		retrySchedule = []time.Duration{time.Second, time.Second, time.Second}
-		viper.Set(flag.RetrySchedule, retrySchedule)
+		viper.Set(flag.RetriesSchedule, retrySchedule)
 
 		workerApp := fxtest.New(t,
 			fx.Supply(httpServerSuccess.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
-				viper.GetDuration(flag.RetryCron),
+				viper.GetDuration(flag.RetriesCron),
 				retrySchedule))
 		require.NoError(t, workerApp.Start(context.Background()))
 
@@ -337,13 +337,13 @@ func TestWorkerRetries(t *testing.T) {
 		require.NoError(t, err)
 
 		retrySchedule = []time.Duration{time.Second, time.Second, time.Second}
-		viper.Set(flag.RetrySchedule, retrySchedule)
+		viper.Set(flag.RetriesSchedule, retrySchedule)
 
 		workerApp := fxtest.New(t,
 			fx.Supply(httpServerFail.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
-				viper.GetDuration(flag.RetryCron),
+				viper.GetDuration(flag.RetriesCron),
 				retrySchedule))
 		require.NoError(t, workerApp.Start(context.Background()))
 
@@ -378,7 +378,7 @@ func TestWorkerRetries(t *testing.T) {
 
 	t.Run("retry long schedule", func(t *testing.T) {
 		retrySchedule = []time.Duration{time.Hour}
-		viper.Set(flag.RetrySchedule, retrySchedule)
+		viper.Set(flag.RetriesSchedule, retrySchedule)
 
 		require.NoError(t, mongoClient.Database(
 			viper.GetString(flag.StorageMongoDatabaseName)).
@@ -421,7 +421,7 @@ func TestWorkerRetries(t *testing.T) {
 			fx.Supply(httpServerFail.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
-				viper.GetDuration(flag.RetryCron),
+				viper.GetDuration(flag.RetriesCron),
 				retrySchedule))
 		require.NoError(t, workerApp.Start(context.Background()))
 
