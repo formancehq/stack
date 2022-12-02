@@ -245,6 +245,7 @@ components:
           endpoint: https://example.com
           modifiedAt: 2022-07-20T08:32:59Z
           active: true
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
           eventTypes:
           - TYPE1
@@ -259,11 +260,15 @@ components:
         endpoint: https://example.com
         modifiedAt: 2022-07-20T08:32:59Z
         active: true
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
         eventTypes:
         - TYPE1
         - TYPE2
       properties:
+        id:
+          format: uuid
+          type: string
         endpoint:
           example: https://example.com
           type: string
@@ -302,6 +307,7 @@ components:
             endpoint: https://example.com
             modifiedAt: 2022-07-20T08:32:59Z
             active: true
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
             eventTypes:
             - TYPE1
@@ -324,6 +330,7 @@ components:
           endpoint: https://example.com
           modifiedAt: 2022-07-20T08:32:59Z
           active: true
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
           eventTypes:
           - TYPE1

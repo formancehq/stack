@@ -253,6 +253,9 @@ components:
 
     Config:
       properties:
+        id:
+          type: string
+          format: uuid
         endpoint:
           type: string
           example: "https://example.com"

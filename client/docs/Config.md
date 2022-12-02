@@ -4,6 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**Id** | Pointer to **string** |  | [optional] 
 **Endpoint** | Pointer to **string** |  | [optional] 
 **Secret** | Pointer to **string** |  | [optional] 
 **EventTypes** | Pointer to **[]string** |  | [optional] 
@@ -29,6 +30,31 @@ will change when the set of required properties is changed
 NewConfigWithDefaults instantiates a new Config object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetId
+
+`func (o *Config) GetId() string`
+
+GetId returns the Id field if non-nil, zero value otherwise.
+
+### GetIdOk
+
+`func (o *Config) GetIdOk() (*string, bool)`
+
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetId
+
+`func (o *Config) SetId(v string)`
+
+SetId sets Id field to given value.
+
+### HasId
+
+`func (o *Config) HasId() bool`
+
+HasId returns a boolean if a field has been set.
 
 ### GetEndpoint
 

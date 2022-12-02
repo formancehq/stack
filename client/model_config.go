@@ -20,6 +20,7 @@ var _ MappedNullable = &Config{}
 
 // Config struct for Config
 type Config struct {
+	Id *string `json:"id,omitempty"`
 	Endpoint *string `json:"endpoint,omitempty"`
 	Secret *string `json:"secret,omitempty"`
 	EventTypes []string `json:"eventTypes,omitempty"`
@@ -43,6 +44,38 @@ func NewConfig() *Config {
 func NewConfigWithDefaults() *Config {
 	this := Config{}
 	return &this
+}
+
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *Config) GetId() string {
+	if o == nil || isNil(o.Id) {
+		var ret string
+		return ret
+	}
+	return *o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Config) GetIdOk() (*string, bool) {
+	if o == nil || isNil(o.Id) {
+		return nil, false
+	}
+	return o.Id, true
+}
+
+// HasId returns a boolean if a field has been set.
+func (o *Config) HasId() bool {
+	if o != nil && !isNil(o.Id) {
+		return true
+	}
+
+	return false
+}
+
+// SetId gets a reference to the given string and assigns it to the Id field.
+func (o *Config) SetId(v string) {
+	o.Id = &v
 }
 
 // GetEndpoint returns the Endpoint field value if set, zero value otherwise.
@@ -247,6 +280,9 @@ func (o Config) MarshalJSON() ([]byte, error) {
 
 func (o Config) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !isNil(o.Id) {
+		toSerialize["id"] = o.Id
+	}
 	if !isNil(o.Endpoint) {
 		toSerialize["endpoint"] = o.Endpoint
 	}
