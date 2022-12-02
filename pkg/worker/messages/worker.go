@@ -124,10 +124,8 @@ func fetchMessages(ctx context.Context, kafkaClient kafka.Client, msgChan chan *
 				}
 			}
 
-			var records []*kgo.Record
 			fetches.EachRecord(func(record *kgo.Record) {
 				msgChan <- record
-				records = append(records, record)
 			})
 		}
 	}
