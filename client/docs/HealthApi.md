@@ -1,6 +1,6 @@
 # \HealthApi
 
-All URIs are relative to *https://.o.formance.cloud/webhooks*
+All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

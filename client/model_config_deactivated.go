@@ -15,12 +15,8 @@ import (
 	"time"
 )
 
-// checks if the Config type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Config{}
-
-// Config struct for Config
-type Config struct {
-	Id *string `json:"id,omitempty"`
+// ConfigDeactivated struct for ConfigDeactivated
+type ConfigDeactivated struct {
 	Endpoint *string `json:"endpoint,omitempty"`
 	Secret *string `json:"secret,omitempty"`
 	EventTypes []string `json:"eventTypes,omitempty"`
@@ -29,57 +25,25 @@ type Config struct {
 	ModifiedAt *time.Time `json:"modifiedAt,omitempty"`
 }
 
-// NewConfig instantiates a new Config object
+// NewConfigDeactivated instantiates a new ConfigDeactivated object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConfig() *Config {
-	this := Config{}
+func NewConfigDeactivated() *ConfigDeactivated {
+	this := ConfigDeactivated{}
 	return &this
 }
 
-// NewConfigWithDefaults instantiates a new Config object
+// NewConfigDeactivatedWithDefaults instantiates a new ConfigDeactivated object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewConfigWithDefaults() *Config {
-	this := Config{}
+func NewConfigDeactivatedWithDefaults() *ConfigDeactivated {
+	this := ConfigDeactivated{}
 	return &this
-}
-
-// GetId returns the Id field value if set, zero value otherwise.
-func (o *Config) GetId() string {
-	if o == nil || isNil(o.Id) {
-		var ret string
-		return ret
-	}
-	return *o.Id
-}
-
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Config) GetIdOk() (*string, bool) {
-	if o == nil || isNil(o.Id) {
-		return nil, false
-	}
-	return o.Id, true
-}
-
-// HasId returns a boolean if a field has been set.
-func (o *Config) HasId() bool {
-	if o != nil && !isNil(o.Id) {
-		return true
-	}
-
-	return false
-}
-
-// SetId gets a reference to the given string and assigns it to the Id field.
-func (o *Config) SetId(v string) {
-	o.Id = &v
 }
 
 // GetEndpoint returns the Endpoint field value if set, zero value otherwise.
-func (o *Config) GetEndpoint() string {
+func (o *ConfigDeactivated) GetEndpoint() string {
 	if o == nil || isNil(o.Endpoint) {
 		var ret string
 		return ret
@@ -89,7 +53,7 @@ func (o *Config) GetEndpoint() string {
 
 // GetEndpointOk returns a tuple with the Endpoint field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Config) GetEndpointOk() (*string, bool) {
+func (o *ConfigDeactivated) GetEndpointOk() (*string, bool) {
 	if o == nil || isNil(o.Endpoint) {
 		return nil, false
 	}
@@ -97,7 +61,7 @@ func (o *Config) GetEndpointOk() (*string, bool) {
 }
 
 // HasEndpoint returns a boolean if a field has been set.
-func (o *Config) HasEndpoint() bool {
+func (o *ConfigDeactivated) HasEndpoint() bool {
 	if o != nil && !isNil(o.Endpoint) {
 		return true
 	}
@@ -106,12 +70,12 @@ func (o *Config) HasEndpoint() bool {
 }
 
 // SetEndpoint gets a reference to the given string and assigns it to the Endpoint field.
-func (o *Config) SetEndpoint(v string) {
+func (o *ConfigDeactivated) SetEndpoint(v string) {
 	o.Endpoint = &v
 }
 
 // GetSecret returns the Secret field value if set, zero value otherwise.
-func (o *Config) GetSecret() string {
+func (o *ConfigDeactivated) GetSecret() string {
 	if o == nil || isNil(o.Secret) {
 		var ret string
 		return ret
@@ -121,7 +85,7 @@ func (o *Config) GetSecret() string {
 
 // GetSecretOk returns a tuple with the Secret field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Config) GetSecretOk() (*string, bool) {
+func (o *ConfigDeactivated) GetSecretOk() (*string, bool) {
 	if o == nil || isNil(o.Secret) {
 		return nil, false
 	}
@@ -129,7 +93,7 @@ func (o *Config) GetSecretOk() (*string, bool) {
 }
 
 // HasSecret returns a boolean if a field has been set.
-func (o *Config) HasSecret() bool {
+func (o *ConfigDeactivated) HasSecret() bool {
 	if o != nil && !isNil(o.Secret) {
 		return true
 	}
@@ -138,12 +102,12 @@ func (o *Config) HasSecret() bool {
 }
 
 // SetSecret gets a reference to the given string and assigns it to the Secret field.
-func (o *Config) SetSecret(v string) {
+func (o *ConfigDeactivated) SetSecret(v string) {
 	o.Secret = &v
 }
 
 // GetEventTypes returns the EventTypes field value if set, zero value otherwise.
-func (o *Config) GetEventTypes() []string {
+func (o *ConfigDeactivated) GetEventTypes() []string {
 	if o == nil || isNil(o.EventTypes) {
 		var ret []string
 		return ret
@@ -153,7 +117,7 @@ func (o *Config) GetEventTypes() []string {
 
 // GetEventTypesOk returns a tuple with the EventTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Config) GetEventTypesOk() ([]string, bool) {
+func (o *ConfigDeactivated) GetEventTypesOk() ([]string, bool) {
 	if o == nil || isNil(o.EventTypes) {
 		return nil, false
 	}
@@ -161,7 +125,7 @@ func (o *Config) GetEventTypesOk() ([]string, bool) {
 }
 
 // HasEventTypes returns a boolean if a field has been set.
-func (o *Config) HasEventTypes() bool {
+func (o *ConfigDeactivated) HasEventTypes() bool {
 	if o != nil && !isNil(o.EventTypes) {
 		return true
 	}
@@ -170,12 +134,12 @@ func (o *Config) HasEventTypes() bool {
 }
 
 // SetEventTypes gets a reference to the given []string and assigns it to the EventTypes field.
-func (o *Config) SetEventTypes(v []string) {
+func (o *ConfigDeactivated) SetEventTypes(v []string) {
 	o.EventTypes = v
 }
 
 // GetActive returns the Active field value if set, zero value otherwise.
-func (o *Config) GetActive() bool {
+func (o *ConfigDeactivated) GetActive() bool {
 	if o == nil || isNil(o.Active) {
 		var ret bool
 		return ret
@@ -185,7 +149,7 @@ func (o *Config) GetActive() bool {
 
 // GetActiveOk returns a tuple with the Active field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Config) GetActiveOk() (*bool, bool) {
+func (o *ConfigDeactivated) GetActiveOk() (*bool, bool) {
 	if o == nil || isNil(o.Active) {
 		return nil, false
 	}
@@ -193,7 +157,7 @@ func (o *Config) GetActiveOk() (*bool, bool) {
 }
 
 // HasActive returns a boolean if a field has been set.
-func (o *Config) HasActive() bool {
+func (o *ConfigDeactivated) HasActive() bool {
 	if o != nil && !isNil(o.Active) {
 		return true
 	}
@@ -202,12 +166,12 @@ func (o *Config) HasActive() bool {
 }
 
 // SetActive gets a reference to the given bool and assigns it to the Active field.
-func (o *Config) SetActive(v bool) {
+func (o *ConfigDeactivated) SetActive(v bool) {
 	o.Active = &v
 }
 
 // GetCreatedAt returns the CreatedAt field value if set, zero value otherwise.
-func (o *Config) GetCreatedAt() time.Time {
+func (o *ConfigDeactivated) GetCreatedAt() time.Time {
 	if o == nil || isNil(o.CreatedAt) {
 		var ret time.Time
 		return ret
@@ -217,7 +181,7 @@ func (o *Config) GetCreatedAt() time.Time {
 
 // GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Config) GetCreatedAtOk() (*time.Time, bool) {
+func (o *ConfigDeactivated) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.CreatedAt) {
 		return nil, false
 	}
@@ -225,7 +189,7 @@ func (o *Config) GetCreatedAtOk() (*time.Time, bool) {
 }
 
 // HasCreatedAt returns a boolean if a field has been set.
-func (o *Config) HasCreatedAt() bool {
+func (o *ConfigDeactivated) HasCreatedAt() bool {
 	if o != nil && !isNil(o.CreatedAt) {
 		return true
 	}
@@ -234,12 +198,12 @@ func (o *Config) HasCreatedAt() bool {
 }
 
 // SetCreatedAt gets a reference to the given time.Time and assigns it to the CreatedAt field.
-func (o *Config) SetCreatedAt(v time.Time) {
+func (o *ConfigDeactivated) SetCreatedAt(v time.Time) {
 	o.CreatedAt = &v
 }
 
 // GetModifiedAt returns the ModifiedAt field value if set, zero value otherwise.
-func (o *Config) GetModifiedAt() time.Time {
+func (o *ConfigDeactivated) GetModifiedAt() time.Time {
 	if o == nil || isNil(o.ModifiedAt) {
 		var ret time.Time
 		return ret
@@ -249,7 +213,7 @@ func (o *Config) GetModifiedAt() time.Time {
 
 // GetModifiedAtOk returns a tuple with the ModifiedAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Config) GetModifiedAtOk() (*time.Time, bool) {
+func (o *ConfigDeactivated) GetModifiedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.ModifiedAt) {
 		return nil, false
 	}
@@ -257,7 +221,7 @@ func (o *Config) GetModifiedAtOk() (*time.Time, bool) {
 }
 
 // HasModifiedAt returns a boolean if a field has been set.
-func (o *Config) HasModifiedAt() bool {
+func (o *ConfigDeactivated) HasModifiedAt() bool {
 	if o != nil && !isNil(o.ModifiedAt) {
 		return true
 	}
@@ -266,23 +230,12 @@ func (o *Config) HasModifiedAt() bool {
 }
 
 // SetModifiedAt gets a reference to the given time.Time and assigns it to the ModifiedAt field.
-func (o *Config) SetModifiedAt(v time.Time) {
+func (o *ConfigDeactivated) SetModifiedAt(v time.Time) {
 	o.ModifiedAt = &v
 }
 
-func (o Config) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
-func (o Config) ToMap() (map[string]interface{}, error) {
+func (o ConfigDeactivated) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Id) {
-		toSerialize["id"] = o.Id
-	}
 	if !isNil(o.Endpoint) {
 		toSerialize["endpoint"] = o.Endpoint
 	}
@@ -301,41 +254,41 @@ func (o Config) ToMap() (map[string]interface{}, error) {
 	if !isNil(o.ModifiedAt) {
 		toSerialize["modifiedAt"] = o.ModifiedAt
 	}
-	return toSerialize, nil
+	return json.Marshal(toSerialize)
 }
 
-type NullableConfig struct {
-	value *Config
+type NullableConfigDeactivated struct {
+	value *ConfigDeactivated
 	isSet bool
 }
 
-func (v NullableConfig) Get() *Config {
+func (v NullableConfigDeactivated) Get() *ConfigDeactivated {
 	return v.value
 }
 
-func (v *NullableConfig) Set(val *Config) {
+func (v *NullableConfigDeactivated) Set(val *ConfigDeactivated) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableConfig) IsSet() bool {
+func (v NullableConfigDeactivated) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableConfig) Unset() {
+func (v *NullableConfigDeactivated) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableConfig(val *Config) *NullableConfig {
-	return &NullableConfig{value: val, isSet: true}
+func NewNullableConfigDeactivated(val *ConfigDeactivated) *NullableConfigDeactivated {
+	return &NullableConfigDeactivated{value: val, isSet: true}
 }
 
-func (v NullableConfig) MarshalJSON() ([]byte, error) {
+func (v NullableConfigDeactivated) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableConfig) UnmarshalJSON(src []byte) error {
+func (v *NullableConfigDeactivated) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

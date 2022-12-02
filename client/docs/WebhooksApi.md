@@ -1,21 +1,22 @@
-# \ConfigsApi
+# \WebhooksApi
 
-All URIs are relative to *https://.o.formance.cloud/webhooks*
+All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**ActivateOneConfig**](ConfigsApi.md#ActivateOneConfig) | **Put** /configs/{id}/activate | Activate one config
-[**ChangeOneConfigSecret**](ConfigsApi.md#ChangeOneConfigSecret) | **Put** /configs/{id}/secret/change | Change the signing secret of a config
-[**DeactivateOneConfig**](ConfigsApi.md#DeactivateOneConfig) | **Put** /configs/{id}/deactivate | Deactivate one config
-[**DeleteOneConfig**](ConfigsApi.md#DeleteOneConfig) | **Delete** /configs/{id} | Delete one config
-[**GetManyConfigs**](ConfigsApi.md#GetManyConfigs) | **Get** /configs | Get many configs
-[**InsertOneConfig**](ConfigsApi.md#InsertOneConfig) | **Post** /configs | Insert a new config 
+[**ActivateOneConfig**](WebhooksApi.md#ActivateOneConfig) | **Put** /configs/{id}/activate | Activate one config
+[**ChangeOneConfigSecret**](WebhooksApi.md#ChangeOneConfigSecret) | **Put** /configs/{id}/secret/change | Change the signing secret of a config
+[**DeactivateOneConfig**](WebhooksApi.md#DeactivateOneConfig) | **Put** /configs/{id}/deactivate | Deactivate one config
+[**DeleteOneConfig**](WebhooksApi.md#DeleteOneConfig) | **Delete** /configs/{id} | Delete one config
+[**GetManyConfigs**](WebhooksApi.md#GetManyConfigs) | **Get** /configs | Get many configs
+[**InsertOneConfig**](WebhooksApi.md#InsertOneConfig) | **Post** /configs | Insert a new config 
+[**TestOneConfig**](WebhooksApi.md#TestOneConfig) | **Get** /configs/{id}/test | Test one config
 
 
 
 ## ActivateOneConfig
 
-> GetManyConfigs200Response ActivateOneConfig(ctx, id).Execute()
+> ConfigResponse ActivateOneConfig(ctx, id).Execute()
 
 Activate one config
 
@@ -36,13 +37,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.ConfigsApi.ActivateOneConfig(context.Background(), id).Execute()
+    resp, r, err := apiClient.WebhooksApi.ActivateOneConfig(context.Background(), id).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `ConfigsApi.ActivateOneConfig``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.ActivateOneConfig``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ActivateOneConfig`: GetManyConfigs200Response
-    fmt.Fprintf(os.Stdout, "Response from `ConfigsApi.ActivateOneConfig`: %v\n", resp)
+    // response from `ActivateOneConfig`: ConfigResponse
+    fmt.Fprintf(os.Stdout, "Response from `WebhooksApi.ActivateOneConfig`: %v\n", resp)
 }
 ```
 
@@ -65,7 +66,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetManyConfigs200Response**](GetManyConfigs200Response.md)
+[**ConfigResponse**](ConfigResponse.md)
 
 ### Authorization
 
@@ -83,7 +84,7 @@ No authorization required
 
 ## ChangeOneConfigSecret
 
-> GetManyConfigs200Response ChangeOneConfigSecret(ctx, id).ChangeOneConfigSecretRequest(changeOneConfigSecretRequest).Execute()
+> ConfigResponse ChangeOneConfigSecret(ctx, id).ChangeOneConfigSecretRequest(changeOneConfigSecretRequest).Execute()
 
 Change the signing secret of a config
 
@@ -103,17 +104,17 @@ import (
 
 func main() {
     id := "4997257d-dfb6-445b-929c-cbe2ab182818" // string | Config ID
-    changeOneConfigSecretRequest := *openapiclient.NewChangeOneConfigSecretRequest() // ChangeOneConfigSecretRequest |  (optional)
+    changeOneConfigSecretRequest := *openapiclient.NewChangeOneConfigSecretRequest("V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3") // ChangeOneConfigSecretRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.ConfigsApi.ChangeOneConfigSecret(context.Background(), id).ChangeOneConfigSecretRequest(changeOneConfigSecretRequest).Execute()
+    resp, r, err := apiClient.WebhooksApi.ChangeOneConfigSecret(context.Background(), id).ChangeOneConfigSecretRequest(changeOneConfigSecretRequest).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `ConfigsApi.ChangeOneConfigSecret``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.ChangeOneConfigSecret``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ChangeOneConfigSecret`: GetManyConfigs200Response
-    fmt.Fprintf(os.Stdout, "Response from `ConfigsApi.ChangeOneConfigSecret`: %v\n", resp)
+    // response from `ChangeOneConfigSecret`: ConfigResponse
+    fmt.Fprintf(os.Stdout, "Response from `WebhooksApi.ChangeOneConfigSecret`: %v\n", resp)
 }
 ```
 
@@ -137,7 +138,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetManyConfigs200Response**](GetManyConfigs200Response.md)
+[**ConfigResponse**](ConfigResponse.md)
 
 ### Authorization
 
@@ -155,7 +156,7 @@ No authorization required
 
 ## DeactivateOneConfig
 
-> GetManyConfigs200Response DeactivateOneConfig(ctx, id).Execute()
+> ConfigResponse DeactivateOneConfig(ctx, id).Execute()
 
 Deactivate one config
 
@@ -176,13 +177,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.ConfigsApi.DeactivateOneConfig(context.Background(), id).Execute()
+    resp, r, err := apiClient.WebhooksApi.DeactivateOneConfig(context.Background(), id).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `ConfigsApi.DeactivateOneConfig``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.DeactivateOneConfig``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `DeactivateOneConfig`: GetManyConfigs200Response
-    fmt.Fprintf(os.Stdout, "Response from `ConfigsApi.DeactivateOneConfig`: %v\n", resp)
+    // response from `DeactivateOneConfig`: ConfigResponse
+    fmt.Fprintf(os.Stdout, "Response from `WebhooksApi.DeactivateOneConfig`: %v\n", resp)
 }
 ```
 
@@ -205,7 +206,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetManyConfigs200Response**](GetManyConfigs200Response.md)
+[**ConfigResponse**](ConfigResponse.md)
 
 ### Authorization
 
@@ -244,9 +245,9 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.ConfigsApi.DeleteOneConfig(context.Background(), id).Execute()
+    resp, r, err := apiClient.WebhooksApi.DeleteOneConfig(context.Background(), id).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `ConfigsApi.DeleteOneConfig``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.DeleteOneConfig``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
 }
@@ -313,13 +314,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.ConfigsApi.GetManyConfigs(context.Background()).Id(id).Endpoint(endpoint).Execute()
+    resp, r, err := apiClient.WebhooksApi.GetManyConfigs(context.Background()).Id(id).Endpoint(endpoint).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `ConfigsApi.GetManyConfigs``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.GetManyConfigs``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     // response from `GetManyConfigs`: GetManyConfigs200Response
-    fmt.Fprintf(os.Stdout, "Response from `ConfigsApi.GetManyConfigs`: %v\n", resp)
+    fmt.Fprintf(os.Stdout, "Response from `WebhooksApi.GetManyConfigs`: %v\n", resp)
 }
 ```
 
@@ -357,7 +358,7 @@ No authorization required
 
 ## InsertOneConfig
 
-> string InsertOneConfig(ctx).ConfigUser(configUser).Execute()
+> ConfigResponse InsertOneConfig(ctx).ConfigUser(configUser).Execute()
 
 Insert a new config 
 
@@ -380,13 +381,13 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.ConfigsApi.InsertOneConfig(context.Background()).ConfigUser(configUser).Execute()
+    resp, r, err := apiClient.WebhooksApi.InsertOneConfig(context.Background()).ConfigUser(configUser).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `ConfigsApi.InsertOneConfig``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.InsertOneConfig``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `InsertOneConfig`: string
-    fmt.Fprintf(os.Stdout, "Response from `ConfigsApi.InsertOneConfig`: %v\n", resp)
+    // response from `InsertOneConfig`: ConfigResponse
+    fmt.Fprintf(os.Stdout, "Response from `WebhooksApi.InsertOneConfig`: %v\n", resp)
 }
 ```
 
@@ -405,7 +406,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**string**
+[**ConfigResponse**](ConfigResponse.md)
 
 ### Authorization
 
@@ -414,7 +415,77 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: text/plain
+- **Accept**: application/json, text/plain
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## TestOneConfig
+
+> AttemptResponse TestOneConfig(ctx, id).Execute()
+
+Test one config
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "./openapi"
+)
+
+func main() {
+    id := "4997257d-dfb6-445b-929c-cbe2ab182818" // string | Config ID
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.WebhooksApi.TestOneConfig(context.Background(), id).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.TestOneConfig``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `TestOneConfig`: AttemptResponse
+    fmt.Fprintf(os.Stdout, "Response from `WebhooksApi.TestOneConfig`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** | Config ID | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiTestOneConfigRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+[**AttemptResponse**](AttemptResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

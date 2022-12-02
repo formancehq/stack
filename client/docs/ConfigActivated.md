@@ -1,10 +1,9 @@
-# Config
+# ConfigActivated
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | Pointer to **string** |  | [optional] 
 **Endpoint** | Pointer to **string** |  | [optional] 
 **Secret** | Pointer to **string** |  | [optional] 
 **EventTypes** | Pointer to **[]string** |  | [optional] 
@@ -14,195 +13,170 @@ Name | Type | Description | Notes
 
 ## Methods
 
-### NewConfig
+### NewConfigActivated
 
-`func NewConfig() *Config`
+`func NewConfigActivated() *ConfigActivated`
 
-NewConfig instantiates a new Config object
+NewConfigActivated instantiates a new ConfigActivated object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewConfigWithDefaults
+### NewConfigActivatedWithDefaults
 
-`func NewConfigWithDefaults() *Config`
+`func NewConfigActivatedWithDefaults() *ConfigActivated`
 
-NewConfigWithDefaults instantiates a new Config object
+NewConfigActivatedWithDefaults instantiates a new ConfigActivated object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetId
-
-`func (o *Config) GetId() string`
-
-GetId returns the Id field if non-nil, zero value otherwise.
-
-### GetIdOk
-
-`func (o *Config) GetIdOk() (*string, bool)`
-
-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetId
-
-`func (o *Config) SetId(v string)`
-
-SetId sets Id field to given value.
-
-### HasId
-
-`func (o *Config) HasId() bool`
-
-HasId returns a boolean if a field has been set.
-
 ### GetEndpoint
 
-`func (o *Config) GetEndpoint() string`
+`func (o *ConfigActivated) GetEndpoint() string`
 
 GetEndpoint returns the Endpoint field if non-nil, zero value otherwise.
 
 ### GetEndpointOk
 
-`func (o *Config) GetEndpointOk() (*string, bool)`
+`func (o *ConfigActivated) GetEndpointOk() (*string, bool)`
 
 GetEndpointOk returns a tuple with the Endpoint field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetEndpoint
 
-`func (o *Config) SetEndpoint(v string)`
+`func (o *ConfigActivated) SetEndpoint(v string)`
 
 SetEndpoint sets Endpoint field to given value.
 
 ### HasEndpoint
 
-`func (o *Config) HasEndpoint() bool`
+`func (o *ConfigActivated) HasEndpoint() bool`
 
 HasEndpoint returns a boolean if a field has been set.
 
 ### GetSecret
 
-`func (o *Config) GetSecret() string`
+`func (o *ConfigActivated) GetSecret() string`
 
 GetSecret returns the Secret field if non-nil, zero value otherwise.
 
 ### GetSecretOk
 
-`func (o *Config) GetSecretOk() (*string, bool)`
+`func (o *ConfigActivated) GetSecretOk() (*string, bool)`
 
 GetSecretOk returns a tuple with the Secret field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetSecret
 
-`func (o *Config) SetSecret(v string)`
+`func (o *ConfigActivated) SetSecret(v string)`
 
 SetSecret sets Secret field to given value.
 
 ### HasSecret
 
-`func (o *Config) HasSecret() bool`
+`func (o *ConfigActivated) HasSecret() bool`
 
 HasSecret returns a boolean if a field has been set.
 
 ### GetEventTypes
 
-`func (o *Config) GetEventTypes() []string`
+`func (o *ConfigActivated) GetEventTypes() []string`
 
 GetEventTypes returns the EventTypes field if non-nil, zero value otherwise.
 
 ### GetEventTypesOk
 
-`func (o *Config) GetEventTypesOk() (*[]string, bool)`
+`func (o *ConfigActivated) GetEventTypesOk() (*[]string, bool)`
 
 GetEventTypesOk returns a tuple with the EventTypes field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetEventTypes
 
-`func (o *Config) SetEventTypes(v []string)`
+`func (o *ConfigActivated) SetEventTypes(v []string)`
 
 SetEventTypes sets EventTypes field to given value.
 
 ### HasEventTypes
 
-`func (o *Config) HasEventTypes() bool`
+`func (o *ConfigActivated) HasEventTypes() bool`
 
 HasEventTypes returns a boolean if a field has been set.
 
 ### GetActive
 
-`func (o *Config) GetActive() bool`
+`func (o *ConfigActivated) GetActive() bool`
 
 GetActive returns the Active field if non-nil, zero value otherwise.
 
 ### GetActiveOk
 
-`func (o *Config) GetActiveOk() (*bool, bool)`
+`func (o *ConfigActivated) GetActiveOk() (*bool, bool)`
 
 GetActiveOk returns a tuple with the Active field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetActive
 
-`func (o *Config) SetActive(v bool)`
+`func (o *ConfigActivated) SetActive(v bool)`
 
 SetActive sets Active field to given value.
 
 ### HasActive
 
-`func (o *Config) HasActive() bool`
+`func (o *ConfigActivated) HasActive() bool`
 
 HasActive returns a boolean if a field has been set.
 
 ### GetCreatedAt
 
-`func (o *Config) GetCreatedAt() time.Time`
+`func (o *ConfigActivated) GetCreatedAt() time.Time`
 
 GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
 
 ### GetCreatedAtOk
 
-`func (o *Config) GetCreatedAtOk() (*time.Time, bool)`
+`func (o *ConfigActivated) GetCreatedAtOk() (*time.Time, bool)`
 
 GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetCreatedAt
 
-`func (o *Config) SetCreatedAt(v time.Time)`
+`func (o *ConfigActivated) SetCreatedAt(v time.Time)`
 
 SetCreatedAt sets CreatedAt field to given value.
 
 ### HasCreatedAt
 
-`func (o *Config) HasCreatedAt() bool`
+`func (o *ConfigActivated) HasCreatedAt() bool`
 
 HasCreatedAt returns a boolean if a field has been set.
 
 ### GetModifiedAt
 
-`func (o *Config) GetModifiedAt() time.Time`
+`func (o *ConfigActivated) GetModifiedAt() time.Time`
 
 GetModifiedAt returns the ModifiedAt field if non-nil, zero value otherwise.
 
 ### GetModifiedAtOk
 
-`func (o *Config) GetModifiedAtOk() (*time.Time, bool)`
+`func (o *ConfigActivated) GetModifiedAtOk() (*time.Time, bool)`
 
 GetModifiedAtOk returns a tuple with the ModifiedAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetModifiedAt
 
-`func (o *Config) SetModifiedAt(v time.Time)`
+`func (o *ConfigActivated) SetModifiedAt(v time.Time)`
 
 SetModifiedAt sets ModifiedAt field to given value.
 
 ### HasModifiedAt
 
-`func (o *Config) HasModifiedAt() bool`
+`func (o *ConfigActivated) HasModifiedAt() bool`
 
 HasModifiedAt returns a boolean if a field has been set.
 

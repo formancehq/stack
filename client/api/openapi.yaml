@@ -1,14 +1,9 @@
 openapi: 3.0.3
 info:
   title: Webhooks server
-  version: v0.2.1
+  version: v0.2.2
 servers:
-- description: Production server
-  url: "https://{organization}.o.formance.cloud/webhooks"
-  variables:
-    organization:
-      default: ""
-      description: The organization on which the webhooks server is located
+- url: /
 paths:
   /_healthcheck:
     get:
@@ -52,7 +47,7 @@ paths:
           description: OK
       summary: Get many configs
       tags:
-      - Configs
+      - Webhooks
     post:
       description: |
         Insert a new config.
@@ -74,12 +69,10 @@ paths:
       responses:
         "200":
           content:
-            text/plain:
+            application/json:
               schema:
-                description: Config ID
-                example: 4997257d-dfb6-445b-929c-cbe2ab182818
-                type: string
-          description: "Config created successfully, returns its ID."
+                $ref: '#/components/schemas/ConfigResponse'
+          description: Config created successfully.
         "400":
           content:
             text/plain:
@@ -90,7 +83,7 @@ paths:
       summary: |
         Insert a new config
       tags:
-      - Configs
+      - Webhooks
   /configs/{id}:
     delete:
       operationId: deleteOneConfig
@@ -107,10 +100,35 @@ paths:
       responses:
         "200":
           content: {}
-          description: OK
+          description: Config successfully deleted.
       summary: Delete one config
       tags:
-      - Configs
+      - Webhooks
+  /configs/{id}/test:
+    get:
+      description: |
+        Test one config by sending a webhook to its endpoint.
+      operationId: testOneConfig
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttemptResponse'
+          description: OK
+      summary: Test one config
+      tags:
+      - Webhooks
   /configs/{id}/activate:
     put:
       operationId: activateOneConfig
@@ -129,14 +147,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/getManyConfigs_200_response'
+                $ref: '#/components/schemas/ConfigResponse'
           description: Config successfully activated.
         "304":
           content: {}
           description: "Config not modified, was already activated."
       summary: Activate one config
       tags:
-      - Configs
+      - Webhooks
   /configs/{id}/deactivate:
     put:
       operationId: deactivateOneConfig
@@ -155,14 +173,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/getManyConfigs_200_response'
+                $ref: '#/components/schemas/ConfigResponse'
           description: Config successfully deactivated.
         "304":
           content: {}
           description: "Config not modified, was already deactivated."
       summary: Deactivate one config
       tags:
-      - Configs
+      - Webhooks
   /configs/{id}/secret/change:
     put:
       description: |
@@ -191,11 +209,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/getManyConfigs_200_response'
-          description: OK
+                $ref: '#/components/schemas/ConfigResponse'
+          description: Secret successfully changed.
       summary: Change the signing secret of a config
       tags:
-      - Configs
+      - Webhooks
 components:
   schemas:
     ConfigUser:
@@ -220,8 +238,37 @@ components:
             example: TYPE1
             type: string
           type: array
-    Config:
+    ConfigResponse:
+      example:
+        data:
+          createdAt: 2022-07-20T07:31:40Z
+          endpoint: https://example.com
+          modifiedAt: 2022-07-20T08:32:59Z
+          active: true
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          eventTypes:
+          - TYPE1
+          - TYPE2
       properties:
+        data:
+          $ref: '#/components/schemas/Config'
+      type: object
+    Config:
+      example:
+        createdAt: 2022-07-20T07:31:40Z
+        endpoint: https://example.com
+        modifiedAt: 2022-07-20T08:32:59Z
+        active: true
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+        eventTypes:
+        - TYPE1
+        - TYPE2
+      properties:
+        id:
+          format: uuid
+          type: string
         endpoint:
           example: https://example.com
           type: string
@@ -247,7 +294,72 @@ components:
           example: 2022-07-20T08:32:59Z
           format: date-time
           type: string
-        _id:
+    AttemptResponse:
+      example:
+        data:
+          date: 2000-01-23T04:56:07.000+00:00
+          nextRetryAfter: 2000-01-23T04:56:07.000+00:00
+          webhookID: 4997257d-dfb6-445b-929c-cbe2ab182818
+          payload: "{\"data\":\"test\"}"
+          retryAttempt: 1
+          config:
+            createdAt: 2022-07-20T07:31:40Z
+            endpoint: https://example.com
+            modifiedAt: 2022-07-20T08:32:59Z
+            active: true
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+            eventTypes:
+            - TYPE1
+            - TYPE2
+          statusCode: 200
+          status: success
+      properties:
+        data:
+          $ref: '#/components/schemas/Attempt'
+      type: object
+    Attempt:
+      example:
+        date: 2000-01-23T04:56:07.000+00:00
+        nextRetryAfter: 2000-01-23T04:56:07.000+00:00
+        webhookID: 4997257d-dfb6-445b-929c-cbe2ab182818
+        payload: "{\"data\":\"test\"}"
+        retryAttempt: 1
+        config:
+          createdAt: 2022-07-20T07:31:40Z
+          endpoint: https://example.com
+          modifiedAt: 2022-07-20T08:32:59Z
+          active: true
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          eventTypes:
+          - TYPE1
+          - TYPE2
+        statusCode: 200
+        status: success
+      properties:
+        webhookID:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        date:
+          format: date-time
+          type: string
+        config:
+          $ref: '#/components/schemas/Config'
+        payload:
+          example: "{\"data\":\"test\"}"
+          type: string
+        statusCode:
+          example: 200
+          type: integer
+        retryAttempt:
+          example: 1
+          type: integer
+        status:
+          example: success
+          type: string
+        nextRetryAfter:
+          format: date-time
           type: string
     Cursor:
       properties:
@@ -282,4 +394,6 @@ components:
         secret:
           example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
           type: string
+      required:
+      - secret
       type: object

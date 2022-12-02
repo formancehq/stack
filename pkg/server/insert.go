@@ -36,6 +36,7 @@ func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Req
 		resp := sharedapi.BaseResponse[webhooks.Config]{
 			Data: &c,
 		}
+
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			sharedlogging.GetLogger(r.Context()).Errorf("json.Encoder.Encode: %s", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

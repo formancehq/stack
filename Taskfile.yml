@@ -43,8 +43,9 @@ tasks:
     cmds:
       - go build -o {{.SERVICE}}
 
-  install:lint:
+  install:
     cmds:
+      - pre-commit install
       - >
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh |
         sh -s -- -b $(go env GOPATH)/bin latest
