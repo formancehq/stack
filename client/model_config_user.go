@@ -14,6 +14,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConfigUser type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConfigUser{}
+
 // ConfigUser struct for ConfigUser
 type ConfigUser struct {
 	Endpoint *string `json:"endpoint,omitempty"`
@@ -135,6 +138,14 @@ func (o *ConfigUser) SetEventTypes(v []string) {
 }
 
 func (o ConfigUser) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ConfigUser) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Endpoint) {
 		toSerialize["endpoint"] = o.Endpoint
@@ -145,7 +156,7 @@ func (o ConfigUser) MarshalJSON() ([]byte, error) {
 	if !isNil(o.EventTypes) {
 		toSerialize["eventTypes"] = o.EventTypes
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableConfigUser struct {

@@ -15,11 +15,14 @@ import (
 	"time"
 )
 
+// checks if the Attempt type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Attempt{}
+
 // Attempt struct for Attempt
 type Attempt struct {
 	WebhookID *string `json:"webhookID,omitempty"`
 	Date *time.Time `json:"date,omitempty"`
-	Config *ConfigActivated `json:"config,omitempty"`
+	Config *Config `json:"config,omitempty"`
 	Payload *string `json:"payload,omitempty"`
 	StatusCode *int32 `json:"statusCode,omitempty"`
 	RetryAttempt *int32 `json:"retryAttempt,omitempty"`
@@ -109,9 +112,9 @@ func (o *Attempt) SetDate(v time.Time) {
 }
 
 // GetConfig returns the Config field value if set, zero value otherwise.
-func (o *Attempt) GetConfig() ConfigActivated {
+func (o *Attempt) GetConfig() Config {
 	if o == nil || isNil(o.Config) {
-		var ret ConfigActivated
+		var ret Config
 		return ret
 	}
 	return *o.Config
@@ -119,7 +122,7 @@ func (o *Attempt) GetConfig() ConfigActivated {
 
 // GetConfigOk returns a tuple with the Config field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Attempt) GetConfigOk() (*ConfigActivated, bool) {
+func (o *Attempt) GetConfigOk() (*Config, bool) {
 	if o == nil || isNil(o.Config) {
 		return nil, false
 	}
@@ -135,8 +138,8 @@ func (o *Attempt) HasConfig() bool {
 	return false
 }
 
-// SetConfig gets a reference to the given ConfigActivated and assigns it to the Config field.
-func (o *Attempt) SetConfig(v ConfigActivated) {
+// SetConfig gets a reference to the given Config and assigns it to the Config field.
+func (o *Attempt) SetConfig(v Config) {
 	o.Config = &v
 }
 
@@ -301,6 +304,14 @@ func (o *Attempt) SetNextRetryAfter(v time.Time) {
 }
 
 func (o Attempt) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o Attempt) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.WebhookID) {
 		toSerialize["webhookID"] = o.WebhookID
@@ -326,7 +337,7 @@ func (o Attempt) MarshalJSON() ([]byte, error) {
 	if !isNil(o.NextRetryAfter) {
 		toSerialize["nextRetryAfter"] = o.NextRetryAfter
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableAttempt struct {

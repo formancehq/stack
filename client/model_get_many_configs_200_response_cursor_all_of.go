@@ -14,16 +14,19 @@ import (
 	"encoding/json"
 )
 
+// checks if the GetManyConfigs200ResponseCursorAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &GetManyConfigs200ResponseCursorAllOf{}
+
 // GetManyConfigs200ResponseCursorAllOf struct for GetManyConfigs200ResponseCursorAllOf
 type GetManyConfigs200ResponseCursorAllOf struct {
-	Data []ConfigActivated `json:"data"`
+	Data []Config `json:"data"`
 }
 
 // NewGetManyConfigs200ResponseCursorAllOf instantiates a new GetManyConfigs200ResponseCursorAllOf object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewGetManyConfigs200ResponseCursorAllOf(data []ConfigActivated) *GetManyConfigs200ResponseCursorAllOf {
+func NewGetManyConfigs200ResponseCursorAllOf(data []Config) *GetManyConfigs200ResponseCursorAllOf {
 	this := GetManyConfigs200ResponseCursorAllOf{}
 	this.Data = data
 	return &this
@@ -38,9 +41,9 @@ func NewGetManyConfigs200ResponseCursorAllOfWithDefaults() *GetManyConfigs200Res
 }
 
 // GetData returns the Data field value
-func (o *GetManyConfigs200ResponseCursorAllOf) GetData() []ConfigActivated {
+func (o *GetManyConfigs200ResponseCursorAllOf) GetData() []Config {
 	if o == nil {
-		var ret []ConfigActivated
+		var ret []Config
 		return ret
 	}
 
@@ -49,7 +52,7 @@ func (o *GetManyConfigs200ResponseCursorAllOf) GetData() []ConfigActivated {
 
 // GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *GetManyConfigs200ResponseCursorAllOf) GetDataOk() ([]ConfigActivated, bool) {
+func (o *GetManyConfigs200ResponseCursorAllOf) GetDataOk() ([]Config, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -57,16 +60,22 @@ func (o *GetManyConfigs200ResponseCursorAllOf) GetDataOk() ([]ConfigActivated, b
 }
 
 // SetData sets field value
-func (o *GetManyConfigs200ResponseCursorAllOf) SetData(v []ConfigActivated) {
+func (o *GetManyConfigs200ResponseCursorAllOf) SetData(v []Config) {
 	o.Data = v
 }
 
 func (o GetManyConfigs200ResponseCursorAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o GetManyConfigs200ResponseCursorAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableGetManyConfigs200ResponseCursorAllOf struct {

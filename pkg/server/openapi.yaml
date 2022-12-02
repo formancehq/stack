@@ -55,7 +55,7 @@ paths:
                           data:
                             type: array
                             items:
-                              $ref: '#/components/schemas/ConfigActivated'
+                              $ref: '#/components/schemas/Config'
                         required:
                           - data
 
@@ -87,7 +87,7 @@ paths:
           content:
             application/json:
                 schema:
-                  $ref: '#/components/schemas/ConfigActivatedResponse'
+                  $ref: '#/components/schemas/ConfigResponse'
 
         "400":
           description: Bad Request
@@ -160,7 +160,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConfigActivatedResponse'
+                $ref: '#/components/schemas/ConfigResponse'
         "304":
           description: Config not modified, was already activated.
           content: {}
@@ -185,7 +185,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConfigDeactivatedResponse'
+                $ref: '#/components/schemas/ConfigResponse'
         "304":
           description: Config not modified, was already deactivated.
           content: {}
@@ -226,7 +226,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConfigActivatedResponse'
+                $ref: '#/components/schemas/ConfigResponse'
 
 components:
   schemas:
@@ -245,19 +245,13 @@ components:
             example: "TYPE1"
           example: ["TYPE1", "TYPE2"]
 
-    ConfigActivatedResponse:
+    ConfigResponse:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/ConfigActivated'
+          $ref: '#/components/schemas/Config'
 
-    ConfigDeactivatedResponse:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ConfigDeactivated'
-
-    ConfigActivated:
+    Config:
       properties:
         endpoint:
           type: string
@@ -283,32 +277,6 @@ components:
           format: date-time
           example: "2022-07-20T08:32:59Z"
 
-    ConfigDeactivated:
-      properties:
-        endpoint:
-          type: string
-          example: "https://example.com"
-        secret:
-          type: string
-          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
-        eventTypes:
-          type: array
-          items:
-            type: string
-            example: "TYPE1"
-          example: ["TYPE1", "TYPE2"]
-        active:
-          type: boolean
-          example: false
-        createdAt:
-          type: string
-          format: date-time
-          example: "2022-07-20T07:31:40Z"
-        modifiedAt:
-          type: string
-          format: date-time
-          example: "2022-07-20T08:32:59Z"
-
     AttemptResponse:
       type: object
       properties:
@@ -324,7 +292,7 @@ components:
           type: string
           format: date-time
         config:
-          $ref: '#/components/schemas/ConfigActivated'
+          $ref: '#/components/schemas/Config'
         payload:
           type: string
           example: '{"data":"test"}'

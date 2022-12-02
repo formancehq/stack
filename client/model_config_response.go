@@ -14,35 +14,35 @@ import (
 	"encoding/json"
 )
 
-// checks if the AttemptResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &AttemptResponse{}
+// checks if the ConfigResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConfigResponse{}
 
-// AttemptResponse struct for AttemptResponse
-type AttemptResponse struct {
-	Data *Attempt `json:"data,omitempty"`
+// ConfigResponse struct for ConfigResponse
+type ConfigResponse struct {
+	Data *Config `json:"data,omitempty"`
 }
 
-// NewAttemptResponse instantiates a new AttemptResponse object
+// NewConfigResponse instantiates a new ConfigResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAttemptResponse() *AttemptResponse {
-	this := AttemptResponse{}
+func NewConfigResponse() *ConfigResponse {
+	this := ConfigResponse{}
 	return &this
 }
 
-// NewAttemptResponseWithDefaults instantiates a new AttemptResponse object
+// NewConfigResponseWithDefaults instantiates a new ConfigResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewAttemptResponseWithDefaults() *AttemptResponse {
-	this := AttemptResponse{}
+func NewConfigResponseWithDefaults() *ConfigResponse {
+	this := ConfigResponse{}
 	return &this
 }
 
 // GetData returns the Data field value if set, zero value otherwise.
-func (o *AttemptResponse) GetData() Attempt {
+func (o *ConfigResponse) GetData() Config {
 	if o == nil || isNil(o.Data) {
-		var ret Attempt
+		var ret Config
 		return ret
 	}
 	return *o.Data
@@ -50,7 +50,7 @@ func (o *AttemptResponse) GetData() Attempt {
 
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *AttemptResponse) GetDataOk() (*Attempt, bool) {
+func (o *ConfigResponse) GetDataOk() (*Config, bool) {
 	if o == nil || isNil(o.Data) {
 		return nil, false
 	}
@@ -58,7 +58,7 @@ func (o *AttemptResponse) GetDataOk() (*Attempt, bool) {
 }
 
 // HasData returns a boolean if a field has been set.
-func (o *AttemptResponse) HasData() bool {
+func (o *ConfigResponse) HasData() bool {
 	if o != nil && !isNil(o.Data) {
 		return true
 	}
@@ -66,12 +66,12 @@ func (o *AttemptResponse) HasData() bool {
 	return false
 }
 
-// SetData gets a reference to the given Attempt and assigns it to the Data field.
-func (o *AttemptResponse) SetData(v Attempt) {
+// SetData gets a reference to the given Config and assigns it to the Data field.
+func (o *ConfigResponse) SetData(v Config) {
 	o.Data = &v
 }
 
-func (o AttemptResponse) MarshalJSON() ([]byte, error) {
+func (o ConfigResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -79,7 +79,7 @@ func (o AttemptResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o AttemptResponse) ToMap() (map[string]interface{}, error) {
+func (o ConfigResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -87,38 +87,38 @@ func (o AttemptResponse) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableAttemptResponse struct {
-	value *AttemptResponse
+type NullableConfigResponse struct {
+	value *ConfigResponse
 	isSet bool
 }
 
-func (v NullableAttemptResponse) Get() *AttemptResponse {
+func (v NullableConfigResponse) Get() *ConfigResponse {
 	return v.value
 }
 
-func (v *NullableAttemptResponse) Set(val *AttemptResponse) {
+func (v *NullableConfigResponse) Set(val *ConfigResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableAttemptResponse) IsSet() bool {
+func (v NullableConfigResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableAttemptResponse) Unset() {
+func (v *NullableConfigResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableAttemptResponse(val *AttemptResponse) *NullableAttemptResponse {
-	return &NullableAttemptResponse{value: val, isSet: true}
+func NewNullableConfigResponse(val *ConfigResponse) *NullableConfigResponse {
+	return &NullableConfigResponse{value: val, isSet: true}
 }
 
-func (v NullableAttemptResponse) MarshalJSON() ([]byte, error) {
+func (v NullableConfigResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableAttemptResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableConfigResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

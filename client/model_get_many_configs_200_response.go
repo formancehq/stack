@@ -14,6 +14,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the GetManyConfigs200Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &GetManyConfigs200Response{}
+
 // GetManyConfigs200Response struct for GetManyConfigs200Response
 type GetManyConfigs200Response struct {
 	Cursor GetManyConfigs200ResponseCursor `json:"cursor"`
@@ -62,11 +65,17 @@ func (o *GetManyConfigs200Response) SetCursor(v GetManyConfigs200ResponseCursor)
 }
 
 func (o GetManyConfigs200Response) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["cursor"] = o.Cursor
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o GetManyConfigs200Response) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["cursor"] = o.Cursor
+	return toSerialize, nil
 }
 
 type NullableGetManyConfigs200Response struct {

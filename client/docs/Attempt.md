@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **WebhookID** | Pointer to **string** |  | [optional] 
 **Date** | Pointer to **time.Time** |  | [optional] 
-**Config** | Pointer to [**ConfigActivated**](ConfigActivated.md) |  | [optional] 
+**Config** | Pointer to [**Config**](Config.md) |  | [optional] 
 **Payload** | Pointer to **string** |  | [optional] 
 **StatusCode** | Pointer to **int32** |  | [optional] 
 **RetryAttempt** | Pointer to **int32** |  | [optional] 
@@ -84,20 +84,20 @@ HasDate returns a boolean if a field has been set.
 
 ### GetConfig
 
-`func (o *Attempt) GetConfig() ConfigActivated`
+`func (o *Attempt) GetConfig() Config`
 
 GetConfig returns the Config field if non-nil, zero value otherwise.
 
 ### GetConfigOk
 
-`func (o *Attempt) GetConfigOk() (*ConfigActivated, bool)`
+`func (o *Attempt) GetConfigOk() (*Config, bool)`
 
 GetConfigOk returns a tuple with the Config field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetConfig
 
-`func (o *Attempt) SetConfig(v ConfigActivated)`
+`func (o *Attempt) SetConfig(v Config)`
 
 SetConfig sets Config field to given value.
 

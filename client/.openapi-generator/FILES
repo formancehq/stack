@@ -9,10 +9,8 @@ configuration.go
 docs/Attempt.md
 docs/AttemptResponse.md
 docs/ChangeOneConfigSecretRequest.md
-docs/ConfigActivated.md
-docs/ConfigActivatedResponse.md
-docs/ConfigDeactivated.md
-docs/ConfigDeactivatedResponse.md
+docs/Config.md
+docs/ConfigResponse.md
 docs/ConfigUser.md
 docs/Cursor.md
 docs/GetManyConfigs200Response.md
@@ -26,10 +24,8 @@ go.sum
 model_attempt.go
 model_attempt_response.go
 model_change_one_config_secret_request.go
-model_config_activated.go
-model_config_activated_response.go
-model_config_deactivated.go
-model_config_deactivated_response.go
+model_config.go
+model_config_response.go
 model_config_user.go
 model_cursor.go
 model_get_many_configs_200_response.go

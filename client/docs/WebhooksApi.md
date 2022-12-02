@@ -16,7 +16,7 @@ Method | HTTP request | Description
 
 ## ActivateOneConfig
 
-> ConfigActivatedResponse ActivateOneConfig(ctx, id).Execute()
+> ConfigResponse ActivateOneConfig(ctx, id).Execute()
 
 Activate one config
 
@@ -42,7 +42,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.ActivateOneConfig``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ActivateOneConfig`: ConfigActivatedResponse
+    // response from `ActivateOneConfig`: ConfigResponse
     fmt.Fprintf(os.Stdout, "Response from `WebhooksApi.ActivateOneConfig`: %v\n", resp)
 }
 ```
@@ -66,7 +66,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ConfigActivatedResponse**](ConfigActivatedResponse.md)
+[**ConfigResponse**](ConfigResponse.md)
 
 ### Authorization
 
@@ -84,7 +84,7 @@ No authorization required
 
 ## ChangeOneConfigSecret
 
-> ConfigActivatedResponse ChangeOneConfigSecret(ctx, id).ChangeOneConfigSecretRequest(changeOneConfigSecretRequest).Execute()
+> ConfigResponse ChangeOneConfigSecret(ctx, id).ChangeOneConfigSecretRequest(changeOneConfigSecretRequest).Execute()
 
 Change the signing secret of a config
 
@@ -113,7 +113,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.ChangeOneConfigSecret``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ChangeOneConfigSecret`: ConfigActivatedResponse
+    // response from `ChangeOneConfigSecret`: ConfigResponse
     fmt.Fprintf(os.Stdout, "Response from `WebhooksApi.ChangeOneConfigSecret`: %v\n", resp)
 }
 ```
@@ -138,7 +138,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ConfigActivatedResponse**](ConfigActivatedResponse.md)
+[**ConfigResponse**](ConfigResponse.md)
 
 ### Authorization
 
@@ -156,7 +156,7 @@ No authorization required
 
 ## DeactivateOneConfig
 
-> ConfigDeactivatedResponse DeactivateOneConfig(ctx, id).Execute()
+> ConfigResponse DeactivateOneConfig(ctx, id).Execute()
 
 Deactivate one config
 
@@ -182,7 +182,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.DeactivateOneConfig``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `DeactivateOneConfig`: ConfigDeactivatedResponse
+    // response from `DeactivateOneConfig`: ConfigResponse
     fmt.Fprintf(os.Stdout, "Response from `WebhooksApi.DeactivateOneConfig`: %v\n", resp)
 }
 ```
@@ -206,7 +206,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ConfigDeactivatedResponse**](ConfigDeactivatedResponse.md)
+[**ConfigResponse**](ConfigResponse.md)
 
 ### Authorization
 
@@ -358,7 +358,7 @@ No authorization required
 
 ## InsertOneConfig
 
-> ConfigActivatedResponse InsertOneConfig(ctx).ConfigUser(configUser).Execute()
+> ConfigResponse InsertOneConfig(ctx).ConfigUser(configUser).Execute()
 
 Insert a new config 
 
@@ -386,7 +386,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.InsertOneConfig``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `InsertOneConfig`: ConfigActivatedResponse
+    // response from `InsertOneConfig`: ConfigResponse
     fmt.Fprintf(os.Stdout, "Response from `WebhooksApi.InsertOneConfig`: %v\n", resp)
 }
 ```
@@ -406,7 +406,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ConfigActivatedResponse**](ConfigActivatedResponse.md)
+[**ConfigResponse**](ConfigResponse.md)
 
 ### Authorization
 

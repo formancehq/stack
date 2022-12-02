@@ -5,13 +5,13 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **HasMore** | Pointer to **bool** |  | [optional] 
-**Data** | [**[]ConfigActivated**](ConfigActivated.md) |  | 
+**Data** | [**[]Config**](Config.md) |  | 
 
 ## Methods
 
 ### NewGetManyConfigs200ResponseCursor
 
-`func NewGetManyConfigs200ResponseCursor(data []ConfigActivated, ) *GetManyConfigs200ResponseCursor`
+`func NewGetManyConfigs200ResponseCursor(data []Config, ) *GetManyConfigs200ResponseCursor`
 
 NewGetManyConfigs200ResponseCursor instantiates a new GetManyConfigs200ResponseCursor object
 This constructor will assign default values to properties that have it defined,
@@ -53,20 +53,20 @@ HasHasMore returns a boolean if a field has been set.
 
 ### GetData
 
-`func (o *GetManyConfigs200ResponseCursor) GetData() []ConfigActivated`
+`func (o *GetManyConfigs200ResponseCursor) GetData() []Config`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *GetManyConfigs200ResponseCursor) GetDataOk() (*[]ConfigActivated, bool)`
+`func (o *GetManyConfigs200ResponseCursor) GetDataOk() (*[]Config, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *GetManyConfigs200ResponseCursor) SetData(v []ConfigActivated)`
+`func (o *GetManyConfigs200ResponseCursor) SetData(v []Config)`
 
 SetData sets Data field to given value.
 

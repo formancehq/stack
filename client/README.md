@@ -15,7 +15,6 @@ Install the following dependencies:
 
 ```shell
 go get github.com/stretchr/testify/assert
-go get golang.org/x/oauth2
 go get golang.org/x/net/context
 ```
 
@@ -93,10 +92,8 @@ Class | Method | HTTP request | Description
  - [Attempt](docs/Attempt.md)
  - [AttemptResponse](docs/AttemptResponse.md)
  - [ChangeOneConfigSecretRequest](docs/ChangeOneConfigSecretRequest.md)
- - [ConfigActivated](docs/ConfigActivated.md)
- - [ConfigActivatedResponse](docs/ConfigActivatedResponse.md)
- - [ConfigDeactivated](docs/ConfigDeactivated.md)
- - [ConfigDeactivatedResponse](docs/ConfigDeactivatedResponse.md)
+ - [Config](docs/Config.md)
+ - [ConfigResponse](docs/ConfigResponse.md)
  - [ConfigUser](docs/ConfigUser.md)
  - [Cursor](docs/Cursor.md)
  - [GetManyConfigs200Response](docs/GetManyConfigs200Response.md)

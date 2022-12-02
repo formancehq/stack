@@ -14,6 +14,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ChangeOneConfigSecretRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ChangeOneConfigSecretRequest{}
+
 // ChangeOneConfigSecretRequest struct for ChangeOneConfigSecretRequest
 type ChangeOneConfigSecretRequest struct {
 	Secret string `json:"secret"`
@@ -62,11 +65,17 @@ func (o *ChangeOneConfigSecretRequest) SetSecret(v string) {
 }
 
 func (o ChangeOneConfigSecretRequest) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["secret"] = o.Secret
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ChangeOneConfigSecretRequest) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["secret"] = o.Secret
+	return toSerialize, nil
 }
 
 type NullableChangeOneConfigSecretRequest struct {

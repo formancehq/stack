@@ -71,7 +71,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConfigActivatedResponse'
+                $ref: '#/components/schemas/ConfigResponse'
           description: Config created successfully.
         "400":
           content:
@@ -147,7 +147,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConfigActivatedResponse'
+                $ref: '#/components/schemas/ConfigResponse'
           description: Config successfully activated.
         "304":
           content: {}
@@ -173,7 +173,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConfigDeactivatedResponse'
+                $ref: '#/components/schemas/ConfigResponse'
           description: Config successfully deactivated.
         "304":
           content: {}
@@ -209,7 +209,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConfigActivatedResponse'
+                $ref: '#/components/schemas/ConfigResponse'
           description: Secret successfully changed.
       summary: Change the signing secret of a config
       tags:
@@ -238,7 +238,7 @@ components:
             example: TYPE1
             type: string
           type: array
-    ConfigActivatedResponse:
+    ConfigResponse:
       example:
         data:
           createdAt: 2022-07-20T07:31:40Z
@@ -251,24 +251,9 @@ components:
           - TYPE2
       properties:
         data:
-          $ref: '#/components/schemas/ConfigActivated'
+          $ref: '#/components/schemas/Config'
       type: object
-    ConfigDeactivatedResponse:
-      example:
-        data:
-          createdAt: 2022-07-20T07:31:40Z
-          endpoint: https://example.com
-          modifiedAt: 2022-07-20T08:32:59Z
-          active: false
-          secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
-          eventTypes:
-          - TYPE1
-          - TYPE2
-      properties:
-        data:
-          $ref: '#/components/schemas/ConfigDeactivated'
-      type: object
-    ConfigActivated:
+    Config:
       example:
         createdAt: 2022-07-20T07:31:40Z
         endpoint: https://example.com
@@ -295,42 +280,6 @@ components:
           type: array
         active:
           example: true
-          type: boolean
-        createdAt:
-          example: 2022-07-20T07:31:40Z
-          format: date-time
-          type: string
-        modifiedAt:
-          example: 2022-07-20T08:32:59Z
-          format: date-time
-          type: string
-    ConfigDeactivated:
-      example:
-        createdAt: 2022-07-20T07:31:40Z
-        endpoint: https://example.com
-        modifiedAt: 2022-07-20T08:32:59Z
-        active: false
-        secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
-        eventTypes:
-        - TYPE1
-        - TYPE2
-      properties:
-        endpoint:
-          example: https://example.com
-          type: string
-        secret:
-          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
-          type: string
-        eventTypes:
-          example:
-          - TYPE1
-          - TYPE2
-          items:
-            example: TYPE1
-            type: string
-          type: array
-        active:
-          example: false
           type: boolean
         createdAt:
           example: 2022-07-20T07:31:40Z
@@ -389,7 +338,7 @@ components:
           format: date-time
           type: string
         config:
-          $ref: '#/components/schemas/ConfigActivated'
+          $ref: '#/components/schemas/Config'
         payload:
           example: "{\"data\":\"test\"}"
           type: string
@@ -415,7 +364,7 @@ components:
       properties:
         data:
           items:
-            $ref: '#/components/schemas/ConfigActivated'
+            $ref: '#/components/schemas/Config'
           type: array
       required:
       - data

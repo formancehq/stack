@@ -1,49 +1,54 @@
-# GetManyConfigs200ResponseCursorAllOf
+# ConfigResponse
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | [**[]Config**](Config.md) |  | 
+**Data** | Pointer to [**Config**](Config.md) |  | [optional] 
 
 ## Methods
 
-### NewGetManyConfigs200ResponseCursorAllOf
+### NewConfigResponse
 
-`func NewGetManyConfigs200ResponseCursorAllOf(data []Config, ) *GetManyConfigs200ResponseCursorAllOf`
+`func NewConfigResponse() *ConfigResponse`
 
-NewGetManyConfigs200ResponseCursorAllOf instantiates a new GetManyConfigs200ResponseCursorAllOf object
+NewConfigResponse instantiates a new ConfigResponse object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewGetManyConfigs200ResponseCursorAllOfWithDefaults
+### NewConfigResponseWithDefaults
 
-`func NewGetManyConfigs200ResponseCursorAllOfWithDefaults() *GetManyConfigs200ResponseCursorAllOf`
+`func NewConfigResponseWithDefaults() *ConfigResponse`
 
-NewGetManyConfigs200ResponseCursorAllOfWithDefaults instantiates a new GetManyConfigs200ResponseCursorAllOf object
+NewConfigResponseWithDefaults instantiates a new ConfigResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *GetManyConfigs200ResponseCursorAllOf) GetData() []Config`
+`func (o *ConfigResponse) GetData() Config`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *GetManyConfigs200ResponseCursorAllOf) GetDataOk() (*[]Config, bool)`
+`func (o *ConfigResponse) GetDataOk() (*Config, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *GetManyConfigs200ResponseCursorAllOf) SetData(v []Config)`
+`func (o *ConfigResponse) SetData(v Config)`
 
 SetData sets Data field to given value.
 
+### HasData
+
+`func (o *ConfigResponse) HasData() bool`
+
+HasData returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

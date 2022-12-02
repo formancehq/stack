@@ -29,7 +29,7 @@ type ApiActivateOneConfigRequest struct {
 	id string
 }
 
-func (r ApiActivateOneConfigRequest) Execute() (*ConfigActivatedResponse, *http.Response, error) {
+func (r ApiActivateOneConfigRequest) Execute() (*ConfigResponse, *http.Response, error) {
 	return r.ApiService.ActivateOneConfigExecute(r)
 }
 
@@ -49,13 +49,13 @@ func (a *WebhooksApiService) ActivateOneConfig(ctx context.Context, id string) A
 }
 
 // Execute executes the request
-//  @return ConfigActivatedResponse
-func (a *WebhooksApiService) ActivateOneConfigExecute(r ApiActivateOneConfigRequest) (*ConfigActivatedResponse, *http.Response, error) {
+//  @return ConfigResponse
+func (a *WebhooksApiService) ActivateOneConfigExecute(r ApiActivateOneConfigRequest) (*ConfigResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ConfigActivatedResponse
+		localVarReturnValue  *ConfigResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhooksApiService.ActivateOneConfig")
@@ -64,7 +64,7 @@ func (a *WebhooksApiService) ActivateOneConfigExecute(r ApiActivateOneConfigRequ
 	}
 
 	localVarPath := localBasePath + "/configs/{id}/activate"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -136,7 +136,7 @@ func (r ApiChangeOneConfigSecretRequest) ChangeOneConfigSecretRequest(changeOneC
 	return r
 }
 
-func (r ApiChangeOneConfigSecretRequest) Execute() (*ConfigActivatedResponse, *http.Response, error) {
+func (r ApiChangeOneConfigSecretRequest) Execute() (*ConfigResponse, *http.Response, error) {
 	return r.ApiService.ChangeOneConfigSecretExecute(r)
 }
 
@@ -162,13 +162,13 @@ func (a *WebhooksApiService) ChangeOneConfigSecret(ctx context.Context, id strin
 }
 
 // Execute executes the request
-//  @return ConfigActivatedResponse
-func (a *WebhooksApiService) ChangeOneConfigSecretExecute(r ApiChangeOneConfigSecretRequest) (*ConfigActivatedResponse, *http.Response, error) {
+//  @return ConfigResponse
+func (a *WebhooksApiService) ChangeOneConfigSecretExecute(r ApiChangeOneConfigSecretRequest) (*ConfigResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ConfigActivatedResponse
+		localVarReturnValue  *ConfigResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhooksApiService.ChangeOneConfigSecret")
@@ -177,7 +177,7 @@ func (a *WebhooksApiService) ChangeOneConfigSecretExecute(r ApiChangeOneConfigSe
 	}
 
 	localVarPath := localBasePath + "/configs/{id}/secret/change"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -245,7 +245,7 @@ type ApiDeactivateOneConfigRequest struct {
 	id string
 }
 
-func (r ApiDeactivateOneConfigRequest) Execute() (*ConfigDeactivatedResponse, *http.Response, error) {
+func (r ApiDeactivateOneConfigRequest) Execute() (*ConfigResponse, *http.Response, error) {
 	return r.ApiService.DeactivateOneConfigExecute(r)
 }
 
@@ -265,13 +265,13 @@ func (a *WebhooksApiService) DeactivateOneConfig(ctx context.Context, id string)
 }
 
 // Execute executes the request
-//  @return ConfigDeactivatedResponse
-func (a *WebhooksApiService) DeactivateOneConfigExecute(r ApiDeactivateOneConfigRequest) (*ConfigDeactivatedResponse, *http.Response, error) {
+//  @return ConfigResponse
+func (a *WebhooksApiService) DeactivateOneConfigExecute(r ApiDeactivateOneConfigRequest) (*ConfigResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ConfigDeactivatedResponse
+		localVarReturnValue  *ConfigResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhooksApiService.DeactivateOneConfig")
@@ -280,7 +280,7 @@ func (a *WebhooksApiService) DeactivateOneConfigExecute(r ApiDeactivateOneConfig
 	}
 
 	localVarPath := localBasePath + "/configs/{id}/deactivate"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -379,7 +379,7 @@ func (a *WebhooksApiService) DeleteOneConfigExecute(r ApiDeleteOneConfigRequest)
 	}
 
 	localVarPath := localBasePath + "/configs/{id}"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -490,10 +490,10 @@ func (a *WebhooksApiService) GetManyConfigsExecute(r ApiGetManyConfigsRequest) (
 	localVarFormParams := url.Values{}
 
 	if r.id != nil {
-		localVarQueryParams.Add("id", parameterToString(*r.id, ""))
+	    parameterAddToQuery(localVarQueryParams, "id", r.id, "")
 	}
 	if r.endpoint != nil {
-		localVarQueryParams.Add("endpoint", parameterToString(*r.endpoint, ""))
+	    parameterAddToQuery(localVarQueryParams, "endpoint", r.endpoint, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -560,7 +560,7 @@ func (r ApiInsertOneConfigRequest) ConfigUser(configUser ConfigUser) ApiInsertOn
 	return r
 }
 
-func (r ApiInsertOneConfigRequest) Execute() (*ConfigActivatedResponse, *http.Response, error) {
+func (r ApiInsertOneConfigRequest) Execute() (*ConfigResponse, *http.Response, error) {
 	return r.ApiService.InsertOneConfigExecute(r)
 }
 
@@ -589,13 +589,13 @@ func (a *WebhooksApiService) InsertOneConfig(ctx context.Context) ApiInsertOneCo
 }
 
 // Execute executes the request
-//  @return ConfigActivatedResponse
-func (a *WebhooksApiService) InsertOneConfigExecute(r ApiInsertOneConfigRequest) (*ConfigActivatedResponse, *http.Response, error) {
+//  @return ConfigResponse
+func (a *WebhooksApiService) InsertOneConfigExecute(r ApiInsertOneConfigRequest) (*ConfigResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ConfigActivatedResponse
+		localVarReturnValue  *ConfigResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WebhooksApiService.InsertOneConfig")
@@ -722,7 +722,7 @@ func (a *WebhooksApiService) TestOneConfigExecute(r ApiTestOneConfigRequest) (*A
 	}
 
 	localVarPath := localBasePath + "/configs/{id}/test"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
