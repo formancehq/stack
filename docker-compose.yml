@@ -13,7 +13,6 @@ services:
     ports:
       - "8080:8080"
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
       OTEL_SERVICE_NAME: webhooks
       OTEL_TRACES: "true"
       OTEL_TRACES_EXPORTER: jaeger
@@ -33,20 +32,25 @@ services:
     ports:
       - "8081:8081"
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
       KAFKA_BROKERS: "redpanda:29092"
       OTEL_SERVICE_NAME: webhooks-worker
       OTEL_TRACES: "true"
       OTEL_TRACES_EXPORTER: jaeger
       OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
 
-  mongo:
-    image: mongo
+  postgres:
+    image: "postgres:alpine"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ledger"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
-      - "27017:27017"
+      - "5432:5432"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: "admin"
-      MONGO_INITDB_ROOT_PASSWORD: "admin"
+      POSTGRES_USER: "webhooks"
+      POSTGRES_PASSWORD: "webhooks"
+      POSTGRES_DB: "webhooks"
     depends_on:
       redpanda:
         condition: service_healthy

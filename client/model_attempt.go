@@ -20,8 +20,10 @@ var _ MappedNullable = &Attempt{}
 
 // Attempt struct for Attempt
 type Attempt struct {
+	Id *string `json:"id,omitempty"`
 	WebhookID *string `json:"webhookID,omitempty"`
-	Date *time.Time `json:"date,omitempty"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 	Config *Config `json:"config,omitempty"`
 	Payload *string `json:"payload,omitempty"`
 	StatusCode *int32 `json:"statusCode,omitempty"`
@@ -45,6 +47,38 @@ func NewAttempt() *Attempt {
 func NewAttemptWithDefaults() *Attempt {
 	this := Attempt{}
 	return &this
+}
+
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *Attempt) GetId() string {
+	if o == nil || isNil(o.Id) {
+		var ret string
+		return ret
+	}
+	return *o.Id
+}
+
+// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Attempt) GetIdOk() (*string, bool) {
+	if o == nil || isNil(o.Id) {
+		return nil, false
+	}
+	return o.Id, true
+}
+
+// HasId returns a boolean if a field has been set.
+func (o *Attempt) HasId() bool {
+	if o != nil && !isNil(o.Id) {
+		return true
+	}
+
+	return false
+}
+
+// SetId gets a reference to the given string and assigns it to the Id field.
+func (o *Attempt) SetId(v string) {
+	o.Id = &v
 }
 
 // GetWebhookID returns the WebhookID field value if set, zero value otherwise.
@@ -79,36 +113,68 @@ func (o *Attempt) SetWebhookID(v string) {
 	o.WebhookID = &v
 }
 
-// GetDate returns the Date field value if set, zero value otherwise.
-func (o *Attempt) GetDate() time.Time {
-	if o == nil || isNil(o.Date) {
+// GetCreatedAt returns the CreatedAt field value if set, zero value otherwise.
+func (o *Attempt) GetCreatedAt() time.Time {
+	if o == nil || isNil(o.CreatedAt) {
 		var ret time.Time
 		return ret
 	}
-	return *o.Date
+	return *o.CreatedAt
 }
 
-// GetDateOk returns a tuple with the Date field value if set, nil otherwise
+// GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Attempt) GetDateOk() (*time.Time, bool) {
-	if o == nil || isNil(o.Date) {
+func (o *Attempt) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil || isNil(o.CreatedAt) {
 		return nil, false
 	}
-	return o.Date, true
+	return o.CreatedAt, true
 }
 
-// HasDate returns a boolean if a field has been set.
-func (o *Attempt) HasDate() bool {
-	if o != nil && !isNil(o.Date) {
+// HasCreatedAt returns a boolean if a field has been set.
+func (o *Attempt) HasCreatedAt() bool {
+	if o != nil && !isNil(o.CreatedAt) {
 		return true
 	}
 
 	return false
 }
 
-// SetDate gets a reference to the given time.Time and assigns it to the Date field.
-func (o *Attempt) SetDate(v time.Time) {
-	o.Date = &v
+// SetCreatedAt gets a reference to the given time.Time and assigns it to the CreatedAt field.
+func (o *Attempt) SetCreatedAt(v time.Time) {
+	o.CreatedAt = &v
+}
+
+// GetUpdatedAt returns the UpdatedAt field value if set, zero value otherwise.
+func (o *Attempt) GetUpdatedAt() time.Time {
+	if o == nil || isNil(o.UpdatedAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.UpdatedAt
+}
+
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Attempt) GetUpdatedAtOk() (*time.Time, bool) {
+	if o == nil || isNil(o.UpdatedAt) {
+		return nil, false
+	}
+	return o.UpdatedAt, true
+}
+
+// HasUpdatedAt returns a boolean if a field has been set.
+func (o *Attempt) HasUpdatedAt() bool {
+	if o != nil && !isNil(o.UpdatedAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetUpdatedAt gets a reference to the given time.Time and assigns it to the UpdatedAt field.
+func (o *Attempt) SetUpdatedAt(v time.Time) {
+	o.UpdatedAt = &v
 }
 
 // GetConfig returns the Config field value if set, zero value otherwise.
@@ -313,11 +379,17 @@ func (o Attempt) MarshalJSON() ([]byte, error) {
 
 func (o Attempt) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !isNil(o.Id) {
+		toSerialize["id"] = o.Id
+	}
 	if !isNil(o.WebhookID) {
 		toSerialize["webhookID"] = o.WebhookID
 	}
-	if !isNil(o.Date) {
-		toSerialize["date"] = o.Date
+	if !isNil(o.CreatedAt) {
+		toSerialize["createdAt"] = o.CreatedAt
+	}
+	if !isNil(o.UpdatedAt) {
+		toSerialize["updatedAt"] = o.UpdatedAt
 	}
 	if !isNil(o.Config) {
 		toSerialize["config"] = o.Config

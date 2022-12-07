@@ -241,30 +241,30 @@ components:
     ConfigResponse:
       example:
         data:
-          createdAt: 2022-07-20T07:31:40Z
+          createdAt: 2000-01-23T04:56:07.000+00:00
           endpoint: https://example.com
-          modifiedAt: 2022-07-20T08:32:59Z
           active: true
           id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
           eventTypes:
           - TYPE1
           - TYPE2
+          updatedAt: 2000-01-23T04:56:07.000+00:00
       properties:
         data:
           $ref: '#/components/schemas/Config'
       type: object
     Config:
       example:
-        createdAt: 2022-07-20T07:31:40Z
+        createdAt: 2000-01-23T04:56:07.000+00:00
         endpoint: https://example.com
-        modifiedAt: 2022-07-20T08:32:59Z
         active: true
         id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
         eventTypes:
         - TYPE1
         - TYPE2
+        updatedAt: 2000-01-23T04:56:07.000+00:00
       properties:
         id:
           format: uuid
@@ -287,31 +287,31 @@ components:
           example: true
           type: boolean
         createdAt:
-          example: 2022-07-20T07:31:40Z
           format: date-time
           type: string
-        modifiedAt:
-          example: 2022-07-20T08:32:59Z
+        updatedAt:
           format: date-time
           type: string
     AttemptResponse:
       example:
         data:
-          date: 2000-01-23T04:56:07.000+00:00
           nextRetryAfter: 2000-01-23T04:56:07.000+00:00
-          webhookID: 4997257d-dfb6-445b-929c-cbe2ab182818
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          webhookID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           payload: "{\"data\":\"test\"}"
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           retryAttempt: 1
           config:
-            createdAt: 2022-07-20T07:31:40Z
+            createdAt: 2000-01-23T04:56:07.000+00:00
             endpoint: https://example.com
-            modifiedAt: 2022-07-20T08:32:59Z
             active: true
             id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
             eventTypes:
             - TYPE1
             - TYPE2
+            updatedAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: 2000-01-23T04:56:07.000+00:00
           statusCode: 200
           status: success
       properties:
@@ -320,28 +320,36 @@ components:
       type: object
     Attempt:
       example:
-        date: 2000-01-23T04:56:07.000+00:00
         nextRetryAfter: 2000-01-23T04:56:07.000+00:00
-        webhookID: 4997257d-dfb6-445b-929c-cbe2ab182818
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        webhookID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         payload: "{\"data\":\"test\"}"
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         retryAttempt: 1
         config:
-          createdAt: 2022-07-20T07:31:40Z
+          createdAt: 2000-01-23T04:56:07.000+00:00
           endpoint: https://example.com
-          modifiedAt: 2022-07-20T08:32:59Z
           active: true
           id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
           eventTypes:
           - TYPE1
           - TYPE2
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        updatedAt: 2000-01-23T04:56:07.000+00:00
         statusCode: 200
         status: success
       properties:
-        webhookID:
-          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+        id:
+          format: uuid
           type: string
-        date:
+        webhookID:
+          format: uuid
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
           format: date-time
           type: string
         config:

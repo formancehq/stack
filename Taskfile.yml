@@ -52,7 +52,7 @@ tasks:
 
   docker:
     cmds:
-      - docker compose up -d --remove-orphans mongo redpanda redpanda-config redpanda-ui
+      - docker compose up -d --remove-orphans postgres redpanda redpanda-config redpanda-ui
 
   coverage:
     cmds:
@@ -72,3 +72,13 @@ tasks:
     run: once
     cmds:
       - docker build -t numary:{{.SERVICE}}-{{.APP_SHA}} --target app --build-arg APP_SHA={{.APP_SHA}} --build-arg APP_VERSION={{.APP_VERSION}} .
+
+  stop:
+    cmds:
+      - docker-compose stop
+  rm:
+    deps:
+      - stop
+    cmds:
+      - docker-compose rm -f
+      - docker volume prune -f
