@@ -2,6 +2,7 @@ package test_test
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -16,15 +17,14 @@ import (
 	"github.com/formancehq/webhooks/pkg/kafka"
 	"github.com/formancehq/webhooks/pkg/security"
 	"github.com/formancehq/webhooks/pkg/server"
-	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/formancehq/webhooks/pkg/worker"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 	"github.com/twmb/franz-go/pkg/kgo"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/driver/pgdriver"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
 )
@@ -33,15 +33,16 @@ func TestWorkerMessages(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	mongoClient, err := mongo.Connect(ctx,
-		options.Client().ApplyURI(
-			viper.GetString(flag.StorageMongoConnString)))
-	require.NoError(t, err)
+	sqldb := sql.OpenDB(
+		pgdriver.NewConnector(
+			pgdriver.WithDSN(viper.GetString(flag.StoragePostgresConnString))))
+	db := bun.NewDB(sqldb, pgdialect.New())
+	defer db.Close()
 
-	// Cleanup collections
-	require.NoError(t, mongoClient.Database(
-		viper.GetString(flag.StorageMongoDatabaseName)).
-		Collection(storage.CollectionConfigs).Drop(context.Background()))
+	require.NoError(t, db.Ping())
+
+	// Cleanup tables
+	require.NoError(t, db.ResetModel(ctx, (*webhooks.Config)(nil)))
 
 	// New test server with success handler
 	httpServerSuccess := httptest.NewServer(http.HandlerFunc(webhooksSuccessHandler))
@@ -81,9 +82,7 @@ func TestWorkerMessages(t *testing.T) {
 	requestServer(t, http.MethodPost, server.PathConfigs, http.StatusOK, cfgFail)
 
 	t.Run("success", func(t *testing.T) {
-		require.NoError(t, mongoClient.Database(
-			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.CollectionAttempts).Drop(context.Background()))
+		require.NoError(t, db.ResetModel(ctx, (*webhooks.Attempt)(nil)))
 
 		retrySchedule = []time.Duration{time.Second}
 		viper.Set(flag.RetriesSchedule, retrySchedule)
@@ -112,21 +111,15 @@ func TestWorkerMessages(t *testing.T) {
 			{Topic: kafkaTopics[0], Value: by1},
 			{Topic: kafkaTopics[0], Value: by3},
 		}
-		if err := kafkaClient.ProduceSync(context.Background(), records...).FirstErr(); err != nil {
-			fmt.Printf("record had a produce error while synchronously producing: %v\n", err)
-		}
+		err = kafkaClient.ProduceSync(context.Background(), records...).FirstErr()
+		require.NoError(t, err)
 		kafkaClient.Close()
 
 		t.Run("webhooks", func(t *testing.T) {
 			msgs := 0
 			for msgs != expectedSentWebhooks {
-				cur, err := mongoClient.Database(
-					viper.GetString(flag.StorageMongoDatabaseName)).
-					Collection(storage.CollectionAttempts).
-					Find(context.Background(), bson.M{}, nil)
-				require.NoError(t, err)
 				var results []webhooks.Attempt
-				require.NoError(t, cur.All(context.Background(), &results))
+				require.NoError(t, db.NewSelect().Model(&results).Scan(ctx))
 				msgs = len(results)
 				if msgs != expectedSentWebhooks {
 					time.Sleep(time.Second)
@@ -145,9 +138,7 @@ func TestWorkerMessages(t *testing.T) {
 	})
 
 	t.Run("failure", func(t *testing.T) {
-		require.NoError(t, mongoClient.Database(
-			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.CollectionAttempts).Drop(context.Background()))
+		require.NoError(t, db.ResetModel(ctx, (*webhooks.Attempt)(nil)))
 
 		retrySchedule = []time.Duration{time.Second}
 		viper.Set(flag.RetriesSchedule, retrySchedule)
@@ -176,21 +167,15 @@ func TestWorkerMessages(t *testing.T) {
 			{Topic: kafkaTopics[0], Value: by2},
 			{Topic: kafkaTopics[0], Value: by3},
 		}
-		if err := kafkaClient.ProduceSync(context.Background(), records...).FirstErr(); err != nil {
-			fmt.Printf("record had a produce error while synchronously producing: %v\n", err)
-		}
+		err = kafkaClient.ProduceSync(context.Background(), records...).FirstErr()
+		require.NoError(t, err)
 		kafkaClient.Close()
 
 		t.Run("webhooks", func(t *testing.T) {
 			msgs := 0
 			for msgs != expectedSentWebhooks {
-				cur, err := mongoClient.Database(
-					viper.GetString(flag.StorageMongoDatabaseName)).
-					Collection(storage.CollectionAttempts).
-					Find(context.Background(), bson.M{}, nil)
-				require.NoError(t, err)
 				var results []webhooks.Attempt
-				require.NoError(t, cur.All(context.Background(), &results))
+				require.NoError(t, db.NewSelect().Model(&results).Scan(ctx))
 				msgs = len(results)
 				if msgs != expectedSentWebhooks {
 					time.Sleep(time.Second)
@@ -215,15 +200,15 @@ func TestWorkerRetries(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	mongoClient, err := mongo.Connect(ctx,
-		options.Client().ApplyURI(
-			viper.GetString(flag.StorageMongoConnString)))
-	require.NoError(t, err)
+	sqldb := sql.OpenDB(
+		pgdriver.NewConnector(
+			pgdriver.WithDSN(viper.GetString(flag.StoragePostgresConnString))))
+	db := bun.NewDB(sqldb, pgdialect.New())
+
+	require.NoError(t, db.Ping())
 
 	t.Run("1 attempt to retry with success", func(t *testing.T) {
-		require.NoError(t, mongoClient.Database(
-			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.CollectionAttempts).Drop(context.Background()))
+		require.NoError(t, db.ResetModel(ctx, (*webhooks.Attempt)(nil)))
 
 		// New test server with success handler
 		httpServerSuccess := httptest.NewServer(http.HandlerFunc(webhooksSuccessHandler))
@@ -233,7 +218,8 @@ func TestWorkerRetries(t *testing.T) {
 		}()
 
 		failedAttempt := webhooks.Attempt{
-			Date:      time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
+			ID:        uuid.NewString(),
 			WebhookID: uuid.NewString(),
 			Config: webhooks.Config{
 				ConfigUser: webhooks.ConfigUser{
@@ -253,9 +239,7 @@ func TestWorkerRetries(t *testing.T) {
 			NextRetryAfter: time.Now().UTC(),
 		}
 
-		_, err = mongoClient.Database(
-			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.CollectionAttempts).InsertOne(context.Background(), failedAttempt)
+		_, err := db.NewInsert().Model(&failedAttempt).Exec(ctx)
 		require.NoError(t, err)
 
 		retrySchedule = []time.Duration{time.Second, time.Second, time.Second}
@@ -275,14 +259,8 @@ func TestWorkerRetries(t *testing.T) {
 
 		attempts := 0
 		for attempts != expectedAttempts {
-			opts := options.Find().SetSort(bson.M{webhooks.KeyID: -1})
-			cur, err := mongoClient.Database(
-				viper.GetString(flag.StorageMongoDatabaseName)).
-				Collection(storage.CollectionAttempts).
-				Find(context.Background(), bson.M{}, opts)
-			require.NoError(t, err)
 			var results []webhooks.Attempt
-			require.NoError(t, cur.All(context.Background(), &results))
+			require.NoError(t, db.NewSelect().Model(&results).Order("created_at DESC").Scan(ctx))
 			attempts = len(results)
 			if attempts != expectedAttempts {
 				time.Sleep(time.Second)
@@ -299,9 +277,7 @@ func TestWorkerRetries(t *testing.T) {
 	})
 
 	t.Run("retrying an attempt until failed at the end of the schedule", func(t *testing.T) {
-		require.NoError(t, mongoClient.Database(
-			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.CollectionAttempts).Drop(context.Background()))
+		require.NoError(t, db.ResetModel(ctx, (*webhooks.Attempt)(nil)))
 
 		// New test server with fail handler
 		httpServerFail := httptest.NewServer(http.HandlerFunc(webhooksFailHandler))
@@ -311,7 +287,8 @@ func TestWorkerRetries(t *testing.T) {
 		}()
 
 		failedAttempt := webhooks.Attempt{
-			Date:      time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
+			ID:        uuid.NewString(),
 			WebhookID: uuid.NewString(),
 			Config: webhooks.Config{
 				ConfigUser: webhooks.ConfigUser{
@@ -331,9 +308,7 @@ func TestWorkerRetries(t *testing.T) {
 			NextRetryAfter: time.Now().UTC(),
 		}
 
-		_, err = mongoClient.Database(
-			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.CollectionAttempts).InsertOne(context.Background(), failedAttempt)
+		_, err := db.NewInsert().Model(&failedAttempt).Exec(ctx)
 		require.NoError(t, err)
 
 		retrySchedule = []time.Duration{time.Second, time.Second, time.Second}
@@ -353,14 +328,8 @@ func TestWorkerRetries(t *testing.T) {
 
 		attempts := 0
 		for attempts != expectedAttempts {
-			opts := options.Find().SetSort(bson.M{webhooks.KeyID: -1})
-			cur, err := mongoClient.Database(
-				viper.GetString(flag.StorageMongoDatabaseName)).
-				Collection(storage.CollectionAttempts).
-				Find(context.Background(), bson.M{}, opts)
-			require.NoError(t, err)
 			var results []webhooks.Attempt
-			require.NoError(t, cur.All(context.Background(), &results))
+			require.NoError(t, db.NewSelect().Model(&results).Order("created_at DESC").Scan(ctx))
 			attempts = len(results)
 			if attempts != expectedAttempts {
 				time.Sleep(time.Second)
@@ -380,9 +349,7 @@ func TestWorkerRetries(t *testing.T) {
 		retrySchedule = []time.Duration{time.Hour}
 		viper.Set(flag.RetriesSchedule, retrySchedule)
 
-		require.NoError(t, mongoClient.Database(
-			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.CollectionAttempts).Drop(context.Background()))
+		require.NoError(t, db.ResetModel(ctx, (*webhooks.Attempt)(nil)))
 
 		// New test server with fail handler
 		httpServerFail := httptest.NewServer(http.HandlerFunc(webhooksFailHandler))
@@ -392,7 +359,8 @@ func TestWorkerRetries(t *testing.T) {
 		}()
 
 		failedAttempt := webhooks.Attempt{
-			Date:      time.Now().UTC(),
+			CreatedAt: time.Now().UTC(),
+			ID:        uuid.NewString(),
 			WebhookID: uuid.NewString(),
 			Config: webhooks.Config{
 				ConfigUser: webhooks.ConfigUser{
@@ -412,9 +380,7 @@ func TestWorkerRetries(t *testing.T) {
 			NextRetryAfter: time.Now().UTC(),
 		}
 
-		_, err = mongoClient.Database(
-			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.CollectionAttempts).InsertOne(context.Background(), failedAttempt)
+		_, err := db.NewInsert().Model(&failedAttempt).Exec(ctx)
 		require.NoError(t, err)
 
 		workerApp := fxtest.New(t,
@@ -429,13 +395,8 @@ func TestWorkerRetries(t *testing.T) {
 
 		time.Sleep(3 * time.Second)
 
-		cur, err := mongoClient.Database(
-			viper.GetString(flag.StorageMongoDatabaseName)).
-			Collection(storage.CollectionAttempts).
-			Find(context.Background(), bson.M{}, nil)
-		require.NoError(t, err)
 		var results []webhooks.Attempt
-		require.NoError(t, cur.All(context.Background(), &results))
+		require.NoError(t, db.NewSelect().Model(&results).Scan(ctx))
 		attempts := len(results)
 		require.Equal(t, 2, attempts)
 		require.Equal(t, webhooks.StatusAttemptFailed, results[0].Status)

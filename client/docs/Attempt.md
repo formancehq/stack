@@ -4,8 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**Id** | Pointer to **string** |  | [optional] 
 **WebhookID** | Pointer to **string** |  | [optional] 
-**Date** | Pointer to **time.Time** |  | [optional] 
+**CreatedAt** | Pointer to **time.Time** |  | [optional] 
+**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
 **Config** | Pointer to [**Config**](Config.md) |  | [optional] 
 **Payload** | Pointer to **string** |  | [optional] 
 **StatusCode** | Pointer to **int32** |  | [optional] 
@@ -32,6 +34,31 @@ NewAttemptWithDefaults instantiates a new Attempt object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
+### GetId
+
+`func (o *Attempt) GetId() string`
+
+GetId returns the Id field if non-nil, zero value otherwise.
+
+### GetIdOk
+
+`func (o *Attempt) GetIdOk() (*string, bool)`
+
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetId
+
+`func (o *Attempt) SetId(v string)`
+
+SetId sets Id field to given value.
+
+### HasId
+
+`func (o *Attempt) HasId() bool`
+
+HasId returns a boolean if a field has been set.
+
 ### GetWebhookID
 
 `func (o *Attempt) GetWebhookID() string`
@@ -57,30 +84,55 @@ SetWebhookID sets WebhookID field to given value.
 
 HasWebhookID returns a boolean if a field has been set.
 
-### GetDate
+### GetCreatedAt
 
-`func (o *Attempt) GetDate() time.Time`
+`func (o *Attempt) GetCreatedAt() time.Time`
 
-GetDate returns the Date field if non-nil, zero value otherwise.
+GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
 
-### GetDateOk
+### GetCreatedAtOk
 
-`func (o *Attempt) GetDateOk() (*time.Time, bool)`
+`func (o *Attempt) GetCreatedAtOk() (*time.Time, bool)`
 
-GetDateOk returns a tuple with the Date field if it's non-nil, zero value otherwise
+GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetDate
+### SetCreatedAt
 
-`func (o *Attempt) SetDate(v time.Time)`
+`func (o *Attempt) SetCreatedAt(v time.Time)`
 
-SetDate sets Date field to given value.
+SetCreatedAt sets CreatedAt field to given value.
 
-### HasDate
+### HasCreatedAt
 
-`func (o *Attempt) HasDate() bool`
+`func (o *Attempt) HasCreatedAt() bool`
 
-HasDate returns a boolean if a field has been set.
+HasCreatedAt returns a boolean if a field has been set.
+
+### GetUpdatedAt
+
+`func (o *Attempt) GetUpdatedAt() time.Time`
+
+GetUpdatedAt returns the UpdatedAt field if non-nil, zero value otherwise.
+
+### GetUpdatedAtOk
+
+`func (o *Attempt) GetUpdatedAtOk() (*time.Time, bool)`
+
+GetUpdatedAtOk returns a tuple with the UpdatedAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUpdatedAt
+
+`func (o *Attempt) SetUpdatedAt(v time.Time)`
+
+SetUpdatedAt sets UpdatedAt field to given value.
+
+### HasUpdatedAt
+
+`func (o *Attempt) HasUpdatedAt() bool`
+
+HasUpdatedAt returns a boolean if a field has been set.
 
 ### GetConfig
 

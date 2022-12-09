@@ -103,6 +103,8 @@ func (w *Worker) Stop(ctx context.Context) {
 		case <-ch:
 			sharedlogging.GetLogger(ctx).Debug("worker stopped via stopChan")
 		}
+	default:
+		sharedlogging.GetLogger(ctx).Debug("trying to stop worker: no communication")
 	}
 }
 
@@ -149,7 +151,7 @@ func (w *Worker) processMessage(ctx context.Context, msgValue []byte) error {
 		ev.Type = strings.Join([]string{eventApp, eventType}, ".")
 	}
 
-	filter := map[string]any{webhooks.KeyEventTypes: ev.Type}
+	filter := map[string]string{"event_types": ev.Type}
 	sharedlogging.GetLogger(ctx).Debugf("searching configs with filter: %+v", filter)
 	cfgs, err := w.store.FindManyConfigs(ctx, filter)
 	if err != nil {
@@ -163,7 +165,7 @@ func (w *Worker) processMessage(ctx context.Context, msgValue []byte) error {
 			return errors.Wrap(err, "json.Marshal event message")
 		}
 
-		attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retriesSchedule,
+		attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retriesSchedule, uuid.NewString(),
 			uuid.NewString(), 0, cfg, data, false)
 		if err != nil {
 			return errors.Wrap(err, "sending webhook")
@@ -192,33 +194,29 @@ func (w *Worker) attemptRetries(ctx context.Context, errChan chan error) {
 			return
 		default:
 			// Find all webhookIDs ready to be retried
-			filter := map[string]any{
-				webhooks.KeyStatus:         webhooks.StatusAttemptToRetry,
-				webhooks.KeyNextRetryAfter: map[string]any{"$lt": time.Now().UTC()},
-			}
-			ids, err := w.store.FindDistinctWebhookIDs(ctx, filter)
+			webhookIDs, err := w.store.FindWebhookIDsToRetry(ctx)
 			if err != nil {
-				errChan <- errors.Wrap(err, "storage.Store.FindDistinctWebhookIDs to retry")
+				errChan <- errors.Wrap(err, "storage.Store.FindWebhookIDsToRetry")
 				continue
 			} else {
-				sharedlogging.GetLogger(ctx).Debugf("found %d distinct webhookIDs to retry: %+v", len(ids), ids)
+				sharedlogging.GetLogger(ctx).Debugf(
+					"found %d distinct webhookIDs to retry: %+v", len(webhookIDs), webhookIDs)
 			}
 
-			for _, id := range ids {
-				filter[webhooks.KeyWebhookID] = id
-				atts, err := w.store.FindManyAttempts(ctx, filter)
+			for _, webhookID := range webhookIDs {
+				atts, err := w.store.FindAttemptsToRetryByWebhookID(ctx, webhookID)
 				if err != nil {
-					errChan <- errors.Wrap(err, "storage.Store.FindManyAttempts")
+					errChan <- errors.Wrap(err, "storage.Store.FindAttemptsToRetryByWebhookID")
 					continue
 				}
 				if len(atts) == 0 {
-					errChan <- fmt.Errorf("%w for webhookID: %s", ErrNoAttemptsFound, id)
+					errChan <- fmt.Errorf("%w for webhookID: %s", ErrNoAttemptsFound, webhookID)
 					continue
 				}
 
 				newAttemptNb := atts[0].RetryAttempt + 1
-				attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retriesSchedule,
-					id, newAttemptNb, atts[0].Config, []byte(atts[0].Payload), false)
+				attempt, err := webhooks.MakeAttempt(ctx, w.httpClient, w.retriesSchedule, uuid.NewString(),
+					webhookID, newAttemptNb, atts[0].Config, []byte(atts[0].Payload), false)
 				if err != nil {
 					errChan <- errors.Wrap(err, "webhooks.MakeAttempt")
 					continue
@@ -229,11 +227,11 @@ func (w *Worker) attemptRetries(ctx context.Context, errChan chan error) {
 					continue
 				}
 
-				if _, err := w.store.UpdateManyAttemptsStatus(ctx, id, attempt.Status); err != nil {
-					if errors.Is(err, storage.ErrAttemptNotModified) {
+				if _, err := w.store.UpdateAttemptsStatus(ctx, webhookID, attempt.Status); err != nil {
+					if errors.Is(err, storage.ErrAttemptsNotModified) {
 						continue
 					}
-					errChan <- errors.Wrap(err, "storage.Store.UpdateManyAttemptsStatus")
+					errChan <- errors.Wrap(err, "storage.Store.UpdateAttemptsStatus")
 					continue
 				}
 			}

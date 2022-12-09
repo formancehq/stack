@@ -5,9 +5,9 @@ import (
 )
 
 type EventMessage struct {
-	Date    time.Time `json:"date" bson:"date"`
-	App     string    `json:"app" bson:"app"`
-	Version string    `json:"version" bson:"version"`
-	Type    string    `json:"type" bson:"type"`
-	Payload any       `json:"payload" bson:"payload"`
+	Date    time.Time `json:"date"`
+	App     string    `json:"app"`
+	Version string    `json:"version"`
+	Type    string    `json:"type"`
+	Payload any       `json:"payload"`
 }

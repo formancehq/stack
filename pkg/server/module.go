@@ -6,7 +6,7 @@ import (
 	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/formancehq/webhooks/pkg/httpserver"
-	"github.com/formancehq/webhooks/pkg/storage/mongo"
+	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
@@ -19,7 +19,7 @@ func StartModule(addr string) fx.Option {
 	options = append(options, fx.Provide(
 		func() string { return addr },
 		httpserver.NewMuxServer,
-		mongo.NewStore,
+		postgres.NewStore,
 		newServerHandler,
 	))
 	options = append(options, fx.Invoke(httpserver.RegisterHandler))

@@ -22,8 +22,7 @@ const (
 	RetriesSchedule = "retries-schedule"
 	RetriesCron     = "retries-cron"
 
-	StorageMongoConnString   = "storage-mongo-conn-string"
-	StorageMongoDatabaseName = "storage-mongo-database-name"
+	StoragePostgresConnString = "storage-postgres-conn-string"
 
 	KafkaBrokers       = "kafka-brokers"
 	KafkaGroupID       = "kafka-consumer-group"
@@ -39,8 +38,7 @@ const (
 	DefaultBindAddressServer = ":8080"
 	DefaultBindAddressWorker = ":8081"
 
-	DefaultMongoConnString   = "mongodb://admin:admin@localhost:27017/"
-	DefaultMongoDatabaseName = "webhooks"
+	DefaultPostgresConnString = "postgresql://webhooks:webhooks@localhost:5432/webhooks?sslmode=disable"
 
 	DefaultKafkaTopic   = "default"
 	DefaultKafkaBroker  = "localhost:9092"
@@ -62,8 +60,7 @@ func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
 	flagSet.String(HttpBindAddressWorker, DefaultBindAddressWorker, "worker HTTP bind address")
 	flagSet.DurationSlice(RetriesSchedule, DefaultRetriesSchedule, "worker retries schedule")
 	flagSet.Duration(RetriesCron, DefaultRetriesCron, "worker retries cron")
-	flagSet.String(StorageMongoConnString, DefaultMongoConnString, "Mongo connection string")
-	flagSet.String(StorageMongoDatabaseName, DefaultMongoDatabaseName, "Mongo database name")
+	flagSet.String(StoragePostgresConnString, DefaultPostgresConnString, "Postgres connection string")
 
 	flagSet.StringSlice(KafkaBrokers, []string{DefaultKafkaBroker}, "Kafka brokers")
 	flagSet.String(KafkaGroupID, DefaultKafkaGroupID, "Kafka consumer group")

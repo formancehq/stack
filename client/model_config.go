@@ -26,7 +26,7 @@ type Config struct {
 	EventTypes []string `json:"eventTypes,omitempty"`
 	Active *bool `json:"active,omitempty"`
 	CreatedAt *time.Time `json:"createdAt,omitempty"`
-	ModifiedAt *time.Time `json:"modifiedAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
 
 // NewConfig instantiates a new Config object
@@ -238,36 +238,36 @@ func (o *Config) SetCreatedAt(v time.Time) {
 	o.CreatedAt = &v
 }
 
-// GetModifiedAt returns the ModifiedAt field value if set, zero value otherwise.
-func (o *Config) GetModifiedAt() time.Time {
-	if o == nil || isNil(o.ModifiedAt) {
+// GetUpdatedAt returns the UpdatedAt field value if set, zero value otherwise.
+func (o *Config) GetUpdatedAt() time.Time {
+	if o == nil || isNil(o.UpdatedAt) {
 		var ret time.Time
 		return ret
 	}
-	return *o.ModifiedAt
+	return *o.UpdatedAt
 }
 
-// GetModifiedAtOk returns a tuple with the ModifiedAt field value if set, nil otherwise
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Config) GetModifiedAtOk() (*time.Time, bool) {
-	if o == nil || isNil(o.ModifiedAt) {
+func (o *Config) GetUpdatedAtOk() (*time.Time, bool) {
+	if o == nil || isNil(o.UpdatedAt) {
 		return nil, false
 	}
-	return o.ModifiedAt, true
+	return o.UpdatedAt, true
 }
 
-// HasModifiedAt returns a boolean if a field has been set.
-func (o *Config) HasModifiedAt() bool {
-	if o != nil && !isNil(o.ModifiedAt) {
+// HasUpdatedAt returns a boolean if a field has been set.
+func (o *Config) HasUpdatedAt() bool {
+	if o != nil && !isNil(o.UpdatedAt) {
 		return true
 	}
 
 	return false
 }
 
-// SetModifiedAt gets a reference to the given time.Time and assigns it to the ModifiedAt field.
-func (o *Config) SetModifiedAt(v time.Time) {
-	o.ModifiedAt = &v
+// SetUpdatedAt gets a reference to the given time.Time and assigns it to the UpdatedAt field.
+func (o *Config) SetUpdatedAt(v time.Time) {
+	o.UpdatedAt = &v
 }
 
 func (o Config) MarshalJSON() ([]byte, error) {
@@ -298,8 +298,8 @@ func (o Config) ToMap() (map[string]interface{}, error) {
 	if !isNil(o.CreatedAt) {
 		toSerialize["createdAt"] = o.CreatedAt
 	}
-	if !isNil(o.ModifiedAt) {
-		toSerialize["modifiedAt"] = o.ModifiedAt
+	if !isNil(o.UpdatedAt) {
+		toSerialize["updatedAt"] = o.UpdatedAt
 	}
 	return toSerialize, nil
 }

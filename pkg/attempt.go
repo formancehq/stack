@@ -11,30 +11,45 @@ import (
 	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/webhooks/pkg/security"
 	"github.com/pkg/errors"
+	"github.com/uptrace/bun"
 )
 
 const (
 	StatusAttemptSuccess = "success"
 	StatusAttemptToRetry = "to retry"
 	StatusAttemptFailed  = "failed"
-
-	KeyWebhookID      = "webhookID"
-	KeyStatus         = "status"
-	KeyNextRetryAfter = "nextRetryAfter"
 )
 
 type Attempt struct {
-	WebhookID      string    `json:"webhookID" bson:"webhookID"`
-	Date           time.Time `json:"date" bson:"date"`
-	Config         Config    `json:"config" bson:"config"`
-	Payload        string    `json:"payload" bson:"payload"`
-	StatusCode     int       `json:"statusCode" bson:"statusCode"`
-	RetryAttempt   int       `json:"retryAttempt" bson:"retryAttempt"`
-	Status         string    `json:"status" bson:"status"`
-	NextRetryAfter time.Time `json:"nextRetryAfter,omitempty" bson:"nextRetryAfter,omitempty"`
+	bun.BaseModel `bun:"table:attempts"`
+
+	ID             string    `json:"id" bun:",pk"`
+	WebhookID      string    `json:"webhookID" bun:"webhook_id"`
+	CreatedAt      time.Time `json:"createdAt" bun:"created_at,nullzero,notnull,default:current_timestamp"`
+	UpdatedAt      time.Time `json:"updatedAt" bun:"updated_at,nullzero,notnull,default:current_timestamp"`
+	Config         Config    `json:"config" bun:"type:jsonb"`
+	Payload        string    `json:"payload"`
+	StatusCode     int       `json:"statusCode" bun:"status_code"`
+	RetryAttempt   int       `json:"retryAttempt" bun:"retry_attempt"`
+	Status         string    `json:"status"`
+	NextRetryAfter time.Time `json:"nextRetryAfter,omitempty" bun:"next_retry_after,nullzero"`
 }
 
-func MakeAttempt(ctx context.Context, httpClient *http.Client, schedule []time.Duration, id string, attemptNb int, cfg Config, payload []byte, isTest bool) (Attempt, error) {
+var _ bun.AfterCreateTableHook = (*Attempt)(nil)
+
+func (*Attempt) AfterCreateTable(ctx context.Context, q *bun.CreateTableQuery) error {
+	if _, err := q.DB().NewCreateIndex().IfNotExists().
+		Model((*Attempt)(nil)).
+		Index("attempts_idx").
+		Column("webhook_id", "status").
+		Exec(ctx); err != nil {
+		return errors.Wrap(err, "creating attempts index")
+	}
+
+	return nil
+}
+
+func MakeAttempt(ctx context.Context, httpClient *http.Client, schedule []time.Duration, id, webhookID string, attemptNb int, cfg Config, payload []byte, isTest bool) (Attempt, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, cfg.Endpoint, bytes.NewBuffer(payload))
 	if err != nil {
 		return Attempt{}, errors.Wrap(err, "http.NewRequestWithContext")
@@ -42,14 +57,14 @@ func MakeAttempt(ctx context.Context, httpClient *http.Client, schedule []time.D
 
 	ts := time.Now().UTC()
 	timestamp := ts.Unix()
-	signature, err := security.Sign(id, timestamp, cfg.Secret, payload)
+	signature, err := security.Sign(webhookID, timestamp, cfg.Secret, payload)
 	if err != nil {
 		return Attempt{}, errors.Wrap(err, "security.Sign")
 	}
 
 	req.Header.Set("content-type", "application/json")
 	req.Header.Set("user-agent", "formance-webhooks/v0")
-	req.Header.Set("formance-webhook-id", id)
+	req.Header.Set("formance-webhook-id", webhookID)
 	req.Header.Set("formance-webhook-timestamp", fmt.Sprintf("%d", timestamp))
 	req.Header.Set("formance-webhook-signature", signature)
 	req.Header.Set("formance-webhook-test", fmt.Sprintf("%v", isTest))
@@ -73,8 +88,8 @@ func MakeAttempt(ctx context.Context, httpClient *http.Client, schedule []time.D
 	sharedlogging.GetLogger(ctx).Debugf("webhooks.MakeAttempt: server response body: %s", string(body))
 
 	attempt := Attempt{
-		WebhookID:    id,
-		Date:         ts,
+		ID:           id,
+		WebhookID:    webhookID,
 		Config:       cfg,
 		Payload:      string(payload),
 		StatusCode:   resp.StatusCode,

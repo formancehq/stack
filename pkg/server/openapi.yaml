@@ -274,11 +274,9 @@ components:
         createdAt:
           type: string
           format: date-time
-          example: "2022-07-20T07:31:40Z"
-        modifiedAt:
+        updatedAt:
           type: string
           format: date-time
-          example: "2022-07-20T08:32:59Z"
 
     AttemptResponse:
       type: object
@@ -288,10 +286,16 @@ components:
 
     Attempt:
       properties:
+        id:
+          type: string
+          format: uuid
         webhookID:
           type: string
-          example: 4997257d-dfb6-445b-929c-cbe2ab182818
-        date:
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
           type: string
           format: date-time
         config:

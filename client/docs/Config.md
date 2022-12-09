@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **EventTypes** | Pointer to **[]string** |  | [optional] 
 **Active** | Pointer to **bool** |  | [optional] 
 **CreatedAt** | Pointer to **time.Time** |  | [optional] 
-**ModifiedAt** | Pointer to **time.Time** |  | [optional] 
+**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
 
 ## Methods
 
@@ -181,30 +181,30 @@ SetCreatedAt sets CreatedAt field to given value.
 
 HasCreatedAt returns a boolean if a field has been set.
 
-### GetModifiedAt
+### GetUpdatedAt
 
-`func (o *Config) GetModifiedAt() time.Time`
+`func (o *Config) GetUpdatedAt() time.Time`
 
-GetModifiedAt returns the ModifiedAt field if non-nil, zero value otherwise.
+GetUpdatedAt returns the UpdatedAt field if non-nil, zero value otherwise.
 
-### GetModifiedAtOk
+### GetUpdatedAtOk
 
-`func (o *Config) GetModifiedAtOk() (*time.Time, bool)`
+`func (o *Config) GetUpdatedAtOk() (*time.Time, bool)`
 
-GetModifiedAtOk returns a tuple with the ModifiedAt field if it's non-nil, zero value otherwise
+GetUpdatedAtOk returns a tuple with the UpdatedAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetModifiedAt
+### SetUpdatedAt
 
-`func (o *Config) SetModifiedAt(v time.Time)`
+`func (o *Config) SetUpdatedAt(v time.Time)`
 
-SetModifiedAt sets ModifiedAt field to given value.
+SetUpdatedAt sets UpdatedAt field to given value.
 
-### HasModifiedAt
+### HasUpdatedAt
 
-`func (o *Config) HasModifiedAt() bool`
+`func (o *Config) HasUpdatedAt() bool`
 
-HasModifiedAt returns a boolean if a field has been set.
+HasUpdatedAt returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

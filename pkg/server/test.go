@@ -14,7 +14,7 @@ import (
 
 func (h *serverHandler) testOneConfigHandle(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, PathParamId)
-	cfgs, err := h.store.FindManyConfigs(r.Context(), map[string]any{webhooks.KeyID: id})
+	cfgs, err := h.store.FindManyConfigs(r.Context(), map[string]string{"id": id})
 	if err == nil {
 		if len(cfgs) == 0 {
 			sharedlogging.GetLogger(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, storage.ErrConfigNotFound)
@@ -22,7 +22,7 @@ func (h *serverHandler) testOneConfigHandle(w http.ResponseWriter, r *http.Reque
 			return
 		}
 		sharedlogging.GetLogger(r.Context()).Infof("GET %s/%s%s", PathConfigs, id, PathTest)
-		attempt, err := webhooks.MakeAttempt(r.Context(), h.httpClient, nil,
+		attempt, err := webhooks.MakeAttempt(r.Context(), h.httpClient, nil, uuid.NewString(),
 			uuid.NewString(), 0, cfgs[0], []byte(`{"data":"test"}`), true)
 		if err != nil {
 			sharedlogging.GetLogger(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, err)

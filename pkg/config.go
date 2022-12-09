@@ -1,28 +1,47 @@
 package webhooks
 
 import (
+	"context"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
+	"github.com/uptrace/bun"
 )
 
 type Config struct {
-	ConfigUser `bson:"inline"`
-	ID         string    `json:"id" bson:"_id"`
-	Active     bool      `json:"active" bson:"active"`
-	CreatedAt  time.Time `json:"createdAt" bson:"createdAt"`
-	UpdatedAt  time.Time `json:"updatedAt" bson:"updatedAt"`
+	bun.BaseModel `bun:"table:configs"`
+
+	ConfigUser
+
+	ID        string    `json:"id" bun:",pk"`
+	Active    bool      `json:"active"`
+	CreatedAt time.Time `json:"createdAt" bun:"created_at,nullzero,notnull,default:current_timestamp"`
+	UpdatedAt time.Time `json:"updatedAt" bun:"updated_at,nullzero,notnull,default:current_timestamp"`
 }
 
 type ConfigUser struct {
-	Endpoint   string   `json:"endpoint" bson:"endpoint"`
-	Secret     string   `json:"secret" bson:"secret"`
-	EventTypes []string `json:"eventTypes" bson:"eventTypes"`
+	Endpoint   string   `json:"endpoint"`
+	Secret     string   `json:"secret"`
+	EventTypes []string `json:"eventTypes" bun:"event_types,array"`
+}
+
+var _ bun.AfterCreateTableHook = (*Config)(nil)
+
+func (*Config) AfterCreateTable(ctx context.Context, q *bun.CreateTableQuery) error {
+	if _, err := q.DB().NewCreateIndex().IfNotExists().
+		Model((*Config)(nil)).
+		Index("configs_idx").
+		Column("event_types").
+		Exec(ctx); err != nil {
+		return errors.Wrap(err, "creating configs index")
+	}
+
+	return nil
 }
 
 func NewConfig(cfgUser ConfigUser) Config {
@@ -34,14 +53,6 @@ func NewConfig(cfgUser ConfigUser) Config {
 		UpdatedAt:  time.Now().UTC(),
 	}
 }
-
-const (
-	KeySecret     = "secret"
-	KeyEventTypes = "eventTypes"
-	KeyID         = "_id"
-	KeyActive     = "active"
-	KeyUpdatedAt  = "updatedAt"
-)
 
 var (
 	ErrInvalidEndpoint   = errors.New("endpoint should be a valid url")

@@ -9,7 +9,7 @@ import (
 	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/formancehq/webhooks/pkg/httpserver"
-	"github.com/formancehq/webhooks/pkg/storage/mongo"
+	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
@@ -24,7 +24,7 @@ func StartModule(addr string, retriesCron time.Duration, retriesSchedule []time.
 			return addr, retriesCron, retriesSchedule
 		},
 		httpserver.NewMuxServer,
-		mongo.NewStore,
+		postgres.NewStore,
 		NewWorker,
 		newWorkerHandler,
 	))
