@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/go-libs/sharedapi"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
+	"github.com/formancehq/webhooks/pkg/server"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -24,16 +25,15 @@ import (
 var (
 	httpClient = http.DefaultClient
 
-	serverBaseURL         string
-	workerMessagesBaseURL string
-	workerRetriesBaseURL  string
+	serverBaseURL string
+	workerBaseURL string
 
 	secret = webhooks.NewSecret()
 
 	topic = strings.ReplaceAll(
 		time.Now().UTC().Format(time.RFC3339Nano), ":", "-")
 
-	retriesSchedule []time.Duration
+	retrySchedule []time.Duration
 )
 
 func TestMain(m *testing.M) {
@@ -48,10 +48,8 @@ func TestMain(m *testing.M) {
 
 	serverBaseURL = fmt.Sprintf("http://localhost%s",
 		viper.GetString(flag.HttpBindAddressServer))
-	workerMessagesBaseURL = fmt.Sprintf("http://localhost%s",
-		viper.GetString(flag.HttpBindAddressWorkerMessages))
-	workerRetriesBaseURL = fmt.Sprintf("http://localhost%s",
-		viper.GetString(flag.HttpBindAddressWorkerRetries))
+	workerBaseURL = fmt.Sprintf("http://localhost%s",
+		viper.GetString(flag.HttpBindAddressWorker))
 
 	os.Exit(m.Run())
 }
@@ -60,12 +58,8 @@ func requestServer(t *testing.T, method, url string, expectedCode int, body ...a
 	return request(t, method, serverBaseURL+url, body, expectedCode)
 }
 
-func requestWorkerMessages(t *testing.T, method, url string, expectedCode int, body ...any) {
-	request(t, method, workerMessagesBaseURL+url, body, expectedCode)
-}
-
-func requestWorkerRetries(t *testing.T, method, url string, expectedCode int, body ...any) {
-	request(t, method, workerRetriesBaseURL+url, body, expectedCode)
+func healthCheckWorker(t *testing.T) {
+	request(t, http.MethodGet, workerBaseURL+server.PathHealthCheck, nil, http.StatusOK)
 }
 
 func request(t *testing.T, method, url string, body []any, expectedCode int) io.ReadCloser {

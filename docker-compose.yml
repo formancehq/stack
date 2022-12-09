@@ -13,14 +13,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
       OTEL_SERVICE_NAME: webhooks
       OTEL_TRACES: "true"
       OTEL_TRACES_EXPORTER: jaeger
       OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
 
-  worker-messages:
-    command: reflex -r '\.go' -s -- sh -c "go run . worker messages"
+  worker:
+    command: reflex -r '\.go' -s -- sh -c "go run . worker"
     build:
       target: dev
     healthcheck:
@@ -33,40 +32,25 @@ services:
     ports:
       - "8081:8081"
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
       KAFKA_BROKERS: "redpanda:29092"
-      OTEL_SERVICE_NAME: webhooks-worker-messages
+      OTEL_SERVICE_NAME: webhooks-worker
       OTEL_TRACES: "true"
       OTEL_TRACES_EXPORTER: jaeger
       OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
 
-  worker-retries:
-    command: reflex -r '\.go' -s -- sh -c "go run . worker retries"
-    build:
-      target: dev
+  postgres:
+    image: "postgres:alpine"
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8082/_healthcheck" ]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD-SHELL", "pg_isready -U ledger"]
+      interval: 10s
+      timeout: 5s
       retries: 5
-    volumes:
-      - .:/app
     ports:
-      - "8082:8082"
+      - "5432:5432"
     environment:
-      STORAGE_MONGO_CONN_STRING: "mongodb://admin:admin@mongo:27017/"
-      OTEL_SERVICE_NAME: webhooks-worker-retries
-      OTEL_TRACES: "true"
-      OTEL_TRACES_EXPORTER: jaeger
-      OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
-
-  mongo:
-    image: mongo
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: "admin"
-      MONGO_INITDB_ROOT_PASSWORD: "admin"
+      POSTGRES_USER: "webhooks"
+      POSTGRES_PASSWORD: "webhooks"
+      POSTGRES_DB: "webhooks"
     depends_on:
       redpanda:
         condition: service_healthy

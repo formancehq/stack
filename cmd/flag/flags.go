@@ -14,17 +14,15 @@ import (
 )
 
 const (
-	Debug                         = "debug"
-	LogLevel                      = "log-level"
-	HttpBindAddressServer         = "http-bind-address-server"
-	HttpBindAddressWorkerMessages = "http-bind-address-worker-messages"
-	HttpBindAddressWorkerRetries  = "http-bind-address-worker-retries"
+	Debug                 = "debug"
+	LogLevel              = "log-level"
+	HttpBindAddressServer = "http-bind-address-server"
+	HttpBindAddressWorker = "http-bind-address-worker"
 
 	RetriesSchedule = "retries-schedule"
 	RetriesCron     = "retries-cron"
 
-	StorageMongoConnString   = "storage-mongo-conn-string"
-	StorageMongoDatabaseName = "storage-mongo-database-name"
+	StoragePostgresConnString = "storage-postgres-conn-string"
 
 	KafkaBrokers       = "kafka-brokers"
 	KafkaGroupID       = "kafka-consumer-group"
@@ -37,12 +35,10 @@ const (
 )
 
 const (
-	DefaultBindAddressServer         = ":8080"
-	DefaultBindAddressWorkerMessages = ":8081"
-	DefaultBindAddressWorkerRetries  = ":8082"
+	DefaultBindAddressServer = ":8080"
+	DefaultBindAddressWorker = ":8081"
 
-	DefaultMongoConnString   = "mongodb://admin:admin@localhost:27017/"
-	DefaultMongoDatabaseName = "webhooks"
+	DefaultPostgresConnString = "postgresql://webhooks:webhooks@localhost:5432/webhooks?sslmode=disable"
 
 	DefaultKafkaTopic   = "default"
 	DefaultKafkaBroker  = "localhost:9092"
@@ -54,19 +50,17 @@ var (
 	DefaultRetriesCron     = time.Minute
 )
 
-var ErrScheduleInvalid = errors.New("the retries schedule should only contain durations of at least 1 second")
+var ErrScheduleInvalid = errors.New("the retry schedule should only contain durations of at least 1 second")
 
 func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
 	flagSet.Bool(Debug, false, "Debug mode")
 	flagSet.String(LogLevel, logrus.InfoLevel.String(), "Log level")
 
 	flagSet.String(HttpBindAddressServer, DefaultBindAddressServer, "server HTTP bind address")
-	flagSet.String(HttpBindAddressWorkerMessages, DefaultBindAddressWorkerMessages, "worker messages HTTP bind address")
-	flagSet.String(HttpBindAddressWorkerRetries, DefaultBindAddressWorkerRetries, "worker retries HTTP bind address")
+	flagSet.String(HttpBindAddressWorker, DefaultBindAddressWorker, "worker HTTP bind address")
 	flagSet.DurationSlice(RetriesSchedule, DefaultRetriesSchedule, "worker retries schedule")
 	flagSet.Duration(RetriesCron, DefaultRetriesCron, "worker retries cron")
-	flagSet.String(StorageMongoConnString, DefaultMongoConnString, "Mongo connection string")
-	flagSet.String(StorageMongoDatabaseName, DefaultMongoDatabaseName, "Mongo database name")
+	flagSet.String(StoragePostgresConnString, DefaultPostgresConnString, "Postgres connection string")
 
 	flagSet.StringSlice(KafkaBrokers, []string{DefaultKafkaBroker}, "Kafka brokers")
 	flagSet.String(KafkaGroupID, DefaultKafkaGroupID, "Kafka consumer group")
