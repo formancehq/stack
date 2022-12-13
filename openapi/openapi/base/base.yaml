@@ -76,4 +76,10 @@ x-tagGroups:
   - name: Webhooks
     tags:
       - Webhooks
+  - name: Wallets
+    tags:
+      - Wallets
+  - name: Counterparties
+    tags:
+      - Counterparties
   
