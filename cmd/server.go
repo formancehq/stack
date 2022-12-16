@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/formancehq/go-libs/oauth2/oauth2introspect"
+	"github.com/formancehq/go-libs/sharedapi"
 	"github.com/formancehq/go-libs/sharedauth"
 	sharedhealth "github.com/formancehq/go-libs/sharedhealth/pkg"
 	"github.com/formancehq/go-libs/sharedlogging"
@@ -92,7 +93,9 @@ func NewServer() *cobra.Command {
 			)
 
 			options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
-			options = append(options, apiModule("search", bind, esIndices...))
+			options = append(options, apiModule("search", bind, sharedapi.ServiceInfo{
+				Version: Version,
+			}, esIndices...))
 
 			app := fx.New(options...)
 
@@ -154,7 +157,7 @@ func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIn
 	return fx.Options(options...)
 }
 
-func apiModule(serviceName, bind string, esIndices ...string) fx.Option {
+func apiModule(serviceName, bind string, serviceInfo sharedapi.ServiceInfo, esIndices ...string) fx.Option {
 	return fx.Options(
 		fx.Provide(fx.Annotate(func(openSearchClient *opensearch.Client, tp trace.TracerProvider, healthController *sharedhealth.HealthController) (http.Handler, error) {
 			router := mux.NewRouter()
@@ -166,6 +169,7 @@ func apiModule(serviceName, bind string, esIndices ...string) fx.Option {
 			if viper.GetBool(sharedotlptraces.OtelTracesFlag) {
 				routerWithTraces.Use(otelmux.Middleware(serviceName, otelmux.WithTracerProvider(tp)))
 			}
+			routerWithTraces.Get("/_info").Methods(http.MethodGet).Handler(sharedapi.InfoHandler(serviceInfo))
 
 			protected := routerWithTraces.PathPrefix("/").Subrouter()
 

@@ -219,8 +219,10 @@ github.com/fatih/structs v1.1.0/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga
 github.com/felixge/httpsnoop v1.0.1/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/felixge/httpsnoop v1.0.3 h1:s/nj+GCswXYzN5v2DpNMuMQYe+0DDwt5WVCU6CWBdXk=
 github.com/felixge/httpsnoop v1.0.3/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
-github.com/formancehq/go-libs v1.2.0 h1:tiPl3usXJD1stSXBonpu1lL/ACD+m6Qh/rinptc9qag=
-github.com/formancehq/go-libs v1.2.0/go.mod h1:9pIcaXQR4O1biXDfhFurYJZw1piU6sJk+0Vqvu+92ng=
+github.com/formancehq/go-libs v1.3.0 h1:Ogs/B9FcoGHl2yF0TeTrBoGejKQk0G7XH6pFwgCod3U=
+github.com/formancehq/go-libs v1.3.0/go.mod h1:9pIcaXQR4O1biXDfhFurYJZw1piU6sJk+0Vqvu+92ng=
+github.com/formancehq/go-libs/sharedapi v0.0.0-20221216091331-d43b8d37bc84 h1:9mgfYd6l5bHj7xhbbLKLupKknjQvVlF+r7fMacxoqDM=
+github.com/formancehq/go-libs/sharedapi v0.0.0-20221216091331-d43b8d37bc84/go.mod h1:PMf25p7rXNJkc/LIwvf0AmGfAo1NqwQG+5emONMrurA=
 github.com/formancehq/go-libs/sharedhealth v0.0.0-20221123112229-2c8ab193c63c h1:+snDJtioDraxQxHCPoLDdMRWotMJyJm7qjXuSyZ7iP0=
 github.com/formancehq/go-libs/sharedhealth v0.0.0-20221123112229-2c8ab193c63c/go.mod h1:4TBSSGGBeY6xCaqI4gw74ouwgirdZjvKlv001kQ8xp0=
 github.com/formancehq/go-libs/sharedotlp v0.0.0-20221123112229-2c8ab193c63c h1:xzGPlzwbAzotpvY6rU0/OtYruK/4VDJpMX+QcagbYJM=

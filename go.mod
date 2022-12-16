@@ -6,7 +6,8 @@ require (
 	github.com/aquasecurity/esquery v0.2.0
 	github.com/bombsimon/logrusr/v3 v3.1.0
 	github.com/elastic/go-elasticsearch/v7 v7.17.7
-	github.com/formancehq/go-libs v1.2.0
+	github.com/formancehq/go-libs v1.3.0
+	github.com/formancehq/go-libs/sharedapi v0.0.0-20221216091331-d43b8d37bc84
 	github.com/formancehq/go-libs/sharedhealth v0.0.0-20221123112229-2c8ab193c63c
 	github.com/formancehq/go-libs/sharedotlp v0.0.0-20221123112229-2c8ab193c63c
 	github.com/gorilla/handlers v1.5.1
