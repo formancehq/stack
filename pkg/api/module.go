@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/formancehq/go-libs/sharedapi"
 	sharedhealth "github.com/formancehq/go-libs/sharedhealth/pkg"
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
@@ -22,10 +23,15 @@ func CreateRootRouter() *mux.Router {
 	return rootRouter
 }
 
-func Module(addr string) fx.Option {
+func addInfoRoute(router *mux.Router, serviceInfo sharedapi.ServiceInfo) {
+	router.Path("/_info").Methods(http.MethodGet).HandlerFunc(sharedapi.InfoHandler(serviceInfo))
+}
+
+func Module(addr string, serviceInfo sharedapi.ServiceInfo) fx.Option {
 	return fx.Options(
 		sharedhealth.ProvideHealthCheck(delegatedOIDCServerAvailability),
 		sharedhealth.Module(),
+		fx.Supply(serviceInfo),
 		fx.Provide(CreateRootRouter),
 		fx.Invoke(func(lc fx.Lifecycle, r *mux.Router, healthController *sharedhealth.HealthController) {
 			finalRouter := mux.NewRouter()
@@ -38,6 +44,7 @@ func Module(addr string) fx.Option {
 			})
 		}),
 		fx.Invoke(
+			addInfoRoute,
 			addClientRoutes,
 			addScopeRoutes,
 			addUserRoutes,

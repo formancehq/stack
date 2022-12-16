@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
+	"github.com/formancehq/go-libs/sharedapi"
 	"github.com/formancehq/go-libs/sharedlogging"
 	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
 	"github.com/pkg/errors"
@@ -142,7 +143,9 @@ var serveCmd = &cobra.Command{
 				ClientSecret: delegatedClientSecret,
 				RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
 			}),
-			api.Module(viper.GetString(listenFlag)),
+			api.Module(viper.GetString(listenFlag), sharedapi.ServiceInfo{
+				Version: Version,
+			}),
 			oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
 			authorization.Module(),
 			sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag),

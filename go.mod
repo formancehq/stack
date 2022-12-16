@@ -3,7 +3,8 @@ module github.com/formancehq/auth
 go 1.18
 
 require (
-	github.com/formancehq/go-libs v1.2.1-0.20221124082706-09db8cefd5b4
+	github.com/formancehq/go-libs v1.3.0
+	github.com/formancehq/go-libs/sharedapi v0.0.0-20221216091331-d43b8d37bc84
 	github.com/formancehq/go-libs/sharedhealth v0.0.0-20221124082706-09db8cefd5b4
 	github.com/formancehq/go-libs/sharedotlp v0.0.0-20221124082706-09db8cefd5b4
 	github.com/golang-jwt/jwt v3.2.2+incompatible
