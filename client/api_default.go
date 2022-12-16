@@ -22,61 +22,51 @@ import (
 // DefaultApiService DefaultApi service
 type DefaultApiService service
 
-type ApiSearchRequest struct {
+type ApiGetServerInfoRequest struct {
 	ctx context.Context
 	ApiService *DefaultApiService
-	query *Query
 }
 
-// the query
-func (r ApiSearchRequest) Query(query Query) ApiSearchRequest {
-	r.query = &query
-	return r
-}
-
-func (r ApiSearchRequest) Execute() (*Response, *http.Response, error) {
-	return r.ApiService.SearchExecute(r)
+func (r ApiGetServerInfoRequest) Execute() (*GetServerInfo200Response, *http.Response, error) {
+	return r.ApiService.GetServerInfoExecute(r)
 }
 
 /*
-Search Method for Search
+GetServerInfo Get server info
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiSearchRequest
+ @return ApiGetServerInfoRequest
 */
-func (a *DefaultApiService) Search(ctx context.Context) ApiSearchRequest {
-	return ApiSearchRequest{
+func (a *DefaultApiService) GetServerInfo(ctx context.Context) ApiGetServerInfoRequest {
+	return ApiGetServerInfoRequest{
 		ApiService: a,
 		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//  @return Response
-func (a *DefaultApiService) SearchExecute(r ApiSearchRequest) (*Response, *http.Response, error) {
+//  @return GetServerInfo200Response
+func (a *DefaultApiService) GetServerInfoExecute(r ApiGetServerInfoRequest) (*GetServerInfo200Response, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
+		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *Response
+		localVarReturnValue  *GetServerInfo200Response
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.Search")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.GetServerInfo")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/"
+	localVarPath := localBasePath + "/_info"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.query == nil {
-		return localVarReturnValue, nil, reportError("query is required and must be specified")
-	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -92,8 +82,6 @@ func (a *DefaultApiService) SearchExecute(r ApiSearchRequest) (*Response, *http.
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	// body params
-	localVarPostBody = r.query
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

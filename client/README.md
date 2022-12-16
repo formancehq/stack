@@ -78,11 +78,13 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /_info | Get server info
 *SearchApi* | [**Search**](docs/SearchApi.md#search) | **Post** / | Search
 
 
 ## Documentation For Models
 
+ - [GetServerInfo200Response](docs/GetServerInfo200Response.md)
  - [Query](docs/Query.md)
  - [Response](docs/Response.md)
  - [ResponseCursor](docs/ResponseCursor.md)

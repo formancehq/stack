@@ -4,15 +4,15 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**Search**](DefaultApi.md#Search) | **Post** / | 
+[**GetServerInfo**](DefaultApi.md#GetServerInfo) | **Get** /_info | Get server info
 
 
 
-## Search
+## GetServerInfo
 
-> Response Search(ctx).Query(query).Execute()
+> GetServerInfo200Response GetServerInfo(ctx).Execute()
 
-
+Get server info
 
 ### Example
 
@@ -27,36 +27,31 @@ import (
 )
 
 func main() {
-    query := *openapiclient.NewQuery() // Query | the query
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.Search(context.Background()).Query(query).Execute()
+    resp, r, err := apiClient.DefaultApi.GetServerInfo(context.Background()).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.Search``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.GetServerInfo``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `Search`: Response
-    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.Search`: %v\n", resp)
+    // response from `GetServerInfo`: GetServerInfo200Response
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.GetServerInfo`: %v\n", resp)
 }
 ```
 
 ### Path Parameters
 
-
+This endpoint does not need any parameter.
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiSearchRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiGetServerInfoRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **query** | [**Query**](Query.md) | the query | 
 
 ### Return type
 
-[**Response**](Response.md)
+[**GetServerInfo200Response**](GetServerInfo200Response.md)
 
 ### Authorization
 
@@ -64,7 +59,7 @@ No authorization required
 
 ### HTTP request headers
 
-- **Content-Type**: application/json
+- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

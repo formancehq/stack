@@ -5,6 +5,17 @@ info:
 servers:
 - url: /
 paths:
+  /_info:
+    get:
+      operationId: getServerInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getServerInfo_200_response'
+          description: Server information
+      summary: Get server info
   /:
     post:
       description: Search with Query
@@ -65,6 +76,11 @@ components:
           description: "The kind of the object, either \"TRANSACTION\" or \"META\""
         ledger:
           description: The ledger
+    getServerInfo_200_response:
+      example:
+        version: ""
+      properties:
+        version: {}
     Response_cursor_total:
       example:
         value: ""

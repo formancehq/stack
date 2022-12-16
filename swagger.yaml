@@ -4,6 +4,20 @@ info:
   title: Search API
   version: latest
 paths:
+  /_info:
+    get:
+      summary: Get server info
+      operationId: getServerInfo
+      responses:
+        200:
+          description: Server information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
   /:
     post:
       summary: Search
