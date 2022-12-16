@@ -53,6 +53,8 @@ type APIClient struct {
 
 	ClientsApi *ClientsApiService
 
+	DefaultApi *DefaultApiService
+
 	ScopesApi *ScopesApiService
 
 	UsersApi *UsersApiService
@@ -75,6 +77,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 
 	// API Services
 	c.ClientsApi = (*ClientsApiService)(&c.common)
+	c.DefaultApi = (*DefaultApiService)(&c.common)
 	c.ScopesApi = (*ScopesApiService)(&c.common)
 	c.UsersApi = (*UsersApiService)(&c.common)
 
@@ -663,5 +666,5 @@ func formatErrorMessage(status string, v interface{}) string {
 	}
 
 	// status title (detail)
-	return fmt.Sprintf("%s %s", status, str)
+	return strings.TrimSpace(fmt.Sprintf("%s %s", status, str))
 }

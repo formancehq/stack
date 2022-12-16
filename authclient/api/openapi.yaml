@@ -6,6 +6,17 @@ info:
 servers:
 - url: /
 paths:
+  /_info:
+    get:
+      operationId: getServerInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getServerInfo_200_response'
+          description: Server information
+      summary: Get server info
   /clients:
     get:
       operationId: listClients
@@ -587,3 +598,8 @@ components:
         data:
           items:
             $ref: '#/components/schemas/User'
+    getServerInfo_200_response:
+      example:
+        version: ""
+      properties:
+        version: {}

@@ -29,10 +29,9 @@ func Test_authclient_ScopesApiService(t *testing.T) {
 		var scopeId interface{}
 		var transientScopeId interface{}
 
-		resp, httpRes, err := apiClient.ScopesApi.AddTransientScope(context.Background(), scopeId, transientScopeId).Execute()
+		httpRes, err := apiClient.ScopesApi.AddTransientScope(context.Background(), scopeId, transientScopeId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
@@ -55,10 +54,9 @@ func Test_authclient_ScopesApiService(t *testing.T) {
 
 		var scopeId interface{}
 
-		resp, httpRes, err := apiClient.ScopesApi.DeleteScope(context.Background(), scopeId).Execute()
+		httpRes, err := apiClient.ScopesApi.DeleteScope(context.Background(), scopeId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
@@ -70,10 +68,9 @@ func Test_authclient_ScopesApiService(t *testing.T) {
 		var scopeId interface{}
 		var transientScopeId interface{}
 
-		resp, httpRes, err := apiClient.ScopesApi.DeleteTransientScope(context.Background(), scopeId, transientScopeId).Execute()
+		httpRes, err := apiClient.ScopesApi.DeleteTransientScope(context.Background(), scopeId, transientScopeId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})

@@ -5,6 +5,20 @@ info:
   version: "AUTH_VERSION"
 
 paths:
+  /_info:
+    get:
+      summary: Get server info
+      operationId: getServerInfo
+      responses:
+        200:
+          description: Server information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
   /clients:
     get:
       summary: List clients

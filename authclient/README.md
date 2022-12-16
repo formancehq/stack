@@ -87,6 +87,7 @@ Class | Method | HTTP request | Description
 *ClientsApi* | [**ListClients**](docs/ClientsApi.md#listclients) | **Get** /clients | List clients
 *ClientsApi* | [**ReadClient**](docs/ClientsApi.md#readclient) | **Get** /clients/{clientId} | Read client
 *ClientsApi* | [**UpdateClient**](docs/ClientsApi.md#updateclient) | **Put** /clients/{clientId} | Update client
+*DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /_info | Get server info
 *ScopesApi* | [**AddTransientScope**](docs/ScopesApi.md#addtransientscope) | **Put** /scopes/{scopeId}/transient/{transientScopeId} | Add a transient scope to a scope
 *ScopesApi* | [**CreateScope**](docs/ScopesApi.md#createscope) | **Post** /scopes | Create scope
 *ScopesApi* | [**DeleteScope**](docs/ScopesApi.md#deletescope) | **Delete** /scopes/{scopeId} | Delete scope
@@ -105,6 +106,7 @@ Class | Method | HTTP request | Description
  - [CreateClientResponse](docs/CreateClientResponse.md)
  - [CreateScopeResponse](docs/CreateScopeResponse.md)
  - [CreateSecretResponse](docs/CreateSecretResponse.md)
+ - [GetServerInfo200Response](docs/GetServerInfo200Response.md)
  - [ListClientsResponse](docs/ListClientsResponse.md)
  - [ListScopesResponse](docs/ListScopesResponse.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)

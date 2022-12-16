@@ -29,10 +29,9 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 		var clientId interface{}
 		var scopeId interface{}
 
-		resp, httpRes, err := apiClient.ClientsApi.AddScopeToClient(context.Background(), clientId, scopeId).Execute()
+		httpRes, err := apiClient.ClientsApi.AddScopeToClient(context.Background(), clientId, scopeId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
@@ -69,10 +68,9 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 
 		var clientId interface{}
 
-		resp, httpRes, err := apiClient.ClientsApi.DeleteClient(context.Background(), clientId).Execute()
+		httpRes, err := apiClient.ClientsApi.DeleteClient(context.Background(), clientId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
@@ -84,10 +82,9 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 		var clientId interface{}
 		var scopeId interface{}
 
-		resp, httpRes, err := apiClient.ClientsApi.DeleteScopeFromClient(context.Background(), clientId, scopeId).Execute()
+		httpRes, err := apiClient.ClientsApi.DeleteScopeFromClient(context.Background(), clientId, scopeId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
@@ -99,10 +96,9 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 		var clientId interface{}
 		var secretId interface{}
 
-		resp, httpRes, err := apiClient.ClientsApi.DeleteSecret(context.Background(), clientId, secretId).Execute()
+		httpRes, err := apiClient.ClientsApi.DeleteSecret(context.Background(), clientId, secretId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
