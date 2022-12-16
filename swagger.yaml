@@ -14,10 +14,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  version:
-                    type: string
+                $ref: '#/components/schemas/ServerInfo'
   /:
     post:
       summary: Search
@@ -93,3 +90,10 @@ components:
           description: The ledger
           type: string
       type: object
+    ServerInfo:
+      type: object
+      required:
+      - version
+      properties:
+        version:
+          type: string

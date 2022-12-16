@@ -84,11 +84,11 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
- - [GetServerInfo200Response](docs/GetServerInfo200Response.md)
  - [Query](docs/Query.md)
  - [Response](docs/Response.md)
  - [ResponseCursor](docs/ResponseCursor.md)
  - [ResponseCursorTotal](docs/ResponseCursorTotal.md)
+ - [ServerInfo](docs/ServerInfo.md)
 
 
 ## Documentation For Authorization

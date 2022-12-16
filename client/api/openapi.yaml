@@ -13,7 +13,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/getServerInfo_200_response'
+                $ref: '#/components/schemas/ServerInfo'
           description: Server information
       summary: Get server info
   /:
@@ -76,11 +76,13 @@ components:
           description: "The kind of the object, either \"TRANSACTION\" or \"META\""
         ledger:
           description: The ledger
-    getServerInfo_200_response:
+    ServerInfo:
       example:
         version: ""
       properties:
         version: {}
+      required:
+      - version
     Response_cursor_total:
       example:
         value: ""

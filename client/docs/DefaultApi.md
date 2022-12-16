@@ -10,7 +10,7 @@ Method | HTTP request | Description
 
 ## GetServerInfo
 
-> GetServerInfo200Response GetServerInfo(ctx).Execute()
+> ServerInfo GetServerInfo(ctx).Execute()
 
 Get server info
 
@@ -35,7 +35,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.GetServerInfo``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `GetServerInfo`: GetServerInfo200Response
+    // response from `GetServerInfo`: ServerInfo
     fmt.Fprintf(os.Stdout, "Response from `DefaultApi.GetServerInfo`: %v\n", resp)
 }
 ```
@@ -51,7 +51,7 @@ Other parameters are passed through a pointer to a apiGetServerInfoRequest struc
 
 ### Return type
 
-[**GetServerInfo200Response**](GetServerInfo200Response.md)
+[**ServerInfo**](ServerInfo.md)
 
 ### Authorization
 
