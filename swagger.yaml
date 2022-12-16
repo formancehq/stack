@@ -15,10 +15,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  version:
-                    type: string
+                $ref: '#/components/schemas/ServerInfo'
   /clients:
     get:
       summary: List clients
@@ -552,3 +549,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/User'
+    ServerInfo:
+      type: object
+      required:
+      - version
+      properties:
+        version:
+          type: string

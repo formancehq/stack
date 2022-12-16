@@ -16,7 +16,6 @@ docs/CreateClientResponse.md
 docs/CreateScopeResponse.md
 docs/CreateSecretResponse.md
 docs/DefaultApi.md
-docs/GetServerInfo200Response.md
 docs/ListClientsResponse.md
 docs/ListScopesResponse.md
 docs/ListUsersResponse.md
@@ -25,6 +24,7 @@ docs/ReadUserResponse.md
 docs/ScopeOptions.md
 docs/ScopesApi.md
 docs/SecretOptions.md
+docs/ServerInfo.md
 docs/User.md
 docs/UsersApi.md
 git_push.sh
@@ -35,7 +35,6 @@ model_client_secret.go
 model_create_client_response.go
 model_create_scope_response.go
 model_create_secret_response.go
-model_get_server_info_200_response.go
 model_list_clients_response.go
 model_list_scopes_response.go
 model_list_users_response.go
@@ -43,6 +42,7 @@ model_read_client_response.go
 model_read_user_response.go
 model_scope_options.go
 model_secret_options.go
+model_server_info.go
 model_user.go
 response.go
 test/api_clients_test.go

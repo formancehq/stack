@@ -14,7 +14,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/getServerInfo_200_response'
+                $ref: '#/components/schemas/ServerInfo'
           description: Server information
       summary: Get server info
   /clients:
@@ -598,8 +598,10 @@ components:
         data:
           items:
             $ref: '#/components/schemas/User'
-    getServerInfo_200_response:
+    ServerInfo:
       example:
         version: ""
       properties:
         version: {}
+      required:
+      - version

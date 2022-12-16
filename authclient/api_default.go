@@ -27,7 +27,7 @@ type ApiGetServerInfoRequest struct {
 	ApiService *DefaultApiService
 }
 
-func (r ApiGetServerInfoRequest) Execute() (*GetServerInfo200Response, *http.Response, error) {
+func (r ApiGetServerInfoRequest) Execute() (*ServerInfo, *http.Response, error) {
 	return r.ApiService.GetServerInfoExecute(r)
 }
 
@@ -45,13 +45,13 @@ func (a *DefaultApiService) GetServerInfo(ctx context.Context) ApiGetServerInfoR
 }
 
 // Execute executes the request
-//  @return GetServerInfo200Response
-func (a *DefaultApiService) GetServerInfoExecute(r ApiGetServerInfoRequest) (*GetServerInfo200Response, *http.Response, error) {
+//  @return ServerInfo
+func (a *DefaultApiService) GetServerInfoExecute(r ApiGetServerInfoRequest) (*ServerInfo, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *GetServerInfo200Response
+		localVarReturnValue  *ServerInfo
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.GetServerInfo")

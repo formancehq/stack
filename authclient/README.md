@@ -106,7 +106,6 @@ Class | Method | HTTP request | Description
  - [CreateClientResponse](docs/CreateClientResponse.md)
  - [CreateScopeResponse](docs/CreateScopeResponse.md)
  - [CreateSecretResponse](docs/CreateSecretResponse.md)
- - [GetServerInfo200Response](docs/GetServerInfo200Response.md)
  - [ListClientsResponse](docs/ListClientsResponse.md)
  - [ListScopesResponse](docs/ListScopesResponse.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)
@@ -114,6 +113,7 @@ Class | Method | HTTP request | Description
  - [ReadUserResponse](docs/ReadUserResponse.md)
  - [ScopeOptions](docs/ScopeOptions.md)
  - [SecretOptions](docs/SecretOptions.md)
+ - [ServerInfo](docs/ServerInfo.md)
  - [User](docs/User.md)
 
 
