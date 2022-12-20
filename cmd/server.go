@@ -169,7 +169,7 @@ func apiModule(serviceName, bind string, serviceInfo sharedapi.ServiceInfo, esIn
 			if viper.GetBool(sharedotlptraces.OtelTracesFlag) {
 				routerWithTraces.Use(otelmux.Middleware(serviceName, otelmux.WithTracerProvider(tp)))
 			}
-			routerWithTraces.Get("/_info").Methods(http.MethodGet).Handler(sharedapi.InfoHandler(serviceInfo))
+			routerWithTraces.Path("/_info").Methods(http.MethodGet).Handler(sharedapi.InfoHandler(serviceInfo))
 
 			protected := routerWithTraces.PathPrefix("/").Subrouter()
 

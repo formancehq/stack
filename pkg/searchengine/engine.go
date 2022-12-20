@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 
 	"github.com/formancehq/search/pkg/es"
 	"github.com/opensearch-project/opensearch-go"
@@ -100,10 +101,16 @@ func (e *DefaultEngine) doRequest(ctx context.Context, m map[string]interface{})
 	defer httpResponse.Body.Close()
 
 	if httpResponse.IsError() {
-		if httpResponse.StatusCode == 404 {
+		switch httpResponse.StatusCode {
+		case 404:
 			return &es.Response{}, nil
+		default:
+			data, err := io.ReadAll(httpResponse.Body)
+			if err != nil || len(data) == 0 {
+				return nil, recordFailingSpan(errors.New(httpResponse.Status()))
+			}
+			return nil, recordFailingSpan(errors.New(string(data)))
 		}
-		return nil, recordFailingSpan(errors.New(httpResponse.Status()))
 	}
 
 	res := &es.Response{}
