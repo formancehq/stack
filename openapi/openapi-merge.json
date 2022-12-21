@@ -62,18 +62,6 @@
       "dispute": {
         "prefix": "wallets"
       }
-    },
-    {
-      "inputFile": "./../services/counterparties/openapi.yml",
-      "pathModification":{
-        "prepend": "/api/counterparties"
-      },
-      "operationSelection": {
-        "excludeTags": ["Health"]
-      },
-      "dispute": {
-        "prefix": "counterparties"
-      }
     }
   ], 
   "output": "./sdk/generate.json"
