@@ -42,8 +42,8 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 
 var ErrInvalidParams = errors.New("invalid params: only 'id' and 'endpoint' with a valid URL are accepted")
 
-func buildQueryFilter(values url.Values) (map[string]string, error) {
-	filter := map[string]string{}
+func buildQueryFilter(values url.Values) (map[string]any, error) {
+	filter := map[string]any{}
 
 	for key, value := range values {
 		if len(value) != 1 {

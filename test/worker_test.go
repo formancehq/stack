@@ -193,6 +193,55 @@ func TestWorkerMessages(t *testing.T) {
 		require.NoError(t, workerApp.Stop(context.Background()))
 	})
 
+	t.Run("disabled config should not receive webhooks", func(t *testing.T) {
+		resBody := requestServer(t, http.MethodGet, server.PathConfigs, http.StatusOK)
+		cur := decodeCursorResponse[webhooks.Config](t, resBody)
+		require.Equal(t, 2, len(cur.Data))
+		require.NoError(t, resBody.Close())
+
+		resBody = requestServer(t, http.MethodPut, server.PathConfigs+"/"+cur.Data[1].ID+server.PathDeactivate, http.StatusOK)
+		c, ok := decodeSingleResponse[webhooks.Config](t, resBody)
+		require.Equal(t, true, ok)
+		require.Equal(t, false, c.Active)
+
+		require.NoError(t, db.ResetModel(ctx, (*webhooks.Attempt)(nil)))
+
+		retrySchedule = []time.Duration{time.Second}
+		viper.Set(flag.RetriesSchedule, retrySchedule)
+
+		workerApp := fxtest.New(t,
+			fx.Supply(httpServerSuccess.Client()),
+			worker.StartModule(
+				viper.GetString(flag.HttpBindAddressWorker),
+				viper.GetDuration(flag.RetriesCron),
+				retrySchedule,
+			))
+		require.NoError(t, workerApp.Start(context.Background()))
+
+		healthCheckWorker(t)
+
+		kafkaClient, kafkaTopics, err := kafka.NewClient()
+		require.NoError(t, err)
+
+		by1, err := json.Marshal(event1)
+		require.NoError(t, err)
+
+		records := []*kgo.Record{
+			{Topic: kafkaTopics[0], Value: by1},
+		}
+		err = kafkaClient.ProduceSync(context.Background(), records...).FirstErr()
+		require.NoError(t, err)
+		kafkaClient.Close()
+
+		time.Sleep(3 * time.Second)
+
+		var results []webhooks.Attempt
+		require.NoError(t, db.NewSelect().Model(&results).Scan(ctx))
+		require.Equal(t, 0, len(results))
+
+		require.NoError(t, workerApp.Stop(context.Background()))
+	})
+
 	require.NoError(t, serverApp.Stop(context.Background()))
 }
 

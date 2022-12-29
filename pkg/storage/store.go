@@ -15,7 +15,7 @@ var (
 )
 
 type Store interface {
-	FindManyConfigs(ctx context.Context, filter map[string]string) ([]webhooks.Config, error)
+	FindManyConfigs(ctx context.Context, filter map[string]any) ([]webhooks.Config, error)
 	InsertOneConfig(ctx context.Context, cfg webhooks.ConfigUser) (webhooks.Config, error)
 	DeleteOneConfig(ctx context.Context, id string) error
 	UpdateOneConfigActivation(ctx context.Context, id string, active bool) (webhooks.Config, error)

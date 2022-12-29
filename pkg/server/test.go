@@ -14,7 +14,7 @@ import (
 
 func (h *serverHandler) testOneConfigHandle(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, PathParamId)
-	cfgs, err := h.store.FindManyConfigs(r.Context(), map[string]string{"id": id})
+	cfgs, err := h.store.FindManyConfigs(r.Context(), map[string]any{"id": id})
 	if err == nil {
 		if len(cfgs) == 0 {
 			sharedlogging.GetLogger(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, storage.ErrConfigNotFound)

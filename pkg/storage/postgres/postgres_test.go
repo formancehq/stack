@@ -40,7 +40,7 @@ func TestStore(t *testing.T) {
 	store, err := postgres.NewStore()
 	require.NoError(t, err)
 
-	cfgs, err := store.FindManyConfigs(context.Background(), map[string]string{})
+	cfgs, err := store.FindManyConfigs(context.Background(), map[string]any{})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(cfgs))
 
