@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/webhooks/pkg/security"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -76,7 +76,7 @@ func MakeAttempt(ctx context.Context, httpClient *http.Client, schedule []time.D
 
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			sharedlogging.GetLogger(ctx).Error(
+			logging.GetLogger(ctx).Error(
 				errors.Wrap(err, "http.Response.Body.Close"))
 		}
 	}()
@@ -85,7 +85,7 @@ func MakeAttempt(ctx context.Context, httpClient *http.Client, schedule []time.D
 	if err != nil {
 		return Attempt{}, errors.Wrap(err, "io.ReadAll")
 	}
-	sharedlogging.GetLogger(ctx).Debugf("webhooks.MakeAttempt: server response body: %s", string(body))
+	logging.GetLogger(ctx).Debugf("webhooks.MakeAttempt: server response body: %s", string(body))
 
 	attempt := Attempt{
 		ID:           id,

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/kafka"
 	"github.com/formancehq/webhooks/pkg/storage"
@@ -59,20 +59,20 @@ func (w *Worker) Run(ctx context.Context) error {
 	for {
 		select {
 		case ch := <-w.stopChan:
-			sharedlogging.GetLogger(ctx).Debug("worker: received from stopChan")
+			logging.GetLogger(ctx).Debug("worker: received from stopChan")
 			close(ch)
 			return nil
 		case <-ctx.Done():
-			sharedlogging.GetLogger(ctx).Debugf("worker: context done: %s", ctx.Err())
+			logging.GetLogger(ctx).Debugf("worker: context done: %s", ctx.Err())
 			return nil
 		case err := <-errChan:
 			return errors.Wrap(err, "kafka.Worker")
 		case msg := <-msgChan:
-			ctx = sharedlogging.ContextWithLogger(ctx,
-				sharedlogging.GetLogger(ctx).WithFields(map[string]any{
+			ctx = logging.ContextWithLogger(ctx,
+				logging.GetLogger(ctx).WithFields(map[string]any{
 					"offset": msg.Offset,
 				}))
-			sharedlogging.GetLogger(ctx).WithFields(map[string]any{
+			logging.GetLogger(ctx).WithFields(map[string]any{
 				"time":      msg.Timestamp.UTC().Format(time.RFC3339),
 				"partition": msg.Partition,
 				"headers":   msg.Headers,
@@ -93,18 +93,18 @@ func (w *Worker) Stop(ctx context.Context) {
 	ch := make(chan struct{})
 	select {
 	case <-ctx.Done():
-		sharedlogging.GetLogger(ctx).Debugf("worker stopped: context done: %s", ctx.Err())
+		logging.GetLogger(ctx).Debugf("worker stopped: context done: %s", ctx.Err())
 		return
 	case w.stopChan <- ch:
 		select {
 		case <-ctx.Done():
-			sharedlogging.GetLogger(ctx).Debugf("worker stopped via stopChan: context done: %s", ctx.Err())
+			logging.GetLogger(ctx).Debugf("worker stopped via stopChan: context done: %s", ctx.Err())
 			return
 		case <-ch:
-			sharedlogging.GetLogger(ctx).Debug("worker stopped via stopChan")
+			logging.GetLogger(ctx).Debug("worker stopped via stopChan")
 		}
 	default:
-		sharedlogging.GetLogger(ctx).Debug("trying to stop worker: no communication")
+		logging.GetLogger(ctx).Debug("trying to stop worker: no communication")
 	}
 }
 
@@ -116,7 +116,7 @@ func fetchMessages(ctx context.Context, kafkaClient kafka.Client, msgChan chan *
 		default:
 			fetches := kafkaClient.PollFetches(ctx)
 			if errs := fetches.Errors(); len(errs) > 0 {
-				sharedlogging.GetLogger(ctx).Errorf("POLL: %+v", errs)
+				logging.GetLogger(ctx).Errorf("POLL: %+v", errs)
 				for _, err := range errs {
 					select {
 					case <-ctx.Done():
@@ -155,14 +155,14 @@ func (w *Worker) processMessage(ctx context.Context, msgValue []byte) error {
 		"event_types": ev.Type,
 		"active":      true,
 	}
-	sharedlogging.GetLogger(ctx).Debugf("searching configs with filter: %+v", filter)
+	logging.GetLogger(ctx).Debugf("searching configs with filter: %+v", filter)
 	cfgs, err := w.store.FindManyConfigs(ctx, filter)
 	if err != nil {
 		return errors.Wrap(err, "storage.store.FindManyConfigs")
 	}
 
 	for _, cfg := range cfgs {
-		sharedlogging.GetLogger(ctx).Debugf("found one config: %+v", cfg)
+		logging.GetLogger(ctx).Debugf("found one config: %+v", cfg)
 		data, err := json.Marshal(ev)
 		if err != nil {
 			return errors.Wrap(err, "json.Marshal event message")
@@ -175,7 +175,7 @@ func (w *Worker) processMessage(ctx context.Context, msgValue []byte) error {
 		}
 
 		if attempt.Status == webhooks.StatusAttemptSuccess {
-			sharedlogging.GetLogger(ctx).Infof(
+			logging.GetLogger(ctx).Infof(
 				"webhook sent with ID %s to %s of type %s",
 				attempt.WebhookID, cfg.Endpoint, ev.Type)
 		}
@@ -202,7 +202,7 @@ func (w *Worker) attemptRetries(ctx context.Context, errChan chan error) {
 				errChan <- errors.Wrap(err, "storage.Store.FindWebhookIDsToRetry")
 				continue
 			} else {
-				sharedlogging.GetLogger(ctx).Debugf(
+				logging.GetLogger(ctx).Debugf(
 					"found %d distinct webhookIDs to retry: %+v", len(webhookIDs), webhookIDs)
 			}
 

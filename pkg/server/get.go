@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/formancehq/go-libs/sharedapi"
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 )
 
@@ -20,24 +20,24 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 
 	cfgs, err := h.store.FindManyConfigs(r.Context(), filter)
 	if err != nil {
-		sharedlogging.GetLogger(r.Context()).Errorf("storage.store.FindManyConfigs: %s", err)
+		logging.GetLogger(r.Context()).Errorf("storage.store.FindManyConfigs: %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	resp := sharedapi.BaseResponse[webhooks.Config]{
-		Cursor: &sharedapi.Cursor[webhooks.Config]{
+	resp := api.BaseResponse[webhooks.Config]{
+		Cursor: &api.Cursor[webhooks.Config]{
 			Data: cfgs,
 		},
 	}
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		sharedlogging.GetLogger(r.Context()).Errorf("json.Encoder.Encode: %s", err)
+		logging.GetLogger(r.Context()).Errorf("json.Encoder.Encode: %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	sharedlogging.GetLogger(r.Context()).Infof("GET /configs: %d results", len(resp.Cursor.Data))
+	logging.GetLogger(r.Context()).Infof("GET /configs: %d results", len(resp.Cursor.Data))
 }
 
 var ErrInvalidParams = errors.New("invalid params: only 'id' and 'endpoint' with a valid URL are accepted")

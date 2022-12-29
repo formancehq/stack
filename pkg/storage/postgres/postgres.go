@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
@@ -27,7 +27,7 @@ func NewStore() (storage.Store, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	sharedlogging.Infof("postgres.NewStore: connecting to '%s'", viper.GetString(flag.StoragePostgresConnString))
+	logging.Infof("postgres.NewStore: connecting to '%s'", viper.GetString(flag.StoragePostgresConnString))
 	sqldb := sql.OpenDB(
 		pgdriver.NewConnector(
 			pgdriver.WithDSN(viper.GetString(flag.StoragePostgresConnString))))

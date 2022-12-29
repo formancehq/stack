@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedlogging"
-	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
 	"github.com/formancehq/webhooks/pkg/httpserver"
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/spf13/viper"
@@ -17,7 +17,7 @@ import (
 func StartModule(addr string, retriesCron time.Duration, retriesSchedule []time.Duration) fx.Option {
 	var options []fx.Option
 
-	options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
+	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 
 	options = append(options, fx.Provide(
 		func() (string, time.Duration, []time.Duration) {
@@ -32,9 +32,9 @@ func StartModule(addr string, retriesCron time.Duration, retriesSchedule []time.
 	options = append(options, fx.Invoke(httpserver.Run))
 	options = append(options, fx.Invoke(run))
 
-	sharedlogging.Debugf("starting worker with env:")
+	logging.Debugf("starting worker with env:")
 	for _, e := range os.Environ() {
-		sharedlogging.Debugf("%s", e)
+		logging.Debugf("%s", e)
 	}
 
 	return fx.Module("webhooks worker", options...)
@@ -43,16 +43,16 @@ func StartModule(addr string, retriesCron time.Duration, retriesSchedule []time.
 func run(lc fx.Lifecycle, w *Worker) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			sharedlogging.GetLogger(ctx).Debugf("starting worker...")
+			logging.GetLogger(ctx).Debugf("starting worker...")
 			go func() {
 				if err := w.Run(ctx); err != nil {
-					sharedlogging.GetLogger(ctx).Errorf("kafka.Worker.Run: %s", err)
+					logging.GetLogger(ctx).Errorf("kafka.Worker.Run: %s", err)
 				}
 			}()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			sharedlogging.GetLogger(ctx).Debugf("stopping worker...")
+			logging.GetLogger(ctx).Debugf("stopping worker...")
 			w.Stop(ctx)
 			w.kafkaClient.Close()
 			if err := w.store.Close(ctx); err != nil {

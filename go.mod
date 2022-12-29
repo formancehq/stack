@@ -1,11 +1,9 @@
 module github.com/formancehq/webhooks
 
-go 1.18
+go 1.19
 
 require (
-	github.com/formancehq/go-libs v1.3.0
-	github.com/formancehq/go-libs/sharedapi v0.0.0-20221227133431-4af2af9da65b
-	github.com/formancehq/go-libs/sharedotlp v0.0.0-20221227133431-4af2af9da65b
+	github.com/formancehq/go-libs v1.4.0
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/google/uuid v1.3.0
 	github.com/pkg/errors v0.9.1
@@ -73,12 +71,11 @@ require (
 	golang.org/x/net v0.4.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect
 	golang.org/x/text v0.5.0 // indirect
-	google.golang.org/genproto v0.0.0-20221207170731-23e4bf6bdc37 // indirect
+	google.golang.org/genproto v0.0.0-20221227171554-f9683d7f8bef // indirect
 	google.golang.org/grpc v1.51.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	mellium.im/sasl v0.3.0 // indirect
+	mellium.im/sasl v0.3.1 // indirect
 )

@@ -3,7 +3,7 @@ package worker
 import (
 	"net/http"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/go-chi/chi/v5"
 	"github.com/riandyrn/otelchi"
 )
@@ -21,5 +21,5 @@ func newWorkerHandler() http.Handler {
 }
 
 func healthCheckHandle(_ http.ResponseWriter, r *http.Request) {
-	sharedlogging.GetLogger(r.Context()).Infof("health check OK")
+	logging.GetLogger(r.Context()).Infof("health check OK")
 }

@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedapi"
+	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/server"
@@ -84,15 +84,15 @@ func buffer(t *testing.T, v any) *bytes.Buffer {
 	return bytes.NewBuffer(data)
 }
 
-func decodeCursorResponse[T any](t *testing.T, reader io.Reader) *sharedapi.Cursor[T] {
-	res := sharedapi.BaseResponse[T]{}
+func decodeCursorResponse[T any](t *testing.T, reader io.Reader) *api.Cursor[T] {
+	res := api.BaseResponse[T]{}
 	err := json.NewDecoder(reader).Decode(&res)
 	require.NoError(t, err)
 	return res.Cursor
 }
 
 func decodeSingleResponse[T any](t *testing.T, reader io.Reader) (T, bool) {
-	res := sharedapi.BaseResponse[T]{}
+	res := api.BaseResponse[T]{}
 	if !decode(t, reader, &res) {
 		var zero T
 		return zero, false

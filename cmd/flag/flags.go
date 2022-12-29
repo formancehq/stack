@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedlogging"
-	"github.com/formancehq/go-libs/sharedlogging/sharedlogginglogrus"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/logging/logginglogrus"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
@@ -104,9 +104,9 @@ func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
 		}
 	}
 
-	sharedlogging.SetFactory(
-		sharedlogging.StaticLoggerFactory(
-			sharedlogginglogrus.New(logger)))
+	logging.SetFactory(
+		logging.StaticLoggerFactory(
+			logginglogrus.New(logger)))
 
 	return retriesSchedule, nil
 }

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"syscall"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/otlp"
 	"github.com/formancehq/webhooks/pkg/worker"
@@ -20,7 +20,7 @@ var workerCmd = &cobra.Command{
 }
 
 func RunWorker(cmd *cobra.Command, _ []string) error {
-	sharedlogging.GetLogger(cmd.Context()).Debugf(
+	logging.GetLogger(cmd.Context()).Debugf(
 		"starting webhooks worker module: env variables: %+v viper keys: %+v",
 		syscall.Environ(), viper.AllKeys())
 

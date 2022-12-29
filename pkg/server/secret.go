@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/formancehq/go-libs/sharedapi"
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/go-chi/chi/v5"
@@ -22,32 +22,32 @@ func (h *serverHandler) changeSecretHandle(w http.ResponseWriter, r *http.Reques
 		} else {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
-		sharedlogging.GetLogger(r.Context()).Errorf("decodeJSONBody: %s", err)
+		logging.GetLogger(r.Context()).Errorf("decodeJSONBody: %s", err)
 		return
 	}
 
 	if err := sec.Validate(); err != nil {
-		sharedlogging.GetLogger(r.Context()).Errorf("invalid secret: %s", err)
+		logging.GetLogger(r.Context()).Errorf("invalid secret: %s", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	c, err := h.store.UpdateOneConfigSecret(r.Context(), id, sec.Secret)
 	if err == nil {
-		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, id, PathChangeSecret)
-		resp := sharedapi.BaseResponse[webhooks.Config]{
+		logging.GetLogger(r.Context()).Infof("PUT %s/%s%s", PathConfigs, id, PathChangeSecret)
+		resp := api.BaseResponse[webhooks.Config]{
 			Data: &c,
 		}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
-			sharedlogging.GetLogger(r.Context()).Errorf("json.Encoder.Encode: %s", err)
+			logging.GetLogger(r.Context()).Errorf("json.Encoder.Encode: %s", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
 	} else if errors.Is(err, storage.ErrConfigNotFound) {
-		sharedlogging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, id, PathChangeSecret, storage.ErrConfigNotFound)
+		logging.GetLogger(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, id, PathChangeSecret, storage.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	} else {
-		sharedlogging.GetLogger(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, id, PathChangeSecret, err)
+		logging.GetLogger(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, id, PathChangeSecret, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }

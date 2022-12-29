@@ -1,20 +1,9 @@
 openapi: 3.0.3
 info:
   title: Webhooks server
-  version: v0.2.2
+  version: "WEBHOOKS_VERSION"
 
 paths:
-  /_healthcheck:
-    get:
-      summary: Health check of the server
-      operationId: healthCheck
-      tags:
-        - Health
-      responses:
-        "200":
-          description: The server is healthy
-          content: {}
-
   /configs:
     get:
       summary: Get many configs
@@ -43,27 +32,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - cursor
-                properties:
-                  cursor:
-                    allOf:
-                      - $ref: '#/components/schemas/Cursor'
-                      - type: object
-                        properties:
-                          data:
-                            type: array
-                            items:
-                              $ref: '#/components/schemas/Config'
-                        required:
-                          - data
+                $ref: '#/components/schemas/ConfigsResponse'
 
     post:
-      summary: |
-        Insert a new config
+      summary: Insert a new config
       description: |
-        Insert a new config.
+        Insert a new webhooks config.
 
         The endpoint should be a valid https URL and be unique.
 
@@ -72,7 +46,7 @@ paths:
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
 
         All eventTypes are converted to lower-case when inserted.
-      operationId: insertOneConfig
+      operationId: insertConfig
       tags:
         - Webhooks
       requestBody:
@@ -100,7 +74,8 @@ paths:
   /configs/{id}:
     delete:
       summary: Delete one config
-      operationId: deleteOneConfig
+      description: Delete a webhooks config by ID.
+      operationId: deleteConfig
       tags:
         - Webhooks
       parameters:
@@ -119,9 +94,8 @@ paths:
   /configs/{id}/test:
     get:
       summary: Test one config
-      description: |
-        Test one config by sending a webhook to its endpoint.
-      operationId: testOneConfig
+      description: Test a config by sending a webhook to its endpoint.
+      operationId: testConfig
       tags:
         - Webhooks
       parameters:
@@ -143,7 +117,8 @@ paths:
   /configs/{id}/activate:
     put:
       summary: Activate one config
-      operationId: activateOneConfig
+      description: Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
+      operationId: activateConfig
       tags:
         - Webhooks
       parameters:
@@ -168,7 +143,8 @@ paths:
   /configs/{id}/deactivate:
     put:
       summary: Deactivate one config
-      operationId: deactivateOneConfig
+      description: Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
+      operationId: deactivateConfig
       tags:
         - Webhooks
       parameters:
@@ -194,24 +170,18 @@ paths:
     put:
       summary: Change the signing secret of a config
       description: |
-        Change the signing secret of the endpoint of a config.
+        Change the signing secret of the endpoint of a webhooks config.
 
         If not passed or empty, a secret is automatically generated.
         The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
-      operationId: changeOneConfigSecret
+      operationId: changeConfigSecret
       tags:
         - Webhooks
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                secret:
-                  type: string
-                  example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
-              required:
-                - secret
+              $ref: '#/components/schemas/ConfigChangeSecret'
       parameters:
         - name: id
           in: path
@@ -231,6 +201,10 @@ paths:
 components:
   schemas:
     ConfigUser:
+      type: object
+      required:
+        - endpoint
+        - eventTypes
       properties:
         endpoint:
           type: string
@@ -245,8 +219,32 @@ components:
             example: "TYPE1"
           example: ["TYPE1", "TYPE2"]
 
+    ConfigsResponse:
+      type: object
+      required:
+        - cursor
+      properties:
+        cursor:
+          $ref: '#/components/schemas/Cursor'
+
+    Cursor:
+      type: object
+      required:
+        - hasMore
+        - data
+      properties:
+        hasMore:
+          type: boolean
+          example: false
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Config'
+
     ConfigResponse:
       type: object
+      required:
+        - data
       properties:
         data:
           $ref: '#/components/schemas/Config'
@@ -278,8 +276,17 @@ components:
           type: string
           format: date-time
 
+    ConfigChangeSecret:
+      type: object
+      properties:
+        secret:
+          type: string
+          example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+
     AttemptResponse:
       type: object
+      required:
+        - data
       properties:
         data:
           $ref: '#/components/schemas/Attempt'
@@ -315,10 +322,3 @@ components:
         nextRetryAfter:
           type: string
           format: date-time
-
-    Cursor:
-      type: object
-      properties:
-        has_more:
-          type: boolean
-          example: false
