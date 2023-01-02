@@ -9,7 +9,7 @@ docker compose up
 ## How to test messages?
 
 ```
-docker compose exec -ti redpanda sh
+docker compose exec -ti redpanda bash
 redpanda@ad6639f1576b:/$ cat /src/benthos/messages/committed_transactions.json | rpk topic produce ledger
 ```
 

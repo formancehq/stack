@@ -13,7 +13,7 @@ services:
     - 9200:9200/tcp
 
   benthos:
-    image: jeffail/benthos:4.10
+    image: jeffail/benthos:4.11
     ports:
     - "4195:4195/tcp"
     volumes:
@@ -44,6 +44,7 @@ services:
     - opensearch
     - redpanda
     - redpanda-config
+    - jaeger
 
   search:
     command: go run main.go serve
