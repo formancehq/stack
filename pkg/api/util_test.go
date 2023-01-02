@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/formancehq/go-libs/sharedapi"
+	"github.com/formancehq/go-libs/api"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,7 +19,7 @@ func createJSONBuffer(t *testing.T, v any) io.Reader {
 }
 
 func readTestResponse[T any](t *testing.T, recorder *httptest.ResponseRecorder) T {
-	body := sharedapi.BaseResponse[T]{}
+	body := api.BaseResponse[T]{}
 	require.NoError(t, json.NewDecoder(recorder.Body).Decode(&body))
 	return *body.Data
 }

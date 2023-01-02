@@ -8,7 +8,7 @@ import (
 	"time"
 
 	auth "github.com/formancehq/auth/pkg"
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,7 +20,7 @@ const (
 	KindPostgres = "postgres"
 )
 
-// TODO: Replace by sharedlogging
+// TODO: Replace by logging
 func newLogger(debug bool) logger.Interface {
 	out := io.Discard
 	if debug {
@@ -84,7 +84,7 @@ func gormModule(kind, uri string, debug bool) fx.Option {
 		fx.Invoke(func(lc fx.Lifecycle, db *gorm.DB) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					sharedlogging.Info("Migrate tables")
+					logging.Info("Migrate tables")
 					return MigrateTables(ctx, db)
 				},
 			})

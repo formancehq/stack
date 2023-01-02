@@ -13,9 +13,9 @@ import (
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
-	"github.com/formancehq/go-libs/sharedapi"
-	"github.com/formancehq/go-libs/sharedlogging"
-	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
+	sharedapi "github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -152,12 +152,12 @@ var serveCmd = &cobra.Command{
 				viper.GetBool(debugFlag), key, o.Clients...),
 			delegatedauth.Module(),
 			fx.Invoke(func() {
-				sharedlogging.Infof("App started.")
+				logging.Infof("App started.")
 			}),
 			fx.NopLogger,
 		}
 
-		options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
+		options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 
 		app := fx.New(options...)
 		err = app.Start(cmd.Context())
@@ -182,5 +182,5 @@ func init() {
 
 	serveCmd.Flags().String(configFlag, "config", "Config file name without extension")
 
-	sharedotlptraces.InitOTLPTracesFlags(serveCmd.Flags())
+	otlptraces.InitOTLPTracesFlags(serveCmd.Flags())
 }
