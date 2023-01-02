@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/formancehq/go-libs/sharedapi"
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/otel/trace"
 	"gorm.io/gorm"
@@ -13,17 +13,17 @@ import (
 
 func validationError(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusBadRequest)
-	if err := json.NewEncoder(w).Encode(sharedapi.ErrorResponse{
+	if err := json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    "VALIDATION",
 		ErrorMessage: err.Error(),
 	}); err != nil {
-		sharedlogging.GetLogger(r.Context()).Info("Error validating request: %s", err)
+		logging.GetLogger(r.Context()).Info("Error validating request: %s", err)
 	}
 }
 
 func internalServerError(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
-	if err := json.NewEncoder(w).Encode(sharedapi.ErrorResponse{
+	if err := json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    "INTERNAL",
 		ErrorMessage: err.Error(),
 	}); err != nil {
@@ -32,7 +32,7 @@ func internalServerError(w http.ResponseWriter, r *http.Request, err error) {
 }
 
 func writeJSONObject[T any](w http.ResponseWriter, r *http.Request, v T) {
-	if err := json.NewEncoder(w).Encode(sharedapi.BaseResponse[T]{
+	if err := json.NewEncoder(w).Encode(api.BaseResponse[T]{
 		Data: &v,
 	}); err != nil {
 		trace.SpanFromContext(r.Context()).RecordError(err)

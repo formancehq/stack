@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	auth "github.com/formancehq/auth/pkg"
-	_ "github.com/formancehq/go-libs/sharedapi"
+	_ "github.com/formancehq/go-libs/api"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )

@@ -5,7 +5,7 @@ import (
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/oidc"
-	sharedhealth "github.com/formancehq/go-libs/sharedhealth/pkg"
+	"github.com/formancehq/go-libs/health"
 	"github.com/zitadel/oidc/pkg/op"
 	"go.uber.org/fx"
 )
@@ -18,8 +18,8 @@ func Module(kind, uri string, debug bool, key *rsa.PrivateKey, staticClients ...
 		fx.Provide(fx.Annotate(New,
 			fx.As(new(oidc.Storage)),
 		)),
-		sharedhealth.ProvideHealthCheck(func(storage op.Storage) sharedhealth.NamedCheck {
-			return sharedhealth.NewNamedCheck("Database", sharedhealth.CheckFn(storage.Health))
+		health.ProvideHealthCheck(func(storage op.Storage) health.NamedCheck {
+			return health.NewNamedCheck("Database", health.CheckFn(storage.Health))
 		}),
 	)
 }
