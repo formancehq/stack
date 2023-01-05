@@ -1,0 +1,69 @@
+name: Docker
+on:
+  workflow_call:
+    inputs:
+      NAME:
+        required: true
+        type: string
+      PATH:
+        required: true
+        type: string
+      GITHUB_EVENT_ACTION:
+        required: true
+        type: string
+    secrets:
+      NUMARY_GITHUB_TOKEN:
+        required: true
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.PATH }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: "NumaryBot"
+          password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+
+      - name: Build and push Released
+        if: ${{ inputs.GITHUB_EVENT_ACTION }} == 'released'
+        uses: docker/build-push-action@v2
+        with:
+          context: ${{ inputs.PATH }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/formancehq/${{ inputs.NAME }}:latest,ghcr.io/formancehq/${{ inputs.NAME }}:${{ github.event.release.tag_name }}
+          build-args: |
+            APP_SHA=${{ github.sha }}
+            VERSION=${{ github.event.release.tag_name }}
+      - name: Build and push PreReleased
+        if: ${{ inputs.GITHUB_EVENT_ACTION }} == 'prereleased'
+        uses: docker/build-push-action@v2
+        with:
+          context: ${{ inputs.PATH }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/formancehq/${{ inputs.NAME }}:${{ github.event.release.tag_name }}
+          build-args: |
+            APP_SHA=${{ github.sha }}
+            VERSION=${{ github.event.release.tag_name }}
+      - name: Build and push
+        if: ${{ inputs.GITHUB_EVENT_ACTION }} != 'released' || ${{ inputs.GITHUB_EVENT_ACTION }} != 'prereleased'
+        uses: docker/build-push-action@v2
+        with:
+          context: ${{ inputs.PATH }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/formancehq/${{ inputs.NAME }}:${{ github.sha }}
+          build-args: |
+            APP_SHA=${{ github.sha }}
+            VERSION=develop
