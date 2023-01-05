@@ -7,9 +7,6 @@
 [submodule "services/auth"]
 	path = services/auth
 	url = https://github.com/formancehq/auth
-[submodule "services/search"]
-	path = services/search
-	url = https://github.com/formancehq/search
 [submodule "services/webhooks"]
 	path = services/webhooks
 	url = https://github.com/formancehq/webhooks
