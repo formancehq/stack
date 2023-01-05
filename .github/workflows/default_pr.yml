@@ -31,6 +31,7 @@ jobs:
     outputs:
       wallets: ${{ steps.filter.outputs.wallets }}
       search: ${{ steps.filter.outputs.search }}
+      fctl: ${{ steps.filter.outputs.fctl }}
     steps:
       - uses: actions/checkout@v3
       - name: Check which services were modified
@@ -41,6 +42,7 @@ jobs:
           filters: |
             wallets: 'services/wallets/**'
             search: 'services/search/**'
+            fctl: 'services/fctl/**'
 
   Wallets:
     if: needs.Changes.outputs.wallets == 'true'
@@ -54,6 +56,14 @@ jobs:
     if: needs.Changes.outputs.search == 'true'
     needs: Changes
     uses: ./.github/workflows/service_pr_search.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Fctl:
+    if: needs.Changes.outputs.fctl == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service_pr_fctl.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}

@@ -1,0 +1,32 @@
+on:
+  workflow_call:
+    inputs:
+      GITHUB_EVENT_NAME:
+        type: string
+        required: true
+      GITHUB_EVENT_ACTION:
+        type: string
+        required: true
+
+name: fctl
+defaults:
+  run:
+    working-directory: "./services/fctl"
+jobs:
+  Lint:
+    uses: ./.github/workflows/template_lint.yaml
+    with:
+      PATH: "./services/fctl"
+
+  Test:
+    uses: ./.github/workflows/template_tests.yaml
+    with:
+      PATH: "./services/fctl"
+
+  Build:
+    uses: ./.github/workflows/template_goreleaser_build.yaml
+    with:
+      PATH: "./services/fctl"
+    needs:
+      - Lint
+      - Test
