@@ -1,0 +1,10 @@
+vars {
+    monetary $amount
+    account $source
+    account $destination
+}
+
+send $amount (
+    source = $source
+    destination = $destination
+)
