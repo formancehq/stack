@@ -1,9 +1,0 @@
-vars {
-  account $hold
-  account $dest = meta($hold, "void_destination")
-}
-
-send [ASSET *] (
-  source = $hold
-  destination = $dest
-)
