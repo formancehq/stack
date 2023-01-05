@@ -21,6 +21,9 @@ jobs:
         sdk: [ go, php, python, typescript-node, java ]
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
+          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
       - name: Install Task
         uses: arduino/setup-task@v1
         with:
