@@ -17,3 +17,9 @@ jobs:
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Search:
+    uses: ./.github/workflows/service_release_search.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}

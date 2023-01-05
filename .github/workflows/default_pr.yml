@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       wallets: ${{ steps.filter.outputs.wallets }}
+      search: ${{ steps.filter.outputs.search }}
     steps:
       - uses: actions/checkout@v3
       - name: Check which services were modified
@@ -39,11 +40,20 @@ jobs:
           list-files: shell
           filters: |
             wallets: 'services/wallets/**'
+            search: 'services/search/**'
 
   Wallets:
     if: needs.Changes.outputs.wallets == 'true'
     needs: Changes
     uses: ./.github/workflows/service_pr_wallets.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Search:
+    if: needs.Changes.outputs.search == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service_pr_search.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
