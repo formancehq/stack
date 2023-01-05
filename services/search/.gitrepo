@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/formancehq/search.git
+	branch = main
+	commit = bf92fe058ce34ce507b9a288a489ffd592a9810e
+	parent = ed0e8a5043f1e96a6f7c06c8d1f931672f60c7fc
+	method = merge
+	cmdver = 0.4.5
