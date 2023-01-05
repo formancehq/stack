@@ -50,6 +50,18 @@
       "dispute": {
         "prefix": "webhooks"
       }
+    },
+    {
+      "inputFile": "./../services/wallets/openapi.yml",
+      "pathModification":{
+        "prepend": "/api/wallets"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
+      },
+      "dispute": {
+        "prefix": "wallets"
+      }
     }
   ], 
   "output": "./build/generate.json"

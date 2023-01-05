@@ -2872,6 +2872,556 @@
           }
         }
       }
+    },
+    "/api/wallets/_info": {
+      "get": {
+        "summary": "Get server info",
+        "operationId": "walletsgetServerInfo",
+        "responses": {
+          "200": {
+            "description": "Server information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServerInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wallets/transactions": {
+      "get": {
+        "operationId": "getTransactions",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The maximum number of results to return per page",
+            "example": 100,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 15
+            }
+          },
+          {
+            "name": "wallet_id",
+            "in": "query",
+            "description": "A wallet ID to filter on",
+            "example": "wallet1",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Parameter used in pagination requests.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when the cursor is set.\n",
+            "schema": {
+              "type": "string",
+              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+            }
+          }
+        ],
+        "tags": [
+          "Wallets"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTransactionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wallets/wallets": {
+      "get": {
+        "summary": "List all wallets",
+        "operationId": "listWallets",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Filter on wallet name",
+            "example": "wallet1",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "description": "Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.",
+            "style": "deepObject",
+            "explode": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The maximum number of results to return per page",
+            "example": 100,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 15
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Parameter used in pagination requests.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when the pagination token is set.\n",
+            "schema": {
+              "type": "string",
+              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+            }
+          }
+        ],
+        "tags": [
+          "Wallets"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListWalletsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new wallet",
+        "operationId": "createWallet",
+        "tags": [
+          "Wallets"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWalletRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Wallet created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateWalletResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wallets/wallets/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Get a wallet",
+        "operationId": "getWallet",
+        "tags": [
+          "Wallets"
+        ],
+        "responses": {
+          "200": {
+            "description": "Wallet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetWalletResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Wallet not found"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update a wallet",
+        "operationId": "updateWallet",
+        "tags": [
+          "Wallets"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "metadata": {
+                    "type": "object",
+                    "description": "Custom metadata to attach to this wallet.",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Wallet successfully updated"
+          }
+        }
+      }
+    },
+    "/api/wallets/wallets/{id}/balances": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "summary": "List balances of a wallet",
+        "operationId": "listBalances",
+        "responses": {
+          "200": {
+            "description": "Balances list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListBalancesResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a balance",
+        "operationId": "createBalance",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBalanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created balance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateBalanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wallets/wallets/{id}/balances/{balanceName}": {
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "balanceName",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "summary": "Get detailed balance",
+        "operationId": "getBalance",
+        "responses": {
+          "200": {
+            "description": "Balance summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetBalanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wallets/wallets/{id}/debit": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "summary": "Debit a wallet",
+        "operationId": "debitWallet",
+        "tags": [
+          "Wallets"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DebitWalletRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wallet successfully debited as a pending hold",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DebitWalletResponse"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Wallet successfully debited"
+          }
+        }
+      }
+    },
+    "/api/wallets/wallets/{id}/credit": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "summary": "Credit a wallet",
+        "operationId": "creditWallet",
+        "tags": [
+          "Wallets"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreditWalletRequest"
+              },
+              "example": {
+                "amount": {
+                  "asset": "USD/2",
+                  "amount": 100
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Wallet successfully credited"
+          }
+        }
+      }
+    },
+    "/api/wallets/holds": {
+      "get": {
+        "summary": "Get all holds for a wallet",
+        "tags": [
+          "Wallets"
+        ],
+        "operationId": "getHolds",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The maximum number of results to return per page",
+            "example": 100,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 15
+            }
+          },
+          {
+            "name": "walletID",
+            "in": "query",
+            "description": "The wallet to filter on",
+            "example": "wallet1",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "metadata",
+            "in": "query",
+            "description": "Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.",
+            "style": "deepObject",
+            "explode": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            },
+            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Parameter used in pagination requests.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when the pagination token is set.\n",
+            "schema": {
+              "type": "string",
+              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Holds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetHoldsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wallets/holds/{holdID}": {
+      "get": {
+        "summary": "Get a hold",
+        "tags": [
+          "Wallets"
+        ],
+        "operationId": "getHold",
+        "parameters": [
+          {
+            "name": "holdID",
+            "in": "path",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The hold ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Holds",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetHoldResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wallets/holds/{hold_id}/confirm": {
+      "post": {
+        "parameters": [
+          {
+            "name": "hold_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmHoldRequest"
+              }
+            }
+          }
+        },
+        "summary": "Confirm a hold",
+        "tags": [
+          "Wallets"
+        ],
+        "operationId": "confirmHold",
+        "responses": {
+          "204": {
+            "description": "Hold successfully confirmed, funds moved back to initial destination"
+          }
+        }
+      }
+    },
+    "/api/wallets/holds/{hold_id}/void": {
+      "parameters": [
+        {
+          "name": "hold_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "summary": "Cancel a hold",
+        "operationId": "voidHold",
+        "tags": [
+          "Wallets"
+        ],
+        "responses": {
+          "204": {
+            "description": "Hold successfully cancelled, funds returned to wallet"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4649,6 +5199,652 @@
           "nextRetryAfter": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "Monetary": {
+        "type": "object",
+        "required": [
+          "asset",
+          "amount"
+        ],
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "The asset of the monetary value."
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "The amount of the monetary value."
+          }
+        }
+      },
+      "Wallet": {
+        "type": "object",
+        "required": [
+          "name",
+          "id",
+          "metadata"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique ID of the wallet."
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Metadata associated with the wallet.",
+            "additionalProperties": {}
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "WalletWithBalances": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Wallet"
+          },
+          {
+            "type": "object",
+            "required": [
+              "balances"
+            ],
+            "properties": {
+              "balances": {
+                "type": "object",
+                "required": [
+                  "main"
+                ],
+                "properties": {
+                  "main": {
+                    "$ref": "#/components/schemas/AssetHolder"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Hold": {
+        "type": "object",
+        "required": [
+          "id",
+          "walletID",
+          "metadata",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique ID of the hold."
+          },
+          "walletID": {
+            "type": "string",
+            "description": "The ID of the wallet the hold is associated with."
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Metadata associated with the hold.",
+            "additionalProperties": {}
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "ExpandedDebitHold": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Hold"
+          },
+          {
+            "type": "object",
+            "required": [
+              "remaining",
+              "originalAmount"
+            ],
+            "properties": {
+              "remaining": {
+                "type": "integer",
+                "description": "Remaining amount on hold",
+                "example": 10,
+                "format": "int64"
+              },
+              "originalAmount": {
+                "type": "integer",
+                "description": "Original amount on hold",
+                "example": 100,
+                "format": "int64"
+              }
+            }
+          }
+        ]
+      },
+      "ListWalletsResponse": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/walletsCursor"
+              },
+              {
+                "properties": {
+                  "data": {
+                    "items": {
+                      "$ref": "#/components/schemas/Wallet"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "data"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "CreateWalletResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Wallet"
+          }
+        }
+      },
+      "GetWalletResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/WalletWithBalances"
+          }
+        }
+      },
+      "DebitWalletResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Hold"
+          }
+        }
+      },
+      "walletsAggregatedVolumes": {
+        "type": "object",
+        "x-go-type": {
+          "type": "AggregatedVolumes"
+        },
+        "additionalProperties": {
+          "$ref": "#/components/schemas/walletsVolumes"
+        }
+      },
+      "walletsMetadata": {
+        "type": "object",
+        "nullable": true,
+        "additionalProperties": {},
+        "example": {
+          "admin": true,
+          "a": {
+            "nested": {
+              "key": "value"
+            }
+          }
+        }
+      },
+      "walletsPosting": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "example": 100
+          },
+          "asset": {
+            "type": "string",
+            "example": "COIN"
+          },
+          "destination": {
+            "type": "string",
+            "example": "users:002"
+          },
+          "source": {
+            "type": "string",
+            "example": "users:001"
+          }
+        },
+        "required": [
+          "amount",
+          "asset",
+          "destination",
+          "source"
+        ]
+      },
+      "walletsTransaction": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "postings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/walletsPosting"
+            }
+          },
+          "reference": {
+            "type": "string",
+            "example": "ref:001"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/walletsMetadata"
+          },
+          "txid": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          },
+          "preCommitVolumes": {
+            "$ref": "#/components/schemas/walletsAggregatedVolumes"
+          },
+          "postCommitVolumes": {
+            "$ref": "#/components/schemas/walletsAggregatedVolumes"
+          }
+        },
+        "required": [
+          "postings",
+          "timestamp",
+          "txid"
+        ]
+      },
+      "walletsCursor": {
+        "type": "object",
+        "required": [
+          "pageSize"
+        ],
+        "properties": {
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 1000,
+            "example": 15
+          },
+          "hasMore": {
+            "type": "boolean",
+            "example": false
+          },
+          "previous": {
+            "type": "string",
+            "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+          },
+          "next": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "GetTransactionsResponse": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/walletsCursor"
+              },
+              {
+                "properties": {
+                  "data": {
+                    "items": {
+                      "$ref": "#/components/schemas/walletsTransaction"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "data"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "GetHoldsResponse": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/walletsCursor"
+              },
+              {
+                "properties": {
+                  "data": {
+                    "items": {
+                      "$ref": "#/components/schemas/Hold"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "data"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "GetHoldResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ExpandedDebitHold"
+          }
+        }
+      },
+      "CreateWalletRequest": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "metadata": {
+            "type": "object",
+            "description": "Custom metadata to attach to this wallet.",
+            "additionalProperties": {}
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "walletsVolume": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "integer"
+          },
+          "output": {
+            "type": "integer"
+          },
+          "balance": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "input",
+          "output",
+          "balance"
+        ],
+        "example": {
+          "input": 100,
+          "output": 20,
+          "balance": 80
+        }
+      },
+      "walletsVolumes": {
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/walletsVolume"
+        },
+        "example": {
+          "USD": {
+            "input": 100,
+            "output": 10,
+            "balance": 90
+          },
+          "EUR": {
+            "input": 100,
+            "output": 10,
+            "balance": 90
+          }
+        }
+      },
+      "ConfirmHoldRequest": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "format": "int64",
+            "example": 100,
+            "description": "Define the amount to transfer."
+          },
+          "final": {
+            "type": "boolean",
+            "example": true,
+            "description": "Define a final confirmation. Remaining funds will be returned to the wallet."
+          }
+        }
+      },
+      "LedgerAccountSubject": {
+        "required": [
+          "type",
+          "identifier"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "string"
+          }
+        }
+      },
+      "WalletSubject": {
+        "required": [
+          "type",
+          "identifier"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "string"
+          }
+        }
+      },
+      "Subject": {
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "ACCOUNT": "#/components/schemas/LedgerAccountSubject",
+            "WALLET": "#/components/schemas/WalletSubject"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/LedgerAccountSubject"
+          },
+          {
+            "$ref": "#/components/schemas/WalletSubject"
+          }
+        ]
+      },
+      "Subjects": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Subject"
+        }
+      },
+      "CreditWalletRequest": {
+        "type": "object",
+        "required": [
+          "amount"
+        ],
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Monetary"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/walletsMetadata"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "sources": {
+            "$ref": "#/components/schemas/Subjects"
+          },
+          "balance": {
+            "type": "string",
+            "description": "The balance to credit"
+          }
+        }
+      },
+      "DebitWalletRequest": {
+        "type": "object",
+        "required": [
+          "amount"
+        ],
+        "properties": {
+          "amount": {
+            "$ref": "#/components/schemas/Monetary"
+          },
+          "pending": {
+            "type": "boolean",
+            "description": "Set to true to create a pending hold. If false, the wallet will be debited immediately."
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/walletsMetadata"
+          },
+          "description": {
+            "type": "string"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/Subject"
+          },
+          "balance": {
+            "type": "string",
+            "description": "The targeted balance"
+          }
+        },
+        "example": {
+          "amount": {
+            "asset": "USD/2",
+            "amount": 100
+          },
+          "pending": true
+        }
+      },
+      "AssetHolder": {
+        "type": "object",
+        "required": [
+          "assets"
+        ],
+        "properties": {
+          "assets": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "Balance": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "BalanceWithAssets": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Balance"
+          },
+          {
+            "$ref": "#/components/schemas/AssetHolder"
+          }
+        ]
+      },
+      "ListBalancesResponse": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/walletsCursor"
+              },
+              {
+                "properties": {
+                  "data": {
+                    "items": {
+                      "$ref": "#/components/schemas/Balance"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "data"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "GetBalanceResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/BalanceWithAssets"
+          }
+        }
+      },
+      "CreateBalanceRequest": {
+        "$ref": "#/components/schemas/Balance"
+      },
+      "CreateBalanceResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Balance"
           }
         }
       }

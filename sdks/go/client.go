@@ -76,6 +76,8 @@ type APIClient struct {
 
 	UsersApi UsersApi
 
+	WalletsApi WalletsApi
+
 	WebhooksApi WebhooksApi
 }
 
@@ -108,6 +110,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.StatsApi = (*StatsApiService)(&c.common)
 	c.TransactionsApi = (*TransactionsApiService)(&c.common)
 	c.UsersApi = (*UsersApiService)(&c.common)
+	c.WalletsApi = (*WalletsApiService)(&c.common)
 	c.WebhooksApi = (*WebhooksApiService)(&c.common)
 
 	return c

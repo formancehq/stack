@@ -105,8 +105,12 @@ Class | Method | HTTP request | Description
 *ClientsApi* | [**ListClients**](docs/ClientsApi.md#listclients) | **Get** /api/auth/clients | List clients
 *ClientsApi* | [**ReadClient**](docs/ClientsApi.md#readclient) | **Get** /api/auth/clients/{clientId} | Read client
 *ClientsApi* | [**UpdateClient**](docs/ClientsApi.md#updateclient) | **Put** /api/auth/clients/{clientId} | Update client
+*DefaultApi* | [**CreateBalance**](docs/DefaultApi.md#createbalance) | **Post** /api/wallets/wallets/{id}/balances | Create a balance
+*DefaultApi* | [**GetBalance**](docs/DefaultApi.md#getbalance) | **Get** /api/wallets/wallets/{id}/balances/{balanceName} | Get detailed balance
 *DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /api/auth/_info | Get server info
+*DefaultApi* | [**ListBalances**](docs/DefaultApi.md#listbalances) | **Get** /api/wallets/wallets/{id}/balances | List balances of a wallet
 *DefaultApi* | [**SearchgetServerInfo**](docs/DefaultApi.md#searchgetserverinfo) | **Get** /api/search/_info | Get server info
+*DefaultApi* | [**WalletsgetServerInfo**](docs/DefaultApi.md#walletsgetserverinfo) | **Get** /api/wallets/_info | Get server info
 *MappingApi* | [**GetMapping**](docs/MappingApi.md#getmapping) | **Get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger.
 *MappingApi* | [**UpdateMapping**](docs/MappingApi.md#updatemapping) | **Put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger.
 *PaymentsApi* | [**ConnectorsStripeTransfer**](docs/PaymentsApi.md#connectorsstripetransfer) | **Post** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
@@ -140,6 +144,17 @@ Class | Method | HTTP request | Description
 *TransactionsApi* | [**RevertTransaction**](docs/TransactionsApi.md#reverttransaction) | **Post** /api/ledger/{ledger}/transactions/{txid}/revert | Revert a ledger transaction by its ID.
 *UsersApi* | [**ListUsers**](docs/UsersApi.md#listusers) | **Get** /api/auth/users | List users
 *UsersApi* | [**ReadUser**](docs/UsersApi.md#readuser) | **Get** /api/auth/users/{userId} | Read user
+*WalletsApi* | [**ConfirmHold**](docs/WalletsApi.md#confirmhold) | **Post** /api/wallets/holds/{hold_id}/confirm | Confirm a hold
+*WalletsApi* | [**CreateWallet**](docs/WalletsApi.md#createwallet) | **Post** /api/wallets/wallets | Create a new wallet
+*WalletsApi* | [**CreditWallet**](docs/WalletsApi.md#creditwallet) | **Post** /api/wallets/wallets/{id}/credit | Credit a wallet
+*WalletsApi* | [**DebitWallet**](docs/WalletsApi.md#debitwallet) | **Post** /api/wallets/wallets/{id}/debit | Debit a wallet
+*WalletsApi* | [**GetHold**](docs/WalletsApi.md#gethold) | **Get** /api/wallets/holds/{holdID} | Get a hold
+*WalletsApi* | [**GetHolds**](docs/WalletsApi.md#getholds) | **Get** /api/wallets/holds | Get all holds for a wallet
+*WalletsApi* | [**GetTransactions**](docs/WalletsApi.md#gettransactions) | **Get** /api/wallets/transactions | 
+*WalletsApi* | [**GetWallet**](docs/WalletsApi.md#getwallet) | **Get** /api/wallets/wallets/{id} | Get a wallet
+*WalletsApi* | [**ListWallets**](docs/WalletsApi.md#listwallets) | **Get** /api/wallets/wallets | List all wallets
+*WalletsApi* | [**UpdateWallet**](docs/WalletsApi.md#updatewallet) | **Patch** /api/wallets/wallets/{id} | Update a wallet
+*WalletsApi* | [**VoidHold**](docs/WalletsApi.md#voidhold) | **Post** /api/wallets/holds/{hold_id}/void | Cancel a hold
 *WebhooksApi* | [**ActivateConfig**](docs/WebhooksApi.md#activateconfig) | **Put** /api/webhooks/configs/{id}/activate | Activate one config
 *WebhooksApi* | [**ChangeConfigSecret**](docs/WebhooksApi.md#changeconfigsecret) | **Put** /api/webhooks/configs/{id}/secret/change | Change the signing secret of a config
 *WebhooksApi* | [**DeactivateConfig**](docs/WebhooksApi.md#deactivateconfig) | **Put** /api/webhooks/configs/{id}/deactivate | Deactivate one config
@@ -154,8 +169,11 @@ Class | Method | HTTP request | Description
  - [Account](docs/Account.md)
  - [AccountWithVolumesAndBalances](docs/AccountWithVolumesAndBalances.md)
  - [AddMetadataToAccount409Response](docs/AddMetadataToAccount409Response.md)
+ - [AssetHolder](docs/AssetHolder.md)
  - [Attempt](docs/Attempt.md)
  - [AttemptResponse](docs/AttemptResponse.md)
+ - [Balance](docs/Balance.md)
+ - [BalanceWithAssets](docs/BalanceWithAssets.md)
  - [BankingCircleConfig](docs/BankingCircleConfig.md)
  - [Client](docs/Client.md)
  - [ClientAllOf](docs/ClientAllOf.md)
@@ -168,36 +186,59 @@ Class | Method | HTTP request | Description
  - [ConfigResponse](docs/ConfigResponse.md)
  - [ConfigUser](docs/ConfigUser.md)
  - [ConfigsResponse](docs/ConfigsResponse.md)
+ - [ConfirmHoldRequest](docs/ConfirmHoldRequest.md)
  - [ConnectorBaseInfo](docs/ConnectorBaseInfo.md)
  - [ConnectorConfig](docs/ConnectorConfig.md)
  - [Connectors](docs/Connectors.md)
  - [Contract](docs/Contract.md)
+ - [CreateBalanceResponse](docs/CreateBalanceResponse.md)
  - [CreateClientResponse](docs/CreateClientResponse.md)
  - [CreateScopeResponse](docs/CreateScopeResponse.md)
  - [CreateSecretResponse](docs/CreateSecretResponse.md)
  - [CreateTransaction400Response](docs/CreateTransaction400Response.md)
  - [CreateTransaction409Response](docs/CreateTransaction409Response.md)
  - [CreateTransactions400Response](docs/CreateTransactions400Response.md)
+ - [CreateWalletRequest](docs/CreateWalletRequest.md)
+ - [CreateWalletResponse](docs/CreateWalletResponse.md)
+ - [CreditWalletRequest](docs/CreditWalletRequest.md)
  - [CurrencyCloudConfig](docs/CurrencyCloudConfig.md)
  - [Cursor](docs/Cursor.md)
+ - [DebitWalletRequest](docs/DebitWalletRequest.md)
+ - [DebitWalletResponse](docs/DebitWalletResponse.md)
  - [DummyPayConfig](docs/DummyPayConfig.md)
  - [ErrorCode](docs/ErrorCode.md)
  - [ErrorResponse](docs/ErrorResponse.md)
+ - [ExpandedDebitHold](docs/ExpandedDebitHold.md)
+ - [ExpandedDebitHoldAllOf](docs/ExpandedDebitHoldAllOf.md)
  - [GetAccount200Response](docs/GetAccount200Response.md)
  - [GetAccount400Response](docs/GetAccount400Response.md)
+ - [GetBalanceResponse](docs/GetBalanceResponse.md)
  - [GetBalances200Response](docs/GetBalances200Response.md)
  - [GetBalances200ResponseCursor](docs/GetBalances200ResponseCursor.md)
  - [GetBalances200ResponseCursorAllOf](docs/GetBalances200ResponseCursorAllOf.md)
  - [GetBalancesAggregated200Response](docs/GetBalancesAggregated200Response.md)
  - [GetBalancesAggregated400Response](docs/GetBalancesAggregated400Response.md)
+ - [GetHoldResponse](docs/GetHoldResponse.md)
+ - [GetHoldsResponse](docs/GetHoldsResponse.md)
+ - [GetHoldsResponseCursor](docs/GetHoldsResponseCursor.md)
+ - [GetHoldsResponseCursorAllOf](docs/GetHoldsResponseCursorAllOf.md)
  - [GetPaymentResponse](docs/GetPaymentResponse.md)
  - [GetTransaction400Response](docs/GetTransaction400Response.md)
  - [GetTransaction404Response](docs/GetTransaction404Response.md)
+ - [GetTransactionsResponse](docs/GetTransactionsResponse.md)
+ - [GetTransactionsResponseCursor](docs/GetTransactionsResponseCursor.md)
+ - [GetTransactionsResponseCursorAllOf](docs/GetTransactionsResponseCursorAllOf.md)
+ - [GetWalletResponse](docs/GetWalletResponse.md)
+ - [Hold](docs/Hold.md)
+ - [LedgerAccountSubject](docs/LedgerAccountSubject.md)
  - [LedgerStorage](docs/LedgerStorage.md)
  - [ListAccounts200Response](docs/ListAccounts200Response.md)
  - [ListAccounts200ResponseCursor](docs/ListAccounts200ResponseCursor.md)
  - [ListAccounts200ResponseCursorAllOf](docs/ListAccounts200ResponseCursorAllOf.md)
  - [ListAccounts400Response](docs/ListAccounts400Response.md)
+ - [ListBalancesResponse](docs/ListBalancesResponse.md)
+ - [ListBalancesResponseCursor](docs/ListBalancesResponseCursor.md)
+ - [ListBalancesResponseCursorAllOf](docs/ListBalancesResponseCursorAllOf.md)
  - [ListClientsResponse](docs/ListClientsResponse.md)
  - [ListConnectorTasks200ResponseInner](docs/ListConnectorTasks200ResponseInner.md)
  - [ListConnectorsConfigsResponse](docs/ListConnectorsConfigsResponse.md)
@@ -210,9 +251,13 @@ Class | Method | HTTP request | Description
  - [ListTransactions200ResponseCursor](docs/ListTransactions200ResponseCursor.md)
  - [ListTransactions200ResponseCursorAllOf](docs/ListTransactions200ResponseCursorAllOf.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)
+ - [ListWalletsResponse](docs/ListWalletsResponse.md)
+ - [ListWalletsResponseCursor](docs/ListWalletsResponseCursor.md)
+ - [ListWalletsResponseCursorAllOf](docs/ListWalletsResponseCursorAllOf.md)
  - [Mapping](docs/Mapping.md)
  - [MappingResponse](docs/MappingResponse.md)
  - [ModulrConfig](docs/ModulrConfig.md)
+ - [Monetary](docs/Monetary.md)
  - [Payment](docs/Payment.md)
  - [Posting](docs/Posting.md)
  - [Query](docs/Query.md)
@@ -234,6 +279,7 @@ Class | Method | HTTP request | Description
  - [StripeConfig](docs/StripeConfig.md)
  - [StripeTask](docs/StripeTask.md)
  - [StripeTransferRequest](docs/StripeTransferRequest.md)
+ - [Subject](docs/Subject.md)
  - [TaskDescriptorBankingCircle](docs/TaskDescriptorBankingCircle.md)
  - [TaskDescriptorBankingCircleDescriptor](docs/TaskDescriptorBankingCircleDescriptor.md)
  - [TaskDescriptorCurrencyCloud](docs/TaskDescriptorCurrencyCloud.md)
@@ -252,8 +298,18 @@ Class | Method | HTTP request | Description
  - [TransactionResponse](docs/TransactionResponse.md)
  - [Transactions](docs/Transactions.md)
  - [TransactionsResponse](docs/TransactionsResponse.md)
+ - [UpdateWalletRequest](docs/UpdateWalletRequest.md)
  - [User](docs/User.md)
  - [Volume](docs/Volume.md)
+ - [Wallet](docs/Wallet.md)
+ - [WalletSubject](docs/WalletSubject.md)
+ - [WalletWithBalances](docs/WalletWithBalances.md)
+ - [WalletWithBalancesAllOf](docs/WalletWithBalancesAllOf.md)
+ - [WalletWithBalancesAllOfBalances](docs/WalletWithBalancesAllOfBalances.md)
+ - [WalletsCursor](docs/WalletsCursor.md)
+ - [WalletsPosting](docs/WalletsPosting.md)
+ - [WalletsTransaction](docs/WalletsTransaction.md)
+ - [WalletsVolume](docs/WalletsVolume.md)
  - [WebhooksConfig](docs/WebhooksConfig.md)
  - [WebhooksCursor](docs/WebhooksCursor.md)
  - [WiseConfig](docs/WiseConfig.md)

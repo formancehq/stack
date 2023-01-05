@@ -52,10 +52,10 @@ func NewCommand() *cobra.Command {
 			if len(args) > 1 {
 				terms = args[1:]
 			}
-			size := int32(fctl.GetInt(cmd, sizeFlag))
+			size := int64(fctl.GetInt(cmd, sizeFlag))
 
 			response, _, err := searchClient.SearchApi.Search(cmd.Context()).Query(formance.Query{
-				Size:   &size,
+				PageSize:   &size,
 				Terms:  terms,
 				Target: &target,
 			}).Execute()

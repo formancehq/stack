@@ -73,13 +73,13 @@ func PrintWallet(out io.Writer, wallet formance.WalletWithBalances) error {
 	}
 
 	fctl.Section.Println("Balances")
-	if len(wallet.Balances) == 0 {
+	if len(wallet.Balances.Main.Assets) == 0 {
 		fctl.Println("No balances found.")
 		return nil
 	}
 	tableData = pterm.TableData{}
 	tableData = append(tableData, []string{"Asset", "Amount"})
-	for asset, amount := range wallet.Balances {
+	for asset, amount := range wallet.Balances.Main.Assets {
 		tableData = append(tableData, []string{asset, fmt.Sprint(amount)})
 	}
 	if err := pterm.DefaultTable.
