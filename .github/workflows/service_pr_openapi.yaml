@@ -7,6 +7,9 @@ on:
       GITHUB_EVENT_ACTION:
         type: string
         required: true
+    secrets:
+      NUMARY_GITHUB_TOKEN:
+        required: true
 
 name: OpenAPI
 defaults:
