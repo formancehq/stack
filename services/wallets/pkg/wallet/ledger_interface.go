@@ -1,0 +1,114 @@
+package wallet
+
+import (
+	"context"
+
+	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/go-libs/metadata"
+)
+
+type ListAccountsQuery struct {
+	PaginationToken string
+	Limit           int
+	Metadata        map[string]any
+}
+
+type ListTransactionsQuery struct {
+	PaginationToken string
+	Limit           int
+	Metadata        map[string]any
+	Destination     string
+	Source          string
+	Account         string
+}
+
+type Ledger interface {
+	AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error
+	GetAccount(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error)
+	ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*sdk.ListAccounts200ResponseCursor, error)
+	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*sdk.ListTransactions200ResponseCursor, error)
+	CreateTransaction(ctx context.Context, ledger string, transaction sdk.TransactionData) error
+	RunScript(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResult, error)
+}
+
+type DefaultLedger struct {
+	client *sdk.APIClient
+}
+
+func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*sdk.ListTransactions200ResponseCursor, error) {
+	var (
+		ret *sdk.ListTransactions200Response
+		err error
+	)
+	if query.PaginationToken == "" {
+		ret, _, err = d.client.TransactionsApi.ListTransactions(ctx, ledger).
+			Metadata(query.Metadata).
+			PageSize(int32(query.Limit)).
+			Destination(query.Destination).
+			Account(query.Account).
+			Source(query.Source).
+			Execute()
+	} else {
+		ret, _, err = d.client.TransactionsApi.ListTransactions(ctx, ledger).
+			PaginationToken(query.PaginationToken).
+			Execute()
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &ret.Cursor, nil
+}
+
+func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error {
+	_, err := d.client.AccountsApi.AddMetadataToAccount(ctx, ledger, account).RequestBody(metadata).Execute()
+	return err
+}
+
+func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+	ret, _, err := d.client.AccountsApi.GetAccount(ctx, ledger, account).Execute()
+	return &ret.Data, err
+}
+
+func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*sdk.ListAccounts200ResponseCursor, error) {
+	var (
+		ret *sdk.ListAccounts200Response
+		err error
+	)
+	if query.PaginationToken == "" {
+		ret, _, err = d.client.AccountsApi.ListAccounts(ctx, ledger).
+			Metadata(query.Metadata).
+			PageSize(int32(query.Limit)).
+			Execute()
+	} else {
+		ret, _, err = d.client.AccountsApi.ListAccounts(ctx, ledger).
+			PaginationToken(query.PaginationToken).
+			Execute()
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	return &ret.Cursor, nil
+}
+
+func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction sdk.TransactionData) error {
+	_, _, err := d.client.TransactionsApi.
+		CreateTransaction(ctx, ledger).
+		TransactionData(transaction).
+		Execute()
+	return err
+}
+
+func (d DefaultLedger) RunScript(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResult, error) {
+	ret, _, err := d.client.ScriptApi.RunScript(ctx, ledger).Script(script).Execute()
+	return ret, err
+}
+
+var _ Ledger = &DefaultLedger{}
+
+func NewDefaultLedger(client *sdk.APIClient) *DefaultLedger {
+	return &DefaultLedger{
+		client: client,
+	}
+}
