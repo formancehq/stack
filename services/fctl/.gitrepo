@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/formancehq/fctl.git
+	branch = main
+	commit = e1690e513023c402a36edb64b953af769150dd6e
+	parent = d23bdbbe22e7ccdf8609b46b751e5c5c0f9006d1
+	method = merge
+	cmdver = 0.4.5
