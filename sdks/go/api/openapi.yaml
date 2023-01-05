@@ -1,0 +1,4052 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: support@formance.com
+    name: Formance
+    url: https://www.formance.com
+  description: |
+    Open, modular foundation for unique payments flows
+
+    # Introduction
+    This API is documented in **OpenAPI format**.
+
+    # Authentication
+    Formance Stack offers one forms of authentication:
+      - OAuth2
+    OAuth2 - an open protocol to allow secure authorization in a simple
+    and standard method from web, mobile and desktop applications.
+    <SecurityDefinitions />
+  title: Formance Stack API
+  version: SDK_VERSION
+  x-logo:
+    url: https://avatars.githubusercontent.com/u/84325077?s=200&v=4
+    altText: Formance
+servers:
+- description: local server
+  url: http://localhost
+- description: sandbox server
+  url: "https://{organization}.sandbox.formance.cloud"
+  variables:
+    organization:
+      default: ""
+      description: The organization on which the ledger is located
+security:
+- Authorization: []
+paths:
+  /api/auth/_info:
+    get:
+      operationId: getServerInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerInfo'
+          description: Server information
+      summary: Get server info
+  /api/auth/clients:
+    get:
+      operationId: listClients
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListClientsResponse'
+          description: List of clients
+      summary: List clients
+      tags:
+      - Clients
+    post:
+      operationId: createClient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClientRequest'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateClientResponse'
+          description: Client created
+      summary: Create client
+      tags:
+      - Clients
+  /api/auth/clients/{clientId}:
+    delete:
+      operationId: deleteClient
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Client deleted
+      summary: Delete client
+      tags:
+      - Clients
+    get:
+      operationId: readClient
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadClientResponse'
+          description: Retrieved client
+      summary: Read client
+      tags:
+      - Clients
+    put:
+      operationId: updateClient
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateClientRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateClientResponse'
+          description: Updated client
+      summary: Update client
+      tags:
+      - Clients
+  /api/auth/clients/{clientId}/secrets:
+    post:
+      operationId: createSecret
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSecretRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSecretResponse'
+          description: Created secret
+      summary: Add a secret to a client
+      tags:
+      - Clients
+  /api/auth/clients/{clientId}/secrets/{secretId}:
+    delete:
+      operationId: deleteSecret
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Secret ID
+        explode: false
+        in: path
+        name: secretId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Secret deleted
+      summary: Delete a secret from a client
+      tags:
+      - Clients
+  /api/auth/clients/{clientId}/scopes/{scopeId}:
+    delete:
+      operationId: deleteScopeFromClient
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Scope ID
+        explode: false
+        in: path
+        name: scopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Scope deleted from client
+      summary: Delete scope from client
+      tags:
+      - Clients
+    put:
+      operationId: addScopeToClient
+      parameters:
+      - description: Client ID
+        explode: false
+        in: path
+        name: clientId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Scope ID
+        explode: false
+        in: path
+        name: scopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Scope added to client
+      summary: Add scope to client
+      tags:
+      - Clients
+  /api/auth/scopes:
+    get:
+      description: List Scopes
+      operationId: listScopes
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListScopesResponse'
+          description: List of scopes
+      summary: List scopes
+      tags:
+      - Scopes
+    post:
+      description: Create scope
+      operationId: createScope
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateScopeRequest'
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateScopeResponse'
+          description: Created scope
+      summary: Create scope
+      tags:
+      - Scopes
+  /api/auth/scopes/{scopeId}:
+    delete:
+      description: Delete scope
+      operationId: deleteScope
+      parameters:
+      - description: Scope ID
+        explode: false
+        in: path
+        name: scopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Scope deleted
+      summary: Delete scope
+      tags:
+      - Scopes
+    get:
+      description: Read scope
+      operationId: readScope
+      parameters:
+      - description: Scope ID
+        explode: false
+        in: path
+        name: scopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadScopeResponse'
+          description: Retrieved scope
+      summary: Read scope
+      tags:
+      - Scopes
+    put:
+      description: Update scope
+      operationId: updateScope
+      parameters:
+      - description: Scope ID
+        explode: false
+        in: path
+        name: scopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateScopeRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateScopeResponse'
+          description: Updated scope
+      summary: Update scope
+      tags:
+      - Scopes
+  /api/auth/scopes/{scopeId}/transient/{transientScopeId}:
+    delete:
+      description: Delete a transient scope from a scope
+      operationId: deleteTransientScope
+      parameters:
+      - description: Scope ID
+        explode: false
+        in: path
+        name: scopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Transient scope ID
+        explode: false
+        in: path
+        name: transientScopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Transient scope deleted
+      summary: Delete a transient scope from a scope
+      tags:
+      - Scopes
+    put:
+      description: Add a transient scope to a scope
+      operationId: addTransientScope
+      parameters:
+      - description: Scope ID
+        explode: false
+        in: path
+        name: scopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: Transient scope ID
+        explode: false
+        in: path
+        name: transientScopeId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Scope added
+      summary: Add a transient scope to a scope
+      tags:
+      - Scopes
+  /api/auth/users:
+    get:
+      description: List users
+      operationId: listUsers
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListUsersResponse'
+          description: List of users
+      summary: List users
+      tags:
+      - Users
+  /api/auth/users/{userId}:
+    get:
+      description: Read user
+      operationId: readUser
+      parameters:
+      - description: User ID
+        explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadUserResponse'
+          description: Retrieved user
+      summary: Read user
+      tags:
+      - Users
+  /api/ledger/_info:
+    get:
+      operationId: getInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigInfoResponse'
+          description: OK
+      summary: Show server information.
+      tags:
+      - server
+  /api/ledger/{ledger}/accounts:
+    get:
+      description: "List accounts from a ledger, sorted by address in descending order."
+      operationId: listAccounts
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: The maximum number of results to return per page
+        example: 100
+        explode: true
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 15
+          maximum: 1000
+          minimum: 1
+          type: integer
+        style: form
+      - description: "Pagination cursor, will return accounts after given address,\
+          \ in descending order."
+        explode: true
+        in: query
+        name: after
+        required: false
+        schema:
+          example: users:003
+          type: string
+        style: form
+      - description: Filter accounts by address pattern (regular expression placed
+          between ^ and $).
+        explode: true
+        in: query
+        name: address
+        required: false
+        schema:
+          example: users:.+
+          type: string
+        style: form
+      - description: Filter accounts by metadata key value pairs. Nested objects can
+          be used as seen in the example below.
+        example: "metadata[key]=value1&metadata[a.nested.key]=value2"
+        explode: true
+        in: query
+        name: metadata
+        required: false
+        schema:
+          properties: {}
+          type: object
+        style: deepObject
+      - description: Filter accounts by their balance (default operator is gte)
+        explode: true
+        in: query
+        name: balance
+        required: false
+        schema:
+          example: 2400
+          format: int64
+          type: integer
+        style: form
+      - description: "Operator used for the filtering of balances can be greater than/equal,\
+          \ less than/equal, greater than, less than, or equal"
+        explode: true
+        in: query
+        name: balance_operator
+        required: false
+        schema:
+          enum:
+          - gte
+          - lte
+          - gt
+          - lt
+          - e
+          example: gte
+          type: string
+        style: form
+      - description: "Parameter used in pagination requests. Maximum page size is\
+          \ set to 15.\nSet to the value of next for the next page of results. \n\
+          Set to the value of previous for the previous page of results.\nNo other\
+          \ parameters can be set when the pagination token is set.\n"
+        explode: true
+        in: query
+        name: pagination_token
+        required: false
+        schema:
+          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listAccounts_200_response'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listAccounts_400_response'
+          description: Bad Request
+      summary: List accounts from a ledger.
+      tags:
+      - accounts
+    head:
+      operationId: countAccounts
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: Filter accounts by address pattern (regular expression placed
+          between ^ and $).
+        explode: true
+        in: query
+        name: address
+        required: false
+        schema:
+          example: users:.+
+          type: string
+        style: form
+      - description: Filter accounts by metadata key value pairs. Nested objects can
+          be used as seen in the example below.
+        example: "metadata[key]=value1&metadata[a.nested.key]=value2"
+        explode: true
+        in: query
+        name: metadata
+        required: false
+        schema:
+          properties: {}
+          type: object
+        style: deepObject
+      responses:
+        "200":
+          description: OK
+          headers:
+            Count:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      summary: Count the accounts from a ledger.
+      tags:
+      - accounts
+  /api/ledger/{ledger}/accounts/{address}:
+    get:
+      operationId: getAccount
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: |
+          Exact address of the account. It must match the following regular expressions pattern:
+          ```
+          ^\w+(:\w+)*$
+          ```
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          example: users:001
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getAccount_200_response'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getAccount_400_response'
+          description: Bad Request
+      summary: Get account by its address.
+      tags:
+      - accounts
+  /api/ledger/{ledger}/accounts/{address}/metadata:
+    post:
+      operationId: addMetadataToAccount
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: |
+          Exact address of the account. It must match the following regular expressions pattern:
+          ```
+          ^\w+(:\w+)*$
+          ```
+        explode: false
+        in: path
+        name: address
+        required: true
+        schema:
+          example: users:001
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ledgerMetadata'
+        description: metadata
+        required: true
+      responses:
+        "204":
+          content: {}
+          description: No Content
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getAccount_400_response'
+          description: Bad Request
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/addMetadataToAccount_409_response'
+          description: Conflict
+      summary: Add metadata to an account.
+      tags:
+      - accounts
+  /api/ledger/{ledger}/mapping:
+    get:
+      operationId: getMapping
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MappingResponse'
+          description: OK
+      summary: Get the mapping of a ledger.
+      tags:
+      - mapping
+    put:
+      operationId: updateMapping
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Mapping'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MappingResponse'
+          description: OK
+      summary: Update the mapping of a ledger.
+      tags:
+      - mapping
+  /api/ledger/{ledger}/script:
+    post:
+      operationId: runScript
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: Set the preview mode. Preview mode doesn't add the logs to the
+          database or publish a message to the message broker.
+        explode: true
+        in: query
+        name: preview
+        required: false
+        schema:
+          example: true
+          type: boolean
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Script'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScriptResult'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/runScript_400_response'
+          description: Bad Request
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/addMetadataToAccount_409_response'
+          description: Conflict
+      summary: Execute a Numscript.
+      tags:
+      - script
+  /api/ledger/{ledger}/stats:
+    get:
+      description: |
+        Get ledger stats (aggregate metrics on accounts and transactions)
+        The stats for account
+      operationId: readStats
+      parameters:
+      - description: name of the ledger
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsResponse'
+          description: OK
+      summary: Get Stats
+      tags:
+      - stats
+  /api/ledger/{ledger}/transactions:
+    get:
+      description: "List transactions from a ledger, sorted by txid in descending\
+        \ order."
+      operationId: listTransactions
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: The maximum number of results to return per page
+        example: 100
+        explode: true
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 15
+          maximum: 1000
+          minimum: 1
+          type: integer
+        style: form
+      - description: "Pagination cursor, will return transactions after given txid\
+          \ (in descending order)."
+        explode: true
+        in: query
+        name: after
+        required: false
+        schema:
+          example: "1234"
+          type: string
+        style: form
+      - description: Find transactions by reference field.
+        explode: true
+        in: query
+        name: reference
+        required: false
+        schema:
+          example: ref:001
+          type: string
+        style: form
+      - description: "Find transactions with postings involving given account, either\
+          \ as source or destination."
+        explode: true
+        in: query
+        name: account
+        required: false
+        schema:
+          example: users:001
+          type: string
+        style: form
+      - description: Find transactions with postings involving given account at source.
+        explode: true
+        in: query
+        name: source
+        required: false
+        schema:
+          example: users:001
+          type: string
+        style: form
+      - description: Find transactions with postings involving given account at destination.
+        explode: true
+        in: query
+        name: destination
+        required: false
+        schema:
+          example: users:001
+          type: string
+        style: form
+      - description: |
+          Filter transactions that occurred after this timestamp.
+          The format is RFC3339 and is inclusive (for example, 12:00:01 includes the first second of the minute).
+        explode: true
+        in: query
+        name: start_time
+        required: false
+        schema:
+          type: string
+          example: null
+        style: form
+      - description: |
+          Filter transactions that occurred before this timestamp.
+          The format is RFC3339 and is exclusive (for example, 12:00:01 excludes the first second of the minute).
+        explode: true
+        in: query
+        name: end_time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Parameter used in pagination requests. Maximum page size is\
+          \ set to 15.\nSet to the value of next for the next page of results. \n\
+          Set to the value of previous for the previous page of results.\nNo other\
+          \ parameters can be set when the pagination token is set.\n"
+        explode: true
+        in: query
+        name: pagination_token
+        required: false
+        schema:
+          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+          type: string
+        style: form
+      - description: Filter transactions by metadata key value pairs. Nested objects
+          can be used as seen in the example below.
+        example: "metadata[key]=value1&metadata[a.nested.key]=value2"
+        explode: true
+        in: query
+        name: metadata
+        required: false
+        schema:
+          properties: {}
+          type: object
+        style: deepObject
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listTransactions_200_response'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listAccounts_400_response'
+          description: Bad Request
+      summary: List transactions from a ledger.
+      tags:
+      - transactions
+    head:
+      operationId: countTransactions
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: Filter transactions by reference field.
+        explode: true
+        in: query
+        name: reference
+        required: false
+        schema:
+          example: ref:001
+          type: string
+        style: form
+      - description: "Filter transactions with postings involving given account, either\
+          \ as source or destination (regular expression placed between ^ and $)."
+        explode: true
+        in: query
+        name: account
+        required: false
+        schema:
+          example: users:001
+          type: string
+        style: form
+      - description: Filter transactions with postings involving given account at
+          source (regular expression placed between ^ and $).
+        explode: true
+        in: query
+        name: source
+        required: false
+        schema:
+          example: users:001
+          type: string
+        style: form
+      - description: Filter transactions with postings involving given account at
+          destination (regular expression placed between ^ and $).
+        explode: true
+        in: query
+        name: destination
+        required: false
+        schema:
+          example: users:001
+          type: string
+        style: form
+      - description: Filter transactions by metadata key value pairs. Nested objects
+          can be used as seen in the example below.
+        example: "metadata[key]=value1&metadata[a.nested.key]=value2"
+        explode: true
+        in: query
+        name: metadata
+        required: false
+        schema:
+          properties: {}
+          type: object
+        style: deepObject
+      responses:
+        "200":
+          description: OK
+          headers:
+            Count:
+              explode: false
+              schema:
+                type: integer
+              style: simple
+      summary: Count the transactions from a ledger.
+      tags:
+      - transactions
+    post:
+      operationId: createTransaction
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: Set the preview mode. Preview mode doesn't add the logs to the
+          database or publish a message to the message broker.
+        explode: true
+        in: query
+        name: preview
+        required: false
+        schema:
+          example: true
+          type: boolean
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionData'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsResponse'
+          description: OK
+        "304":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsResponse'
+          description: Not modified (when preview is enabled)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createTransaction_400_response'
+          description: Bad Request
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createTransaction_409_response'
+          description: Conflict
+      summary: Create a new transaction to a ledger.
+      tags:
+      - transactions
+  /api/ledger/{ledger}/transactions/{txid}:
+    get:
+      operationId: getTransaction
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: Transaction ID.
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          example: 1234
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getTransaction_400_response'
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getTransaction_404_response'
+          description: Not Found
+      summary: Get transaction from a ledger by its ID.
+      tags:
+      - transactions
+  /api/ledger/{ledger}/transactions/{txid}/metadata:
+    post:
+      operationId: addMetadataOnTransaction
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: Transaction ID.
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          example: 1234
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ledgerMetadata'
+        description: metadata
+      responses:
+        "204":
+          content: {}
+          description: No Content
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getTransaction_400_response'
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getTransaction_404_response'
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/addMetadataToAccount_409_response'
+          description: Conflict
+      summary: Set the metadata of a transaction by its ID.
+      tags:
+      - transactions
+  /api/ledger/{ledger}/transactions/{txid}/revert:
+    post:
+      operationId: revertTransaction
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: Transaction ID.
+        explode: false
+        in: path
+        name: txid
+        required: true
+        schema:
+          example: 1234
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getTransaction_400_response'
+          description: Bad Request
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getTransaction_404_response'
+          description: Not Found
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/addMetadataToAccount_409_response'
+          description: Conflict
+      summary: Revert a ledger transaction by its ID.
+      tags:
+      - transactions
+  /api/ledger/{ledger}/transactions/batch:
+    post:
+      operationId: CreateTransactions
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Transactions'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsResponse'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTransactions_400_response'
+          description: Bad Request
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/createTransaction_409_response'
+          description: Conflict
+      summary: Create a new batch of transactions to a ledger.
+      tags:
+      - transactions
+  /api/ledger/{ledger}/balances:
+    get:
+      operationId: getBalances
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: "Filter balances involving given account, either as source or\
+          \ destination."
+        explode: true
+        in: query
+        name: address
+        required: false
+        schema:
+          example: users:001
+          type: string
+        style: form
+      - description: "Pagination cursor, will return accounts after given address,\
+          \ in descending order."
+        explode: true
+        in: query
+        name: after
+        required: false
+        schema:
+          example: users:003
+          type: string
+        style: form
+      - description: "Parameter used in pagination requests. \nSet to the value of\
+          \ next for the next page of results. \nSet to the value of previous for\
+          \ the previous page of results."
+        explode: true
+        in: query
+        name: pagination_token
+        required: false
+        schema:
+          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getBalances_200_response'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listAccounts_400_response'
+          description: Bad Request
+      summary: Get the balances from a ledger's account
+      tags:
+      - balances
+  /api/ledger/{ledger}/aggregate/balances:
+    get:
+      operationId: getBalancesAggregated
+      parameters:
+      - description: Name of the ledger.
+        explode: false
+        in: path
+        name: ledger
+        required: true
+        schema:
+          example: ledger001
+          type: string
+        style: simple
+      - description: "Filter balances involving given account, either as source or\
+          \ destination."
+        explode: true
+        in: query
+        name: address
+        required: false
+        schema:
+          example: users:001
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getBalancesAggregated_200_response'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getBalancesAggregated_400_response'
+          description: Bad Request
+      summary: Get the aggregated balances from selected accounts
+      tags:
+      - balances
+  /api/payments/payments:
+    get:
+      operationId: listPayments
+      parameters:
+      - description: "Limit the number of payments to return, pagination can be achieved\
+          \ in conjunction with 'skip' parameter."
+        example: 10
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: "How many payments to skip, pagination can be achieved in conjunction\
+          \ with 'limit' parameter."
+        example: 100
+        explode: true
+        in: query
+        name: skip
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Field used to sort payments (Default is by date).
+        example: status
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPaymentsResponse'
+          description: A JSON array of payments
+      summary: Returns a list of payments.
+      tags:
+      - Payments
+  /api/payments/payments/{paymentId}:
+    get:
+      operationId: getPayment
+      parameters:
+      - description: The payment id
+        example: XXX
+        explode: false
+        in: path
+        name: paymentId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: A payment
+      summary: Returns a payment.
+      tags:
+      - Payments
+  /api/payments/connectors:
+    get:
+      description: Get all installed connectors
+      operationId: getAllConnectors
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListConnectorsResponse'
+          description: List of installed connectors
+      summary: Get all installed connectors
+      tags:
+      - Payments
+  /api/payments/connectors/configs:
+    get:
+      description: Get all available connectors configs
+      operationId: getAllConnectorsConfigs
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListConnectorsConfigsResponse'
+          description: List of available connectors configs
+      summary: Get all available connectors configs
+      tags:
+      - Payments
+  /api/payments/connectors/{connector}:
+    delete:
+      description: Uninstall  connector
+      operationId: uninstallConnector
+      parameters:
+      - description: The connector code
+        explode: false
+        in: path
+        name: connector
+        required: true
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        style: simple
+      responses:
+        "204":
+          description: Connector has been uninstalled
+      summary: Uninstall connector
+      tags:
+      - Payments
+    post:
+      description: Install connector
+      operationId: installConnector
+      parameters:
+      - description: The connector code
+        explode: false
+        in: path
+        name: connector
+        required: true
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorConfig'
+        required: true
+      responses:
+        "204":
+          description: Connector has been installed
+      summary: Install connector
+      tags:
+      - Payments
+  /api/payments/connectors/{connector}/config:
+    get:
+      description: Read connector config
+      operationId: readConnectorConfig
+      parameters:
+      - description: The connector code
+        explode: false
+        in: path
+        name: connector
+        required: true
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorConfig'
+          description: Connector config
+      summary: Read connector config
+      tags:
+      - Payments
+  /api/payments/connectors/{connector}/reset:
+    post:
+      description: Reset connector. Will remove the connector and ALL PAYMENTS generated
+        with it.
+      operationId: resetConnector
+      parameters:
+      - description: The connector code
+        explode: false
+        in: path
+        name: connector
+        required: true
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        style: simple
+      responses:
+        "204":
+          description: Connector has been reset
+      summary: Reset connector
+      tags:
+      - Payments
+  /api/payments/connectors/{connector}/tasks:
+    get:
+      description: List all tasks associated with this connector.
+      operationId: listConnectorTasks
+      parameters:
+      - description: The connector code
+        explode: false
+        in: path
+        name: connector
+        required: true
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/listConnectorTasks_200_response_inner'
+                type: array
+          description: Task list
+      summary: List connector tasks
+      tags:
+      - Payments
+  /api/payments/connectors/{connector}/tasks/{taskId}:
+    get:
+      description: Get a specific task associated to the connector
+      operationId: getConnectorTask
+      parameters:
+      - description: The connector code
+        explode: false
+        in: path
+        name: connector
+        required: true
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        style: simple
+      - description: The task id
+        example: task1
+        explode: false
+        in: path
+        name: taskId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/listConnectorTasks_200_response_inner'
+          description: The specified task
+      summary: Read a specific task of the connector
+      tags:
+      - Payments
+  /api/payments/connectors/stripe/transfer:
+    post:
+      description: Execute a transfer between two Stripe accounts
+      operationId: connectorsStripeTransfer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StripeTransferRequest'
+        required: true
+      responses:
+        "200":
+          description: Transfer has been executed
+      summary: Transfer funds between Stripe accounts
+      tags:
+      - Payments
+  /api/search/_info:
+    get:
+      operationId: searchgetServerInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerInfo'
+          description: Server information
+      summary: Get server info
+  /api/search/:
+    post:
+      description: ElasticSearch query engine
+      operationId: search
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Query'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+          description: Success
+        default:
+          content: {}
+          description: Error
+      summary: Search
+      tags:
+      - Search
+  /api/webhooks/configs:
+    get:
+      description: Sorted by updated date descending
+      operationId: getManyConfigs
+      parameters:
+      - description: Optional filter by Config ID
+        explode: true
+        in: query
+        name: id
+        required: false
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: form
+      - description: Optional filter by endpoint URL
+        explode: true
+        in: query
+        name: endpoint
+        required: false
+        schema:
+          example: https://example.com
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigsResponse'
+          description: OK
+      summary: Get many configs
+      tags:
+      - Webhooks
+    post:
+      description: |
+        Insert a new webhooks config.
+
+        The endpoint should be a valid https URL and be unique.
+
+        The secret is the endpoint's verification secret.
+        If not passed or empty, a secret is automatically generated.
+        The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
+
+        All eventTypes are converted to lower-case when inserted.
+      operationId: insertConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigUser'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+          description: Config created successfully.
+        "400":
+          content:
+            text/plain:
+              schema:
+                example: endpoints should be valid urls
+                type: string
+          description: Bad Request
+      summary: Insert a new config
+      tags:
+      - Webhooks
+  /api/webhooks/configs/{id}:
+    delete:
+      description: Delete a webhooks config by ID.
+      operationId: deleteConfig
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      responses:
+        "200":
+          content: {}
+          description: Config successfully deleted.
+      summary: Delete one config
+      tags:
+      - Webhooks
+  /api/webhooks/configs/{id}/test:
+    get:
+      description: Test a config by sending a webhook to its endpoint.
+      operationId: testConfig
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttemptResponse'
+          description: OK
+      summary: Test one config
+      tags:
+      - Webhooks
+  /api/webhooks/configs/{id}/activate:
+    put:
+      description: "Activate a webhooks config by ID, to start receiving webhooks\
+        \ to its endpoint."
+      operationId: activateConfig
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+          description: Config successfully activated.
+        "304":
+          content: {}
+          description: "Config not modified, was already activated."
+      summary: Activate one config
+      tags:
+      - Webhooks
+  /api/webhooks/configs/{id}/deactivate:
+    put:
+      description: "Deactivate a webhooks config by ID, to stop receiving webhooks\
+        \ to its endpoint."
+      operationId: deactivateConfig
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+          description: Config successfully deactivated.
+        "304":
+          content: {}
+          description: "Config not modified, was already deactivated."
+      summary: Deactivate one config
+      tags:
+      - Webhooks
+  /api/webhooks/configs/{id}/secret/change:
+    put:
+      description: |
+        Change the signing secret of the endpoint of a webhooks config.
+
+        If not passed or empty, a secret is automatically generated.
+        The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
+      operationId: changeConfigSecret
+      parameters:
+      - description: Config ID
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          example: 4997257d-dfb6-445b-929c-cbe2ab182818
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigChangeSecret'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+          description: Secret successfully changed.
+      summary: Change the signing secret of a config
+      tags:
+      - Webhooks
+components:
+  schemas:
+    Metadata:
+      additionalProperties: {}
+      type: object
+    ClientOptions:
+      example:
+        metadata:
+          key: ""
+        public: true
+        trusted: true
+        postLogoutRedirectUris:
+        - postLogoutRedirectUris
+        - postLogoutRedirectUris
+        name: name
+        description: description
+        redirectUris:
+        - redirectUris
+        - redirectUris
+      properties:
+        public:
+          type: boolean
+        redirectUris:
+          items:
+            type: string
+          type: array
+        description:
+          type: string
+        name:
+          type: string
+        trusted:
+          type: boolean
+        postLogoutRedirectUris:
+          items:
+            type: string
+          type: array
+        metadata:
+          additionalProperties: {}
+          type: object
+      required:
+      - name
+      type: object
+    ClientSecret:
+      properties:
+        lastDigits:
+          type: string
+        name:
+          type: string
+        id:
+          type: string
+        metadata:
+          additionalProperties: {}
+          type: object
+      required:
+      - id
+      - lastDigits
+      - name
+      type: object
+    Client:
+      allOf:
+      - $ref: '#/components/schemas/ClientOptions'
+      - $ref: '#/components/schemas/Client_allOf'
+    ScopeOptions:
+      example:
+        metadata:
+          key: ""
+        label: label
+      properties:
+        label:
+          type: string
+        metadata:
+          additionalProperties: {}
+          type: object
+      required:
+      - label
+      type: object
+    Scope:
+      allOf:
+      - $ref: '#/components/schemas/ScopeOptions'
+      - $ref: '#/components/schemas/Scope_allOf'
+    SecretOptions:
+      example:
+        metadata:
+          key: ""
+        name: name
+      properties:
+        name:
+          type: string
+        metadata:
+          additionalProperties: {}
+          type: object
+      required:
+      - name
+      type: object
+    Secret:
+      allOf:
+      - $ref: '#/components/schemas/SecretOptions'
+      - $ref: '#/components/schemas/Secret_allOf'
+    User:
+      example:
+        subject: Jane Doe
+        id: 3bb03708-312f-48a0-821a-e765837dc2c4
+        email: user1@orga1.com
+      properties:
+        id:
+          example: 3bb03708-312f-48a0-821a-e765837dc2c4
+          type: string
+        subject:
+          example: Jane Doe
+          type: string
+        email:
+          example: user1@orga1.com
+          type: string
+      type: object
+    CreateClientRequest:
+      $ref: '#/components/schemas/ClientOptions'
+    CreateClientResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/Client'
+      type: object
+    ListClientsResponse:
+      example:
+        data:
+        - null
+        - null
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Client'
+          type: array
+      type: object
+    UpdateClientRequest:
+      $ref: '#/components/schemas/ClientOptions'
+    UpdateClientResponse:
+      $ref: '#/components/schemas/CreateClientResponse'
+    ReadClientResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/Client'
+      type: object
+    ListScopesResponse:
+      example:
+        data:
+        - null
+        - null
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Scope'
+          type: array
+      type: object
+    CreateScopeRequest:
+      $ref: '#/components/schemas/ScopeOptions'
+    CreateScopeResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/Scope'
+      type: object
+    ReadScopeResponse:
+      $ref: '#/components/schemas/CreateScopeResponse'
+    UpdateScopeRequest:
+      $ref: '#/components/schemas/ScopeOptions'
+    UpdateScopeResponse:
+      $ref: '#/components/schemas/CreateScopeResponse'
+    CreateSecretRequest:
+      $ref: '#/components/schemas/SecretOptions'
+    CreateSecretResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/Secret'
+      type: object
+    ReadUserResponse:
+      example:
+        data:
+          subject: Jane Doe
+          id: 3bb03708-312f-48a0-821a-e765837dc2c4
+          email: user1@orga1.com
+      properties:
+        data:
+          $ref: '#/components/schemas/User'
+      type: object
+    ListUsersResponse:
+      example:
+        data:
+        - subject: Jane Doe
+          id: 3bb03708-312f-48a0-821a-e765837dc2c4
+          email: user1@orga1.com
+        - subject: Jane Doe
+          id: 3bb03708-312f-48a0-821a-e765837dc2c4
+          email: user1@orga1.com
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/User'
+          type: array
+      type: object
+    ServerInfo:
+      example:
+        version: version
+      properties:
+        version:
+          type: string
+      required:
+      - version
+      type: object
+    Config:
+      example:
+        storage:
+          driver: driver
+          ledgers:
+          - ledgers
+          - ledgers
+      properties:
+        storage:
+          $ref: '#/components/schemas/LedgerStorage'
+      required:
+      - storage
+      type: object
+    ledgerMetadata:
+      additionalProperties: {}
+      example:
+        admin: true
+        a:
+          nested:
+            key: value
+      nullable: true
+      type: object
+    ConfigInfo:
+      example:
+        server: server
+        config:
+          storage:
+            driver: driver
+            ledgers:
+            - ledgers
+            - ledgers
+        version: version
+      properties:
+        config:
+          $ref: '#/components/schemas/Config'
+        server:
+          type: string
+        version:
+          type: string
+      required:
+      - config
+      - server
+      - version
+      type: object
+    LedgerStorage:
+      example:
+        driver: driver
+        ledgers:
+        - ledgers
+        - ledgers
+      properties:
+        driver:
+          type: string
+        ledgers:
+          items:
+            type: string
+          type: array
+      required:
+      - driver
+      - ledgers
+      type: object
+    ScriptResult:
+      example:
+        error_message: error_message
+        details: details
+        error_code: INTERNAL
+        transaction:
+          reference: ref:001
+          metadata:
+            admin: true
+            a:
+              nested:
+                key: value
+          postings:
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          txid: 0
+          postCommitVolumes:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          preCommitVolumes:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        details:
+          type: string
+        error_code:
+          enum:
+          - INTERNAL
+          - INSUFFICIENT_FUND
+          - COMPILATION_FAILED
+          - NO_SCRIPT
+          type: string
+        error_message:
+          type: string
+        transaction:
+          $ref: '#/components/schemas/Transaction'
+      type: object
+    Account:
+      properties:
+        address:
+          example: users:001
+          type: string
+        type:
+          example: virtual
+          type: string
+        metadata:
+          example:
+            admin: true
+            a:
+              nested:
+                key: value
+          properties: {}
+          type: object
+      required:
+      - address
+      type: object
+    AccountWithVolumesAndBalances:
+      example:
+        metadata:
+          admin: true
+          a:
+            nested:
+              key: value
+        balances:
+          COIN: 100
+        address: users:001
+        volumes:
+          COIN:
+            input: 100
+            output: 0
+        type: virtual
+      properties:
+        address:
+          example: users:001
+          type: string
+        type:
+          example: virtual
+          type: string
+        metadata:
+          example:
+            admin: true
+            a:
+              nested:
+                key: value
+          properties: {}
+          type: object
+        volumes:
+          additionalProperties:
+            additionalProperties:
+              type: integer
+            type: object
+          example:
+            COIN:
+              input: 100
+              output: 0
+          type: object
+        balances:
+          additionalProperties:
+            type: integer
+          example:
+            COIN: 100
+          type: object
+      required:
+      - address
+      type: object
+    AccountsBalances:
+      additionalProperties:
+        $ref: '#/components/schemas/AssetsBalances'
+      example:
+        account1:
+          USD: 100
+          EUR: 23
+        account2:
+          CAD: 20
+          JPY: 21
+      type: object
+    AssetsBalances:
+      additionalProperties:
+        type: integer
+      example:
+        USD: 100
+        EUR: 12
+      type: object
+    Contract:
+      example:
+        expr: "{}"
+        account: users:001
+      properties:
+        account:
+          example: users:001
+          type: string
+        expr:
+          type: object
+      required:
+      - accounts
+      - expr
+      type: object
+    Mapping:
+      example:
+        contracts:
+        - expr: "{}"
+          account: users:001
+        - expr: "{}"
+          account: users:001
+      nullable: true
+      properties:
+        contracts:
+          items:
+            $ref: '#/components/schemas/Contract'
+          type: array
+      required:
+      - contracts
+      type: object
+    Posting:
+      example:
+        amount: 100
+        destination: users:002
+        source: users:001
+        asset: COIN
+      properties:
+        amount:
+          example: 100
+          type: integer
+        asset:
+          example: COIN
+          type: string
+        destination:
+          example: users:002
+          type: string
+        source:
+          example: users:001
+          type: string
+      required:
+      - amount
+      - asset
+      - destination
+      - source
+      type: object
+    Script:
+      example:
+        reference: order_1234
+        metadata:
+          admin: true
+          a:
+            nested:
+              key: value
+        plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\t\
+          destination = $user\n)\n"
+        vars:
+          vars:
+            user: users:042
+      properties:
+        reference:
+          description: Reference to attach to the generated transaction
+          example: order_1234
+          type: string
+        metadata:
+          additionalProperties: {}
+          example:
+            admin: true
+            a:
+              nested:
+                key: value
+          nullable: true
+          type: object
+        plain:
+          example: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+            \tdestination = $user\n)\n"
+          type: string
+        vars:
+          example:
+            vars:
+              user: users:042
+          properties: {}
+          type: object
+      required:
+      - plain
+      type: object
+    Transaction:
+      example:
+        reference: ref:001
+        metadata:
+          admin: true
+          a:
+            nested:
+              key: value
+        postings:
+        - amount: 100
+          destination: users:002
+          source: users:001
+          asset: COIN
+        - amount: 100
+          destination: users:002
+          source: users:001
+          asset: COIN
+        txid: 0
+        postCommitVolumes:
+          orders:1:
+            USD:
+              input: 100
+              output: 10
+              balance: 90
+          orders:2:
+            USD:
+              input: 100
+              output: 10
+              balance: 90
+        preCommitVolumes:
+          orders:1:
+            USD:
+              input: 100
+              output: 10
+              balance: 90
+          orders:2:
+            USD:
+              input: 100
+              output: 10
+              balance: 90
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        timestamp:
+          format: date-time
+          type: string
+        postings:
+          items:
+            $ref: '#/components/schemas/Posting'
+          type: array
+        reference:
+          example: ref:001
+          type: string
+        metadata:
+          additionalProperties: {}
+          example:
+            admin: true
+            a:
+              nested:
+                key: value
+          nullable: true
+          type: object
+        txid:
+          type: integer
+        preCommitVolumes:
+          additionalProperties:
+            $ref: '#/components/schemas/Volumes'
+          example:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          type: object
+        postCommitVolumes:
+          additionalProperties:
+            $ref: '#/components/schemas/Volumes'
+          example:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          type: object
+      required:
+      - postings
+      - timestamp
+      - txid
+      type: object
+    TransactionData:
+      example:
+        reference: ref:001
+        metadata:
+          admin: true
+          a:
+            nested:
+              key: value
+        postings:
+        - amount: 100
+          destination: users:002
+          source: users:001
+          asset: COIN
+        - amount: 100
+          destination: users:002
+          source: users:001
+          asset: COIN
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        timestamp:
+          format: date-time
+          type: string
+        postings:
+          items:
+            $ref: '#/components/schemas/Posting'
+          type: array
+        reference:
+          example: ref:001
+          type: string
+        metadata:
+          additionalProperties: {}
+          example:
+            admin: true
+            a:
+              nested:
+                key: value
+          nullable: true
+          type: object
+      required:
+      - postings
+      type: object
+    Transactions:
+      example:
+        transactions:
+        - reference: ref:001
+          metadata:
+            admin: true
+            a:
+              nested:
+                key: value
+          postings:
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          timestamp: 2000-01-23T04:56:07.000+00:00
+        - reference: ref:001
+          metadata:
+            admin: true
+            a:
+              nested:
+                key: value
+          postings:
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        transactions:
+          items:
+            $ref: '#/components/schemas/TransactionData'
+          type: array
+      required:
+      - transactions
+      type: object
+    Stats:
+      example:
+        accounts: 0
+        transactions: 6
+      properties:
+        accounts:
+          type: integer
+        transactions:
+          type: integer
+      required:
+      - accounts
+      - transactions
+      type: object
+    Cursor:
+      properties:
+        page_size:
+          example: 1
+          type: integer
+        has_more:
+          example: false
+          type: boolean
+        previous:
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          type: string
+        next:
+          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+          type: string
+      required:
+      - page_size
+      type: object
+    TransactionsResponse:
+      example:
+        data:
+        - reference: ref:001
+          metadata:
+            admin: true
+            a:
+              nested:
+                key: value
+          postings:
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          txid: 0
+          postCommitVolumes:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          preCommitVolumes:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          timestamp: 2000-01-23T04:56:07.000+00:00
+        - reference: ref:001
+          metadata:
+            admin: true
+            a:
+              nested:
+                key: value
+          postings:
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          txid: 0
+          postCommitVolumes:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          preCommitVolumes:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Transaction'
+          type: array
+      required:
+      - data
+      type: object
+    TransactionResponse:
+      example:
+        data:
+          reference: ref:001
+          metadata:
+            admin: true
+            a:
+              nested:
+                key: value
+          postings:
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          txid: 0
+          postCommitVolumes:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          preCommitVolumes:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        data:
+          $ref: '#/components/schemas/Transaction'
+      required:
+      - data
+      type: object
+    StatsResponse:
+      example:
+        data:
+          accounts: 0
+          transactions: 6
+      properties:
+        data:
+          $ref: '#/components/schemas/Stats'
+      required:
+      - data
+      type: object
+    MappingResponse:
+      example:
+        data:
+          contracts:
+          - expr: "{}"
+            account: users:001
+          - expr: "{}"
+            account: users:001
+      properties:
+        data:
+          $ref: '#/components/schemas/Mapping'
+      type: object
+    ConfigInfoResponse:
+      example:
+        data:
+          server: server
+          config:
+            storage:
+              driver: driver
+              ledgers:
+              - ledgers
+              - ledgers
+          version: version
+      properties:
+        data:
+          $ref: '#/components/schemas/ConfigInfo'
+      required:
+      - data
+      type: object
+    Volume:
+      example:
+        input: 100
+        output: 20
+        balance: 80
+      properties:
+        input:
+          type: number
+        output:
+          type: number
+        balance:
+          type: number
+      required:
+      - input
+      - output
+      type: object
+    Volumes:
+      additionalProperties:
+        $ref: '#/components/schemas/Volume'
+      example:
+        USD:
+          input: 100
+          output: 10
+          balance: 90
+        EUR:
+          input: 100
+          output: 10
+          balance: 90
+      type: object
+    AggregatedVolumes:
+      additionalProperties:
+        $ref: '#/components/schemas/Volumes'
+      example:
+        orders:1:
+          USD:
+            input: 100
+            output: 10
+            balance: 90
+        orders:2:
+          USD:
+            input: 100
+            output: 10
+            balance: 90
+      type: object
+    ErrorCode:
+      enum:
+      - INTERNAL
+      - INSUFFICIENT_FUND
+      - VALIDATION
+      - CONFLICT
+      type: string
+    ErrorResponse:
+      properties:
+        error_code:
+          $ref: '#/components/schemas/ErrorCode'
+        error_message:
+          example: internal error
+          type: string
+      required:
+      - error_code
+      type: object
+    Connectors:
+      enum:
+      - STRIPE
+      - DUMMY-PAY
+      - SIE
+      - MODULR
+      - CURRENCY-CLOUD
+      - BANKING-CIRCLE
+      type: string
+    ConnectorConfig:
+      oneOf:
+      - $ref: '#/components/schemas/StripeConfig'
+      - $ref: '#/components/schemas/DummyPayConfig'
+      - $ref: '#/components/schemas/WiseConfig'
+      - $ref: '#/components/schemas/ModulrConfig'
+      - $ref: '#/components/schemas/CurrencyCloudConfig'
+      - $ref: '#/components/schemas/BankingCircleConfig'
+    StripeConfig:
+      properties:
+        pollingPeriod:
+          default: 120s
+          description: The frequency at which the connector will try to fetch new
+            BalanceTransaction objects from Stripe api
+          example: 60s
+          type: string
+        apiKey:
+          example: XXX
+          type: string
+        pageSize:
+          default: 10
+          description: |
+            Number of BalanceTransaction to fetch at each polling interval.
+          example: 50
+          type: number
+      required:
+      - apiKey
+      type: object
+    StripeTask:
+      properties:
+        oldestId:
+          description: The id of the oldest BalanceTransaction fetched from stripe
+            for this account
+          type: string
+        oldestDate:
+          description: The creation date of the oldest BalanceTransaction fetched
+            from stripe for this account
+          format: date-time
+          type: string
+        moreRecentId:
+          description: The id of the more recent BalanceTransaction fetched from stripe
+            for this account
+          type: string
+        moreRecentDate:
+          description: The creation date of the more recent BalanceTransaction fetched
+            from stripe for this account
+          format: date-time
+          type: string
+        noMoreHistory:
+          type: boolean
+      type: object
+    DummyPayConfig:
+      properties:
+        filePollingPeriod:
+          default: 10s
+          description: The frequency at which the connector will try to fetch new
+            payment objects from the directory
+          example: 60s
+          type: string
+        fileGenerationPeriod:
+          default: 10s
+          description: The frequency at which the connector will create new payment
+            objects in the directory
+          example: 60s
+          type: string
+        directory:
+          example: /tmp/dummypay
+          type: string
+      required:
+      - directory
+      type: object
+    WiseConfig:
+      properties:
+        apiKey:
+          example: XXX
+          type: string
+      required:
+      - apiKey
+      type: object
+    ModulrConfig:
+      properties:
+        apiKey:
+          example: XXX
+          type: string
+        apiSecret:
+          example: XXX
+          type: string
+        endpoint:
+          example: XXX
+          type: string
+      required:
+      - apiKey
+      - apiSecret
+      type: object
+    BankingCircleConfig:
+      properties:
+        username:
+          example: XXX
+          type: string
+        password:
+          example: XXX
+          type: string
+        endpoint:
+          example: XXX
+          type: string
+        authorizationEndpoint:
+          example: XXX
+          type: string
+      required:
+      - authorizationEndpoint
+      - endpoint
+      - password
+      - username
+      type: object
+    CurrencyCloudConfig:
+      properties:
+        apiKey:
+          example: XXX
+          type: string
+        loginID:
+          description: Username of the API Key holder
+          example: XXX
+          type: string
+        pollingPeriod:
+          description: The frequency at which the connector will fetch transactions
+          example: 60s
+          type: string
+        endpoint:
+          description: The endpoint to use for the API. Defaults to https://devapi.currencycloud.com
+          example: XXX
+          type: string
+      required:
+      - apiKey
+      - loginID
+      type: object
+    ListPaymentsResponse:
+      example:
+        data:
+        - reference: reference
+          date: 2000-01-23T04:56:07.000+00:00
+          amount: 100
+          scheme: visa
+          provider: provider
+          raw: ""
+          id: XXX
+          type: pay-in
+          asset: USD
+          status: status
+        - reference: reference
+          date: 2000-01-23T04:56:07.000+00:00
+          amount: 100
+          scheme: visa
+          provider: provider
+          raw: ""
+          id: XXX
+          type: pay-in
+          asset: USD
+          status: status
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Payment'
+          type: array
+      required:
+      - data
+      type: object
+    GetPaymentResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/Payment'
+      required:
+      - data
+      type: object
+    Payment:
+      example:
+        reference: reference
+        date: 2000-01-23T04:56:07.000+00:00
+        amount: 100
+        scheme: visa
+        provider: provider
+        raw: ""
+        id: XXX
+        type: pay-in
+        asset: USD
+        status: status
+      properties:
+        provider:
+          type: string
+        reference:
+          type: string
+        scheme:
+          enum:
+          - visa
+          - mastercard
+          - apple pay
+          - google pay
+          - sepa debit
+          - sepa credit
+          - sepa
+          - a2a
+          - ach debit
+          - ach
+          - rtp
+          - other
+          type: string
+        status:
+          type: string
+        type:
+          enum:
+          - pay-in
+          - payout
+          - other
+          type: string
+        id:
+          example: XXX
+          type: string
+        amount:
+          example: 100
+          type: integer
+        asset:
+          example: USD
+          type: string
+        date:
+          format: date-time
+          type: string
+        raw:
+          nullable: true
+      required:
+      - amount
+      - asset
+      - date
+      - id
+      - provider
+      - scheme
+      - status
+      - type
+      type: object
+    ListConnectorsResponse:
+      example:
+        data:
+        - provider: stripe
+          disabled: false
+        - provider: stripe
+          disabled: false
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/ConnectorBaseInfo'
+          type: array
+      required:
+      - data
+      type: object
+    ListConnectorsConfigsResponse:
+      example:
+        connector:
+          key:
+            datatype: datatype
+            required: true
+      properties:
+        connector:
+          $ref: '#/components/schemas/ListConnectorsConfigsResponse_connector'
+      type: object
+    ConnectorBaseInfo:
+      example:
+        provider: stripe
+        disabled: false
+      properties:
+        provider:
+          example: stripe
+          type: string
+        disabled:
+          example: false
+          type: boolean
+      type: object
+    StripeTransferRequest:
+      example:
+        amount: 100
+        metadata:
+          order_id: "6735"
+        destination: acct_1Gqj58KZcSIg2N2q
+        asset: USD
+      properties:
+        amount:
+          example: 100
+          type: integer
+        asset:
+          example: USD
+          type: string
+        destination:
+          example: acct_1Gqj58KZcSIg2N2q
+          type: string
+        metadata:
+          description: |
+            A set of key/value pairs that you can attach to a transfer object.
+            It can be useful for storing additional information about the transfer in a structured format.
+          example:
+            order_id: "6735"
+          type: object
+      type: object
+    TaskDescriptorStripe:
+      properties:
+        provider:
+          description: The connector code
+          example: stripe
+          type: string
+        createdAt:
+          description: The date when the task was created
+          example: 2020-01-01T00:00:00Z
+          format: date-time
+          type: string
+        status:
+          description: The task status
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+          example: stopped
+          type: string
+        error:
+          description: The error message if the task failed
+          example: "Error: Something went wrong"
+          type: string
+        state:
+          description: The task state
+          example: {}
+          type: object
+        descriptor:
+          $ref: '#/components/schemas/TaskDescriptorStripe_descriptor'
+      type: object
+    TaskDescriptorWise:
+      properties:
+        provider:
+          description: The connector code
+          example: stripe
+          type: string
+        createdAt:
+          description: The date when the task was created
+          example: 2020-01-01T00:00:00Z
+          format: date-time
+          type: string
+        status:
+          description: The task status
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+          example: stopped
+          type: string
+        error:
+          description: The error message if the task failed
+          example: "Error: Something went wrong"
+          type: string
+        state:
+          description: The task state
+          example: {}
+          type: object
+        descriptor:
+          $ref: '#/components/schemas/TaskDescriptorWise_descriptor'
+      type: object
+    TaskDescriptorModulr:
+      properties:
+        provider:
+          description: The connector code
+          example: stripe
+          type: string
+        createdAt:
+          description: The date when the task was created
+          example: 2020-01-01T00:00:00Z
+          format: date-time
+          type: string
+        status:
+          description: The task status
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+          example: stopped
+          type: string
+        error:
+          description: The error message if the task failed
+          example: "Error: Something went wrong"
+          type: string
+        state:
+          description: The task state
+          example: {}
+          type: object
+        descriptor:
+          $ref: '#/components/schemas/TaskDescriptorModulr_descriptor'
+      type: object
+    TaskDescriptorDummyPay:
+      properties:
+        provider:
+          description: The connector code
+          example: stripe
+          type: string
+        createdAt:
+          description: The date when the task was created
+          example: 2020-01-01T00:00:00Z
+          format: date-time
+          type: string
+        status:
+          description: The task status
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+          example: stopped
+          type: string
+        error:
+          description: The error message if the task failed
+          example: "Error: Something went wrong"
+          type: string
+        state:
+          description: The task state
+          example: {}
+          type: object
+        descriptor:
+          $ref: '#/components/schemas/TaskDescriptorDummyPay_descriptor'
+      type: object
+    TaskDescriptorCurrencyCloud:
+      properties:
+        provider:
+          description: The connector code
+          example: stripe
+          type: string
+        createdAt:
+          description: The date when the task was created
+          example: 2020-01-01T00:00:00Z
+          format: date-time
+          type: string
+        status:
+          description: The task status
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+          example: stopped
+          type: string
+        error:
+          description: The error message if the task failed
+          example: "Error: Something went wrong"
+          type: string
+        state:
+          description: The task state
+          example: {}
+          type: object
+        descriptor:
+          $ref: '#/components/schemas/TaskDescriptorCurrencyCloud_descriptor'
+      type: object
+    TaskDescriptorBankingCircle:
+      properties:
+        provider:
+          description: The connector code
+          example: stripe
+          type: string
+        createdAt:
+          description: The date when the task was created
+          example: 2020-01-01T00:00:00Z
+          format: date-time
+          type: string
+        status:
+          description: The task status
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+          example: stopped
+          type: string
+        error:
+          description: The error message if the task failed
+          example: "Error: Something went wrong"
+          type: string
+        state:
+          description: The task state
+          example: {}
+          type: object
+        descriptor:
+          $ref: '#/components/schemas/TaskDescriptorBankingCircle_descriptor'
+      type: object
+    Query:
+      example:
+        cursor: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+        terms:
+        - destination=central_bank1
+        - destination=central_bank1
+        ledgers:
+        - quickstart
+        - quickstart
+        pageSize: 0
+        after:
+        - users:002
+        - users:002
+        sort: txid:asc
+        policy: OR
+        target: target
+      properties:
+        ledgers:
+          items:
+            example: quickstart
+            type: string
+          type: array
+        after:
+          items:
+            example: users:002
+            type: string
+          type: array
+        pageSize:
+          format: int64
+          minimum: 0
+          type: integer
+        terms:
+          items:
+            example: destination=central_bank1
+            type: string
+          type: array
+        sort:
+          example: txid:asc
+          type: string
+        policy:
+          example: OR
+          type: string
+        target:
+          type: string
+        cursor:
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          type: string
+      type: object
+    Response:
+      example:
+        cursor:
+          next: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          total:
+            value: 1
+            relation: eq
+          previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          data:
+          - ""
+          - ""
+          hasMore: true
+          pageSize: 0
+        data: "{}"
+      properties:
+        data:
+          description: The payload
+          type: object
+        cursor:
+          $ref: '#/components/schemas/cursor'
+      type: object
+    ConfigUser:
+      example:
+        endpoint: https://example.com
+        secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+        eventTypes:
+        - TYPE1
+        - TYPE2
+      properties:
+        endpoint:
+          example: https://example.com
+          type: string
+        secret:
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          type: string
+        eventTypes:
+          example:
+          - TYPE1
+          - TYPE2
+          items:
+            example: TYPE1
+            type: string
+          type: array
+      required:
+      - endpoint
+      - eventTypes
+      type: object
+    ConfigsResponse:
+      example:
+        cursor:
+          data:
+          - createdAt: 2000-01-23T04:56:07.000+00:00
+            endpoint: https://example.com
+            active: true
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+            eventTypes:
+            - TYPE1
+            - TYPE2
+            updatedAt: 2000-01-23T04:56:07.000+00:00
+          - createdAt: 2000-01-23T04:56:07.000+00:00
+            endpoint: https://example.com
+            active: true
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+            eventTypes:
+            - TYPE1
+            - TYPE2
+            updatedAt: 2000-01-23T04:56:07.000+00:00
+          hasMore: false
+      properties:
+        cursor:
+          $ref: '#/components/schemas/webhooksCursor'
+      required:
+      - cursor
+      type: object
+    webhooksCursor:
+      example:
+        data:
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          endpoint: https://example.com
+          active: true
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          eventTypes:
+          - TYPE1
+          - TYPE2
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          endpoint: https://example.com
+          active: true
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          eventTypes:
+          - TYPE1
+          - TYPE2
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        hasMore: false
+      properties:
+        hasMore:
+          example: false
+          type: boolean
+        data:
+          items:
+            $ref: '#/components/schemas/webhooksConfig'
+          type: array
+      required:
+      - data
+      - hasMore
+      type: object
+    ConfigResponse:
+      example:
+        data:
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          endpoint: https://example.com
+          active: true
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          eventTypes:
+          - TYPE1
+          - TYPE2
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        data:
+          $ref: '#/components/schemas/webhooksConfig'
+      required:
+      - data
+      type: object
+    webhooksConfig:
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        endpoint: https://example.com
+        active: true
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+        eventTypes:
+        - TYPE1
+        - TYPE2
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          format: uuid
+          type: string
+        endpoint:
+          example: https://example.com
+          type: string
+        secret:
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          type: string
+        eventTypes:
+          example:
+          - TYPE1
+          - TYPE2
+          items:
+            example: TYPE1
+            type: string
+          type: array
+        active:
+          example: true
+          type: boolean
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+    ConfigChangeSecret:
+      example:
+        secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+      properties:
+        secret:
+          example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          type: string
+      type: object
+    AttemptResponse:
+      example:
+        data:
+          nextRetryAfter: 2000-01-23T04:56:07.000+00:00
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          webhookID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          payload: "{\"data\":\"test\"}"
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          retryAttempt: 1
+          config:
+            createdAt: 2000-01-23T04:56:07.000+00:00
+            endpoint: https://example.com
+            active: true
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+            eventTypes:
+            - TYPE1
+            - TYPE2
+            updatedAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+          statusCode: 200
+          status: success
+      properties:
+        data:
+          $ref: '#/components/schemas/Attempt'
+      required:
+      - data
+      type: object
+    Attempt:
+      example:
+        nextRetryAfter: 2000-01-23T04:56:07.000+00:00
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        webhookID: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        payload: "{\"data\":\"test\"}"
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        retryAttempt: 1
+        config:
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          endpoint: https://example.com
+          active: true
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
+          eventTypes:
+          - TYPE1
+          - TYPE2
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+        statusCode: 200
+        status: success
+      properties:
+        id:
+          format: uuid
+          type: string
+        webhookID:
+          format: uuid
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        config:
+          $ref: '#/components/schemas/webhooksConfig'
+        payload:
+          example: "{\"data\":\"test\"}"
+          type: string
+        statusCode:
+          example: 200
+          type: integer
+        retryAttempt:
+          example: 1
+          type: integer
+        status:
+          example: success
+          type: string
+        nextRetryAfter:
+          format: date-time
+          type: string
+    listAccounts_200_response_cursor_allOf:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Account'
+          type: array
+      required:
+      - data
+      type: object
+    listAccounts_200_response_cursor:
+      allOf:
+      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/listAccounts_200_response_cursor_allOf'
+    listAccounts_200_response:
+      example:
+        cursor: null
+      properties:
+        cursor:
+          $ref: '#/components/schemas/listAccounts_200_response_cursor'
+      required:
+      - cursor
+    listAccounts_400_response:
+      properties:
+        error_code:
+          example: VALIDATION
+          type: string
+        error_message:
+          example: no other query params can be set with 'pagination_token'
+          type: string
+      required:
+      - error_code
+      type: object
+    getAccount_200_response:
+      example:
+        data:
+          metadata:
+            admin: true
+            a:
+              nested:
+                key: value
+          balances:
+            COIN: 100
+          address: users:001
+          volumes:
+            COIN:
+              input: 100
+              output: 0
+          type: virtual
+      properties:
+        data:
+          $ref: '#/components/schemas/AccountWithVolumesAndBalances'
+      required:
+      - data
+      type: object
+    getAccount_400_response:
+      properties:
+        error_code:
+          example: VALIDATION
+          type: string
+        error_message:
+          example: invalid account address format
+          type: string
+      required:
+      - error_code
+      type: object
+    addMetadataToAccount_409_response:
+      properties:
+        error_code:
+          example: CONFLICT
+          type: string
+        error_message:
+          type: string
+      required:
+      - error_code
+      type: object
+    runScript_400_response:
+      properties:
+        error_code:
+          example: VALIDATION
+          type: string
+        error_message:
+          example: invalid payload
+          type: string
+      required:
+      - error_code
+      type: object
+    listTransactions_200_response_cursor_allOf:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Transaction'
+          type: array
+      required:
+      - data
+      type: object
+    listTransactions_200_response_cursor:
+      allOf:
+      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/listTransactions_200_response_cursor_allOf'
+    listTransactions_200_response:
+      example:
+        cursor: null
+      properties:
+        cursor:
+          $ref: '#/components/schemas/listTransactions_200_response_cursor'
+      required:
+      - cursor
+      type: object
+    createTransaction_400_response:
+      properties:
+        error_code:
+          example: VALIDATION
+          type: string
+        error_message:
+          example: transaction has no postings
+          type: string
+      required:
+      - error_code
+      type: object
+    createTransaction_409_response:
+      properties:
+        error_code:
+          example: CONFLICT
+          type: string
+        error_message:
+          example: conflict error on reference
+          type: string
+      required:
+      - error_code
+      type: object
+    getTransaction_400_response:
+      properties:
+        error_code:
+          example: VALIDATION
+          type: string
+        error_message:
+          example: invalid transaction ID
+          type: string
+      required:
+      - error_code
+      type: object
+    getTransaction_404_response:
+      properties:
+        error_code:
+          example: NOT_FOUND
+          type: string
+        error_message:
+          example: transaction not found
+          type: string
+      required:
+      - error_code
+      type: object
+    CreateTransactions_400_response:
+      properties:
+        error_code:
+          example: VALIDATION
+          type: string
+        error_message:
+          example: invalid transactions format
+          type: string
+      required:
+      - error_code
+      type: object
+    getBalances_200_response_cursor_allOf:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/AccountsBalances'
+          type: array
+      required:
+      - data
+      type: object
+    getBalances_200_response_cursor:
+      allOf:
+      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/getBalances_200_response_cursor_allOf'
+    getBalances_200_response:
+      example:
+        cursor: null
+      properties:
+        cursor:
+          $ref: '#/components/schemas/getBalances_200_response_cursor'
+      required:
+      - cursor
+      type: object
+    getBalancesAggregated_200_response:
+      example:
+        data:
+          USD: 100
+          EUR: 12
+      properties:
+        data:
+          additionalProperties:
+            type: integer
+          example:
+            USD: 100
+            EUR: 12
+          type: object
+      required:
+      - data
+      type: object
+    getBalancesAggregated_400_response:
+      properties:
+        error_code:
+          example: VALIDATION
+          type: string
+        error_message:
+          example: invalid address
+          type: string
+      required:
+      - error_code
+      type: object
+    listConnectorTasks_200_response_inner:
+      oneOf:
+      - $ref: '#/components/schemas/TaskDescriptorStripe'
+      - $ref: '#/components/schemas/TaskDescriptorWise'
+      - $ref: '#/components/schemas/TaskDescriptorCurrencyCloud'
+      - $ref: '#/components/schemas/TaskDescriptorDummyPay'
+      - $ref: '#/components/schemas/TaskDescriptorModulr'
+      - $ref: '#/components/schemas/TaskDescriptorBankingCircle'
+    Client_allOf:
+      properties:
+        id:
+          type: string
+        scopes:
+          items:
+            type: string
+          type: array
+        secrets:
+          items:
+            $ref: '#/components/schemas/ClientSecret'
+          type: array
+      required:
+      - id
+      type: object
+      example: null
+    Scope_allOf:
+      properties:
+        id:
+          type: string
+        transient:
+          items:
+            type: string
+          type: array
+      required:
+      - id
+      type: object
+      example: null
+    Secret_allOf:
+      properties:
+        id:
+          type: string
+        lastDigits:
+          type: string
+        clear:
+          type: string
+      required:
+      - clear
+      - id
+      - lastDigits
+      type: object
+      example: null
+    ListConnectorsConfigsResponse_connector_key:
+      example:
+        datatype: datatype
+        required: true
+      properties:
+        datatype:
+          type: string
+        required:
+          type: boolean
+      type: object
+    ListConnectorsConfigsResponse_connector:
+      example:
+        key:
+          datatype: datatype
+          required: true
+      properties:
+        key:
+          $ref: '#/components/schemas/ListConnectorsConfigsResponse_connector_key'
+      type: object
+    TaskDescriptorStripe_descriptor:
+      properties:
+        name:
+          type: string
+        main:
+          type: boolean
+        account:
+          type: string
+      type: object
+    TaskDescriptorWise_descriptor:
+      properties:
+        name:
+          type: string
+        key:
+          type: string
+        profileID:
+          type: integer
+      type: object
+    TaskDescriptorModulr_descriptor:
+      properties:
+        name:
+          type: string
+        key:
+          type: string
+        accountID:
+          type: string
+      type: object
+    TaskDescriptorDummyPay_descriptor:
+      properties:
+        name:
+          type: string
+        key:
+          type: string
+        fileName:
+          type: string
+      type: object
+    TaskDescriptorCurrencyCloud_descriptor:
+      properties:
+        name:
+          type: string
+      type: object
+    TaskDescriptorBankingCircle_descriptor:
+      properties:
+        name:
+          type: string
+        key:
+          type: string
+      type: object
+    total:
+      example:
+        value: 1
+        relation: eq
+      properties:
+        value:
+          example: 1
+          format: int64
+          minimum: 0
+          type: integer
+        relation:
+          example: eq
+          type: string
+      title: total
+      type: object
+    cursor:
+      example:
+        next: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+        total:
+          value: 1
+          relation: eq
+        previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+        data:
+        - ""
+        - ""
+        hasMore: true
+        pageSize: 0
+      properties:
+        pageSize:
+          format: int64
+          minimum: 0
+          type: integer
+        hasMore:
+          type: boolean
+        total:
+          $ref: '#/components/schemas/total'
+        next:
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          type: string
+        previous:
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          type: string
+        data:
+          items:
+            allOf:
+            - type: object
+          type: array
+      title: cursor
+      type: object
+  securitySchemes:
+    Authorization:
+      flows:
+        clientCredentials:
+          refreshUrl: ""
+          scopes: {}
+          tokenUrl: ""
+      type: oauth2
+x-tagGroups:
+- name: Auth
+  tags:
+  - Clients
+  - Scopes
+  - Users
+- name: Ledger
+  tags:
+  - Server
+  - Accounts
+  - Mapping
+  - Script
+  - Stats
+  - Transactions
+  - Balances
+  - server
+  - accounts
+  - mapping
+  - script
+  - stats
+  - transactions
+  - balances
+- name: Payments
+  tags:
+  - Payments
+- name: Search
+  tags:
+  - Search
+- name: Webhooks
+  tags:
+  - Webhooks
