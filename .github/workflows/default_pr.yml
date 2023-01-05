@@ -27,8 +27,7 @@ jobs:
   Changes:
     runs-on: ubuntu-latest
     outputs:
-      auth: ${{ steps.filter.outputs.auth }}
-      payments: ${{ steps.filter.outputs.payments }}
+      wallets: ${{ steps.filter.outputs.wallets }}
     steps:
       - uses: actions/checkout@v3
       - name: Check which services were modified
