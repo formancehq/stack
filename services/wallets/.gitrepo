@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/formancehq/wallets.git
+	branch = main
+	commit = cd8731707a922afbff30f27f05b529b4c025ab4a
+	parent = dfb7477421ed5cef4c73c5eba557c8e8b847f79c
+	method = merge
+	cmdver = 0.4.5
