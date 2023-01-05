@@ -1,1 +1,1 @@
-# Wallets
+# Wallets Service
