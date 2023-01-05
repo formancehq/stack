@@ -19,6 +19,3 @@
 [submodule "docs"]
 	path = docs
 	url = https://github.com/formancehq/docs
-[submodule "services/wallets"]
-	path = services/wallets
-	url = https://github.com/formancehq/wallets
