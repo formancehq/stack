@@ -1,9 +1,14 @@
 on:
-  push:
-    branches:
-    - feat/*
+  workflow_call:
+    inputs:
+      GITHUB_EVENT_NAME:
+        type: string
+        required: true
+      GITHUB_EVENT_ACTION:
+        type: string
+        required: true
 
-name: Feature - OpenAPI
+name: OpenAPI
 defaults:
   run:
     working-directory: "./openapi"
