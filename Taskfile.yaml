@@ -5,6 +5,11 @@ version: '3'
 vars:
   COMPOSE_FILE: -f docker-compose.yml
 
+includes:
+  openapi:
+    taskfile: ./openapi
+    dir: ./openapi
+
 tasks:
   run:
     cmds:

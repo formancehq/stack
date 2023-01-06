@@ -7,13 +7,14 @@ Name | Type | Description | Notes
 **Id** | **string** | The unique ID of the wallet. | 
 **Metadata** | **map[string]interface{}** | Metadata associated with the wallet. | 
 **Name** | **string** |  | 
-**Balances** | [**WalletWithBalancesAllOfBalances**](WalletWithBalancesAllOfBalances.md) |  | 
+**CreatedAt** | **time.Time** |  | 
+**Balances** | [**WalletWithBalancesBalances**](WalletWithBalancesBalances.md) |  | 
 
 ## Methods
 
 ### NewWalletWithBalances
 
-`func NewWalletWithBalances(id string, metadata map[string]interface{}, name string, balances WalletWithBalancesAllOfBalances, ) *WalletWithBalances`
+`func NewWalletWithBalances(id string, metadata map[string]interface{}, name string, createdAt time.Time, balances WalletWithBalancesBalances, ) *WalletWithBalances`
 
 NewWalletWithBalances instantiates a new WalletWithBalances object
 This constructor will assign default values to properties that have it defined,
@@ -88,22 +89,42 @@ and a boolean to check if the value has been set.
 SetName sets Name field to given value.
 
 
+### GetCreatedAt
+
+`func (o *WalletWithBalances) GetCreatedAt() time.Time`
+
+GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
+
+### GetCreatedAtOk
+
+`func (o *WalletWithBalances) GetCreatedAtOk() (*time.Time, bool)`
+
+GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetCreatedAt
+
+`func (o *WalletWithBalances) SetCreatedAt(v time.Time)`
+
+SetCreatedAt sets CreatedAt field to given value.
+
+
 ### GetBalances
 
-`func (o *WalletWithBalances) GetBalances() WalletWithBalancesAllOfBalances`
+`func (o *WalletWithBalances) GetBalances() WalletWithBalancesBalances`
 
 GetBalances returns the Balances field if non-nil, zero value otherwise.
 
 ### GetBalancesOk
 
-`func (o *WalletWithBalances) GetBalancesOk() (*WalletWithBalancesAllOfBalances, bool)`
+`func (o *WalletWithBalances) GetBalancesOk() (*WalletWithBalancesBalances, bool)`
 
 GetBalancesOk returns a tuple with the Balances field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetBalances
 
-`func (o *WalletWithBalances) SetBalances(v WalletWithBalancesAllOfBalances)`
+`func (o *WalletWithBalances) SetBalances(v WalletWithBalancesBalances)`
 
 SetBalances sets Balances field to given value.
 

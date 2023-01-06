@@ -17,7 +17,7 @@ info:
     and standard method from web, mobile and desktop applications.
     <SecurityDefinitions />
   title: Formance Stack API
-  version: SDK_VERSION
+  version: develop
   x-logo:
     url: https://avatars.githubusercontent.com/u/84325077?s=200&v=4
     altText: Formance
@@ -4071,6 +4071,7 @@ components:
       type: object
     Wallet:
       example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
         metadata:
           key: ""
         name: name
@@ -4086,20 +4087,55 @@ components:
           type: object
         name:
           type: string
+        createdAt:
+          format: date-time
+          type: string
       required:
+      - createdAt
       - id
       - metadata
       - name
       type: object
     WalletWithBalances:
-      allOf:
-      - $ref: '#/components/schemas/Wallet'
-      - $ref: '#/components/schemas/WalletWithBalances_allOf'
+      example:
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        metadata:
+          key: ""
+        balances:
+          main:
+            assets:
+              key: 0.8008281904610115
+        name: name
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        id:
+          description: The unique ID of the wallet.
+          format: uuid
+          type: string
+        metadata:
+          additionalProperties: {}
+          description: Metadata associated with the wallet.
+          type: object
+        name:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        balances:
+          $ref: '#/components/schemas/WalletWithBalances_balances'
+      required:
+      - balances
+      - createdAt
+      - id
+      - metadata
+      - name
+      type: object
     Hold:
       example:
         walletID: walletID
         metadata:
           key: ""
+        destination: null
         description: description
         id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
@@ -4116,6 +4152,8 @@ components:
           type: object
         description:
           type: string
+        destination:
+          $ref: '#/components/schemas/Subject'
       required:
       - description
       - id
@@ -4138,6 +4176,7 @@ components:
     CreateWalletResponse:
       example:
         data:
+          createdAt: 2000-01-23T04:56:07.000+00:00
           metadata:
             key: ""
           name: name
@@ -4150,7 +4189,16 @@ components:
       type: object
     GetWalletResponse:
       example:
-        data: null
+        data:
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          metadata:
+            key: ""
+          balances:
+            main:
+              assets:
+                key: 0.8008281904610115
+          name: name
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
         data:
           $ref: '#/components/schemas/WalletWithBalances'
@@ -4163,6 +4211,7 @@ components:
           walletID: walletID
           metadata:
             key: ""
+          destination: null
           description: description
           id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
@@ -4463,6 +4512,9 @@ components:
       - amount
       type: object
     AssetHolder:
+      example:
+        assets:
+          key: 0.8008281904610115
       properties:
         assets:
           additionalProperties:
@@ -4899,22 +4951,17 @@ components:
           type: array
       title: cursor
       type: object
-    WalletWithBalances_allOf_balances:
+    WalletWithBalances_balances:
+      example:
+        main:
+          assets:
+            key: 0.8008281904610115
       properties:
         main:
           $ref: '#/components/schemas/AssetHolder'
       required:
       - main
       type: object
-      example: null
-    WalletWithBalances_allOf:
-      properties:
-        balances:
-          $ref: '#/components/schemas/WalletWithBalances_allOf_balances'
-      required:
-      - balances
-      type: object
-      example: null
     ExpandedDebitHold_allOf:
       properties:
         remaining:

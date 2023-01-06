@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **WalletID** | **string** | The ID of the wallet the hold is associated with. | 
 **Metadata** | **map[string]interface{}** | Metadata associated with the hold. | 
 **Description** | **string** |  | 
+**Destination** | Pointer to [**Subject**](Subject.md) |  | [optional] 
 
 ## Methods
 
@@ -107,6 +108,31 @@ and a boolean to check if the value has been set.
 
 SetDescription sets Description field to given value.
 
+
+### GetDestination
+
+`func (o *Hold) GetDestination() Subject`
+
+GetDestination returns the Destination field if non-nil, zero value otherwise.
+
+### GetDestinationOk
+
+`func (o *Hold) GetDestinationOk() (*Subject, bool)`
+
+GetDestinationOk returns a tuple with the Destination field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDestination
+
+`func (o *Hold) SetDestination(v Subject)`
+
+SetDestination sets Destination field to given value.
+
+### HasDestination
+
+`func (o *Hold) HasDestination() bool`
+
+HasDestination returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

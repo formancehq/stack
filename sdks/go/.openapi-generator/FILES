@@ -170,8 +170,7 @@ docs/Volume.md
 docs/Wallet.md
 docs/WalletSubject.md
 docs/WalletWithBalances.md
-docs/WalletWithBalancesAllOf.md
-docs/WalletWithBalancesAllOfBalances.md
+docs/WalletWithBalancesBalances.md
 docs/WalletsApi.md
 docs/WalletsCursor.md
 docs/WalletsPosting.md
@@ -322,8 +321,7 @@ model_volume.go
 model_wallet.go
 model_wallet_subject.go
 model_wallet_with_balances.go
-model_wallet_with_balances_all_of.go
-model_wallet_with_balances_all_of_balances.go
+model_wallet_with_balances_balances.go
 model_wallets_cursor.go
 model_wallets_posting.go
 model_wallets_transaction.go
@@ -332,5 +330,4 @@ model_webhooks_config.go
 model_webhooks_cursor.go
 model_wise_config.go
 response.go
-test/api_wallets_test.go
 utils.go

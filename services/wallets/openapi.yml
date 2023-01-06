@@ -406,26 +406,41 @@ components:
         metadata:
           type: object
           description: Metadata associated with the wallet.
-          additionalProperties: {}
+          additionalProperties: { }
         name:
           type: string
         createdAt:
           type: string
           format: date-time
     WalletWithBalances:
-      allOf:
-      - $ref: '#/components/schemas/Wallet'
-      - type: object
-        required:
-        - balances
-        properties:
-          balances:
-            type: object
-            required:
-            - main
-            properties:
-              main:
-                $ref: '#/components/schemas/AssetHolder'
+      type: object
+      required:
+      - name
+      - id
+      - metadata
+      - createdAt
+      - balances
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique ID of the wallet.
+        metadata:
+          type: object
+          description: Metadata associated with the wallet.
+          additionalProperties: { }
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        balances:
+          type: object
+          required:
+          - main
+          properties:
+            main:
+              $ref: '#/components/schemas/AssetHolder'
     Hold:
       type: object
       required:

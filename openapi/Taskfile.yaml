@@ -10,10 +10,11 @@ tasks:
     desc: Build the SDK
     cmds:
       - yarn run build
-      - sed -i -e "s/SDK_VERSION/{{.VERSION}}/g" sdk/generate.json
+      - sed -i -e "s/SDK_VERSION/{{.VERSION}}/g" build/generate.json
 
   sdk:generate:
     desc: Generate client code
+    workdir: .
     preconditions:
       - sh: '[ "{{.CLI_ARGS}}" != "" ]'
         msg: Please specify generator as first cli arg (ie "task generate -- go")

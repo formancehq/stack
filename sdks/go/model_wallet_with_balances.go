@@ -3,7 +3,7 @@ Formance Stack API
 
 Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
 
-API version: SDK_VERSION
+API version: develop
 Contact: support@formance.com
 */
 
@@ -13,6 +13,7 @@ package formance
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // WalletWithBalances struct for WalletWithBalances
@@ -22,18 +23,20 @@ type WalletWithBalances struct {
 	// Metadata associated with the wallet.
 	Metadata map[string]interface{} `json:"metadata"`
 	Name string `json:"name"`
-	Balances WalletWithBalancesAllOfBalances `json:"balances"`
+	CreatedAt time.Time `json:"createdAt"`
+	Balances WalletWithBalancesBalances `json:"balances"`
 }
 
 // NewWalletWithBalances instantiates a new WalletWithBalances object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWalletWithBalances(id string, metadata map[string]interface{}, name string, balances WalletWithBalancesAllOfBalances) *WalletWithBalances {
+func NewWalletWithBalances(id string, metadata map[string]interface{}, name string, createdAt time.Time, balances WalletWithBalancesBalances) *WalletWithBalances {
 	this := WalletWithBalances{}
 	this.Id = id
 	this.Metadata = metadata
 	this.Name = name
+	this.CreatedAt = createdAt
 	this.Balances = balances
 	return &this
 }
@@ -118,10 +121,34 @@ func (o *WalletWithBalances) SetName(v string) {
 	o.Name = v
 }
 
-// GetBalances returns the Balances field value
-func (o *WalletWithBalances) GetBalances() WalletWithBalancesAllOfBalances {
+// GetCreatedAt returns the CreatedAt field value
+func (o *WalletWithBalances) GetCreatedAt() time.Time {
 	if o == nil {
-		var ret WalletWithBalancesAllOfBalances
+		var ret time.Time
+		return ret
+	}
+
+	return o.CreatedAt
+}
+
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
+// and a boolean to check if the value has been set.
+func (o *WalletWithBalances) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return &o.CreatedAt, true
+}
+
+// SetCreatedAt sets field value
+func (o *WalletWithBalances) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
+}
+
+// GetBalances returns the Balances field value
+func (o *WalletWithBalances) GetBalances() WalletWithBalancesBalances {
+	if o == nil {
+		var ret WalletWithBalancesBalances
 		return ret
 	}
 
@@ -130,7 +157,7 @@ func (o *WalletWithBalances) GetBalances() WalletWithBalancesAllOfBalances {
 
 // GetBalancesOk returns a tuple with the Balances field value
 // and a boolean to check if the value has been set.
-func (o *WalletWithBalances) GetBalancesOk() (*WalletWithBalancesAllOfBalances, bool) {
+func (o *WalletWithBalances) GetBalancesOk() (*WalletWithBalancesBalances, bool) {
 	if o == nil {
     return nil, false
 	}
@@ -138,7 +165,7 @@ func (o *WalletWithBalances) GetBalancesOk() (*WalletWithBalancesAllOfBalances, 
 }
 
 // SetBalances sets field value
-func (o *WalletWithBalances) SetBalances(v WalletWithBalancesAllOfBalances) {
+func (o *WalletWithBalances) SetBalances(v WalletWithBalancesBalances) {
 	o.Balances = v
 }
 
@@ -152,6 +179,9 @@ func (o WalletWithBalances) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["name"] = o.Name
+	}
+	if true {
+		toSerialize["createdAt"] = o.CreatedAt
 	}
 	if true {
 		toSerialize["balances"] = o.Balances

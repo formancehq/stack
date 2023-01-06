@@ -15,31 +15,31 @@ import (
 	"encoding/json"
 )
 
-// WalletWithBalancesAllOfBalances struct for WalletWithBalancesAllOfBalances
-type WalletWithBalancesAllOfBalances struct {
+// WalletWithBalancesBalances struct for WalletWithBalancesBalances
+type WalletWithBalancesBalances struct {
 	Main AssetHolder `json:"main"`
 }
 
-// NewWalletWithBalancesAllOfBalances instantiates a new WalletWithBalancesAllOfBalances object
+// NewWalletWithBalancesBalances instantiates a new WalletWithBalancesBalances object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWalletWithBalancesAllOfBalances(main AssetHolder) *WalletWithBalancesAllOfBalances {
-	this := WalletWithBalancesAllOfBalances{}
+func NewWalletWithBalancesBalances(main AssetHolder) *WalletWithBalancesBalances {
+	this := WalletWithBalancesBalances{}
 	this.Main = main
 	return &this
 }
 
-// NewWalletWithBalancesAllOfBalancesWithDefaults instantiates a new WalletWithBalancesAllOfBalances object
+// NewWalletWithBalancesBalancesWithDefaults instantiates a new WalletWithBalancesBalances object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewWalletWithBalancesAllOfBalancesWithDefaults() *WalletWithBalancesAllOfBalances {
-	this := WalletWithBalancesAllOfBalances{}
+func NewWalletWithBalancesBalancesWithDefaults() *WalletWithBalancesBalances {
+	this := WalletWithBalancesBalances{}
 	return &this
 }
 
 // GetMain returns the Main field value
-func (o *WalletWithBalancesAllOfBalances) GetMain() AssetHolder {
+func (o *WalletWithBalancesBalances) GetMain() AssetHolder {
 	if o == nil {
 		var ret AssetHolder
 		return ret
@@ -50,7 +50,7 @@ func (o *WalletWithBalancesAllOfBalances) GetMain() AssetHolder {
 
 // GetMainOk returns a tuple with the Main field value
 // and a boolean to check if the value has been set.
-func (o *WalletWithBalancesAllOfBalances) GetMainOk() (*AssetHolder, bool) {
+func (o *WalletWithBalancesBalances) GetMainOk() (*AssetHolder, bool) {
 	if o == nil {
     return nil, false
 	}
@@ -58,11 +58,11 @@ func (o *WalletWithBalancesAllOfBalances) GetMainOk() (*AssetHolder, bool) {
 }
 
 // SetMain sets field value
-func (o *WalletWithBalancesAllOfBalances) SetMain(v AssetHolder) {
+func (o *WalletWithBalancesBalances) SetMain(v AssetHolder) {
 	o.Main = v
 }
 
-func (o WalletWithBalancesAllOfBalances) MarshalJSON() ([]byte, error) {
+func (o WalletWithBalancesBalances) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
 		toSerialize["main"] = o.Main
@@ -70,38 +70,38 @@ func (o WalletWithBalancesAllOfBalances) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-type NullableWalletWithBalancesAllOfBalances struct {
-	value *WalletWithBalancesAllOfBalances
+type NullableWalletWithBalancesBalances struct {
+	value *WalletWithBalancesBalances
 	isSet bool
 }
 
-func (v NullableWalletWithBalancesAllOfBalances) Get() *WalletWithBalancesAllOfBalances {
+func (v NullableWalletWithBalancesBalances) Get() *WalletWithBalancesBalances {
 	return v.value
 }
 
-func (v *NullableWalletWithBalancesAllOfBalances) Set(val *WalletWithBalancesAllOfBalances) {
+func (v *NullableWalletWithBalancesBalances) Set(val *WalletWithBalancesBalances) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableWalletWithBalancesAllOfBalances) IsSet() bool {
+func (v NullableWalletWithBalancesBalances) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableWalletWithBalancesAllOfBalances) Unset() {
+func (v *NullableWalletWithBalancesBalances) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableWalletWithBalancesAllOfBalances(val *WalletWithBalancesAllOfBalances) *NullableWalletWithBalancesAllOfBalances {
-	return &NullableWalletWithBalancesAllOfBalances{value: val, isSet: true}
+func NewNullableWalletWithBalancesBalances(val *WalletWithBalancesBalances) *NullableWalletWithBalancesBalances {
+	return &NullableWalletWithBalancesBalances{value: val, isSet: true}
 }
 
-func (v NullableWalletWithBalancesAllOfBalances) MarshalJSON() ([]byte, error) {
+func (v NullableWalletWithBalancesBalances) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableWalletWithBalancesAllOfBalances) UnmarshalJSON(src []byte) error {
+func (v *NullableWalletWithBalancesBalances) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -3,7 +3,7 @@ Formance Stack API
 
 Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
 
-API version: SDK_VERSION
+API version: develop
 Contact: support@formance.com
 */
 
@@ -13,6 +13,7 @@ package formance
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // Wallet struct for Wallet
@@ -22,17 +23,19 @@ type Wallet struct {
 	// Metadata associated with the wallet.
 	Metadata map[string]interface{} `json:"metadata"`
 	Name string `json:"name"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 // NewWallet instantiates a new Wallet object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWallet(id string, metadata map[string]interface{}, name string) *Wallet {
+func NewWallet(id string, metadata map[string]interface{}, name string, createdAt time.Time) *Wallet {
 	this := Wallet{}
 	this.Id = id
 	this.Metadata = metadata
 	this.Name = name
+	this.CreatedAt = createdAt
 	return &this
 }
 
@@ -116,6 +119,30 @@ func (o *Wallet) SetName(v string) {
 	o.Name = v
 }
 
+// GetCreatedAt returns the CreatedAt field value
+func (o *Wallet) GetCreatedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.CreatedAt
+}
+
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
+// and a boolean to check if the value has been set.
+func (o *Wallet) GetCreatedAtOk() (*time.Time, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return &o.CreatedAt, true
+}
+
+// SetCreatedAt sets field value
+func (o *Wallet) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
+}
+
 func (o Wallet) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -126,6 +153,9 @@ func (o Wallet) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["name"] = o.Name
+	}
+	if true {
+		toSerialize["createdAt"] = o.CreatedAt
 	}
 	return json.Marshal(toSerialize)
 }
