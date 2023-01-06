@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 dir=$(dirname "$0")
 source ${dir}/common.sh
 
-for i in $(gomodules); do
-  echo "Run go test on ${i}"
-  pushd ${i} >/dev/null
-  go test ./...
-  popd >/dev/null
+cmdLine="go test -v "
+for mod in $(find-updated-modules $@); do
+  cmdLine="${cmdLine} ./${mod}/..."
 done
+
+$cmdLine

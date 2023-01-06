@@ -3,9 +3,12 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/cmd"
 )
 
 func main() {
+	fmt.Println("test2")
 	cmd.Execute()
 }

@@ -1,11 +1,3 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-dir=$(dirname "$0")
-source ${dir}/common.sh
-
-for i in $(gomodules); do
-  echo "Run goimports on ${i}"
-  pushd ${i} >/dev/null
-  goimports -w .
-  popd >/dev/null
-done
+goimports -w $@

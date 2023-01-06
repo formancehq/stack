@@ -10,17 +10,16 @@ repos:
 - repo: local
   hooks:
   - id: gofmt
-    name: go-fmt
+    name: gofmt
     entry: ./scripts/gofmt.sh
     description: "Runs `go fmt`, requires golang"
     language: script
-    files: '\.go$'
+    files: \.go$
     require_serial: true
-    pass_filenames: false
   - id: goimports
     name: goimports
     entry: ./scripts/goimports.sh
-    files: '\.go$'
+    files: \.go$
     description: "Runs `goimports`, requires golang"
     language: script
     require_serial: true
@@ -28,24 +27,21 @@ repos:
     name: golangci-lint
     entry: ./scripts/golangci-lint.sh
     language: script
-    files: '\.go$'
+    files: \.go$
     description: "Runs `golangci-lint`, requires golangci-lint"
     require_serial: true
-    pass_filenames: false
   - id: gotests
     name: gotests
     entry: ./scripts/gotests.sh
     language: script
-    files: '\.go$'
-    pass_filenames: false
+    files: \.go$
     description: "Runs `go test`, requires golang"
     require_serial: true
   - id: gomodtidy
     name: gomodtidy
     entry: ./scripts/gomodtidy.sh
     language: script
-    pass_filenames: false
-    files: '\.go$'
+    files: \.go$
     description: "Runs `go mod tidy`, requires golang"
     require_serial: true
   - id: commitlint
@@ -53,6 +49,6 @@ repos:
     description: Commitlint hook
     language: node
     entry: commitlint --edit
-    pass_filenames: false
     always_run: true
+    pass_filenames: false
     additional_dependencies: ['@commitlint/config-conventional']
