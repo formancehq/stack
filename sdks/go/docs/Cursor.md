@@ -4,12 +4,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**PageSize** | Pointer to **int64** |  | [optional] 
-**HasMore** | Pointer to **bool** |  | [optional] 
-**Total** | Pointer to [**Total**](Total.md) |  | [optional] 
-**Next** | Pointer to **string** |  | [optional] 
-**Previous** | Pointer to **string** |  | [optional] 
-**Data** | Pointer to **[]interface{}** |  | [optional] 
+**PageSize** | Pointer to **int64** |  | [optional]
+**HasMore** | Pointer to **bool** |  | [optional]
+**Total** | Pointer to [**Total**](Total.md) |  | [optional]
+**Next** | Pointer to **string** |  | [optional]
+**Previous** | Pointer to **string** |  | [optional]
+**Data** | Pointer to **[]interface{}** |  | [optional]
 
 ## Methods
 
@@ -182,5 +182,3 @@ HasData returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

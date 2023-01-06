@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | The unique ID of the hold. | 
-**WalletID** | **string** | The ID of the wallet the hold is associated with. | 
-**Metadata** | **map[string]interface{}** | Metadata associated with the hold. | 
-**Description** | **string** |  | 
-**Destination** | Pointer to [**Subject**](Subject.md) |  | [optional] 
-**Remaining** | **int64** | Remaining amount on hold | 
-**OriginalAmount** | **int64** | Original amount on hold | 
+**Id** | **string** | The unique ID of the hold. |
+**WalletID** | **string** | The ID of the wallet the hold is associated with. |
+**Metadata** | **map[string]interface{}** | Metadata associated with the hold. |
+**Description** | **string** |  |
+**Destination** | Pointer to [**Subject**](Subject.md) |  | [optional]
+**Remaining** | **int64** | Remaining amount on hold |
+**OriginalAmount** | **int64** | Original amount on hold |
 
 ## Methods
 
@@ -178,5 +178,3 @@ SetOriginalAmount sets OriginalAmount field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

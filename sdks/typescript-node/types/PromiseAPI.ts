@@ -165,7 +165,7 @@ export class PromiseAccountsApi {
     /**
      * Add metadata to an account.
      * @param ledger Name of the ledger.
-     * @param address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; 
+     * @param address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;
      * @param requestBody metadata
      */
     public addMetadataToAccount(ledger: string, address: string, requestBody: { [key: string]: any; }, _options?: Configuration): Promise<void> {
@@ -187,7 +187,7 @@ export class PromiseAccountsApi {
     /**
      * Get account by its address.
      * @param ledger Name of the ledger.
-     * @param address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; 
+     * @param address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;
      */
     public getAccount(ledger: string, address: string, _options?: Configuration): Promise<GetAccount200Response> {
         const result = this.api.getAccount(ledger, address, _options);
@@ -204,7 +204,7 @@ export class PromiseAccountsApi {
      * @param metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
      * @param balance Filter accounts by their balance (default operator is gte)
      * @param balanceOperator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, or equal
-     * @param paginationToken Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+     * @param paginationToken Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
      */
     public listAccounts(ledger: string, pageSize?: number, after?: string, address?: string, metadata?: any, balance?: number, balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e', paginationToken?: string, _options?: Configuration): Promise<ListAccounts200Response> {
         const result = this.api.listAccounts(ledger, pageSize, after, address, metadata, balance, balanceOperator, paginationToken, _options);
@@ -283,7 +283,7 @@ export class PromiseClientsApi {
 
     /**
      * Create client
-     * @param body 
+     * @param body
      */
     public createClient(body?: ClientOptions, _options?: Configuration): Promise<CreateClientResponse> {
         const result = this.api.createClient(body, _options);
@@ -293,7 +293,7 @@ export class PromiseClientsApi {
     /**
      * Add a secret to a client
      * @param clientId Client ID
-     * @param body 
+     * @param body
      */
     public createSecret(clientId: string, body?: SecretOptions, _options?: Configuration): Promise<CreateSecretResponse> {
         const result = this.api.createSecret(clientId, body, _options);
@@ -349,7 +349,7 @@ export class PromiseClientsApi {
     /**
      * Update client
      * @param clientId Client ID
-     * @param body 
+     * @param body
      */
     public updateClient(clientId: string, body?: ClientOptions, _options?: Configuration): Promise<CreateClientResponse> {
         const result = this.api.updateClient(clientId, body, _options);
@@ -422,7 +422,7 @@ export class PromiseMappingApi {
     /**
      * Update the mapping of a ledger.
      * @param ledger Name of the ledger.
-     * @param mapping 
+     * @param mapping
      */
     public updateMapping(ledger: string, mapping: Mapping, _options?: Configuration): Promise<MappingResponse> {
         const result = this.api.updateMapping(ledger, mapping, _options);
@@ -451,7 +451,7 @@ export class PromisePaymentsApi {
     /**
      * Execute a transfer between two Stripe accounts
      * Transfer funds between Stripe accounts
-     * @param stripeTransferRequest 
+     * @param stripeTransferRequest
      */
     public connectorsStripeTransfer(stripeTransferRequest: StripeTransferRequest, _options?: Configuration): Promise<void> {
         const result = this.api.connectorsStripeTransfer(stripeTransferRequest, _options);
@@ -500,7 +500,7 @@ export class PromisePaymentsApi {
      * Install connector
      * Install connector
      * @param connector The connector code
-     * @param connectorConfig 
+     * @param connectorConfig
      */
     public installConnector(connector: Connectors, connectorConfig: ConnectorConfig, _options?: Configuration): Promise<void> {
         const result = this.api.installConnector(connector, connectorConfig, _options);
@@ -591,7 +591,7 @@ export class PromiseScopesApi {
     /**
      * Create scope
      * Create scope
-     * @param body 
+     * @param body
      */
     public createScope(body?: ScopeOptions, _options?: Configuration): Promise<CreateScopeResponse> {
         const result = this.api.createScope(body, _options);
@@ -642,7 +642,7 @@ export class PromiseScopesApi {
      * Update scope
      * Update scope
      * @param scopeId Scope ID
-     * @param body 
+     * @param body
      */
     public updateScope(scopeId: string, body?: ScopeOptions, _options?: Configuration): Promise<CreateScopeResponse> {
         const result = this.api.updateScope(scopeId, body, _options);
@@ -671,7 +671,7 @@ export class PromiseScriptApi {
     /**
      * Execute a Numscript.
      * @param ledger Name of the ledger.
-     * @param script 
+     * @param script
      * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
      */
     public runScript(ledger: string, script: Script, preview?: boolean, _options?: Configuration): Promise<ScriptResult> {
@@ -701,7 +701,7 @@ export class PromiseSearchApi {
     /**
      * ElasticSearch query engine
      * Search
-     * @param query 
+     * @param query
      */
     public search(query: Query, _options?: Configuration): Promise<Response> {
         const result = this.api.search(query, _options);
@@ -755,7 +755,7 @@ export class PromiseStatsApi {
     }
 
     /**
-     * Get ledger stats (aggregate metrics on accounts and transactions) The stats for account 
+     * Get ledger stats (aggregate metrics on accounts and transactions) The stats for account
      * Get Stats
      * @param ledger name of the ledger
      */
@@ -811,7 +811,7 @@ export class PromiseTransactionsApi {
     /**
      * Create a new transaction to a ledger.
      * @param ledger Name of the ledger.
-     * @param transactionData 
+     * @param transactionData
      * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
      */
     public createTransaction(ledger: string, transactionData: TransactionData, preview?: boolean, _options?: Configuration): Promise<TransactionsResponse> {
@@ -822,7 +822,7 @@ export class PromiseTransactionsApi {
     /**
      * Create a new batch of transactions to a ledger.
      * @param ledger Name of the ledger.
-     * @param transactions 
+     * @param transactions
      */
     public createTransactions(ledger: string, transactions: Transactions, _options?: Configuration): Promise<TransactionsResponse> {
         const result = this.api.createTransactions(ledger, transactions, _options);
@@ -849,9 +849,9 @@ export class PromiseTransactionsApi {
      * @param account Find transactions with postings involving given account, either as source or destination.
      * @param source Find transactions with postings involving given account at source.
      * @param destination Find transactions with postings involving given account at destination.
-     * @param startTime Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, 12:00:01 includes the first second of the minute). 
-     * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, 12:00:01 excludes the first second of the minute). 
-     * @param paginationToken Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+     * @param startTime Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, 12:00:01 includes the first second of the minute).
+     * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, 12:00:01 excludes the first second of the minute).
+     * @param paginationToken Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
      * @param metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
     public listTransactions(ledger: string, pageSize?: number, after?: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: string, endTime?: string, paginationToken?: string, metadata?: any, _options?: Configuration): Promise<ListTransactions200Response> {
@@ -928,8 +928,8 @@ export class PromiseWalletsApi {
 
     /**
      * Confirm a hold
-     * @param holdId 
-     * @param confirmHoldRequest 
+     * @param holdId
+     * @param confirmHoldRequest
      */
     public confirmHold(holdId: string, confirmHoldRequest?: ConfirmHoldRequest, _options?: Configuration): Promise<void> {
         const result = this.api.confirmHold(holdId, confirmHoldRequest, _options);
@@ -938,8 +938,8 @@ export class PromiseWalletsApi {
 
     /**
      * Create a balance
-     * @param id 
-     * @param body 
+     * @param id
+     * @param body
      */
     public createBalance(id: string, body?: Balance, _options?: Configuration): Promise<CreateBalanceResponse> {
         const result = this.api.createBalance(id, body, _options);
@@ -948,7 +948,7 @@ export class PromiseWalletsApi {
 
     /**
      * Create a new wallet
-     * @param createWalletRequest 
+     * @param createWalletRequest
      */
     public createWallet(createWalletRequest?: CreateWalletRequest, _options?: Configuration): Promise<CreateWalletResponse> {
         const result = this.api.createWallet(createWalletRequest, _options);
@@ -957,8 +957,8 @@ export class PromiseWalletsApi {
 
     /**
      * Credit a wallet
-     * @param id 
-     * @param creditWalletRequest 
+     * @param id
+     * @param creditWalletRequest
      */
     public creditWallet(id: string, creditWalletRequest?: CreditWalletRequest, _options?: Configuration): Promise<void> {
         const result = this.api.creditWallet(id, creditWalletRequest, _options);
@@ -967,8 +967,8 @@ export class PromiseWalletsApi {
 
     /**
      * Debit a wallet
-     * @param id 
-     * @param debitWalletRequest 
+     * @param id
+     * @param debitWalletRequest
      */
     public debitWallet(id: string, debitWalletRequest?: DebitWalletRequest, _options?: Configuration): Promise<DebitWalletResponse | void> {
         const result = this.api.debitWallet(id, debitWalletRequest, _options);
@@ -977,8 +977,8 @@ export class PromiseWalletsApi {
 
     /**
      * Get detailed balance
-     * @param id 
-     * @param balanceName 
+     * @param id
+     * @param balanceName
      */
     public getBalance(id: string, balanceName: string, _options?: Configuration): Promise<GetBalanceResponse> {
         const result = this.api.getBalance(id, balanceName, _options);
@@ -999,7 +999,7 @@ export class PromiseWalletsApi {
      * @param pageSize The maximum number of results to return per page
      * @param walletID The wallet to filter on
      * @param metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
-     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
      */
     public getHolds(pageSize?: number, walletID?: string, metadata?: any, cursor?: string, _options?: Configuration): Promise<GetHoldsResponse> {
         const result = this.api.getHolds(pageSize, walletID, metadata, cursor, _options);
@@ -1009,7 +1009,7 @@ export class PromiseWalletsApi {
     /**
      * @param pageSize The maximum number of results to return per page
      * @param walletId A wallet ID to filter on
-     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set. 
+     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.
      */
     public getTransactions(pageSize?: number, walletId?: string, cursor?: string, _options?: Configuration): Promise<GetTransactionsResponse> {
         const result = this.api.getTransactions(pageSize, walletId, cursor, _options);
@@ -1018,7 +1018,7 @@ export class PromiseWalletsApi {
 
     /**
      * Get a wallet
-     * @param id 
+     * @param id
      */
     public getWallet(id: string, _options?: Configuration): Promise<GetWalletResponse> {
         const result = this.api.getWallet(id, _options);
@@ -1027,7 +1027,7 @@ export class PromiseWalletsApi {
 
     /**
      * List balances of a wallet
-     * @param id 
+     * @param id
      */
     public listBalances(id: string, _options?: Configuration): Promise<ListBalancesResponse> {
         const result = this.api.listBalances(id, _options);
@@ -1039,7 +1039,7 @@ export class PromiseWalletsApi {
      * @param name Filter on wallet name
      * @param metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.
      * @param pageSize The maximum number of results to return per page
-     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
      */
     public listWallets(name?: string, metadata?: any, pageSize?: number, cursor?: string, _options?: Configuration): Promise<ListWalletsResponse> {
         const result = this.api.listWallets(name, metadata, pageSize, cursor, _options);
@@ -1048,8 +1048,8 @@ export class PromiseWalletsApi {
 
     /**
      * Update a wallet
-     * @param id 
-     * @param updateWalletRequest 
+     * @param id
+     * @param updateWalletRequest
      */
     public updateWallet(id: string, updateWalletRequest?: UpdateWalletRequest, _options?: Configuration): Promise<void> {
         const result = this.api.updateWallet(id, updateWalletRequest, _options);
@@ -1058,7 +1058,7 @@ export class PromiseWalletsApi {
 
     /**
      * Cancel a hold
-     * @param holdId 
+     * @param holdId
      */
     public voidHold(holdId: string, _options?: Configuration): Promise<void> {
         const result = this.api.voidHold(holdId, _options);
@@ -1103,10 +1103,10 @@ export class PromiseWebhooksApi {
     }
 
     /**
-     * Change the signing secret of the endpoint of a webhooks config.  If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding) 
+     * Change the signing secret of the endpoint of a webhooks config.  If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
      * Change the signing secret of a config
      * @param id Config ID
-     * @param configChangeSecret 
+     * @param configChangeSecret
      */
     public changeConfigSecret(id: string, configChangeSecret?: ConfigChangeSecret, _options?: Configuration): Promise<ConfigResponse> {
         const result = this.api.changeConfigSecret(id, configChangeSecret, _options);
@@ -1145,9 +1145,9 @@ export class PromiseWebhooksApi {
     }
 
     /**
-     * Insert a new webhooks config.  The endpoint should be a valid https URL and be unique.  The secret is the endpoint's verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)  All eventTypes are converted to lower-case when inserted. 
+     * Insert a new webhooks config.  The endpoint should be a valid https URL and be unique.  The secret is the endpoint's verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)  All eventTypes are converted to lower-case when inserted.
      * Insert a new config
-     * @param configUser 
+     * @param configUser
      */
     public insertConfig(configUser: ConfigUser, _options?: Configuration): Promise<ConfigResponse> {
         const result = this.api.insertConfig(configUser, _options);
@@ -1166,6 +1166,3 @@ export class PromiseWebhooksApi {
 
 
 }
-
-
-

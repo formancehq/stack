@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Input** | **int32** |  | 
-**Output** | **int32** |  | 
-**Balance** | **int32** |  | 
+**Input** | **int32** |  |
+**Output** | **int32** |  |
+**Balance** | **int32** |  |
 
 ## Methods
 
@@ -89,5 +89,3 @@ SetBalance sets Balance field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

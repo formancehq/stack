@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Details** | Pointer to **string** |  | [optional] 
-**ErrorCode** | Pointer to **string** |  | [optional] 
-**ErrorMessage** | Pointer to **string** |  | [optional] 
-**Transaction** | Pointer to [**Transaction**](Transaction.md) |  | [optional] 
+**Details** | Pointer to **string** |  | [optional]
+**ErrorCode** | Pointer to **string** |  | [optional]
+**ErrorMessage** | Pointer to **string** |  | [optional]
+**Transaction** | Pointer to [**Transaction**](Transaction.md) |  | [optional]
 
 ## Methods
 
@@ -130,5 +130,3 @@ HasTransaction returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

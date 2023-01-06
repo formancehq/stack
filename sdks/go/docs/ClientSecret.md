@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**LastDigits** | **string** |  | 
-**Name** | **string** |  | 
-**Id** | **string** |  | 
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
+**LastDigits** | **string** |  |
+**Name** | **string** |  |
+**Id** | **string** |  |
+**Metadata** | Pointer to **map[string]interface{}** |  | [optional]
 
 ## Methods
 
@@ -115,5 +115,3 @@ HasMetadata returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Transactions** | [**[]TransactionData**](TransactionData.md) |  | 
+**Transactions** | [**[]TransactionData**](TransactionData.md) |  |
 
 ## Methods
 
@@ -47,5 +47,3 @@ SetTransactions sets Transactions field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

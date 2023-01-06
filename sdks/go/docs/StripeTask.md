@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**OldestId** | Pointer to **string** | The id of the oldest BalanceTransaction fetched from stripe for this account | [optional] 
-**OldestDate** | Pointer to **time.Time** | The creation date of the oldest BalanceTransaction fetched from stripe for this account | [optional] 
-**MoreRecentId** | Pointer to **string** | The id of the more recent BalanceTransaction fetched from stripe for this account | [optional] 
-**MoreRecentDate** | Pointer to **time.Time** | The creation date of the more recent BalanceTransaction fetched from stripe for this account | [optional] 
-**NoMoreHistory** | Pointer to **bool** |  | [optional] 
+**OldestId** | Pointer to **string** | The id of the oldest BalanceTransaction fetched from stripe for this account | [optional]
+**OldestDate** | Pointer to **time.Time** | The creation date of the oldest BalanceTransaction fetched from stripe for this account | [optional]
+**MoreRecentId** | Pointer to **string** | The id of the more recent BalanceTransaction fetched from stripe for this account | [optional]
+**MoreRecentDate** | Pointer to **time.Time** | The creation date of the more recent BalanceTransaction fetched from stripe for this account | [optional]
+**NoMoreHistory** | Pointer to **bool** |  | [optional]
 
 ## Methods
 
@@ -156,5 +156,3 @@ HasNoMoreHistory returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

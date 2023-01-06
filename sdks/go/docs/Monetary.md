@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Asset** | **string** | The asset of the monetary value. | 
-**Amount** | **int64** | The amount of the monetary value. | 
+**Asset** | **string** | The asset of the monetary value. |
+**Amount** | **int64** | The amount of the monetary value. |
 
 ## Methods
 
@@ -68,5 +68,3 @@ SetAmount sets Amount field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

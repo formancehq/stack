@@ -10,7 +10,7 @@ Method | HTTP request | Description
 # **readStats**
 > StatsResponse readStats()
 
-Get ledger stats (aggregate metrics on accounts and transactions) The stats for account 
+Get ledger stats (aggregate metrics on accounts and transactions) The stats for account
 
 ### Example
 
@@ -60,4 +60,3 @@ Name | Type | Description  | Notes
 **200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
-

@@ -35,7 +35,7 @@ send [COIN 10] (
 	source = @world
 	destination = $user
 )
-") // Script | 
+") // Script |
     preview := true // bool | Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker. (optional)
 
     configuration := client.NewConfiguration()
@@ -56,7 +56,7 @@ send [COIN 10] (
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. | 
+**ledger** | **string** | Name of the ledger. |
 
 ### Other Parameters
 
@@ -66,8 +66,8 @@ Other parameters are passed through a pointer to a apiRunScriptRequest struct vi
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **script** | [**Script**](Script.md) |  | 
- **preview** | **bool** | Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. | 
+ **script** | [**Script**](Script.md) |  |
+ **preview** | **bool** | Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. |
 
 ### Return type
 
@@ -85,4 +85,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

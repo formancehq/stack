@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Username** | **string** |  | 
-**Password** | **string** |  | 
-**Endpoint** | **string** |  | 
-**AuthorizationEndpoint** | **string** |  | 
+**Username** | **string** |  |
+**Password** | **string** |  |
+**Endpoint** | **string** |  |
+**AuthorizationEndpoint** | **string** |  |
 
 ## Methods
 
@@ -110,5 +110,3 @@ SetAuthorizationEndpoint sets AuthorizationEndpoint field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

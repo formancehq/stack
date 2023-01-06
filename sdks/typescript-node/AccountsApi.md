@@ -27,7 +27,7 @@ const apiInstance = new AccountsApi(configuration);
 let body:AccountsApiAddMetadataToAccountRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
-  // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
+  // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
   address: "users:001",
   // { [key: string]: any; } | metadata
   requestBody: {
@@ -149,7 +149,7 @@ const apiInstance = new AccountsApi(configuration);
 let body:AccountsApiGetAccountRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
-  // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
+  // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
   address: "users:001",
 };
 
@@ -264,4 +264,3 @@ Name | Type | Description  | Notes
 **400** | Bad Request |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
-

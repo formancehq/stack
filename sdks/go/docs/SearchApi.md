@@ -29,7 +29,7 @@ import (
 )
 
 func main() {
-    query := *client.NewQuery() // Query | 
+    query := *client.NewQuery() // Query |
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -54,7 +54,7 @@ Other parameters are passed through a pointer to a apiSearchRequest struct via t
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **query** | [**Query**](Query.md) |  | 
+ **query** | [**Query**](Query.md) |  |
 
 ### Return type
 
@@ -72,4 +72,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-

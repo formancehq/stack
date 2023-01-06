@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Input** | **float32** |  | 
-**Output** | **float32** |  | 
-**Balance** | Pointer to **float32** |  | [optional] 
+**Input** | **float32** |  |
+**Output** | **float32** |  |
+**Balance** | Pointer to **float32** |  | [optional]
 
 ## Methods
 
@@ -94,5 +94,3 @@ HasBalance returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

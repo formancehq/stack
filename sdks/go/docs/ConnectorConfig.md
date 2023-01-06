@@ -4,18 +4,18 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**PollingPeriod** | Pointer to **string** | The frequency at which the connector will fetch transactions | [optional] 
-**ApiKey** | **string** |  | 
+**PollingPeriod** | Pointer to **string** | The frequency at which the connector will fetch transactions | [optional]
+**ApiKey** | **string** |  |
 **PageSize** | Pointer to **float32** | Number of BalanceTransaction to fetch at each polling interval.  | [optional] [default to 10]
 **FilePollingPeriod** | Pointer to **string** | The frequency at which the connector will try to fetch new payment objects from the directory | [optional] [default to "10s"]
 **FileGenerationPeriod** | Pointer to **string** | The frequency at which the connector will create new payment objects in the directory | [optional] [default to "10s"]
-**Directory** | **string** |  | 
-**ApiSecret** | **string** |  | 
-**Endpoint** | **string** |  | 
-**LoginID** | **string** | Username of the API Key holder | 
-**Username** | **string** |  | 
-**Password** | **string** |  | 
-**AuthorizationEndpoint** | **string** |  | 
+**Directory** | **string** |  |
+**ApiSecret** | **string** |  |
+**Endpoint** | **string** |  |
+**LoginID** | **string** | Username of the API Key holder |
+**Username** | **string** |  |
+**Password** | **string** |  |
+**AuthorizationEndpoint** | **string** |  |
 
 ## Methods
 
@@ -298,5 +298,3 @@ SetAuthorizationEndpoint sets AuthorizationEndpoint field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Ledgers** | Pointer to **[]string** |  | [optional] 
-**After** | Pointer to **[]string** |  | [optional] 
-**PageSize** | Pointer to **int64** |  | [optional] 
-**Terms** | Pointer to **[]string** |  | [optional] 
-**Sort** | Pointer to **string** |  | [optional] 
-**Policy** | Pointer to **string** |  | [optional] 
-**Target** | Pointer to **string** |  | [optional] 
-**Cursor** | Pointer to **string** |  | [optional] 
+**Ledgers** | Pointer to **[]string** |  | [optional]
+**After** | Pointer to **[]string** |  | [optional]
+**PageSize** | Pointer to **int64** |  | [optional]
+**Terms** | Pointer to **[]string** |  | [optional]
+**Sort** | Pointer to **string** |  | [optional]
+**Policy** | Pointer to **string** |  | [optional]
+**Target** | Pointer to **string** |  | [optional]
+**Cursor** | Pointer to **string** |  | [optional]
 
 ## Methods
 
@@ -234,5 +234,3 @@ HasCursor returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

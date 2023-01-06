@@ -18,7 +18,7 @@ import { StatsResponse } from '../models/StatsResponse';
 export class StatsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
-     * Get ledger stats (aggregate metrics on accounts and transactions) The stats for account 
+     * Get ledger stats (aggregate metrics on accounts and transactions) The stats for account
      * Get Stats
      * @param ledger name of the ledger
      */
@@ -46,7 +46,7 @@ export class StatsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);

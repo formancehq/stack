@@ -36,8 +36,8 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Confirm a hold
-     * @param holdId 
-     * @param confirmHoldRequest 
+     * @param holdId
+     * @param confirmHoldRequest
      */
     public async confirmHold(holdId: string, confirmHoldRequest?: ConfirmHoldRequest, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -75,7 +75,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -86,8 +86,8 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Create a balance
-     * @param id 
-     * @param body 
+     * @param id
+     * @param body
      */
     public async createBalance(id: string, body?: Balance, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -125,7 +125,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -136,7 +136,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Create a new wallet
-     * @param createWalletRequest 
+     * @param createWalletRequest
      */
     public async createWallet(createWalletRequest?: CreateWalletRequest, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -167,7 +167,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -178,8 +178,8 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Credit a wallet
-     * @param id 
-     * @param creditWalletRequest 
+     * @param id
+     * @param creditWalletRequest
      */
     public async creditWallet(id: string, creditWalletRequest?: CreditWalletRequest, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -217,7 +217,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -228,8 +228,8 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Debit a wallet
-     * @param id 
-     * @param debitWalletRequest 
+     * @param id
+     * @param debitWalletRequest
      */
     public async debitWallet(id: string, debitWalletRequest?: DebitWalletRequest, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -267,7 +267,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -278,8 +278,8 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Get detailed balance
-     * @param id 
-     * @param balanceName 
+     * @param id
+     * @param balanceName
      */
     public async getBalance(id: string, balanceName: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -312,7 +312,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -349,7 +349,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -363,7 +363,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
      * @param pageSize The maximum number of results to return per page
      * @param walletID The wallet to filter on
      * @param metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
-     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
      */
     public async getHolds(pageSize?: number, walletID?: string, metadata?: any, cursor?: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -406,7 +406,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -418,7 +418,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
     /**
      * @param pageSize The maximum number of results to return per page
      * @param walletId A wallet ID to filter on
-     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set. 
+     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.
      */
     public async getTransactions(pageSize?: number, walletId?: string, cursor?: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -455,7 +455,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -466,7 +466,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Get a wallet
-     * @param id 
+     * @param id
      */
     public async getWallet(id: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -492,7 +492,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -503,7 +503,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * List balances of a wallet
-     * @param id 
+     * @param id
      */
     public async listBalances(id: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -529,7 +529,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -543,7 +543,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
      * @param name Filter on wallet name
      * @param metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.
      * @param pageSize The maximum number of results to return per page
-     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+     * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
      */
     public async listWallets(name?: string, metadata?: any, pageSize?: number, cursor?: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -586,7 +586,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -597,8 +597,8 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Update a wallet
-     * @param id 
-     * @param updateWalletRequest 
+     * @param id
+     * @param updateWalletRequest
      */
     public async updateWallet(id: string, updateWalletRequest?: UpdateWalletRequest, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -636,7 +636,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -647,7 +647,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Cancel a hold
-     * @param holdId 
+     * @param holdId
      */
     public async voidHold(holdId: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -673,7 +673,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -702,7 +702,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);

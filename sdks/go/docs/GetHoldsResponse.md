@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Cursor** | [**GetHoldsResponseCursor**](GetHoldsResponseCursor.md) |  | 
+**Cursor** | [**GetHoldsResponseCursor**](GetHoldsResponseCursor.md) |  |
 
 ## Methods
 
@@ -47,5 +47,3 @@ SetCursor sets Cursor field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

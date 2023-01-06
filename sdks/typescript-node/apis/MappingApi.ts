@@ -46,7 +46,7 @@ export class MappingApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -58,7 +58,7 @@ export class MappingApiRequestFactory extends BaseAPIRequestFactory {
     /**
      * Update the mapping of a ledger.
      * @param ledger Name of the ledger.
-     * @param mapping 
+     * @param mapping
      */
     public async updateMapping(ledger: string, mapping: Mapping, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -101,7 +101,7 @@ export class MappingApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);

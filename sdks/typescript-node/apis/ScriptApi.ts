@@ -23,7 +23,7 @@ export class ScriptApiRequestFactory extends BaseAPIRequestFactory {
     /**
      * Execute a Numscript.
      * @param ledger Name of the ledger.
-     * @param script 
+     * @param script
      * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
      */
     public async runScript(ledger: string, script: Script, preview?: boolean, _options?: Configuration): Promise<RequestContext> {
@@ -73,7 +73,7 @@ export class ScriptApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-        
+
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);

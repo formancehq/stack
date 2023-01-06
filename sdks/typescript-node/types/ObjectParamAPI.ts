@@ -160,7 +160,7 @@ export interface AccountsApiAddMetadataToAccountRequest {
      */
     ledger: string
     /**
-     * Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; 
+     * Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;
      * @type string
      * @memberof AccountsApiaddMetadataToAccount
      */
@@ -202,7 +202,7 @@ export interface AccountsApiGetAccountRequest {
      */
     ledger: string
     /**
-     * Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; 
+     * Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;
      * @type string
      * @memberof AccountsApigetAccount
      */
@@ -253,7 +253,7 @@ export interface AccountsApiListAccountsRequest {
      */
     balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e'
     /**
-     * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+     * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
      * @type string
      * @memberof AccountsApilistAccounts
      */
@@ -392,7 +392,7 @@ export interface ClientsApiAddScopeToClientRequest {
 
 export interface ClientsApiCreateClientRequest {
     /**
-     * 
+     *
      * @type ClientOptions
      * @memberof ClientsApicreateClient
      */
@@ -407,7 +407,7 @@ export interface ClientsApiCreateSecretRequest {
      */
     clientId: string
     /**
-     * 
+     *
      * @type SecretOptions
      * @memberof ClientsApicreateSecret
      */
@@ -473,7 +473,7 @@ export interface ClientsApiUpdateClientRequest {
      */
     clientId: string
     /**
-     * 
+     *
      * @type ClientOptions
      * @memberof ClientsApiupdateClient
      */
@@ -615,7 +615,7 @@ export interface MappingApiUpdateMappingRequest {
      */
     ledger: string
     /**
-     * 
+     *
      * @type Mapping
      * @memberof MappingApiupdateMapping
      */
@@ -652,7 +652,7 @@ import { PaymentsApiRequestFactory, PaymentsApiResponseProcessor} from "../apis/
 
 export interface PaymentsApiConnectorsStripeTransferRequest {
     /**
-     * 
+     *
      * @type StripeTransferRequest
      * @memberof PaymentsApiconnectorsStripeTransfer
      */
@@ -697,7 +697,7 @@ export interface PaymentsApiInstallConnectorRequest {
      */
     connector: Connectors
     /**
-     * 
+     *
      * @type ConnectorConfig
      * @memberof PaymentsApiinstallConnector
      */
@@ -887,7 +887,7 @@ export interface ScopesApiAddTransientScopeRequest {
 
 export interface ScopesApiCreateScopeRequest {
     /**
-     * 
+     *
      * @type ScopeOptions
      * @memberof ScopesApicreateScope
      */
@@ -938,7 +938,7 @@ export interface ScopesApiUpdateScopeRequest {
      */
     scopeId: string
     /**
-     * 
+     *
      * @type ScopeOptions
      * @memberof ScopesApiupdateScope
      */
@@ -1028,7 +1028,7 @@ export interface ScriptApiRunScriptRequest {
      */
     ledger: string
     /**
-     * 
+     *
      * @type Script
      * @memberof ScriptApirunScript
      */
@@ -1063,7 +1063,7 @@ import { SearchApiRequestFactory, SearchApiResponseProcessor} from "../apis/Sear
 
 export interface SearchApiSearchRequest {
     /**
-     * 
+     *
      * @type Query
      * @memberof SearchApisearch
      */
@@ -1131,7 +1131,7 @@ export class ObjectStatsApi {
     }
 
     /**
-     * Get ledger stats (aggregate metrics on accounts and transactions) The stats for account 
+     * Get ledger stats (aggregate metrics on accounts and transactions) The stats for account
      * Get Stats
      * @param param the request object
      */
@@ -1212,7 +1212,7 @@ export interface TransactionsApiCreateTransactionRequest {
      */
     ledger: string
     /**
-     * 
+     *
      * @type TransactionData
      * @memberof TransactionsApicreateTransaction
      */
@@ -1233,7 +1233,7 @@ export interface TransactionsApiCreateTransactionsRequest {
      */
     ledger: string
     /**
-     * 
+     *
      * @type Transactions
      * @memberof TransactionsApicreateTransactions
      */
@@ -1299,19 +1299,19 @@ export interface TransactionsApiListTransactionsRequest {
      */
     destination?: string
     /**
-     * Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, 12:00:01 includes the first second of the minute). 
+     * Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, 12:00:01 includes the first second of the minute).
      * @type string
      * @memberof TransactionsApilistTransactions
      */
     startTime?: string
     /**
-     * Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, 12:00:01 excludes the first second of the minute). 
+     * Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, 12:00:01 excludes the first second of the minute).
      * @type string
      * @memberof TransactionsApilistTransactions
      */
     endTime?: string
     /**
-     * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+     * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
      * @type string
      * @memberof TransactionsApilistTransactions
      */
@@ -1452,13 +1452,13 @@ import { WalletsApiRequestFactory, WalletsApiResponseProcessor} from "../apis/Wa
 
 export interface WalletsApiConfirmHoldRequest {
     /**
-     * 
+     *
      * @type string
      * @memberof WalletsApiconfirmHold
      */
     holdId: string
     /**
-     * 
+     *
      * @type ConfirmHoldRequest
      * @memberof WalletsApiconfirmHold
      */
@@ -1467,13 +1467,13 @@ export interface WalletsApiConfirmHoldRequest {
 
 export interface WalletsApiCreateBalanceRequest {
     /**
-     * 
+     *
      * @type string
      * @memberof WalletsApicreateBalance
      */
     id: string
     /**
-     * 
+     *
      * @type Balance
      * @memberof WalletsApicreateBalance
      */
@@ -1482,7 +1482,7 @@ export interface WalletsApiCreateBalanceRequest {
 
 export interface WalletsApiCreateWalletRequest {
     /**
-     * 
+     *
      * @type CreateWalletRequest
      * @memberof WalletsApicreateWallet
      */
@@ -1491,13 +1491,13 @@ export interface WalletsApiCreateWalletRequest {
 
 export interface WalletsApiCreditWalletRequest {
     /**
-     * 
+     *
      * @type string
      * @memberof WalletsApicreditWallet
      */
     id: string
     /**
-     * 
+     *
      * @type CreditWalletRequest
      * @memberof WalletsApicreditWallet
      */
@@ -1506,13 +1506,13 @@ export interface WalletsApiCreditWalletRequest {
 
 export interface WalletsApiDebitWalletRequest {
     /**
-     * 
+     *
      * @type string
      * @memberof WalletsApidebitWallet
      */
     id: string
     /**
-     * 
+     *
      * @type DebitWalletRequest
      * @memberof WalletsApidebitWallet
      */
@@ -1521,13 +1521,13 @@ export interface WalletsApiDebitWalletRequest {
 
 export interface WalletsApiGetBalanceRequest {
     /**
-     * 
+     *
      * @type string
      * @memberof WalletsApigetBalance
      */
     id: string
     /**
-     * 
+     *
      * @type string
      * @memberof WalletsApigetBalance
      */
@@ -1563,7 +1563,7 @@ export interface WalletsApiGetHoldsRequest {
      */
     metadata?: any
     /**
-     * Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+     * Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
      * @type string
      * @memberof WalletsApigetHolds
      */
@@ -1584,7 +1584,7 @@ export interface WalletsApiGetTransactionsRequest {
      */
     walletId?: string
     /**
-     * Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set. 
+     * Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.
      * @type string
      * @memberof WalletsApigetTransactions
      */
@@ -1593,7 +1593,7 @@ export interface WalletsApiGetTransactionsRequest {
 
 export interface WalletsApiGetWalletRequest {
     /**
-     * 
+     *
      * @type string
      * @memberof WalletsApigetWallet
      */
@@ -1602,7 +1602,7 @@ export interface WalletsApiGetWalletRequest {
 
 export interface WalletsApiListBalancesRequest {
     /**
-     * 
+     *
      * @type string
      * @memberof WalletsApilistBalances
      */
@@ -1629,7 +1629,7 @@ export interface WalletsApiListWalletsRequest {
      */
     pageSize?: number
     /**
-     * Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+     * Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
      * @type string
      * @memberof WalletsApilistWallets
      */
@@ -1638,13 +1638,13 @@ export interface WalletsApiListWalletsRequest {
 
 export interface WalletsApiUpdateWalletRequest {
     /**
-     * 
+     *
      * @type string
      * @memberof WalletsApiupdateWallet
      */
     id: string
     /**
-     * 
+     *
      * @type UpdateWalletRequest
      * @memberof WalletsApiupdateWallet
      */
@@ -1653,7 +1653,7 @@ export interface WalletsApiUpdateWalletRequest {
 
 export interface WalletsApiVoidHoldRequest {
     /**
-     * 
+     *
      * @type string
      * @memberof WalletsApivoidHold
      */
@@ -1811,7 +1811,7 @@ export interface WebhooksApiChangeConfigSecretRequest {
      */
     id: string
     /**
-     * 
+     *
      * @type ConfigChangeSecret
      * @memberof WebhooksApichangeConfigSecret
      */
@@ -1853,7 +1853,7 @@ export interface WebhooksApiGetManyConfigsRequest {
 
 export interface WebhooksApiInsertConfigRequest {
     /**
-     * 
+     *
      * @type ConfigUser
      * @memberof WebhooksApiinsertConfig
      */
@@ -1886,7 +1886,7 @@ export class ObjectWebhooksApi {
     }
 
     /**
-     * Change the signing secret of the endpoint of a webhooks config.  If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding) 
+     * Change the signing secret of the endpoint of a webhooks config.  If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
      * Change the signing secret of a config
      * @param param the request object
      */
@@ -1922,7 +1922,7 @@ export class ObjectWebhooksApi {
     }
 
     /**
-     * Insert a new webhooks config.  The endpoint should be a valid https URL and be unique.  The secret is the endpoint's verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)  All eventTypes are converted to lower-case when inserted. 
+     * Insert a new webhooks config.  The endpoint should be a valid https URL and be unique.  The secret is the endpoint's verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)  All eventTypes are converted to lower-case when inserted.
      * Insert a new config
      * @param param the request object
      */

@@ -48,7 +48,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. | 
+**ledger** | **string** | Name of the ledger. |
 
 ### Other Parameters
 
@@ -97,7 +97,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    mapping := *client.NewMapping([]client.Contract{*client.NewContract(map[string]interface{}(123))}) // Mapping | 
+    mapping := *client.NewMapping([]client.Contract{*client.NewContract(map[string]interface{}(123))}) // Mapping |
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -117,7 +117,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. | 
+**ledger** | **string** | Name of the ledger. |
 
 ### Other Parameters
 
@@ -127,7 +127,7 @@ Other parameters are passed through a pointer to a apiUpdateMappingRequest struc
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **mapping** | [**Mapping**](Mapping.md) |  | 
+ **mapping** | [**Mapping**](Mapping.md) |  |
 
 ### Return type
 
@@ -145,4 +145,3 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
