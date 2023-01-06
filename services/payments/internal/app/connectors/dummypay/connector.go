@@ -8,7 +8,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 )
 
 // Name is the name of the connector.
@@ -16,7 +16,7 @@ const Name = models.ConnectorProviderDummyPay
 
 // Connector is the connector for the dummy payment connector.
 type Connector struct {
-	logger sharedlogging.Logger
+	logger logging.Logger
 	cfg    Config
 	fs     fs
 }
@@ -70,7 +70,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 	return handleResolve(c.cfg, taskDescriptor, c.fs)
 }
 
-func newConnector(logger sharedlogging.Logger, cfg Config, fs fs) *Connector {
+func newConnector(logger logging.Logger, cfg Config, fs fs) *Connector {
 	return &Connector{
 		logger: logger.WithFields(map[string]any{
 			"component": "connector",

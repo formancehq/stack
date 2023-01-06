@@ -50,33 +50,33 @@ func init() {
 
 				ALTER TABLE payments.adjustment ADD CONSTRAINT adjustment_payment
 					FOREIGN KEY (payment_id)
-					REFERENCES payments.payment (id)
+					REFERENCES payments.payment (id)  
 					ON DELETE CASCADE
-					NOT DEFERRABLE
+					NOT DEFERRABLE 
 					INITIALLY IMMEDIATE
 				;
 
 				ALTER TABLE payments.metadata ADD CONSTRAINT metadata_payment
 					FOREIGN KEY (payment_id)
-					REFERENCES payments.payment (id)
+					REFERENCES payments.payment (id)  
 					ON DELETE CASCADE
-					NOT DEFERRABLE
+					NOT DEFERRABLE 
 					INITIALLY IMMEDIATE
 				;
 
 				ALTER TABLE payments.payment ADD CONSTRAINT payment_account
 					FOREIGN KEY (account_id)
-					REFERENCES accounts.account (id)
+					REFERENCES accounts.account (id)  
 					ON DELETE CASCADE
-					NOT DEFERRABLE
+					NOT DEFERRABLE 
 					INITIALLY IMMEDIATE
 				;
 
 				ALTER TABLE payments.payment ADD CONSTRAINT payment_connector
 					FOREIGN KEY (connector_id)
-					REFERENCES connectors.connector (id)
+					REFERENCES connectors.connector (id)  
 					ON DELETE CASCADE
-					NOT DEFERRABLE
+					NOT DEFERRABLE 
 					INITIALLY IMMEDIATE
 				;
 		`)

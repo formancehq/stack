@@ -16,7 +16,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -35,7 +35,7 @@ type Scheduler interface {
 type taskHolder struct {
 	descriptor models.TaskDescriptor
 	cancel     func()
-	logger     sharedlogging.Logger
+	logger     logging.Logger
 	stopChan   StopChan
 }
 
@@ -43,7 +43,7 @@ type ContainerCreateFunc func(ctx context.Context, descriptor models.TaskDescrip
 
 type DefaultTaskScheduler struct {
 	provider         models.ConnectorProvider
-	logger           sharedlogging.Logger
+	logger           logging.Logger
 	store            Repository
 	containerFactory ContainerCreateFunc
 	tasks            map[string]*taskHolder
@@ -192,21 +192,21 @@ func (s *DefaultTaskScheduler) deleteTask(holder *taskHolder) {
 			return
 		}
 
-		sharedlogging.Error(err)
+		logging.Error(err)
 
 		return
 	}
 
 	p := s.resolver.Resolve(oldestPendingTask.GetDescriptor())
 	if p == nil {
-		sharedlogging.Errorf("unable to resolve task")
+		logging.Errorf("unable to resolve task")
 
 		return
 	}
 
 	err = s.startTask(oldestPendingTask.GetDescriptor())
 	if err != nil {
-		sharedlogging.Error(err)
+		logging.Error(err)
 	}
 }
 
@@ -272,7 +272,7 @@ func (s *DefaultTaskScheduler) startTask(descriptor models.TaskDescriptor) error
 		panic(err)
 	}
 
-	err = container.Provide(func() sharedlogging.Logger {
+	err = container.Provide(func() logging.Logger {
 		return s.logger
 	})
 	if err != nil {
@@ -346,7 +346,7 @@ var _ Scheduler = &DefaultTaskScheduler{}
 
 func NewDefaultScheduler(
 	provider models.ConnectorProvider,
-	logger sharedlogging.Logger,
+	logger logging.Logger,
 	store Repository,
 	containerFactory ContainerCreateFunc,
 	resolver Resolver,

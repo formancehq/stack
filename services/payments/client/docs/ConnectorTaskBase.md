@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Provider** | Pointer to **interface{}** | The connector code | [optional]
-**CreatedAt** | Pointer to **interface{}** | The date when the task was created | [optional]
-**Status** | Pointer to **interface{}** | The task status | [optional]
-**Error** | Pointer to **interface{}** | The error message if the task failed | [optional]
-**State** | Pointer to **interface{}** | The task state | [optional]
+**Provider** | Pointer to **interface{}** | The connector code | [optional] 
+**CreatedAt** | Pointer to **interface{}** | The date when the task was created | [optional] 
+**Status** | Pointer to **interface{}** | The task status | [optional] 
+**Error** | Pointer to **interface{}** | The error message if the task failed | [optional] 
+**State** | Pointer to **interface{}** | The task state | [optional] 
 
 ## Methods
 
@@ -206,3 +206,5 @@ HasState returns a boolean if a field has been set.
 UnsetState ensures that no value is present for State, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

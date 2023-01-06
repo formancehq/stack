@@ -9,7 +9,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,7 +37,7 @@ func TestConnector(t *testing.T) {
 	t.Parallel()
 
 	config := Config{}
-	logger := sharedlogging.GetLogger(context.Background())
+	logger := logging.GetLogger(context.Background())
 
 	fileSystem := newTestFS()
 

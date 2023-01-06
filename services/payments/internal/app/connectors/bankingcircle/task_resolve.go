@@ -7,7 +7,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 )
 
 const (
@@ -20,7 +20,7 @@ type TaskDescriptor struct {
 	Key  string `json:"key" yaml:"key" bson:"key"`
 }
 
-func resolveTasks(logger sharedlogging.Logger, config Config) func(taskDefinition models.TaskDescriptor) task.Task {
+func resolveTasks(logger logging.Logger, config Config) func(taskDefinition models.TaskDescriptor) task.Task {
 	bankingCircleClient, err := newClient(config.Username, config.Password, config.Endpoint, config.AuthorizationEndpoint, logger)
 	if err != nil {
 		logger.Error(err)

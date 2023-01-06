@@ -5,8 +5,8 @@
 ;
 [subrepo]
 	remote = payments
-	branch = main
-	commit = 3930503e8ff4527751cf591bf2e83fd47c852dcd
-	parent = 07c56762a71e9851102829f4ea6b72bb841a7e65
+	branch = chore/upgrade-go-libs
+	commit = bfbfa5cbe138ed0d4d23e5021c21ebec72bdd91b
+	parent = a9efa4b04d3b79ad8b19caa21481897f86d4fba2
 	method = merge
 	cmdver = 0.4.5

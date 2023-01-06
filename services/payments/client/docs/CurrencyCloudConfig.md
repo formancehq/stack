@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ApiKey** | **interface{}** |  |
-**LoginID** | **interface{}** | Username of the API Key holder |
-**PollingPeriod** | Pointer to **interface{}** | The frequency at which the connector will fetch transactions | [optional]
-**Endpoint** | Pointer to **interface{}** | The endpoint to use for the API. Defaults to https://devapi.currencycloud.com | [optional]
+**ApiKey** | **interface{}** |  | 
+**LoginID** | **interface{}** | Username of the API Key holder | 
+**PollingPeriod** | Pointer to **interface{}** | The frequency at which the connector will fetch transactions | [optional] 
+**Endpoint** | Pointer to **interface{}** | The endpoint to use for the API. Defaults to https://devapi.currencycloud.com | [optional] 
 
 ## Methods
 
@@ -160,3 +160,5 @@ HasEndpoint returns a boolean if a field has been set.
 UnsetEndpoint ensures that no value is present for Endpoint, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

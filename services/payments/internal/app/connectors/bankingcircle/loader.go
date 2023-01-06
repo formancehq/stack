@@ -1,7 +1,7 @@
 package bankingcircle
 
 import (
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
@@ -12,7 +12,7 @@ const Name = models.ConnectorProviderBankingCircle
 // NewLoader creates a new loader.
 func NewLoader() integration.Loader[Config] {
 	loader := integration.NewLoaderBuilder[Config](Name).
-		WithLoad(func(logger sharedlogging.Logger, config Config) integration.Connector {
+		WithLoad(func(logger logging.Logger, config Config) integration.Connector {
 			return integration.NewConnectorBuilder().
 				WithInstall(func(ctx task.ConnectorContext) error {
 					taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{

@@ -15,17 +15,17 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/formancehq/go-libs/sharedapi"
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/integration"
 )
 
 func handleErrorBadRequest(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusBadRequest)
 
-	sharedlogging.GetLogger(r.Context()).Error(err)
+	logging.GetLogger(r.Context()).Error(err)
 	// TODO: Opentracing
-	err = json.NewEncoder(w).Encode(sharedapi.ErrorResponse{
+	err = json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    http.StatusText(http.StatusBadRequest),
 		ErrorMessage: err.Error(),
 	})
@@ -37,9 +37,9 @@ func handleErrorBadRequest(w http.ResponseWriter, r *http.Request, err error) {
 func handleError(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
 
-	sharedlogging.GetLogger(r.Context()).Error(err)
+	logging.GetLogger(r.Context()).Error(err)
 	// TODO: Opentracing
-	err = json.NewEncoder(w).Encode(sharedapi.ErrorResponse{
+	err = json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    "INTERNAL",
 		ErrorMessage: err.Error(),
 	})

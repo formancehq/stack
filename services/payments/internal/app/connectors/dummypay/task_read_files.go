@@ -8,7 +8,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/spf13/afero"
 )
@@ -26,7 +26,7 @@ func newTaskReadFiles() TaskDescriptor {
 // taskReadFiles creates a task that reads files from a given directory.
 // Only reads files with the generatedFilePrefix in their name.
 func taskReadFiles(config Config, fs fs) task.Task {
-	return func(ctx context.Context, logger sharedlogging.Logger,
+	return func(ctx context.Context, logger logging.Logger,
 		scheduler task.Scheduler,
 	) error {
 		for {

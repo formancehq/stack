@@ -13,8 +13,8 @@ import (
 
 	"github.com/formancehq/payments/internal/pkg/fifo"
 
-	"github.com/formancehq/go-libs/sharedlogging"
-	"github.com/formancehq/go-libs/sharedlogging/sharedlogginglogrus"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/logging/logginglogrus"
 	"github.com/sirupsen/logrus"
 	"github.com/stripe/stripe-go/v72"
 )
@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 	if testing.Verbose() {
 		l := logrus.New()
 		l.Level = logrus.DebugLevel
-		sharedlogging.SetFactory(sharedlogging.StaticLoggerFactory(sharedlogginglogrus.New(l)))
+		logging.SetFactory(logging.StaticLoggerFactory(logginglogrus.New(l)))
 	}
 
 	os.Exit(m.Run())

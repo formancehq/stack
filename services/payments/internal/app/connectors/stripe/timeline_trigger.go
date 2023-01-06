@@ -3,14 +3,14 @@ package stripe
 import (
 	"context"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v72"
 	"golang.org/x/sync/semaphore"
 )
 
 func NewTimelineTrigger(
-	logger sharedlogging.Logger,
+	logger logging.Logger,
 	ingester Ingester,
 	timeline *Timeline,
 ) *TimelineTrigger {
@@ -25,7 +25,7 @@ func NewTimelineTrigger(
 }
 
 type TimelineTrigger struct {
-	logger   sharedlogging.Logger
+	logger   logging.Logger
 	ingester Ingester
 	timeline *Timeline
 	sem      *semaphore.Weighted

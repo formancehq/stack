@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/formancehq/go-libs/sharedlogging"
-	"github.com/formancehq/go-libs/sharedpublish"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/payments/internal/app/models"
 )
 
@@ -16,10 +16,10 @@ type Ingester interface {
 
 type DefaultIngester struct {
 	repo       Repository
-	logger     sharedlogging.Logger
+	logger     logging.Logger
 	provider   models.ConnectorProvider
 	descriptor models.TaskDescriptor
-	publisher  sharedpublish.Publisher
+	publisher  publish.Publisher
 }
 
 type Repository interface {
@@ -32,8 +32,8 @@ func NewDefaultIngester(
 	provider models.ConnectorProvider,
 	descriptor models.TaskDescriptor,
 	repo Repository,
-	logger sharedlogging.Logger,
-	publisher sharedpublish.Publisher,
+	logger logging.Logger,
+	publisher publish.Publisher,
 ) *DefaultIngester {
 	return &DefaultIngester{
 		provider:   provider,

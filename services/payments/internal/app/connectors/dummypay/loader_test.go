@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/connectors"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,7 +15,7 @@ func TestLoader(t *testing.T) {
 	t.Parallel()
 
 	config := Config{}
-	logger := sharedlogging.GetLogger(context.Background())
+	logger := logging.GetLogger(context.Background())
 
 	loader := NewLoader()
 

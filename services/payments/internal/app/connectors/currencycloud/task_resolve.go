@@ -8,7 +8,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 )
 
 const (
@@ -20,7 +20,7 @@ type TaskDescriptor struct {
 	Name string `json:"name" yaml:"name" bson:"name"`
 }
 
-func resolveTasks(logger sharedlogging.Logger, config Config) task.Task {
+func resolveTasks(logger logging.Logger, config Config) task.Task {
 	return func(ctx context.Context, taskDescriptor TaskDescriptor) task.Task {
 		currencyCloudClient, err := client.NewClient(ctx, config.LoginID, config.APIKey, config.Endpoint)
 		if err != nil {

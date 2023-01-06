@@ -7,7 +7,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/sharedapi"
+	"github.com/formancehq/go-libs/api"
 )
 
 type readConnectorsRepository interface {
@@ -42,7 +42,7 @@ func readConnectorsHandler(repo readConnectorsRepository) http.HandlerFunc {
 		}
 
 		err = json.NewEncoder(w).Encode(
-			sharedapi.BaseResponse[[]readConnectorsResponseElement]{
+			api.BaseResponse[[]readConnectorsResponseElement]{
 				Data: &data,
 			})
 		if err != nil {

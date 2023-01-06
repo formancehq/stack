@@ -12,10 +12,10 @@ import (
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 )
 
-func taskFetchTransactions(logger sharedlogging.Logger, client *client.Client, accountID string) task.Task {
+func taskFetchTransactions(logger logging.Logger, client *client.Client, accountID string) task.Task {
 	return func(
 		ctx context.Context,
 		ingester ingestion.Ingester,

@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Amount** | Pointer to **interface{}** |  | [optional]
-**Asset** | Pointer to **interface{}** |  | [optional]
-**Destination** | Pointer to **interface{}** |  | [optional]
-**Metadata** | Pointer to **interface{}** | A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.  | [optional]
+**Amount** | Pointer to **interface{}** |  | [optional] 
+**Asset** | Pointer to **interface{}** |  | [optional] 
+**Destination** | Pointer to **interface{}** |  | [optional] 
+**Metadata** | Pointer to **interface{}** | A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.  | [optional] 
 
 ## Methods
 
@@ -170,3 +170,5 @@ HasMetadata returns a boolean if a field has been set.
 UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

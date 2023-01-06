@@ -3,7 +3,7 @@ package cmd
 import (
 	"strings"
 
-	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
 
 	"github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/internal/app/api"
@@ -13,11 +13,11 @@ import (
 
 	"github.com/Shopify/sarama"
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/formancehq/go-libs/sharedlogging"
-	"github.com/formancehq/go-libs/sharedlogging/sharedlogginglogrus"
-	"github.com/formancehq/go-libs/sharedpublish"
-	"github.com/formancehq/go-libs/sharedpublish/sharedpublishhttp"
-	"github.com/formancehq/go-libs/sharedpublish/sharedpublishkafka"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/logging/logginglogrus"
+	"github.com/formancehq/go-libs/publish"
+	"github.com/formancehq/go-libs/publish/publishhttp"
+	"github.com/formancehq/go-libs/publish/publishkafka"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -76,41 +76,41 @@ func runServer(cmd *cobra.Command, args []string) error {
 	}
 
 	options = append(options, databaseOptions)
-	options = append(options, sharedotlptraces.CLITracesModule(viper.GetViper()))
+	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 
 	options = append(options,
-		fx.Provide(fx.Annotate(func(p message.Publisher) *sharedpublish.TopicMapperPublisher {
-			return sharedpublish.NewTopicMapperPublisher(p, topicsMapping())
-		}, fx.As(new(sharedpublish.Publisher)))))
+		fx.Provide(fx.Annotate(func(p message.Publisher) *publish.TopicMapperPublisher {
+			return publish.NewTopicMapperPublisher(p, topicsMapping())
+		}, fx.As(new(publish.Publisher)))))
 
 	options = append(options, api.HTTPModule())
-	options = append(options, sharedpublish.Module())
+	options = append(options, publish.Module())
 
 	switch {
 	case viper.GetBool(publisherHTTPEnabledFlag):
-		options = append(options, sharedpublishhttp.Module())
+		options = append(options, publishhttp.Module())
 	case viper.GetBool(publisherKafkaEnabledFlag):
 		options = append(options,
-			sharedpublishkafka.Module(serviceName, viper.GetStringSlice(publisherKafkaBrokerFlag)...),
-			sharedpublishkafka.ProvideSaramaOption(
-				sharedpublishkafka.WithConsumerReturnErrors(),
-				sharedpublishkafka.WithProducerReturnSuccess(),
+			publishkafka.Module(serviceName, viper.GetStringSlice(publisherKafkaBrokerFlag)...),
+			publishkafka.ProvideSaramaOption(
+				publishkafka.WithConsumerReturnErrors(),
+				publishkafka.WithProducerReturnSuccess(),
 			),
 		)
 
 		if viper.GetBool(publisherKafkaTLSEnabled) {
-			options = append(options, sharedpublishkafka.ProvideSaramaOption(sharedpublishkafka.WithTLS()))
+			options = append(options, publishkafka.ProvideSaramaOption(publishkafka.WithTLS()))
 		}
 
 		if viper.GetBool(publisherKafkaSASLEnabled) {
-			options = append(options, sharedpublishkafka.ProvideSaramaOption(
-				sharedpublishkafka.WithSASLEnabled(),
-				sharedpublishkafka.WithSASLCredentials(
+			options = append(options, publishkafka.ProvideSaramaOption(
+				publishkafka.WithSASLEnabled(),
+				publishkafka.WithSASLCredentials(
 					viper.GetString(publisherKafkaSASLUsername),
 					viper.GetString(publisherKafkaSASLPassword),
 				),
-				sharedpublishkafka.WithSASLMechanism(sarama.SASLMechanism(viper.GetString(publisherKafkaSASLMechanism))),
-				sharedpublishkafka.WithSASLScramClient(setSCRAMClient),
+				publishkafka.WithSASLMechanism(sarama.SASLMechanism(viper.GetString(publisherKafkaSASLMechanism))),
+				publishkafka.WithSASLScramClient(setSCRAMClient),
 			))
 		}
 	}
@@ -142,7 +142,7 @@ func setLogger() {
 		log.SetFormatter(&logrus.JSONFormatter{})
 	}
 
-	sharedlogging.SetFactory(sharedlogging.StaticLoggerFactory(sharedlogginglogrus.New(log)))
+	logging.SetFactory(logging.StaticLoggerFactory(logginglogrus.New(log)))
 
 	// Add a dedicated logger for opentelemetry in case of error
 	otel.SetLogger(logrusr.New(logrus.New().WithField("component", "otlp")))
@@ -178,14 +178,14 @@ func setSCRAMClient() sarama.SCRAMClient {
 
 	switch viper.GetInt(publisherKafkaSASLScramSHASize) {
 	case 512:
-		fn = sharedpublishkafka.SHA512
+		fn = publishkafka.SHA512
 	case 256:
-		fn = sharedpublishkafka.SHA256
+		fn = publishkafka.SHA256
 	default:
 		panic("sha size not handled")
 	}
 
-	return &sharedpublishkafka.XDGSCRAMClient{
+	return &publishkafka.XDGSCRAMClient{
 		HashGeneratorFcn: fn,
 	}
 }

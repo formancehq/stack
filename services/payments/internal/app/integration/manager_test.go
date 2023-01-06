@@ -12,8 +12,8 @@ import (
 
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/sharedlogging"
-	"github.com/formancehq/go-libs/sharedlogging/sharedlogginglogrus"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/logging/logginglogrus"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
@@ -47,7 +47,7 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 		return dig.New(), nil
 	})
 
-	logger := sharedlogginglogrus.New(l)
+	logger := logginglogrus.New(l)
 	taskStore := task.NewInMemoryStore()
 	managerStore := NewInMemoryStore()
 	provider := models.ConnectorProvider(uuid.New().String())
@@ -59,7 +59,7 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 	})
 
 	loader := NewLoaderBuilder[ConnectorConfig](provider).
-		WithLoad(func(logger sharedlogging.Logger, config ConnectorConfig) Connector {
+		WithLoad(func(logger logging.Logger, config ConnectorConfig) Connector {
 			return builder.Build()
 		}).
 		WithAllowedTasks(1).

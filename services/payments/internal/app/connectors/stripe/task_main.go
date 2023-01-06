@@ -5,7 +5,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/pkg/errors"
@@ -14,7 +14,7 @@ import (
 
 func ingest(
 	ctx context.Context,
-	logger sharedlogging.Logger,
+	logger logging.Logger,
 	scheduler task.Scheduler,
 	ingester ingestion.Ingester,
 	bts []*stripe.BalanceTransaction,
@@ -52,9 +52,9 @@ func ingest(
 	return nil
 }
 
-func MainTask(config Config) func(ctx context.Context, logger sharedlogging.Logger, resolver task.StateResolver,
+func MainTask(config Config) func(ctx context.Context, logger logging.Logger, resolver task.StateResolver,
 	scheduler task.Scheduler, ingester ingestion.Ingester) error {
-	return func(ctx context.Context, logger sharedlogging.Logger, resolver task.StateResolver,
+	return func(ctx context.Context, logger logging.Logger, resolver task.StateResolver,
 		scheduler task.Scheduler, ingester ingestion.Ingester,
 	) error {
 		runner := NewRunner(

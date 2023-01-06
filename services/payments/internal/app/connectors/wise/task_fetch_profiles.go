@@ -8,10 +8,10 @@ import (
 
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 )
 
-func taskFetchProfiles(logger sharedlogging.Logger, client *client) task.Task {
+func taskFetchProfiles(logger logging.Logger, client *client) task.Task {
 	return func(
 		ctx context.Context,
 		scheduler task.Scheduler,

@@ -155,3 +155,4 @@ This connector is used only for testing purposes. It does not connect to any rea
   "fileGenerationPeriod": "10s"
 }
 ```
+

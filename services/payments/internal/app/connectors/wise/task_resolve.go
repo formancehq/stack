@@ -5,7 +5,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 )
 
 const (
@@ -20,7 +20,7 @@ type TaskDescriptor struct {
 	ProfileID uint64 `json:"profileID" yaml:"profileID" bson:"profileID"`
 }
 
-func resolveTasks(logger sharedlogging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
+func resolveTasks(logger logging.Logger, config Config) func(taskDefinition TaskDescriptor) task.Task {
 	client := newClient(config.APIKey)
 
 	return func(taskDefinition TaskDescriptor) task.Task {

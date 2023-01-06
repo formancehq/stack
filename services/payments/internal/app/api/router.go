@@ -7,7 +7,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/storage"
 
-	"github.com/formancehq/go-libs/sharedauth"
+	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -31,7 +31,7 @@ func httpRouter(store *storage.Storage, connectorHandlers []connectorHandler) (*
 	authGroup := rootMux.Name("authenticated").Subrouter()
 
 	if methods := sharedAuthMethods(); len(methods) > 0 {
-		authGroup.Use(sharedauth.Middleware(methods...))
+		authGroup.Use(auth.Middleware(methods...))
 	}
 
 	authGroup.Path("/payments").Methods(http.MethodGet).Handler(listPaymentsHandler(store))

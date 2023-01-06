@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -21,7 +21,7 @@ type client struct {
 	endpoint              string
 	authorizationEndpoint string
 
-	logger sharedlogging.Logger
+	logger logging.Logger
 
 	accessToken          string
 	accessTokenExpiresAt time.Time
@@ -34,7 +34,7 @@ func newHTTPClient() *http.Client {
 	}
 }
 
-func newClient(username, password, endpoint, authorizationEndpoint string, logger sharedlogging.Logger) (*client, error) {
+func newClient(username, password, endpoint, authorizationEndpoint string, logger logging.Logger) (*client, error) {
 	c := &client{
 		httpClient: newHTTPClient(),
 

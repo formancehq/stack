@@ -12,8 +12,8 @@ import (
 
 	"github.com/formancehq/payments/internal/app/storage"
 
-	"github.com/formancehq/go-libs/sharedlogging"
-	"github.com/formancehq/go-libs/sharedpublish"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/formancehq/payments/internal/app/task"
@@ -30,9 +30,9 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integrati
 ) fx.Option {
 	return fx.Options(
 		fx.Provide(func(store *storage.Storage,
-			publisher sharedpublish.Publisher,
+			publisher publish.Publisher,
 		) *integration.ConnectorManager[ConnectorConfig] {
-			logger := sharedlogging.GetLogger(context.Background())
+			logger := logging.GetLogger(context.Background())
 
 			schedulerFactory := integration.TaskSchedulerFactoryFn(func(
 				resolver task.Resolver, maxTasks int,

@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ApiKey** | **interface{}** |  |
+**ApiKey** | **interface{}** |  | 
 
 ## Methods
 
@@ -57,3 +57,5 @@ SetApiKey sets ApiKey field to given value.
 UnsetApiKey ensures that no value is present for ApiKey, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

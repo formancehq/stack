@@ -14,7 +14,7 @@ import (
 
 	"github.com/uptrace/bun"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"go.uber.org/fx"
 )
 
@@ -46,7 +46,7 @@ func Module(uri string) fx.Option {
 		fx.Invoke(func(lc fx.Lifecycle, repo *Storage) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					sharedlogging.Debug("Ping database...")
+					logging.Debug("Ping database...")
 
 					// TODO: Check migrations state and panic if migrations are not applied
 

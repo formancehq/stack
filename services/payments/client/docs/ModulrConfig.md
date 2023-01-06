@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ApiKey** | **interface{}** |  |
-**ApiSecret** | **interface{}** |  |
-**Endpoint** | Pointer to **interface{}** |  | [optional]
+**ApiKey** | **interface{}** |  | 
+**ApiSecret** | **interface{}** |  | 
+**Endpoint** | Pointer to **interface{}** |  | [optional] 
 
 ## Methods
 
@@ -124,3 +124,5 @@ HasEndpoint returns a boolean if a field has been set.
 UnsetEndpoint ensures that no value is present for Endpoint, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

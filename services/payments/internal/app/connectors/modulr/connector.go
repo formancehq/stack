@@ -5,7 +5,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/formancehq/payments/internal/app/task"
 )
@@ -13,7 +13,7 @@ import (
 const Name = models.ConnectorProviderModulr
 
 type Connector struct {
-	logger sharedlogging.Logger
+	logger logging.Logger
 	cfg    Config
 }
 
@@ -44,7 +44,7 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 
 var _ integration.Connector = &Connector{}
 
-func newConnector(logger sharedlogging.Logger, cfg Config) *Connector {
+func newConnector(logger logging.Logger, cfg Config) *Connector {
 	return &Connector{
 		logger: logger.WithFields(map[string]any{
 			"component": "connector",

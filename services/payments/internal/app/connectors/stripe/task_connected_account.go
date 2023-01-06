@@ -3,13 +3,13 @@ package stripe
 import (
 	"context"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/task"
 	"github.com/stripe/stripe-go/v72"
 )
 
-func ingestBatch(ctx context.Context, logger sharedlogging.Logger, ingester ingestion.Ingester,
+func ingestBatch(ctx context.Context, logger logging.Logger, ingester ingestion.Ingester,
 	bts []*stripe.BalanceTransaction, commitState TimelineState, tail bool,
 ) error {
 	batch := ingestion.PaymentBatch{}
@@ -42,9 +42,9 @@ func ingestBatch(ctx context.Context, logger sharedlogging.Logger, ingester inge
 	return nil
 }
 
-func ConnectedAccountTask(config Config, account string) func(ctx context.Context, logger sharedlogging.Logger,
+func ConnectedAccountTask(config Config, account string) func(ctx context.Context, logger logging.Logger,
 	ingester ingestion.Ingester, resolver task.StateResolver) error {
-	return func(ctx context.Context, logger sharedlogging.Logger, ingester ingestion.Ingester,
+	return func(ctx context.Context, logger logging.Logger, ingester ingestion.Ingester,
 		resolver task.StateResolver,
 	) error {
 		logger.Infof("Create new trigger")

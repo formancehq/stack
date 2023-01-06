@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/stretchr/testify/require"
 	"github.com/stripe/stripe-go/v72"
 )
@@ -24,7 +24,7 @@ func TestTimelineTrigger(t *testing.T) {
 
 	ingestedTx := make([]*stripe.BalanceTransaction, 0)
 	trigger := NewTimelineTrigger(
-		sharedlogging.GetLogger(context.Background()),
+		logging.GetLogger(context.Background()),
 		IngesterFn(func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
 			ingestedTx = append(ingestedTx, batch...)
 
@@ -73,7 +73,7 @@ func TestCancelTimelineTrigger(t *testing.T) {
 
 	waiting := make(chan struct{})
 	trigger := NewTimelineTrigger(
-		sharedlogging.GetLogger(context.Background()),
+		logging.GetLogger(context.Background()),
 		IngesterFn(func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
 			close(waiting) // Instruct the test the trigger is in fetching state
 			<-ctx.Done()

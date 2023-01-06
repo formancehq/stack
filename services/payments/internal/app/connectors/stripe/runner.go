@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 )
 
 func NewRunner(
-	logger sharedlogging.Logger,
+	logger logging.Logger,
 	trigger *TimelineTrigger,
 	pollingPeriod time.Duration,
 ) *Runner {
@@ -25,7 +25,7 @@ func NewRunner(
 type Runner struct {
 	stopChan      chan chan struct{}
 	trigger       *TimelineTrigger
-	logger        sharedlogging.Logger
+	logger        logging.Logger
 	pollingPeriod time.Duration
 }
 

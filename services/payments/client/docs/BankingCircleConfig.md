@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Username** | **interface{}** |  |
-**Password** | **interface{}** |  |
-**Endpoint** | **interface{}** |  |
-**AuthorizationEndpoint** | **interface{}** |  |
+**Username** | **interface{}** |  | 
+**Password** | **interface{}** |  | 
+**Endpoint** | **interface{}** |  | 
+**AuthorizationEndpoint** | **interface{}** |  | 
 
 ## Methods
 
@@ -150,3 +150,5 @@ SetAuthorizationEndpoint sets AuthorizationEndpoint field to given value.
 UnsetAuthorizationEndpoint ensures that no value is present for AuthorizationEndpoint, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

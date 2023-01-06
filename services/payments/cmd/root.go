@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	_ "github.com/bombsimon/logrusr/v3"
-	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -68,7 +68,7 @@ func rootCommand() *cobra.Command {
 	server.Flags().Bool(authBearerUseScopesFlag,
 		false, "Use scopes as defined by rfc https://datatracker.ietf.org/doc/html/rfc8693")
 
-	sharedotlptraces.InitOTLPTracesFlags(server.Flags())
+	otlptraces.InitOTLPTracesFlags(server.Flags())
 
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()

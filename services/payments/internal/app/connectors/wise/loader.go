@@ -1,7 +1,7 @@
 package wise
 
 import (
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/formancehq/payments/internal/app/models"
 )
@@ -18,7 +18,7 @@ func (l *Loader) Name() models.ConnectorProvider {
 	return Name
 }
 
-func (l *Loader) Load(logger sharedlogging.Logger, config Config) integration.Connector {
+func (l *Loader) Load(logger logging.Logger, config Config) integration.Connector {
 	return newConnector(logger, config)
 }
 

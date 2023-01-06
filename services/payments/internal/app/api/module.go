@@ -8,15 +8,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedapi"
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/go-libs/logging"
 
 	"github.com/formancehq/payments/internal/app/connectors/bankingcircle"
 	"github.com/formancehq/payments/internal/app/connectors/currencycloud"
 
+	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/go-libs/oauth2/oauth2introspect"
-	"github.com/formancehq/go-libs/sharedauth"
-	sharedotlp "github.com/formancehq/go-libs/sharedotlp/pkg"
+	"github.com/formancehq/go-libs/otlp"
 	"github.com/formancehq/payments/internal/app/connectors/dummypay"
 	"github.com/formancehq/payments/internal/app/connectors/modulr"
 	"github.com/formancehq/payments/internal/app/connectors/stripe"
@@ -77,7 +77,7 @@ func HTTPModule() fx.Option {
 
 func httpRecoveryFunc(ctx context.Context, e interface{}) {
 	if viper.GetBool(otelTracesFlag) {
-		sharedotlp.RecordAsError(ctx, e)
+		otlp.RecordAsError(ctx, e)
 	} else {
 		logrus.Errorln(e)
 		debug.PrintStack()
@@ -99,28 +99,28 @@ func httpServeFunc(handler http.Handler) http.Handler {
 	})
 }
 
-func sharedAuthMethods() []sharedauth.Method {
-	methods := make([]sharedauth.Method, 0)
+func sharedAuthMethods() []auth.Method {
+	methods := make([]auth.Method, 0)
 
 	if viper.GetBool(authBasicEnabledFlag) {
-		credentials := sharedauth.Credentials{}
+		credentials := auth.Credentials{}
 
 		for _, kv := range viper.GetStringSlice(authBasicCredentialsFlag) {
 			parts := strings.SplitN(kv, ":", 2)
-			credentials[parts[0]] = sharedauth.Credential{
+			credentials[parts[0]] = auth.Credential{
 				Password: parts[1],
 			}
 		}
 
-		methods = append(methods, sharedauth.NewHTTPBasicMethod(credentials))
+		methods = append(methods, auth.NewHTTPBasicMethod(credentials))
 	}
 
 	if viper.GetBool(authBearerEnabledFlag) {
-		methods = append(methods, sharedauth.NewHttpBearerMethod(
-			sharedauth.NewIntrospectionValidator(
+		methods = append(methods, auth.NewHttpBearerMethod(
+			auth.NewIntrospectionValidator(
 				oauth2introspect.NewIntrospecter(viper.GetString(authBearerIntrospectURLFlag)),
 				viper.GetBool(authBearerAudiencesWildcardFlag),
-				sharedauth.AudienceIn(viper.GetStringSlice(authBearerAudienceFlag)...),
+				auth.AudienceIn(viper.GetStringSlice(authBearerAudienceFlag)...),
 			),
 		))
 	}
@@ -130,9 +130,9 @@ func sharedAuthMethods() []sharedauth.Method {
 
 func handleServerError(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
-	sharedlogging.GetLogger(r.Context()).Error(err)
+	logging.GetLogger(r.Context()).Error(err)
 	// TODO: Opentracing
-	err = json.NewEncoder(w).Encode(sharedapi.ErrorResponse{
+	err = json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    "INTERNAL",
 		ErrorMessage: err.Error(),
 	})
@@ -143,9 +143,9 @@ func handleServerError(w http.ResponseWriter, r *http.Request, err error) {
 
 func handleValidationError(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusBadRequest)
-	sharedlogging.GetLogger(r.Context()).Error(err)
+	logging.GetLogger(r.Context()).Error(err)
 	// TODO: Opentracing
-	err = json.NewEncoder(w).Encode(sharedapi.ErrorResponse{
+	err = json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    "VALIDATION",
 		ErrorMessage: err.Error(),
 	})

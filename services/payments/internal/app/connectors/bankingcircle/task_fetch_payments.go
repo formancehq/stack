@@ -9,10 +9,10 @@ import (
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 )
 
-func taskFetchPayments(logger sharedlogging.Logger, client *client) task.Task {
+func taskFetchPayments(logger logging.Logger, client *client) task.Task {
 	return func(
 		ctx context.Context,
 		scheduler task.Scheduler,

@@ -7,7 +7,7 @@ import (
 
 	"github.com/stripe/stripe-go/v72"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/stretchr/testify/require"
 )
 
@@ -28,7 +28,7 @@ func TestStopTailing(t *testing.T) {
 		MoreRecentID: "tx2",
 	})
 
-	logger := sharedlogging.GetLogger(context.Background())
+	logger := logging.GetLogger(context.Background())
 	trigger := NewTimelineTrigger(logger, NoOpIngester, timeline)
 	r := NewRunner(logger, trigger, time.Second)
 

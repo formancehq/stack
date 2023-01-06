@@ -12,7 +12,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/sharedlogging/sharedlogginglogrus"
+	"github.com/formancehq/go-libs/logging/logginglogrus"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
@@ -67,7 +67,7 @@ func TestTaskScheduler(t *testing.T) {
 		l.SetLevel(logrus.DebugLevel)
 	}
 
-	logger := sharedlogginglogrus.New(l)
+	logger := logginglogrus.New(l)
 
 	t.Run("Nominal", func(t *testing.T) {
 		t.Parallel()

@@ -8,12 +8,12 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/task"
 )
 
-func taskFetchTransfers(logger sharedlogging.Logger, client *client, profileID uint64) task.Task {
+func taskFetchTransfers(logger logging.Logger, client *client, profileID uint64) task.Task {
 	return func(
 		ctx context.Context,
 		scheduler task.Scheduler,

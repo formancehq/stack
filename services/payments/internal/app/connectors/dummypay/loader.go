@@ -5,7 +5,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/connectors"
 	"github.com/formancehq/payments/internal/app/integration"
 )
@@ -44,7 +44,7 @@ func (l *Loader) ApplyDefaults(cfg Config) Config {
 }
 
 // Load returns the connector.
-func (l *Loader) Load(logger sharedlogging.Logger, config Config) integration.Connector {
+func (l *Loader) Load(logger logging.Logger, config Config) integration.Connector {
 	return newConnector(logger, config, newFS())
 }
 

@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Datatype** | Pointer to **interface{}** |  | [optional]
-**Required** | Pointer to **interface{}** |  | [optional]
+**Datatype** | Pointer to **interface{}** |  | [optional] 
+**Required** | Pointer to **interface{}** |  | [optional] 
 
 ## Methods
 
@@ -98,3 +98,5 @@ HasRequired returns a boolean if a field has been set.
 UnsetRequired ensures that no value is present for Required, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

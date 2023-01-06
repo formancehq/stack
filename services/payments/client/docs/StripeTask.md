@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**OldestId** | Pointer to **interface{}** | The id of the oldest BalanceTransaction fetched from stripe for this account | [optional]
-**OldestDate** | Pointer to **interface{}** | The creation date of the oldest BalanceTransaction fetched from stripe for this account | [optional]
-**MoreRecentId** | Pointer to **interface{}** | The id of the more recent BalanceTransaction fetched from stripe for this account | [optional]
-**MoreRecentDate** | Pointer to **interface{}** | The creation date of the more recent BalanceTransaction fetched from stripe for this account | [optional]
-**NoMoreHistory** | Pointer to **interface{}** |  | [optional]
+**OldestId** | Pointer to **interface{}** | The id of the oldest BalanceTransaction fetched from stripe for this account | [optional] 
+**OldestDate** | Pointer to **interface{}** | The creation date of the oldest BalanceTransaction fetched from stripe for this account | [optional] 
+**MoreRecentId** | Pointer to **interface{}** | The id of the more recent BalanceTransaction fetched from stripe for this account | [optional] 
+**MoreRecentDate** | Pointer to **interface{}** | The creation date of the more recent BalanceTransaction fetched from stripe for this account | [optional] 
+**NoMoreHistory** | Pointer to **interface{}** |  | [optional] 
 
 ## Methods
 
@@ -206,3 +206,5 @@ HasNoMoreHistory returns a boolean if a field has been set.
 UnsetNoMoreHistory ensures that no value is present for NoMoreHistory, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+
