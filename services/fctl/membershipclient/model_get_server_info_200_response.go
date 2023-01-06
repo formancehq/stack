@@ -72,7 +72,7 @@ func (o *GetServerInfo200Response) SetVersion(v string) {
 }
 
 func (o GetServerInfo200Response) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

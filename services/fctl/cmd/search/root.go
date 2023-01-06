@@ -55,9 +55,9 @@ func NewCommand() *cobra.Command {
 			size := int64(fctl.GetInt(cmd, sizeFlag))
 
 			response, _, err := searchClient.SearchApi.Search(cmd.Context()).Query(formance.Query{
-				PageSize:   &size,
-				Terms:  terms,
-				Target: &target,
+				PageSize: &size,
+				Terms:    terms,
+				Target:   &target,
 			}).Execute()
 			if err != nil {
 				return err
