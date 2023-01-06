@@ -1,0 +1,33 @@
+name: Tests
+on:
+  workflow_call:
+    inputs:
+      PATH:
+        required: true
+        type: string
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ inputs.PATH }}
+    steps:
+      - name: Install task
+        uses: arduino/setup-task@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: '${{ inputs.PATH }}/go.mod'
+          cache-dependency-path: '${{ inputs.PATH }}/go.sum'
+          cache: true
+      - name: Run tests
+        run: task tests
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: false # optional (default = false)
+          verbose: true # optional (default = false)
+          working-directory: '${{ inputs.PATH }}'

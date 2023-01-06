@@ -1,0 +1,9 @@
+go 1.19
+
+use (
+	./libs/go-libs
+	./sdks/go
+	./services/fctl
+	./services/fctl/membershipclient
+	./services/wallets
+)

@@ -1,0 +1,31 @@
+name: Default - Release
+on:
+  release:
+    types: [prereleased, released]
+
+jobs:
+  OpenAPI:
+    uses: ./.github/workflows/service_release_openapi.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+
+  Wallets:
+    uses: ./.github/workflows/service_release_wallets.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Search:
+    uses: ./.github/workflows/service_release_search.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Fctl:
+    uses: ./.github/workflows/service_release_fctl.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}

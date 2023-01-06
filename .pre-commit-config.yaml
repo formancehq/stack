@@ -1,0 +1,58 @@
+fail_fast: true
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.4.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-yaml
+  - id: check-added-large-files
+- repo: local
+  hooks:
+  - id: gofmt
+    name: go-fmt
+    entry: ./scripts/gofmt.sh
+    description: "Runs `go fmt`, requires golang"
+    language: script
+    files: '\.go$'
+    require_serial: true
+    pass_filenames: false
+  - id: goimports
+    name: goimports
+    entry: ./scripts/goimports.sh
+    files: '\.go$'
+    description: "Runs `goimports`, requires golang"
+    language: script
+    require_serial: true
+  - id: golangci-lint
+    name: golangci-lint
+    entry: ./scripts/golangci-lint.sh
+    language: script
+    files: '\.go$'
+    description: "Runs `golangci-lint`, requires golangci-lint"
+    require_serial: true
+    pass_filenames: false
+  - id: gotests
+    name: gotests
+    entry: ./scripts/gotests.sh
+    language: script
+    files: '\.go$'
+    pass_filenames: false
+    description: "Runs `go test`, requires golang"
+    require_serial: true
+  - id: gomodtidy
+    name: gomodtidy
+    entry: ./scripts/gomodtidy.sh
+    language: script
+    pass_filenames: false
+    files: '\.go$'
+    description: "Runs `go mod tidy`, requires golang"
+    require_serial: true
+  - id: commitlint
+    name: commitlint
+    description: Commitlint hook
+    language: node
+    entry: commitlint --edit
+    pass_filenames: false
+    always_run: true
+    additional_dependencies: ['@commitlint/config-conventional']

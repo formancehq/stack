@@ -1,0 +1,47 @@
+on:
+  workflow_call:
+    inputs:
+      GITHUB_EVENT_NAME:
+        type: string
+        required: true
+      GITHUB_EVENT_ACTION:
+        type: string
+        required: true
+
+name: Wallets
+defaults:
+  run:
+    working-directory: "./services/wallets"
+jobs:
+  Lint:
+    uses: ./.github/workflows/template_lint.yaml
+    with:
+      PATH: "./services/wallets"
+
+  Test:
+    uses: ./.github/workflows/template_tests.yaml
+    with:
+      PATH: "./services/wallets"
+
+  Release:
+    uses: ./.github/workflows/template_goreleaser_release.yaml
+    with:
+      PATH: "./services/wallets"
+    secrets:
+      FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+    needs:
+      - Lint
+      - Test
+
+  Docker:
+    uses: ./.github/workflows/template_docker.yaml
+    with:
+      NAME: wallets
+      PATH: "./services/wallets"
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+    needs:
+      - Lint
+      - Test

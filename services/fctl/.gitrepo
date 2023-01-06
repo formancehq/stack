@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = fctl
+	branch = feat/num-1422-wallets-fctl-v03
+	commit = 2b5a8483ae66924119c407512e62ae5f5a679a02
+	parent = 85056ea9fcc479cd97a154e344e3d7ad29ff991f
+	method = merge
+	cmdver = 0.4.5

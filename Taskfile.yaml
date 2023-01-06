@@ -1,0 +1,8 @@
+# https://taskfile.dev
+
+version: '3'
+
+includes:
+  openapi:
+    taskfile: ./openapi
+    dir: ./openapi
