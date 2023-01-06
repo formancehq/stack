@@ -6,7 +6,7 @@
 [subrepo]
 	remote = fctl
 	branch = feat/num-1422-wallets-fctl-v03
-	commit = 74c7abae13065b30cd18b2e834e529e1c76758bf
-	parent = 404945dd5faa801774dce004e3dbd847df660652
+	commit = 2b5a8483ae66924119c407512e62ae5f5a679a02
+	parent = b3419c0d86d16c8a8f79d99b482e115ee6588435
 	method = merge
 	cmdver = 0.4.5
