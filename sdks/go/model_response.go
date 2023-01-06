@@ -18,8 +18,8 @@ import (
 // Response struct for Response
 type Response struct {
 	// The payload
-	Data   map[string]interface{} `json:"data,omitempty"`
-	Cursor *Cursor                `json:"cursor,omitempty"`
+	Data map[string]interface{} `json:"data,omitempty"`
+	Cursor *Cursor `json:"cursor,omitempty"`
 }
 
 // NewResponse instantiates a new Response object
@@ -52,7 +52,7 @@ func (o *Response) GetData() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Response) GetDataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Data) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Data, true
 }
@@ -84,7 +84,7 @@ func (o *Response) GetCursor() Cursor {
 // and a boolean to check if the value has been set.
 func (o *Response) GetCursorOk() (*Cursor, bool) {
 	if o == nil || isNil(o.Cursor) {
-		return nil, false
+    return nil, false
 	}
 	return o.Cursor, true
 }

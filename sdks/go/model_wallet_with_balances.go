@@ -21,10 +21,10 @@ type WalletWithBalances struct {
 	// The unique ID of the wallet.
 	Id string `json:"id"`
 	// Metadata associated with the wallet.
-	Metadata  map[string]interface{}     `json:"metadata"`
-	Name      string                     `json:"name"`
-	CreatedAt time.Time                  `json:"createdAt"`
-	Balances  WalletWithBalancesBalances `json:"balances"`
+	Metadata map[string]interface{} `json:"metadata"`
+	Name string `json:"name"`
+	CreatedAt time.Time `json:"createdAt"`
+	Balances WalletWithBalancesBalances `json:"balances"`
 }
 
 // NewWalletWithBalances instantiates a new WalletWithBalances object
@@ -63,7 +63,7 @@ func (o *WalletWithBalances) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -87,7 +87,7 @@ func (o *WalletWithBalances) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -111,7 +111,7 @@ func (o *WalletWithBalances) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetNameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Name, true
 }
@@ -135,7 +135,7 @@ func (o *WalletWithBalances) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.CreatedAt, true
 }
@@ -159,7 +159,7 @@ func (o *WalletWithBalances) GetBalances() WalletWithBalancesBalances {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetBalancesOk() (*WalletWithBalancesBalances, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Balances, true
 }

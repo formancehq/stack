@@ -17,7 +17,7 @@ import (
 
 // ScopeOptions struct for ScopeOptions
 type ScopeOptions struct {
-	Label    string                 `json:"label"`
+	Label string `json:"label"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
@@ -53,7 +53,7 @@ func (o *ScopeOptions) GetLabel() string {
 // and a boolean to check if the value has been set.
 func (o *ScopeOptions) GetLabelOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Label, true
 }
@@ -76,7 +76,7 @@ func (o *ScopeOptions) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *ScopeOptions) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }

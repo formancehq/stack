@@ -52,7 +52,7 @@ func (o *GetHoldsResponse) GetCursor() GetHoldsResponseCursor {
 // and a boolean to check if the value has been set.
 func (o *GetHoldsResponse) GetCursorOk() (*GetHoldsResponseCursor, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Cursor, true
 }

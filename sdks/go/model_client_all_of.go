@@ -17,8 +17,8 @@ import (
 
 // ClientAllOf struct for ClientAllOf
 type ClientAllOf struct {
-	Id      string         `json:"id"`
-	Scopes  []string       `json:"scopes,omitempty"`
+	Id string `json:"id"`
+	Scopes []string `json:"scopes,omitempty"`
 	Secrets []ClientSecret `json:"secrets,omitempty"`
 }
 
@@ -54,7 +54,7 @@ func (o *ClientAllOf) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *ClientAllOf) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -77,7 +77,7 @@ func (o *ClientAllOf) GetScopes() []string {
 // and a boolean to check if the value has been set.
 func (o *ClientAllOf) GetScopesOk() ([]string, bool) {
 	if o == nil || isNil(o.Scopes) {
-		return nil, false
+    return nil, false
 	}
 	return o.Scopes, true
 }
@@ -109,7 +109,7 @@ func (o *ClientAllOf) GetSecrets() []ClientSecret {
 // and a boolean to check if the value has been set.
 func (o *ClientAllOf) GetSecretsOk() ([]ClientSecret, bool) {
 	if o == nil || isNil(o.Secrets) {
-		return nil, false
+    return nil, false
 	}
 	return o.Secrets, true
 }

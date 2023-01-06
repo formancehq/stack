@@ -17,9 +17,9 @@ import (
 
 // SecretAllOf struct for SecretAllOf
 type SecretAllOf struct {
-	Id         string `json:"id"`
+	Id string `json:"id"`
 	LastDigits string `json:"lastDigits"`
-	Clear      string `json:"clear"`
+	Clear string `json:"clear"`
 }
 
 // NewSecretAllOf instantiates a new SecretAllOf object
@@ -56,7 +56,7 @@ func (o *SecretAllOf) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *SecretAllOf) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -80,7 +80,7 @@ func (o *SecretAllOf) GetLastDigits() string {
 // and a boolean to check if the value has been set.
 func (o *SecretAllOf) GetLastDigitsOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.LastDigits, true
 }
@@ -104,7 +104,7 @@ func (o *SecretAllOf) GetClear() string {
 // and a boolean to check if the value has been set.
 func (o *SecretAllOf) GetClearOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Clear, true
 }

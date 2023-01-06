@@ -18,29 +18,31 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
+
 
 type TransactionsApi interface {
 
 	/*
-		AddMetadataOnTransaction Set the metadata of a transaction by its ID.
+	AddMetadataOnTransaction Set the metadata of a transaction by its ID
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param ledger Name of the ledger.
-		@param txid Transaction ID.
-		@return ApiAddMetadataOnTransactionRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param ledger Name of the ledger.
+	@param txid Transaction ID.
+	@return ApiAddMetadataOnTransactionRequest
 	*/
-	AddMetadataOnTransaction(ctx context.Context, ledger string, txid int32) ApiAddMetadataOnTransactionRequest
+	AddMetadataOnTransaction(ctx context.Context, ledger string, txid int64) ApiAddMetadataOnTransactionRequest
 
 	// AddMetadataOnTransactionExecute executes the request
 	AddMetadataOnTransactionExecute(r ApiAddMetadataOnTransactionRequest) (*http.Response, error)
 
 	/*
-		CountTransactions Count the transactions from a ledger.
+	CountTransactions Count the transactions from a ledger
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param ledger Name of the ledger.
-		@return ApiCountTransactionsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param ledger Name of the ledger.
+	@return ApiCountTransactionsRequest
 	*/
 	CountTransactions(ctx context.Context, ledger string) ApiCountTransactionsRequest
 
@@ -48,11 +50,11 @@ type TransactionsApi interface {
 	CountTransactionsExecute(r ApiCountTransactionsRequest) (*http.Response, error)
 
 	/*
-		CreateTransaction Create a new transaction to a ledger.
+	CreateTransaction Create a new transaction to a ledger
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param ledger Name of the ledger.
-		@return ApiCreateTransactionRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param ledger Name of the ledger.
+	@return ApiCreateTransactionRequest
 	*/
 	CreateTransaction(ctx context.Context, ledger string) ApiCreateTransactionRequest
 
@@ -61,11 +63,11 @@ type TransactionsApi interface {
 	CreateTransactionExecute(r ApiCreateTransactionRequest) (*TransactionsResponse, *http.Response, error)
 
 	/*
-		CreateTransactions Create a new batch of transactions to a ledger.
+	CreateTransactions Create a new batch of transactions to a ledger
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param ledger Name of the ledger.
-		@return ApiCreateTransactionsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param ledger Name of the ledger.
+	@return ApiCreateTransactionsRequest
 	*/
 	CreateTransactions(ctx context.Context, ledger string) ApiCreateTransactionsRequest
 
@@ -74,43 +76,43 @@ type TransactionsApi interface {
 	CreateTransactionsExecute(r ApiCreateTransactionsRequest) (*TransactionsResponse, *http.Response, error)
 
 	/*
-		GetTransaction Get transaction from a ledger by its ID.
+	GetTransaction Get transaction from a ledger by its ID
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param ledger Name of the ledger.
-		@param txid Transaction ID.
-		@return ApiGetTransactionRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param ledger Name of the ledger.
+	@param txid Transaction ID.
+	@return ApiGetTransactionRequest
 	*/
-	GetTransaction(ctx context.Context, ledger string, txid int32) ApiGetTransactionRequest
+	GetTransaction(ctx context.Context, ledger string, txid int64) ApiGetTransactionRequest
 
 	// GetTransactionExecute executes the request
 	//  @return TransactionResponse
 	GetTransactionExecute(r ApiGetTransactionRequest) (*TransactionResponse, *http.Response, error)
 
 	/*
-		ListTransactions List transactions from a ledger.
+	ListTransactions List transactions from a ledger
 
-		List transactions from a ledger, sorted by txid in descending order.
+	List transactions from a ledger, sorted by txid in descending order.
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param ledger Name of the ledger.
-		@return ApiListTransactionsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param ledger Name of the ledger.
+	@return ApiListTransactionsRequest
 	*/
 	ListTransactions(ctx context.Context, ledger string) ApiListTransactionsRequest
 
 	// ListTransactionsExecute executes the request
-	//  @return ListTransactions200Response
-	ListTransactionsExecute(r ApiListTransactionsRequest) (*ListTransactions200Response, *http.Response, error)
+	//  @return TransactionsCursorResponse
+	ListTransactionsExecute(r ApiListTransactionsRequest) (*TransactionsCursorResponse, *http.Response, error)
 
 	/*
-		RevertTransaction Revert a ledger transaction by its ID.
+	RevertTransaction Revert a ledger transaction by its ID
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param ledger Name of the ledger.
-		@param txid Transaction ID.
-		@return ApiRevertTransactionRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param ledger Name of the ledger.
+	@param txid Transaction ID.
+	@return ApiRevertTransactionRequest
 	*/
-	RevertTransaction(ctx context.Context, ledger string, txid int32) ApiRevertTransactionRequest
+	RevertTransaction(ctx context.Context, ledger string, txid int64) ApiRevertTransactionRequest
 
 	// RevertTransactionExecute executes the request
 	//  @return TransactionResponse
@@ -121,10 +123,10 @@ type TransactionsApi interface {
 type TransactionsApiService service
 
 type ApiAddMetadataOnTransactionRequest struct {
-	ctx         context.Context
-	ApiService  TransactionsApi
-	ledger      string
-	txid        int32
+	ctx context.Context
+	ApiService TransactionsApi
+	ledger string
+	txid int64
 	requestBody *map[string]interface{}
 }
 
@@ -139,28 +141,28 @@ func (r ApiAddMetadataOnTransactionRequest) Execute() (*http.Response, error) {
 }
 
 /*
-AddMetadataOnTransaction Set the metadata of a transaction by its ID.
+AddMetadataOnTransaction Set the metadata of a transaction by its ID
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@param txid Transaction ID.
-	@return ApiAddMetadataOnTransactionRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param ledger Name of the ledger.
+ @param txid Transaction ID.
+ @return ApiAddMetadataOnTransactionRequest
 */
-func (a *TransactionsApiService) AddMetadataOnTransaction(ctx context.Context, ledger string, txid int32) ApiAddMetadataOnTransactionRequest {
+func (a *TransactionsApiService) AddMetadataOnTransaction(ctx context.Context, ledger string, txid int64) ApiAddMetadataOnTransactionRequest {
 	return ApiAddMetadataOnTransactionRequest{
 		ApiService: a,
-		ctx:        ctx,
-		ledger:     ledger,
-		txid:       txid,
+		ctx: ctx,
+		ledger: ledger,
+		txid: txid,
 	}
 }
 
 // Execute executes the request
 func (a *TransactionsApiService) AddMetadataOnTransactionExecute(r ApiAddMetadataOnTransactionRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPost
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.AddMetadataOnTransaction")
@@ -175,6 +177,9 @@ func (a *TransactionsApiService) AddMetadataOnTransactionExecute(r ApiAddMetadat
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.txid < 0 {
+		return nil, reportError("txid must be greater than 0")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
@@ -217,38 +222,14 @@ func (a *TransactionsApiService) AddMetadataOnTransactionExecute(r ApiAddMetadat
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v GetTransaction400Response
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v GetTransaction404Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v AddMetadataToAccount409Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-		}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -256,14 +237,18 @@ func (a *TransactionsApiService) AddMetadataOnTransactionExecute(r ApiAddMetadat
 }
 
 type ApiCountTransactionsRequest struct {
-	ctx         context.Context
-	ApiService  TransactionsApi
-	ledger      string
-	reference   *string
-	account     *string
-	source      *string
+	ctx context.Context
+	ApiService TransactionsApi
+	ledger string
+	reference *string
+	account *string
+	source *string
 	destination *string
-	metadata    *map[string]interface{}
+	startTime *time.Time
+	startTime2 *time.Time
+	endTime *time.Time
+	endTime2 *time.Time
+	metadata *map[string]interface{}
 }
 
 // Filter transactions by reference field.
@@ -290,6 +275,32 @@ func (r ApiCountTransactionsRequest) Destination(destination string) ApiCountTra
 	return r
 }
 
+// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).
+func (r ApiCountTransactionsRequest) StartTime(startTime time.Time) ApiCountTransactionsRequest {
+	r.startTime = &startTime
+	return r
+}
+
+// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead.
+// Deprecated
+func (r ApiCountTransactionsRequest) StartTime2(startTime2 time.Time) ApiCountTransactionsRequest {
+	r.startTime2 = &startTime2
+	return r
+}
+
+// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).
+func (r ApiCountTransactionsRequest) EndTime(endTime time.Time) ApiCountTransactionsRequest {
+	r.endTime = &endTime
+	return r
+}
+
+// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead.
+// Deprecated
+func (r ApiCountTransactionsRequest) EndTime2(endTime2 time.Time) ApiCountTransactionsRequest {
+	r.endTime2 = &endTime2
+	return r
+}
+
 // Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
 func (r ApiCountTransactionsRequest) Metadata(metadata map[string]interface{}) ApiCountTransactionsRequest {
 	r.metadata = &metadata
@@ -301,26 +312,26 @@ func (r ApiCountTransactionsRequest) Execute() (*http.Response, error) {
 }
 
 /*
-CountTransactions Count the transactions from a ledger.
+CountTransactions Count the transactions from a ledger
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@return ApiCountTransactionsRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param ledger Name of the ledger.
+ @return ApiCountTransactionsRequest
 */
 func (a *TransactionsApiService) CountTransactions(ctx context.Context, ledger string) ApiCountTransactionsRequest {
 	return ApiCountTransactionsRequest{
 		ApiService: a,
-		ctx:        ctx,
-		ledger:     ledger,
+		ctx: ctx,
+		ledger: ledger,
 	}
 }
 
 // Execute executes the request
 func (a *TransactionsApiService) CountTransactionsExecute(r ApiCountTransactionsRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodHead
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodHead
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.CountTransactions")
@@ -347,6 +358,18 @@ func (a *TransactionsApiService) CountTransactionsExecute(r ApiCountTransactions
 	if r.destination != nil {
 		localVarQueryParams.Add("destination", parameterToString(*r.destination, ""))
 	}
+	if r.startTime != nil {
+		localVarQueryParams.Add("startTime", parameterToString(*r.startTime, ""))
+	}
+	if r.startTime2 != nil {
+		localVarQueryParams.Add("start_time", parameterToString(*r.startTime2, ""))
+	}
+	if r.endTime != nil {
+		localVarQueryParams.Add("endTime", parameterToString(*r.endTime, ""))
+	}
+	if r.endTime2 != nil {
+		localVarQueryParams.Add("end_time", parameterToString(*r.endTime2, ""))
+	}
 	if r.metadata != nil {
 		localVarQueryParams.Add("metadata", parameterToString(*r.metadata, ""))
 	}
@@ -360,7 +383,7 @@ func (a *TransactionsApiService) CountTransactionsExecute(r ApiCountTransactions
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{}
+	localVarHTTPHeaderAccepts := []string{"application/json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -389,6 +412,14 @@ func (a *TransactionsApiService) CountTransactionsExecute(r ApiCountTransactions
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -396,15 +427,16 @@ func (a *TransactionsApiService) CountTransactionsExecute(r ApiCountTransactions
 }
 
 type ApiCreateTransactionRequest struct {
-	ctx             context.Context
-	ApiService      TransactionsApi
-	ledger          string
-	transactionData *TransactionData
-	preview         *bool
+	ctx context.Context
+	ApiService TransactionsApi
+	ledger string
+	postTransaction *PostTransaction
+	preview *bool
 }
 
-func (r ApiCreateTransactionRequest) TransactionData(transactionData TransactionData) ApiCreateTransactionRequest {
-	r.transactionData = &transactionData
+// The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript
+func (r ApiCreateTransactionRequest) PostTransaction(postTransaction PostTransaction) ApiCreateTransactionRequest {
+	r.postTransaction = &postTransaction
 	return r
 }
 
@@ -419,29 +451,28 @@ func (r ApiCreateTransactionRequest) Execute() (*TransactionsResponse, *http.Res
 }
 
 /*
-CreateTransaction Create a new transaction to a ledger.
+CreateTransaction Create a new transaction to a ledger
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@return ApiCreateTransactionRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param ledger Name of the ledger.
+ @return ApiCreateTransactionRequest
 */
 func (a *TransactionsApiService) CreateTransaction(ctx context.Context, ledger string) ApiCreateTransactionRequest {
 	return ApiCreateTransactionRequest{
 		ApiService: a,
-		ctx:        ctx,
-		ledger:     ledger,
+		ctx: ctx,
+		ledger: ledger,
 	}
 }
 
 // Execute executes the request
-//
-//	@return TransactionsResponse
+//  @return TransactionsResponse
 func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransactionRequest) (*TransactionsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *TransactionsResponse
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *TransactionsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.CreateTransaction")
@@ -455,8 +486,8 @@ func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransaction
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.transactionData == nil {
-		return localVarReturnValue, nil, reportError("transactionData is required and must be specified")
+	if r.postTransaction == nil {
+		return localVarReturnValue, nil, reportError("postTransaction is required and must be specified")
 	}
 
 	if r.preview != nil {
@@ -480,7 +511,7 @@ func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransaction
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.transactionData
+	localVarPostBody = r.postTransaction
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -503,38 +534,14 @@ func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransaction
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 304 {
-			var v TransactionsResponse
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v CreateTransaction400Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v CreateTransaction409Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-		}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -551,9 +558,9 @@ func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransaction
 }
 
 type ApiCreateTransactionsRequest struct {
-	ctx          context.Context
-	ApiService   TransactionsApi
-	ledger       string
+	ctx context.Context
+	ApiService TransactionsApi
+	ledger string
 	transactions *Transactions
 }
 
@@ -567,29 +574,28 @@ func (r ApiCreateTransactionsRequest) Execute() (*TransactionsResponse, *http.Re
 }
 
 /*
-CreateTransactions Create a new batch of transactions to a ledger.
+CreateTransactions Create a new batch of transactions to a ledger
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@return ApiCreateTransactionsRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param ledger Name of the ledger.
+ @return ApiCreateTransactionsRequest
 */
 func (a *TransactionsApiService) CreateTransactions(ctx context.Context, ledger string) ApiCreateTransactionsRequest {
 	return ApiCreateTransactionsRequest{
 		ApiService: a,
-		ctx:        ctx,
-		ledger:     ledger,
+		ctx: ctx,
+		ledger: ledger,
 	}
 }
 
 // Execute executes the request
-//
-//	@return TransactionsResponse
+//  @return TransactionsResponse
 func (a *TransactionsApiService) CreateTransactionsExecute(r ApiCreateTransactionsRequest) (*TransactionsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *TransactionsResponse
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *TransactionsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.CreateTransactions")
@@ -648,27 +654,14 @@ func (a *TransactionsApiService) CreateTransactionsExecute(r ApiCreateTransactio
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v CreateTransactions400Response
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v CreateTransaction409Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-		}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -685,10 +678,10 @@ func (a *TransactionsApiService) CreateTransactionsExecute(r ApiCreateTransactio
 }
 
 type ApiGetTransactionRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService TransactionsApi
-	ledger     string
-	txid       int32
+	ledger string
+	txid int64
 }
 
 func (r ApiGetTransactionRequest) Execute() (*TransactionResponse, *http.Response, error) {
@@ -696,31 +689,30 @@ func (r ApiGetTransactionRequest) Execute() (*TransactionResponse, *http.Respons
 }
 
 /*
-GetTransaction Get transaction from a ledger by its ID.
+GetTransaction Get transaction from a ledger by its ID
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@param txid Transaction ID.
-	@return ApiGetTransactionRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param ledger Name of the ledger.
+ @param txid Transaction ID.
+ @return ApiGetTransactionRequest
 */
-func (a *TransactionsApiService) GetTransaction(ctx context.Context, ledger string, txid int32) ApiGetTransactionRequest {
+func (a *TransactionsApiService) GetTransaction(ctx context.Context, ledger string, txid int64) ApiGetTransactionRequest {
 	return ApiGetTransactionRequest{
 		ApiService: a,
-		ctx:        ctx,
-		ledger:     ledger,
-		txid:       txid,
+		ctx: ctx,
+		ledger: ledger,
+		txid: txid,
 	}
 }
 
 // Execute executes the request
-//
-//	@return TransactionResponse
+//  @return TransactionResponse
 func (a *TransactionsApiService) GetTransactionExecute(r ApiGetTransactionRequest) (*TransactionResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *TransactionResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *TransactionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.GetTransaction")
@@ -735,6 +727,9 @@ func (a *TransactionsApiService) GetTransactionExecute(r ApiGetTransactionReques
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.txid < 0 {
+		return localVarReturnValue, nil, reportError("txid must be greater than 0")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -775,27 +770,14 @@ func (a *TransactionsApiService) GetTransactionExecute(r ApiGetTransactionReques
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v GetTransaction400Response
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v GetTransaction404Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-		}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -812,24 +794,35 @@ func (a *TransactionsApiService) GetTransactionExecute(r ApiGetTransactionReques
 }
 
 type ApiListTransactionsRequest struct {
-	ctx             context.Context
-	ApiService      TransactionsApi
-	ledger          string
-	pageSize        *int32
-	after           *string
-	reference       *string
-	account         *string
-	source          *string
-	destination     *string
-	startTime       *string
-	endTime         *string
+	ctx context.Context
+	ApiService TransactionsApi
+	ledger string
+	pageSize *int64
+	pageSize2 *int64
+	after *string
+	reference *string
+	account *string
+	source *string
+	destination *string
+	startTime *time.Time
+	startTime2 *time.Time
+	endTime *time.Time
+	endTime2 *time.Time
+	cursor *string
 	paginationToken *string
-	metadata        *map[string]interface{}
+	metadata *map[string]interface{}
 }
 
-// The maximum number of results to return per page
-func (r ApiListTransactionsRequest) PageSize(pageSize int32) ApiListTransactionsRequest {
+// The maximum number of results to return per page.
+func (r ApiListTransactionsRequest) PageSize(pageSize int64) ApiListTransactionsRequest {
 	r.pageSize = &pageSize
+	return r
+}
+
+// The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead.
+// Deprecated
+func (r ApiListTransactionsRequest) PageSize2(pageSize2 int64) ApiListTransactionsRequest {
+	r.pageSize2 = &pageSize2
 	return r
 }
 
@@ -845,37 +838,58 @@ func (r ApiListTransactionsRequest) Reference(reference string) ApiListTransacti
 	return r
 }
 
-// Find transactions with postings involving given account, either as source or destination.
+// Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
 func (r ApiListTransactionsRequest) Account(account string) ApiListTransactionsRequest {
 	r.account = &account
 	return r
 }
 
-// Find transactions with postings involving given account at source.
+// Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
 func (r ApiListTransactionsRequest) Source(source string) ApiListTransactionsRequest {
 	r.source = &source
 	return r
 }
 
-// Find transactions with postings involving given account at destination.
+// Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
 func (r ApiListTransactionsRequest) Destination(destination string) ApiListTransactionsRequest {
 	r.destination = &destination
 	return r
 }
 
-// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, 12:00:01 includes the first second of the minute).
-func (r ApiListTransactionsRequest) StartTime(startTime string) ApiListTransactionsRequest {
+// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).
+func (r ApiListTransactionsRequest) StartTime(startTime time.Time) ApiListTransactionsRequest {
 	r.startTime = &startTime
 	return r
 }
 
-// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, 12:00:01 excludes the first second of the minute).
-func (r ApiListTransactionsRequest) EndTime(endTime string) ApiListTransactionsRequest {
+// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead.
+// Deprecated
+func (r ApiListTransactionsRequest) StartTime2(startTime2 time.Time) ApiListTransactionsRequest {
+	r.startTime2 = &startTime2
+	return r
+}
+
+// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).
+func (r ApiListTransactionsRequest) EndTime(endTime time.Time) ApiListTransactionsRequest {
 	r.endTime = &endTime
 	return r
 }
 
-// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
+// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead.
+// Deprecated
+func (r ApiListTransactionsRequest) EndTime2(endTime2 time.Time) ApiListTransactionsRequest {
+	r.endTime2 = &endTime2
+	return r
+}
+
+// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
+func (r ApiListTransactionsRequest) Cursor(cursor string) ApiListTransactionsRequest {
+	r.cursor = &cursor
+	return r
+}
+
+// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead.
+// Deprecated
 func (r ApiListTransactionsRequest) PaginationToken(paginationToken string) ApiListTransactionsRequest {
 	r.paginationToken = &paginationToken
 	return r
@@ -887,36 +901,35 @@ func (r ApiListTransactionsRequest) Metadata(metadata map[string]interface{}) Ap
 	return r
 }
 
-func (r ApiListTransactionsRequest) Execute() (*ListTransactions200Response, *http.Response, error) {
+func (r ApiListTransactionsRequest) Execute() (*TransactionsCursorResponse, *http.Response, error) {
 	return r.ApiService.ListTransactionsExecute(r)
 }
 
 /*
-ListTransactions List transactions from a ledger.
+ListTransactions List transactions from a ledger
 
 List transactions from a ledger, sorted by txid in descending order.
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@return ApiListTransactionsRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param ledger Name of the ledger.
+ @return ApiListTransactionsRequest
 */
 func (a *TransactionsApiService) ListTransactions(ctx context.Context, ledger string) ApiListTransactionsRequest {
 	return ApiListTransactionsRequest{
 		ApiService: a,
-		ctx:        ctx,
-		ledger:     ledger,
+		ctx: ctx,
+		ledger: ledger,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ListTransactions200Response
-func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRequest) (*ListTransactions200Response, *http.Response, error) {
+//  @return TransactionsCursorResponse
+func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRequest) (*TransactionsCursorResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ListTransactions200Response
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *TransactionsCursorResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.ListTransactions")
@@ -932,7 +945,10 @@ func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRe
 	localVarFormParams := url.Values{}
 
 	if r.pageSize != nil {
-		localVarQueryParams.Add("page_size", parameterToString(*r.pageSize, ""))
+		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
+	}
+	if r.pageSize2 != nil {
+		localVarQueryParams.Add("page_size", parameterToString(*r.pageSize2, ""))
 	}
 	if r.after != nil {
 		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
@@ -950,10 +966,19 @@ func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRe
 		localVarQueryParams.Add("destination", parameterToString(*r.destination, ""))
 	}
 	if r.startTime != nil {
-		localVarQueryParams.Add("start_time", parameterToString(*r.startTime, ""))
+		localVarQueryParams.Add("startTime", parameterToString(*r.startTime, ""))
+	}
+	if r.startTime2 != nil {
+		localVarQueryParams.Add("start_time", parameterToString(*r.startTime2, ""))
 	}
 	if r.endTime != nil {
-		localVarQueryParams.Add("end_time", parameterToString(*r.endTime, ""))
+		localVarQueryParams.Add("endTime", parameterToString(*r.endTime, ""))
+	}
+	if r.endTime2 != nil {
+		localVarQueryParams.Add("end_time", parameterToString(*r.endTime2, ""))
+	}
+	if r.cursor != nil {
+		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
 	}
 	if r.paginationToken != nil {
 		localVarQueryParams.Add("pagination_token", parameterToString(*r.paginationToken, ""))
@@ -1000,16 +1025,14 @@ func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRe
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v ListAccounts400Response
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-		}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1026,10 +1049,10 @@ func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRe
 }
 
 type ApiRevertTransactionRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService TransactionsApi
-	ledger     string
-	txid       int32
+	ledger string
+	txid int64
 }
 
 func (r ApiRevertTransactionRequest) Execute() (*TransactionResponse, *http.Response, error) {
@@ -1037,31 +1060,30 @@ func (r ApiRevertTransactionRequest) Execute() (*TransactionResponse, *http.Resp
 }
 
 /*
-RevertTransaction Revert a ledger transaction by its ID.
+RevertTransaction Revert a ledger transaction by its ID
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@param txid Transaction ID.
-	@return ApiRevertTransactionRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param ledger Name of the ledger.
+ @param txid Transaction ID.
+ @return ApiRevertTransactionRequest
 */
-func (a *TransactionsApiService) RevertTransaction(ctx context.Context, ledger string, txid int32) ApiRevertTransactionRequest {
+func (a *TransactionsApiService) RevertTransaction(ctx context.Context, ledger string, txid int64) ApiRevertTransactionRequest {
 	return ApiRevertTransactionRequest{
 		ApiService: a,
-		ctx:        ctx,
-		ledger:     ledger,
-		txid:       txid,
+		ctx: ctx,
+		ledger: ledger,
+		txid: txid,
 	}
 }
 
 // Execute executes the request
-//
-//	@return TransactionResponse
+//  @return TransactionResponse
 func (a *TransactionsApiService) RevertTransactionExecute(r ApiRevertTransactionRequest) (*TransactionResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *TransactionResponse
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *TransactionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.RevertTransaction")
@@ -1076,6 +1098,9 @@ func (a *TransactionsApiService) RevertTransactionExecute(r ApiRevertTransaction
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.txid < 0 {
+		return localVarReturnValue, nil, reportError("txid must be greater than 0")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -1116,38 +1141,14 @@ func (a *TransactionsApiService) RevertTransactionExecute(r ApiRevertTransaction
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v GetTransaction400Response
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 404 {
-			var v GetTransaction404Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v AddMetadataToAccount409Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-		}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

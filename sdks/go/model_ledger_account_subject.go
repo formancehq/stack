@@ -17,7 +17,7 @@ import (
 
 // LedgerAccountSubject struct for LedgerAccountSubject
 type LedgerAccountSubject struct {
-	Type       string `json:"type"`
+	Type string `json:"type"`
 	Identifier string `json:"identifier"`
 }
 
@@ -54,7 +54,7 @@ func (o *LedgerAccountSubject) GetType() string {
 // and a boolean to check if the value has been set.
 func (o *LedgerAccountSubject) GetTypeOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Type, true
 }
@@ -78,7 +78,7 @@ func (o *LedgerAccountSubject) GetIdentifier() string {
 // and a boolean to check if the value has been set.
 func (o *LedgerAccountSubject) GetIdentifierOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Identifier, true
 }

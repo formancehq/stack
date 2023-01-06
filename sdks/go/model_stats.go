@@ -17,15 +17,15 @@ import (
 
 // Stats struct for Stats
 type Stats struct {
-	Accounts     int32 `json:"accounts"`
-	Transactions int32 `json:"transactions"`
+	Accounts int64 `json:"accounts"`
+	Transactions int64 `json:"transactions"`
 }
 
 // NewStats instantiates a new Stats object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStats(accounts int32, transactions int32) *Stats {
+func NewStats(accounts int64, transactions int64) *Stats {
 	this := Stats{}
 	this.Accounts = accounts
 	this.Transactions = transactions
@@ -41,9 +41,9 @@ func NewStatsWithDefaults() *Stats {
 }
 
 // GetAccounts returns the Accounts field value
-func (o *Stats) GetAccounts() int32 {
+func (o *Stats) GetAccounts() int64 {
 	if o == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 
@@ -52,22 +52,22 @@ func (o *Stats) GetAccounts() int32 {
 
 // GetAccountsOk returns a tuple with the Accounts field value
 // and a boolean to check if the value has been set.
-func (o *Stats) GetAccountsOk() (*int32, bool) {
+func (o *Stats) GetAccountsOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Accounts, true
 }
 
 // SetAccounts sets field value
-func (o *Stats) SetAccounts(v int32) {
+func (o *Stats) SetAccounts(v int64) {
 	o.Accounts = v
 }
 
 // GetTransactions returns the Transactions field value
-func (o *Stats) GetTransactions() int32 {
+func (o *Stats) GetTransactions() int64 {
 	if o == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 
@@ -76,15 +76,15 @@ func (o *Stats) GetTransactions() int32 {
 
 // GetTransactionsOk returns a tuple with the Transactions field value
 // and a boolean to check if the value has been set.
-func (o *Stats) GetTransactionsOk() (*int32, bool) {
+func (o *Stats) GetTransactionsOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Transactions, true
 }
 
 // SetTransactions sets field value
-func (o *Stats) SetTransactions(v int32) {
+func (o *Stats) SetTransactions(v int64) {
 	o.Transactions = v
 }
 

@@ -20,14 +20,15 @@ import (
 	"strings"
 )
 
+
 type MappingApi interface {
 
 	/*
-		GetMapping Get the mapping of a ledger.
+	GetMapping Get the mapping of a ledger
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param ledger Name of the ledger.
-		@return ApiGetMappingRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param ledger Name of the ledger.
+	@return ApiGetMappingRequest
 	*/
 	GetMapping(ctx context.Context, ledger string) ApiGetMappingRequest
 
@@ -36,11 +37,11 @@ type MappingApi interface {
 	GetMappingExecute(r ApiGetMappingRequest) (*MappingResponse, *http.Response, error)
 
 	/*
-		UpdateMapping Update the mapping of a ledger.
+	UpdateMapping Update the mapping of a ledger
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param ledger Name of the ledger.
-		@return ApiUpdateMappingRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param ledger Name of the ledger.
+	@return ApiUpdateMappingRequest
 	*/
 	UpdateMapping(ctx context.Context, ledger string) ApiUpdateMappingRequest
 
@@ -53,9 +54,9 @@ type MappingApi interface {
 type MappingApiService service
 
 type ApiGetMappingRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService MappingApi
-	ledger     string
+	ledger string
 }
 
 func (r ApiGetMappingRequest) Execute() (*MappingResponse, *http.Response, error) {
@@ -63,29 +64,28 @@ func (r ApiGetMappingRequest) Execute() (*MappingResponse, *http.Response, error
 }
 
 /*
-GetMapping Get the mapping of a ledger.
+GetMapping Get the mapping of a ledger
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@return ApiGetMappingRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param ledger Name of the ledger.
+ @return ApiGetMappingRequest
 */
 func (a *MappingApiService) GetMapping(ctx context.Context, ledger string) ApiGetMappingRequest {
 	return ApiGetMappingRequest{
 		ApiService: a,
-		ctx:        ctx,
-		ledger:     ledger,
+		ctx: ctx,
+		ledger: ledger,
 	}
 }
 
 // Execute executes the request
-//
-//	@return MappingResponse
+//  @return MappingResponse
 func (a *MappingApiService) GetMappingExecute(r ApiGetMappingRequest) (*MappingResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *MappingResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *MappingResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MappingApiService.GetMapping")
@@ -139,6 +139,14 @@ func (a *MappingApiService) GetMappingExecute(r ApiGetMappingRequest) (*MappingR
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -155,10 +163,10 @@ func (a *MappingApiService) GetMappingExecute(r ApiGetMappingRequest) (*MappingR
 }
 
 type ApiUpdateMappingRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService MappingApi
-	ledger     string
-	mapping    *Mapping
+	ledger string
+	mapping *Mapping
 }
 
 func (r ApiUpdateMappingRequest) Mapping(mapping Mapping) ApiUpdateMappingRequest {
@@ -171,29 +179,28 @@ func (r ApiUpdateMappingRequest) Execute() (*MappingResponse, *http.Response, er
 }
 
 /*
-UpdateMapping Update the mapping of a ledger.
+UpdateMapping Update the mapping of a ledger
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@return ApiUpdateMappingRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param ledger Name of the ledger.
+ @return ApiUpdateMappingRequest
 */
 func (a *MappingApiService) UpdateMapping(ctx context.Context, ledger string) ApiUpdateMappingRequest {
 	return ApiUpdateMappingRequest{
 		ApiService: a,
-		ctx:        ctx,
-		ledger:     ledger,
+		ctx: ctx,
+		ledger: ledger,
 	}
 }
 
 // Execute executes the request
-//
-//	@return MappingResponse
+//  @return MappingResponse
 func (a *MappingApiService) UpdateMappingExecute(r ApiUpdateMappingRequest) (*MappingResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPut
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *MappingResponse
+		localVarHTTPMethod   = http.MethodPut
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *MappingResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MappingApiService.UpdateMapping")
@@ -252,6 +259,14 @@ func (a *MappingApiService) UpdateMappingExecute(r ApiUpdateMappingRequest) (*Ma
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

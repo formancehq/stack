@@ -50,7 +50,7 @@ func (o *ConfigChangeSecret) GetSecret() string {
 // and a boolean to check if the value has been set.
 func (o *ConfigChangeSecret) GetSecretOk() (*string, bool) {
 	if o == nil || isNil(o.Secret) {
-		return nil, false
+    return nil, false
 	}
 	return o.Secret, true
 }

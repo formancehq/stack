@@ -17,7 +17,7 @@ import (
 
 // BalanceWithAssets struct for BalanceWithAssets
 type BalanceWithAssets struct {
-	Name   string             `json:"name"`
+	Name string `json:"name"`
 	Assets map[string]float32 `json:"assets"`
 }
 
@@ -54,7 +54,7 @@ func (o *BalanceWithAssets) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *BalanceWithAssets) GetNameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Name, true
 }
@@ -78,7 +78,7 @@ func (o *BalanceWithAssets) GetAssets() map[string]float32 {
 // and a boolean to check if the value has been set.
 func (o *BalanceWithAssets) GetAssetsOk() (*map[string]float32, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Assets, true
 }

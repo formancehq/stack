@@ -53,7 +53,7 @@ func (o *ConfirmHoldRequest) GetAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *ConfirmHoldRequest) GetAmountOk() (*int64, bool) {
 	if o == nil || isNil(o.Amount) {
-		return nil, false
+    return nil, false
 	}
 	return o.Amount, true
 }
@@ -85,7 +85,7 @@ func (o *ConfirmHoldRequest) GetFinal() bool {
 // and a boolean to check if the value has been set.
 func (o *ConfirmHoldRequest) GetFinalOk() (*bool, bool) {
 	if o == nil || isNil(o.Final) {
-		return nil, false
+    return nil, false
 	}
 	return o.Final, true
 }

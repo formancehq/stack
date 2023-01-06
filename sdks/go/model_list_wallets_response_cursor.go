@@ -17,11 +17,11 @@ import (
 
 // ListWalletsResponseCursor struct for ListWalletsResponseCursor
 type ListWalletsResponseCursor struct {
-	PageSize int64    `json:"pageSize"`
-	HasMore  *bool    `json:"hasMore,omitempty"`
-	Previous *string  `json:"previous,omitempty"`
-	Next     *string  `json:"next,omitempty"`
-	Data     []Wallet `json:"data"`
+	PageSize int64 `json:"pageSize"`
+	HasMore *bool `json:"hasMore,omitempty"`
+	Previous *string `json:"previous,omitempty"`
+	Next *string `json:"next,omitempty"`
+	Data []Wallet `json:"data"`
 }
 
 // NewListWalletsResponseCursor instantiates a new ListWalletsResponseCursor object
@@ -57,7 +57,7 @@ func (o *ListWalletsResponseCursor) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *ListWalletsResponseCursor) GetPageSizeOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.PageSize, true
 }
@@ -80,7 +80,7 @@ func (o *ListWalletsResponseCursor) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *ListWalletsResponseCursor) GetHasMoreOk() (*bool, bool) {
 	if o == nil || isNil(o.HasMore) {
-		return nil, false
+    return nil, false
 	}
 	return o.HasMore, true
 }
@@ -112,7 +112,7 @@ func (o *ListWalletsResponseCursor) GetPrevious() string {
 // and a boolean to check if the value has been set.
 func (o *ListWalletsResponseCursor) GetPreviousOk() (*string, bool) {
 	if o == nil || isNil(o.Previous) {
-		return nil, false
+    return nil, false
 	}
 	return o.Previous, true
 }
@@ -144,7 +144,7 @@ func (o *ListWalletsResponseCursor) GetNext() string {
 // and a boolean to check if the value has been set.
 func (o *ListWalletsResponseCursor) GetNextOk() (*string, bool) {
 	if o == nil || isNil(o.Next) {
-		return nil, false
+    return nil, false
 	}
 	return o.Next, true
 }
@@ -177,7 +177,7 @@ func (o *ListWalletsResponseCursor) GetData() []Wallet {
 // and a boolean to check if the value has been set.
 func (o *ListWalletsResponseCursor) GetDataOk() ([]Wallet, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Data, true
 }

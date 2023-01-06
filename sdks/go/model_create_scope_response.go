@@ -50,7 +50,7 @@ func (o *CreateScopeResponse) GetData() Scope {
 // and a boolean to check if the value has been set.
 func (o *CreateScopeResponse) GetDataOk() (*Scope, bool) {
 	if o == nil || isNil(o.Data) {
-		return nil, false
+    return nil, false
 	}
 	return o.Data, true
 }

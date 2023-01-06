@@ -612,9 +612,9 @@
     "/api/ledger/_info": {
       "get": {
         "tags": [
-          "server"
+          "Server"
         ],
-        "summary": "Show server information.",
+        "summary": "Show server information",
         "operationId": "getInfo",
         "responses": {
           "200": {
@@ -626,16 +626,69 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ledger/{ledger}/_info": {
+      "get": {
+        "summary": "Get information about a ledger",
+        "operationId": "getLedgerInfo",
+        "tags": [
+          "Ledger"
+        ],
+        "parameters": [
+          {
+            "name": "ledger",
+            "in": "path",
+            "description": "Name of the ledger.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ledger001"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerInfoResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/ledger/{ledger}/accounts": {
       "head": {
-        "summary": "Count the accounts from a ledger.",
+        "summary": "Count the accounts from a ledger",
         "operationId": "countAccounts",
         "tags": [
-          "accounts"
+          "Accounts"
         ],
         "parameters": [
           {
@@ -676,7 +729,19 @@
             "headers": {
               "Count": {
                 "schema": {
-                  "type": "integer"
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -684,11 +749,11 @@
         }
       },
       "get": {
-        "summary": "List accounts from a ledger.",
+        "summary": "List accounts from a ledger",
         "description": "List accounts from a ledger, sorted by address in descending order.",
         "operationId": "listAccounts",
         "tags": [
-          "accounts"
+          "Accounts"
         ],
         "parameters": [
           {
@@ -702,16 +767,31 @@
             }
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
-            "description": "The maximum number of results to return per page",
+            "description": "The maximum number of results to return per page.\n",
             "example": 100,
             "schema": {
               "type": "integer",
-              "maximum": 1000,
+              "format": "int64",
               "minimum": 1,
+              "maximum": 1000,
               "default": 15
             }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
+            "example": 100,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 15
+            },
+            "deprecated": true
           },
           {
             "name": "after",
@@ -750,13 +830,14 @@
             "schema": {
               "type": "integer",
               "format": "int64",
+              "minimum": 0,
               "example": 2400
             }
           },
           {
-            "name": "balance_operator",
+            "name": "balanceOperator",
             "in": "query",
-            "description": "Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, or equal",
+            "description": "Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.\n",
             "schema": {
               "type": "string",
               "enum": [
@@ -764,19 +845,48 @@
                 "lte",
                 "gt",
                 "lt",
-                "e"
+                "e",
+                "ne"
               ],
               "example": "gte"
             }
           },
           {
-            "name": "pagination_token",
+            "name": "balance_operator",
             "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results. \nSet to the value of previous for the previous page of results.\nNo other parameters can be set when the pagination token is set.\n",
+            "description": "Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.\nDeprecated, please use `balanceOperator` instead.\n",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "gte",
+                "lte",
+                "gt",
+                "lt",
+                "e",
+                "ne"
+              ],
+              "example": "gte"
+            },
+            "deprecated": true
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
             "schema": {
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
+          },
+          {
+            "name": "pagination_token",
+            "in": "query",
+            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
+            "schema": {
+              "type": "string",
+              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+            },
+            "deprecated": true
           }
         ],
         "responses": {
@@ -785,55 +895,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "required": [
-                    "cursor"
-                  ],
-                  "properties": {
-                    "cursor": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/Cursor"
-                        },
-                        {
-                          "properties": {
-                            "data": {
-                              "items": {
-                                "$ref": "#/components/schemas/Account"
-                              },
-                              "type": "array"
-                            }
-                          },
-                          "type": "object",
-                          "required": [
-                            "data"
-                          ]
-                        }
-                      ]
-                    }
-                  }
+                  "$ref": "#/components/schemas/AccountsCursorResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "no other query params can be set with 'pagination_token'"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -843,10 +915,10 @@
     },
     "/api/ledger/{ledger}/accounts/{address}": {
       "get": {
-        "summary": "Get account by its address.",
+        "summary": "Get account by its address",
         "operationId": "getAccount",
         "tags": [
-          "accounts"
+          "Accounts"
         ],
         "parameters": [
           {
@@ -876,38 +948,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/AccountWithVolumesAndBalances"
-                    }
-                  },
-                  "type": "object",
-                  "required": [
-                    "data"
-                  ]
+                  "$ref": "#/components/schemas/AccountResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "invalid account address format"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -917,10 +968,10 @@
     },
     "/api/ledger/{ledger}/accounts/{address}/metadata": {
       "post": {
-        "summary": "Add metadata to an account.",
+        "summary": "Add metadata to an account",
         "operationId": "addMetadataToAccount",
         "tags": [
-          "accounts"
+          "Accounts"
         ],
         "parameters": [
           {
@@ -960,47 +1011,12 @@
             "description": "No Content",
             "content": {}
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "invalid account address format"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "CONFLICT"
-                    },
-                    "error_message": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1011,10 +1027,10 @@
     "/api/ledger/{ledger}/mapping": {
       "get": {
         "tags": [
-          "mapping"
+          "Mapping"
         ],
         "operationId": "getMapping",
-        "summary": "Get the mapping of a ledger.",
+        "summary": "Get the mapping of a ledger",
         "parameters": [
           {
             "name": "ledger",
@@ -1037,15 +1053,25 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       },
       "put": {
         "tags": [
-          "mapping"
+          "Mapping"
         ],
         "operationId": "updateMapping",
-        "summary": "Update the mapping of a ledger.",
+        "summary": "Update the mapping of a ledger",
         "parameters": [
           {
             "name": "ledger",
@@ -1078,17 +1104,29 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
     "/api/ledger/{ledger}/script": {
       "post": {
+        "deprecated": true,
         "tags": [
-          "script"
+          "Script"
         ],
         "operationId": "runScript",
-        "summary": "Execute a Numscript.",
+        "summary": "Execute a Numscript",
+        "description": "This route is deprecated, and has been merged into `POST /{ledger}/transactions`.\n",
         "parameters": [
           {
             "name": "ledger",
@@ -1111,67 +1149,22 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/Script"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "On success, it will return a 200 status code, and the resulting transaction under the `transaction` field.\n\nOn failure, it will also return a 200 status code, and the following fields:\n  - `details`: contains a URL. When there is an error parsing Numscript, the result can be difficult to read—the provided URL will render the error in an easy-to-read format.\n  - `errorCode` and `error_code` (deprecated): contains the string code of the error\n  - `errorMessage` and `error_message` (deprecated): contains a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.\n",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ScriptResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "invalid payload"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "CONFLICT"
-                    },
-                    "error_message": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ScriptResponse"
                 }
               }
             }
@@ -1182,11 +1175,11 @@
     "/api/ledger/{ledger}/stats": {
       "get": {
         "tags": [
-          "stats"
+          "Stats"
         ],
         "operationId": "readStats",
-        "summary": "Get Stats",
-        "description": "Get ledger stats (aggregate metrics on accounts and transactions)\nThe stats for account\n",
+        "summary": "Get statistics from a ledger",
+        "description": "Get statistics from a ledger. (aggregate metrics on accounts and transactions)\n",
         "parameters": [
           {
             "name": "ledger",
@@ -1209,6 +1202,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -1216,9 +1219,9 @@
     "/api/ledger/{ledger}/transactions": {
       "head": {
         "tags": [
-          "transactions"
+          "Transactions"
         ],
-        "summary": "Count the transactions from a ledger.",
+        "summary": "Count the transactions from a ledger",
         "operationId": "countTransactions",
         "parameters": [
           {
@@ -1268,6 +1271,44 @@
             }
           },
           {
+            "name": "startTime",
+            "in": "query",
+            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": true
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": true
+          },
+          {
             "name": "metadata",
             "in": "query",
             "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
@@ -1286,7 +1327,19 @@
             "headers": {
               "Count": {
                 "schema": {
-                  "type": "integer"
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1295,9 +1348,9 @@
       },
       "get": {
         "tags": [
-          "transactions"
+          "Transactions"
         ],
-        "summary": "List transactions from a ledger.",
+        "summary": "List transactions from a ledger",
         "description": "List transactions from a ledger, sorted by txid in descending order.",
         "operationId": "listTransactions",
         "parameters": [
@@ -1312,16 +1365,31 @@
             }
           },
           {
-            "name": "page_size",
+            "name": "pageSize",
             "in": "query",
-            "description": "The maximum number of results to return per page",
+            "description": "The maximum number of results to return per page.\n",
             "example": 100,
             "schema": {
               "type": "integer",
-              "maximum": 1000,
+              "format": "int64",
               "minimum": 1,
+              "maximum": 1000,
               "default": 15
             }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
+            "example": 100,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 15
+            },
+            "deprecated": true
           },
           {
             "name": "after",
@@ -1344,7 +1412,7 @@
           {
             "name": "account",
             "in": "query",
-            "description": "Find transactions with postings involving given account, either as source or destination.",
+            "description": "Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).",
             "schema": {
               "type": "string",
               "example": "users:001"
@@ -1353,7 +1421,7 @@
           {
             "name": "source",
             "in": "query",
-            "description": "Find transactions with postings involving given account at source.",
+            "description": "Filter transactions with postings involving given account at source (regular expression placed between ^ and $).",
             "schema": {
               "type": "string",
               "example": "users:001"
@@ -1362,37 +1430,68 @@
           {
             "name": "destination",
             "in": "query",
-            "description": "Find transactions with postings involving given account at destination.",
+            "description": "Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).",
             "schema": {
               "type": "string",
               "example": "users:001"
             }
           },
           {
-            "name": "start_time",
+            "name": "startTime",
             "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, 12:00:01 includes the first second of the minute).\n",
+            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\n",
             "schema": {
               "type": "string",
-              "example": null
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": true
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
             }
           },
           {
             "name": "end_time",
             "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, 12:00:01 excludes the first second of the minute).\n",
+            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": true
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
+            "schema": {
+              "type": "string",
+              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
           },
           {
             "name": "pagination_token",
             "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results. \nSet to the value of previous for the previous page of results.\nNo other parameters can be set when the pagination token is set.\n",
+            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
             "schema": {
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            }
+            },
+            "deprecated": true
           },
           {
             "name": "metadata",
@@ -1413,56 +1512,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "cursor"
-                  ],
-                  "properties": {
-                    "cursor": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/Cursor"
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "data": {
-                              "type": "array",
-                              "items": {
-                                "$ref": "#/components/schemas/Transaction"
-                              }
-                            }
-                          },
-                          "required": [
-                            "data"
-                          ]
-                        }
-                      ]
-                    }
-                  }
+                  "$ref": "#/components/schemas/TransactionsCursorResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "no other query params can be set with 'pagination_token'"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1471,9 +1531,9 @@
       },
       "post": {
         "tags": [
-          "transactions"
+          "Transactions"
         ],
-        "summary": "Create a new transaction to a ledger.",
+        "summary": "Create a new transaction to a ledger",
         "operationId": "createTransaction",
         "parameters": [
           {
@@ -1497,14 +1557,15 @@
           }
         ],
         "requestBody": {
+          "required": true,
+          "description": "The request body must contain at least one of the following objects:\n  - `postings`: suitable for simple transactions\n  - `script`: enabling more complex transactions with Numscript\n",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TransactionData"
+                "$ref": "#/components/schemas/PostTransaction"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -1517,58 +1578,12 @@
               }
             }
           },
-          "304": {
-            "description": "Not modified (when preview is enabled)",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TransactionsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "transaction has no postings"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "CONFLICT"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "conflict error on reference"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1579,9 +1594,9 @@
     "/api/ledger/{ledger}/transactions/{txid}": {
       "get": {
         "tags": [
-          "transactions"
+          "Transactions"
         ],
-        "summary": "Get transaction from a ledger by its ID.",
+        "summary": "Get transaction from a ledger by its ID",
         "operationId": "getTransaction",
         "parameters": [
           {
@@ -1601,6 +1616,8 @@
             "required": true,
             "schema": {
               "type": "integer",
+              "format": "int64",
+              "minimum": 0,
               "example": 1234
             }
           }
@@ -1616,48 +1633,12 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "invalid transaction ID"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "NOT_FOUND"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "transaction not found"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1668,9 +1649,9 @@
     "/api/ledger/{ledger}/transactions/{txid}/metadata": {
       "post": {
         "tags": [
-          "transactions"
+          "Transactions"
         ],
-        "summary": "Set the metadata of a transaction by its ID.",
+        "summary": "Set the metadata of a transaction by its ID",
         "operationId": "addMetadataOnTransaction",
         "parameters": [
           {
@@ -1690,6 +1671,8 @@
             "required": true,
             "schema": {
               "type": "integer",
+              "format": "int64",
+              "minimum": 0,
               "example": 1234
             }
           }
@@ -1709,70 +1692,12 @@
             "description": "No Content",
             "content": {}
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "invalid transaction ID"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "NOT_FOUND"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "transaction not found"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "CONFLICT"
-                    },
-                    "error_message": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1783,10 +1708,10 @@
     "/api/ledger/{ledger}/transactions/{txid}/revert": {
       "post": {
         "tags": [
-          "transactions"
+          "Transactions"
         ],
         "operationId": "revertTransaction",
-        "summary": "Revert a ledger transaction by its ID.",
+        "summary": "Revert a ledger transaction by its ID",
         "parameters": [
           {
             "name": "ledger",
@@ -1805,6 +1730,8 @@
             "required": true,
             "schema": {
               "type": "integer",
+              "format": "int64",
+              "minimum": 0,
               "example": 1234
             }
           }
@@ -1820,70 +1747,12 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "invalid transaction ID"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "NOT_FOUND"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "transaction not found"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "CONFLICT"
-                    },
-                    "error_message": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1894,9 +1763,9 @@
     "/api/ledger/{ledger}/transactions/batch": {
       "post": {
         "tags": [
-          "transactions"
+          "Transactions"
         ],
-        "summary": "Create a new batch of transactions to a ledger.",
+        "summary": "Create a new batch of transactions to a ledger",
         "operationId": "CreateTransactions",
         "parameters": [
           {
@@ -1931,48 +1800,12 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "invalid transactions format"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "CONFLICT"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "conflict error on reference"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -1983,7 +1816,7 @@
     "/api/ledger/{ledger}/balances": {
       "get": {
         "tags": [
-          "balances"
+          "Balances"
         ],
         "summary": "Get the balances from a ledger's account",
         "operationId": "getBalances",
@@ -2017,13 +1850,23 @@
             }
           },
           {
-            "name": "pagination_token",
+            "name": "cursor",
             "in": "query",
-            "description": "Parameter used in pagination requests. \nSet to the value of next for the next page of results. \nSet to the value of previous for the previous page of results.",
+            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
             "schema": {
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
+          },
+          {
+            "name": "pagination_token",
+            "in": "query",
+            "description": "Parameter used in pagination requests.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nDeprecated, please use `cursor` instead.",
+            "schema": {
+              "type": "string",
+              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+            },
+            "deprecated": true
           }
         ],
         "responses": {
@@ -2032,56 +1875,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "cursor"
-                  ],
-                  "properties": {
-                    "cursor": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/Cursor"
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "data": {
-                              "type": "array",
-                              "items": {
-                                "$ref": "#/components/schemas/AccountsBalances"
-                              }
-                            }
-                          },
-                          "required": [
-                            "data"
-                          ]
-                        }
-                      ]
-                    }
-                  }
+                  "$ref": "#/components/schemas/BalancesCursorResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "no other query params can be set with 'pagination_token'"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2092,7 +1896,7 @@
     "/api/ledger/{ledger}/aggregate/balances": {
       "get": {
         "tags": [
-          "balances"
+          "Balances"
         ],
         "summary": "Get the aggregated balances from selected accounts",
         "operationId": "getBalancesAggregated",
@@ -2123,38 +1927,154 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "data": {
-                      "$ref": "#/components/schemas/AssetsBalances"
-                    }
-                  },
-                  "required": [
-                    "data"
-                  ]
+                  "$ref": "#/components/schemas/AggregateBalancesResponse"
                 }
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "error_code"
-                  ],
-                  "properties": {
-                    "error_code": {
-                      "type": "string",
-                      "example": "VALIDATION"
-                    },
-                    "error_message": {
-                      "type": "string",
-                      "example": "invalid address"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ledger/{ledger}/log": {
+      "get": {
+        "tags": [
+          "Logs"
+        ],
+        "summary": "List the logs from a ledger",
+        "description": "List the logs from a ledger, sorted by ID in descending order.",
+        "operationId": "listLogs",
+        "parameters": [
+          {
+            "name": "ledger",
+            "in": "path",
+            "description": "Name of the ledger.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ledger001"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "The maximum number of results to return per page.\n",
+            "example": 100,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 15
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
+            "example": 100,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 15
+            },
+            "deprecated": true
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Pagination cursor, will return the logs after a given ID. (in descending order).",
+            "schema": {
+              "type": "string",
+              "example": 1234
+            }
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "start_time",
+            "in": "query",
+            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": true
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "end_time",
+            "in": "query",
+            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deprecated": true
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
+            "schema": {
+              "type": "string",
+              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+            }
+          },
+          {
+            "name": "pagination_token",
+            "in": "query",
+            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
+            "schema": {
+              "type": "string",
+              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+            },
+            "deprecated": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogsCursorResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2241,6 +2161,59 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Payment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/payments/accounts": {
+      "get": {
+        "summary": "Returns a list of accounts.",
+        "operationId": "paymentslistAccounts",
+        "tags": [
+          "Payments"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter.",
+            "example": 10
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter.",
+            "example": 100
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Field used to sort payments (Default is by date).",
+            "example": "status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A JSON array of accounts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListAccountsResponse"
                 }
               }
             }
@@ -3874,6 +3847,200 @@
           }
         }
       },
+      "AccountsCursorResponse": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "type": "object",
+            "required": [
+              "pageSize",
+              "hasMore",
+              "data"
+            ],
+            "properties": {
+              "pageSize": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 1000,
+                "example": 15
+              },
+              "hasMore": {
+                "type": "boolean",
+                "example": false
+              },
+              "previous": {
+                "type": "string",
+                "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              },
+              "next": {
+                "type": "string",
+                "example": ""
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Account"
+                }
+              }
+            }
+          }
+        }
+      },
+      "BalancesCursorResponse": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "type": "object",
+            "required": [
+              "pageSize",
+              "hasMore",
+              "data"
+            ],
+            "properties": {
+              "pageSize": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 1000,
+                "example": 15
+              },
+              "hasMore": {
+                "type": "boolean",
+                "example": false
+              },
+              "previous": {
+                "type": "string",
+                "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              },
+              "next": {
+                "type": "string",
+                "example": ""
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/AccountsBalances"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TransactionsCursorResponse": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "type": "object",
+            "required": [
+              "pageSize",
+              "hasMore",
+              "data"
+            ],
+            "properties": {
+              "pageSize": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 1000,
+                "example": 15
+              },
+              "hasMore": {
+                "type": "boolean",
+                "example": false
+              },
+              "previous": {
+                "type": "string",
+                "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              },
+              "next": {
+                "type": "string",
+                "example": ""
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Transaction"
+                }
+              }
+            }
+          }
+        }
+      },
+      "LogsCursorResponse": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "type": "object",
+            "required": [
+              "pageSize",
+              "hasMore",
+              "data"
+            ],
+            "properties": {
+              "pageSize": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": 1,
+                "maximum": 1000,
+                "example": 15
+              },
+              "hasMore": {
+                "type": "boolean",
+                "example": false
+              },
+              "previous": {
+                "type": "string",
+                "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+              },
+              "next": {
+                "type": "string",
+                "example": ""
+              },
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Log"
+                }
+              }
+            }
+          }
+        }
+      },
+      "AccountResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AccountWithVolumesAndBalances"
+          }
+        }
+      },
+      "AggregateBalancesResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AssetsBalances"
+          }
+        }
+      },
       "Config": {
         "type": "object",
         "properties": {
@@ -3883,6 +4050,24 @@
         },
         "required": [
           "storage"
+        ]
+      },
+      "LedgerStorage": {
+        "type": "object",
+        "properties": {
+          "driver": {
+            "type": "string"
+          },
+          "ledgers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "driver",
+          "ledgers"
         ]
       },
       "ledgerMetadata": {
@@ -3917,41 +4102,38 @@
           "version"
         ]
       },
-      "LedgerStorage": {
+      "ScriptResponse": {
         "type": "object",
         "properties": {
-          "driver": {
-            "type": "string"
+          "errorCode": {
+            "$ref": "#/components/schemas/ErrorsEnum"
           },
-          "ledgers": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "driver",
-          "ledgers"
-        ]
-      },
-      "ScriptResult": {
-        "type": "object",
-        "properties": {
+          "errorMessage": {
+            "type": "string",
+            "example": "account had insufficient funds"
+          },
           "details": {
-            "type": "string"
+            "type": "string",
+            "example": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
           },
           "error_code": {
             "type": "string",
             "enum": [
               "INTERNAL",
               "INSUFFICIENT_FUND",
+              "VALIDATION",
+              "CONFLICT",
+              "NO_SCRIPT",
               "COMPILATION_FAILED",
-              "NO_SCRIPT"
-            ]
+              "METADATA_OVERRIDE"
+            ],
+            "example": "INSUFFICIENT_FUND",
+            "deprecated": true
           },
           "error_message": {
-            "type": "string"
+            "type": "string",
+            "example": "[INSUFFICIENT_FUND] account had insufficient funds",
+            "deprecated": true
           },
           "transaction": {
             "$ref": "#/components/schemas/Transaction"
@@ -4017,7 +4199,9 @@
             "additionalProperties": {
               "type": "object",
               "additionalProperties": {
-                "type": "integer"
+                "type": "integer",
+                "format": "int64",
+                "minimum": 0
               }
             },
             "example": {
@@ -4030,7 +4214,9 @@
           "balances": {
             "type": "object",
             "additionalProperties": {
-              "type": "integer"
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0
             },
             "example": {
               "COIN": 100
@@ -4057,7 +4243,9 @@
       "AssetsBalances": {
         "type": "object",
         "additionalProperties": {
-          "type": "integer"
+          "type": "integer",
+          "format": "int64",
+          "minimum": 0
         },
         "example": {
           "USD": 100,
@@ -4100,6 +4288,8 @@
         "properties": {
           "amount": {
             "type": "integer",
+            "format": "int64",
+            "minimum": 0,
             "example": 100
           },
           "asset": {
@@ -4125,14 +4315,6 @@
       "Script": {
         "type": "object",
         "properties": {
-          "reference": {
-            "type": "string",
-            "example": "order_1234",
-            "description": "Reference to attach to the generated transaction"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/ledgerMetadata"
-          },
           "plain": {
             "type": "string",
             "example": "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n"
@@ -4145,6 +4327,14 @@
                 "user": "users:042"
               }
             }
+          },
+          "reference": {
+            "type": "string",
+            "example": "order_1234",
+            "description": "Reference to attach to the generated transaction"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ledgerMetadata"
           }
         },
         "required": [
@@ -4172,7 +4362,9 @@
             "$ref": "#/components/schemas/ledgerMetadata"
           },
           "txid": {
-            "type": "integer"
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
           },
           "preCommitVolumes": {
             "$ref": "#/components/schemas/AggregatedVolumes"
@@ -4189,11 +4381,10 @@
       },
       "TransactionData": {
         "type": "object",
+        "required": [
+          "postings"
+        ],
         "properties": {
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          },
           "postings": {
             "type": "array",
             "items": {
@@ -4206,11 +4397,12 @@
           },
           "metadata": {
             "$ref": "#/components/schemas/ledgerMetadata"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
           }
-        },
-        "required": [
-          "postings"
-        ]
+        }
       },
       "Transactions": {
         "required": [
@@ -4226,14 +4418,61 @@
           }
         }
       },
+      "PostTransaction": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "postings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Posting"
+            }
+          },
+          "script": {
+            "type": "object",
+            "properties": {
+              "plain": {
+                "type": "string",
+                "example": "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n"
+              },
+              "vars": {
+                "type": "object",
+                "properties": {},
+                "example": {
+                  "vars": {
+                    "user": "users:042"
+                  }
+                }
+              }
+            },
+            "required": [
+              "plain"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "example": "ref:001"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ledgerMetadata"
+          }
+        }
+      },
       "Stats": {
         "type": "object",
         "properties": {
           "accounts": {
-            "type": "integer"
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
           },
           "transactions": {
-            "type": "integer"
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
           }
         },
         "required": [
@@ -4241,29 +4480,42 @@
           "transactions"
         ]
       },
-      "Cursor": {
+      "Log": {
         "type": "object",
-        "required": [
-          "page_size"
-        ],
         "properties": {
-          "page_size": {
+          "id": {
             "type": "integer",
-            "example": 1
+            "format": "int64",
+            "minimum": 0,
+            "example": 1234
           },
-          "has_more": {
-            "type": "boolean",
-            "example": false
-          },
-          "previous": {
+          "type": {
             "type": "string",
-            "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+            "enum": [
+              "NEW_TRANSACTION",
+              "SET_METADATA"
+            ]
           },
-          "next": {
+          "data": {
+            "type": "object",
+            "properties": {}
+          },
+          "hash": {
             "type": "string",
-            "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+            "example": "9ee060170400f556b7e1575cb13f9db004f150a08355c7431c62bc639166431e"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "id",
+          "type",
+          "data",
+          "hash",
+          "date"
+        ]
       },
       "TransactionsResponse": {
         "type": "object",
@@ -4324,13 +4576,16 @@
         "type": "object",
         "properties": {
           "input": {
-            "type": "number"
+            "type": "integer",
+            "format": "int64"
           },
           "output": {
-            "type": "number"
+            "type": "integer",
+            "format": "int64"
           },
           "balance": {
-            "type": "number"
+            "type": "integer",
+            "format": "int64"
           }
         },
         "required": [
@@ -4383,27 +4638,88 @@
           }
         }
       },
-      "ErrorCode": {
-        "type": "string",
-        "enum": [
-          "INTERNAL",
-          "INSUFFICIENT_FUND",
-          "VALIDATION",
-          "CONFLICT"
-        ]
-      },
       "ErrorResponse": {
         "type": "object",
         "required": [
           "error_code"
         ],
         "properties": {
-          "error_code": {
-            "$ref": "#/components/schemas/ErrorCode"
+          "errorCode": {
+            "$ref": "#/components/schemas/ErrorsEnum"
           },
-          "error_message": {
+          "errorMessage": {
             "type": "string",
-            "example": "internal error"
+            "example": "[INSUFFICIENT_FUND] account had insufficient funds"
+          },
+          "details": {
+            "type": "string",
+            "example": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
+          }
+        }
+      },
+      "ErrorsEnum": {
+        "type": "string",
+        "enum": [
+          "INTERNAL",
+          "INSUFFICIENT_FUND",
+          "VALIDATION",
+          "CONFLICT",
+          "NO_SCRIPT",
+          "COMPILATION_FAILED",
+          "METADATA_OVERRIDE"
+        ],
+        "example": "INSUFFICIENT_FUND"
+      },
+      "LedgerInfoResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/LedgerInfo"
+          }
+        }
+      },
+      "LedgerInfo": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "ledger001"
+          },
+          "storage": {
+            "type": "object",
+            "properties": {
+              "migrations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/MigrationInfo"
+                }
+              }
+            }
+          }
+        }
+      },
+      "MigrationInfo": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
+            "example": 11
+          },
+          "name": {
+            "type": "string",
+            "example": "migrations:001"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "to do",
+              "done"
+            ]
           }
         }
       },
@@ -4692,6 +5008,52 @@
           },
           "raw": {
             "nullable": true
+          }
+        }
+      },
+      "ListAccountsResponse": {
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/paymentsAccount"
+            }
+          }
+        }
+      },
+      "paymentsAccount": {
+        "type": "object",
+        "required": [
+          "id",
+          "createdAt",
+          "provider",
+          "reference",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "TARGET",
+              "SOURCE"
+            ]
           }
         }
       },
@@ -5208,11 +5570,11 @@
         ],
         "properties": {
           "cursor": {
-            "$ref": "#/components/schemas/webhooksCursor"
+            "$ref": "#/components/schemas/Cursor"
           }
         }
       },
-      "webhooksCursor": {
+      "Cursor": {
         "type": "object",
         "required": [
           "hasMore",
@@ -5560,35 +5922,6 @@
           "$ref": "#/components/schemas/walletsVolumes"
         }
       },
-      "walletsPosting": {
-        "type": "object",
-        "properties": {
-          "amount": {
-            "type": "integer",
-            "format": "int64",
-            "minimum": 0,
-            "example": 100
-          },
-          "asset": {
-            "type": "string",
-            "example": "COIN"
-          },
-          "destination": {
-            "type": "string",
-            "example": "users:002"
-          },
-          "source": {
-            "type": "string",
-            "example": "users:001"
-          }
-        },
-        "required": [
-          "amount",
-          "asset",
-          "destination",
-          "source"
-        ]
-      },
       "walletsTransaction": {
         "type": "object",
         "properties": {
@@ -5599,7 +5932,7 @@
           "postings": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/walletsPosting"
+              "$ref": "#/components/schemas/Posting"
             }
           },
           "reference": {

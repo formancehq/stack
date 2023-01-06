@@ -21,9 +21,9 @@ type Wallet struct {
 	// The unique ID of the wallet.
 	Id string `json:"id"`
 	// Metadata associated with the wallet.
-	Metadata  map[string]interface{} `json:"metadata"`
-	Name      string                 `json:"name"`
-	CreatedAt time.Time              `json:"createdAt"`
+	Metadata map[string]interface{} `json:"metadata"`
+	Name string `json:"name"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 // NewWallet instantiates a new Wallet object
@@ -61,7 +61,7 @@ func (o *Wallet) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Wallet) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -85,7 +85,7 @@ func (o *Wallet) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Wallet) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -109,7 +109,7 @@ func (o *Wallet) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *Wallet) GetNameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Name, true
 }
@@ -133,7 +133,7 @@ func (o *Wallet) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Wallet) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.CreatedAt, true
 }

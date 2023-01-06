@@ -4,15 +4,17 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**RunScript**](ScriptApi.md#RunScript) | **Post** /api/ledger/{ledger}/script | Execute a Numscript.
+[**RunScript**](ScriptApi.md#RunScript) | **Post** /api/ledger/{ledger}/script | Execute a Numscript
 
 
 
 ## RunScript
 
-> ScriptResult RunScript(ctx, ledger).Script(script).Preview(preview).Execute()
+> ScriptResponse RunScript(ctx, ledger).Script(script).Preview(preview).Execute()
 
-Execute a Numscript.
+Execute a Numscript
+
+
 
 ### Example
 
@@ -45,7 +47,7 @@ send [COIN 10] (
         fmt.Fprintf(os.Stderr, "Error when calling `ScriptApi.RunScript``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `RunScript`: ScriptResult
+    // response from `RunScript`: ScriptResponse
     fmt.Fprintf(os.Stdout, "Response from `ScriptApi.RunScript`: %v\n", resp)
 }
 ```
@@ -71,7 +73,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ScriptResult**](ScriptResult.md)
+[**ScriptResponse**](ScriptResponse.md)
 
 ### Authorization
 

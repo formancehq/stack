@@ -17,9 +17,9 @@ import (
 
 // User struct for User
 type User struct {
-	Id      *string `json:"id,omitempty"`
+	Id *string `json:"id,omitempty"`
 	Subject *string `json:"subject,omitempty"`
-	Email   *string `json:"email,omitempty"`
+	Email *string `json:"email,omitempty"`
 }
 
 // NewUser instantiates a new User object
@@ -52,7 +52,7 @@ func (o *User) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *User) GetIdOk() (*string, bool) {
 	if o == nil || isNil(o.Id) {
-		return nil, false
+    return nil, false
 	}
 	return o.Id, true
 }
@@ -84,7 +84,7 @@ func (o *User) GetSubject() string {
 // and a boolean to check if the value has been set.
 func (o *User) GetSubjectOk() (*string, bool) {
 	if o == nil || isNil(o.Subject) {
-		return nil, false
+    return nil, false
 	}
 	return o.Subject, true
 }
@@ -116,7 +116,7 @@ func (o *User) GetEmail() string {
 // and a boolean to check if the value has been set.
 func (o *User) GetEmailOk() (*string, bool) {
 	if o == nil || isNil(o.Email) {
-		return nil, false
+    return nil, false
 	}
 	return o.Email, true
 }

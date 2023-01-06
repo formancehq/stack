@@ -22,9 +22,9 @@ type ExpandedDebitHold struct {
 	// The ID of the wallet the hold is associated with.
 	WalletID string `json:"walletID"`
 	// Metadata associated with the hold.
-	Metadata    map[string]interface{} `json:"metadata"`
-	Description string                 `json:"description"`
-	Destination *Subject               `json:"destination,omitempty"`
+	Metadata map[string]interface{} `json:"metadata"`
+	Description string `json:"description"`
+	Destination *Subject `json:"destination,omitempty"`
 	// Remaining amount on hold
 	Remaining int64 `json:"remaining"`
 	// Original amount on hold
@@ -68,7 +68,7 @@ func (o *ExpandedDebitHold) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -92,7 +92,7 @@ func (o *ExpandedDebitHold) GetWalletID() string {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetWalletIDOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.WalletID, true
 }
@@ -116,7 +116,7 @@ func (o *ExpandedDebitHold) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -140,7 +140,7 @@ func (o *ExpandedDebitHold) GetDescription() string {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetDescriptionOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Description, true
 }
@@ -163,7 +163,7 @@ func (o *ExpandedDebitHold) GetDestination() Subject {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetDestinationOk() (*Subject, bool) {
 	if o == nil || isNil(o.Destination) {
-		return nil, false
+    return nil, false
 	}
 	return o.Destination, true
 }
@@ -196,7 +196,7 @@ func (o *ExpandedDebitHold) GetRemaining() int64 {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetRemainingOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Remaining, true
 }
@@ -220,7 +220,7 @@ func (o *ExpandedDebitHold) GetOriginalAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetOriginalAmountOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.OriginalAmount, true
 }

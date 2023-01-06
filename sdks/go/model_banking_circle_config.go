@@ -17,9 +17,9 @@ import (
 
 // BankingCircleConfig struct for BankingCircleConfig
 type BankingCircleConfig struct {
-	Username              string `json:"username"`
-	Password              string `json:"password"`
-	Endpoint              string `json:"endpoint"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Endpoint string `json:"endpoint"`
 	AuthorizationEndpoint string `json:"authorizationEndpoint"`
 }
 
@@ -58,7 +58,7 @@ func (o *BankingCircleConfig) GetUsername() string {
 // and a boolean to check if the value has been set.
 func (o *BankingCircleConfig) GetUsernameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Username, true
 }
@@ -82,7 +82,7 @@ func (o *BankingCircleConfig) GetPassword() string {
 // and a boolean to check if the value has been set.
 func (o *BankingCircleConfig) GetPasswordOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Password, true
 }
@@ -106,7 +106,7 @@ func (o *BankingCircleConfig) GetEndpoint() string {
 // and a boolean to check if the value has been set.
 func (o *BankingCircleConfig) GetEndpointOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Endpoint, true
 }
@@ -130,7 +130,7 @@ func (o *BankingCircleConfig) GetAuthorizationEndpoint() string {
 // and a boolean to check if the value has been set.
 func (o *BankingCircleConfig) GetAuthorizationEndpointOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.AuthorizationEndpoint, true
 }

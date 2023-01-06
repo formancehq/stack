@@ -17,10 +17,10 @@ import (
 
 // WalletsCursor struct for WalletsCursor
 type WalletsCursor struct {
-	PageSize int64   `json:"pageSize"`
-	HasMore  *bool   `json:"hasMore,omitempty"`
+	PageSize int64 `json:"pageSize"`
+	HasMore *bool `json:"hasMore,omitempty"`
 	Previous *string `json:"previous,omitempty"`
-	Next     *string `json:"next,omitempty"`
+	Next *string `json:"next,omitempty"`
 }
 
 // NewWalletsCursor instantiates a new WalletsCursor object
@@ -55,7 +55,7 @@ func (o *WalletsCursor) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *WalletsCursor) GetPageSizeOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.PageSize, true
 }
@@ -78,7 +78,7 @@ func (o *WalletsCursor) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *WalletsCursor) GetHasMoreOk() (*bool, bool) {
 	if o == nil || isNil(o.HasMore) {
-		return nil, false
+    return nil, false
 	}
 	return o.HasMore, true
 }
@@ -110,7 +110,7 @@ func (o *WalletsCursor) GetPrevious() string {
 // and a boolean to check if the value has been set.
 func (o *WalletsCursor) GetPreviousOk() (*string, bool) {
 	if o == nil || isNil(o.Previous) {
-		return nil, false
+    return nil, false
 	}
 	return o.Previous, true
 }
@@ -142,7 +142,7 @@ func (o *WalletsCursor) GetNext() string {
 // and a boolean to check if the value has been set.
 func (o *WalletsCursor) GetNextOk() (*string, bool) {
 	if o == nil || isNil(o.Next) {
-		return nil, false
+    return nil, false
 	}
 	return o.Next, true
 }

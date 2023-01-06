@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**ReadStats**](StatsApi.md#ReadStats) | **Get** /api/ledger/{ledger}/stats | Get Stats
+[**ReadStats**](StatsApi.md#ReadStats) | **Get** /api/ledger/{ledger}/stats | Get statistics from a ledger
 
 
 
@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 > StatsResponse ReadStats(ctx, ledger).Execute()
 
-Get Stats
+Get statistics from a ledger
 
 
 

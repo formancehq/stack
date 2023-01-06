@@ -1,4 +1,5 @@
 fail_fast: true
+exclude: ^sdks/|openapi/build|services/payments/client
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
@@ -9,6 +10,12 @@ repos:
   - id: check-added-large-files
 - repo: local
   hooks:
+  - id: gosdk
+    name: gosdk
+    entry: ./scripts/update-sdk.sh
+    description: "Update Go SDK"
+    language: script
+    files: swagger.yaml | swagger.yml | openapi.yml | openapi.yaml # TODO: Refine when all specs will be on the same location
   - id: gofmt
     name: gofmt
     entry: ./scripts/gofmt.sh

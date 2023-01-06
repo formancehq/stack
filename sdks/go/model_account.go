@@ -17,8 +17,8 @@ import (
 
 // Account struct for Account
 type Account struct {
-	Address  string                 `json:"address"`
-	Type     *string                `json:"type,omitempty"`
+	Address string `json:"address"`
+	Type *string `json:"type,omitempty"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
@@ -54,7 +54,7 @@ func (o *Account) GetAddress() string {
 // and a boolean to check if the value has been set.
 func (o *Account) GetAddressOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Address, true
 }
@@ -77,7 +77,7 @@ func (o *Account) GetType() string {
 // and a boolean to check if the value has been set.
 func (o *Account) GetTypeOk() (*string, bool) {
 	if o == nil || isNil(o.Type) {
-		return nil, false
+    return nil, false
 	}
 	return o.Type, true
 }
@@ -109,7 +109,7 @@ func (o *Account) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Account) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }

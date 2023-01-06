@@ -17,11 +17,11 @@ import (
 
 // Secret struct for Secret
 type Secret struct {
-	Name       string                 `json:"name"`
-	Metadata   map[string]interface{} `json:"metadata,omitempty"`
-	Id         string                 `json:"id"`
-	LastDigits string                 `json:"lastDigits"`
-	Clear      string                 `json:"clear"`
+	Name string `json:"name"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Id string `json:"id"`
+	LastDigits string `json:"lastDigits"`
+	Clear string `json:"clear"`
 }
 
 // NewSecret instantiates a new Secret object
@@ -59,7 +59,7 @@ func (o *Secret) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *Secret) GetNameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Name, true
 }
@@ -82,7 +82,7 @@ func (o *Secret) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Secret) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -115,7 +115,7 @@ func (o *Secret) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Secret) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -139,7 +139,7 @@ func (o *Secret) GetLastDigits() string {
 // and a boolean to check if the value has been set.
 func (o *Secret) GetLastDigitsOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.LastDigits, true
 }
@@ -163,7 +163,7 @@ func (o *Secret) GetClear() string {
 // and a boolean to check if the value has been set.
 func (o *Secret) GetClearOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Clear, true
 }

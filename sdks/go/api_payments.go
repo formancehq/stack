@@ -17,19 +17,20 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"reflect"
 	"strings"
+	"reflect"
 )
+
 
 type PaymentsApi interface {
 
 	/*
-		ConnectorsStripeTransfer Transfer funds between Stripe accounts
+	ConnectorsStripeTransfer Transfer funds between Stripe accounts
 
-		Execute a transfer between two Stripe accounts
+	Execute a transfer between two Stripe accounts
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiConnectorsStripeTransferRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiConnectorsStripeTransferRequest
 	*/
 	ConnectorsStripeTransfer(ctx context.Context) ApiConnectorsStripeTransferRequest
 
@@ -37,12 +38,12 @@ type PaymentsApi interface {
 	ConnectorsStripeTransferExecute(r ApiConnectorsStripeTransferRequest) (*http.Response, error)
 
 	/*
-		GetAllConnectors Get all installed connectors
+	GetAllConnectors Get all installed connectors
 
-		Get all installed connectors
+	Get all installed connectors
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiGetAllConnectorsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetAllConnectorsRequest
 	*/
 	GetAllConnectors(ctx context.Context) ApiGetAllConnectorsRequest
 
@@ -51,12 +52,12 @@ type PaymentsApi interface {
 	GetAllConnectorsExecute(r ApiGetAllConnectorsRequest) (*ListConnectorsResponse, *http.Response, error)
 
 	/*
-		GetAllConnectorsConfigs Get all available connectors configs
+	GetAllConnectorsConfigs Get all available connectors configs
 
-		Get all available connectors configs
+	Get all available connectors configs
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiGetAllConnectorsConfigsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetAllConnectorsConfigsRequest
 	*/
 	GetAllConnectorsConfigs(ctx context.Context) ApiGetAllConnectorsConfigsRequest
 
@@ -65,14 +66,14 @@ type PaymentsApi interface {
 	GetAllConnectorsConfigsExecute(r ApiGetAllConnectorsConfigsRequest) (*ListConnectorsConfigsResponse, *http.Response, error)
 
 	/*
-		GetConnectorTask Read a specific task of the connector
+	GetConnectorTask Read a specific task of the connector
 
-		Get a specific task associated to the connector
+	Get a specific task associated to the connector
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param connector The connector code
-		@param taskId The task id
-		@return ApiGetConnectorTaskRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param connector The connector code
+	@param taskId The task id
+	@return ApiGetConnectorTaskRequest
 	*/
 	GetConnectorTask(ctx context.Context, connector Connectors, taskId string) ApiGetConnectorTaskRequest
 
@@ -81,11 +82,11 @@ type PaymentsApi interface {
 	GetConnectorTaskExecute(r ApiGetConnectorTaskRequest) (*ListConnectorTasks200ResponseInner, *http.Response, error)
 
 	/*
-		GetPayment Returns a payment.
+	GetPayment Returns a payment.
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param paymentId The payment id
-		@return ApiGetPaymentRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param paymentId The payment id
+	@return ApiGetPaymentRequest
 	*/
 	GetPayment(ctx context.Context, paymentId string) ApiGetPaymentRequest
 
@@ -94,13 +95,13 @@ type PaymentsApi interface {
 	GetPaymentExecute(r ApiGetPaymentRequest) (*Payment, *http.Response, error)
 
 	/*
-		InstallConnector Install connector
+	InstallConnector Install connector
 
-		Install connector
+	Install connector
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param connector The connector code
-		@return ApiInstallConnectorRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param connector The connector code
+	@return ApiInstallConnectorRequest
 	*/
 	InstallConnector(ctx context.Context, connector Connectors) ApiInstallConnectorRequest
 
@@ -108,13 +109,13 @@ type PaymentsApi interface {
 	InstallConnectorExecute(r ApiInstallConnectorRequest) (*http.Response, error)
 
 	/*
-		ListConnectorTasks List connector tasks
+	ListConnectorTasks List connector tasks
 
-		List all tasks associated with this connector.
+	List all tasks associated with this connector.
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param connector The connector code
-		@return ApiListConnectorTasksRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param connector The connector code
+	@return ApiListConnectorTasksRequest
 	*/
 	ListConnectorTasks(ctx context.Context, connector Connectors) ApiListConnectorTasksRequest
 
@@ -123,10 +124,10 @@ type PaymentsApi interface {
 	ListConnectorTasksExecute(r ApiListConnectorTasksRequest) ([]ListConnectorTasks200ResponseInner, *http.Response, error)
 
 	/*
-		ListPayments Returns a list of payments.
+	ListPayments Returns a list of payments.
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiListPaymentsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiListPaymentsRequest
 	*/
 	ListPayments(ctx context.Context) ApiListPaymentsRequest
 
@@ -135,13 +136,25 @@ type PaymentsApi interface {
 	ListPaymentsExecute(r ApiListPaymentsRequest) (*ListPaymentsResponse, *http.Response, error)
 
 	/*
-		ReadConnectorConfig Read connector config
+	PaymentslistAccounts Returns a list of accounts.
 
-		Read connector config
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiPaymentslistAccountsRequest
+	*/
+	PaymentslistAccounts(ctx context.Context) ApiPaymentslistAccountsRequest
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param connector The connector code
-		@return ApiReadConnectorConfigRequest
+	// PaymentslistAccountsExecute executes the request
+	//  @return ListAccountsResponse
+	PaymentslistAccountsExecute(r ApiPaymentslistAccountsRequest) (*ListAccountsResponse, *http.Response, error)
+
+	/*
+	ReadConnectorConfig Read connector config
+
+	Read connector config
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param connector The connector code
+	@return ApiReadConnectorConfigRequest
 	*/
 	ReadConnectorConfig(ctx context.Context, connector Connectors) ApiReadConnectorConfigRequest
 
@@ -150,13 +163,13 @@ type PaymentsApi interface {
 	ReadConnectorConfigExecute(r ApiReadConnectorConfigRequest) (*ConnectorConfig, *http.Response, error)
 
 	/*
-		ResetConnector Reset connector
+	ResetConnector Reset connector
 
-		Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
+	Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param connector The connector code
-		@return ApiResetConnectorRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param connector The connector code
+	@return ApiResetConnectorRequest
 	*/
 	ResetConnector(ctx context.Context, connector Connectors) ApiResetConnectorRequest
 
@@ -164,13 +177,13 @@ type PaymentsApi interface {
 	ResetConnectorExecute(r ApiResetConnectorRequest) (*http.Response, error)
 
 	/*
-		UninstallConnector Uninstall connector
+	UninstallConnector Uninstall connector
 
-		Uninstall  connector
+	Uninstall  connector
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param connector The connector code
-		@return ApiUninstallConnectorRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param connector The connector code
+	@return ApiUninstallConnectorRequest
 	*/
 	UninstallConnector(ctx context.Context, connector Connectors) ApiUninstallConnectorRequest
 
@@ -182,8 +195,8 @@ type PaymentsApi interface {
 type PaymentsApiService service
 
 type ApiConnectorsStripeTransferRequest struct {
-	ctx                   context.Context
-	ApiService            PaymentsApi
+	ctx context.Context
+	ApiService PaymentsApi
 	stripeTransferRequest *StripeTransferRequest
 }
 
@@ -201,22 +214,22 @@ ConnectorsStripeTransfer Transfer funds between Stripe accounts
 
 Execute a transfer between two Stripe accounts
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiConnectorsStripeTransferRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiConnectorsStripeTransferRequest
 */
 func (a *PaymentsApiService) ConnectorsStripeTransfer(ctx context.Context) ApiConnectorsStripeTransferRequest {
 	return ApiConnectorsStripeTransferRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
 func (a *PaymentsApiService) ConnectorsStripeTransferExecute(r ApiConnectorsStripeTransferRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPost
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.ConnectorsStripeTransfer")
@@ -281,7 +294,7 @@ func (a *PaymentsApiService) ConnectorsStripeTransferExecute(r ApiConnectorsStri
 }
 
 type ApiGetAllConnectorsRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService PaymentsApi
 }
 
@@ -294,25 +307,24 @@ GetAllConnectors Get all installed connectors
 
 Get all installed connectors
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetAllConnectorsRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiGetAllConnectorsRequest
 */
 func (a *PaymentsApiService) GetAllConnectors(ctx context.Context) ApiGetAllConnectorsRequest {
 	return ApiGetAllConnectorsRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ListConnectorsResponse
+//  @return ListConnectorsResponse
 func (a *PaymentsApiService) GetAllConnectorsExecute(r ApiGetAllConnectorsRequest) (*ListConnectorsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ListConnectorsResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListConnectorsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.GetAllConnectors")
@@ -381,7 +393,7 @@ func (a *PaymentsApiService) GetAllConnectorsExecute(r ApiGetAllConnectorsReques
 }
 
 type ApiGetAllConnectorsConfigsRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService PaymentsApi
 }
 
@@ -394,25 +406,24 @@ GetAllConnectorsConfigs Get all available connectors configs
 
 Get all available connectors configs
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetAllConnectorsConfigsRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiGetAllConnectorsConfigsRequest
 */
 func (a *PaymentsApiService) GetAllConnectorsConfigs(ctx context.Context) ApiGetAllConnectorsConfigsRequest {
 	return ApiGetAllConnectorsConfigsRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ListConnectorsConfigsResponse
+//  @return ListConnectorsConfigsResponse
 func (a *PaymentsApiService) GetAllConnectorsConfigsExecute(r ApiGetAllConnectorsConfigsRequest) (*ListConnectorsConfigsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ListConnectorsConfigsResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListConnectorsConfigsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.GetAllConnectorsConfigs")
@@ -481,10 +492,10 @@ func (a *PaymentsApiService) GetAllConnectorsConfigsExecute(r ApiGetAllConnector
 }
 
 type ApiGetConnectorTaskRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService PaymentsApi
-	connector  Connectors
-	taskId     string
+	connector Connectors
+	taskId string
 }
 
 func (r ApiGetConnectorTaskRequest) Execute() (*ListConnectorTasks200ResponseInner, *http.Response, error) {
@@ -496,29 +507,28 @@ GetConnectorTask Read a specific task of the connector
 
 Get a specific task associated to the connector
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param connector The connector code
-	@param taskId The task id
-	@return ApiGetConnectorTaskRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param connector The connector code
+ @param taskId The task id
+ @return ApiGetConnectorTaskRequest
 */
 func (a *PaymentsApiService) GetConnectorTask(ctx context.Context, connector Connectors, taskId string) ApiGetConnectorTaskRequest {
 	return ApiGetConnectorTaskRequest{
 		ApiService: a,
-		ctx:        ctx,
-		connector:  connector,
-		taskId:     taskId,
+		ctx: ctx,
+		connector: connector,
+		taskId: taskId,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ListConnectorTasks200ResponseInner
+//  @return ListConnectorTasks200ResponseInner
 func (a *PaymentsApiService) GetConnectorTaskExecute(r ApiGetConnectorTaskRequest) (*ListConnectorTasks200ResponseInner, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ListConnectorTasks200ResponseInner
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListConnectorTasks200ResponseInner
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.GetConnectorTask")
@@ -589,9 +599,9 @@ func (a *PaymentsApiService) GetConnectorTaskExecute(r ApiGetConnectorTaskReques
 }
 
 type ApiGetPaymentRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService PaymentsApi
-	paymentId  string
+	paymentId string
 }
 
 func (r ApiGetPaymentRequest) Execute() (*Payment, *http.Response, error) {
@@ -601,27 +611,26 @@ func (r ApiGetPaymentRequest) Execute() (*Payment, *http.Response, error) {
 /*
 GetPayment Returns a payment.
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param paymentId The payment id
-	@return ApiGetPaymentRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param paymentId The payment id
+ @return ApiGetPaymentRequest
 */
 func (a *PaymentsApiService) GetPayment(ctx context.Context, paymentId string) ApiGetPaymentRequest {
 	return ApiGetPaymentRequest{
 		ApiService: a,
-		ctx:        ctx,
-		paymentId:  paymentId,
+		ctx: ctx,
+		paymentId: paymentId,
 	}
 }
 
 // Execute executes the request
-//
-//	@return Payment
+//  @return Payment
 func (a *PaymentsApiService) GetPaymentExecute(r ApiGetPaymentRequest) (*Payment, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *Payment
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *Payment
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.GetPayment")
@@ -691,9 +700,9 @@ func (a *PaymentsApiService) GetPaymentExecute(r ApiGetPaymentRequest) (*Payment
 }
 
 type ApiInstallConnectorRequest struct {
-	ctx             context.Context
-	ApiService      PaymentsApi
-	connector       Connectors
+	ctx context.Context
+	ApiService PaymentsApi
+	connector Connectors
 	connectorConfig *ConnectorConfig
 }
 
@@ -711,24 +720,24 @@ InstallConnector Install connector
 
 Install connector
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param connector The connector code
-	@return ApiInstallConnectorRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param connector The connector code
+ @return ApiInstallConnectorRequest
 */
 func (a *PaymentsApiService) InstallConnector(ctx context.Context, connector Connectors) ApiInstallConnectorRequest {
 	return ApiInstallConnectorRequest{
 		ApiService: a,
-		ctx:        ctx,
-		connector:  connector,
+		ctx: ctx,
+		connector: connector,
 	}
 }
 
 // Execute executes the request
 func (a *PaymentsApiService) InstallConnectorExecute(r ApiInstallConnectorRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPost
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.InstallConnector")
@@ -794,9 +803,9 @@ func (a *PaymentsApiService) InstallConnectorExecute(r ApiInstallConnectorReques
 }
 
 type ApiListConnectorTasksRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService PaymentsApi
-	connector  Connectors
+	connector Connectors
 }
 
 func (r ApiListConnectorTasksRequest) Execute() ([]ListConnectorTasks200ResponseInner, *http.Response, error) {
@@ -808,27 +817,26 @@ ListConnectorTasks List connector tasks
 
 List all tasks associated with this connector.
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param connector The connector code
-	@return ApiListConnectorTasksRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param connector The connector code
+ @return ApiListConnectorTasksRequest
 */
 func (a *PaymentsApiService) ListConnectorTasks(ctx context.Context, connector Connectors) ApiListConnectorTasksRequest {
 	return ApiListConnectorTasksRequest{
 		ApiService: a,
-		ctx:        ctx,
-		connector:  connector,
+		ctx: ctx,
+		connector: connector,
 	}
 }
 
 // Execute executes the request
-//
-//	@return []ListConnectorTasks200ResponseInner
+//  @return []ListConnectorTasks200ResponseInner
 func (a *PaymentsApiService) ListConnectorTasksExecute(r ApiListConnectorTasksRequest) ([]ListConnectorTasks200ResponseInner, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue []ListConnectorTasks200ResponseInner
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  []ListConnectorTasks200ResponseInner
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.ListConnectorTasks")
@@ -898,11 +906,11 @@ func (a *PaymentsApiService) ListConnectorTasksExecute(r ApiListConnectorTasksRe
 }
 
 type ApiListPaymentsRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService PaymentsApi
-	limit      *int32
-	skip       *int32
-	sort       *[]string
+	limit *int32
+	skip *int32
+	sort *[]string
 }
 
 // Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.
@@ -930,25 +938,24 @@ func (r ApiListPaymentsRequest) Execute() (*ListPaymentsResponse, *http.Response
 /*
 ListPayments Returns a list of payments.
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiListPaymentsRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiListPaymentsRequest
 */
 func (a *PaymentsApiService) ListPayments(ctx context.Context) ApiListPaymentsRequest {
 	return ApiListPaymentsRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ListPaymentsResponse
+//  @return ListPaymentsResponse
 func (a *PaymentsApiService) ListPaymentsExecute(r ApiListPaymentsRequest) (*ListPaymentsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ListPaymentsResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListPaymentsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.ListPayments")
@@ -1033,10 +1040,145 @@ func (a *PaymentsApiService) ListPaymentsExecute(r ApiListPaymentsRequest) (*Lis
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiReadConnectorConfigRequest struct {
-	ctx        context.Context
+type ApiPaymentslistAccountsRequest struct {
+	ctx context.Context
 	ApiService PaymentsApi
-	connector  Connectors
+	limit *int32
+	skip *int32
+	sort *[]string
+}
+
+// Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.
+func (r ApiPaymentslistAccountsRequest) Limit(limit int32) ApiPaymentslistAccountsRequest {
+	r.limit = &limit
+	return r
+}
+
+// How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.
+func (r ApiPaymentslistAccountsRequest) Skip(skip int32) ApiPaymentslistAccountsRequest {
+	r.skip = &skip
+	return r
+}
+
+// Field used to sort payments (Default is by date).
+func (r ApiPaymentslistAccountsRequest) Sort(sort []string) ApiPaymentslistAccountsRequest {
+	r.sort = &sort
+	return r
+}
+
+func (r ApiPaymentslistAccountsRequest) Execute() (*ListAccountsResponse, *http.Response, error) {
+	return r.ApiService.PaymentslistAccountsExecute(r)
+}
+
+/*
+PaymentslistAccounts Returns a list of accounts.
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiPaymentslistAccountsRequest
+*/
+func (a *PaymentsApiService) PaymentslistAccounts(ctx context.Context) ApiPaymentslistAccountsRequest {
+	return ApiPaymentslistAccountsRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return ListAccountsResponse
+func (a *PaymentsApiService) PaymentslistAccountsExecute(r ApiPaymentslistAccountsRequest) (*ListAccountsResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListAccountsResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.PaymentslistAccounts")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/payments/accounts"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	if r.limit != nil {
+		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	}
+	if r.skip != nil {
+		localVarQueryParams.Add("skip", parameterToString(*r.skip, ""))
+	}
+	if r.sort != nil {
+		t := *r.sort
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				localVarQueryParams.Add("sort", parameterToString(s.Index(i), "multi"))
+			}
+		} else {
+			localVarQueryParams.Add("sort", parameterToString(t, "multi"))
+		}
+	}
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiReadConnectorConfigRequest struct {
+	ctx context.Context
+	ApiService PaymentsApi
+	connector Connectors
 }
 
 func (r ApiReadConnectorConfigRequest) Execute() (*ConnectorConfig, *http.Response, error) {
@@ -1048,27 +1190,26 @@ ReadConnectorConfig Read connector config
 
 Read connector config
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param connector The connector code
-	@return ApiReadConnectorConfigRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param connector The connector code
+ @return ApiReadConnectorConfigRequest
 */
 func (a *PaymentsApiService) ReadConnectorConfig(ctx context.Context, connector Connectors) ApiReadConnectorConfigRequest {
 	return ApiReadConnectorConfigRequest{
 		ApiService: a,
-		ctx:        ctx,
-		connector:  connector,
+		ctx: ctx,
+		connector: connector,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ConnectorConfig
+//  @return ConnectorConfig
 func (a *PaymentsApiService) ReadConnectorConfigExecute(r ApiReadConnectorConfigRequest) (*ConnectorConfig, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ConnectorConfig
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ConnectorConfig
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.ReadConnectorConfig")
@@ -1138,9 +1279,9 @@ func (a *PaymentsApiService) ReadConnectorConfigExecute(r ApiReadConnectorConfig
 }
 
 type ApiResetConnectorRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService PaymentsApi
-	connector  Connectors
+	connector Connectors
 }
 
 func (r ApiResetConnectorRequest) Execute() (*http.Response, error) {
@@ -1152,24 +1293,24 @@ ResetConnector Reset connector
 
 Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param connector The connector code
-	@return ApiResetConnectorRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param connector The connector code
+ @return ApiResetConnectorRequest
 */
 func (a *PaymentsApiService) ResetConnector(ctx context.Context, connector Connectors) ApiResetConnectorRequest {
 	return ApiResetConnectorRequest{
 		ApiService: a,
-		ctx:        ctx,
-		connector:  connector,
+		ctx: ctx,
+		connector: connector,
 	}
 }
 
 // Execute executes the request
 func (a *PaymentsApiService) ResetConnectorExecute(r ApiResetConnectorRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPost
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.ResetConnector")
@@ -1230,9 +1371,9 @@ func (a *PaymentsApiService) ResetConnectorExecute(r ApiResetConnectorRequest) (
 }
 
 type ApiUninstallConnectorRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService PaymentsApi
-	connector  Connectors
+	connector Connectors
 }
 
 func (r ApiUninstallConnectorRequest) Execute() (*http.Response, error) {
@@ -1244,24 +1385,24 @@ UninstallConnector Uninstall connector
 
 Uninstall  connector
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param connector The connector code
-	@return ApiUninstallConnectorRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param connector The connector code
+ @return ApiUninstallConnectorRequest
 */
 func (a *PaymentsApiService) UninstallConnector(ctx context.Context, connector Connectors) ApiUninstallConnectorRequest {
 	return ApiUninstallConnectorRequest{
 		ApiService: a,
-		ctx:        ctx,
-		connector:  connector,
+		ctx: ctx,
+		connector: connector,
 	}
 }
 
 // Execute executes the request
 func (a *PaymentsApiService) UninstallConnectorExecute(r ApiUninstallConnectorRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodDelete
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodDelete
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.UninstallConnector")

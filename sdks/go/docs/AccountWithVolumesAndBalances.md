@@ -7,8 +7,8 @@ Name | Type | Description | Notes
 **Address** | **string** |  |
 **Type** | Pointer to **string** |  | [optional]
 **Metadata** | Pointer to **map[string]interface{}** |  | [optional]
-**Volumes** | Pointer to **map[string]map[string]int32** |  | [optional]
-**Balances** | Pointer to **map[string]int32** |  | [optional]
+**Volumes** | Pointer to **map[string]map[string]int64** |  | [optional]
+**Balances** | Pointer to **map[string]int64** |  | [optional]
 
 ## Methods
 
@@ -101,20 +101,20 @@ HasMetadata returns a boolean if a field has been set.
 
 ### GetVolumes
 
-`func (o *AccountWithVolumesAndBalances) GetVolumes() map[string]map[string]int32`
+`func (o *AccountWithVolumesAndBalances) GetVolumes() map[string]map[string]int64`
 
 GetVolumes returns the Volumes field if non-nil, zero value otherwise.
 
 ### GetVolumesOk
 
-`func (o *AccountWithVolumesAndBalances) GetVolumesOk() (*map[string]map[string]int32, bool)`
+`func (o *AccountWithVolumesAndBalances) GetVolumesOk() (*map[string]map[string]int64, bool)`
 
 GetVolumesOk returns a tuple with the Volumes field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetVolumes
 
-`func (o *AccountWithVolumesAndBalances) SetVolumes(v map[string]map[string]int32)`
+`func (o *AccountWithVolumesAndBalances) SetVolumes(v map[string]map[string]int64)`
 
 SetVolumes sets Volumes field to given value.
 
@@ -126,20 +126,20 @@ HasVolumes returns a boolean if a field has been set.
 
 ### GetBalances
 
-`func (o *AccountWithVolumesAndBalances) GetBalances() map[string]int32`
+`func (o *AccountWithVolumesAndBalances) GetBalances() map[string]int64`
 
 GetBalances returns the Balances field if non-nil, zero value otherwise.
 
 ### GetBalancesOk
 
-`func (o *AccountWithVolumesAndBalances) GetBalancesOk() (*map[string]int32, bool)`
+`func (o *AccountWithVolumesAndBalances) GetBalancesOk() (*map[string]int64, bool)`
 
 GetBalancesOk returns a tuple with the Balances field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetBalances
 
-`func (o *AccountWithVolumesAndBalances) SetBalances(v map[string]int32)`
+`func (o *AccountWithVolumesAndBalances) SetBalances(v map[string]int64)`
 
 SetBalances sets Balances field to given value.
 

@@ -17,7 +17,7 @@ import (
 
 // LedgerStorage struct for LedgerStorage
 type LedgerStorage struct {
-	Driver  string   `json:"driver"`
+	Driver string `json:"driver"`
 	Ledgers []string `json:"ledgers"`
 }
 
@@ -54,7 +54,7 @@ func (o *LedgerStorage) GetDriver() string {
 // and a boolean to check if the value has been set.
 func (o *LedgerStorage) GetDriverOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Driver, true
 }
@@ -78,7 +78,7 @@ func (o *LedgerStorage) GetLedgers() []string {
 // and a boolean to check if the value has been set.
 func (o *LedgerStorage) GetLedgersOk() ([]string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Ledgers, true
 }

@@ -52,7 +52,7 @@ func (o *WalletWithBalancesBalances) GetMain() AssetHolder {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalancesBalances) GetMainOk() (*AssetHolder, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Main, true
 }

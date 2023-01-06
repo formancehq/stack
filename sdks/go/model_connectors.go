@@ -21,10 +21,10 @@ type Connectors string
 
 // List of Connectors
 const (
-	STRIPE         Connectors = "STRIPE"
-	DUMMY_PAY      Connectors = "DUMMY-PAY"
-	SIE            Connectors = "SIE"
-	MODULR         Connectors = "MODULR"
+	STRIPE Connectors = "STRIPE"
+	DUMMY_PAY Connectors = "DUMMY-PAY"
+	SIE Connectors = "SIE"
+	MODULR Connectors = "MODULR"
 	CURRENCY_CLOUD Connectors = "CURRENCY-CLOUD"
 	BANKING_CIRCLE Connectors = "BANKING-CIRCLE"
 )

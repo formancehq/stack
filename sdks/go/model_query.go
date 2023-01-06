@@ -17,14 +17,14 @@ import (
 
 // Query struct for Query
 type Query struct {
-	Ledgers  []string `json:"ledgers,omitempty"`
-	After    []string `json:"after,omitempty"`
-	PageSize *int64   `json:"pageSize,omitempty"`
-	Terms    []string `json:"terms,omitempty"`
-	Sort     *string  `json:"sort,omitempty"`
-	Policy   *string  `json:"policy,omitempty"`
-	Target   *string  `json:"target,omitempty"`
-	Cursor   *string  `json:"cursor,omitempty"`
+	Ledgers []string `json:"ledgers,omitempty"`
+	After []string `json:"after,omitempty"`
+	PageSize *int64 `json:"pageSize,omitempty"`
+	Terms []string `json:"terms,omitempty"`
+	Sort *string `json:"sort,omitempty"`
+	Policy *string `json:"policy,omitempty"`
+	Target *string `json:"target,omitempty"`
+	Cursor *string `json:"cursor,omitempty"`
 }
 
 // NewQuery instantiates a new Query object
@@ -57,7 +57,7 @@ func (o *Query) GetLedgers() []string {
 // and a boolean to check if the value has been set.
 func (o *Query) GetLedgersOk() ([]string, bool) {
 	if o == nil || isNil(o.Ledgers) {
-		return nil, false
+    return nil, false
 	}
 	return o.Ledgers, true
 }
@@ -89,7 +89,7 @@ func (o *Query) GetAfter() []string {
 // and a boolean to check if the value has been set.
 func (o *Query) GetAfterOk() ([]string, bool) {
 	if o == nil || isNil(o.After) {
-		return nil, false
+    return nil, false
 	}
 	return o.After, true
 }
@@ -121,7 +121,7 @@ func (o *Query) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *Query) GetPageSizeOk() (*int64, bool) {
 	if o == nil || isNil(o.PageSize) {
-		return nil, false
+    return nil, false
 	}
 	return o.PageSize, true
 }
@@ -153,7 +153,7 @@ func (o *Query) GetTerms() []string {
 // and a boolean to check if the value has been set.
 func (o *Query) GetTermsOk() ([]string, bool) {
 	if o == nil || isNil(o.Terms) {
-		return nil, false
+    return nil, false
 	}
 	return o.Terms, true
 }
@@ -185,7 +185,7 @@ func (o *Query) GetSort() string {
 // and a boolean to check if the value has been set.
 func (o *Query) GetSortOk() (*string, bool) {
 	if o == nil || isNil(o.Sort) {
-		return nil, false
+    return nil, false
 	}
 	return o.Sort, true
 }
@@ -217,7 +217,7 @@ func (o *Query) GetPolicy() string {
 // and a boolean to check if the value has been set.
 func (o *Query) GetPolicyOk() (*string, bool) {
 	if o == nil || isNil(o.Policy) {
-		return nil, false
+    return nil, false
 	}
 	return o.Policy, true
 }
@@ -249,7 +249,7 @@ func (o *Query) GetTarget() string {
 // and a boolean to check if the value has been set.
 func (o *Query) GetTargetOk() (*string, bool) {
 	if o == nil || isNil(o.Target) {
-		return nil, false
+    return nil, false
 	}
 	return o.Target, true
 }
@@ -281,7 +281,7 @@ func (o *Query) GetCursor() string {
 // and a boolean to check if the value has been set.
 func (o *Query) GetCursorOk() (*string, bool) {
 	if o == nil || isNil(o.Cursor) {
-		return nil, false
+    return nil, false
 	}
 	return o.Cursor, true
 }

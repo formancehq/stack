@@ -18,13 +18,13 @@ import (
 
 // WebhooksConfig struct for WebhooksConfig
 type WebhooksConfig struct {
-	Id         *string    `json:"id,omitempty"`
-	Endpoint   *string    `json:"endpoint,omitempty"`
-	Secret     *string    `json:"secret,omitempty"`
-	EventTypes []string   `json:"eventTypes,omitempty"`
-	Active     *bool      `json:"active,omitempty"`
-	CreatedAt  *time.Time `json:"createdAt,omitempty"`
-	UpdatedAt  *time.Time `json:"updatedAt,omitempty"`
+	Id *string `json:"id,omitempty"`
+	Endpoint *string `json:"endpoint,omitempty"`
+	Secret *string `json:"secret,omitempty"`
+	EventTypes []string `json:"eventTypes,omitempty"`
+	Active *bool `json:"active,omitempty"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 }
 
 // NewWebhooksConfig instantiates a new WebhooksConfig object
@@ -57,7 +57,7 @@ func (o *WebhooksConfig) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetIdOk() (*string, bool) {
 	if o == nil || isNil(o.Id) {
-		return nil, false
+    return nil, false
 	}
 	return o.Id, true
 }
@@ -89,7 +89,7 @@ func (o *WebhooksConfig) GetEndpoint() string {
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetEndpointOk() (*string, bool) {
 	if o == nil || isNil(o.Endpoint) {
-		return nil, false
+    return nil, false
 	}
 	return o.Endpoint, true
 }
@@ -121,7 +121,7 @@ func (o *WebhooksConfig) GetSecret() string {
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetSecretOk() (*string, bool) {
 	if o == nil || isNil(o.Secret) {
-		return nil, false
+    return nil, false
 	}
 	return o.Secret, true
 }
@@ -153,7 +153,7 @@ func (o *WebhooksConfig) GetEventTypes() []string {
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetEventTypesOk() ([]string, bool) {
 	if o == nil || isNil(o.EventTypes) {
-		return nil, false
+    return nil, false
 	}
 	return o.EventTypes, true
 }
@@ -185,7 +185,7 @@ func (o *WebhooksConfig) GetActive() bool {
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetActiveOk() (*bool, bool) {
 	if o == nil || isNil(o.Active) {
-		return nil, false
+    return nil, false
 	}
 	return o.Active, true
 }
@@ -217,7 +217,7 @@ func (o *WebhooksConfig) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.CreatedAt) {
-		return nil, false
+    return nil, false
 	}
 	return o.CreatedAt, true
 }
@@ -249,7 +249,7 @@ func (o *WebhooksConfig) GetUpdatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetUpdatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.UpdatedAt) {
-		return nil, false
+    return nil, false
 	}
 	return o.UpdatedAt, true
 }

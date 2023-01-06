@@ -17,17 +17,17 @@ import (
 
 // ErrorResponse struct for ErrorResponse
 type ErrorResponse struct {
-	ErrorCode    ErrorCode `json:"error_code"`
-	ErrorMessage *string   `json:"error_message,omitempty"`
+	ErrorCode *ErrorsEnum `json:"errorCode,omitempty"`
+	ErrorMessage *string `json:"errorMessage,omitempty"`
+	Details *string `json:"details,omitempty"`
 }
 
 // NewErrorResponse instantiates a new ErrorResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewErrorResponse(errorCode ErrorCode) *ErrorResponse {
+func NewErrorResponse() *ErrorResponse {
 	this := ErrorResponse{}
-	this.ErrorCode = errorCode
 	return &this
 }
 
@@ -39,28 +39,36 @@ func NewErrorResponseWithDefaults() *ErrorResponse {
 	return &this
 }
 
-// GetErrorCode returns the ErrorCode field value
-func (o *ErrorResponse) GetErrorCode() ErrorCode {
-	if o == nil {
-		var ret ErrorCode
+// GetErrorCode returns the ErrorCode field value if set, zero value otherwise.
+func (o *ErrorResponse) GetErrorCode() ErrorsEnum {
+	if o == nil || isNil(o.ErrorCode) {
+		var ret ErrorsEnum
 		return ret
 	}
-
-	return o.ErrorCode
+	return *o.ErrorCode
 }
 
-// GetErrorCodeOk returns a tuple with the ErrorCode field value
+// GetErrorCodeOk returns a tuple with the ErrorCode field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ErrorResponse) GetErrorCodeOk() (*ErrorCode, bool) {
-	if o == nil {
-		return nil, false
+func (o *ErrorResponse) GetErrorCodeOk() (*ErrorsEnum, bool) {
+	if o == nil || isNil(o.ErrorCode) {
+    return nil, false
 	}
-	return &o.ErrorCode, true
+	return o.ErrorCode, true
 }
 
-// SetErrorCode sets field value
-func (o *ErrorResponse) SetErrorCode(v ErrorCode) {
-	o.ErrorCode = v
+// HasErrorCode returns a boolean if a field has been set.
+func (o *ErrorResponse) HasErrorCode() bool {
+	if o != nil && !isNil(o.ErrorCode) {
+		return true
+	}
+
+	return false
+}
+
+// SetErrorCode gets a reference to the given ErrorsEnum and assigns it to the ErrorCode field.
+func (o *ErrorResponse) SetErrorCode(v ErrorsEnum) {
+	o.ErrorCode = &v
 }
 
 // GetErrorMessage returns the ErrorMessage field value if set, zero value otherwise.
@@ -76,7 +84,7 @@ func (o *ErrorResponse) GetErrorMessage() string {
 // and a boolean to check if the value has been set.
 func (o *ErrorResponse) GetErrorMessageOk() (*string, bool) {
 	if o == nil || isNil(o.ErrorMessage) {
-		return nil, false
+    return nil, false
 	}
 	return o.ErrorMessage, true
 }
@@ -95,13 +103,48 @@ func (o *ErrorResponse) SetErrorMessage(v string) {
 	o.ErrorMessage = &v
 }
 
+// GetDetails returns the Details field value if set, zero value otherwise.
+func (o *ErrorResponse) GetDetails() string {
+	if o == nil || isNil(o.Details) {
+		var ret string
+		return ret
+	}
+	return *o.Details
+}
+
+// GetDetailsOk returns a tuple with the Details field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ErrorResponse) GetDetailsOk() (*string, bool) {
+	if o == nil || isNil(o.Details) {
+    return nil, false
+	}
+	return o.Details, true
+}
+
+// HasDetails returns a boolean if a field has been set.
+func (o *ErrorResponse) HasDetails() bool {
+	if o != nil && !isNil(o.Details) {
+		return true
+	}
+
+	return false
+}
+
+// SetDetails gets a reference to the given string and assigns it to the Details field.
+func (o *ErrorResponse) SetDetails(v string) {
+	o.Details = &v
+}
+
 func (o ErrorResponse) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["error_code"] = o.ErrorCode
+	if !isNil(o.ErrorCode) {
+		toSerialize["errorCode"] = o.ErrorCode
 	}
 	if !isNil(o.ErrorMessage) {
-		toSerialize["error_message"] = o.ErrorMessage
+		toSerialize["errorMessage"] = o.ErrorMessage
+	}
+	if !isNil(o.Details) {
+		toSerialize["details"] = o.Details
 	}
 	return json.Marshal(toSerialize)
 }

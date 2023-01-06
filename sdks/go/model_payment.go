@@ -18,16 +18,16 @@ import (
 
 // Payment struct for Payment
 type Payment struct {
-	Provider  string      `json:"provider"`
-	Reference *string     `json:"reference,omitempty"`
-	Scheme    string      `json:"scheme"`
-	Status    string      `json:"status"`
-	Type      string      `json:"type"`
-	Id        string      `json:"id"`
-	Amount    int32       `json:"amount"`
-	Asset     string      `json:"asset"`
-	Date      time.Time   `json:"date"`
-	Raw       interface{} `json:"raw,omitempty"`
+	Provider string `json:"provider"`
+	Reference *string `json:"reference,omitempty"`
+	Scheme string `json:"scheme"`
+	Status string `json:"status"`
+	Type string `json:"type"`
+	Id string `json:"id"`
+	Amount int32 `json:"amount"`
+	Asset string `json:"asset"`
+	Date time.Time `json:"date"`
+	Raw interface{} `json:"raw,omitempty"`
 }
 
 // NewPayment instantiates a new Payment object
@@ -69,7 +69,7 @@ func (o *Payment) GetProvider() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetProviderOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Provider, true
 }
@@ -92,7 +92,7 @@ func (o *Payment) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetReferenceOk() (*string, bool) {
 	if o == nil || isNil(o.Reference) {
-		return nil, false
+    return nil, false
 	}
 	return o.Reference, true
 }
@@ -125,7 +125,7 @@ func (o *Payment) GetScheme() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetSchemeOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Scheme, true
 }
@@ -149,7 +149,7 @@ func (o *Payment) GetStatus() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetStatusOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Status, true
 }
@@ -173,7 +173,7 @@ func (o *Payment) GetType() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetTypeOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Type, true
 }
@@ -197,7 +197,7 @@ func (o *Payment) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -221,7 +221,7 @@ func (o *Payment) GetAmount() int32 {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetAmountOk() (*int32, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Amount, true
 }
@@ -245,7 +245,7 @@ func (o *Payment) GetAsset() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetAssetOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Asset, true
 }
@@ -269,7 +269,7 @@ func (o *Payment) GetDate() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetDateOk() (*time.Time, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Date, true
 }
@@ -293,7 +293,7 @@ func (o *Payment) GetRaw() interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *Payment) GetRawOk() (*interface{}, bool) {
 	if o == nil || isNil(o.Raw) {
-		return nil, false
+    return nil, false
 	}
 	return &o.Raw, true
 }

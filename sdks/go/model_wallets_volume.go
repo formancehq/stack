@@ -17,8 +17,8 @@ import (
 
 // WalletsVolume struct for WalletsVolume
 type WalletsVolume struct {
-	Input   int32 `json:"input"`
-	Output  int32 `json:"output"`
+	Input int32 `json:"input"`
+	Output int32 `json:"output"`
 	Balance int32 `json:"balance"`
 }
 
@@ -56,7 +56,7 @@ func (o *WalletsVolume) GetInput() int32 {
 // and a boolean to check if the value has been set.
 func (o *WalletsVolume) GetInputOk() (*int32, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Input, true
 }
@@ -80,7 +80,7 @@ func (o *WalletsVolume) GetOutput() int32 {
 // and a boolean to check if the value has been set.
 func (o *WalletsVolume) GetOutputOk() (*int32, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Output, true
 }
@@ -104,7 +104,7 @@ func (o *WalletsVolume) GetBalance() int32 {
 // and a boolean to check if the value has been set.
 func (o *WalletsVolume) GetBalanceOk() (*int32, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Balance, true
 }

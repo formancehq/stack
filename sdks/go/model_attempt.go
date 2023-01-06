@@ -18,16 +18,16 @@ import (
 
 // Attempt struct for Attempt
 type Attempt struct {
-	Id             *string         `json:"id,omitempty"`
-	WebhookID      *string         `json:"webhookID,omitempty"`
-	CreatedAt      *time.Time      `json:"createdAt,omitempty"`
-	UpdatedAt      *time.Time      `json:"updatedAt,omitempty"`
-	Config         *WebhooksConfig `json:"config,omitempty"`
-	Payload        *string         `json:"payload,omitempty"`
-	StatusCode     *int32          `json:"statusCode,omitempty"`
-	RetryAttempt   *int32          `json:"retryAttempt,omitempty"`
-	Status         *string         `json:"status,omitempty"`
-	NextRetryAfter *time.Time      `json:"nextRetryAfter,omitempty"`
+	Id *string `json:"id,omitempty"`
+	WebhookID *string `json:"webhookID,omitempty"`
+	CreatedAt *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+	Config *WebhooksConfig `json:"config,omitempty"`
+	Payload *string `json:"payload,omitempty"`
+	StatusCode *int32 `json:"statusCode,omitempty"`
+	RetryAttempt *int32 `json:"retryAttempt,omitempty"`
+	Status *string `json:"status,omitempty"`
+	NextRetryAfter *time.Time `json:"nextRetryAfter,omitempty"`
 }
 
 // NewAttempt instantiates a new Attempt object
@@ -60,7 +60,7 @@ func (o *Attempt) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetIdOk() (*string, bool) {
 	if o == nil || isNil(o.Id) {
-		return nil, false
+    return nil, false
 	}
 	return o.Id, true
 }
@@ -92,7 +92,7 @@ func (o *Attempt) GetWebhookID() string {
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetWebhookIDOk() (*string, bool) {
 	if o == nil || isNil(o.WebhookID) {
-		return nil, false
+    return nil, false
 	}
 	return o.WebhookID, true
 }
@@ -124,7 +124,7 @@ func (o *Attempt) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.CreatedAt) {
-		return nil, false
+    return nil, false
 	}
 	return o.CreatedAt, true
 }
@@ -156,7 +156,7 @@ func (o *Attempt) GetUpdatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetUpdatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.UpdatedAt) {
-		return nil, false
+    return nil, false
 	}
 	return o.UpdatedAt, true
 }
@@ -188,7 +188,7 @@ func (o *Attempt) GetConfig() WebhooksConfig {
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetConfigOk() (*WebhooksConfig, bool) {
 	if o == nil || isNil(o.Config) {
-		return nil, false
+    return nil, false
 	}
 	return o.Config, true
 }
@@ -220,7 +220,7 @@ func (o *Attempt) GetPayload() string {
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetPayloadOk() (*string, bool) {
 	if o == nil || isNil(o.Payload) {
-		return nil, false
+    return nil, false
 	}
 	return o.Payload, true
 }
@@ -252,7 +252,7 @@ func (o *Attempt) GetStatusCode() int32 {
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetStatusCodeOk() (*int32, bool) {
 	if o == nil || isNil(o.StatusCode) {
-		return nil, false
+    return nil, false
 	}
 	return o.StatusCode, true
 }
@@ -284,7 +284,7 @@ func (o *Attempt) GetRetryAttempt() int32 {
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetRetryAttemptOk() (*int32, bool) {
 	if o == nil || isNil(o.RetryAttempt) {
-		return nil, false
+    return nil, false
 	}
 	return o.RetryAttempt, true
 }
@@ -316,7 +316,7 @@ func (o *Attempt) GetStatus() string {
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetStatusOk() (*string, bool) {
 	if o == nil || isNil(o.Status) {
-		return nil, false
+    return nil, false
 	}
 	return o.Status, true
 }
@@ -348,7 +348,7 @@ func (o *Attempt) GetNextRetryAfter() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetNextRetryAfterOk() (*time.Time, bool) {
 	if o == nil || isNil(o.NextRetryAfter) {
-		return nil, false
+    return nil, false
 	}
 	return o.NextRetryAfter, true
 }

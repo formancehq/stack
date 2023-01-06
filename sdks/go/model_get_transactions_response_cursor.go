@@ -17,11 +17,11 @@ import (
 
 // GetTransactionsResponseCursor struct for GetTransactionsResponseCursor
 type GetTransactionsResponseCursor struct {
-	PageSize int64                `json:"pageSize"`
-	HasMore  *bool                `json:"hasMore,omitempty"`
-	Previous *string              `json:"previous,omitempty"`
-	Next     *string              `json:"next,omitempty"`
-	Data     []WalletsTransaction `json:"data"`
+	PageSize int64 `json:"pageSize"`
+	HasMore *bool `json:"hasMore,omitempty"`
+	Previous *string `json:"previous,omitempty"`
+	Next *string `json:"next,omitempty"`
+	Data []WalletsTransaction `json:"data"`
 }
 
 // NewGetTransactionsResponseCursor instantiates a new GetTransactionsResponseCursor object
@@ -57,7 +57,7 @@ func (o *GetTransactionsResponseCursor) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *GetTransactionsResponseCursor) GetPageSizeOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.PageSize, true
 }
@@ -80,7 +80,7 @@ func (o *GetTransactionsResponseCursor) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *GetTransactionsResponseCursor) GetHasMoreOk() (*bool, bool) {
 	if o == nil || isNil(o.HasMore) {
-		return nil, false
+    return nil, false
 	}
 	return o.HasMore, true
 }
@@ -112,7 +112,7 @@ func (o *GetTransactionsResponseCursor) GetPrevious() string {
 // and a boolean to check if the value has been set.
 func (o *GetTransactionsResponseCursor) GetPreviousOk() (*string, bool) {
 	if o == nil || isNil(o.Previous) {
-		return nil, false
+    return nil, false
 	}
 	return o.Previous, true
 }
@@ -144,7 +144,7 @@ func (o *GetTransactionsResponseCursor) GetNext() string {
 // and a boolean to check if the value has been set.
 func (o *GetTransactionsResponseCursor) GetNextOk() (*string, bool) {
 	if o == nil || isNil(o.Next) {
-		return nil, false
+    return nil, false
 	}
 	return o.Next, true
 }
@@ -177,7 +177,7 @@ func (o *GetTransactionsResponseCursor) GetData() []WalletsTransaction {
 // and a boolean to check if the value has been set.
 func (o *GetTransactionsResponseCursor) GetDataOk() ([]WalletsTransaction, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Data, true
 }

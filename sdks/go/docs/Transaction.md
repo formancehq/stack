@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **Postings** | [**[]Posting**](Posting.md) |  |
 **Reference** | Pointer to **string** |  | [optional]
 **Metadata** | Pointer to **map[string]interface{}** |  | [optional]
-**Txid** | **int32** |  |
+**Txid** | **int64** |  |
 **PreCommitVolumes** | Pointer to [**map[string]map[string]Volume**](map.md) |  | [optional]
 **PostCommitVolumes** | Pointer to [**map[string]map[string]Volume**](map.md) |  | [optional]
 
@@ -16,7 +16,7 @@ Name | Type | Description | Notes
 
 ### NewTransaction
 
-`func NewTransaction(timestamp time.Time, postings []Posting, txid int32, ) *Transaction`
+`func NewTransaction(timestamp time.Time, postings []Posting, txid int64, ) *Transaction`
 
 NewTransaction instantiates a new Transaction object
 This constructor will assign default values to properties that have it defined,
@@ -133,20 +133,20 @@ HasMetadata returns a boolean if a field has been set.
 UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 ### GetTxid
 
-`func (o *Transaction) GetTxid() int32`
+`func (o *Transaction) GetTxid() int64`
 
 GetTxid returns the Txid field if non-nil, zero value otherwise.
 
 ### GetTxidOk
 
-`func (o *Transaction) GetTxidOk() (*int32, bool)`
+`func (o *Transaction) GetTxidOk() (*int64, bool)`
 
 GetTxidOk returns a tuple with the Txid field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetTxid
 
-`func (o *Transaction) SetTxid(v int32)`
+`func (o *Transaction) SetTxid(v int64)`
 
 SetTxid sets Txid field to given value.
 

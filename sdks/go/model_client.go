@@ -17,16 +17,16 @@ import (
 
 // Client struct for Client
 type Client struct {
-	Public                 *bool                  `json:"public,omitempty"`
-	RedirectUris           []string               `json:"redirectUris,omitempty"`
-	Description            *string                `json:"description,omitempty"`
-	Name                   string                 `json:"name"`
-	Trusted                *bool                  `json:"trusted,omitempty"`
-	PostLogoutRedirectUris []string               `json:"postLogoutRedirectUris,omitempty"`
-	Metadata               map[string]interface{} `json:"metadata,omitempty"`
-	Id                     string                 `json:"id"`
-	Scopes                 []string               `json:"scopes,omitempty"`
-	Secrets                []ClientSecret         `json:"secrets,omitempty"`
+	Public *bool `json:"public,omitempty"`
+	RedirectUris []string `json:"redirectUris,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Name string `json:"name"`
+	Trusted *bool `json:"trusted,omitempty"`
+	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris,omitempty"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Id string `json:"id"`
+	Scopes []string `json:"scopes,omitempty"`
+	Secrets []ClientSecret `json:"secrets,omitempty"`
 }
 
 // NewClient instantiates a new Client object
@@ -61,7 +61,7 @@ func (o *Client) GetPublic() bool {
 // and a boolean to check if the value has been set.
 func (o *Client) GetPublicOk() (*bool, bool) {
 	if o == nil || isNil(o.Public) {
-		return nil, false
+    return nil, false
 	}
 	return o.Public, true
 }
@@ -93,7 +93,7 @@ func (o *Client) GetRedirectUris() []string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetRedirectUrisOk() ([]string, bool) {
 	if o == nil || isNil(o.RedirectUris) {
-		return nil, false
+    return nil, false
 	}
 	return o.RedirectUris, true
 }
@@ -125,7 +125,7 @@ func (o *Client) GetDescription() string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetDescriptionOk() (*string, bool) {
 	if o == nil || isNil(o.Description) {
-		return nil, false
+    return nil, false
 	}
 	return o.Description, true
 }
@@ -158,7 +158,7 @@ func (o *Client) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetNameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Name, true
 }
@@ -181,7 +181,7 @@ func (o *Client) GetTrusted() bool {
 // and a boolean to check if the value has been set.
 func (o *Client) GetTrustedOk() (*bool, bool) {
 	if o == nil || isNil(o.Trusted) {
-		return nil, false
+    return nil, false
 	}
 	return o.Trusted, true
 }
@@ -213,7 +213,7 @@ func (o *Client) GetPostLogoutRedirectUris() []string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetPostLogoutRedirectUrisOk() ([]string, bool) {
 	if o == nil || isNil(o.PostLogoutRedirectUris) {
-		return nil, false
+    return nil, false
 	}
 	return o.PostLogoutRedirectUris, true
 }
@@ -245,7 +245,7 @@ func (o *Client) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Client) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -278,7 +278,7 @@ func (o *Client) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -301,7 +301,7 @@ func (o *Client) GetScopes() []string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetScopesOk() ([]string, bool) {
 	if o == nil || isNil(o.Scopes) {
-		return nil, false
+    return nil, false
 	}
 	return o.Scopes, true
 }
@@ -333,7 +333,7 @@ func (o *Client) GetSecrets() []ClientSecret {
 // and a boolean to check if the value has been set.
 func (o *Client) GetSecretsOk() ([]ClientSecret, bool) {
 	if o == nil || isNil(o.Secrets) {
-		return nil, false
+    return nil, false
 	}
 	return o.Secrets, true
 }

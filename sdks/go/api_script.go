@@ -20,31 +20,38 @@ import (
 	"strings"
 )
 
+
 type ScriptApi interface {
 
 	/*
-		RunScript Execute a Numscript.
+	RunScript Execute a Numscript
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param ledger Name of the ledger.
-		@return ApiRunScriptRequest
+	This route is deprecated, and has been merged into `POST /{ledger}/transactions`.
+
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param ledger Name of the ledger.
+	@return ApiRunScriptRequest
+
+	Deprecated
 	*/
 	RunScript(ctx context.Context, ledger string) ApiRunScriptRequest
 
 	// RunScriptExecute executes the request
-	//  @return ScriptResult
-	RunScriptExecute(r ApiRunScriptRequest) (*ScriptResult, *http.Response, error)
+	//  @return ScriptResponse
+	// Deprecated
+	RunScriptExecute(r ApiRunScriptRequest) (*ScriptResponse, *http.Response, error)
 }
 
 // ScriptApiService ScriptApi service
 type ScriptApiService service
 
 type ApiRunScriptRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ScriptApi
-	ledger     string
-	script     *Script
-	preview    *bool
+	ledger string
+	script *Script
+	preview *bool
 }
 
 func (r ApiRunScriptRequest) Script(script Script) ApiRunScriptRequest {
@@ -58,34 +65,39 @@ func (r ApiRunScriptRequest) Preview(preview bool) ApiRunScriptRequest {
 	return r
 }
 
-func (r ApiRunScriptRequest) Execute() (*ScriptResult, *http.Response, error) {
+func (r ApiRunScriptRequest) Execute() (*ScriptResponse, *http.Response, error) {
 	return r.ApiService.RunScriptExecute(r)
 }
 
 /*
-RunScript Execute a Numscript.
+RunScript Execute a Numscript
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@return ApiRunScriptRequest
+This route is deprecated, and has been merged into `POST /{ledger}/transactions`.
+
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param ledger Name of the ledger.
+ @return ApiRunScriptRequest
+
+Deprecated
 */
 func (a *ScriptApiService) RunScript(ctx context.Context, ledger string) ApiRunScriptRequest {
 	return ApiRunScriptRequest{
 		ApiService: a,
-		ctx:        ctx,
-		ledger:     ledger,
+		ctx: ctx,
+		ledger: ledger,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ScriptResult
-func (a *ScriptApiService) RunScriptExecute(r ApiRunScriptRequest) (*ScriptResult, *http.Response, error) {
+//  @return ScriptResponse
+// Deprecated
+func (a *ScriptApiService) RunScriptExecute(r ApiRunScriptRequest) (*ScriptResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ScriptResult
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ScriptResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ScriptApiService.RunScript")
@@ -146,27 +158,6 @@ func (a *ScriptApiService) RunScriptExecute(r ApiRunScriptRequest) (*ScriptResul
 		newErr := &GenericOpenAPIError{
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v RunScript400Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 409 {
-			var v AddMetadataToAccount409Response
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}

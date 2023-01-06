@@ -17,7 +17,7 @@ import (
 
 // SecretOptions struct for SecretOptions
 type SecretOptions struct {
-	Name     string                 `json:"name"`
+	Name string `json:"name"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
@@ -53,7 +53,7 @@ func (o *SecretOptions) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *SecretOptions) GetNameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Name, true
 }
@@ -76,7 +76,7 @@ func (o *SecretOptions) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *SecretOptions) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }

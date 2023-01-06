@@ -27,7 +27,7 @@ type TaskDescriptorWise struct {
 	// The error message if the task failed
 	Error *string `json:"error,omitempty"`
 	// The task state
-	State      map[string]interface{}        `json:"state,omitempty"`
+	State map[string]interface{} `json:"state,omitempty"`
 	Descriptor *TaskDescriptorWiseDescriptor `json:"descriptor,omitempty"`
 }
 
@@ -61,7 +61,7 @@ func (o *TaskDescriptorWise) GetProvider() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorWise) GetProviderOk() (*string, bool) {
 	if o == nil || isNil(o.Provider) {
-		return nil, false
+    return nil, false
 	}
 	return o.Provider, true
 }
@@ -93,7 +93,7 @@ func (o *TaskDescriptorWise) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorWise) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.CreatedAt) {
-		return nil, false
+    return nil, false
 	}
 	return o.CreatedAt, true
 }
@@ -125,7 +125,7 @@ func (o *TaskDescriptorWise) GetStatus() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorWise) GetStatusOk() (*string, bool) {
 	if o == nil || isNil(o.Status) {
-		return nil, false
+    return nil, false
 	}
 	return o.Status, true
 }
@@ -157,7 +157,7 @@ func (o *TaskDescriptorWise) GetError() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorWise) GetErrorOk() (*string, bool) {
 	if o == nil || isNil(o.Error) {
-		return nil, false
+    return nil, false
 	}
 	return o.Error, true
 }
@@ -189,7 +189,7 @@ func (o *TaskDescriptorWise) GetState() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorWise) GetStateOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.State) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.State, true
 }
@@ -221,7 +221,7 @@ func (o *TaskDescriptorWise) GetDescriptor() TaskDescriptorWiseDescriptor {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorWise) GetDescriptorOk() (*TaskDescriptorWiseDescriptor, bool) {
 	if o == nil || isNil(o.Descriptor) {
-		return nil, false
+    return nil, false
 	}
 	return o.Descriptor, true
 }

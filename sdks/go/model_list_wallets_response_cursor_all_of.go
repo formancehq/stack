@@ -52,7 +52,7 @@ func (o *ListWalletsResponseCursorAllOf) GetData() []Wallet {
 // and a boolean to check if the value has been set.
 func (o *ListWalletsResponseCursorAllOf) GetDataOk() ([]Wallet, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Data, true
 }

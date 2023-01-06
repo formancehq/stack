@@ -19,13 +19,14 @@ import (
 	"net/url"
 )
 
+
 type ServerApi interface {
 
 	/*
-		GetInfo Show server information.
+	GetInfo Show server information
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiGetInfoRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetInfoRequest
 	*/
 	GetInfo(ctx context.Context) ApiGetInfoRequest
 
@@ -38,7 +39,7 @@ type ServerApi interface {
 type ServerApiService service
 
 type ApiGetInfoRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ServerApi
 }
 
@@ -47,27 +48,26 @@ func (r ApiGetInfoRequest) Execute() (*ConfigInfoResponse, *http.Response, error
 }
 
 /*
-GetInfo Show server information.
+GetInfo Show server information
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetInfoRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiGetInfoRequest
 */
 func (a *ServerApiService) GetInfo(ctx context.Context) ApiGetInfoRequest {
 	return ApiGetInfoRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ConfigInfoResponse
+//  @return ConfigInfoResponse
 func (a *ServerApiService) GetInfoExecute(r ApiGetInfoRequest) (*ConfigInfoResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ConfigInfoResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ConfigInfoResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ServerApiService.GetInfo")
@@ -120,6 +120,14 @@ func (a *ServerApiService) GetInfoExecute(r ApiGetInfoRequest) (*ConfigInfoRespo
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

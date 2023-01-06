@@ -52,7 +52,7 @@ func (o *AssetHolder) GetAssets() map[string]float32 {
 // and a boolean to check if the value has been set.
 func (o *AssetHolder) GetAssetsOk() (*map[string]float32, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Assets, true
 }

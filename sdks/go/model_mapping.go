@@ -52,7 +52,7 @@ func (o *Mapping) GetContracts() []Contract {
 // and a boolean to check if the value has been set.
 func (o *Mapping) GetContractsOk() ([]Contract, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Contracts, true
 }

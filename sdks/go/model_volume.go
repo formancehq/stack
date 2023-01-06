@@ -17,16 +17,16 @@ import (
 
 // Volume struct for Volume
 type Volume struct {
-	Input   float32  `json:"input"`
-	Output  float32  `json:"output"`
-	Balance *float32 `json:"balance,omitempty"`
+	Input int64 `json:"input"`
+	Output int64 `json:"output"`
+	Balance *int64 `json:"balance,omitempty"`
 }
 
 // NewVolume instantiates a new Volume object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewVolume(input float32, output float32) *Volume {
+func NewVolume(input int64, output int64) *Volume {
 	this := Volume{}
 	this.Input = input
 	this.Output = output
@@ -42,9 +42,9 @@ func NewVolumeWithDefaults() *Volume {
 }
 
 // GetInput returns the Input field value
-func (o *Volume) GetInput() float32 {
+func (o *Volume) GetInput() int64 {
 	if o == nil {
-		var ret float32
+		var ret int64
 		return ret
 	}
 
@@ -53,22 +53,22 @@ func (o *Volume) GetInput() float32 {
 
 // GetInputOk returns a tuple with the Input field value
 // and a boolean to check if the value has been set.
-func (o *Volume) GetInputOk() (*float32, bool) {
+func (o *Volume) GetInputOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Input, true
 }
 
 // SetInput sets field value
-func (o *Volume) SetInput(v float32) {
+func (o *Volume) SetInput(v int64) {
 	o.Input = v
 }
 
 // GetOutput returns the Output field value
-func (o *Volume) GetOutput() float32 {
+func (o *Volume) GetOutput() int64 {
 	if o == nil {
-		var ret float32
+		var ret int64
 		return ret
 	}
 
@@ -77,22 +77,22 @@ func (o *Volume) GetOutput() float32 {
 
 // GetOutputOk returns a tuple with the Output field value
 // and a boolean to check if the value has been set.
-func (o *Volume) GetOutputOk() (*float32, bool) {
+func (o *Volume) GetOutputOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Output, true
 }
 
 // SetOutput sets field value
-func (o *Volume) SetOutput(v float32) {
+func (o *Volume) SetOutput(v int64) {
 	o.Output = v
 }
 
 // GetBalance returns the Balance field value if set, zero value otherwise.
-func (o *Volume) GetBalance() float32 {
+func (o *Volume) GetBalance() int64 {
 	if o == nil || isNil(o.Balance) {
-		var ret float32
+		var ret int64
 		return ret
 	}
 	return *o.Balance
@@ -100,9 +100,9 @@ func (o *Volume) GetBalance() float32 {
 
 // GetBalanceOk returns a tuple with the Balance field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Volume) GetBalanceOk() (*float32, bool) {
+func (o *Volume) GetBalanceOk() (*int64, bool) {
 	if o == nil || isNil(o.Balance) {
-		return nil, false
+    return nil, false
 	}
 	return o.Balance, true
 }
@@ -116,8 +116,8 @@ func (o *Volume) HasBalance() bool {
 	return false
 }
 
-// SetBalance gets a reference to the given float32 and assigns it to the Balance field.
-func (o *Volume) SetBalance(v float32) {
+// SetBalance gets a reference to the given int64 and assigns it to the Balance field.
+func (o *Volume) SetBalance(v int64) {
 	o.Balance = &v
 }
 

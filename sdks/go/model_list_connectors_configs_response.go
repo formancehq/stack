@@ -50,7 +50,7 @@ func (o *ListConnectorsConfigsResponse) GetConnector() ListConnectorsConfigsResp
 // and a boolean to check if the value has been set.
 func (o *ListConnectorsConfigsResponse) GetConnectorOk() (*ListConnectorsConfigsResponseConnector, bool) {
 	if o == nil || isNil(o.Connector) {
-		return nil, false
+    return nil, false
 	}
 	return o.Connector, true
 }

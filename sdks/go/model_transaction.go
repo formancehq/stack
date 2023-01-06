@@ -18,12 +18,12 @@ import (
 
 // Transaction struct for Transaction
 type Transaction struct {
-	Timestamp         time.Time                     `json:"timestamp"`
-	Postings          []Posting                     `json:"postings"`
-	Reference         *string                       `json:"reference,omitempty"`
-	Metadata          map[string]interface{}        `json:"metadata,omitempty"`
-	Txid              int32                         `json:"txid"`
-	PreCommitVolumes  *map[string]map[string]Volume `json:"preCommitVolumes,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
+	Postings []Posting `json:"postings"`
+	Reference *string `json:"reference,omitempty"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Txid int64 `json:"txid"`
+	PreCommitVolumes *map[string]map[string]Volume `json:"preCommitVolumes,omitempty"`
 	PostCommitVolumes *map[string]map[string]Volume `json:"postCommitVolumes,omitempty"`
 }
 
@@ -31,7 +31,7 @@ type Transaction struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTransaction(timestamp time.Time, postings []Posting, txid int32) *Transaction {
+func NewTransaction(timestamp time.Time, postings []Posting, txid int64) *Transaction {
 	this := Transaction{}
 	this.Timestamp = timestamp
 	this.Postings = postings
@@ -61,7 +61,7 @@ func (o *Transaction) GetTimestamp() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Transaction) GetTimestampOk() (*time.Time, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Timestamp, true
 }
@@ -85,7 +85,7 @@ func (o *Transaction) GetPostings() []Posting {
 // and a boolean to check if the value has been set.
 func (o *Transaction) GetPostingsOk() ([]Posting, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Postings, true
 }
@@ -108,7 +108,7 @@ func (o *Transaction) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *Transaction) GetReferenceOk() (*string, bool) {
 	if o == nil || isNil(o.Reference) {
-		return nil, false
+    return nil, false
 	}
 	return o.Reference, true
 }
@@ -141,7 +141,7 @@ func (o *Transaction) GetMetadata() map[string]interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *Transaction) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -161,9 +161,9 @@ func (o *Transaction) SetMetadata(v map[string]interface{}) {
 }
 
 // GetTxid returns the Txid field value
-func (o *Transaction) GetTxid() int32 {
+func (o *Transaction) GetTxid() int64 {
 	if o == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 
@@ -172,15 +172,15 @@ func (o *Transaction) GetTxid() int32 {
 
 // GetTxidOk returns a tuple with the Txid field value
 // and a boolean to check if the value has been set.
-func (o *Transaction) GetTxidOk() (*int32, bool) {
+func (o *Transaction) GetTxidOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Txid, true
 }
 
 // SetTxid sets field value
-func (o *Transaction) SetTxid(v int32) {
+func (o *Transaction) SetTxid(v int64) {
 	o.Txid = v
 }
 
@@ -197,7 +197,7 @@ func (o *Transaction) GetPreCommitVolumes() map[string]map[string]Volume {
 // and a boolean to check if the value has been set.
 func (o *Transaction) GetPreCommitVolumesOk() (*map[string]map[string]Volume, bool) {
 	if o == nil || isNil(o.PreCommitVolumes) {
-		return nil, false
+    return nil, false
 	}
 	return o.PreCommitVolumes, true
 }
@@ -229,7 +229,7 @@ func (o *Transaction) GetPostCommitVolumes() map[string]map[string]Volume {
 // and a boolean to check if the value has been set.
 func (o *Transaction) GetPostCommitVolumesOk() (*map[string]map[string]Volume, bool) {
 	if o == nil || isNil(o.PostCommitVolumes) {
-		return nil, false
+    return nil, false
 	}
 	return o.PostCommitVolumes, true
 }

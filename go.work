@@ -3,7 +3,12 @@ go 1.19
 use (
 	./libs/go-libs
 	./sdks/go
+	./services/auth
 	./services/fctl
 	./services/fctl/membershipclient
+	./services/ledger
+	./services/payments
+	./services/search
 	./services/wallets
+	./services/webhooks
 )

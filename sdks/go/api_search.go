@@ -19,15 +19,16 @@ import (
 	"net/url"
 )
 
+
 type SearchApi interface {
 
 	/*
-		Search Search
+	Search Search
 
-		ElasticSearch query engine
+	ElasticSearch query engine
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiSearchRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiSearchRequest
 	*/
 	Search(ctx context.Context) ApiSearchRequest
 
@@ -40,9 +41,9 @@ type SearchApi interface {
 type SearchApiService service
 
 type ApiSearchRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService SearchApi
-	query      *Query
+	query *Query
 }
 
 func (r ApiSearchRequest) Query(query Query) ApiSearchRequest {
@@ -59,25 +60,24 @@ Search Search
 
 ElasticSearch query engine
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiSearchRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiSearchRequest
 */
 func (a *SearchApiService) Search(ctx context.Context) ApiSearchRequest {
 	return ApiSearchRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return Response
+//  @return Response
 func (a *SearchApiService) SearchExecute(r ApiSearchRequest) (*Response, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *Response
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *Response
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "SearchApiService.Search")

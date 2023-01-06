@@ -17,13 +17,13 @@ import (
 
 // ClientOptions struct for ClientOptions
 type ClientOptions struct {
-	Public                 *bool                  `json:"public,omitempty"`
-	RedirectUris           []string               `json:"redirectUris,omitempty"`
-	Description            *string                `json:"description,omitempty"`
-	Name                   string                 `json:"name"`
-	Trusted                *bool                  `json:"trusted,omitempty"`
-	PostLogoutRedirectUris []string               `json:"postLogoutRedirectUris,omitempty"`
-	Metadata               map[string]interface{} `json:"metadata,omitempty"`
+	Public *bool `json:"public,omitempty"`
+	RedirectUris []string `json:"redirectUris,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Name string `json:"name"`
+	Trusted *bool `json:"trusted,omitempty"`
+	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris,omitempty"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // NewClientOptions instantiates a new ClientOptions object
@@ -57,7 +57,7 @@ func (o *ClientOptions) GetPublic() bool {
 // and a boolean to check if the value has been set.
 func (o *ClientOptions) GetPublicOk() (*bool, bool) {
 	if o == nil || isNil(o.Public) {
-		return nil, false
+    return nil, false
 	}
 	return o.Public, true
 }
@@ -89,7 +89,7 @@ func (o *ClientOptions) GetRedirectUris() []string {
 // and a boolean to check if the value has been set.
 func (o *ClientOptions) GetRedirectUrisOk() ([]string, bool) {
 	if o == nil || isNil(o.RedirectUris) {
-		return nil, false
+    return nil, false
 	}
 	return o.RedirectUris, true
 }
@@ -121,7 +121,7 @@ func (o *ClientOptions) GetDescription() string {
 // and a boolean to check if the value has been set.
 func (o *ClientOptions) GetDescriptionOk() (*string, bool) {
 	if o == nil || isNil(o.Description) {
-		return nil, false
+    return nil, false
 	}
 	return o.Description, true
 }
@@ -154,7 +154,7 @@ func (o *ClientOptions) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *ClientOptions) GetNameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Name, true
 }
@@ -177,7 +177,7 @@ func (o *ClientOptions) GetTrusted() bool {
 // and a boolean to check if the value has been set.
 func (o *ClientOptions) GetTrustedOk() (*bool, bool) {
 	if o == nil || isNil(o.Trusted) {
-		return nil, false
+    return nil, false
 	}
 	return o.Trusted, true
 }
@@ -209,7 +209,7 @@ func (o *ClientOptions) GetPostLogoutRedirectUris() []string {
 // and a boolean to check if the value has been set.
 func (o *ClientOptions) GetPostLogoutRedirectUrisOk() ([]string, bool) {
 	if o == nil || isNil(o.PostLogoutRedirectUris) {
-		return nil, false
+    return nil, false
 	}
 	return o.PostLogoutRedirectUris, true
 }
@@ -241,7 +241,7 @@ func (o *ClientOptions) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *ClientOptions) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }

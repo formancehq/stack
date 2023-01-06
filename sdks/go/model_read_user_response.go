@@ -50,7 +50,7 @@ func (o *ReadUserResponse) GetData() User {
 // and a boolean to check if the value has been set.
 func (o *ReadUserResponse) GetDataOk() (*User, bool) {
 	if o == nil || isNil(o.Data) {
-		return nil, false
+    return nil, false
 	}
 	return o.Data, true
 }

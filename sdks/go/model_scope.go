@@ -17,10 +17,10 @@ import (
 
 // Scope struct for Scope
 type Scope struct {
-	Label     string                 `json:"label"`
-	Metadata  map[string]interface{} `json:"metadata,omitempty"`
-	Id        string                 `json:"id"`
-	Transient []string               `json:"transient,omitempty"`
+	Label string `json:"label"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Id string `json:"id"`
+	Transient []string `json:"transient,omitempty"`
 }
 
 // NewScope instantiates a new Scope object
@@ -56,7 +56,7 @@ func (o *Scope) GetLabel() string {
 // and a boolean to check if the value has been set.
 func (o *Scope) GetLabelOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Label, true
 }
@@ -79,7 +79,7 @@ func (o *Scope) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Scope) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -112,7 +112,7 @@ func (o *Scope) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Scope) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -135,7 +135,7 @@ func (o *Scope) GetTransient() []string {
 // and a boolean to check if the value has been set.
 func (o *Scope) GetTransientOk() ([]string, bool) {
 	if o == nil || isNil(o.Transient) {
-		return nil, false
+    return nil, false
 	}
 	return o.Transient, true
 }

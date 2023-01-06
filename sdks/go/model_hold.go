@@ -22,9 +22,9 @@ type Hold struct {
 	// The ID of the wallet the hold is associated with.
 	WalletID string `json:"walletID"`
 	// Metadata associated with the hold.
-	Metadata    map[string]interface{} `json:"metadata"`
-	Description string                 `json:"description"`
-	Destination *Subject               `json:"destination,omitempty"`
+	Metadata map[string]interface{} `json:"metadata"`
+	Description string `json:"description"`
+	Destination *Subject `json:"destination,omitempty"`
 }
 
 // NewHold instantiates a new Hold object
@@ -62,7 +62,7 @@ func (o *Hold) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Hold) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -86,7 +86,7 @@ func (o *Hold) GetWalletID() string {
 // and a boolean to check if the value has been set.
 func (o *Hold) GetWalletIDOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.WalletID, true
 }
@@ -110,7 +110,7 @@ func (o *Hold) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Hold) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -134,7 +134,7 @@ func (o *Hold) GetDescription() string {
 // and a boolean to check if the value has been set.
 func (o *Hold) GetDescriptionOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Description, true
 }
@@ -157,7 +157,7 @@ func (o *Hold) GetDestination() Subject {
 // and a boolean to check if the value has been set.
 func (o *Hold) GetDestinationOk() (*Subject, bool) {
 	if o == nil || isNil(o.Destination) {
-		return nil, false
+    return nil, false
 	}
 	return o.Destination, true
 }

@@ -17,9 +17,9 @@ import (
 
 // WalletSubject struct for WalletSubject
 type WalletSubject struct {
-	Type       string  `json:"type"`
-	Identifier string  `json:"identifier"`
-	Balance    *string `json:"balance,omitempty"`
+	Type string `json:"type"`
+	Identifier string `json:"identifier"`
+	Balance *string `json:"balance,omitempty"`
 }
 
 // NewWalletSubject instantiates a new WalletSubject object
@@ -55,7 +55,7 @@ func (o *WalletSubject) GetType() string {
 // and a boolean to check if the value has been set.
 func (o *WalletSubject) GetTypeOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Type, true
 }
@@ -79,7 +79,7 @@ func (o *WalletSubject) GetIdentifier() string {
 // and a boolean to check if the value has been set.
 func (o *WalletSubject) GetIdentifierOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Identifier, true
 }
@@ -102,7 +102,7 @@ func (o *WalletSubject) GetBalance() string {
 // and a boolean to check if the value has been set.
 func (o *WalletSubject) GetBalanceOk() (*string, bool) {
 	if o == nil || isNil(o.Balance) {
-		return nil, false
+    return nil, false
 	}
 	return o.Balance, true
 }

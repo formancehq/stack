@@ -50,7 +50,7 @@ func (o *CreateSecretResponse) GetData() Secret {
 // and a boolean to check if the value has been set.
 func (o *CreateSecretResponse) GetDataOk() (*Secret, bool) {
 	if o == nil || isNil(o.Data) {
-		return nil, false
+    return nil, false
 	}
 	return o.Data, true
 }

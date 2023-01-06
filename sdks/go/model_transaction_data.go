@@ -18,10 +18,10 @@ import (
 
 // TransactionData struct for TransactionData
 type TransactionData struct {
-	Timestamp *time.Time             `json:"timestamp,omitempty"`
-	Postings  []Posting              `json:"postings"`
-	Reference *string                `json:"reference,omitempty"`
-	Metadata  map[string]interface{} `json:"metadata,omitempty"`
+	Postings []Posting `json:"postings"`
+	Reference *string `json:"reference,omitempty"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Timestamp *time.Time `json:"timestamp,omitempty"`
 }
 
 // NewTransactionData instantiates a new TransactionData object
@@ -42,38 +42,6 @@ func NewTransactionDataWithDefaults() *TransactionData {
 	return &this
 }
 
-// GetTimestamp returns the Timestamp field value if set, zero value otherwise.
-func (o *TransactionData) GetTimestamp() time.Time {
-	if o == nil || isNil(o.Timestamp) {
-		var ret time.Time
-		return ret
-	}
-	return *o.Timestamp
-}
-
-// GetTimestampOk returns a tuple with the Timestamp field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *TransactionData) GetTimestampOk() (*time.Time, bool) {
-	if o == nil || isNil(o.Timestamp) {
-		return nil, false
-	}
-	return o.Timestamp, true
-}
-
-// HasTimestamp returns a boolean if a field has been set.
-func (o *TransactionData) HasTimestamp() bool {
-	if o != nil && !isNil(o.Timestamp) {
-		return true
-	}
-
-	return false
-}
-
-// SetTimestamp gets a reference to the given time.Time and assigns it to the Timestamp field.
-func (o *TransactionData) SetTimestamp(v time.Time) {
-	o.Timestamp = &v
-}
-
 // GetPostings returns the Postings field value
 func (o *TransactionData) GetPostings() []Posting {
 	if o == nil {
@@ -88,7 +56,7 @@ func (o *TransactionData) GetPostings() []Posting {
 // and a boolean to check if the value has been set.
 func (o *TransactionData) GetPostingsOk() ([]Posting, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Postings, true
 }
@@ -111,7 +79,7 @@ func (o *TransactionData) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *TransactionData) GetReferenceOk() (*string, bool) {
 	if o == nil || isNil(o.Reference) {
-		return nil, false
+    return nil, false
 	}
 	return o.Reference, true
 }
@@ -144,7 +112,7 @@ func (o *TransactionData) GetMetadata() map[string]interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *TransactionData) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -163,11 +131,40 @@ func (o *TransactionData) SetMetadata(v map[string]interface{}) {
 	o.Metadata = v
 }
 
+// GetTimestamp returns the Timestamp field value if set, zero value otherwise.
+func (o *TransactionData) GetTimestamp() time.Time {
+	if o == nil || isNil(o.Timestamp) {
+		var ret time.Time
+		return ret
+	}
+	return *o.Timestamp
+}
+
+// GetTimestampOk returns a tuple with the Timestamp field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TransactionData) GetTimestampOk() (*time.Time, bool) {
+	if o == nil || isNil(o.Timestamp) {
+    return nil, false
+	}
+	return o.Timestamp, true
+}
+
+// HasTimestamp returns a boolean if a field has been set.
+func (o *TransactionData) HasTimestamp() bool {
+	if o != nil && !isNil(o.Timestamp) {
+		return true
+	}
+
+	return false
+}
+
+// SetTimestamp gets a reference to the given time.Time and assigns it to the Timestamp field.
+func (o *TransactionData) SetTimestamp(v time.Time) {
+	o.Timestamp = &v
+}
+
 func (o TransactionData) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Timestamp) {
-		toSerialize["timestamp"] = o.Timestamp
-	}
 	if true {
 		toSerialize["postings"] = o.Postings
 	}
@@ -176,6 +173,9 @@ func (o TransactionData) MarshalJSON() ([]byte, error) {
 	}
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
+	}
+	if !isNil(o.Timestamp) {
+		toSerialize["timestamp"] = o.Timestamp
 	}
 	return json.Marshal(toSerialize)
 }

@@ -17,8 +17,8 @@ import (
 
 // Contract struct for Contract
 type Contract struct {
-	Account *string                `json:"account,omitempty"`
-	Expr    map[string]interface{} `json:"expr"`
+	Account *string `json:"account,omitempty"`
+	Expr map[string]interface{} `json:"expr"`
 }
 
 // NewContract instantiates a new Contract object
@@ -52,7 +52,7 @@ func (o *Contract) GetAccount() string {
 // and a boolean to check if the value has been set.
 func (o *Contract) GetAccountOk() (*string, bool) {
 	if o == nil || isNil(o.Account) {
-		return nil, false
+    return nil, false
 	}
 	return o.Account, true
 }
@@ -85,7 +85,7 @@ func (o *Contract) GetExpr() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Contract) GetExprOk() (map[string]interface{}, bool) {
 	if o == nil {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Expr, true
 }

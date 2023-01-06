@@ -18,7 +18,7 @@ import (
 // ConnectorBaseInfo struct for ConnectorBaseInfo
 type ConnectorBaseInfo struct {
 	Provider *string `json:"provider,omitempty"`
-	Disabled *bool   `json:"disabled,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 }
 
 // NewConnectorBaseInfo instantiates a new ConnectorBaseInfo object
@@ -51,7 +51,7 @@ func (o *ConnectorBaseInfo) GetProvider() string {
 // and a boolean to check if the value has been set.
 func (o *ConnectorBaseInfo) GetProviderOk() (*string, bool) {
 	if o == nil || isNil(o.Provider) {
-		return nil, false
+    return nil, false
 	}
 	return o.Provider, true
 }
@@ -83,7 +83,7 @@ func (o *ConnectorBaseInfo) GetDisabled() bool {
 // and a boolean to check if the value has been set.
 func (o *ConnectorBaseInfo) GetDisabledOk() (*bool, bool) {
 	if o == nil || isNil(o.Disabled) {
-		return nil, false
+    return nil, false
 	}
 	return o.Disabled, true
 }

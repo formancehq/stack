@@ -90,10 +90,10 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*AccountsApi* | [**AddMetadataToAccount**](docs/AccountsApi.md#addmetadatatoaccount) | **Post** /api/ledger/{ledger}/accounts/{address}/metadata | Add metadata to an account.
-*AccountsApi* | [**CountAccounts**](docs/AccountsApi.md#countaccounts) | **Head** /api/ledger/{ledger}/accounts | Count the accounts from a ledger.
-*AccountsApi* | [**GetAccount**](docs/AccountsApi.md#getaccount) | **Get** /api/ledger/{ledger}/accounts/{address} | Get account by its address.
-*AccountsApi* | [**ListAccounts**](docs/AccountsApi.md#listaccounts) | **Get** /api/ledger/{ledger}/accounts | List accounts from a ledger.
+*AccountsApi* | [**AddMetadataToAccount**](docs/AccountsApi.md#addmetadatatoaccount) | **Post** /api/ledger/{ledger}/accounts/{address}/metadata | Add metadata to an account
+*AccountsApi* | [**CountAccounts**](docs/AccountsApi.md#countaccounts) | **Head** /api/ledger/{ledger}/accounts | Count the accounts from a ledger
+*AccountsApi* | [**GetAccount**](docs/AccountsApi.md#getaccount) | **Get** /api/ledger/{ledger}/accounts/{address} | Get account by its address
+*AccountsApi* | [**ListAccounts**](docs/AccountsApi.md#listaccounts) | **Get** /api/ledger/{ledger}/accounts | List accounts from a ledger
 *BalancesApi* | [**GetBalances**](docs/BalancesApi.md#getbalances) | **Get** /api/ledger/{ledger}/balances | Get the balances from a ledger&#39;s account
 *BalancesApi* | [**GetBalancesAggregated**](docs/BalancesApi.md#getbalancesaggregated) | **Get** /api/ledger/{ledger}/aggregate/balances | Get the aggregated balances from selected accounts
 *ClientsApi* | [**AddScopeToClient**](docs/ClientsApi.md#addscopetoclient) | **Put** /api/auth/clients/{clientId}/scopes/{scopeId} | Add scope to client
@@ -107,8 +107,10 @@ Class | Method | HTTP request | Description
 *ClientsApi* | [**UpdateClient**](docs/ClientsApi.md#updateclient) | **Put** /api/auth/clients/{clientId} | Update client
 *DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /api/auth/_info | Get server info
 *DefaultApi* | [**SearchgetServerInfo**](docs/DefaultApi.md#searchgetserverinfo) | **Get** /api/search/_info | Get server info
-*MappingApi* | [**GetMapping**](docs/MappingApi.md#getmapping) | **Get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger.
-*MappingApi* | [**UpdateMapping**](docs/MappingApi.md#updatemapping) | **Put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger.
+*LedgerApi* | [**GetLedgerInfo**](docs/LedgerApi.md#getledgerinfo) | **Get** /api/ledger/{ledger}/_info | Get information about a ledger
+*LogsApi* | [**ListLogs**](docs/LogsApi.md#listlogs) | **Get** /api/ledger/{ledger}/log | List the logs from a ledger
+*MappingApi* | [**GetMapping**](docs/MappingApi.md#getmapping) | **Get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
+*MappingApi* | [**UpdateMapping**](docs/MappingApi.md#updatemapping) | **Put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
 *PaymentsApi* | [**ConnectorsStripeTransfer**](docs/PaymentsApi.md#connectorsstripetransfer) | **Post** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
 *PaymentsApi* | [**GetAllConnectors**](docs/PaymentsApi.md#getallconnectors) | **Get** /api/payments/connectors | Get all installed connectors
 *PaymentsApi* | [**GetAllConnectorsConfigs**](docs/PaymentsApi.md#getallconnectorsconfigs) | **Get** /api/payments/connectors/configs | Get all available connectors configs
@@ -117,6 +119,7 @@ Class | Method | HTTP request | Description
 *PaymentsApi* | [**InstallConnector**](docs/PaymentsApi.md#installconnector) | **Post** /api/payments/connectors/{connector} | Install connector
 *PaymentsApi* | [**ListConnectorTasks**](docs/PaymentsApi.md#listconnectortasks) | **Get** /api/payments/connectors/{connector}/tasks | List connector tasks
 *PaymentsApi* | [**ListPayments**](docs/PaymentsApi.md#listpayments) | **Get** /api/payments/payments | Returns a list of payments.
+*PaymentsApi* | [**PaymentslistAccounts**](docs/PaymentsApi.md#paymentslistaccounts) | **Get** /api/payments/accounts | Returns a list of accounts.
 *PaymentsApi* | [**ReadConnectorConfig**](docs/PaymentsApi.md#readconnectorconfig) | **Get** /api/payments/connectors/{connector}/config | Read connector config
 *PaymentsApi* | [**ResetConnector**](docs/PaymentsApi.md#resetconnector) | **Post** /api/payments/connectors/{connector}/reset | Reset connector
 *PaymentsApi* | [**UninstallConnector**](docs/PaymentsApi.md#uninstallconnector) | **Delete** /api/payments/connectors/{connector} | Uninstall connector
@@ -127,17 +130,17 @@ Class | Method | HTTP request | Description
 *ScopesApi* | [**ListScopes**](docs/ScopesApi.md#listscopes) | **Get** /api/auth/scopes | List scopes
 *ScopesApi* | [**ReadScope**](docs/ScopesApi.md#readscope) | **Get** /api/auth/scopes/{scopeId} | Read scope
 *ScopesApi* | [**UpdateScope**](docs/ScopesApi.md#updatescope) | **Put** /api/auth/scopes/{scopeId} | Update scope
-*ScriptApi* | [**RunScript**](docs/ScriptApi.md#runscript) | **Post** /api/ledger/{ledger}/script | Execute a Numscript.
+*ScriptApi* | [**RunScript**](docs/ScriptApi.md#runscript) | **Post** /api/ledger/{ledger}/script | Execute a Numscript
 *SearchApi* | [**Search**](docs/SearchApi.md#search) | **Post** /api/search/ | Search
-*ServerApi* | [**GetInfo**](docs/ServerApi.md#getinfo) | **Get** /api/ledger/_info | Show server information.
-*StatsApi* | [**ReadStats**](docs/StatsApi.md#readstats) | **Get** /api/ledger/{ledger}/stats | Get Stats
-*TransactionsApi* | [**AddMetadataOnTransaction**](docs/TransactionsApi.md#addmetadataontransaction) | **Post** /api/ledger/{ledger}/transactions/{txid}/metadata | Set the metadata of a transaction by its ID.
-*TransactionsApi* | [**CountTransactions**](docs/TransactionsApi.md#counttransactions) | **Head** /api/ledger/{ledger}/transactions | Count the transactions from a ledger.
-*TransactionsApi* | [**CreateTransaction**](docs/TransactionsApi.md#createtransaction) | **Post** /api/ledger/{ledger}/transactions | Create a new transaction to a ledger.
-*TransactionsApi* | [**CreateTransactions**](docs/TransactionsApi.md#createtransactions) | **Post** /api/ledger/{ledger}/transactions/batch | Create a new batch of transactions to a ledger.
-*TransactionsApi* | [**GetTransaction**](docs/TransactionsApi.md#gettransaction) | **Get** /api/ledger/{ledger}/transactions/{txid} | Get transaction from a ledger by its ID.
-*TransactionsApi* | [**ListTransactions**](docs/TransactionsApi.md#listtransactions) | **Get** /api/ledger/{ledger}/transactions | List transactions from a ledger.
-*TransactionsApi* | [**RevertTransaction**](docs/TransactionsApi.md#reverttransaction) | **Post** /api/ledger/{ledger}/transactions/{txid}/revert | Revert a ledger transaction by its ID.
+*ServerApi* | [**GetInfo**](docs/ServerApi.md#getinfo) | **Get** /api/ledger/_info | Show server information
+*StatsApi* | [**ReadStats**](docs/StatsApi.md#readstats) | **Get** /api/ledger/{ledger}/stats | Get statistics from a ledger
+*TransactionsApi* | [**AddMetadataOnTransaction**](docs/TransactionsApi.md#addmetadataontransaction) | **Post** /api/ledger/{ledger}/transactions/{txid}/metadata | Set the metadata of a transaction by its ID
+*TransactionsApi* | [**CountTransactions**](docs/TransactionsApi.md#counttransactions) | **Head** /api/ledger/{ledger}/transactions | Count the transactions from a ledger
+*TransactionsApi* | [**CreateTransaction**](docs/TransactionsApi.md#createtransaction) | **Post** /api/ledger/{ledger}/transactions | Create a new transaction to a ledger
+*TransactionsApi* | [**CreateTransactions**](docs/TransactionsApi.md#createtransactions) | **Post** /api/ledger/{ledger}/transactions/batch | Create a new batch of transactions to a ledger
+*TransactionsApi* | [**GetTransaction**](docs/TransactionsApi.md#gettransaction) | **Get** /api/ledger/{ledger}/transactions/{txid} | Get transaction from a ledger by its ID
+*TransactionsApi* | [**ListTransactions**](docs/TransactionsApi.md#listtransactions) | **Get** /api/ledger/{ledger}/transactions | List transactions from a ledger
+*TransactionsApi* | [**RevertTransaction**](docs/TransactionsApi.md#reverttransaction) | **Post** /api/ledger/{ledger}/transactions/{txid}/revert | Revert a ledger transaction by its ID
 *UsersApi* | [**ListUsers**](docs/UsersApi.md#listusers) | **Get** /api/auth/users | List users
 *UsersApi* | [**ReadUser**](docs/UsersApi.md#readuser) | **Get** /api/auth/users/{userId} | Read user
 *WalletsApi* | [**ConfirmHold**](docs/WalletsApi.md#confirmhold) | **Post** /api/wallets/holds/{hold_id}/confirm | Confirm a hold
@@ -167,13 +170,18 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [Account](docs/Account.md)
+ - [AccountResponse](docs/AccountResponse.md)
  - [AccountWithVolumesAndBalances](docs/AccountWithVolumesAndBalances.md)
- - [AddMetadataToAccount409Response](docs/AddMetadataToAccount409Response.md)
+ - [AccountsCursorResponse](docs/AccountsCursorResponse.md)
+ - [AccountsCursorResponseCursor](docs/AccountsCursorResponseCursor.md)
+ - [AggregateBalancesResponse](docs/AggregateBalancesResponse.md)
  - [AssetHolder](docs/AssetHolder.md)
  - [Attempt](docs/Attempt.md)
  - [AttemptResponse](docs/AttemptResponse.md)
  - [Balance](docs/Balance.md)
  - [BalanceWithAssets](docs/BalanceWithAssets.md)
+ - [BalancesCursorResponse](docs/BalancesCursorResponse.md)
+ - [BalancesCursorResponseCursor](docs/BalancesCursorResponseCursor.md)
  - [BankingCircleConfig](docs/BankingCircleConfig.md)
  - [Client](docs/Client.md)
  - [ClientAllOf](docs/ClientAllOf.md)
@@ -195,9 +203,6 @@ Class | Method | HTTP request | Description
  - [CreateClientResponse](docs/CreateClientResponse.md)
  - [CreateScopeResponse](docs/CreateScopeResponse.md)
  - [CreateSecretResponse](docs/CreateSecretResponse.md)
- - [CreateTransaction400Response](docs/CreateTransaction400Response.md)
- - [CreateTransaction409Response](docs/CreateTransaction409Response.md)
- - [CreateTransactions400Response](docs/CreateTransactions400Response.md)
  - [CreateWalletRequest](docs/CreateWalletRequest.md)
  - [CreateWalletResponse](docs/CreateWalletResponse.md)
  - [CreditWalletRequest](docs/CreditWalletRequest.md)
@@ -206,36 +211,27 @@ Class | Method | HTTP request | Description
  - [DebitWalletRequest](docs/DebitWalletRequest.md)
  - [DebitWalletResponse](docs/DebitWalletResponse.md)
  - [DummyPayConfig](docs/DummyPayConfig.md)
- - [ErrorCode](docs/ErrorCode.md)
  - [ErrorResponse](docs/ErrorResponse.md)
+ - [ErrorsEnum](docs/ErrorsEnum.md)
  - [ExpandedDebitHold](docs/ExpandedDebitHold.md)
  - [ExpandedDebitHoldAllOf](docs/ExpandedDebitHoldAllOf.md)
- - [GetAccount200Response](docs/GetAccount200Response.md)
- - [GetAccount400Response](docs/GetAccount400Response.md)
  - [GetBalanceResponse](docs/GetBalanceResponse.md)
- - [GetBalances200Response](docs/GetBalances200Response.md)
- - [GetBalances200ResponseCursor](docs/GetBalances200ResponseCursor.md)
- - [GetBalances200ResponseCursorAllOf](docs/GetBalances200ResponseCursorAllOf.md)
- - [GetBalancesAggregated200Response](docs/GetBalancesAggregated200Response.md)
- - [GetBalancesAggregated400Response](docs/GetBalancesAggregated400Response.md)
  - [GetHoldResponse](docs/GetHoldResponse.md)
  - [GetHoldsResponse](docs/GetHoldsResponse.md)
  - [GetHoldsResponseCursor](docs/GetHoldsResponseCursor.md)
  - [GetHoldsResponseCursorAllOf](docs/GetHoldsResponseCursorAllOf.md)
  - [GetPaymentResponse](docs/GetPaymentResponse.md)
- - [GetTransaction400Response](docs/GetTransaction400Response.md)
- - [GetTransaction404Response](docs/GetTransaction404Response.md)
  - [GetTransactionsResponse](docs/GetTransactionsResponse.md)
  - [GetTransactionsResponseCursor](docs/GetTransactionsResponseCursor.md)
  - [GetTransactionsResponseCursorAllOf](docs/GetTransactionsResponseCursorAllOf.md)
  - [GetWalletResponse](docs/GetWalletResponse.md)
  - [Hold](docs/Hold.md)
  - [LedgerAccountSubject](docs/LedgerAccountSubject.md)
+ - [LedgerInfo](docs/LedgerInfo.md)
+ - [LedgerInfoResponse](docs/LedgerInfoResponse.md)
+ - [LedgerInfoStorage](docs/LedgerInfoStorage.md)
  - [LedgerStorage](docs/LedgerStorage.md)
- - [ListAccounts200Response](docs/ListAccounts200Response.md)
- - [ListAccounts200ResponseCursor](docs/ListAccounts200ResponseCursor.md)
- - [ListAccounts200ResponseCursorAllOf](docs/ListAccounts200ResponseCursorAllOf.md)
- - [ListAccounts400Response](docs/ListAccounts400Response.md)
+ - [ListAccountsResponse](docs/ListAccountsResponse.md)
  - [ListBalancesResponse](docs/ListBalancesResponse.md)
  - [ListBalancesResponseCursor](docs/ListBalancesResponseCursor.md)
  - [ListBalancesResponseCursorAllOf](docs/ListBalancesResponseCursorAllOf.md)
@@ -247,29 +243,32 @@ Class | Method | HTTP request | Description
  - [ListConnectorsResponse](docs/ListConnectorsResponse.md)
  - [ListPaymentsResponse](docs/ListPaymentsResponse.md)
  - [ListScopesResponse](docs/ListScopesResponse.md)
- - [ListTransactions200Response](docs/ListTransactions200Response.md)
- - [ListTransactions200ResponseCursor](docs/ListTransactions200ResponseCursor.md)
- - [ListTransactions200ResponseCursorAllOf](docs/ListTransactions200ResponseCursorAllOf.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)
  - [ListWalletsResponse](docs/ListWalletsResponse.md)
  - [ListWalletsResponseCursor](docs/ListWalletsResponseCursor.md)
  - [ListWalletsResponseCursorAllOf](docs/ListWalletsResponseCursorAllOf.md)
+ - [Log](docs/Log.md)
+ - [LogsCursorResponse](docs/LogsCursorResponse.md)
+ - [LogsCursorResponseCursor](docs/LogsCursorResponseCursor.md)
  - [Mapping](docs/Mapping.md)
  - [MappingResponse](docs/MappingResponse.md)
+ - [MigrationInfo](docs/MigrationInfo.md)
  - [ModulrConfig](docs/ModulrConfig.md)
  - [Monetary](docs/Monetary.md)
  - [Payment](docs/Payment.md)
+ - [PaymentsAccount](docs/PaymentsAccount.md)
+ - [PostTransaction](docs/PostTransaction.md)
+ - [PostTransactionScript](docs/PostTransactionScript.md)
  - [Posting](docs/Posting.md)
  - [Query](docs/Query.md)
  - [ReadClientResponse](docs/ReadClientResponse.md)
  - [ReadUserResponse](docs/ReadUserResponse.md)
  - [Response](docs/Response.md)
- - [RunScript400Response](docs/RunScript400Response.md)
  - [Scope](docs/Scope.md)
  - [ScopeAllOf](docs/ScopeAllOf.md)
  - [ScopeOptions](docs/ScopeOptions.md)
  - [Script](docs/Script.md)
- - [ScriptResult](docs/ScriptResult.md)
+ - [ScriptResponse](docs/ScriptResponse.md)
  - [Secret](docs/Secret.md)
  - [SecretAllOf](docs/SecretAllOf.md)
  - [SecretOptions](docs/SecretOptions.md)
@@ -297,6 +296,8 @@ Class | Method | HTTP request | Description
  - [TransactionData](docs/TransactionData.md)
  - [TransactionResponse](docs/TransactionResponse.md)
  - [Transactions](docs/Transactions.md)
+ - [TransactionsCursorResponse](docs/TransactionsCursorResponse.md)
+ - [TransactionsCursorResponseCursor](docs/TransactionsCursorResponseCursor.md)
  - [TransactionsResponse](docs/TransactionsResponse.md)
  - [UpdateWalletRequest](docs/UpdateWalletRequest.md)
  - [User](docs/User.md)
@@ -307,11 +308,9 @@ Class | Method | HTTP request | Description
  - [WalletWithBalancesBalances](docs/WalletWithBalancesBalances.md)
  - [WalletsCursor](docs/WalletsCursor.md)
  - [WalletsErrorResponse](docs/WalletsErrorResponse.md)
- - [WalletsPosting](docs/WalletsPosting.md)
  - [WalletsTransaction](docs/WalletsTransaction.md)
  - [WalletsVolume](docs/WalletsVolume.md)
  - [WebhooksConfig](docs/WebhooksConfig.md)
- - [WebhooksCursor](docs/WebhooksCursor.md)
  - [WiseConfig](docs/WiseConfig.md)
 
 

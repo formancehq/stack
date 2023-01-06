@@ -17,8 +17,8 @@ import (
 
 // ConfigInfo struct for ConfigInfo
 type ConfigInfo struct {
-	Config  Config `json:"config"`
-	Server  string `json:"server"`
+	Config Config `json:"config"`
+	Server string `json:"server"`
 	Version string `json:"version"`
 }
 
@@ -56,7 +56,7 @@ func (o *ConfigInfo) GetConfig() Config {
 // and a boolean to check if the value has been set.
 func (o *ConfigInfo) GetConfigOk() (*Config, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Config, true
 }
@@ -80,7 +80,7 @@ func (o *ConfigInfo) GetServer() string {
 // and a boolean to check if the value has been set.
 func (o *ConfigInfo) GetServerOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Server, true
 }
@@ -104,7 +104,7 @@ func (o *ConfigInfo) GetVersion() string {
 // and a boolean to check if the value has been set.
 func (o *ConfigInfo) GetVersionOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Version, true
 }

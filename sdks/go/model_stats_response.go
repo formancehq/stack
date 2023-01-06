@@ -52,7 +52,7 @@ func (o *StatsResponse) GetData() Stats {
 // and a boolean to check if the value has been set.
 func (o *StatsResponse) GetDataOk() (*Stats, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Data, true
 }

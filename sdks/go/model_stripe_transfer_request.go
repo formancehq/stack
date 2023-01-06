@@ -17,8 +17,8 @@ import (
 
 // StripeTransferRequest struct for StripeTransferRequest
 type StripeTransferRequest struct {
-	Amount      *int32  `json:"amount,omitempty"`
-	Asset       *string `json:"asset,omitempty"`
+	Amount *int32 `json:"amount,omitempty"`
+	Asset *string `json:"asset,omitempty"`
 	Destination *string `json:"destination,omitempty"`
 	// A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
@@ -54,7 +54,7 @@ func (o *StripeTransferRequest) GetAmount() int32 {
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetAmountOk() (*int32, bool) {
 	if o == nil || isNil(o.Amount) {
-		return nil, false
+    return nil, false
 	}
 	return o.Amount, true
 }
@@ -86,7 +86,7 @@ func (o *StripeTransferRequest) GetAsset() string {
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetAssetOk() (*string, bool) {
 	if o == nil || isNil(o.Asset) {
-		return nil, false
+    return nil, false
 	}
 	return o.Asset, true
 }
@@ -118,7 +118,7 @@ func (o *StripeTransferRequest) GetDestination() string {
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetDestinationOk() (*string, bool) {
 	if o == nil || isNil(o.Destination) {
-		return nil, false
+    return nil, false
 	}
 	return o.Destination, true
 }
@@ -150,7 +150,7 @@ func (o *StripeTransferRequest) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }

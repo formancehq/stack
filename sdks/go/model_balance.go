@@ -52,7 +52,7 @@ func (o *Balance) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *Balance) GetNameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Name, true
 }

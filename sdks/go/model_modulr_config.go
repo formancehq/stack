@@ -17,9 +17,9 @@ import (
 
 // ModulrConfig struct for ModulrConfig
 type ModulrConfig struct {
-	ApiKey    string  `json:"apiKey"`
-	ApiSecret string  `json:"apiSecret"`
-	Endpoint  *string `json:"endpoint,omitempty"`
+	ApiKey string `json:"apiKey"`
+	ApiSecret string `json:"apiSecret"`
+	Endpoint *string `json:"endpoint,omitempty"`
 }
 
 // NewModulrConfig instantiates a new ModulrConfig object
@@ -55,7 +55,7 @@ func (o *ModulrConfig) GetApiKey() string {
 // and a boolean to check if the value has been set.
 func (o *ModulrConfig) GetApiKeyOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.ApiKey, true
 }
@@ -79,7 +79,7 @@ func (o *ModulrConfig) GetApiSecret() string {
 // and a boolean to check if the value has been set.
 func (o *ModulrConfig) GetApiSecretOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.ApiSecret, true
 }
@@ -102,7 +102,7 @@ func (o *ModulrConfig) GetEndpoint() string {
 // and a boolean to check if the value has been set.
 func (o *ModulrConfig) GetEndpointOk() (*string, bool) {
 	if o == nil || isNil(o.Endpoint) {
-		return nil, false
+    return nil, false
 	}
 	return o.Endpoint, true
 }

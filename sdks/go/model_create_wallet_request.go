@@ -19,7 +19,7 @@ import (
 type CreateWalletRequest struct {
 	// Custom metadata to attach to this wallet.
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
-	Name     string                 `json:"name"`
+	Name string `json:"name"`
 }
 
 // NewCreateWalletRequest instantiates a new CreateWalletRequest object
@@ -53,7 +53,7 @@ func (o *CreateWalletRequest) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *CreateWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -86,7 +86,7 @@ func (o *CreateWalletRequest) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *CreateWalletRequest) GetNameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Name, true
 }

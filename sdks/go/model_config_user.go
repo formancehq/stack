@@ -17,8 +17,8 @@ import (
 
 // ConfigUser struct for ConfigUser
 type ConfigUser struct {
-	Endpoint   string   `json:"endpoint"`
-	Secret     *string  `json:"secret,omitempty"`
+	Endpoint string `json:"endpoint"`
+	Secret *string `json:"secret,omitempty"`
 	EventTypes []string `json:"eventTypes"`
 }
 
@@ -55,7 +55,7 @@ func (o *ConfigUser) GetEndpoint() string {
 // and a boolean to check if the value has been set.
 func (o *ConfigUser) GetEndpointOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Endpoint, true
 }
@@ -78,7 +78,7 @@ func (o *ConfigUser) GetSecret() string {
 // and a boolean to check if the value has been set.
 func (o *ConfigUser) GetSecretOk() (*string, bool) {
 	if o == nil || isNil(o.Secret) {
-		return nil, false
+    return nil, false
 	}
 	return o.Secret, true
 }
@@ -111,7 +111,7 @@ func (o *ConfigUser) GetEventTypes() []string {
 // and a boolean to check if the value has been set.
 func (o *ConfigUser) GetEventTypesOk() ([]string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.EventTypes, true
 }

@@ -20,15 +20,16 @@ import (
 	"strings"
 )
 
+
 type ClientsApi interface {
 
 	/*
-		AddScopeToClient Add scope to client
+	AddScopeToClient Add scope to client
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param clientId Client ID
-		@param scopeId Scope ID
-		@return ApiAddScopeToClientRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clientId Client ID
+	@param scopeId Scope ID
+	@return ApiAddScopeToClientRequest
 	*/
 	AddScopeToClient(ctx context.Context, clientId string, scopeId string) ApiAddScopeToClientRequest
 
@@ -36,10 +37,10 @@ type ClientsApi interface {
 	AddScopeToClientExecute(r ApiAddScopeToClientRequest) (*http.Response, error)
 
 	/*
-		CreateClient Create client
+	CreateClient Create client
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiCreateClientRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCreateClientRequest
 	*/
 	CreateClient(ctx context.Context) ApiCreateClientRequest
 
@@ -48,11 +49,11 @@ type ClientsApi interface {
 	CreateClientExecute(r ApiCreateClientRequest) (*CreateClientResponse, *http.Response, error)
 
 	/*
-		CreateSecret Add a secret to a client
+	CreateSecret Add a secret to a client
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param clientId Client ID
-		@return ApiCreateSecretRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clientId Client ID
+	@return ApiCreateSecretRequest
 	*/
 	CreateSecret(ctx context.Context, clientId string) ApiCreateSecretRequest
 
@@ -61,11 +62,11 @@ type ClientsApi interface {
 	CreateSecretExecute(r ApiCreateSecretRequest) (*CreateSecretResponse, *http.Response, error)
 
 	/*
-		DeleteClient Delete client
+	DeleteClient Delete client
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param clientId Client ID
-		@return ApiDeleteClientRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clientId Client ID
+	@return ApiDeleteClientRequest
 	*/
 	DeleteClient(ctx context.Context, clientId string) ApiDeleteClientRequest
 
@@ -73,12 +74,12 @@ type ClientsApi interface {
 	DeleteClientExecute(r ApiDeleteClientRequest) (*http.Response, error)
 
 	/*
-		DeleteScopeFromClient Delete scope from client
+	DeleteScopeFromClient Delete scope from client
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param clientId Client ID
-		@param scopeId Scope ID
-		@return ApiDeleteScopeFromClientRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clientId Client ID
+	@param scopeId Scope ID
+	@return ApiDeleteScopeFromClientRequest
 	*/
 	DeleteScopeFromClient(ctx context.Context, clientId string, scopeId string) ApiDeleteScopeFromClientRequest
 
@@ -86,12 +87,12 @@ type ClientsApi interface {
 	DeleteScopeFromClientExecute(r ApiDeleteScopeFromClientRequest) (*http.Response, error)
 
 	/*
-		DeleteSecret Delete a secret from a client
+	DeleteSecret Delete a secret from a client
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param clientId Client ID
-		@param secretId Secret ID
-		@return ApiDeleteSecretRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clientId Client ID
+	@param secretId Secret ID
+	@return ApiDeleteSecretRequest
 	*/
 	DeleteSecret(ctx context.Context, clientId string, secretId string) ApiDeleteSecretRequest
 
@@ -99,10 +100,10 @@ type ClientsApi interface {
 	DeleteSecretExecute(r ApiDeleteSecretRequest) (*http.Response, error)
 
 	/*
-		ListClients List clients
+	ListClients List clients
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiListClientsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiListClientsRequest
 	*/
 	ListClients(ctx context.Context) ApiListClientsRequest
 
@@ -111,11 +112,11 @@ type ClientsApi interface {
 	ListClientsExecute(r ApiListClientsRequest) (*ListClientsResponse, *http.Response, error)
 
 	/*
-		ReadClient Read client
+	ReadClient Read client
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param clientId Client ID
-		@return ApiReadClientRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clientId Client ID
+	@return ApiReadClientRequest
 	*/
 	ReadClient(ctx context.Context, clientId string) ApiReadClientRequest
 
@@ -124,11 +125,11 @@ type ClientsApi interface {
 	ReadClientExecute(r ApiReadClientRequest) (*ReadClientResponse, *http.Response, error)
 
 	/*
-		UpdateClient Update client
+	UpdateClient Update client
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param clientId Client ID
-		@return ApiUpdateClientRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clientId Client ID
+	@return ApiUpdateClientRequest
 	*/
 	UpdateClient(ctx context.Context, clientId string) ApiUpdateClientRequest
 
@@ -141,10 +142,10 @@ type ClientsApi interface {
 type ClientsApiService service
 
 type ApiAddScopeToClientRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ClientsApi
-	clientId   string
-	scopeId    string
+	clientId string
+	scopeId string
 }
 
 func (r ApiAddScopeToClientRequest) Execute() (*http.Response, error) {
@@ -154,26 +155,26 @@ func (r ApiAddScopeToClientRequest) Execute() (*http.Response, error) {
 /*
 AddScopeToClient Add scope to client
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clientId Client ID
-	@param scopeId Scope ID
-	@return ApiAddScopeToClientRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param clientId Client ID
+ @param scopeId Scope ID
+ @return ApiAddScopeToClientRequest
 */
 func (a *ClientsApiService) AddScopeToClient(ctx context.Context, clientId string, scopeId string) ApiAddScopeToClientRequest {
 	return ApiAddScopeToClientRequest{
 		ApiService: a,
-		ctx:        ctx,
-		clientId:   clientId,
-		scopeId:    scopeId,
+		ctx: ctx,
+		clientId: clientId,
+		scopeId: scopeId,
 	}
 }
 
 // Execute executes the request
 func (a *ClientsApiService) AddScopeToClientExecute(r ApiAddScopeToClientRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPut
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPut
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClientsApiService.AddScopeToClient")
@@ -235,9 +236,9 @@ func (a *ClientsApiService) AddScopeToClientExecute(r ApiAddScopeToClientRequest
 }
 
 type ApiCreateClientRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ClientsApi
-	body       *ClientOptions
+	body *ClientOptions
 }
 
 func (r ApiCreateClientRequest) Body(body ClientOptions) ApiCreateClientRequest {
@@ -252,25 +253,24 @@ func (r ApiCreateClientRequest) Execute() (*CreateClientResponse, *http.Response
 /*
 CreateClient Create client
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiCreateClientRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiCreateClientRequest
 */
 func (a *ClientsApiService) CreateClient(ctx context.Context) ApiCreateClientRequest {
 	return ApiCreateClientRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return CreateClientResponse
+//  @return CreateClientResponse
 func (a *ClientsApiService) CreateClientExecute(r ApiCreateClientRequest) (*CreateClientResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *CreateClientResponse
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateClientResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClientsApiService.CreateClient")
@@ -341,10 +341,10 @@ func (a *ClientsApiService) CreateClientExecute(r ApiCreateClientRequest) (*Crea
 }
 
 type ApiCreateSecretRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ClientsApi
-	clientId   string
-	body       *SecretOptions
+	clientId string
+	body *SecretOptions
 }
 
 func (r ApiCreateSecretRequest) Body(body SecretOptions) ApiCreateSecretRequest {
@@ -359,27 +359,26 @@ func (r ApiCreateSecretRequest) Execute() (*CreateSecretResponse, *http.Response
 /*
 CreateSecret Add a secret to a client
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clientId Client ID
-	@return ApiCreateSecretRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param clientId Client ID
+ @return ApiCreateSecretRequest
 */
 func (a *ClientsApiService) CreateSecret(ctx context.Context, clientId string) ApiCreateSecretRequest {
 	return ApiCreateSecretRequest{
 		ApiService: a,
-		ctx:        ctx,
-		clientId:   clientId,
+		ctx: ctx,
+		clientId: clientId,
 	}
 }
 
 // Execute executes the request
-//
-//	@return CreateSecretResponse
+//  @return CreateSecretResponse
 func (a *ClientsApiService) CreateSecretExecute(r ApiCreateSecretRequest) (*CreateSecretResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *CreateSecretResponse
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateSecretResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClientsApiService.CreateSecret")
@@ -451,9 +450,9 @@ func (a *ClientsApiService) CreateSecretExecute(r ApiCreateSecretRequest) (*Crea
 }
 
 type ApiDeleteClientRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ClientsApi
-	clientId   string
+	clientId string
 }
 
 func (r ApiDeleteClientRequest) Execute() (*http.Response, error) {
@@ -463,24 +462,24 @@ func (r ApiDeleteClientRequest) Execute() (*http.Response, error) {
 /*
 DeleteClient Delete client
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clientId Client ID
-	@return ApiDeleteClientRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param clientId Client ID
+ @return ApiDeleteClientRequest
 */
 func (a *ClientsApiService) DeleteClient(ctx context.Context, clientId string) ApiDeleteClientRequest {
 	return ApiDeleteClientRequest{
 		ApiService: a,
-		ctx:        ctx,
-		clientId:   clientId,
+		ctx: ctx,
+		clientId: clientId,
 	}
 }
 
 // Execute executes the request
 func (a *ClientsApiService) DeleteClientExecute(r ApiDeleteClientRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodDelete
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodDelete
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClientsApiService.DeleteClient")
@@ -541,10 +540,10 @@ func (a *ClientsApiService) DeleteClientExecute(r ApiDeleteClientRequest) (*http
 }
 
 type ApiDeleteScopeFromClientRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ClientsApi
-	clientId   string
-	scopeId    string
+	clientId string
+	scopeId string
 }
 
 func (r ApiDeleteScopeFromClientRequest) Execute() (*http.Response, error) {
@@ -554,26 +553,26 @@ func (r ApiDeleteScopeFromClientRequest) Execute() (*http.Response, error) {
 /*
 DeleteScopeFromClient Delete scope from client
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clientId Client ID
-	@param scopeId Scope ID
-	@return ApiDeleteScopeFromClientRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param clientId Client ID
+ @param scopeId Scope ID
+ @return ApiDeleteScopeFromClientRequest
 */
 func (a *ClientsApiService) DeleteScopeFromClient(ctx context.Context, clientId string, scopeId string) ApiDeleteScopeFromClientRequest {
 	return ApiDeleteScopeFromClientRequest{
 		ApiService: a,
-		ctx:        ctx,
-		clientId:   clientId,
-		scopeId:    scopeId,
+		ctx: ctx,
+		clientId: clientId,
+		scopeId: scopeId,
 	}
 }
 
 // Execute executes the request
 func (a *ClientsApiService) DeleteScopeFromClientExecute(r ApiDeleteScopeFromClientRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodDelete
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodDelete
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClientsApiService.DeleteScopeFromClient")
@@ -635,10 +634,10 @@ func (a *ClientsApiService) DeleteScopeFromClientExecute(r ApiDeleteScopeFromCli
 }
 
 type ApiDeleteSecretRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ClientsApi
-	clientId   string
-	secretId   string
+	clientId string
+	secretId string
 }
 
 func (r ApiDeleteSecretRequest) Execute() (*http.Response, error) {
@@ -648,26 +647,26 @@ func (r ApiDeleteSecretRequest) Execute() (*http.Response, error) {
 /*
 DeleteSecret Delete a secret from a client
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clientId Client ID
-	@param secretId Secret ID
-	@return ApiDeleteSecretRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param clientId Client ID
+ @param secretId Secret ID
+ @return ApiDeleteSecretRequest
 */
 func (a *ClientsApiService) DeleteSecret(ctx context.Context, clientId string, secretId string) ApiDeleteSecretRequest {
 	return ApiDeleteSecretRequest{
 		ApiService: a,
-		ctx:        ctx,
-		clientId:   clientId,
-		secretId:   secretId,
+		ctx: ctx,
+		clientId: clientId,
+		secretId: secretId,
 	}
 }
 
 // Execute executes the request
 func (a *ClientsApiService) DeleteSecretExecute(r ApiDeleteSecretRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodDelete
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodDelete
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClientsApiService.DeleteSecret")
@@ -729,7 +728,7 @@ func (a *ClientsApiService) DeleteSecretExecute(r ApiDeleteSecretRequest) (*http
 }
 
 type ApiListClientsRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ClientsApi
 }
 
@@ -740,25 +739,24 @@ func (r ApiListClientsRequest) Execute() (*ListClientsResponse, *http.Response, 
 /*
 ListClients List clients
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiListClientsRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiListClientsRequest
 */
 func (a *ClientsApiService) ListClients(ctx context.Context) ApiListClientsRequest {
 	return ApiListClientsRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ListClientsResponse
+//  @return ListClientsResponse
 func (a *ClientsApiService) ListClientsExecute(r ApiListClientsRequest) (*ListClientsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ListClientsResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListClientsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClientsApiService.ListClients")
@@ -827,9 +825,9 @@ func (a *ClientsApiService) ListClientsExecute(r ApiListClientsRequest) (*ListCl
 }
 
 type ApiReadClientRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ClientsApi
-	clientId   string
+	clientId string
 }
 
 func (r ApiReadClientRequest) Execute() (*ReadClientResponse, *http.Response, error) {
@@ -839,27 +837,26 @@ func (r ApiReadClientRequest) Execute() (*ReadClientResponse, *http.Response, er
 /*
 ReadClient Read client
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clientId Client ID
-	@return ApiReadClientRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param clientId Client ID
+ @return ApiReadClientRequest
 */
 func (a *ClientsApiService) ReadClient(ctx context.Context, clientId string) ApiReadClientRequest {
 	return ApiReadClientRequest{
 		ApiService: a,
-		ctx:        ctx,
-		clientId:   clientId,
+		ctx: ctx,
+		clientId: clientId,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ReadClientResponse
+//  @return ReadClientResponse
 func (a *ClientsApiService) ReadClientExecute(r ApiReadClientRequest) (*ReadClientResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ReadClientResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ReadClientResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClientsApiService.ReadClient")
@@ -929,10 +926,10 @@ func (a *ClientsApiService) ReadClientExecute(r ApiReadClientRequest) (*ReadClie
 }
 
 type ApiUpdateClientRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService ClientsApi
-	clientId   string
-	body       *ClientOptions
+	clientId string
+	body *ClientOptions
 }
 
 func (r ApiUpdateClientRequest) Body(body ClientOptions) ApiUpdateClientRequest {
@@ -947,27 +944,26 @@ func (r ApiUpdateClientRequest) Execute() (*CreateClientResponse, *http.Response
 /*
 UpdateClient Update client
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clientId Client ID
-	@return ApiUpdateClientRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param clientId Client ID
+ @return ApiUpdateClientRequest
 */
 func (a *ClientsApiService) UpdateClient(ctx context.Context, clientId string) ApiUpdateClientRequest {
 	return ApiUpdateClientRequest{
 		ApiService: a,
-		ctx:        ctx,
-		clientId:   clientId,
+		ctx: ctx,
+		clientId: clientId,
 	}
 }
 
 // Execute executes the request
-//
-//	@return CreateClientResponse
+//  @return CreateClientResponse
 func (a *ClientsApiService) UpdateClientExecute(r ApiUpdateClientRequest) (*CreateClientResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPut
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *CreateClientResponse
+		localVarHTTPMethod   = http.MethodPut
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateClientResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClientsApiService.UpdateClient")

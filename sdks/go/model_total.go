@@ -17,7 +17,7 @@ import (
 
 // Total struct for Total
 type Total struct {
-	Value    *int64  `json:"value,omitempty"`
+	Value *int64 `json:"value,omitempty"`
 	Relation *string `json:"relation,omitempty"`
 }
 
@@ -51,7 +51,7 @@ func (o *Total) GetValue() int64 {
 // and a boolean to check if the value has been set.
 func (o *Total) GetValueOk() (*int64, bool) {
 	if o == nil || isNil(o.Value) {
-		return nil, false
+    return nil, false
 	}
 	return o.Value, true
 }
@@ -83,7 +83,7 @@ func (o *Total) GetRelation() string {
 // and a boolean to check if the value has been set.
 func (o *Total) GetRelationOk() (*string, bool) {
 	if o == nil || isNil(o.Relation) {
-		return nil, false
+    return nil, false
 	}
 	return o.Relation, true
 }

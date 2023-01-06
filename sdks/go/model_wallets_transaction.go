@@ -18,13 +18,13 @@ import (
 
 // WalletsTransaction struct for WalletsTransaction
 type WalletsTransaction struct {
-	Timestamp time.Time        `json:"timestamp"`
-	Postings  []WalletsPosting `json:"postings"`
-	Reference *string          `json:"reference,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
+	Postings []Posting `json:"postings"`
+	Reference *string `json:"reference,omitempty"`
 	// Metadata associated with the wallet.
-	Metadata          map[string]interface{}               `json:"metadata,omitempty"`
-	Txid              int64                                `json:"txid"`
-	PreCommitVolumes  *map[string]map[string]WalletsVolume `json:"preCommitVolumes,omitempty"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Txid int64 `json:"txid"`
+	PreCommitVolumes *map[string]map[string]WalletsVolume `json:"preCommitVolumes,omitempty"`
 	PostCommitVolumes *map[string]map[string]WalletsVolume `json:"postCommitVolumes,omitempty"`
 }
 
@@ -32,7 +32,7 @@ type WalletsTransaction struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWalletsTransaction(timestamp time.Time, postings []WalletsPosting, txid int64) *WalletsTransaction {
+func NewWalletsTransaction(timestamp time.Time, postings []Posting, txid int64) *WalletsTransaction {
 	this := WalletsTransaction{}
 	this.Timestamp = timestamp
 	this.Postings = postings
@@ -62,7 +62,7 @@ func (o *WalletsTransaction) GetTimestamp() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetTimestampOk() (*time.Time, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Timestamp, true
 }
@@ -73,9 +73,9 @@ func (o *WalletsTransaction) SetTimestamp(v time.Time) {
 }
 
 // GetPostings returns the Postings field value
-func (o *WalletsTransaction) GetPostings() []WalletsPosting {
+func (o *WalletsTransaction) GetPostings() []Posting {
 	if o == nil {
-		var ret []WalletsPosting
+		var ret []Posting
 		return ret
 	}
 
@@ -84,15 +84,15 @@ func (o *WalletsTransaction) GetPostings() []WalletsPosting {
 
 // GetPostingsOk returns a tuple with the Postings field value
 // and a boolean to check if the value has been set.
-func (o *WalletsTransaction) GetPostingsOk() ([]WalletsPosting, bool) {
+func (o *WalletsTransaction) GetPostingsOk() ([]Posting, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Postings, true
 }
 
 // SetPostings sets field value
-func (o *WalletsTransaction) SetPostings(v []WalletsPosting) {
+func (o *WalletsTransaction) SetPostings(v []Posting) {
 	o.Postings = v
 }
 
@@ -109,7 +109,7 @@ func (o *WalletsTransaction) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetReferenceOk() (*string, bool) {
 	if o == nil || isNil(o.Reference) {
-		return nil, false
+    return nil, false
 	}
 	return o.Reference, true
 }
@@ -141,7 +141,7 @@ func (o *WalletsTransaction) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -174,7 +174,7 @@ func (o *WalletsTransaction) GetTxid() int64 {
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetTxidOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Txid, true
 }
@@ -197,7 +197,7 @@ func (o *WalletsTransaction) GetPreCommitVolumes() map[string]map[string]Wallets
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetPreCommitVolumesOk() (*map[string]map[string]WalletsVolume, bool) {
 	if o == nil || isNil(o.PreCommitVolumes) {
-		return nil, false
+    return nil, false
 	}
 	return o.PreCommitVolumes, true
 }
@@ -229,7 +229,7 @@ func (o *WalletsTransaction) GetPostCommitVolumes() map[string]map[string]Wallet
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetPostCommitVolumesOk() (*map[string]map[string]WalletsVolume, bool) {
 	if o == nil || isNil(o.PostCommitVolumes) {
-		return nil, false
+    return nil, false
 	}
 	return o.PostCommitVolumes, true
 }

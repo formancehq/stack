@@ -17,11 +17,11 @@ import (
 
 // GetHoldsResponseCursor struct for GetHoldsResponseCursor
 type GetHoldsResponseCursor struct {
-	PageSize int64   `json:"pageSize"`
-	HasMore  *bool   `json:"hasMore,omitempty"`
+	PageSize int64 `json:"pageSize"`
+	HasMore *bool `json:"hasMore,omitempty"`
 	Previous *string `json:"previous,omitempty"`
-	Next     *string `json:"next,omitempty"`
-	Data     []Hold  `json:"data"`
+	Next *string `json:"next,omitempty"`
+	Data []Hold `json:"data"`
 }
 
 // NewGetHoldsResponseCursor instantiates a new GetHoldsResponseCursor object
@@ -57,7 +57,7 @@ func (o *GetHoldsResponseCursor) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *GetHoldsResponseCursor) GetPageSizeOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.PageSize, true
 }
@@ -80,7 +80,7 @@ func (o *GetHoldsResponseCursor) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *GetHoldsResponseCursor) GetHasMoreOk() (*bool, bool) {
 	if o == nil || isNil(o.HasMore) {
-		return nil, false
+    return nil, false
 	}
 	return o.HasMore, true
 }
@@ -112,7 +112,7 @@ func (o *GetHoldsResponseCursor) GetPrevious() string {
 // and a boolean to check if the value has been set.
 func (o *GetHoldsResponseCursor) GetPreviousOk() (*string, bool) {
 	if o == nil || isNil(o.Previous) {
-		return nil, false
+    return nil, false
 	}
 	return o.Previous, true
 }
@@ -144,7 +144,7 @@ func (o *GetHoldsResponseCursor) GetNext() string {
 // and a boolean to check if the value has been set.
 func (o *GetHoldsResponseCursor) GetNextOk() (*string, bool) {
 	if o == nil || isNil(o.Next) {
-		return nil, false
+    return nil, false
 	}
 	return o.Next, true
 }
@@ -177,7 +177,7 @@ func (o *GetHoldsResponseCursor) GetData() []Hold {
 // and a boolean to check if the value has been set.
 func (o *GetHoldsResponseCursor) GetDataOk() ([]Hold, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Data, true
 }

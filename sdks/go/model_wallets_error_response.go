@@ -17,7 +17,7 @@ import (
 
 // WalletsErrorResponse struct for WalletsErrorResponse
 type WalletsErrorResponse struct {
-	ErrorCode    string `json:"errorCode"`
+	ErrorCode string `json:"errorCode"`
 	ErrorMessage string `json:"errorMessage"`
 }
 
@@ -54,7 +54,7 @@ func (o *WalletsErrorResponse) GetErrorCode() string {
 // and a boolean to check if the value has been set.
 func (o *WalletsErrorResponse) GetErrorCodeOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.ErrorCode, true
 }
@@ -78,7 +78,7 @@ func (o *WalletsErrorResponse) GetErrorMessage() string {
 // and a boolean to check if the value has been set.
 func (o *WalletsErrorResponse) GetErrorMessageOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.ErrorMessage, true
 }

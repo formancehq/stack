@@ -17,17 +17,17 @@ import (
 
 // Posting struct for Posting
 type Posting struct {
-	Amount      int32  `json:"amount"`
-	Asset       string `json:"asset"`
+	Amount int64 `json:"amount"`
+	Asset string `json:"asset"`
 	Destination string `json:"destination"`
-	Source      string `json:"source"`
+	Source string `json:"source"`
 }
 
 // NewPosting instantiates a new Posting object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPosting(amount int32, asset string, destination string, source string) *Posting {
+func NewPosting(amount int64, asset string, destination string, source string) *Posting {
 	this := Posting{}
 	this.Amount = amount
 	this.Asset = asset
@@ -45,9 +45,9 @@ func NewPostingWithDefaults() *Posting {
 }
 
 // GetAmount returns the Amount field value
-func (o *Posting) GetAmount() int32 {
+func (o *Posting) GetAmount() int64 {
 	if o == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 
@@ -56,15 +56,15 @@ func (o *Posting) GetAmount() int32 {
 
 // GetAmountOk returns a tuple with the Amount field value
 // and a boolean to check if the value has been set.
-func (o *Posting) GetAmountOk() (*int32, bool) {
+func (o *Posting) GetAmountOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Amount, true
 }
 
 // SetAmount sets field value
-func (o *Posting) SetAmount(v int32) {
+func (o *Posting) SetAmount(v int64) {
 	o.Amount = v
 }
 
@@ -82,7 +82,7 @@ func (o *Posting) GetAsset() string {
 // and a boolean to check if the value has been set.
 func (o *Posting) GetAssetOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Asset, true
 }
@@ -106,7 +106,7 @@ func (o *Posting) GetDestination() string {
 // and a boolean to check if the value has been set.
 func (o *Posting) GetDestinationOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Destination, true
 }
@@ -130,7 +130,7 @@ func (o *Posting) GetSource() string {
 // and a boolean to check if the value has been set.
 func (o *Posting) GetSourceOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Source, true
 }

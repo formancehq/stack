@@ -52,7 +52,7 @@ func (o *ConfigResponse) GetData() WebhooksConfig {
 // and a boolean to check if the value has been set.
 func (o *ConfigResponse) GetDataOk() (*WebhooksConfig, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Data, true
 }

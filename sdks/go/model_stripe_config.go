@@ -19,7 +19,7 @@ import (
 type StripeConfig struct {
 	// The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe api
 	PollingPeriod *string `json:"pollingPeriod,omitempty"`
-	ApiKey        string  `json:"apiKey"`
+	ApiKey string `json:"apiKey"`
 	// Number of BalanceTransaction to fetch at each polling interval.
 	PageSize *float32 `json:"pageSize,omitempty"`
 }
@@ -63,7 +63,7 @@ func (o *StripeConfig) GetPollingPeriod() string {
 // and a boolean to check if the value has been set.
 func (o *StripeConfig) GetPollingPeriodOk() (*string, bool) {
 	if o == nil || isNil(o.PollingPeriod) {
-		return nil, false
+    return nil, false
 	}
 	return o.PollingPeriod, true
 }
@@ -96,7 +96,7 @@ func (o *StripeConfig) GetApiKey() string {
 // and a boolean to check if the value has been set.
 func (o *StripeConfig) GetApiKeyOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.ApiKey, true
 }
@@ -119,7 +119,7 @@ func (o *StripeConfig) GetPageSize() float32 {
 // and a boolean to check if the value has been set.
 func (o *StripeConfig) GetPageSizeOk() (*float32, bool) {
 	if o == nil || isNil(o.PageSize) {
-		return nil, false
+    return nil, false
 	}
 	return o.PageSize, true
 }

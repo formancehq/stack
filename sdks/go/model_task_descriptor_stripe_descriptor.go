@@ -17,8 +17,8 @@ import (
 
 // TaskDescriptorStripeDescriptor struct for TaskDescriptorStripeDescriptor
 type TaskDescriptorStripeDescriptor struct {
-	Name    *string `json:"name,omitempty"`
-	Main    *bool   `json:"main,omitempty"`
+	Name *string `json:"name,omitempty"`
+	Main *bool `json:"main,omitempty"`
 	Account *string `json:"account,omitempty"`
 }
 
@@ -52,7 +52,7 @@ func (o *TaskDescriptorStripeDescriptor) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorStripeDescriptor) GetNameOk() (*string, bool) {
 	if o == nil || isNil(o.Name) {
-		return nil, false
+    return nil, false
 	}
 	return o.Name, true
 }
@@ -84,7 +84,7 @@ func (o *TaskDescriptorStripeDescriptor) GetMain() bool {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorStripeDescriptor) GetMainOk() (*bool, bool) {
 	if o == nil || isNil(o.Main) {
-		return nil, false
+    return nil, false
 	}
 	return o.Main, true
 }
@@ -116,7 +116,7 @@ func (o *TaskDescriptorStripeDescriptor) GetAccount() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorStripeDescriptor) GetAccountOk() (*string, bool) {
 	if o == nil || isNil(o.Account) {
-		return nil, false
+    return nil, false
 	}
 	return o.Account, true
 }

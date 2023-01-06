@@ -17,10 +17,10 @@ import (
 
 // ClientSecret struct for ClientSecret
 type ClientSecret struct {
-	LastDigits string                 `json:"lastDigits"`
-	Name       string                 `json:"name"`
-	Id         string                 `json:"id"`
-	Metadata   map[string]interface{} `json:"metadata,omitempty"`
+	LastDigits string `json:"lastDigits"`
+	Name string `json:"name"`
+	Id string `json:"id"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // NewClientSecret instantiates a new ClientSecret object
@@ -57,7 +57,7 @@ func (o *ClientSecret) GetLastDigits() string {
 // and a boolean to check if the value has been set.
 func (o *ClientSecret) GetLastDigitsOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.LastDigits, true
 }
@@ -81,7 +81,7 @@ func (o *ClientSecret) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *ClientSecret) GetNameOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Name, true
 }
@@ -105,7 +105,7 @@ func (o *ClientSecret) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *ClientSecret) GetIdOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Id, true
 }
@@ -128,7 +128,7 @@ func (o *ClientSecret) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *ClientSecret) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }

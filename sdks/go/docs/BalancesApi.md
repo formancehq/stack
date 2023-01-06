@@ -11,7 +11,7 @@ Method | HTTP request | Description
 
 ## GetBalances
 
-> GetBalances200Response GetBalances(ctx, ledger).Address(address).After(after).PaginationToken(paginationToken).Execute()
+> BalancesCursorResponse GetBalances(ctx, ledger).Address(address).After(after).Cursor(cursor).PaginationToken(paginationToken).Execute()
 
 Get the balances from a ledger's account
 
@@ -31,16 +31,17 @@ func main() {
     ledger := "ledger001" // string | Name of the ledger.
     address := "users:001" // string | Filter balances involving given account, either as source or destination. (optional)
     after := "users:003" // string | Pagination cursor, will return accounts after given address, in descending order. (optional)
-    paginationToken := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests.  Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. (optional)
+    cursor := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
+    paginationToken := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use `cursor` instead. (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.BalancesApi.GetBalances(context.Background(), ledger).Address(address).After(after).PaginationToken(paginationToken).Execute()
+    resp, r, err := apiClient.BalancesApi.GetBalances(context.Background(), ledger).Address(address).After(after).Cursor(cursor).PaginationToken(paginationToken).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `BalancesApi.GetBalances``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `GetBalances`: GetBalances200Response
+    // response from `GetBalances`: BalancesCursorResponse
     fmt.Fprintf(os.Stdout, "Response from `BalancesApi.GetBalances`: %v\n", resp)
 }
 ```
@@ -63,11 +64,12 @@ Name | Type | Description  | Notes
 
  **address** | **string** | Filter balances involving given account, either as source or destination. |
  **after** | **string** | Pagination cursor, will return accounts after given address, in descending order. |
- **paginationToken** | **string** | Parameter used in pagination requests.  Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. |
+ **cursor** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  |
+ **paginationToken** | **string** | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use &#x60;cursor&#x60; instead. |
 
 ### Return type
 
-[**GetBalances200Response**](GetBalances200Response.md)
+[**BalancesCursorResponse**](BalancesCursorResponse.md)
 
 ### Authorization
 
@@ -85,7 +87,7 @@ Name | Type | Description  | Notes
 
 ## GetBalancesAggregated
 
-> GetBalancesAggregated200Response GetBalancesAggregated(ctx, ledger).Address(address).Execute()
+> AggregateBalancesResponse GetBalancesAggregated(ctx, ledger).Address(address).Execute()
 
 Get the aggregated balances from selected accounts
 
@@ -112,7 +114,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `BalancesApi.GetBalancesAggregated``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `GetBalancesAggregated`: GetBalancesAggregated200Response
+    // response from `GetBalancesAggregated`: AggregateBalancesResponse
     fmt.Fprintf(os.Stdout, "Response from `BalancesApi.GetBalancesAggregated`: %v\n", resp)
 }
 ```
@@ -137,7 +139,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**GetBalancesAggregated200Response**](GetBalancesAggregated200Response.md)
+[**AggregateBalancesResponse**](AggregateBalancesResponse.md)
 
 ### Authorization
 

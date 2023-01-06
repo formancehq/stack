@@ -27,7 +27,7 @@ type TaskDescriptorDummyPay struct {
 	// The error message if the task failed
 	Error *string `json:"error,omitempty"`
 	// The task state
-	State      map[string]interface{}            `json:"state,omitempty"`
+	State map[string]interface{} `json:"state,omitempty"`
 	Descriptor *TaskDescriptorDummyPayDescriptor `json:"descriptor,omitempty"`
 }
 
@@ -61,7 +61,7 @@ func (o *TaskDescriptorDummyPay) GetProvider() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorDummyPay) GetProviderOk() (*string, bool) {
 	if o == nil || isNil(o.Provider) {
-		return nil, false
+    return nil, false
 	}
 	return o.Provider, true
 }
@@ -93,7 +93,7 @@ func (o *TaskDescriptorDummyPay) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorDummyPay) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.CreatedAt) {
-		return nil, false
+    return nil, false
 	}
 	return o.CreatedAt, true
 }
@@ -125,7 +125,7 @@ func (o *TaskDescriptorDummyPay) GetStatus() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorDummyPay) GetStatusOk() (*string, bool) {
 	if o == nil || isNil(o.Status) {
-		return nil, false
+    return nil, false
 	}
 	return o.Status, true
 }
@@ -157,7 +157,7 @@ func (o *TaskDescriptorDummyPay) GetError() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorDummyPay) GetErrorOk() (*string, bool) {
 	if o == nil || isNil(o.Error) {
-		return nil, false
+    return nil, false
 	}
 	return o.Error, true
 }
@@ -189,7 +189,7 @@ func (o *TaskDescriptorDummyPay) GetState() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorDummyPay) GetStateOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.State) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.State, true
 }
@@ -221,7 +221,7 @@ func (o *TaskDescriptorDummyPay) GetDescriptor() TaskDescriptorDummyPayDescripto
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorDummyPay) GetDescriptorOk() (*TaskDescriptorDummyPayDescriptor, bool) {
 	if o == nil || isNil(o.Descriptor) {
-		return nil, false
+    return nil, false
 	}
 	return o.Descriptor, true
 }

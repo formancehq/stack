@@ -19,9 +19,9 @@ import (
 type CreditWalletRequest struct {
 	Amount Monetary `json:"amount"`
 	// Metadata associated with the wallet.
-	Metadata  map[string]interface{} `json:"metadata,omitempty"`
-	Reference *string                `json:"reference,omitempty"`
-	Sources   []Subject              `json:"sources"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Reference *string `json:"reference,omitempty"`
+	Sources []Subject `json:"sources"`
 	// The balance to credit
 	Balance *string `json:"balance,omitempty"`
 }
@@ -59,7 +59,7 @@ func (o *CreditWalletRequest) GetAmount() Monetary {
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetAmountOk() (*Monetary, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Amount, true
 }
@@ -82,7 +82,7 @@ func (o *CreditWalletRequest) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -114,7 +114,7 @@ func (o *CreditWalletRequest) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetReferenceOk() (*string, bool) {
 	if o == nil || isNil(o.Reference) {
-		return nil, false
+    return nil, false
 	}
 	return o.Reference, true
 }
@@ -147,7 +147,7 @@ func (o *CreditWalletRequest) GetSources() []Subject {
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetSourcesOk() ([]Subject, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Sources, true
 }
@@ -170,7 +170,7 @@ func (o *CreditWalletRequest) GetBalance() string {
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetBalanceOk() (*string, bool) {
 	if o == nil || isNil(o.Balance) {
-		return nil, false
+    return nil, false
 	}
 	return o.Balance, true
 }

@@ -18,7 +18,7 @@ import (
 // ListConnectorsConfigsResponseConnectorKey struct for ListConnectorsConfigsResponseConnectorKey
 type ListConnectorsConfigsResponseConnectorKey struct {
 	Datatype *string `json:"datatype,omitempty"`
-	Required *bool   `json:"required,omitempty"`
+	Required *bool `json:"required,omitempty"`
 }
 
 // NewListConnectorsConfigsResponseConnectorKey instantiates a new ListConnectorsConfigsResponseConnectorKey object
@@ -51,7 +51,7 @@ func (o *ListConnectorsConfigsResponseConnectorKey) GetDatatype() string {
 // and a boolean to check if the value has been set.
 func (o *ListConnectorsConfigsResponseConnectorKey) GetDatatypeOk() (*string, bool) {
 	if o == nil || isNil(o.Datatype) {
-		return nil, false
+    return nil, false
 	}
 	return o.Datatype, true
 }
@@ -83,7 +83,7 @@ func (o *ListConnectorsConfigsResponseConnectorKey) GetRequired() bool {
 // and a boolean to check if the value has been set.
 func (o *ListConnectorsConfigsResponseConnectorKey) GetRequiredOk() (*bool, bool) {
 	if o == nil || isNil(o.Required) {
-		return nil, false
+    return nil, false
 	}
 	return o.Required, true
 }

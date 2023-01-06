@@ -19,13 +19,14 @@ import (
 	"net/url"
 )
 
+
 type DefaultApi interface {
 
 	/*
-		GetServerInfo Get server info
+	GetServerInfo Get server info
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiGetServerInfoRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetServerInfoRequest
 	*/
 	GetServerInfo(ctx context.Context) ApiGetServerInfoRequest
 
@@ -34,10 +35,10 @@ type DefaultApi interface {
 	GetServerInfoExecute(r ApiGetServerInfoRequest) (*ServerInfo, *http.Response, error)
 
 	/*
-		SearchgetServerInfo Get server info
+	SearchgetServerInfo Get server info
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiSearchgetServerInfoRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiSearchgetServerInfoRequest
 	*/
 	SearchgetServerInfo(ctx context.Context) ApiSearchgetServerInfoRequest
 
@@ -50,7 +51,7 @@ type DefaultApi interface {
 type DefaultApiService service
 
 type ApiGetServerInfoRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService DefaultApi
 }
 
@@ -61,25 +62,24 @@ func (r ApiGetServerInfoRequest) Execute() (*ServerInfo, *http.Response, error) 
 /*
 GetServerInfo Get server info
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetServerInfoRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiGetServerInfoRequest
 */
 func (a *DefaultApiService) GetServerInfo(ctx context.Context) ApiGetServerInfoRequest {
 	return ApiGetServerInfoRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ServerInfo
+//  @return ServerInfo
 func (a *DefaultApiService) GetServerInfoExecute(r ApiGetServerInfoRequest) (*ServerInfo, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ServerInfo
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ServerInfo
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.GetServerInfo")
@@ -148,7 +148,7 @@ func (a *DefaultApiService) GetServerInfoExecute(r ApiGetServerInfoRequest) (*Se
 }
 
 type ApiSearchgetServerInfoRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService DefaultApi
 }
 
@@ -159,25 +159,24 @@ func (r ApiSearchgetServerInfoRequest) Execute() (*ServerInfo, *http.Response, e
 /*
 SearchgetServerInfo Get server info
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiSearchgetServerInfoRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiSearchgetServerInfoRequest
 */
 func (a *DefaultApiService) SearchgetServerInfo(ctx context.Context) ApiSearchgetServerInfoRequest {
 	return ApiSearchgetServerInfoRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ServerInfo
+//  @return ServerInfo
 func (a *DefaultApiService) SearchgetServerInfoExecute(r ApiSearchgetServerInfoRequest) (*ServerInfo, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ServerInfo
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ServerInfo
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.SearchgetServerInfo")

@@ -52,7 +52,7 @@ func (o *Config) GetStorage() LedgerStorage {
 // and a boolean to check if the value has been set.
 func (o *Config) GetStorageOk() (*LedgerStorage, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Storage, true
 }

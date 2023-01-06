@@ -56,7 +56,7 @@ func (o *ExpandedDebitHoldAllOf) GetRemaining() int64 {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHoldAllOf) GetRemainingOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Remaining, true
 }
@@ -80,7 +80,7 @@ func (o *ExpandedDebitHoldAllOf) GetOriginalAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHoldAllOf) GetOriginalAmountOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.OriginalAmount, true
 }

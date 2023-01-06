@@ -17,12 +17,12 @@ import (
 
 // Cursor struct for Cursor
 type Cursor struct {
-	PageSize *int64        `json:"pageSize,omitempty"`
-	HasMore  *bool         `json:"hasMore,omitempty"`
-	Total    *Total        `json:"total,omitempty"`
-	Next     *string       `json:"next,omitempty"`
-	Previous *string       `json:"previous,omitempty"`
-	Data     []interface{} `json:"data,omitempty"`
+	PageSize *int64 `json:"pageSize,omitempty"`
+	HasMore *bool `json:"hasMore,omitempty"`
+	Total *Total `json:"total,omitempty"`
+	Next *string `json:"next,omitempty"`
+	Previous *string `json:"previous,omitempty"`
+	Data []interface{} `json:"data,omitempty"`
 }
 
 // NewCursor instantiates a new Cursor object
@@ -55,7 +55,7 @@ func (o *Cursor) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetPageSizeOk() (*int64, bool) {
 	if o == nil || isNil(o.PageSize) {
-		return nil, false
+    return nil, false
 	}
 	return o.PageSize, true
 }
@@ -87,7 +87,7 @@ func (o *Cursor) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetHasMoreOk() (*bool, bool) {
 	if o == nil || isNil(o.HasMore) {
-		return nil, false
+    return nil, false
 	}
 	return o.HasMore, true
 }
@@ -119,7 +119,7 @@ func (o *Cursor) GetTotal() Total {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetTotalOk() (*Total, bool) {
 	if o == nil || isNil(o.Total) {
-		return nil, false
+    return nil, false
 	}
 	return o.Total, true
 }
@@ -151,7 +151,7 @@ func (o *Cursor) GetNext() string {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetNextOk() (*string, bool) {
 	if o == nil || isNil(o.Next) {
-		return nil, false
+    return nil, false
 	}
 	return o.Next, true
 }
@@ -183,7 +183,7 @@ func (o *Cursor) GetPrevious() string {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetPreviousOk() (*string, bool) {
 	if o == nil || isNil(o.Previous) {
-		return nil, false
+    return nil, false
 	}
 	return o.Previous, true
 }
@@ -215,7 +215,7 @@ func (o *Cursor) GetData() []interface{} {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetDataOk() ([]interface{}, bool) {
 	if o == nil || isNil(o.Data) {
-		return nil, false
+    return nil, false
 	}
 	return o.Data, true
 }

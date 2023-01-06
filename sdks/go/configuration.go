@@ -78,9 +78,9 @@ type ServerVariable struct {
 
 // ServerConfiguration stores the information about a server
 type ServerConfiguration struct {
-	URL         string
+	URL string
 	Description string
-	Variables   map[string]ServerVariable
+	Variables map[string]ServerVariable
 }
 
 // ServerConfigurations stores multiple ServerConfiguration items
@@ -101,26 +101,27 @@ type Configuration struct {
 // NewConfiguration returns a new Configuration object
 func NewConfiguration() *Configuration {
 	cfg := &Configuration{
-		DefaultHeader: make(map[string]string),
-		UserAgent:     "OpenAPI-Generator/develop/go",
-		Debug:         false,
-		Servers: ServerConfigurations{
+		DefaultHeader:    make(map[string]string),
+		UserAgent:        "OpenAPI-Generator/develop/go",
+		Debug:            false,
+		Servers:          ServerConfigurations{
 			{
-				URL:         "http://localhost",
+				URL: "http://localhost",
 				Description: "local server",
 			},
 			{
-				URL:         "https://{organization}.sandbox.formance.cloud",
+				URL: "https://{organization}.sandbox.formance.cloud",
 				Description: "sandbox server",
 				Variables: map[string]ServerVariable{
 					"organization": ServerVariable{
-						Description:  "The organization on which the ledger is located",
+						Description: "The organization on which the ledger is located",
 						DefaultValue: "",
 					},
 				},
 			},
 		},
-		OperationServers: map[string]ServerConfigurations{},
+		OperationServers: map[string]ServerConfigurations{
+		},
 	}
 	return cfg
 }

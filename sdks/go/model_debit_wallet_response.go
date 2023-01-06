@@ -52,7 +52,7 @@ func (o *DebitWalletResponse) GetData() Hold {
 // and a boolean to check if the value has been set.
 func (o *DebitWalletResponse) GetDataOk() (*Hold, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Data, true
 }

@@ -56,7 +56,7 @@ func (o *Monetary) GetAsset() string {
 // and a boolean to check if the value has been set.
 func (o *Monetary) GetAssetOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Asset, true
 }
@@ -80,7 +80,7 @@ func (o *Monetary) GetAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *Monetary) GetAmountOk() (*int64, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Amount, true
 }

@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Timestamp** | **time.Time** |  |
-**Postings** | [**[]WalletsPosting**](WalletsPosting.md) |  |
+**Postings** | [**[]Posting**](Posting.md) |  |
 **Reference** | Pointer to **string** |  | [optional]
 **Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional]
 **Txid** | **int64** |  |
@@ -16,7 +16,7 @@ Name | Type | Description | Notes
 
 ### NewWalletsTransaction
 
-`func NewWalletsTransaction(timestamp time.Time, postings []WalletsPosting, txid int64, ) *WalletsTransaction`
+`func NewWalletsTransaction(timestamp time.Time, postings []Posting, txid int64, ) *WalletsTransaction`
 
 NewWalletsTransaction instantiates a new WalletsTransaction object
 This constructor will assign default values to properties that have it defined,
@@ -53,20 +53,20 @@ SetTimestamp sets Timestamp field to given value.
 
 ### GetPostings
 
-`func (o *WalletsTransaction) GetPostings() []WalletsPosting`
+`func (o *WalletsTransaction) GetPostings() []Posting`
 
 GetPostings returns the Postings field if non-nil, zero value otherwise.
 
 ### GetPostingsOk
 
-`func (o *WalletsTransaction) GetPostingsOk() (*[]WalletsPosting, bool)`
+`func (o *WalletsTransaction) GetPostingsOk() (*[]Posting, bool)`
 
 GetPostingsOk returns a tuple with the Postings field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetPostings
 
-`func (o *WalletsTransaction) SetPostings(v []WalletsPosting)`
+`func (o *WalletsTransaction) SetPostings(v []Posting)`
 
 SetPostings sets Postings field to given value.
 

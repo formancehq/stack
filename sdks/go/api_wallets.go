@@ -20,14 +20,15 @@ import (
 	"strings"
 )
 
+
 type WalletsApi interface {
 
 	/*
-		ConfirmHold Confirm a hold
+	ConfirmHold Confirm a hold
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param holdId
-		@return ApiConfirmHoldRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param holdId
+	@return ApiConfirmHoldRequest
 	*/
 	ConfirmHold(ctx context.Context, holdId string) ApiConfirmHoldRequest
 
@@ -35,11 +36,11 @@ type WalletsApi interface {
 	ConfirmHoldExecute(r ApiConfirmHoldRequest) (*http.Response, error)
 
 	/*
-		CreateBalance Create a balance
+	CreateBalance Create a balance
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param id
-		@return ApiCreateBalanceRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id
+	@return ApiCreateBalanceRequest
 	*/
 	CreateBalance(ctx context.Context, id string) ApiCreateBalanceRequest
 
@@ -48,10 +49,10 @@ type WalletsApi interface {
 	CreateBalanceExecute(r ApiCreateBalanceRequest) (*CreateBalanceResponse, *http.Response, error)
 
 	/*
-		CreateWallet Create a new wallet
+	CreateWallet Create a new wallet
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiCreateWalletRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCreateWalletRequest
 	*/
 	CreateWallet(ctx context.Context) ApiCreateWalletRequest
 
@@ -60,11 +61,11 @@ type WalletsApi interface {
 	CreateWalletExecute(r ApiCreateWalletRequest) (*CreateWalletResponse, *http.Response, error)
 
 	/*
-		CreditWallet Credit a wallet
+	CreditWallet Credit a wallet
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param id
-		@return ApiCreditWalletRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id
+	@return ApiCreditWalletRequest
 	*/
 	CreditWallet(ctx context.Context, id string) ApiCreditWalletRequest
 
@@ -72,11 +73,11 @@ type WalletsApi interface {
 	CreditWalletExecute(r ApiCreditWalletRequest) (*http.Response, error)
 
 	/*
-		DebitWallet Debit a wallet
+	DebitWallet Debit a wallet
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param id
-		@return ApiDebitWalletRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id
+	@return ApiDebitWalletRequest
 	*/
 	DebitWallet(ctx context.Context, id string) ApiDebitWalletRequest
 
@@ -85,12 +86,12 @@ type WalletsApi interface {
 	DebitWalletExecute(r ApiDebitWalletRequest) (*DebitWalletResponse, *http.Response, error)
 
 	/*
-		GetBalance Get detailed balance
+	GetBalance Get detailed balance
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param id
-		@param balanceName
-		@return ApiGetBalanceRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id
+	@param balanceName
+	@return ApiGetBalanceRequest
 	*/
 	GetBalance(ctx context.Context, id string, balanceName string) ApiGetBalanceRequest
 
@@ -99,11 +100,11 @@ type WalletsApi interface {
 	GetBalanceExecute(r ApiGetBalanceRequest) (*GetBalanceResponse, *http.Response, error)
 
 	/*
-		GetHold Get a hold
+	GetHold Get a hold
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param holdID The hold ID
-		@return ApiGetHoldRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param holdID The hold ID
+	@return ApiGetHoldRequest
 	*/
 	GetHold(ctx context.Context, holdID string) ApiGetHoldRequest
 
@@ -112,10 +113,10 @@ type WalletsApi interface {
 	GetHoldExecute(r ApiGetHoldRequest) (*GetHoldResponse, *http.Response, error)
 
 	/*
-		GetHolds Get all holds for a wallet
+	GetHolds Get all holds for a wallet
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiGetHoldsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetHoldsRequest
 	*/
 	GetHolds(ctx context.Context) ApiGetHoldsRequest
 
@@ -124,10 +125,10 @@ type WalletsApi interface {
 	GetHoldsExecute(r ApiGetHoldsRequest) (*GetHoldsResponse, *http.Response, error)
 
 	/*
-		GetTransactions Method for GetTransactions
+	GetTransactions Method for GetTransactions
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiGetTransactionsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiGetTransactionsRequest
 	*/
 	GetTransactions(ctx context.Context) ApiGetTransactionsRequest
 
@@ -136,11 +137,11 @@ type WalletsApi interface {
 	GetTransactionsExecute(r ApiGetTransactionsRequest) (*GetTransactionsResponse, *http.Response, error)
 
 	/*
-		GetWallet Get a wallet
+	GetWallet Get a wallet
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param id
-		@return ApiGetWalletRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id
+	@return ApiGetWalletRequest
 	*/
 	GetWallet(ctx context.Context, id string) ApiGetWalletRequest
 
@@ -149,11 +150,11 @@ type WalletsApi interface {
 	GetWalletExecute(r ApiGetWalletRequest) (*GetWalletResponse, *http.Response, error)
 
 	/*
-		ListBalances List balances of a wallet
+	ListBalances List balances of a wallet
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param id
-		@return ApiListBalancesRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id
+	@return ApiListBalancesRequest
 	*/
 	ListBalances(ctx context.Context, id string) ApiListBalancesRequest
 
@@ -162,10 +163,10 @@ type WalletsApi interface {
 	ListBalancesExecute(r ApiListBalancesRequest) (*ListBalancesResponse, *http.Response, error)
 
 	/*
-		ListWallets List all wallets
+	ListWallets List all wallets
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiListWalletsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiListWalletsRequest
 	*/
 	ListWallets(ctx context.Context) ApiListWalletsRequest
 
@@ -174,11 +175,11 @@ type WalletsApi interface {
 	ListWalletsExecute(r ApiListWalletsRequest) (*ListWalletsResponse, *http.Response, error)
 
 	/*
-		UpdateWallet Update a wallet
+	UpdateWallet Update a wallet
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param id
-		@return ApiUpdateWalletRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param id
+	@return ApiUpdateWalletRequest
 	*/
 	UpdateWallet(ctx context.Context, id string) ApiUpdateWalletRequest
 
@@ -186,11 +187,11 @@ type WalletsApi interface {
 	UpdateWalletExecute(r ApiUpdateWalletRequest) (*http.Response, error)
 
 	/*
-		VoidHold Cancel a hold
+	VoidHold Cancel a hold
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@param holdId
-		@return ApiVoidHoldRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param holdId
+	@return ApiVoidHoldRequest
 	*/
 	VoidHold(ctx context.Context, holdId string) ApiVoidHoldRequest
 
@@ -198,10 +199,10 @@ type WalletsApi interface {
 	VoidHoldExecute(r ApiVoidHoldRequest) (*http.Response, error)
 
 	/*
-		WalletsgetServerInfo Get server info
+	WalletsgetServerInfo Get server info
 
-		@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-		@return ApiWalletsgetServerInfoRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiWalletsgetServerInfoRequest
 	*/
 	WalletsgetServerInfo(ctx context.Context) ApiWalletsgetServerInfoRequest
 
@@ -214,9 +215,9 @@ type WalletsApi interface {
 type WalletsApiService service
 
 type ApiConfirmHoldRequest struct {
-	ctx                context.Context
-	ApiService         WalletsApi
-	holdId             string
+	ctx context.Context
+	ApiService WalletsApi
+	holdId string
 	confirmHoldRequest *ConfirmHoldRequest
 }
 
@@ -232,24 +233,24 @@ func (r ApiConfirmHoldRequest) Execute() (*http.Response, error) {
 /*
 ConfirmHold Confirm a hold
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param holdId
-	@return ApiConfirmHoldRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param holdId
+ @return ApiConfirmHoldRequest
 */
 func (a *WalletsApiService) ConfirmHold(ctx context.Context, holdId string) ApiConfirmHoldRequest {
 	return ApiConfirmHoldRequest{
 		ApiService: a,
-		ctx:        ctx,
-		holdId:     holdId,
+		ctx: ctx,
+		holdId: holdId,
 	}
 }
 
 // Execute executes the request
 func (a *WalletsApiService) ConfirmHoldExecute(r ApiConfirmHoldRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPost
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.ConfirmHold")
@@ -305,14 +306,14 @@ func (a *WalletsApiService) ConfirmHoldExecute(r ApiConfirmHoldRequest) (*http.R
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -320,10 +321,10 @@ func (a *WalletsApiService) ConfirmHoldExecute(r ApiConfirmHoldRequest) (*http.R
 }
 
 type ApiCreateBalanceRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService WalletsApi
-	id         string
-	body       *Balance
+	id string
+	body *Balance
 }
 
 func (r ApiCreateBalanceRequest) Body(body Balance) ApiCreateBalanceRequest {
@@ -338,27 +339,26 @@ func (r ApiCreateBalanceRequest) Execute() (*CreateBalanceResponse, *http.Respon
 /*
 CreateBalance Create a balance
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id
-	@return ApiCreateBalanceRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param id
+ @return ApiCreateBalanceRequest
 */
 func (a *WalletsApiService) CreateBalance(ctx context.Context, id string) ApiCreateBalanceRequest {
 	return ApiCreateBalanceRequest{
 		ApiService: a,
-		ctx:        ctx,
-		id:         id,
+		ctx: ctx,
+		id: id,
 	}
 }
 
 // Execute executes the request
-//
-//	@return CreateBalanceResponse
+//  @return CreateBalanceResponse
 func (a *WalletsApiService) CreateBalanceExecute(r ApiCreateBalanceRequest) (*CreateBalanceResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *CreateBalanceResponse
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateBalanceResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.CreateBalance")
@@ -414,14 +414,14 @@ func (a *WalletsApiService) CreateBalanceExecute(r ApiCreateBalanceRequest) (*Cr
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -438,8 +438,8 @@ func (a *WalletsApiService) CreateBalanceExecute(r ApiCreateBalanceRequest) (*Cr
 }
 
 type ApiCreateWalletRequest struct {
-	ctx                 context.Context
-	ApiService          WalletsApi
+	ctx context.Context
+	ApiService WalletsApi
 	createWalletRequest *CreateWalletRequest
 }
 
@@ -455,25 +455,24 @@ func (r ApiCreateWalletRequest) Execute() (*CreateWalletResponse, *http.Response
 /*
 CreateWallet Create a new wallet
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiCreateWalletRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiCreateWalletRequest
 */
 func (a *WalletsApiService) CreateWallet(ctx context.Context) ApiCreateWalletRequest {
 	return ApiCreateWalletRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return CreateWalletResponse
+//  @return CreateWalletResponse
 func (a *WalletsApiService) CreateWalletExecute(r ApiCreateWalletRequest) (*CreateWalletResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *CreateWalletResponse
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateWalletResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.CreateWallet")
@@ -528,14 +527,14 @@ func (a *WalletsApiService) CreateWalletExecute(r ApiCreateWalletRequest) (*Crea
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -552,9 +551,9 @@ func (a *WalletsApiService) CreateWalletExecute(r ApiCreateWalletRequest) (*Crea
 }
 
 type ApiCreditWalletRequest struct {
-	ctx                 context.Context
-	ApiService          WalletsApi
-	id                  string
+	ctx context.Context
+	ApiService WalletsApi
+	id string
 	creditWalletRequest *CreditWalletRequest
 }
 
@@ -570,24 +569,24 @@ func (r ApiCreditWalletRequest) Execute() (*http.Response, error) {
 /*
 CreditWallet Credit a wallet
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id
-	@return ApiCreditWalletRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param id
+ @return ApiCreditWalletRequest
 */
 func (a *WalletsApiService) CreditWallet(ctx context.Context, id string) ApiCreditWalletRequest {
 	return ApiCreditWalletRequest{
 		ApiService: a,
-		ctx:        ctx,
-		id:         id,
+		ctx: ctx,
+		id: id,
 	}
 }
 
 // Execute executes the request
 func (a *WalletsApiService) CreditWalletExecute(r ApiCreditWalletRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPost
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.CreditWallet")
@@ -643,14 +642,14 @@ func (a *WalletsApiService) CreditWalletExecute(r ApiCreditWalletRequest) (*http
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -658,9 +657,9 @@ func (a *WalletsApiService) CreditWalletExecute(r ApiCreditWalletRequest) (*http
 }
 
 type ApiDebitWalletRequest struct {
-	ctx                context.Context
-	ApiService         WalletsApi
-	id                 string
+	ctx context.Context
+	ApiService WalletsApi
+	id string
 	debitWalletRequest *DebitWalletRequest
 }
 
@@ -676,27 +675,26 @@ func (r ApiDebitWalletRequest) Execute() (*DebitWalletResponse, *http.Response, 
 /*
 DebitWallet Debit a wallet
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id
-	@return ApiDebitWalletRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param id
+ @return ApiDebitWalletRequest
 */
 func (a *WalletsApiService) DebitWallet(ctx context.Context, id string) ApiDebitWalletRequest {
 	return ApiDebitWalletRequest{
 		ApiService: a,
-		ctx:        ctx,
-		id:         id,
+		ctx: ctx,
+		id: id,
 	}
 }
 
 // Execute executes the request
-//
-//	@return DebitWalletResponse
+//  @return DebitWalletResponse
 func (a *WalletsApiService) DebitWalletExecute(r ApiDebitWalletRequest) (*DebitWalletResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *DebitWalletResponse
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *DebitWalletResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.DebitWallet")
@@ -752,14 +750,14 @@ func (a *WalletsApiService) DebitWalletExecute(r ApiDebitWalletRequest) (*DebitW
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -776,9 +774,9 @@ func (a *WalletsApiService) DebitWalletExecute(r ApiDebitWalletRequest) (*DebitW
 }
 
 type ApiGetBalanceRequest struct {
-	ctx         context.Context
-	ApiService  WalletsApi
-	id          string
+	ctx context.Context
+	ApiService WalletsApi
+	id string
 	balanceName string
 }
 
@@ -789,29 +787,28 @@ func (r ApiGetBalanceRequest) Execute() (*GetBalanceResponse, *http.Response, er
 /*
 GetBalance Get detailed balance
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id
-	@param balanceName
-	@return ApiGetBalanceRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param id
+ @param balanceName
+ @return ApiGetBalanceRequest
 */
 func (a *WalletsApiService) GetBalance(ctx context.Context, id string, balanceName string) ApiGetBalanceRequest {
 	return ApiGetBalanceRequest{
-		ApiService:  a,
-		ctx:         ctx,
-		id:          id,
+		ApiService: a,
+		ctx: ctx,
+		id: id,
 		balanceName: balanceName,
 	}
 }
 
 // Execute executes the request
-//
-//	@return GetBalanceResponse
+//  @return GetBalanceResponse
 func (a *WalletsApiService) GetBalanceExecute(r ApiGetBalanceRequest) (*GetBalanceResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *GetBalanceResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *GetBalanceResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.GetBalance")
@@ -866,14 +863,14 @@ func (a *WalletsApiService) GetBalanceExecute(r ApiGetBalanceRequest) (*GetBalan
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -890,9 +887,9 @@ func (a *WalletsApiService) GetBalanceExecute(r ApiGetBalanceRequest) (*GetBalan
 }
 
 type ApiGetHoldRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService WalletsApi
-	holdID     string
+	holdID string
 }
 
 func (r ApiGetHoldRequest) Execute() (*GetHoldResponse, *http.Response, error) {
@@ -902,27 +899,26 @@ func (r ApiGetHoldRequest) Execute() (*GetHoldResponse, *http.Response, error) {
 /*
 GetHold Get a hold
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param holdID The hold ID
-	@return ApiGetHoldRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param holdID The hold ID
+ @return ApiGetHoldRequest
 */
 func (a *WalletsApiService) GetHold(ctx context.Context, holdID string) ApiGetHoldRequest {
 	return ApiGetHoldRequest{
 		ApiService: a,
-		ctx:        ctx,
-		holdID:     holdID,
+		ctx: ctx,
+		holdID: holdID,
 	}
 }
 
 // Execute executes the request
-//
-//	@return GetHoldResponse
+//  @return GetHoldResponse
 func (a *WalletsApiService) GetHoldExecute(r ApiGetHoldRequest) (*GetHoldResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *GetHoldResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *GetHoldResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.GetHold")
@@ -976,14 +972,14 @@ func (a *WalletsApiService) GetHoldExecute(r ApiGetHoldRequest) (*GetHoldRespons
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1000,12 +996,12 @@ func (a *WalletsApiService) GetHoldExecute(r ApiGetHoldRequest) (*GetHoldRespons
 }
 
 type ApiGetHoldsRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService WalletsApi
-	pageSize   *int32
-	walletID   *string
-	metadata   *map[string]interface{}
-	cursor     *string
+	pageSize *int32
+	walletID *string
+	metadata *map[string]interface{}
+	cursor *string
 }
 
 // The maximum number of results to return per page
@@ -1039,25 +1035,24 @@ func (r ApiGetHoldsRequest) Execute() (*GetHoldsResponse, *http.Response, error)
 /*
 GetHolds Get all holds for a wallet
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetHoldsRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiGetHoldsRequest
 */
 func (a *WalletsApiService) GetHolds(ctx context.Context) ApiGetHoldsRequest {
 	return ApiGetHoldsRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return GetHoldsResponse
+//  @return GetHoldsResponse
 func (a *WalletsApiService) GetHoldsExecute(r ApiGetHoldsRequest) (*GetHoldsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *GetHoldsResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *GetHoldsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.GetHolds")
@@ -1122,14 +1117,14 @@ func (a *WalletsApiService) GetHoldsExecute(r ApiGetHoldsRequest) (*GetHoldsResp
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1146,11 +1141,11 @@ func (a *WalletsApiService) GetHoldsExecute(r ApiGetHoldsRequest) (*GetHoldsResp
 }
 
 type ApiGetTransactionsRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService WalletsApi
-	pageSize   *int32
-	walletId   *string
-	cursor     *string
+	pageSize *int32
+	walletId *string
+	cursor *string
 }
 
 // The maximum number of results to return per page
@@ -1178,25 +1173,24 @@ func (r ApiGetTransactionsRequest) Execute() (*GetTransactionsResponse, *http.Re
 /*
 GetTransactions Method for GetTransactions
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetTransactionsRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiGetTransactionsRequest
 */
 func (a *WalletsApiService) GetTransactions(ctx context.Context) ApiGetTransactionsRequest {
 	return ApiGetTransactionsRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return GetTransactionsResponse
+//  @return GetTransactionsResponse
 func (a *WalletsApiService) GetTransactionsExecute(r ApiGetTransactionsRequest) (*GetTransactionsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *GetTransactionsResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *GetTransactionsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.GetTransactions")
@@ -1258,14 +1252,14 @@ func (a *WalletsApiService) GetTransactionsExecute(r ApiGetTransactionsRequest) 
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1282,9 +1276,9 @@ func (a *WalletsApiService) GetTransactionsExecute(r ApiGetTransactionsRequest) 
 }
 
 type ApiGetWalletRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService WalletsApi
-	id         string
+	id string
 }
 
 func (r ApiGetWalletRequest) Execute() (*GetWalletResponse, *http.Response, error) {
@@ -1294,27 +1288,26 @@ func (r ApiGetWalletRequest) Execute() (*GetWalletResponse, *http.Response, erro
 /*
 GetWallet Get a wallet
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id
-	@return ApiGetWalletRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param id
+ @return ApiGetWalletRequest
 */
 func (a *WalletsApiService) GetWallet(ctx context.Context, id string) ApiGetWalletRequest {
 	return ApiGetWalletRequest{
 		ApiService: a,
-		ctx:        ctx,
-		id:         id,
+		ctx: ctx,
+		id: id,
 	}
 }
 
 // Execute executes the request
-//
-//	@return GetWalletResponse
+//  @return GetWalletResponse
 func (a *WalletsApiService) GetWalletExecute(r ApiGetWalletRequest) (*GetWalletResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *GetWalletResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *GetWalletResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.GetWallet")
@@ -1368,14 +1361,14 @@ func (a *WalletsApiService) GetWalletExecute(r ApiGetWalletRequest) (*GetWalletR
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1392,9 +1385,9 @@ func (a *WalletsApiService) GetWalletExecute(r ApiGetWalletRequest) (*GetWalletR
 }
 
 type ApiListBalancesRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService WalletsApi
-	id         string
+	id string
 }
 
 func (r ApiListBalancesRequest) Execute() (*ListBalancesResponse, *http.Response, error) {
@@ -1404,27 +1397,26 @@ func (r ApiListBalancesRequest) Execute() (*ListBalancesResponse, *http.Response
 /*
 ListBalances List balances of a wallet
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id
-	@return ApiListBalancesRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param id
+ @return ApiListBalancesRequest
 */
 func (a *WalletsApiService) ListBalances(ctx context.Context, id string) ApiListBalancesRequest {
 	return ApiListBalancesRequest{
 		ApiService: a,
-		ctx:        ctx,
-		id:         id,
+		ctx: ctx,
+		id: id,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ListBalancesResponse
+//  @return ListBalancesResponse
 func (a *WalletsApiService) ListBalancesExecute(r ApiListBalancesRequest) (*ListBalancesResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ListBalancesResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListBalancesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.ListBalances")
@@ -1494,12 +1486,12 @@ func (a *WalletsApiService) ListBalancesExecute(r ApiListBalancesRequest) (*List
 }
 
 type ApiListWalletsRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService WalletsApi
-	name       *string
-	metadata   *map[string]interface{}
-	pageSize   *int32
-	cursor     *string
+	name *string
+	metadata *map[string]interface{}
+	pageSize *int32
+	cursor *string
 }
 
 // Filter on wallet name
@@ -1533,25 +1525,24 @@ func (r ApiListWalletsRequest) Execute() (*ListWalletsResponse, *http.Response, 
 /*
 ListWallets List all wallets
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiListWalletsRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiListWalletsRequest
 */
 func (a *WalletsApiService) ListWallets(ctx context.Context) ApiListWalletsRequest {
 	return ApiListWalletsRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ListWalletsResponse
+//  @return ListWalletsResponse
 func (a *WalletsApiService) ListWalletsExecute(r ApiListWalletsRequest) (*ListWalletsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ListWalletsResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListWalletsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.ListWallets")
@@ -1632,9 +1623,9 @@ func (a *WalletsApiService) ListWalletsExecute(r ApiListWalletsRequest) (*ListWa
 }
 
 type ApiUpdateWalletRequest struct {
-	ctx                 context.Context
-	ApiService          WalletsApi
-	id                  string
+	ctx context.Context
+	ApiService WalletsApi
+	id string
 	updateWalletRequest *UpdateWalletRequest
 }
 
@@ -1650,24 +1641,24 @@ func (r ApiUpdateWalletRequest) Execute() (*http.Response, error) {
 /*
 UpdateWallet Update a wallet
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param id
-	@return ApiUpdateWalletRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param id
+ @return ApiUpdateWalletRequest
 */
 func (a *WalletsApiService) UpdateWallet(ctx context.Context, id string) ApiUpdateWalletRequest {
 	return ApiUpdateWalletRequest{
 		ApiService: a,
-		ctx:        ctx,
-		id:         id,
+		ctx: ctx,
+		id: id,
 	}
 }
 
 // Execute executes the request
 func (a *WalletsApiService) UpdateWalletExecute(r ApiUpdateWalletRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPatch
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPatch
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.UpdateWallet")
@@ -1723,14 +1714,14 @@ func (a *WalletsApiService) UpdateWalletExecute(r ApiUpdateWalletRequest) (*http
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -1738,9 +1729,9 @@ func (a *WalletsApiService) UpdateWalletExecute(r ApiUpdateWalletRequest) (*http
 }
 
 type ApiVoidHoldRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService WalletsApi
-	holdId     string
+	holdId string
 }
 
 func (r ApiVoidHoldRequest) Execute() (*http.Response, error) {
@@ -1750,24 +1741,24 @@ func (r ApiVoidHoldRequest) Execute() (*http.Response, error) {
 /*
 VoidHold Cancel a hold
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param holdId
-	@return ApiVoidHoldRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param holdId
+ @return ApiVoidHoldRequest
 */
 func (a *WalletsApiService) VoidHold(ctx context.Context, holdId string) ApiVoidHoldRequest {
 	return ApiVoidHoldRequest{
 		ApiService: a,
-		ctx:        ctx,
-		holdId:     holdId,
+		ctx: ctx,
+		holdId: holdId,
 	}
 }
 
 // Execute executes the request
 func (a *WalletsApiService) VoidHoldExecute(r ApiVoidHoldRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPost
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.VoidHold")
@@ -1821,14 +1812,14 @@ func (a *WalletsApiService) VoidHoldExecute(r ApiVoidHoldRequest) (*http.Respons
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -1836,7 +1827,7 @@ func (a *WalletsApiService) VoidHoldExecute(r ApiVoidHoldRequest) (*http.Respons
 }
 
 type ApiWalletsgetServerInfoRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService WalletsApi
 }
 
@@ -1847,25 +1838,24 @@ func (r ApiWalletsgetServerInfoRequest) Execute() (*ServerInfo, *http.Response, 
 /*
 WalletsgetServerInfo Get server info
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiWalletsgetServerInfoRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiWalletsgetServerInfoRequest
 */
 func (a *WalletsApiService) WalletsgetServerInfo(ctx context.Context) ApiWalletsgetServerInfoRequest {
 	return ApiWalletsgetServerInfoRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ServerInfo
+//  @return ServerInfo
 func (a *WalletsApiService) WalletsgetServerInfoExecute(r ApiWalletsgetServerInfoRequest) (*ServerInfo, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ServerInfo
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ServerInfo
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "WalletsApiService.WalletsgetServerInfo")
@@ -1918,14 +1908,14 @@ func (a *WalletsApiService) WalletsgetServerInfoExecute(r ApiWalletsgetServerInf
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		var v WalletsErrorResponse
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
+			var v WalletsErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+            		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

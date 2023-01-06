@@ -52,7 +52,7 @@ func (o *Transactions) GetTransactions() []TransactionData {
 // and a boolean to check if the value has been set.
 func (o *Transactions) GetTransactionsOk() ([]TransactionData, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Transactions, true
 }

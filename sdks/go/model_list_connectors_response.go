@@ -52,7 +52,7 @@ func (o *ListConnectorsResponse) GetData() []ConnectorBaseInfo {
 // and a boolean to check if the value has been set.
 func (o *ListConnectorsResponse) GetDataOk() ([]ConnectorBaseInfo, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Data, true
 }

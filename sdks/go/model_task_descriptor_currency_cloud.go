@@ -27,7 +27,7 @@ type TaskDescriptorCurrencyCloud struct {
 	// The error message if the task failed
 	Error *string `json:"error,omitempty"`
 	// The task state
-	State      map[string]interface{}                 `json:"state,omitempty"`
+	State map[string]interface{} `json:"state,omitempty"`
 	Descriptor *TaskDescriptorCurrencyCloudDescriptor `json:"descriptor,omitempty"`
 }
 
@@ -61,7 +61,7 @@ func (o *TaskDescriptorCurrencyCloud) GetProvider() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorCurrencyCloud) GetProviderOk() (*string, bool) {
 	if o == nil || isNil(o.Provider) {
-		return nil, false
+    return nil, false
 	}
 	return o.Provider, true
 }
@@ -93,7 +93,7 @@ func (o *TaskDescriptorCurrencyCloud) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorCurrencyCloud) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.CreatedAt) {
-		return nil, false
+    return nil, false
 	}
 	return o.CreatedAt, true
 }
@@ -125,7 +125,7 @@ func (o *TaskDescriptorCurrencyCloud) GetStatus() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorCurrencyCloud) GetStatusOk() (*string, bool) {
 	if o == nil || isNil(o.Status) {
-		return nil, false
+    return nil, false
 	}
 	return o.Status, true
 }
@@ -157,7 +157,7 @@ func (o *TaskDescriptorCurrencyCloud) GetError() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorCurrencyCloud) GetErrorOk() (*string, bool) {
 	if o == nil || isNil(o.Error) {
-		return nil, false
+    return nil, false
 	}
 	return o.Error, true
 }
@@ -189,7 +189,7 @@ func (o *TaskDescriptorCurrencyCloud) GetState() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorCurrencyCloud) GetStateOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.State) {
-		return map[string]interface{}{}, false
+    return map[string]interface{}{}, false
 	}
 	return o.State, true
 }
@@ -221,7 +221,7 @@ func (o *TaskDescriptorCurrencyCloud) GetDescriptor() TaskDescriptorCurrencyClou
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorCurrencyCloud) GetDescriptorOk() (*TaskDescriptorCurrencyCloudDescriptor, bool) {
 	if o == nil || isNil(o.Descriptor) {
-		return nil, false
+    return nil, false
 	}
 	return o.Descriptor, true
 }

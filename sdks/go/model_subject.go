@@ -19,7 +19,7 @@ import (
 // Subject - struct for Subject
 type Subject struct {
 	LedgerAccountSubject *LedgerAccountSubject
-	WalletSubject        *WalletSubject
+	WalletSubject *WalletSubject
 }
 
 // LedgerAccountSubjectAsSubject is a convenience function that returns LedgerAccountSubject wrapped in Subject
@@ -35,6 +35,7 @@ func WalletSubjectAsSubject(v *WalletSubject) Subject {
 		WalletSubject: v,
 	}
 }
+
 
 // Unmarshal JSON data into one of the pointers in the struct
 func (dst *Subject) UnmarshalJSON(data []byte) error {
@@ -93,7 +94,7 @@ func (src Subject) MarshalJSON() ([]byte, error) {
 }
 
 // Get the actual instance
-func (obj *Subject) GetActualInstance() interface{} {
+func (obj *Subject) GetActualInstance() (interface{}) {
 	if obj == nil {
 		return nil
 	}

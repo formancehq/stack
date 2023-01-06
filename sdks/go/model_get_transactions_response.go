@@ -52,7 +52,7 @@ func (o *GetTransactionsResponse) GetCursor() GetTransactionsResponseCursor {
 // and a boolean to check if the value has been set.
 func (o *GetTransactionsResponse) GetCursorOk() (*GetTransactionsResponseCursor, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Cursor, true
 }

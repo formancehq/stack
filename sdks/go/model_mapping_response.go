@@ -51,7 +51,7 @@ func (o *MappingResponse) GetData() Mapping {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *MappingResponse) GetDataOk() (*Mapping, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return o.Data.Get(), o.Data.IsSet()
 }
@@ -69,7 +69,6 @@ func (o *MappingResponse) HasData() bool {
 func (o *MappingResponse) SetData(v Mapping) {
 	o.Data.Set(&v)
 }
-
 // SetDataNil sets the value for Data to be an explicit nil
 func (o *MappingResponse) SetDataNil() {
 	o.Data.Set(nil)

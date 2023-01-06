@@ -21,7 +21,7 @@ type DummyPayConfig struct {
 	FilePollingPeriod *string `json:"filePollingPeriod,omitempty"`
 	// The frequency at which the connector will create new payment objects in the directory
 	FileGenerationPeriod *string `json:"fileGenerationPeriod,omitempty"`
-	Directory            string  `json:"directory"`
+	Directory string `json:"directory"`
 }
 
 // NewDummyPayConfig instantiates a new DummyPayConfig object
@@ -63,7 +63,7 @@ func (o *DummyPayConfig) GetFilePollingPeriod() string {
 // and a boolean to check if the value has been set.
 func (o *DummyPayConfig) GetFilePollingPeriodOk() (*string, bool) {
 	if o == nil || isNil(o.FilePollingPeriod) {
-		return nil, false
+    return nil, false
 	}
 	return o.FilePollingPeriod, true
 }
@@ -95,7 +95,7 @@ func (o *DummyPayConfig) GetFileGenerationPeriod() string {
 // and a boolean to check if the value has been set.
 func (o *DummyPayConfig) GetFileGenerationPeriodOk() (*string, bool) {
 	if o == nil || isNil(o.FileGenerationPeriod) {
-		return nil, false
+    return nil, false
 	}
 	return o.FileGenerationPeriod, true
 }
@@ -128,7 +128,7 @@ func (o *DummyPayConfig) GetDirectory() string {
 // and a boolean to check if the value has been set.
 func (o *DummyPayConfig) GetDirectoryOk() (*string, bool) {
 	if o == nil {
-		return nil, false
+    return nil, false
 	}
 	return &o.Directory, true
 }

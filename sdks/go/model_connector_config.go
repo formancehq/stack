@@ -20,10 +20,10 @@ import (
 type ConnectorConfig struct {
 	BankingCircleConfig *BankingCircleConfig
 	CurrencyCloudConfig *CurrencyCloudConfig
-	DummyPayConfig      *DummyPayConfig
-	ModulrConfig        *ModulrConfig
-	StripeConfig        *StripeConfig
-	WiseConfig          *WiseConfig
+	DummyPayConfig *DummyPayConfig
+	ModulrConfig *ModulrConfig
+	StripeConfig *StripeConfig
+	WiseConfig *WiseConfig
 }
 
 // BankingCircleConfigAsConnectorConfig is a convenience function that returns BankingCircleConfig wrapped in ConnectorConfig
@@ -67,6 +67,7 @@ func WiseConfigAsConnectorConfig(v *WiseConfig) ConnectorConfig {
 		WiseConfig: v,
 	}
 }
+
 
 // Unmarshal JSON data into one of the pointers in the struct
 func (dst *ConnectorConfig) UnmarshalJSON(data []byte) error {
@@ -197,7 +198,7 @@ func (src ConnectorConfig) MarshalJSON() ([]byte, error) {
 }
 
 // Get the actual instance
-func (obj *ConnectorConfig) GetActualInstance() interface{} {
+func (obj *ConnectorConfig) GetActualInstance() (interface{}) {
 	if obj == nil {
 		return nil
 	}

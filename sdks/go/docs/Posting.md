@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Amount** | **int32** |  |
+**Amount** | **int64** |  |
 **Asset** | **string** |  |
 **Destination** | **string** |  |
 **Source** | **string** |  |
@@ -13,7 +13,7 @@ Name | Type | Description | Notes
 
 ### NewPosting
 
-`func NewPosting(amount int32, asset string, destination string, source string, ) *Posting`
+`func NewPosting(amount int64, asset string, destination string, source string, ) *Posting`
 
 NewPosting instantiates a new Posting object
 This constructor will assign default values to properties that have it defined,
@@ -30,20 +30,20 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetAmount
 
-`func (o *Posting) GetAmount() int32`
+`func (o *Posting) GetAmount() int64`
 
 GetAmount returns the Amount field if non-nil, zero value otherwise.
 
 ### GetAmountOk
 
-`func (o *Posting) GetAmountOk() (*int32, bool)`
+`func (o *Posting) GetAmountOk() (*int64, bool)`
 
 GetAmountOk returns a tuple with the Amount field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetAmount
 
-`func (o *Posting) SetAmount(v int32)`
+`func (o *Posting) SetAmount(v int64)`
 
 SetAmount sets Amount field to given value.
 

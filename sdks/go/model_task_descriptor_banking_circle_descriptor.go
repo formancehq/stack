@@ -18,7 +18,7 @@ import (
 // TaskDescriptorBankingCircleDescriptor struct for TaskDescriptorBankingCircleDescriptor
 type TaskDescriptorBankingCircleDescriptor struct {
 	Name *string `json:"name,omitempty"`
-	Key  *string `json:"key,omitempty"`
+	Key *string `json:"key,omitempty"`
 }
 
 // NewTaskDescriptorBankingCircleDescriptor instantiates a new TaskDescriptorBankingCircleDescriptor object
@@ -51,7 +51,7 @@ func (o *TaskDescriptorBankingCircleDescriptor) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorBankingCircleDescriptor) GetNameOk() (*string, bool) {
 	if o == nil || isNil(o.Name) {
-		return nil, false
+    return nil, false
 	}
 	return o.Name, true
 }
@@ -83,7 +83,7 @@ func (o *TaskDescriptorBankingCircleDescriptor) GetKey() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorBankingCircleDescriptor) GetKeyOk() (*string, bool) {
 	if o == nil || isNil(o.Key) {
-		return nil, false
+    return nil, false
 	}
 	return o.Key, true
 }
