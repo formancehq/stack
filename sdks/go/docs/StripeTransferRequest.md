@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Amount** | Pointer to **int32** |  | [optional] 
-**Asset** | Pointer to **string** |  | [optional] 
-**Destination** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** | A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.  | [optional] 
+**Amount** | Pointer to **int32** |  | [optional]
+**Asset** | Pointer to **string** |  | [optional]
+**Destination** | Pointer to **string** |  | [optional]
+**Metadata** | Pointer to **map[string]interface{}** | A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.  | [optional]
 
 ## Methods
 
@@ -130,5 +130,3 @@ HasMetadata returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

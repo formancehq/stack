@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | **string** | Stack name | 
-**Tags** | **map[string]string** |  | 
-**Production** | **bool** |  | 
-**Metadata** | **map[string]string** |  | 
+**Name** | **string** | Stack name |
+**Tags** | **map[string]string** |  |
+**Production** | **bool** |  |
+**Metadata** | **map[string]string** |  |
 
 ## Methods
 
@@ -110,5 +110,3 @@ SetMetadata sets Metadata field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

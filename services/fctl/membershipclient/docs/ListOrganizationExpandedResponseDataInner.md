@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | **string** | Organization name | 
-**Id** | **string** | Organization ID | 
-**OwnerId** | **string** | Owner ID | 
-**TotalStacks** | Pointer to **int32** |  | [optional] 
-**TotalUsers** | Pointer to **int32** |  | [optional] 
+**Name** | **string** | Organization name |
+**Id** | **string** | Organization ID |
+**OwnerId** | **string** | Owner ID |
+**TotalStacks** | Pointer to **int32** |  | [optional]
+**TotalUsers** | Pointer to **int32** |  | [optional]
 
 ## Methods
 
@@ -141,5 +141,3 @@ HasTotalUsers returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

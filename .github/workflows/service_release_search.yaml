@@ -22,7 +22,7 @@ jobs:
     uses: ./.github/workflows/template_tests.yaml
     with:
       PATH: "./services/search"
-      
+
   Release:
     uses: ./.github/workflows/template_goreleaser_release.yaml
     with:

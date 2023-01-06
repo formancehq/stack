@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** |  | 
-**Tags** | **map[string]string** |  | 
-**BaseUrl** | **string** |  | 
+**Id** | **string** |  |
+**Tags** | **map[string]string** |  |
+**BaseUrl** | **string** |  |
 
 ## Methods
 
@@ -89,5 +89,3 @@ SetBaseUrl sets BaseUrl field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

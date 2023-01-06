@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** |  | 
-**LastDigits** | **string** |  | 
-**Clear** | **string** |  | 
+**Id** | **string** |  |
+**LastDigits** | **string** |  |
+**Clear** | **string** |  |
 
 ## Methods
 
@@ -89,5 +89,3 @@ SetClear sets Clear field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Type** | **string** |  | 
-**Identifier** | **string** |  | 
+**Type** | **string** |  |
+**Identifier** | **string** |  |
 
 ## Methods
 
@@ -68,5 +68,3 @@ SetIdentifier sets Identifier field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

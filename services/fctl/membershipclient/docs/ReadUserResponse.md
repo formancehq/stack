@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | Pointer to [**User**](User.md) |  | [optional] 
+**Data** | Pointer to [**User**](User.md) |  | [optional]
 
 ## Methods
 
@@ -52,5 +52,3 @@ HasData returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

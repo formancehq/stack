@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ApiKey** | **string** |  | 
+**ApiKey** | **string** |  |
 
 ## Methods
 
@@ -47,5 +47,3 @@ SetApiKey sets ApiKey field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

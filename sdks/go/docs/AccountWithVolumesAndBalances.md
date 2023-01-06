@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Address** | **string** |  | 
-**Type** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
-**Volumes** | Pointer to **map[string]map[string]int32** |  | [optional] 
-**Balances** | Pointer to **map[string]int32** |  | [optional] 
+**Address** | **string** |  |
+**Type** | Pointer to **string** |  | [optional]
+**Metadata** | Pointer to **map[string]interface{}** |  | [optional]
+**Volumes** | Pointer to **map[string]map[string]int32** |  | [optional]
+**Balances** | Pointer to **map[string]int32** |  | [optional]
 
 ## Methods
 
@@ -151,5 +151,3 @@ HasBalances returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

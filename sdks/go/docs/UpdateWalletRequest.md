@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Metadata** | Pointer to **map[string]interface{}** | Custom metadata to attach to this wallet. | [optional] 
+**Metadata** | Pointer to **map[string]interface{}** | Custom metadata to attach to this wallet. | [optional]
 
 ## Methods
 
@@ -52,5 +52,3 @@ HasMetadata returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

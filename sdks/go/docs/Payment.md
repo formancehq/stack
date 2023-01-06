@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Provider** | **string** |  | 
-**Reference** | Pointer to **string** |  | [optional] 
-**Scheme** | **string** |  | 
-**Status** | **string** |  | 
-**Type** | **string** |  | 
-**Id** | **string** |  | 
-**Amount** | **int32** |  | 
-**Asset** | **string** |  | 
-**Date** | **time.Time** |  | 
-**Raw** | Pointer to **interface{}** |  | [optional] 
+**Provider** | **string** |  |
+**Reference** | Pointer to **string** |  | [optional]
+**Scheme** | **string** |  |
+**Status** | **string** |  |
+**Type** | **string** |  |
+**Id** | **string** |  |
+**Amount** | **int32** |  |
+**Asset** | **string** |  |
+**Date** | **time.Time** |  |
+**Raw** | Pointer to **interface{}** |  | [optional]
 
 ## Methods
 
@@ -256,5 +256,3 @@ HasRaw returns a boolean if a field has been set.
 UnsetRaw ensures that no value is present for Raw, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

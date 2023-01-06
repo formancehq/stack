@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** |  | 
-**Scopes** | Pointer to **[]string** |  | [optional] 
-**Secrets** | Pointer to [**[]ClientSecret**](ClientSecret.md) |  | [optional] 
+**Id** | **string** |  |
+**Scopes** | Pointer to **[]string** |  | [optional]
+**Secrets** | Pointer to [**[]ClientSecret**](ClientSecret.md) |  | [optional]
 
 ## Methods
 
@@ -99,5 +99,3 @@ HasSecrets returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

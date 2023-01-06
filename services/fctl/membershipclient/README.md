@@ -137,7 +137,7 @@ Class | Method | HTTP request | Description
 - **Type**: OAuth
 - **Flow**: accessCode
 - **Authorization URL**: /authorize
-- **Scopes**: 
+- **Scopes**:
  - **openid**: Enable OIDC
  - **email**: Ask email access
 
@@ -178,6 +178,3 @@ Each of these functions takes a value of the given basic type and returns a poin
 * `PtrTime`
 
 ## Author
-
-
-

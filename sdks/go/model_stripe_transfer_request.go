@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -20,7 +20,7 @@ type StripeTransferRequest struct {
 	Amount *int32 `json:"amount,omitempty"`
 	Asset *string `json:"asset,omitempty"`
 	Destination *string `json:"destination,omitempty"`
-	// A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format. 
+	// A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
@@ -221,5 +221,3 @@ func (v *NullableStripeTransferRequest) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

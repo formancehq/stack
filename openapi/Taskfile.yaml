@@ -53,5 +53,5 @@ tasks:
       msg: Please specify generator as first cli arg (ie "task template -- go")
     cmds:
     - >
-      docker run --rm -w /local -v ${PWD}:/local openapitools/openapi-generator-cli:v6.2.1 author 
+      docker run --rm -w /local -v ${PWD}:/local openapitools/openapi-generator-cli:v6.2.1 author
       template -g {{.CLI_ARGS}} -o templates/{{.CLI_ARGS}}

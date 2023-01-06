@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Timestamp** | **time.Time** |  | 
-**Postings** | [**[]WalletsPosting**](WalletsPosting.md) |  | 
-**Reference** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional] 
-**Txid** | **int64** |  | 
-**PreCommitVolumes** | Pointer to [**map[string]map[string]WalletsVolume**](map.md) |  | [optional] 
-**PostCommitVolumes** | Pointer to [**map[string]map[string]WalletsVolume**](map.md) |  | [optional] 
+**Timestamp** | **time.Time** |  |
+**Postings** | [**[]WalletsPosting**](WalletsPosting.md) |  |
+**Reference** | Pointer to **string** |  | [optional]
+**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional]
+**Txid** | **int64** |  |
+**PreCommitVolumes** | Pointer to [**map[string]map[string]WalletsVolume**](map.md) |  | [optional]
+**PostCommitVolumes** | Pointer to [**map[string]map[string]WalletsVolume**](map.md) |  | [optional]
 
 ## Methods
 
@@ -193,5 +193,3 @@ HasPostCommitVolumes returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

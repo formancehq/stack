@@ -4,12 +4,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Amount** | [**Monetary**](Monetary.md) |  | 
-**Pending** | Pointer to **bool** | Set to true to create a pending hold. If false, the wallet will be debited immediately. | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional] 
-**Description** | Pointer to **string** |  | [optional] 
-**Destination** | Pointer to [**Subject**](Subject.md) |  | [optional] 
-**Balances** | Pointer to **[]string** |  | [optional] 
+**Amount** | [**Monetary**](Monetary.md) |  |
+**Pending** | Pointer to **bool** | Set to true to create a pending hold. If false, the wallet will be debited immediately. | [optional]
+**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional]
+**Description** | Pointer to **string** |  | [optional]
+**Destination** | Pointer to [**Subject**](Subject.md) |  | [optional]
+**Balances** | Pointer to **[]string** |  | [optional]
 
 ## Methods
 
@@ -177,5 +177,3 @@ HasBalances returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

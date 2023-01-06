@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | **string** | Stack name | 
-**Tags** | **map[string]string** |  | 
-**Production** | **bool** |  | 
-**Metadata** | **map[string]string** |  | 
-**Id** | **string** | Stack ID | 
-**OrganizationId** | **string** | Organization ID | 
-**Uri** | **string** | Base stack uri | 
-**BoundRegion** | Pointer to [**Region**](Region.md) |  | [optional] 
+**Name** | **string** | Stack name |
+**Tags** | **map[string]string** |  |
+**Production** | **bool** |  |
+**Metadata** | **map[string]string** |  |
+**Id** | **string** | Stack ID |
+**OrganizationId** | **string** | Organization ID |
+**Uri** | **string** | Base stack uri |
+**BoundRegion** | Pointer to [**Region**](Region.md) |  | [optional]
 
 ## Methods
 
@@ -199,5 +199,3 @@ HasBoundRegion returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

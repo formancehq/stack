@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **FilePollingPeriod** | Pointer to **string** | The frequency at which the connector will try to fetch new payment objects from the directory | [optional] [default to "10s"]
 **FileGenerationPeriod** | Pointer to **string** | The frequency at which the connector will create new payment objects in the directory | [optional] [default to "10s"]
-**Directory** | **string** |  | 
+**Directory** | **string** |  |
 
 ## Methods
 
@@ -99,5 +99,3 @@ SetDirectory sets Directory field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

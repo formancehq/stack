@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | The unique ID of the wallet. | 
-**Metadata** | **map[string]interface{}** | Metadata associated with the wallet. | 
-**Name** | **string** |  | 
-**CreatedAt** | **time.Time** |  | 
+**Id** | **string** | The unique ID of the wallet. |
+**Metadata** | **map[string]interface{}** | Metadata associated with the wallet. |
+**Name** | **string** |  |
+**CreatedAt** | **time.Time** |  |
 
 ## Methods
 
@@ -110,5 +110,3 @@ SetCreatedAt sets CreatedAt field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

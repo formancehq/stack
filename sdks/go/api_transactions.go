@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -861,19 +861,19 @@ func (r ApiListTransactionsRequest) Destination(destination string) ApiListTrans
 	return r
 }
 
-// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, 12:00:01 includes the first second of the minute). 
+// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, 12:00:01 includes the first second of the minute).
 func (r ApiListTransactionsRequest) StartTime(startTime string) ApiListTransactionsRequest {
 	r.startTime = &startTime
 	return r
 }
 
-// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, 12:00:01 excludes the first second of the minute). 
+// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, 12:00:01 excludes the first second of the minute).
 func (r ApiListTransactionsRequest) EndTime(endTime string) ApiListTransactionsRequest {
 	r.endTime = &endTime
 	return r
 }
 
-// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
+// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
 func (r ApiListTransactionsRequest) PaginationToken(paginationToken string) ApiListTransactionsRequest {
 	r.paginationToken = &paginationToken
 	return r
