@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = go-libs
+	branch = main
+	commit = f90bc2f42878d0148c378edffa3bcbad8bdc3ba8
+	parent = 6bcf7d6a7ac5b3cf5af1e906c50efccf95d9d6a4
+	method = merge
+	cmdver = 0.4.5
