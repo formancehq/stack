@@ -844,9 +844,11 @@ components:
           type: string
         destination:
           $ref: '#/components/schemas/Subject'
-        balance:
-          type: string
-          description: The targeted balance
+        balances:
+          type: array
+          items:
+            type: string
+            description: A targeted balance (use '*' for all)
       example:
         amount:
           asset: USD/2

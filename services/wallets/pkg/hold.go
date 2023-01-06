@@ -49,7 +49,7 @@ func NewDebitHold(walletID string, destination Subject, asset, description strin
 	}
 }
 
-func DebitHoldFromLedgerAccount(account metadata.Owner) DebitHold {
+func DebitHoldFromLedgerAccount(account Account) DebitHold {
 	subjectMetadata := account.GetMetadata()[MetadataKeyHoldSubject].(map[string]any)
 	subject := Subject{
 		Type:       subjectMetadata["type"].(string),
@@ -83,7 +83,7 @@ func (h ExpandedDebitHold) IsClosed() bool {
 }
 
 func ExpandedDebitHoldFromLedgerAccount(account interface {
-	GetMetadata() map[string]any
+	Account
 	GetVolumes() map[string]map[string]int32
 	GetBalances() map[string]int32
 },

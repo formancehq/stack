@@ -26,7 +26,7 @@ func NewDebitWalletCommand() *cobra.Command {
 		fctl.WithStringFlag(descriptionFlag, "", "Debit description"),
 		fctl.WithBoolFlag(pendingFlag, false, "Create a pending debit"),
 		fctl.WithStringSliceFlag(metadataFlag, []string{""}, "Metadata to use"),
-		fctl.WithStringFlag(balanceFlag, "", "Balance to debit"),
+		fctl.WithStringSliceFlag(balanceFlag, []string{""}, "Balance to debit"),
 		fctl.WithStringFlag(destinationFlag, "",
 			`Use --destination account=<account> | --destination wallet=id:<wallet-id>[/<balance>] | --destination wallet=name:<wallet-name>[/<balance>]`),
 		internal.WithTargetingWalletByName(),
@@ -94,7 +94,7 @@ func NewDebitWalletCommand() *cobra.Command {
 				Metadata:    metadata,
 				Description: &description,
 				Destination: destination,
-				Balance:     formance.PtrString(fctl.GetString(cmd, balanceFlag)),
+				Balances:    fctl.GetStringSlice(cmd, balanceFlag),
 			}).Execute()
 			if err != nil {
 				return errors.Wrap(err, "Debiting wallets")

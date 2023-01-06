@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional] 
 **Description** | Pointer to **string** |  | [optional] 
 **Destination** | Pointer to [**Subject**](Subject.md) |  | [optional] 
-**Balance** | Pointer to **string** | The targeted balance | [optional] 
+**Balances** | Pointer to **[]string** |  | [optional] 
 
 ## Methods
 
@@ -150,30 +150,30 @@ SetDestination sets Destination field to given value.
 
 HasDestination returns a boolean if a field has been set.
 
-### GetBalance
+### GetBalances
 
-`func (o *DebitWalletRequest) GetBalance() string`
+`func (o *DebitWalletRequest) GetBalances() []string`
 
-GetBalance returns the Balance field if non-nil, zero value otherwise.
+GetBalances returns the Balances field if non-nil, zero value otherwise.
 
-### GetBalanceOk
+### GetBalancesOk
 
-`func (o *DebitWalletRequest) GetBalanceOk() (*string, bool)`
+`func (o *DebitWalletRequest) GetBalancesOk() (*[]string, bool)`
 
-GetBalanceOk returns a tuple with the Balance field if it's non-nil, zero value otherwise
+GetBalancesOk returns a tuple with the Balances field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetBalance
+### SetBalances
 
-`func (o *DebitWalletRequest) SetBalance(v string)`
+`func (o *DebitWalletRequest) SetBalances(v []string)`
 
-SetBalance sets Balance field to given value.
+SetBalances sets Balances field to given value.
 
-### HasBalance
+### HasBalances
 
-`func (o *DebitWalletRequest) HasBalance() bool`
+`func (o *DebitWalletRequest) HasBalances() bool`
 
-HasBalance returns a boolean if a field has been set.
+HasBalances returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

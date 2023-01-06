@@ -15,7 +15,7 @@ type DebitRequest struct {
 	Description string            `json:"description"`
 	Reference   string            `json:"reference"`
 	Destination *Subject          `json:"destination"`
-	Balance     string            `json:"balance"`
+	Balances    []string          `json:"balances"`
 }
 
 func (c *DebitRequest) Bind(r *http.Request) error {
@@ -47,13 +47,6 @@ func (d Debit) getDestination() Subject {
 		dest = *d.Destination
 	}
 	return dest
-}
-
-func (d Debit) sourceAccount(chart *Chart) string {
-	if d.Balance == "" {
-		return chart.GetMainBalanceAccount(d.WalletID)
-	}
-	return chart.GetBalanceAccount(d.WalletID, d.Balance)
 }
 
 func (d Debit) Validate() error {

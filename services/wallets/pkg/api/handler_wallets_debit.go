@@ -24,6 +24,8 @@ func (m *MainHandler) debitWalletHandler(w http.ResponseWriter, r *http.Request)
 		switch {
 		case errors.Is(err, wallet.ErrInsufficientFundError):
 			badRequest(w, ErrorCodeInsufficientFund, wallet.ErrInsufficientFundError)
+		case errors.Is(err, wallet.ErrInvalidBalanceSpecified):
+			badRequest(w, ErrorCodeValidation, wallet.ErrInvalidBalanceSpecified)
 		default:
 			internalError(w, r, err)
 		}

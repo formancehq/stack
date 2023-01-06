@@ -14,10 +14,12 @@ import (
 )
 
 type testCase struct {
-	name           string
-	request        wallet.DebitRequest
-	scriptResult   sdk.ScriptResult
-	expectedScript func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script
+	name               string
+	request            wallet.DebitRequest
+	scriptResult       sdk.ScriptResult
+	expectedScript     func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script
+	expectedStatusCode int
+	expectedErrorCode  string
 }
 
 var walletDebitTestCases = []testCase{
@@ -28,9 +30,8 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
 			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(),
+				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 				Vars: map[string]interface{}{
-					"source":      testEnv.Chart().GetMainBalanceAccount(walletID),
 					"destination": wallet.DefaultDebitDest.Identifier,
 					"amount": map[string]any{
 						"amount": uint64(100),
@@ -49,9 +50,8 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
 			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(),
+				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 				Vars: map[string]interface{}{
-					"source":      testEnv.Chart().GetMainBalanceAccount(walletID),
 					"destination": "account1",
 					"amount": map[string]any{
 						"amount": uint64(100),
@@ -70,9 +70,8 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
 			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(),
+				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 				Vars: map[string]interface{}{
-					"source":      testEnv.Chart().GetMainBalanceAccount(walletID),
 					"destination": testEnv.Chart().GetMainBalanceAccount("wallet1"),
 					"amount": map[string]any{
 						"amount": uint64(100),
@@ -94,6 +93,8 @@ var walletDebitTestCases = []testCase{
 				return &ret
 			}(),
 		},
+		expectedStatusCode: http.StatusBadRequest,
+		expectedErrorCode:  string(sdk.INSUFFICIENT_FUND),
 	},
 	{
 		name: "with debit hold",
@@ -107,9 +108,8 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
 			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(),
+				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 				Vars: map[string]interface{}{
-					"source":      testEnv.Chart().GetMainBalanceAccount(walletID),
 					"destination": testEnv.Chart().GetHoldAccount(h.ID),
 					"amount": map[string]any{
 						"amount": uint64(100),
@@ -121,18 +121,18 @@ var walletDebitTestCases = []testCase{
 				}),
 			}
 		},
+		expectedStatusCode: http.StatusCreated,
 	},
 	{
 		name: "with custom balance as source",
 		request: wallet.DebitRequest{
-			Amount:  wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
-			Balance: "secondary",
+			Amount:   wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Balances: []string{"secondary"},
 		},
 		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
 			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(),
+				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
 				Vars: map[string]interface{}{
-					"source":      testEnv.Chart().GetBalanceAccount(walletID, "secondary"),
 					"destination": "world",
 					"amount": map[string]any{
 						"amount": uint64(100),
@@ -144,6 +144,48 @@ var walletDebitTestCases = []testCase{
 		},
 	},
 	{
+		name: "with wildcard balance as source",
+		request: wallet.DebitRequest{
+			Amount:   wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Balances: []string{"*"},
+		},
+		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
+			return sdk.Script{
+				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
+				Vars: map[string]interface{}{
+					"destination": "world",
+					"amount": map[string]any{
+						"amount": uint64(100),
+						"asset":  "USD",
+					},
+				},
+				Metadata: wallet.TransactionMetadata(nil),
+			}
+		},
+	},
+	{
+		name: "with wildcard plus another source",
+		request: wallet.DebitRequest{
+			Amount:   wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Balances: []string{"*", "secondary"},
+		},
+		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
+			return sdk.Script{
+				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
+				Vars: map[string]interface{}{
+					"destination": "world",
+					"amount": map[string]any{
+						"amount": uint64(100),
+						"asset":  "USD",
+					},
+				},
+				Metadata: wallet.TransactionMetadata(nil),
+			}
+		},
+		expectedStatusCode: http.StatusBadRequest,
+		expectedErrorCode:  string(sdk.VALIDATION),
+	},
+	{
 		name: "with custom balance as destination",
 		request: wallet.DebitRequest{
 			Amount:      wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
@@ -151,9 +193,8 @@ var walletDebitTestCases = []testCase{
 		},
 		expectedScript: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script {
 			return sdk.Script{
-				Plain: wallet.BuildDebitWalletScript(),
+				Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 				Vars: map[string]interface{}{
-					"source":      testEnv.Chart().GetMainBalanceAccount(walletID),
 					"destination": testEnv.Chart().GetBalanceAccount("wallet1", "secondary"),
 					"amount": map[string]any{
 						"amount": uint64(100),
@@ -190,6 +231,19 @@ func TestWalletsDebit(t *testing.T) {
 					holdAccountMetadata = m
 					return nil
 				}),
+				WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.ListAccounts200ResponseCursor, error) {
+					require.Equal(t, testEnv.LedgerName(), ledger)
+					require.Equal(t, query.Metadata, wallet.BalancesMetadataFilter(walletID))
+					return &sdk.ListAccounts200ResponseCursor{
+						Data: []sdk.Account{{
+							Address: testEnv.Chart().GetBalanceAccount(walletID, "secondary"),
+							Type:    nil,
+							Metadata: wallet.Balance{
+								Name: "secondary",
+							}.LedgerMetadata(walletID),
+						}},
+					}, nil
+				}),
 				WithRunScript(func(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResult, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					executedScript = script
@@ -198,17 +252,21 @@ func TestWalletsDebit(t *testing.T) {
 			)
 			testEnv.Router().ServeHTTP(rec, req)
 
+			expectedStatusCode := testCase.expectedStatusCode
+			if expectedStatusCode == 0 {
+				expectedStatusCode = http.StatusNoContent
+			}
+			require.Equal(t, expectedStatusCode, rec.Result().StatusCode)
+
 			hold := &wallet.DebitHold{}
-			switch {
-			case testCase.request.Pending:
-				require.Equal(t, http.StatusCreated, rec.Result().StatusCode)
+			switch expectedStatusCode {
+			case http.StatusCreated:
 				readResponse(t, rec, hold)
-			case !testCase.request.Pending && testCase.scriptResult.ErrorCode == nil:
-				require.Equal(t, http.StatusNoContent, rec.Result().StatusCode)
-			case !testCase.request.Pending && testCase.scriptResult.ErrorCode != nil:
-				require.Equal(t, http.StatusBadRequest, rec.Result().StatusCode)
+			case http.StatusNoContent:
+			default:
 				errorResponse := readErrorResponse(t, rec)
-				require.Equal(t, *testCase.scriptResult.ErrorCode, errorResponse.ErrorCode)
+				require.Equal(t, testCase.expectedErrorCode, errorResponse.ErrorCode)
+				return
 			}
 
 			if testCase.expectedScript != nil {

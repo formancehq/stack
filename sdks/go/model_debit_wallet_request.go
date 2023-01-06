@@ -24,8 +24,7 @@ type DebitWalletRequest struct {
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Destination *Subject `json:"destination,omitempty"`
-	// The targeted balance
-	Balance *string `json:"balance,omitempty"`
+	Balances []string `json:"balances,omitempty"`
 }
 
 // NewDebitWalletRequest instantiates a new DebitWalletRequest object
@@ -198,36 +197,36 @@ func (o *DebitWalletRequest) SetDestination(v Subject) {
 	o.Destination = &v
 }
 
-// GetBalance returns the Balance field value if set, zero value otherwise.
-func (o *DebitWalletRequest) GetBalance() string {
-	if o == nil || isNil(o.Balance) {
-		var ret string
+// GetBalances returns the Balances field value if set, zero value otherwise.
+func (o *DebitWalletRequest) GetBalances() []string {
+	if o == nil || isNil(o.Balances) {
+		var ret []string
 		return ret
 	}
-	return *o.Balance
+	return o.Balances
 }
 
-// GetBalanceOk returns a tuple with the Balance field value if set, nil otherwise
+// GetBalancesOk returns a tuple with the Balances field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DebitWalletRequest) GetBalanceOk() (*string, bool) {
-	if o == nil || isNil(o.Balance) {
+func (o *DebitWalletRequest) GetBalancesOk() ([]string, bool) {
+	if o == nil || isNil(o.Balances) {
     return nil, false
 	}
-	return o.Balance, true
+	return o.Balances, true
 }
 
-// HasBalance returns a boolean if a field has been set.
-func (o *DebitWalletRequest) HasBalance() bool {
-	if o != nil && !isNil(o.Balance) {
+// HasBalances returns a boolean if a field has been set.
+func (o *DebitWalletRequest) HasBalances() bool {
+	if o != nil && !isNil(o.Balances) {
 		return true
 	}
 
 	return false
 }
 
-// SetBalance gets a reference to the given string and assigns it to the Balance field.
-func (o *DebitWalletRequest) SetBalance(v string) {
-	o.Balance = &v
+// SetBalances gets a reference to the given []string and assigns it to the Balances field.
+func (o *DebitWalletRequest) SetBalances(v []string) {
+	o.Balances = v
 }
 
 func (o DebitWalletRequest) MarshalJSON() ([]byte, error) {
@@ -247,8 +246,8 @@ func (o DebitWalletRequest) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Destination) {
 		toSerialize["destination"] = o.Destination
 	}
-	if !isNil(o.Balance) {
-		toSerialize["balance"] = o.Balance
+	if !isNil(o.Balances) {
+		toSerialize["balances"] = o.Balances
 	}
 	return json.Marshal(toSerialize)
 }

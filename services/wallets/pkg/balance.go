@@ -48,7 +48,7 @@ func NewBalance(name string) Balance {
 	}
 }
 
-func BalanceFromAccount(account metadata.Owner) Balance {
+func BalanceFromAccount(account Account) Balance {
 	return Balance{
 		Name: GetMetadata(account, MetadataKeyBalanceName).(string),
 	}
@@ -60,7 +60,7 @@ type ExpandedBalance struct {
 }
 
 func ExpandedBalanceFromAccount(account interface {
-	metadata.Owner
+	Account
 	GetBalances() map[string]int32
 },
 ) ExpandedBalance {

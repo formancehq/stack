@@ -13,8 +13,7 @@ on:
 
 name: OpenAPI
 defaults:
-  run:
-    working-directory: "./openapi"
+  run: {}
 jobs:
   Build:
     name: 'SDK Build'
@@ -42,7 +41,7 @@ jobs:
         with:
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           repository: formancehq/formance-sdk-${{ matrix.sdk }}
-          path: ./openapi/sdk/sdks/${{ matrix.sdk }}
+          path: ./sdks/${{ matrix.sdk }}
       - name: Build SDK for Release
         run: task sdk:generate VERSION=develop -- ${{ matrix.sdk }}
       - name: Push commit to SDK Repository

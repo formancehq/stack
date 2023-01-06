@@ -60,6 +60,13 @@ type ListTransactions struct {
 	WalletID string
 }
 
+func BalancesMetadataFilter(walletID string) map[string]interface{} {
+	return map[string]interface{}{
+		MetadataKeyWalletBalance: TrueValue,
+		MetadataKeyWalletID:      walletID,
+	}
+}
+
 type Manager struct {
 	client     Ledger
 	chart      *Chart
@@ -96,10 +103,28 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 		dest = NewLedgerAccountSubject(holdAccount)
 	}
 
+	sources := make([]string, 0)
+	var err error
+	switch {
+	case len(debit.Balances) == 0:
+		sources = append(sources, m.chart.GetMainBalanceAccount(debit.WalletID))
+	case len(debit.Balances) == 1 && debit.Balances[0] == "*":
+		sources, err = fetchAndMapAllAccounts[string](ctx, m, BalancesMetadataFilter(debit.WalletID), Account.GetAddress)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		for _, balance := range debit.Balances {
+			if balance == "*" {
+				return nil, ErrInvalidBalanceSpecified
+			}
+			sources = append(sources, m.chart.GetBalanceAccount(debit.WalletID, balance))
+		}
+	}
+
 	script := sdk.Script{
-		Plain: BuildDebitWalletScript(),
+		Plain: BuildDebitWalletScript(sources...),
 		Vars: map[string]interface{}{
-			"source":      debit.sourceAccount(m.chart),
 			"destination": dest.getAccount(m.chart),
 			"amount": map[string]any{
 				// @todo: upgrade this to proper int after sdk is updated
@@ -263,10 +288,7 @@ func (m *Manager) ListHolds(ctx context.Context, query ListQuery[ListHolds]) (*L
 func (m *Manager) ListBalances(ctx context.Context, query ListQuery[ListBalances]) (*ListResponse[Balance], error) {
 	return mapAccountList(ctx, m, mapAccountListQuery{
 		Metadata: func() metadata.Metadata {
-			metadata := map[string]interface{}{
-				MetadataKeyWalletBalance: TrueValue,
-				MetadataKeyWalletID:      query.Payload.WalletID,
-			}
+			metadata := BalancesMetadataFilter(query.Payload.WalletID)
 			if query.Payload.Metadata != nil && len(query.Payload.Metadata) > 0 {
 				for k, v := range query.Payload.Metadata {
 					metadata[MetadataKeyWalletCustomData+"."+k] = v
@@ -419,7 +441,7 @@ type mapAccountListQuery struct {
 	Metadata func() metadata.Metadata
 }
 
-func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountListQuery, mapper mapper[metadata.Owner, TO]) (*ListResponse[TO], error) {
+func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountListQuery, mapper mapper[Account, TO]) (*ListResponse[TO], error) {
 	var (
 		response *sdk.ListAccounts200ResponseCursor
 		err      error
@@ -441,4 +463,31 @@ func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountLis
 	return newListResponse[sdk.Account, TO](response, func(item sdk.Account) TO {
 		return mapper(&item)
 	}), nil
+}
+
+func fetchAndMapAllAccounts[TO any](ctx context.Context, r *Manager, md metadata.Metadata, mapper mapper[Account, TO]) ([]TO, error) {
+	ret := make([]TO, 0)
+	query := mapAccountListQuery{
+		Metadata: func() metadata.Metadata {
+			return md
+		},
+		Pagination: Pagination{
+			Limit: 100,
+		},
+	}
+	for {
+		listResponse, err := mapAccountList(ctx, r, query, mapper)
+		if err != nil {
+			return nil, err
+		}
+		ret = append(ret, listResponse.Data...)
+		if listResponse.Next == "" {
+			return ret, nil
+		}
+		query = mapAccountListQuery{
+			Pagination: Pagination{
+				PaginationToken: listResponse.Next,
+			},
+		}
+	}
 }

@@ -103,7 +103,7 @@ func NewWallet(name string, m metadata.Metadata) Wallet {
 	}
 }
 
-func FromAccount(account metadata.Owner) Wallet {
+func FromAccount(account Account) Wallet {
 	createdAt, err := time.Parse(time.RFC3339Nano, GetMetadata(account, MetadataKeyCreatedAt).(string))
 	if err != nil {
 		panic(err)
@@ -118,7 +118,7 @@ func FromAccount(account metadata.Owner) Wallet {
 }
 
 func WithBalancesFromAccount(account interface {
-	metadata.Owner
+	Account
 	GetBalances() map[string]int32
 },
 ) WithBalances {
