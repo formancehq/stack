@@ -36,8 +36,7 @@ jobs:
           cache: 'yarn'
           cache-dependency-path: ./openapi/yarn.lock
       - run: yarn install
-        with:
-          working-directory: ./openapi
+        working-directory: ./openapi
       - run: task openapi:sdk:build VERSION=develop
       - uses: actions/checkout@v3
         with:
