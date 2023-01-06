@@ -1,4 +1,4 @@
-package wallets
+package balances
 
 import (
 	"fmt"
@@ -13,10 +13,9 @@ import (
 )
 
 func NewShowCommand() *cobra.Command {
-	return fctl.NewCommand("show",
-		fctl.WithShortDescription("Show a wallets"),
+	return fctl.NewCommand("show <balance-name>",
+		fctl.WithShortDescription("Show a balance"),
 		fctl.WithAliases("sh"),
-		fctl.WithConfirmFlag(),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		internal.WithTargetingWalletByID(),
 		internal.WithTargetingWalletByName(),
@@ -41,20 +40,17 @@ func NewShowCommand() *cobra.Command {
 				return errors.Wrap(err, "creating stack client")
 			}
 
-			walletID, err := internal.RetrieveWalletID(cmd, client)
+			walletID, err := internal.RequireWalletID(cmd, client)
 			if err != nil {
 				return err
 			}
-			if walletID == "" {
-				return errors.New("You need to specify wallet id using --id or --name flags")
-			}
 
-			res, _, err := client.WalletsApi.GetWallet(cmd.Context(), walletID).Execute()
+			res, _, err := client.WalletsApi.GetBalance(cmd.Context(), walletID, args[0]).Execute()
 			if err != nil {
 				return errors.Wrap(err, "Creating wallets")
 			}
 
-			return PrintWallet(cmd.OutOrStdout(), res.Data)
+			return PrintBalance(cmd.OutOrStdout(), res.Data)
 		}),
 	)
 }
@@ -80,6 +76,39 @@ func PrintWallet(out io.Writer, wallet formance.WalletWithBalances) error {
 	tableData = pterm.TableData{}
 	tableData = append(tableData, []string{"Asset", "Amount"})
 	for asset, amount := range wallet.Balances.Main.Assets {
+		tableData = append(tableData, []string{asset, fmt.Sprint(amount)})
+	}
+	if err := pterm.DefaultTable.
+		WithHasHeader(true).
+		WithWriter(out).
+		WithData(tableData).
+		Render(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func PrintBalance(out io.Writer, balance formance.BalanceWithAssets) error {
+	fctl.Section.Println("Information")
+	tableData := pterm.TableData{}
+	tableData = append(tableData, []string{pterm.LightCyan("Name"), balance.Name})
+
+	if err := pterm.DefaultTable.
+		WithWriter(out).
+		WithData(tableData).
+		Render(); err != nil {
+		return err
+	}
+
+	fctl.Section.Println("Assets")
+	if len(balance.Assets) == 0 {
+		fctl.Println("No assets found.")
+		return nil
+	}
+	tableData = pterm.TableData{}
+	tableData = append(tableData, []string{"Asset", "Amount"})
+	for asset, amount := range balance.Assets {
 		tableData = append(tableData, []string{asset, fmt.Sprint(amount)})
 	}
 	if err := pterm.DefaultTable.

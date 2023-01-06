@@ -18,9 +18,10 @@ import (
 // CreditWalletRequest struct for CreditWalletRequest
 type CreditWalletRequest struct {
 	Amount Monetary `json:"amount"`
+	// Metadata associated with the wallet.
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 	Reference *string `json:"reference,omitempty"`
-	Sources []Subject `json:"sources,omitempty"`
+	Sources []Subject `json:"sources"`
 	// The balance to credit
 	Balance *string `json:"balance,omitempty"`
 }
@@ -29,9 +30,10 @@ type CreditWalletRequest struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreditWalletRequest(amount Monetary) *CreditWalletRequest {
+func NewCreditWalletRequest(amount Monetary, sources []Subject) *CreditWalletRequest {
 	this := CreditWalletRequest{}
 	this.Amount = amount
+	this.Sources = sources
 	return &this
 }
 
@@ -67,9 +69,9 @@ func (o *CreditWalletRequest) SetAmount(v Monetary) {
 	o.Amount = v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *CreditWalletRequest) GetMetadata() map[string]interface{} {
-	if o == nil {
+	if o == nil || isNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -78,7 +80,6 @@ func (o *CreditWalletRequest) GetMetadata() map[string]interface{} {
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *CreditWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
     return map[string]interface{}{}, false
@@ -88,7 +89,7 @@ func (o *CreditWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *CreditWalletRequest) HasMetadata() bool {
-	if o != nil && isNil(o.Metadata) {
+	if o != nil && !isNil(o.Metadata) {
 		return true
 	}
 
@@ -132,34 +133,26 @@ func (o *CreditWalletRequest) SetReference(v string) {
 	o.Reference = &v
 }
 
-// GetSources returns the Sources field value if set, zero value otherwise.
+// GetSources returns the Sources field value
 func (o *CreditWalletRequest) GetSources() []Subject {
-	if o == nil || isNil(o.Sources) {
+	if o == nil {
 		var ret []Subject
 		return ret
 	}
+
 	return o.Sources
 }
 
-// GetSourcesOk returns a tuple with the Sources field value if set, nil otherwise
+// GetSourcesOk returns a tuple with the Sources field value
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetSourcesOk() ([]Subject, bool) {
-	if o == nil || isNil(o.Sources) {
+	if o == nil {
     return nil, false
 	}
 	return o.Sources, true
 }
 
-// HasSources returns a boolean if a field has been set.
-func (o *CreditWalletRequest) HasSources() bool {
-	if o != nil && !isNil(o.Sources) {
-		return true
-	}
-
-	return false
-}
-
-// SetSources gets a reference to the given []Subject and assigns it to the Sources field.
+// SetSources sets field value
 func (o *CreditWalletRequest) SetSources(v []Subject) {
 	o.Sources = v
 }
@@ -201,13 +194,13 @@ func (o CreditWalletRequest) MarshalJSON() ([]byte, error) {
 	if true {
 		toSerialize["amount"] = o.Amount
 	}
-	if o.Metadata != nil {
+	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	if !isNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
-	if !isNil(o.Sources) {
+	if true {
 		toSerialize["sources"] = o.Sources
 	}
 	if !isNil(o.Balance) {

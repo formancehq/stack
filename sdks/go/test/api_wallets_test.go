@@ -36,6 +36,20 @@ func Test_formance_WalletsApiService(t *testing.T) {
 
     })
 
+    t.Run("Test WalletsApiService CreateBalance", func(t *testing.T) {
+
+        t.Skip("skip test")  // remove to run test
+
+        var id string
+
+        resp, httpRes, err := apiClient.WalletsApi.CreateBalance(context.Background(), id).Execute()
+
+        require.Nil(t, err)
+        require.NotNil(t, resp)
+        assert.Equal(t, 200, httpRes.StatusCode)
+
+    })
+
     t.Run("Test WalletsApiService CreateWallet", func(t *testing.T) {
 
         t.Skip("skip test")  // remove to run test
@@ -69,6 +83,21 @@ func Test_formance_WalletsApiService(t *testing.T) {
         var id string
 
         resp, httpRes, err := apiClient.WalletsApi.DebitWallet(context.Background(), id).Execute()
+
+        require.Nil(t, err)
+        require.NotNil(t, resp)
+        assert.Equal(t, 200, httpRes.StatusCode)
+
+    })
+
+    t.Run("Test WalletsApiService GetBalance", func(t *testing.T) {
+
+        t.Skip("skip test")  // remove to run test
+
+        var id string
+        var balanceName string
+
+        resp, httpRes, err := apiClient.WalletsApi.GetBalance(context.Background(), id, balanceName).Execute()
 
         require.Nil(t, err)
         require.NotNil(t, resp)
@@ -128,6 +157,20 @@ func Test_formance_WalletsApiService(t *testing.T) {
 
     })
 
+    t.Run("Test WalletsApiService ListBalances", func(t *testing.T) {
+
+        t.Skip("skip test")  // remove to run test
+
+        var id string
+
+        resp, httpRes, err := apiClient.WalletsApi.ListBalances(context.Background(), id).Execute()
+
+        require.Nil(t, err)
+        require.NotNil(t, resp)
+        assert.Equal(t, 200, httpRes.StatusCode)
+
+    })
+
     t.Run("Test WalletsApiService ListWallets", func(t *testing.T) {
 
         t.Skip("skip test")  // remove to run test
@@ -161,6 +204,18 @@ func Test_formance_WalletsApiService(t *testing.T) {
         var holdId string
 
         resp, httpRes, err := apiClient.WalletsApi.VoidHold(context.Background(), holdId).Execute()
+
+        require.Nil(t, err)
+        require.NotNil(t, resp)
+        assert.Equal(t, 200, httpRes.StatusCode)
+
+    })
+
+    t.Run("Test WalletsApiService WalletsgetServerInfo", func(t *testing.T) {
+
+        t.Skip("skip test")  // remove to run test
+
+        resp, httpRes, err := apiClient.WalletsApi.WalletsgetServerInfo(context.Background()).Execute()
 
         require.Nil(t, err)
         require.NotNil(t, resp)

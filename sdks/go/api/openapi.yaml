@@ -1876,7 +1876,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/ServerInfo'
           description: Server information
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Get server info
+      tags:
+      - Wallets
   /api/wallets/transactions:
     get:
       operationId: getTransactions
@@ -1922,6 +1930,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetTransactionsResponse'
           description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       tags:
       - Wallets
   /api/wallets/wallets:
@@ -1997,6 +2011,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateWalletResponse'
           description: Wallet created
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Create a new wallet
       tags:
       - Wallets
@@ -2020,6 +2040,12 @@ paths:
           description: Wallet
         "404":
           description: Wallet not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Get a wallet
       tags:
       - Wallets
@@ -2041,6 +2067,12 @@ paths:
       responses:
         "204":
           description: Wallet successfully updated
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Update a wallet
       tags:
       - Wallets
@@ -2063,6 +2095,8 @@ paths:
                 $ref: '#/components/schemas/ListBalancesResponse'
           description: Balances list
       summary: List balances of a wallet
+      tags:
+      - Wallets
     post:
       operationId: createBalance
       parameters:
@@ -2085,7 +2119,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/CreateBalanceResponse'
           description: Created balance
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Create a balance
+      tags:
+      - Wallets
   /api/wallets/wallets/{id}/balances/{balanceName}:
     get:
       operationId: getBalance
@@ -2111,7 +2153,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetBalanceResponse'
           description: Balance summary
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Get detailed balance
+      tags:
+      - Wallets
   /api/wallets/wallets/{id}/debit:
     post:
       operationId: debitWallet
@@ -2137,6 +2187,12 @@ paths:
           description: Wallet successfully debited as a pending hold
         "204":
           description: Wallet successfully debited
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Debit a wallet
       tags:
       - Wallets
@@ -2163,6 +2219,12 @@ paths:
       responses:
         "204":
           description: Wallet successfully credited
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Credit a wallet
       tags:
       - Wallets
@@ -2222,6 +2284,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetHoldsResponse'
           description: Holds
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Get all holds for a wallet
       tags:
       - Wallets
@@ -2244,6 +2312,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/GetHoldResponse'
           description: Holds
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Get a hold
       tags:
       - Wallets
@@ -2266,6 +2340,12 @@ paths:
       responses:
         "204":
           description: "Hold successfully confirmed, funds moved back to initial destination"
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Confirm a hold
       tags:
       - Wallets
@@ -2283,6 +2363,12 @@ paths:
       responses:
         "204":
           description: "Hold successfully cancelled, funds returned to wallet"
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
       summary: Cancel a hold
       tags:
       - Wallets
@@ -4226,15 +4312,6 @@ components:
       type: object
       x-go-type:
         type: AggregatedVolumes
-    walletsMetadata:
-      additionalProperties: {}
-      example:
-        admin: true
-        a:
-          nested:
-            key: value
-      nullable: true
-      type: object
     walletsPosting:
       properties:
         amount:
@@ -4271,12 +4348,7 @@ components:
           type: string
         metadata:
           additionalProperties: {}
-          example:
-            admin: true
-            a:
-              nested:
-                key: value
-          nullable: true
+          description: Metadata associated with the wallet.
           type: object
         txid:
           format: int64
@@ -4436,10 +4508,6 @@ components:
       oneOf:
       - $ref: '#/components/schemas/LedgerAccountSubject'
       - $ref: '#/components/schemas/WalletSubject'
-    Subjects:
-      items:
-        $ref: '#/components/schemas/Subject'
-      type: array
     CreditWalletRequest:
       example:
         reference: reference
@@ -4447,10 +4515,7 @@ components:
           amount: 0
           asset: asset
         metadata:
-          admin: true
-          a:
-            nested:
-              key: value
+          key: ""
         sources:
         - null
         - null
@@ -4460,12 +4525,7 @@ components:
           $ref: '#/components/schemas/Monetary'
         metadata:
           additionalProperties: {}
-          example:
-            admin: true
-            a:
-              nested:
-                key: value
-          nullable: true
+          description: Metadata associated with the wallet.
           type: object
         reference:
           type: string
@@ -4478,6 +4538,7 @@ components:
           type: string
       required:
       - amount
+      - sources
       type: object
     DebitWalletRequest:
       example:
@@ -4494,12 +4555,7 @@ components:
           type: boolean
         metadata:
           additionalProperties: {}
-          example:
-            admin: true
-            a:
-              nested:
-                key: value
-          nullable: true
+          description: Metadata associated with the wallet.
           type: object
         description:
           type: string
@@ -4565,6 +4621,18 @@ components:
           $ref: '#/components/schemas/Balance'
       required:
       - data
+      type: object
+    walletsErrorResponse:
+      properties:
+        errorCode:
+          enum:
+          - VALIDATION
+          type: string
+        errorMessage:
+          type: string
+      required:
+      - errorCode
+      - errorMessage
       type: object
     listAccounts_200_response_cursor_allOf:
       properties:

@@ -21,6 +21,7 @@ type WalletsTransaction struct {
 	Timestamp time.Time `json:"timestamp"`
 	Postings []WalletsPosting `json:"postings"`
 	Reference *string `json:"reference,omitempty"`
+	// Metadata associated with the wallet.
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 	Txid int64 `json:"txid"`
 	PreCommitVolumes *map[string]map[string]WalletsVolume `json:"preCommitVolumes,omitempty"`
@@ -127,9 +128,9 @@ func (o *WalletsTransaction) SetReference(v string) {
 	o.Reference = &v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *WalletsTransaction) GetMetadata() map[string]interface{} {
-	if o == nil {
+	if o == nil || isNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -138,7 +139,6 @@ func (o *WalletsTransaction) GetMetadata() map[string]interface{} {
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *WalletsTransaction) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
     return map[string]interface{}{}, false
@@ -148,7 +148,7 @@ func (o *WalletsTransaction) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *WalletsTransaction) HasMetadata() bool {
-	if o != nil && isNil(o.Metadata) {
+	if o != nil && !isNil(o.Metadata) {
 		return true
 	}
 
@@ -259,7 +259,7 @@ func (o WalletsTransaction) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
-	if o.Metadata != nil {
+	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	if true {

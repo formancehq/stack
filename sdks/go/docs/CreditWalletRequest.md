@@ -5,16 +5,16 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Amount** | [**Monetary**](Monetary.md) |  | 
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
+**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional] 
 **Reference** | Pointer to **string** |  | [optional] 
-**Sources** | Pointer to [**[]Subject**](Subject.md) |  | [optional] 
+**Sources** | [**[]Subject**](Subject.md) |  | 
 **Balance** | Pointer to **string** | The balance to credit | [optional] 
 
 ## Methods
 
 ### NewCreditWalletRequest
 
-`func NewCreditWalletRequest(amount Monetary, ) *CreditWalletRequest`
+`func NewCreditWalletRequest(amount Monetary, sources []Subject, ) *CreditWalletRequest`
 
 NewCreditWalletRequest instantiates a new CreditWalletRequest object
 This constructor will assign default values to properties that have it defined,
@@ -74,16 +74,6 @@ SetMetadata sets Metadata field to given value.
 
 HasMetadata returns a boolean if a field has been set.
 
-### SetMetadataNil
-
-`func (o *CreditWalletRequest) SetMetadataNil(b bool)`
-
- SetMetadataNil sets the value for Metadata to be an explicit nil
-
-### UnsetMetadata
-`func (o *CreditWalletRequest) UnsetMetadata()`
-
-UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 ### GetReference
 
 `func (o *CreditWalletRequest) GetReference() string`
@@ -128,11 +118,6 @@ and a boolean to check if the value has been set.
 
 SetSources sets Sources field to given value.
 
-### HasSources
-
-`func (o *CreditWalletRequest) HasSources() bool`
-
-HasSources returns a boolean if a field has been set.
 
 ### GetBalance
 

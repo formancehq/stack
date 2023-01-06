@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Amount** | [**Monetary**](Monetary.md) |  | 
 **Pending** | Pointer to **bool** | Set to true to create a pending hold. If false, the wallet will be debited immediately. | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
+**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional] 
 **Description** | Pointer to **string** |  | [optional] 
 **Destination** | Pointer to [**Subject**](Subject.md) |  | [optional] 
 **Balance** | Pointer to **string** | The targeted balance | [optional] 
@@ -100,16 +100,6 @@ SetMetadata sets Metadata field to given value.
 
 HasMetadata returns a boolean if a field has been set.
 
-### SetMetadataNil
-
-`func (o *DebitWalletRequest) SetMetadataNil(b bool)`
-
- SetMetadataNil sets the value for Metadata to be an explicit nil
-
-### UnsetMetadata
-`func (o *DebitWalletRequest) UnsetMetadata()`
-
-UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 ### GetDescription
 
 `func (o *DebitWalletRequest) GetDescription() string`

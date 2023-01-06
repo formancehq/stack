@@ -17,6 +17,7 @@ import (
 	"github.com/formancehq/fctl/cmd/wallets"
 	"github.com/formancehq/fctl/cmd/webhooks"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -105,10 +106,13 @@ func Execute() {
 	ctx, _ := signal.NotifyContext(context.TODO(), os.Interrupt)
 	err := NewRootCommand().ExecuteContext(ctx)
 	if err != nil {
-		switch err {
-		case fctl.ErrMissingApproval:
+		switch {
+		case errors.Is(err, fctl.ErrMissingApproval):
 			fctl.Error(os.Stderr, "Command aborted as you didn't approve.")
 			os.Exit(1)
+		case fctl.ExtractOpenAPIErrorMessage(err) != nil:
+			fctl.Error(os.Stderr, fctl.ExtractOpenAPIErrorMessage(err).Error())
+			os.Exit(2)
 		default:
 			fctl.Error(os.Stderr, err.Error())
 			os.Exit(255)

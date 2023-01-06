@@ -2877,6 +2877,9 @@
       "get": {
         "summary": "Get server info",
         "operationId": "walletsgetServerInfo",
+        "tags": [
+          "Wallets"
+        ],
         "responses": {
           "200": {
             "description": "Server information",
@@ -2884,6 +2887,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ServerInfo"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
                 }
               }
             }
@@ -2936,6 +2949,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetTransactionsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
                 }
               }
             }
@@ -3032,6 +3055,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -3066,6 +3099,16 @@
           },
           "404": {
             "description": "Wallet not found"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
+                }
+              }
+            }
           }
         }
       },
@@ -3094,6 +3137,16 @@
         "responses": {
           "204": {
             "description": "Wallet successfully updated"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -3112,6 +3165,9 @@
       "get": {
         "summary": "List balances of a wallet",
         "operationId": "listBalances",
+        "tags": [
+          "Wallets"
+        ],
         "responses": {
           "200": {
             "description": "Balances list",
@@ -3128,6 +3184,9 @@
       "post": {
         "summary": "Create a balance",
         "operationId": "createBalance",
+        "tags": [
+          "Wallets"
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -3144,6 +3203,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CreateBalanceResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
                 }
               }
             }
@@ -3173,6 +3242,9 @@
         ],
         "summary": "Get detailed balance",
         "operationId": "getBalance",
+        "tags": [
+          "Wallets"
+        ],
         "responses": {
           "200": {
             "description": "Balance summary",
@@ -3180,6 +3252,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetBalanceResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
                 }
               }
             }
@@ -3226,6 +3308,16 @@
           },
           "204": {
             "description": "Wallet successfully debited"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -3265,6 +3357,16 @@
         "responses": {
           "204": {
             "description": "Wallet successfully credited"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -3330,6 +3432,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -3359,6 +3471,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GetHoldResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
                 }
               }
             }
@@ -3395,6 +3517,16 @@
         "responses": {
           "204": {
             "description": "Hold successfully confirmed, funds moved back to initial destination"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -3419,6 +3551,16 @@
         "responses": {
           "204": {
             "description": "Hold successfully cancelled, funds returned to wallet"
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/walletsErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -5236,8 +5378,8 @@
           },
           "metadata": {
             "type": "object",
-            "description": "Metadata associated with the wallet.",
-            "additionalProperties": {}
+            "additionalProperties": {},
+            "description": "Metadata associated with the wallet."
           },
           "name": {
             "type": "string"
@@ -5418,19 +5560,6 @@
           "$ref": "#/components/schemas/walletsVolumes"
         }
       },
-      "walletsMetadata": {
-        "type": "object",
-        "nullable": true,
-        "additionalProperties": {},
-        "example": {
-          "admin": true,
-          "a": {
-            "nested": {
-              "key": "value"
-            }
-          }
-        }
-      },
       "walletsPosting": {
         "type": "object",
         "properties": {
@@ -5478,7 +5607,9 @@
             "example": "ref:001"
           },
           "metadata": {
-            "$ref": "#/components/schemas/walletsMetadata"
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Metadata associated with the wallet."
           },
           "txid": {
             "type": "integer",
@@ -5716,29 +5847,29 @@
           }
         ]
       },
-      "Subjects": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/Subject"
-        }
-      },
       "CreditWalletRequest": {
         "type": "object",
         "required": [
-          "amount"
+          "amount",
+          "sources"
         ],
         "properties": {
           "amount": {
             "$ref": "#/components/schemas/Monetary"
           },
           "metadata": {
-            "$ref": "#/components/schemas/walletsMetadata"
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Metadata associated with the wallet."
           },
           "reference": {
             "type": "string"
           },
           "sources": {
-            "$ref": "#/components/schemas/Subjects"
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Subject"
+            }
           },
           "balance": {
             "type": "string",
@@ -5760,7 +5891,9 @@
             "description": "Set to true to create a pending hold. If false, the wallet will be debited immediately."
           },
           "metadata": {
-            "$ref": "#/components/schemas/walletsMetadata"
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Metadata associated with the wallet."
           },
           "description": {
             "type": "string"
@@ -5867,6 +6000,24 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Balance"
+          }
+        }
+      },
+      "walletsErrorResponse": {
+        "type": "object",
+        "required": [
+          "errorCode",
+          "errorMessage"
+        ],
+        "properties": {
+          "errorCode": {
+            "type": "string",
+            "enum": [
+              "VALIDATION"
+            ]
+          },
+          "errorMessage": {
+            "type": "string"
           }
         }
       }

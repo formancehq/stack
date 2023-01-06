@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **Timestamp** | **time.Time** |  | 
 **Postings** | [**[]WalletsPosting**](WalletsPosting.md) |  | 
 **Reference** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
+**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional] 
 **Txid** | **int64** |  | 
 **PreCommitVolumes** | Pointer to [**map[string]map[string]WalletsVolume**](map.md) |  | [optional] 
 **PostCommitVolumes** | Pointer to [**map[string]map[string]WalletsVolume**](map.md) |  | [optional] 
@@ -121,16 +121,6 @@ SetMetadata sets Metadata field to given value.
 
 HasMetadata returns a boolean if a field has been set.
 
-### SetMetadataNil
-
-`func (o *WalletsTransaction) SetMetadataNil(b bool)`
-
- SetMetadataNil sets the value for Metadata to be an explicit nil
-
-### UnsetMetadata
-`func (o *WalletsTransaction) UnsetMetadata()`
-
-UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 ### GetTxid
 
 `func (o *WalletsTransaction) GetTxid() int64`

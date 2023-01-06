@@ -1,9 +1,6 @@
-package transactions
+package balances
 
 import (
-	"fmt"
-	"time"
-
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
@@ -15,12 +12,14 @@ import (
 func NewListCommand() *cobra.Command {
 	return fctl.NewCommand("list",
 		fctl.WithAliases("ls", "l"),
-		fctl.WithShortDescription("List transactions"),
+		fctl.WithShortDescription("List balances"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
+		internal.WithTargetingWalletByName(),
+		internal.WithTargetingWalletByID(),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
 			cfg, err := fctl.GetConfig(cmd)
 			if err != nil {
-				return errors.Wrap(err, "fctl.GetConfig")
+				return errors.Wrap(err, "retrieving config")
 			}
 
 			organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
@@ -38,29 +37,27 @@ func NewListCommand() *cobra.Command {
 				return errors.Wrap(err, "creating stack client")
 			}
 
-			walletID, err := internal.RetrieveWalletID(cmd, client)
+			walletID, err := internal.RequireWalletID(cmd, client)
 			if err != nil {
 				return err
 			}
 
-			res, _, err := client.WalletsApi.GetTransactions(cmd.Context()).WalletId(walletID).Execute()
+			res, _, err := client.WalletsApi.ListBalances(cmd.Context(), walletID).Execute()
 			if err != nil {
-				return errors.Wrap(err, "listing wallets")
+				return errors.Wrap(err, "listing balances")
 			}
 
 			if len(res.Cursor.Data) == 0 {
-				fctl.Println("No transactions found.")
+				fctl.Println("No balances found.")
 				return nil
 			}
 
-			tableData := fctl.Map(res.Cursor.Data, func(tx formance.WalletsTransaction) []string {
+			tableData := fctl.Map(res.Cursor.Data, func(balance formance.Balance) []string {
 				return []string{
-					fmt.Sprintf("%d", tx.Txid),
-					tx.Timestamp.Format(time.RFC3339),
-					fctl.MetadataAsShortString(tx.Metadata),
+					balance.Name,
 				}
 			})
-			tableData = fctl.Prepend(tableData, []string{"ID", "Date", "Metadata"})
+			tableData = fctl.Prepend(tableData, []string{"Name"})
 			return pterm.DefaultTable.
 				WithHasHeader().
 				WithWriter(cmd.OutOrStdout()).

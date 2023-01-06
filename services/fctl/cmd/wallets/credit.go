@@ -13,13 +13,17 @@ import (
 func NewCreditWalletCommand() *cobra.Command {
 	const (
 		metadataFlag = "metadata"
+		balanceFlag  = "balance"
+		sourceFlag   = "source"
 	)
 	return fctl.NewCommand("credit <amount> <asset>",
 		fctl.WithShortDescription("Credit a wallets"),
 		fctl.WithAliases("cr"),
 		fctl.WithConfirmFlag(),
-		fctl.WithArgs(cobra.RangeArgs(2, 3)),
+		fctl.WithArgs(cobra.ExactArgs(2)),
 		fctl.WithStringSliceFlag(metadataFlag, []string{""}, "Metadata to use"),
+		fctl.WithStringFlag(balanceFlag, "", "Balance to credit"),
+		fctl.WithStringSliceFlag(sourceFlag, []string{}, `Use --source account=<account> | --source wallet=id:<wallet-id>[/<balance>] | --source wallet=name:<wallet-name>[/<balance>]`),
 		internal.WithTargetingWalletByName(),
 		internal.WithTargetingWalletByID(),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
@@ -68,15 +72,26 @@ func NewCreditWalletCommand() *cobra.Command {
 				return err
 			}
 
+			sources := make([]formance.Subject, 0)
+			for _, sourceStr := range fctl.GetStringSlice(cmd, sourceFlag) {
+				source, err := internal.ParseSubject(sourceStr, cmd, client)
+				if err != nil {
+					return err
+				}
+				sources = append(sources, *source)
+			}
+
 			_, err = client.WalletsApi.CreditWallet(cmd.Context(), walletID).CreditWalletRequest(formance.CreditWalletRequest{
 				Amount: formance.Monetary{
 					Asset:  asset,
 					Amount: amount,
 				},
 				Metadata: metadata,
+				Sources:  sources,
+				Balance:  formance.PtrString(fctl.GetString(cmd, balanceFlag)),
 			}).Execute()
 			if err != nil {
-				return errors.Wrap(err, "Crediting wallets")
+				return err
 			}
 
 			fctl.Success(cmd.OutOrStdout(), "Wallet credited successfully!")

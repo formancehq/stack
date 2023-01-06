@@ -15,6 +15,8 @@ func NewDebitWalletCommand() *cobra.Command {
 		pendingFlag     = "pending"
 		metadataFlag    = "metadata"
 		descriptionFlag = "description"
+		balanceFlag     = "balance"
+		destinationFlag = "destination"
 	)
 	return fctl.NewCommand("debit <amount> <asset>",
 		fctl.WithShortDescription("Debit a wallet"),
@@ -24,11 +26,15 @@ func NewDebitWalletCommand() *cobra.Command {
 		fctl.WithStringFlag(descriptionFlag, "", "Debit description"),
 		fctl.WithBoolFlag(pendingFlag, false, "Create a pending debit"),
 		fctl.WithStringSliceFlag(metadataFlag, []string{""}, "Metadata to use"),
+		fctl.WithStringFlag(balanceFlag, "", "Balance to debit"),
+		fctl.WithStringFlag(destinationFlag, "",
+			`Use --destination account=<account> | --destination wallet=id:<wallet-id>[/<balance>] | --destination wallet=name:<wallet-name>[/<balance>]`),
 		internal.WithTargetingWalletByName(),
+		internal.WithTargetingWalletByID(),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
 			cfg, err := fctl.GetConfig(cmd)
 			if err != nil {
-				return errors.Wrap(err, "fctl.GetConfig")
+				return errors.Wrap(err, "retrieving config")
 			}
 
 			organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
@@ -59,13 +65,9 @@ func NewDebitWalletCommand() *cobra.Command {
 
 			amountStr := args[0]
 			asset := args[1]
-			walletID, err := internal.RetrieveWalletIDFromName(cmd, client)
+			walletID, err := internal.RequireWalletID(cmd, client)
 			if err != nil {
 				return err
-			}
-
-			if walletID == "" {
-				return errors.New("You need to specify wallet id using --id or --name flags")
 			}
 
 			description := fctl.GetString(cmd, descriptionFlag)
@@ -73,6 +75,14 @@ func NewDebitWalletCommand() *cobra.Command {
 			amount, err := strconv.ParseInt(amountStr, 10, 32)
 			if err != nil {
 				return errors.Wrap(err, "parsing amount")
+			}
+
+			var destination *formance.Subject
+			if destinationStr := fctl.GetString(cmd, destinationFlag); destinationStr != "" {
+				destination, err = internal.ParseSubject(destinationStr, cmd, client)
+				if err != nil {
+					return err
+				}
 			}
 
 			hold, _, err := client.WalletsApi.DebitWallet(cmd.Context(), walletID).DebitWalletRequest(formance.DebitWalletRequest{
@@ -83,6 +93,8 @@ func NewDebitWalletCommand() *cobra.Command {
 				Pending:     &pending,
 				Metadata:    metadata,
 				Description: &description,
+				Destination: destination,
+				Balance:     formance.PtrString(fctl.GetString(cmd, balanceFlag)),
 			}).Execute()
 			if err != nil {
 				return errors.Wrap(err, "Debiting wallets")

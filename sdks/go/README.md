@@ -105,12 +105,8 @@ Class | Method | HTTP request | Description
 *ClientsApi* | [**ListClients**](docs/ClientsApi.md#listclients) | **Get** /api/auth/clients | List clients
 *ClientsApi* | [**ReadClient**](docs/ClientsApi.md#readclient) | **Get** /api/auth/clients/{clientId} | Read client
 *ClientsApi* | [**UpdateClient**](docs/ClientsApi.md#updateclient) | **Put** /api/auth/clients/{clientId} | Update client
-*DefaultApi* | [**CreateBalance**](docs/DefaultApi.md#createbalance) | **Post** /api/wallets/wallets/{id}/balances | Create a balance
-*DefaultApi* | [**GetBalance**](docs/DefaultApi.md#getbalance) | **Get** /api/wallets/wallets/{id}/balances/{balanceName} | Get detailed balance
 *DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /api/auth/_info | Get server info
-*DefaultApi* | [**ListBalances**](docs/DefaultApi.md#listbalances) | **Get** /api/wallets/wallets/{id}/balances | List balances of a wallet
 *DefaultApi* | [**SearchgetServerInfo**](docs/DefaultApi.md#searchgetserverinfo) | **Get** /api/search/_info | Get server info
-*DefaultApi* | [**WalletsgetServerInfo**](docs/DefaultApi.md#walletsgetserverinfo) | **Get** /api/wallets/_info | Get server info
 *MappingApi* | [**GetMapping**](docs/MappingApi.md#getmapping) | **Get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger.
 *MappingApi* | [**UpdateMapping**](docs/MappingApi.md#updatemapping) | **Put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger.
 *PaymentsApi* | [**ConnectorsStripeTransfer**](docs/PaymentsApi.md#connectorsstripetransfer) | **Post** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
@@ -145,16 +141,20 @@ Class | Method | HTTP request | Description
 *UsersApi* | [**ListUsers**](docs/UsersApi.md#listusers) | **Get** /api/auth/users | List users
 *UsersApi* | [**ReadUser**](docs/UsersApi.md#readuser) | **Get** /api/auth/users/{userId} | Read user
 *WalletsApi* | [**ConfirmHold**](docs/WalletsApi.md#confirmhold) | **Post** /api/wallets/holds/{hold_id}/confirm | Confirm a hold
+*WalletsApi* | [**CreateBalance**](docs/WalletsApi.md#createbalance) | **Post** /api/wallets/wallets/{id}/balances | Create a balance
 *WalletsApi* | [**CreateWallet**](docs/WalletsApi.md#createwallet) | **Post** /api/wallets/wallets | Create a new wallet
 *WalletsApi* | [**CreditWallet**](docs/WalletsApi.md#creditwallet) | **Post** /api/wallets/wallets/{id}/credit | Credit a wallet
 *WalletsApi* | [**DebitWallet**](docs/WalletsApi.md#debitwallet) | **Post** /api/wallets/wallets/{id}/debit | Debit a wallet
+*WalletsApi* | [**GetBalance**](docs/WalletsApi.md#getbalance) | **Get** /api/wallets/wallets/{id}/balances/{balanceName} | Get detailed balance
 *WalletsApi* | [**GetHold**](docs/WalletsApi.md#gethold) | **Get** /api/wallets/holds/{holdID} | Get a hold
 *WalletsApi* | [**GetHolds**](docs/WalletsApi.md#getholds) | **Get** /api/wallets/holds | Get all holds for a wallet
 *WalletsApi* | [**GetTransactions**](docs/WalletsApi.md#gettransactions) | **Get** /api/wallets/transactions | 
 *WalletsApi* | [**GetWallet**](docs/WalletsApi.md#getwallet) | **Get** /api/wallets/wallets/{id} | Get a wallet
+*WalletsApi* | [**ListBalances**](docs/WalletsApi.md#listbalances) | **Get** /api/wallets/wallets/{id}/balances | List balances of a wallet
 *WalletsApi* | [**ListWallets**](docs/WalletsApi.md#listwallets) | **Get** /api/wallets/wallets | List all wallets
 *WalletsApi* | [**UpdateWallet**](docs/WalletsApi.md#updatewallet) | **Patch** /api/wallets/wallets/{id} | Update a wallet
 *WalletsApi* | [**VoidHold**](docs/WalletsApi.md#voidhold) | **Post** /api/wallets/holds/{hold_id}/void | Cancel a hold
+*WalletsApi* | [**WalletsgetServerInfo**](docs/WalletsApi.md#walletsgetserverinfo) | **Get** /api/wallets/_info | Get server info
 *WebhooksApi* | [**ActivateConfig**](docs/WebhooksApi.md#activateconfig) | **Put** /api/webhooks/configs/{id}/activate | Activate one config
 *WebhooksApi* | [**ChangeConfigSecret**](docs/WebhooksApi.md#changeconfigsecret) | **Put** /api/webhooks/configs/{id}/secret/change | Change the signing secret of a config
 *WebhooksApi* | [**DeactivateConfig**](docs/WebhooksApi.md#deactivateconfig) | **Put** /api/webhooks/configs/{id}/deactivate | Deactivate one config
@@ -306,6 +306,7 @@ Class | Method | HTTP request | Description
  - [WalletWithBalances](docs/WalletWithBalances.md)
  - [WalletWithBalancesBalances](docs/WalletWithBalancesBalances.md)
  - [WalletsCursor](docs/WalletsCursor.md)
+ - [WalletsErrorResponse](docs/WalletsErrorResponse.md)
  - [WalletsPosting](docs/WalletsPosting.md)
  - [WalletsTransaction](docs/WalletsTransaction.md)
  - [WalletsVolume](docs/WalletsVolume.md)

@@ -20,6 +20,7 @@ type DebitWalletRequest struct {
 	Amount Monetary `json:"amount"`
 	// Set to true to create a pending hold. If false, the wallet will be debited immediately.
 	Pending *bool `json:"pending,omitempty"`
+	// Metadata associated with the wallet.
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 	Description *string `json:"description,omitempty"`
 	Destination *Subject `json:"destination,omitempty"`
@@ -101,9 +102,9 @@ func (o *DebitWalletRequest) SetPending(v bool) {
 	o.Pending = &v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *DebitWalletRequest) GetMetadata() map[string]interface{} {
-	if o == nil {
+	if o == nil || isNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -112,7 +113,6 @@ func (o *DebitWalletRequest) GetMetadata() map[string]interface{} {
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *DebitWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
     return map[string]interface{}{}, false
@@ -122,7 +122,7 @@ func (o *DebitWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *DebitWalletRequest) HasMetadata() bool {
-	if o != nil && isNil(o.Metadata) {
+	if o != nil && !isNil(o.Metadata) {
 		return true
 	}
 
@@ -238,7 +238,7 @@ func (o DebitWalletRequest) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Pending) {
 		toSerialize["pending"] = o.Pending
 	}
-	if o.Metadata != nil {
+	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	if !isNil(o.Description) {

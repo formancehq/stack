@@ -5,16 +5,20 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**ConfirmHold**](WalletsApi.md#ConfirmHold) | **Post** /api/wallets/holds/{hold_id}/confirm | Confirm a hold
+[**CreateBalance**](WalletsApi.md#CreateBalance) | **Post** /api/wallets/wallets/{id}/balances | Create a balance
 [**CreateWallet**](WalletsApi.md#CreateWallet) | **Post** /api/wallets/wallets | Create a new wallet
 [**CreditWallet**](WalletsApi.md#CreditWallet) | **Post** /api/wallets/wallets/{id}/credit | Credit a wallet
 [**DebitWallet**](WalletsApi.md#DebitWallet) | **Post** /api/wallets/wallets/{id}/debit | Debit a wallet
+[**GetBalance**](WalletsApi.md#GetBalance) | **Get** /api/wallets/wallets/{id}/balances/{balanceName} | Get detailed balance
 [**GetHold**](WalletsApi.md#GetHold) | **Get** /api/wallets/holds/{holdID} | Get a hold
 [**GetHolds**](WalletsApi.md#GetHolds) | **Get** /api/wallets/holds | Get all holds for a wallet
 [**GetTransactions**](WalletsApi.md#GetTransactions) | **Get** /api/wallets/transactions | 
 [**GetWallet**](WalletsApi.md#GetWallet) | **Get** /api/wallets/wallets/{id} | Get a wallet
+[**ListBalances**](WalletsApi.md#ListBalances) | **Get** /api/wallets/wallets/{id}/balances | List balances of a wallet
 [**ListWallets**](WalletsApi.md#ListWallets) | **Get** /api/wallets/wallets | List all wallets
 [**UpdateWallet**](WalletsApi.md#UpdateWallet) | **Patch** /api/wallets/wallets/{id} | Update a wallet
 [**VoidHold**](WalletsApi.md#VoidHold) | **Post** /api/wallets/holds/{hold_id}/void | Cancel a hold
+[**WalletsgetServerInfo**](WalletsApi.md#WalletsgetServerInfo) | **Get** /api/wallets/_info | Get server info
 
 
 
@@ -79,7 +83,77 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## CreateBalance
+
+> CreateBalanceResponse CreateBalance(ctx, id).Body(body).Execute()
+
+Create a balance
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    id := "id_example" // string | 
+    body := Balance(987) // Balance |  (optional)
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.WalletsApi.CreateBalance(context.Background(), id).Body(body).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `WalletsApi.CreateBalance``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `CreateBalance`: CreateBalanceResponse
+    fmt.Fprintf(os.Stdout, "Response from `WalletsApi.CreateBalance`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCreateBalanceRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **body** | **Balance** |  | 
+
+### Return type
+
+[**CreateBalanceResponse**](CreateBalanceResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -170,7 +244,7 @@ import (
 
 func main() {
     id := "id_example" // string | 
-    creditWalletRequest := *client.NewCreditWalletRequest(*client.NewMonetary("Asset_example", int64(123))) // CreditWalletRequest |  (optional)
+    creditWalletRequest := *client.NewCreditWalletRequest(*client.NewMonetary("Asset_example", int64(123)), []client.Subject{client.Subject{LedgerAccountSubject: client.NewLedgerAccountSubject("Type_example", "Identifier_example")}}) // CreditWalletRequest |  (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -211,7 +285,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -281,6 +355,77 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetBalance
+
+> GetBalanceResponse GetBalance(ctx, id, balanceName).Execute()
+
+Get detailed balance
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    id := "id_example" // string | 
+    balanceName := "balanceName_example" // string | 
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.WalletsApi.GetBalance(context.Background(), id, balanceName).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `WalletsApi.GetBalance``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `GetBalance`: GetBalanceResponse
+    fmt.Fprintf(os.Stdout, "Response from `WalletsApi.GetBalance`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** |  | 
+**balanceName** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetBalanceRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+### Return type
+
+[**GetBalanceResponse**](GetBalanceResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
@@ -562,6 +707,74 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
+## ListBalances
+
+> ListBalancesResponse ListBalances(ctx, id).Execute()
+
+List balances of a wallet
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    id := "id_example" // string | 
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.WalletsApi.ListBalances(context.Background(), id).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `WalletsApi.ListBalances``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `ListBalances`: ListBalancesResponse
+    fmt.Fprintf(os.Stdout, "Response from `WalletsApi.ListBalances`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListBalancesRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+[**ListBalancesResponse**](ListBalancesResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
 ## ListWallets
 
 > ListWalletsResponse ListWallets(ctx).Name(name).Metadata(metadata).PageSize(pageSize).Cursor(cursor).Execute()
@@ -693,7 +906,7 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
@@ -759,7 +972,66 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## WalletsgetServerInfo
+
+> ServerInfo WalletsgetServerInfo(ctx).Execute()
+
+Get server info
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.WalletsApi.WalletsgetServerInfo(context.Background()).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `WalletsApi.WalletsgetServerInfo``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `WalletsgetServerInfo`: ServerInfo
+    fmt.Fprintf(os.Stdout, "Response from `WalletsApi.WalletsgetServerInfo`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiWalletsgetServerInfoRequest struct via the builder pattern
+
+
+### Return type
+
+[**ServerInfo**](ServerInfo.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
