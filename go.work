@@ -3,5 +3,6 @@ go 1.19
 use (
 	./sdks/go
 	./services/fctl
+	./services/search
 	./services/wallets
 )
