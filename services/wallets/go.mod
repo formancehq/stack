@@ -3,7 +3,6 @@ module github.com/formancehq/wallets
 go 1.19
 
 require (
-	github.com/davecgh/go-spew v1.1.1
 	github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20221227110945-2ed7cd120caa
 	github.com/formancehq/go-libs v1.4.1-0.20221229182026-36654270208c
 	github.com/go-chi/chi/v5 v5.0.8
@@ -23,6 +22,7 @@ require (
 require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
