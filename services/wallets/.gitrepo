@@ -6,7 +6,7 @@
 [subrepo]
 	remote = wallets
 	branch = feat/num-1361-wallets-sub-balances
-	commit = a6e932422a511d6e3bae46c3da029428608d155f
-	parent = 54e1fb2c6425f8a986f5898db6db48d2acfd881b
+	commit = 54c9f0b7a0053eaede9882e1159cbd579be82c89
+	parent = 758008331736022af591d259496e3eeb14c120b0
 	method = merge
 	cmdver = 0.4.5
