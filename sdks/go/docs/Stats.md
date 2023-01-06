@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Accounts** | **int32** |  |
-**Transactions** | **int32** |  |
+**Accounts** | **int32** |  | 
+**Transactions** | **int32** |  | 
 
 ## Methods
 
@@ -68,3 +68,5 @@ SetTransactions sets Transactions field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

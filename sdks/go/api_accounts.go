@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
 
 API version: develop
 Contact: support@formance.com
@@ -28,7 +28,7 @@ type AccountsApi interface {
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param ledger Name of the ledger.
-	@param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
+	@param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
 	@return ApiAddMetadataToAccountRequest
 	*/
 	AddMetadataToAccount(ctx context.Context, ledger string, address string) ApiAddMetadataToAccountRequest
@@ -53,7 +53,7 @@ type AccountsApi interface {
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param ledger Name of the ledger.
-	@param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
+	@param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
 	@return ApiGetAccountRequest
 	*/
 	GetAccount(ctx context.Context, ledger string, address string) ApiGetAccountRequest
@@ -104,7 +104,7 @@ AddMetadataToAccount Add metadata to an account.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param ledger Name of the ledger.
- @param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
+ @param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
  @return ApiAddMetadataToAccountRequest
 */
 func (a *AccountsApiService) AddMetadataToAccount(ctx context.Context, ledger string, address string) ApiAddMetadataToAccountRequest {
@@ -334,7 +334,7 @@ GetAccount Get account by its address.
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param ledger Name of the ledger.
- @param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
+ @param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
  @return ApiGetAccountRequest
 */
 func (a *AccountsApiService) GetAccount(ctx context.Context, ledger string, address string) ApiGetAccountRequest {
@@ -482,7 +482,7 @@ func (r ApiListAccountsRequest) BalanceOperator(balanceOperator string) ApiListA
 	return r
 }
 
-// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
+// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
 func (r ApiListAccountsRequest) PaginationToken(paginationToken string) ApiListAccountsRequest {
 	r.paginationToken = &paginationToken
 	return r

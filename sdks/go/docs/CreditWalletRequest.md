@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Amount** | [**Monetary**](Monetary.md) |  |
-**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional]
-**Reference** | Pointer to **string** |  | [optional]
-**Sources** | [**[]Subject**](Subject.md) |  |
-**Balance** | Pointer to **string** | The balance to credit | [optional]
+**Amount** | [**Monetary**](Monetary.md) |  | 
+**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional] 
+**Reference** | Pointer to **string** |  | [optional] 
+**Sources** | [**[]Subject**](Subject.md) |  | 
+**Balance** | Pointer to **string** | The balance to credit | [optional] 
 
 ## Methods
 
@@ -146,3 +146,5 @@ HasBalance returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

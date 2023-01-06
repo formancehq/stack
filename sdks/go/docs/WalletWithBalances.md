@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | The unique ID of the wallet. |
-**Metadata** | **map[string]interface{}** | Metadata associated with the wallet. |
-**Name** | **string** |  |
-**CreatedAt** | **time.Time** |  |
-**Balances** | [**WalletWithBalancesBalances**](WalletWithBalancesBalances.md) |  |
+**Id** | **string** | The unique ID of the wallet. | 
+**Metadata** | **map[string]interface{}** | Metadata associated with the wallet. | 
+**Name** | **string** |  | 
+**CreatedAt** | **time.Time** |  | 
+**Balances** | [**WalletWithBalancesBalances**](WalletWithBalancesBalances.md) |  | 
 
 ## Methods
 
@@ -131,3 +131,5 @@ SetBalances sets Balances field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

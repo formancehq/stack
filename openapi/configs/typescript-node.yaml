@@ -1,4 +1,4 @@
-templateDir: templates/typescript
+templateDir: openapi/templates/typescript
 # files:
 #   Taskfile.yml.mustache:
 #     destinationFilename: Taskfile.yml

@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
 
 API version: develop
 Contact: support@formance.com
@@ -1022,7 +1022,7 @@ func (r ApiGetHoldsRequest) Metadata(metadata map[string]interface{}) ApiGetHold
 	return r
 }
 
-// Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
+// Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
 func (r ApiGetHoldsRequest) Cursor(cursor string) ApiGetHoldsRequest {
 	r.cursor = &cursor
 	return r
@@ -1160,7 +1160,7 @@ func (r ApiGetTransactionsRequest) WalletId(walletId string) ApiGetTransactionsR
 	return r
 }
 
-// Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.
+// Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set. 
 func (r ApiGetTransactionsRequest) Cursor(cursor string) ApiGetTransactionsRequest {
 	r.cursor = &cursor
 	return r
@@ -1512,7 +1512,7 @@ func (r ApiListWalletsRequest) PageSize(pageSize int32) ApiListWalletsRequest {
 	return r
 }
 
-// Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
+// Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
 func (r ApiListWalletsRequest) Cursor(cursor string) ApiListWalletsRequest {
 	r.cursor = &cursor
 	return r

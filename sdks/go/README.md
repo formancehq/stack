@@ -148,7 +148,7 @@ Class | Method | HTTP request | Description
 *WalletsApi* | [**GetBalance**](docs/WalletsApi.md#getbalance) | **Get** /api/wallets/wallets/{id}/balances/{balanceName} | Get detailed balance
 *WalletsApi* | [**GetHold**](docs/WalletsApi.md#gethold) | **Get** /api/wallets/holds/{holdID} | Get a hold
 *WalletsApi* | [**GetHolds**](docs/WalletsApi.md#getholds) | **Get** /api/wallets/holds | Get all holds for a wallet
-*WalletsApi* | [**GetTransactions**](docs/WalletsApi.md#gettransactions) | **Get** /api/wallets/transactions |
+*WalletsApi* | [**GetTransactions**](docs/WalletsApi.md#gettransactions) | **Get** /api/wallets/transactions | 
 *WalletsApi* | [**GetWallet**](docs/WalletsApi.md#getwallet) | **Get** /api/wallets/wallets/{id} | Get a wallet
 *WalletsApi* | [**ListBalances**](docs/WalletsApi.md#listbalances) | **Get** /api/wallets/wallets/{id}/balances | List balances of a wallet
 *WalletsApi* | [**ListWallets**](docs/WalletsApi.md#listwallets) | **Get** /api/wallets/wallets | List all wallets
@@ -324,7 +324,7 @@ Class | Method | HTTP request | Description
 
 - **Type**: OAuth
 - **Flow**: application
-- **Authorization URL**:
+- **Authorization URL**: 
 - **Scopes**: N/A
 
 Example
@@ -366,3 +366,4 @@ Each of these functions takes a value of the given basic type and returns a poin
 ## Author
 
 support@formance.com
+

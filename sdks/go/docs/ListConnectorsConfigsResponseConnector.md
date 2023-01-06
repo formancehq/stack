@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Key** | Pointer to [**ListConnectorsConfigsResponseConnectorKey**](ListConnectorsConfigsResponseConnectorKey.md) |  | [optional]
+**Key** | Pointer to [**ListConnectorsConfigsResponseConnectorKey**](ListConnectorsConfigsResponseConnectorKey.md) |  | [optional] 
 
 ## Methods
 
@@ -52,3 +52,5 @@ HasKey returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

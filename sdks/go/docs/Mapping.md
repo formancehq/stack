@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Contracts** | [**[]Contract**](Contract.md) |  |
+**Contracts** | [**[]Contract**](Contract.md) |  | 
 
 ## Methods
 
@@ -47,3 +47,5 @@ SetContracts sets Contracts field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

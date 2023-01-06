@@ -31,7 +31,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    address := "users:001" // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
+    address := "users:001" // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
     requestBody := map[string]interface{}{"key": interface{}(123)} // map[string]interface{} | metadata
 
     configuration := client.NewConfiguration()
@@ -50,8 +50,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
-**address** | **string** | Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;  |
+**ledger** | **string** | Name of the ledger. | 
+**address** | **string** | Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;  | 
 
 ### Other Parameters
 
@@ -62,7 +62,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **requestBody** | **map[string]interface{}** | metadata |
+ **requestBody** | **map[string]interface{}** | metadata | 
 
 ### Return type
 
@@ -121,7 +121,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
+**ledger** | **string** | Name of the ledger. | 
 
 ### Other Parameters
 
@@ -131,8 +131,8 @@ Other parameters are passed through a pointer to a apiCountAccountsRequest struc
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **address** | **string** | Filter accounts by address pattern (regular expression placed between ^ and $). |
- **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. |
+ **address** | **string** | Filter accounts by address pattern (regular expression placed between ^ and $). | 
+ **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. | 
 
 ### Return type
 
@@ -172,7 +172,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    address := "users:001" // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
+    address := "users:001" // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -192,8 +192,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
-**address** | **string** | Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;  |
+**ledger** | **string** | Name of the ledger. | 
+**address** | **string** | Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;  | 
 
 ### Other Parameters
 
@@ -271,7 +271,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
+**ledger** | **string** | Name of the ledger. | 
 
 ### Other Parameters
 
@@ -282,12 +282,12 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **pageSize** | **int32** | The maximum number of results to return per page | [default to 15]
- **after** | **string** | Pagination cursor, will return accounts after given address, in descending order. |
- **address** | **string** | Filter accounts by address pattern (regular expression placed between ^ and $). |
- **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. |
- **balance** | **int64** | Filter accounts by their balance (default operator is gte) |
- **balanceOperator** | **string** | Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, or equal |
- **paginationToken** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  |
+ **after** | **string** | Pagination cursor, will return accounts after given address, in descending order. | 
+ **address** | **string** | Filter accounts by address pattern (regular expression placed between ^ and $). | 
+ **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. | 
+ **balance** | **int64** | Filter accounts by their balance (default operator is gte) | 
+ **balanceOperator** | **string** | Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, or equal | 
+ **paginationToken** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  | 
 
 ### Return type
 
@@ -305,3 +305,4 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+

@@ -54,8 +54,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | **string** | Client ID |
-**scopeId** | **string** | Scope ID |
+**clientId** | **string** | Client ID | 
+**scopeId** | **string** | Scope ID | 
 
 ### Other Parameters
 
@@ -129,7 +129,7 @@ Other parameters are passed through a pointer to a apiCreateClientRequest struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | **ClientOptions** |  |
+ **body** | **ClientOptions** |  | 
 
 ### Return type
 
@@ -189,7 +189,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | **string** | Client ID |
+**clientId** | **string** | Client ID | 
 
 ### Other Parameters
 
@@ -199,7 +199,7 @@ Other parameters are passed through a pointer to a apiCreateSecretRequest struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **body** | **SecretOptions** |  |
+ **body** | **SecretOptions** |  | 
 
 ### Return type
 
@@ -256,7 +256,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | **string** | Client ID |
+**clientId** | **string** | Client ID | 
 
 ### Other Parameters
 
@@ -323,8 +323,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | **string** | Client ID |
-**scopeId** | **string** | Scope ID |
+**clientId** | **string** | Client ID | 
+**scopeId** | **string** | Scope ID | 
 
 ### Other Parameters
 
@@ -392,8 +392,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | **string** | Client ID |
-**secretId** | **string** | Secret ID |
+**clientId** | **string** | Client ID | 
+**secretId** | **string** | Secret ID | 
 
 ### Other Parameters
 
@@ -521,7 +521,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | **string** | Client ID |
+**clientId** | **string** | Client ID | 
 
 ### Other Parameters
 
@@ -590,7 +590,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | **string** | Client ID |
+**clientId** | **string** | Client ID | 
 
 ### Other Parameters
 
@@ -600,7 +600,7 @@ Other parameters are passed through a pointer to a apiUpdateClientRequest struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **body** | **ClientOptions** |  |
+ **body** | **ClientOptions** |  | 
 
 ### Return type
 
@@ -618,3 +618,4 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+

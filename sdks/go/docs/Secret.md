@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | **string** |  |
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional]
-**Id** | **string** |  |
-**LastDigits** | **string** |  |
-**Clear** | **string** |  |
+**Name** | **string** |  | 
+**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
+**Id** | **string** |  | 
+**LastDigits** | **string** |  | 
+**Clear** | **string** |  | 
 
 ## Methods
 
@@ -136,3 +136,5 @@ SetClear sets Clear field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

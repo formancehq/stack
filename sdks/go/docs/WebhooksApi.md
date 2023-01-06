@@ -55,7 +55,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** | Config ID |
+**id** | **string** | Config ID | 
 
 ### Other Parameters
 
@@ -126,7 +126,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** | Config ID |
+**id** | **string** | Config ID | 
 
 ### Other Parameters
 
@@ -136,7 +136,7 @@ Other parameters are passed through a pointer to a apiChangeConfigSecretRequest 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **configChangeSecret** | [**ConfigChangeSecret**](ConfigChangeSecret.md) |  |
+ **configChangeSecret** | [**ConfigChangeSecret**](ConfigChangeSecret.md) |  | 
 
 ### Return type
 
@@ -197,7 +197,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** | Config ID |
+**id** | **string** | Config ID | 
 
 ### Other Parameters
 
@@ -265,7 +265,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** | Config ID |
+**id** | **string** | Config ID | 
 
 ### Other Parameters
 
@@ -341,8 +341,8 @@ Other parameters are passed through a pointer to a apiGetManyConfigsRequest stru
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **id** | **string** | Optional filter by Config ID |
- **endpoint** | **string** | Optional filter by endpoint URL |
+ **id** | **string** | Optional filter by Config ID | 
+ **endpoint** | **string** | Optional filter by endpoint URL | 
 
 ### Return type
 
@@ -383,7 +383,7 @@ import (
 )
 
 func main() {
-    configUser := *client.NewConfigUser("https://example.com", []string{"TYPE1"}) // ConfigUser |
+    configUser := *client.NewConfigUser("https://example.com", []string{"TYPE1"}) // ConfigUser | 
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -408,7 +408,7 @@ Other parameters are passed through a pointer to a apiInsertConfigRequest struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **configUser** | [**ConfigUser**](ConfigUser.md) |  |
+ **configUser** | [**ConfigUser**](ConfigUser.md) |  | 
 
 ### Return type
 
@@ -469,7 +469,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** | Config ID |
+**id** | **string** | Config ID | 
 
 ### Other Parameters
 
@@ -496,3 +496,4 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+

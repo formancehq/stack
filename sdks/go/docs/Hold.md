@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** | The unique ID of the hold. |
-**WalletID** | **string** | The ID of the wallet the hold is associated with. |
-**Metadata** | **map[string]interface{}** | Metadata associated with the hold. |
-**Description** | **string** |  |
-**Destination** | Pointer to [**Subject**](Subject.md) |  | [optional]
+**Id** | **string** | The unique ID of the hold. | 
+**WalletID** | **string** | The ID of the wallet the hold is associated with. | 
+**Metadata** | **map[string]interface{}** | Metadata associated with the hold. | 
+**Description** | **string** |  | 
+**Destination** | Pointer to [**Subject**](Subject.md) |  | [optional] 
 
 ## Methods
 
@@ -136,3 +136,5 @@ HasDestination returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

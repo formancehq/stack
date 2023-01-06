@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Metadata** | Pointer to **map[string]interface{}** | Custom metadata to attach to this wallet. | [optional]
-**Name** | **string** |  |
+**Metadata** | Pointer to **map[string]interface{}** | Custom metadata to attach to this wallet. | [optional] 
+**Name** | **string** |  | 
 
 ## Methods
 
@@ -73,3 +73,5 @@ SetName sets Name field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

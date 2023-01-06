@@ -47,7 +47,6 @@ tasks:
 
   sdk:template:
     desc: Extract templates
-    dir: ./sdk
     preconditions:
     - sh: "[ \"{{.CLI_ARGS}}\" != \"\" ]"
       msg: Please specify generator as first cli arg (ie "task template -- go")
