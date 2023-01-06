@@ -6,7 +6,7 @@
 [subrepo]
 	remote = go-libs
 	branch = main
-	commit = f90bc2f42878d0148c378edffa3bcbad8bdc3ba8
-	parent = 6bcf7d6a7ac5b3cf5af1e906c50efccf95d9d6a4
+	commit = 17410b734c2216503e0ad985626737fdbc1cf33b
+	parent = 6cbfd12341460c6eb9eeea0a139d288b72de0b8f
 	method = merge
 	cmdver = 0.4.5
