@@ -17,7 +17,8 @@ func TestHoldsGet(t *testing.T) {
 	t.Parallel()
 
 	walletID := uuid.NewString()
-	hold := wallet.NewDebitHold(walletID, "bank", "USD", "", metadata.Metadata{})
+	hold := wallet.NewDebitHold(walletID, wallet.NewLedgerAccountSubject("bank"),
+		"USD", "", metadata.Metadata{})
 
 	req := newRequest(t, http.MethodGet, "/holds/"+hold.ID, nil)
 	rec := httptest.NewRecorder()

@@ -17,7 +17,7 @@ func TestHoldsConfirm(t *testing.T) {
 	t.Parallel()
 
 	walletID := uuid.NewString()
-	hold := wallet.NewDebitHold(walletID, "bank", "USD", "", metadata.Metadata{})
+	hold := wallet.NewDebitHold(walletID, wallet.NewLedgerAccountSubject("bank"), "USD", "", metadata.Metadata{})
 
 	req := newRequest(t, http.MethodPost, "/holds/"+hold.ID+"/confirm", nil)
 	rec := httptest.NewRecorder()
@@ -60,7 +60,7 @@ func TestHoldsPartialConfirm(t *testing.T) {
 	t.Parallel()
 
 	walletID := uuid.NewString()
-	hold := wallet.NewDebitHold(walletID, "bank", "USD", "", metadata.Metadata{})
+	hold := wallet.NewDebitHold(walletID, wallet.NewLedgerAccountSubject("bank"), "USD", "", metadata.Metadata{})
 
 	req := newRequest(t, http.MethodPost, "/holds/"+hold.ID+"/confirm", ConfirmHoldRequest{
 		Amount: 50,
@@ -111,7 +111,7 @@ func TestHoldsConfirmWithTooHighAmount(t *testing.T) {
 	t.Parallel()
 
 	walletID := uuid.NewString()
-	hold := wallet.NewDebitHold(walletID, "bank", "USD", "", metadata.Metadata{})
+	hold := wallet.NewDebitHold(walletID, wallet.NewLedgerAccountSubject("bank"), "USD", "", metadata.Metadata{})
 
 	req := newRequest(t, http.MethodPost, "/holds/"+hold.ID+"/confirm", ConfirmHoldRequest{
 		Amount: 500,
@@ -150,7 +150,7 @@ func TestHoldsConfirmWithClosedHold(t *testing.T) {
 	t.Parallel()
 
 	walletID := uuid.NewString()
-	hold := wallet.NewDebitHold(walletID, "bank", "USD", "", metadata.Metadata{})
+	hold := wallet.NewDebitHold(walletID, wallet.NewLedgerAccountSubject("bank"), "USD", "", metadata.Metadata{})
 
 	req := newRequest(t, http.MethodPost, "/holds/"+hold.ID+"/confirm", ConfirmHoldRequest{})
 	rec := httptest.NewRecorder()
@@ -187,7 +187,8 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 	t.Parallel()
 
 	walletID := uuid.NewString()
-	hold := wallet.NewDebitHold(walletID, "bank", "USD", "", metadata.Metadata{})
+	hold := wallet.NewDebitHold(walletID, wallet.NewLedgerAccountSubject("bank"),
+		"USD", "", metadata.Metadata{})
 
 	req := newRequest(t, http.MethodPost, "/holds/"+hold.ID+"/confirm", ConfirmHoldRequest{
 		Amount: 50,

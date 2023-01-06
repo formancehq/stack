@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/go-libs/metadata"
@@ -52,6 +53,7 @@ func TestWalletsPatch(t *testing.T) {
 				},
 				wallet.MetadataKeyBalanceName:   wallet.MainBalance,
 				wallet.MetadataKeyWalletBalance: wallet.TrueValue,
+				wallet.MetadataKeyCreatedAt:     w.CreatedAt.UTC().Format(time.RFC3339Nano),
 			}, md)
 			return nil
 		}),

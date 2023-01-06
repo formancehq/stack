@@ -95,7 +95,7 @@ paths:
           type: string
           example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
       tags:
-        - Wallets
+      - Wallets
       responses:
         '200':
           description: OK
@@ -107,7 +107,7 @@ paths:
       summary: Create a new wallet
       operationId: createWallet
       tags:
-        - Wallets
+      - Wallets
       requestBody:
         content:
           application/json:
@@ -123,16 +123,16 @@ paths:
 
   /wallets/{id}:
     parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
     get:
       summary: Get a wallet
       operationId: getWallet
       tags:
-        - Wallets
+      - Wallets
       responses:
         200:
           description: Wallet
@@ -146,7 +146,7 @@ paths:
       summary: Update a wallet
       operationId: updateWallet
       tags:
-        - Wallets
+      - Wallets
       requestBody:
         content:
           application/json:
@@ -219,16 +219,16 @@ paths:
 
   /wallets/{id}/debit:
     parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
     post:
       summary: Debit a wallet
       operationId: debitWallet
       tags:
-        - Wallets
+      - Wallets
       requestBody:
         content:
           application/json:
@@ -246,16 +246,16 @@ paths:
 
   /wallets/{id}/credit:
     parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
     post:
       summary: Credit a wallet
       operationId: creditWallet
       tags:
-        - Wallets
+      - Wallets
       requestBody:
         content:
           application/json:
@@ -273,7 +273,7 @@ paths:
     get:
       summary: Get all holds for a wallet
       tags:
-        - Wallets
+      - Wallets
       operationId: getHolds
       parameters:
       - name: pageSize
@@ -354,7 +354,7 @@ paths:
               $ref: '#/components/schemas/ConfirmHoldRequest'
       summary: Confirm a hold
       tags:
-        - Wallets
+      - Wallets
       operationId: confirmHold
       responses:
         204:
@@ -362,16 +362,16 @@ paths:
 
   /holds/{hold_id}/void:
     parameters:
-      - name: hold_id
-        in: path
-        required: true
-        schema:
-          type: string
+    - name: hold_id
+      in: path
+      required: true
+      schema:
+        type: string
     post:
       summary: Cancel a hold
       operationId: voidHold
       tags:
-        - Wallets
+      - Wallets
       responses:
         204:
           description: Hold successfully cancelled, funds returned to wallet
@@ -394,9 +394,10 @@ components:
     Wallet:
       type: object
       required:
-        - name
-        - id
-        - metadata
+      - name
+      - id
+      - metadata
+      - createdAt
       properties:
         id:
           type: string
@@ -408,6 +409,9 @@ components:
           additionalProperties: {}
         name:
           type: string
+        createdAt:
+          type: string
+          format: date-time
     WalletWithBalances:
       allOf:
       - $ref: '#/components/schemas/Wallet'
@@ -443,6 +447,8 @@ components:
           additionalProperties: {}
         description:
           type: string
+        destination:
+          $ref: '#/components/schemas/Subject'
     ExpandedDebitHold:
       allOf:
       - $ref: '#/components/schemas/Hold'

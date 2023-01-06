@@ -8,7 +8,7 @@ import (
 type DebitHold struct {
 	ID          string            `json:"id"`
 	WalletID    string            `json:"walletID"`
-	Destination string            `json:"destination"`
+	Destination Subject           `json:"destination"`
 	Asset       string            `json:"asset"`
 	Metadata    metadata.Metadata `json:"metadata"`
 	Description string            `json:"description"`
@@ -30,10 +30,15 @@ func (h DebitHold) LedgerMetadata(chart *Chart) metadata.Metadata {
 		},
 		MetadataKeyWalletCustomData:      map[string]any(h.Metadata),
 		MetadataKeyWalletHoldDescription: h.Description,
+		MetadataKeyHoldSubject: map[string]any{
+			"type":       h.Destination.Type,
+			"identifier": h.Destination.Identifier,
+			"balance":    h.Destination.Balance,
+		},
 	}
 }
 
-func NewDebitHold(walletID, destination, asset, description string, md metadata.Metadata) DebitHold {
+func NewDebitHold(walletID string, destination Subject, asset, description string, md metadata.Metadata) DebitHold {
 	return DebitHold{
 		ID:          uuid.NewString(),
 		WalletID:    walletID,
@@ -45,10 +50,22 @@ func NewDebitHold(walletID, destination, asset, description string, md metadata.
 }
 
 func DebitHoldFromLedgerAccount(account metadata.Owner) DebitHold {
+	subjectMetadata := account.GetMetadata()[MetadataKeyHoldSubject].(map[string]any)
+	subject := Subject{
+		Type:       subjectMetadata["type"].(string),
+		Identifier: subjectMetadata["identifier"].(string),
+		Balance: func() string {
+			if balance := subjectMetadata["balance"]; balance != nil {
+				return balance.(string)
+			}
+			return ""
+		}(),
+	}
+
 	hold := DebitHold{}
 	hold.ID = account.GetMetadata()[MetadataKeyHoldID].(string)
 	hold.WalletID = account.GetMetadata()[MetadataKeyHoldWalletID].(string)
-	hold.Destination = account.GetMetadata()[MetadataKeyHoldDestination].(map[string]any)["value"].(string)
+	hold.Destination = subject
 	hold.Asset = account.GetMetadata()[MetadataKeyHoldAsset].(string)
 	hold.Metadata = account.GetMetadata()[MetadataKeyWalletCustomData].(map[string]any)
 	hold.Description = account.GetMetadata()[MetadataKeyWalletHoldDescription].(string)

@@ -3,6 +3,7 @@ package wallet
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/formancehq/go-libs/metadata"
 	"github.com/google/uuid"
@@ -31,9 +32,10 @@ func (c *CreateRequest) Bind(r *http.Request) error {
 }
 
 type Wallet struct {
-	ID       string            `json:"id"`
-	Name     string            `json:"name"`
-	Metadata metadata.Metadata `json:"metadata"`
+	ID        string            `json:"id"`
+	Name      string            `json:"name"`
+	Metadata  metadata.Metadata `json:"metadata"`
+	CreatedAt time.Time         `json:"createdAt"`
 }
 
 type WithBalances struct {
@@ -85,6 +87,7 @@ func (w Wallet) LedgerMetadata() metadata.Metadata {
 		MetadataKeyWalletID:         w.ID,
 		MetadataKeyWalletBalance:    TrueValue,
 		MetadataKeyBalanceName:      MainBalance,
+		MetadataKeyCreatedAt:        w.CreatedAt.UTC().Format(time.RFC3339Nano),
 	}
 }
 
@@ -93,17 +96,24 @@ func NewWallet(name string, m metadata.Metadata) Wallet {
 		m = metadata.Metadata{}
 	}
 	return Wallet{
-		ID:       uuid.NewString(),
-		Metadata: m,
-		Name:     name,
+		ID:        uuid.NewString(),
+		Metadata:  m,
+		Name:      name,
+		CreatedAt: time.Now().UTC().Round(time.Nanosecond),
 	}
 }
 
 func FromAccount(account metadata.Owner) Wallet {
+	createdAt, err := time.Parse(time.RFC3339Nano, GetMetadata(account, MetadataKeyCreatedAt).(string))
+	if err != nil {
+		panic(err)
+	}
+
 	return Wallet{
-		ID:       GetMetadata(account, MetadataKeyWalletID).(string),
-		Name:     GetMetadata(account, MetadataKeyWalletName).(string),
-		Metadata: GetMetadata(account, MetadataKeyWalletCustomData).(map[string]any),
+		ID:        GetMetadata(account, MetadataKeyWalletID).(string),
+		Name:      GetMetadata(account, MetadataKeyWalletName).(string),
+		Metadata:  GetMetadata(account, MetadataKeyWalletCustomData).(map[string]any),
+		CreatedAt: createdAt,
 	}
 }
 

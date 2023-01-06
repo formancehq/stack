@@ -79,11 +79,15 @@ func NewManager(
 }
 
 func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
+	if err := debit.Validate(); err != nil {
+		return nil, err
+	}
+
 	dest := debit.getDestination()
 
 	var hold *DebitHold
 	if debit.Pending {
-		hold = Ptr(debit.newHold(m.chart))
+		hold = Ptr(debit.newHold())
 		holdAccount := m.chart.GetHoldAccount(hold.ID)
 		if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, holdAccount, hold.LedgerMetadata(m.chart)); err != nil {
 			return nil, errors.Wrap(err, "adding metadata to account")

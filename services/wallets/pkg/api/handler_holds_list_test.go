@@ -23,7 +23,8 @@ func TestHoldsList(t *testing.T) {
 
 	holds := make([]wallet.DebitHold, 0)
 	for i := 0; i < 10; i++ {
-		holds = append(holds, wallet.NewDebitHold(walletID, "bank", "USD", "", metadata.Metadata{}))
+		holds = append(holds, wallet.NewDebitHold(walletID, wallet.NewLedgerAccountSubject("bank"),
+			"USD", "", metadata.Metadata{}))
 	}
 
 	var testEnv *testEnv
@@ -66,7 +67,8 @@ func TestHoldsListWithPagination(t *testing.T) {
 
 	holds := make([]wallet.DebitHold, 0)
 	for i := 0; i < 10; i++ {
-		holds = append(holds, wallet.NewDebitHold(walletID, "bank", "USD", "", metadata.Metadata{}))
+		holds = append(holds, wallet.NewDebitHold(walletID, wallet.NewLedgerAccountSubject("bank"),
+			"USD", "", metadata.Metadata{}))
 	}
 	const pageSize = 2
 	numberOfPages := int64(len(holds) / pageSize)
