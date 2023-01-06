@@ -85,6 +85,7 @@ func NewManager(
 	}
 }
 
+//nolint:cyclop
 func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 	if err := debit.Validate(); err != nil {
 		return nil, err
@@ -465,6 +466,8 @@ func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountLis
 	}), nil
 }
 
+const maxPageSize = 100
+
 func fetchAndMapAllAccounts[TO any](ctx context.Context, r *Manager, md metadata.Metadata, mapper mapper[Account, TO]) ([]TO, error) {
 	ret := make([]TO, 0)
 	query := mapAccountListQuery{
@@ -472,7 +475,7 @@ func fetchAndMapAllAccounts[TO any](ctx context.Context, r *Manager, md metadata
 			return md
 		},
 		Pagination: Pagination{
-			Limit: 100,
+			Limit: maxPageSize,
 		},
 	}
 	for {
