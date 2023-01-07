@@ -92,9 +92,9 @@ func newTestEnv(opts ...Option) *testEnv {
 type (
 	addMetadataToAccountFn func(ctx context.Context, ledger, account string, metadata metadata.Metadata) error
 	getAccountFn           func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error)
-	listAccountsFn         func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.ListAccounts200ResponseCursor, error)
-	listTransactionsFn     func(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*sdk.ListTransactions200ResponseCursor, error)
-	runScriptFn            func(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResult, error)
+	listAccountsFn         func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error)
+	listTransactionsFn     func(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error)
+	runScriptFn            func(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResponse, error)
 )
 
 type LedgerMock struct {
@@ -113,15 +113,15 @@ func (l *LedgerMock) GetAccount(ctx context.Context, ledger, account string) (*s
 	return l.getAccount(ctx, ledger, account)
 }
 
-func (l *LedgerMock) ListAccounts(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.ListAccounts200ResponseCursor, error) {
+func (l *LedgerMock) ListAccounts(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
 	return l.listAccounts(ctx, ledger, query)
 }
 
-func (l *LedgerMock) RunScript(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResult, error) {
+func (l *LedgerMock) RunScript(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResponse, error) {
 	return l.runScript(ctx, name, script)
 }
 
-func (l *LedgerMock) ListTransactions(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*sdk.ListTransactions200ResponseCursor, error) {
+func (l *LedgerMock) ListTransactions(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error) {
 	return l.listTransactions(ctx, ledger, query)
 }
 

@@ -84,7 +84,7 @@ func (c *clientFacade) GrantTypes() []oidc.GrantType {
 
 // LoginURL will be called to redirect the user (agent) to the login UI
 // you could implement some logic here to redirect the users to different login UIs depending on the client
-func (c *clientFacade) LoginURL(id string) string {
+func (c *clientFacade) LoginURL(t op.LoginType, id string) string {
 	return rp.AuthURL(delegatedauth.DelegatedState{
 		AuthRequestID: id,
 	}.EncodeAsUrlParam(), c.relyingParty)

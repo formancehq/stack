@@ -40,7 +40,7 @@ func NewShowCommand() *cobra.Command {
 				return err
 			}
 
-			rsp, _, err := ledgerClient.TransactionsApi.GetTransaction(cmd.Context(), ledger, int32(txId)).Execute()
+			rsp, _, err := ledgerClient.TransactionsApi.GetTransaction(cmd.Context(), ledger, txId).Execute()
 			if err != nil {
 				return errors.Wrapf(err, "retrieving transaction")
 			}

@@ -140,7 +140,7 @@ func NewCommand() *cobra.Command {
 				if response.ErrorMessage != nil {
 					return errors.New(*response.ErrorMessage)
 				}
-				return errors.New(*response.ErrorCode)
+				return errors.New(string(*response.ErrorCode))
 			}
 
 			return internal.PrintTransaction(cmd.OutOrStdout(), *response.Transaction)

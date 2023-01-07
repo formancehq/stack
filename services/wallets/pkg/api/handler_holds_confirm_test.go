@@ -27,7 +27,7 @@ func TestHoldsConfirm(t *testing.T) {
 		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int32{
+			balances := map[string]int64{
 				"USD": 100,
 			}
 			return &sdk.AccountWithVolumesAndBalances{
@@ -36,7 +36,7 @@ func TestHoldsConfirm(t *testing.T) {
 				Balances: &balances,
 			}, nil
 		}),
-		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResult, error) {
+		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResponse, error) {
 			require.EqualValues(t, sdk.Script{
 				Plain: wallet.BuildConfirmHoldScript(false, "USD"),
 				Vars: map[string]interface{}{
@@ -48,7 +48,7 @@ func TestHoldsConfirm(t *testing.T) {
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, script)
-			return &sdk.ScriptResult{}, nil
+			return &sdk.ScriptResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
@@ -72,10 +72,10 @@ func TestHoldsPartialConfirm(t *testing.T) {
 		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int32{
+			balances := map[string]int64{
 				"USD": 100,
 			}
-			volumes := map[string]map[string]int32{
+			volumes := map[string]map[string]int64{
 				"USD": {
 					"input": 100,
 				},
@@ -87,7 +87,7 @@ func TestHoldsPartialConfirm(t *testing.T) {
 				Volumes:  &volumes,
 			}, nil
 		}),
-		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResult, error) {
+		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResponse, error) {
 			require.EqualValues(t, sdk.Script{
 				Plain: wallet.BuildConfirmHoldScript(false, "USD"),
 				Vars: map[string]interface{}{
@@ -99,7 +99,7 @@ func TestHoldsPartialConfirm(t *testing.T) {
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, script)
-			return &sdk.ScriptResult{}, nil
+			return &sdk.ScriptResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
@@ -123,10 +123,10 @@ func TestHoldsConfirmWithTooHighAmount(t *testing.T) {
 		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int32{
+			balances := map[string]int64{
 				"USD": 100,
 			}
-			volumes := map[string]map[string]int32{
+			volumes := map[string]map[string]int64{
 				"USD": {
 					"input": 100,
 				},
@@ -160,10 +160,10 @@ func TestHoldsConfirmWithClosedHold(t *testing.T) {
 		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int32{
+			balances := map[string]int64{
 				"USD": 0,
 			}
-			volumes := map[string]map[string]int32{
+			volumes := map[string]map[string]int64{
 				"USD": {
 					"input": 100,
 				},
@@ -201,10 +201,10 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int32{
+			balances := map[string]int64{
 				"USD": 100,
 			}
-			volumes := map[string]map[string]int32{
+			volumes := map[string]map[string]int64{
 				"USD": {
 					"input": 100,
 				},
@@ -216,7 +216,7 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 				Volumes:  &volumes,
 			}, nil
 		}),
-		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResult, error) {
+		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResponse, error) {
 			require.EqualValues(t, sdk.Script{
 				Plain: wallet.BuildConfirmHoldScript(true, "USD"),
 				Vars: map[string]interface{}{
@@ -228,7 +228,7 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, script)
-			return &sdk.ScriptResult{}, nil
+			return &sdk.ScriptResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)

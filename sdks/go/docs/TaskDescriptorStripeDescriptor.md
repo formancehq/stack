@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | Pointer to **string** |  | [optional]
-**Main** | Pointer to **bool** |  | [optional]
-**Account** | Pointer to **string** |  | [optional]
+**Name** | Pointer to **string** |  | [optional] 
+**Main** | Pointer to **bool** |  | [optional] 
+**Account** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -104,3 +104,5 @@ HasAccount returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

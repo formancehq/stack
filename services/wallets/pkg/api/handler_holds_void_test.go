@@ -28,10 +28,10 @@ func TestHoldsVoid(t *testing.T) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
 
-			balances := map[string]int32{
+			balances := map[string]int64{
 				"USD": 100,
 			}
-			volumes := map[string]map[string]int32{
+			volumes := map[string]map[string]int64{
 				"USD": {
 					"input": 100,
 				},
@@ -44,7 +44,7 @@ func TestHoldsVoid(t *testing.T) {
 				Volumes:  &volumes,
 			}, nil
 		}),
-		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResult, error) {
+		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResponse, error) {
 			require.Equal(t, sdk.Script{
 				Plain: wallet.BuildCancelHoldScript("USD"),
 				Vars: map[string]interface{}{
@@ -52,7 +52,7 @@ func TestHoldsVoid(t *testing.T) {
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, script)
-			return &sdk.ScriptResult{}, nil
+			return &sdk.ScriptResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)

@@ -4,12 +4,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Provider** | Pointer to **string** | The connector code | [optional]
-**CreatedAt** | Pointer to **time.Time** | The date when the task was created | [optional]
-**Status** | Pointer to **string** | The task status | [optional]
-**Error** | Pointer to **string** | The error message if the task failed | [optional]
-**State** | Pointer to **map[string]interface{}** | The task state | [optional]
-**Descriptor** | Pointer to [**TaskDescriptorDummyPayDescriptor**](TaskDescriptorDummyPayDescriptor.md) |  | [optional]
+**Provider** | Pointer to **string** | The connector code | [optional] 
+**CreatedAt** | Pointer to **time.Time** | The date when the task was created | [optional] 
+**Status** | Pointer to **string** | The task status | [optional] 
+**Error** | Pointer to **string** | The error message if the task failed | [optional] 
+**State** | Pointer to **map[string]interface{}** | The task state | [optional] 
+**Descriptor** | Pointer to [**TaskDescriptorDummyPayDescriptor**](TaskDescriptorDummyPayDescriptor.md) |  | [optional] 
 
 ## Methods
 
@@ -182,3 +182,5 @@ HasDescriptor returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

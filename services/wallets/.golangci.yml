@@ -31,6 +31,18 @@ linters:
     - nosnakecase
     - nestif
     - goerr113
-
+    # Deprecated linters
+    - ifshort
+    - varcheck
+    - maligned
+    - scopelint
+    - deadcode
+    - structcheck
+    - golint
+    - interfacer
+    # Disabled because of generics
+    - rowserrcheck
+    - sqlclosecheck
+    - wastedassign
 run:
   timeout: 5m

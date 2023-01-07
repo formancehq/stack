@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
 
 API version: develop
 Contact: support@formance.com
@@ -28,7 +28,7 @@ type AccountsApi interface {
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param ledger Name of the ledger.
-	@param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
+	@param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
 	@return ApiAddMetadataToAccountRequest
 	*/
 	AddMetadataToAccount(ctx context.Context, ledger string, address string) ApiAddMetadataToAccountRequest
@@ -53,7 +53,7 @@ type AccountsApi interface {
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param ledger Name of the ledger.
-	@param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
+	@param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
 	@return ApiGetAccountRequest
 	*/
 	GetAccount(ctx context.Context, ledger string, address string) ApiGetAccountRequest
@@ -104,7 +104,7 @@ AddMetadataToAccount Add metadata to an account
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param ledger Name of the ledger.
- @param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
+ @param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
  @return ApiAddMetadataToAccountRequest
 */
 func (a *AccountsApiService) AddMetadataToAccount(ctx context.Context, ledger string, address string) ApiAddMetadataToAccountRequest {
@@ -329,7 +329,7 @@ GetAccount Get account by its address
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param ledger Name of the ledger.
- @param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
+ @param address Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
  @return ApiGetAccountRequest
 */
 func (a *AccountsApiService) GetAccount(ctx context.Context, ledger string, address string) ApiGetAccountRequest {
@@ -431,27 +431,17 @@ type ApiListAccountsRequest struct {
 	ApiService AccountsApi
 	ledger string
 	pageSize *int64
-	pageSize2 *int64
 	after *string
 	address *string
 	metadata *map[string]interface{}
 	balance *int64
 	balanceOperator *string
-	balanceOperator2 *string
 	cursor *string
-	paginationToken *string
 }
 
-// The maximum number of results to return per page.
+// The maximum number of results to return per page. 
 func (r ApiListAccountsRequest) PageSize(pageSize int64) ApiListAccountsRequest {
 	r.pageSize = &pageSize
-	return r
-}
-
-// The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead.
-// Deprecated
-func (r ApiListAccountsRequest) PageSize2(pageSize2 int64) ApiListAccountsRequest {
-	r.pageSize2 = &pageSize2
 	return r
 }
 
@@ -479,29 +469,15 @@ func (r ApiListAccountsRequest) Balance(balance int64) ApiListAccountsRequest {
 	return r
 }
 
-// Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
+// Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. 
 func (r ApiListAccountsRequest) BalanceOperator(balanceOperator string) ApiListAccountsRequest {
 	r.balanceOperator = &balanceOperator
 	return r
 }
 
-// Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. Deprecated, please use &#x60;balanceOperator&#x60; instead.
-// Deprecated
-func (r ApiListAccountsRequest) BalanceOperator2(balanceOperator2 string) ApiListAccountsRequest {
-	r.balanceOperator2 = &balanceOperator2
-	return r
-}
-
-// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
+// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
 func (r ApiListAccountsRequest) Cursor(cursor string) ApiListAccountsRequest {
 	r.cursor = &cursor
-	return r
-}
-
-// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead.
-// Deprecated
-func (r ApiListAccountsRequest) PaginationToken(paginationToken string) ApiListAccountsRequest {
-	r.paginationToken = &paginationToken
 	return r
 }
 
@@ -551,9 +527,6 @@ func (a *AccountsApiService) ListAccountsExecute(r ApiListAccountsRequest) (*Acc
 	if r.pageSize != nil {
 		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
 	}
-	if r.pageSize2 != nil {
-		localVarQueryParams.Add("page_size", parameterToString(*r.pageSize2, ""))
-	}
 	if r.after != nil {
 		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
 	}
@@ -569,14 +542,8 @@ func (a *AccountsApiService) ListAccountsExecute(r ApiListAccountsRequest) (*Acc
 	if r.balanceOperator != nil {
 		localVarQueryParams.Add("balanceOperator", parameterToString(*r.balanceOperator, ""))
 	}
-	if r.balanceOperator2 != nil {
-		localVarQueryParams.Add("balance_operator", parameterToString(*r.balanceOperator2, ""))
-	}
 	if r.cursor != nil {
 		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
-	}
-	if r.paginationToken != nil {
-		localVarQueryParams.Add("pagination_token", parameterToString(*r.paginationToken, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

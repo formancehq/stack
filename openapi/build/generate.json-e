@@ -780,20 +780,6 @@
             }
           },
           {
-            "name": "page_size",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            },
-            "deprecated": true
-          },
-          {
             "name": "after",
             "in": "query",
             "description": "Pagination cursor, will return accounts after given address, in descending order.",
@@ -852,24 +838,6 @@
             }
           },
           {
-            "name": "balance_operator",
-            "in": "query",
-            "description": "Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.\nDeprecated, please use `balanceOperator` instead.\n",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "gte",
-                "lte",
-                "gt",
-                "lt",
-                "e",
-                "ne"
-              ],
-              "example": "gte"
-            },
-            "deprecated": true
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -877,16 +845,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           }
         ],
         "responses": {
@@ -1280,16 +1238,6 @@
             }
           },
           {
-            "name": "start_time",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "endTime",
             "in": "query",
             "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
@@ -1297,16 +1245,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "end_time",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
           },
           {
             "name": "metadata",
@@ -1378,20 +1316,6 @@
             }
           },
           {
-            "name": "page_size",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            },
-            "deprecated": true
-          },
-          {
             "name": "after",
             "in": "query",
             "description": "Pagination cursor, will return transactions after given txid (in descending order).",
@@ -1446,16 +1370,6 @@
             }
           },
           {
-            "name": "start_time",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "endTime",
             "in": "query",
             "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
@@ -1465,16 +1379,6 @@
             }
           },
           {
-            "name": "end_time",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -1482,16 +1386,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           },
           {
             "name": "metadata",
@@ -1857,16 +1751,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nDeprecated, please use `cursor` instead.",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           }
         ],
         "responses": {
@@ -1978,20 +1862,6 @@
             }
           },
           {
-            "name": "page_size",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            },
-            "deprecated": true
-          },
-          {
             "name": "after",
             "in": "query",
             "description": "Pagination cursor, will return the logs after a given ID. (in descending order).",
@@ -2010,16 +1880,6 @@
             }
           },
           {
-            "name": "start_time",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "endTime",
             "in": "query",
             "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
@@ -2029,16 +1889,6 @@
             }
           },
           {
-            "name": "end_time",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -2046,16 +1896,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           }
         ],
         "responses": {
@@ -4116,25 +3956,6 @@
             "type": "string",
             "example": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
           },
-          "error_code": {
-            "type": "string",
-            "enum": [
-              "INTERNAL",
-              "INSUFFICIENT_FUND",
-              "VALIDATION",
-              "CONFLICT",
-              "NO_SCRIPT",
-              "COMPILATION_FAILED",
-              "METADATA_OVERRIDE"
-            ],
-            "example": "INSUFFICIENT_FUND",
-            "deprecated": true
-          },
-          "error_message": {
-            "type": "string",
-            "example": "[INSUFFICIENT_FUND] account had insufficient funds",
-            "deprecated": true
-          },
           "transaction": {
             "$ref": "#/components/schemas/Transaction"
           }
@@ -5570,26 +5391,25 @@
         ],
         "properties": {
           "cursor": {
-            "$ref": "#/components/schemas/Cursor"
-          }
-        }
-      },
-      "Cursor": {
-        "type": "object",
-        "required": [
-          "hasMore",
-          "data"
-        ],
-        "properties": {
-          "hasMore": {
-            "type": "boolean",
-            "example": false
-          },
-          "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/webhooksConfig"
-            }
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Cursor"
+              },
+              {
+                "properties": {
+                  "data": {
+                    "items": {
+                      "$ref": "#/components/schemas/webhooksConfig"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "data"
+                ]
+              }
+            ]
           }
         }
       },
@@ -5860,7 +5680,7 @@
           "cursor": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/walletsCursor"
+                "$ref": "#/components/schemas/Cursor"
               },
               {
                 "properties": {
@@ -5962,7 +5782,7 @@
           "txid"
         ]
       },
-      "walletsCursor": {
+      "Cursor": {
         "type": "object",
         "required": [
           "pageSize"
@@ -5998,7 +5818,7 @@
           "cursor": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/walletsCursor"
+                "$ref": "#/components/schemas/Cursor"
               },
               {
                 "properties": {
@@ -6027,7 +5847,7 @@
           "cursor": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/walletsCursor"
+                "$ref": "#/components/schemas/Cursor"
               },
               {
                 "properties": {
@@ -6294,7 +6114,7 @@
           "cursor": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/walletsCursor"
+                "$ref": "#/components/schemas/Cursor"
               },
               {
                 "properties": {

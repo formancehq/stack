@@ -225,21 +225,16 @@ components:
         - cursor
       properties:
         cursor:
-          $ref: '#/components/schemas/Cursor'
-
-    Cursor:
-      type: object
-      required:
-        - hasMore
-        - data
-      properties:
-        hasMore:
-          type: boolean
-          example: false
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Config'
+          allOf:
+          - $ref: '#/components/schemas/Cursor'
+          - properties:
+              data:
+                items:
+                  $ref: '#/components/schemas/Config'
+                type: array
+            type: object
+            required:
+            - data
 
     ConfigResponse:
       type: object

@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Secret** | Pointer to **string** |  | [optional]
+**Secret** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -52,3 +52,5 @@ HasSecret returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

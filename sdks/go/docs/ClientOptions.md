@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Public** | Pointer to **bool** |  | [optional]
-**RedirectUris** | Pointer to **[]string** |  | [optional]
-**Description** | Pointer to **string** |  | [optional]
-**Name** | **string** |  |
-**Trusted** | Pointer to **bool** |  | [optional]
-**PostLogoutRedirectUris** | Pointer to **[]string** |  | [optional]
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional]
+**Public** | Pointer to **bool** |  | [optional] 
+**RedirectUris** | Pointer to **[]string** |  | [optional] 
+**Description** | Pointer to **string** |  | [optional] 
+**Name** | **string** |  | 
+**Trusted** | Pointer to **bool** |  | [optional] 
+**PostLogoutRedirectUris** | Pointer to **[]string** |  | [optional] 
+**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
 
 ## Methods
 
@@ -203,3 +203,5 @@ HasMetadata returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Remaining** | **int64** | Remaining amount on hold |
-**OriginalAmount** | **int64** | Original amount on hold |
+**Remaining** | **int64** | Remaining amount on hold | 
+**OriginalAmount** | **int64** | Original amount on hold | 
 
 ## Methods
 
@@ -68,3 +68,5 @@ SetOriginalAmount sets OriginalAmount field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

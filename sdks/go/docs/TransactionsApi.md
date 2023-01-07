@@ -53,8 +53,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
-**txid** | **int64** | Transaction ID. |
+**ledger** | **string** | Name of the ledger. | 
+**txid** | **int64** | Transaction ID. | 
 
 ### Other Parameters
 
@@ -65,7 +65,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **requestBody** | **map[string]interface{}** | metadata |
+ **requestBody** | **map[string]interface{}** | metadata | 
 
 ### Return type
 
@@ -87,7 +87,7 @@ Name | Type | Description  | Notes
 
 ## CountTransactions
 
-> CountTransactions(ctx, ledger).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).StartTime2(startTime2).EndTime(endTime).EndTime2(endTime2).Metadata(metadata).Execute()
+> CountTransactions(ctx, ledger).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).EndTime(endTime).Metadata(metadata).Execute()
 
 Count the transactions from a ledger
 
@@ -111,14 +111,12 @@ func main() {
     source := "users:001" // string | Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
     destination := "users:001" // string | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
     startTime := time.Now() // time.Time | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).  (optional)
-    startTime2 := time.Now() // time.Time | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute). Deprecated, please use `startTime` instead.  (optional)
     endTime := time.Now() // time.Time | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).  (optional)
-    endTime2 := time.Now() // time.Time | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute). Deprecated, please use `endTime` instead.  (optional)
     metadata := map[string]interface{}{"key": map[string]interface{}(123)} // map[string]interface{} | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.TransactionsApi.CountTransactions(context.Background(), ledger).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).StartTime2(startTime2).EndTime(endTime).EndTime2(endTime2).Metadata(metadata).Execute()
+    resp, r, err := apiClient.TransactionsApi.CountTransactions(context.Background(), ledger).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).EndTime(endTime).Metadata(metadata).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.CountTransactions``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -132,7 +130,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
+**ledger** | **string** | Name of the ledger. | 
 
 ### Other Parameters
 
@@ -142,15 +140,13 @@ Other parameters are passed through a pointer to a apiCountTransactionsRequest s
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **reference** | **string** | Filter transactions by reference field. |
- **account** | **string** | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). |
- **source** | **string** | Filter transactions with postings involving given account at source (regular expression placed between ^ and $). |
- **destination** | **string** | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). |
- **startTime** | **time.Time** | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  |
- **startTime2** | **time.Time** | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead.  |
- **endTime** | **time.Time** | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  |
- **endTime2** | **time.Time** | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead.  |
- **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. |
+ **reference** | **string** | Filter transactions by reference field. | 
+ **account** | **string** | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). | 
+ **source** | **string** | Filter transactions with postings involving given account at source (regular expression placed between ^ and $). | 
+ **destination** | **string** | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). | 
+ **startTime** | **time.Time** | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  | 
+ **endTime** | **time.Time** | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  | 
+ **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | 
 
 ### Return type
 
@@ -190,7 +186,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    postTransaction := *client.NewPostTransaction() // PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript
+    postTransaction := *client.NewPostTransaction() // PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript 
     preview := true // bool | Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker. (optional)
 
     configuration := client.NewConfiguration()
@@ -211,7 +207,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
+**ledger** | **string** | Name of the ledger. | 
 
 ### Other Parameters
 
@@ -221,8 +217,8 @@ Other parameters are passed through a pointer to a apiCreateTransactionRequest s
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **postTransaction** | [**PostTransaction**](PostTransaction.md) | The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  |
- **preview** | **bool** | Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. |
+ **postTransaction** | [**PostTransaction**](PostTransaction.md) | The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  | 
+ **preview** | **bool** | Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. | 
 
 ### Return type
 
@@ -262,7 +258,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    transactions := *client.NewTransactions([]client.TransactionData{*client.NewTransactionData([]client.Posting{*client.NewPosting(int64(100), "COIN", "users:002", "users:001")})}) // Transactions |
+    transactions := *client.NewTransactions([]client.TransactionData{*client.NewTransactionData([]client.Posting{*client.NewPosting(int64(100), "COIN", "users:002", "users:001")})}) // Transactions | 
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -282,7 +278,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
+**ledger** | **string** | Name of the ledger. | 
 
 ### Other Parameters
 
@@ -292,7 +288,7 @@ Other parameters are passed through a pointer to a apiCreateTransactionsRequest 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **transactions** | [**Transactions**](Transactions.md) |  |
+ **transactions** | [**Transactions**](Transactions.md) |  | 
 
 ### Return type
 
@@ -352,8 +348,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
-**txid** | **int64** | Transaction ID. |
+**ledger** | **string** | Name of the ledger. | 
+**txid** | **int64** | Transaction ID. | 
 
 ### Other Parameters
 
@@ -385,7 +381,7 @@ Name | Type | Description  | Notes
 
 ## ListTransactions
 
-> TransactionsCursorResponse ListTransactions(ctx, ledger).PageSize(pageSize).PageSize2(pageSize2).After(after).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).StartTime2(startTime2).EndTime(endTime).EndTime2(endTime2).Cursor(cursor).PaginationToken(paginationToken).Metadata(metadata).Execute()
+> TransactionsCursorResponse ListTransactions(ctx, ledger).PageSize(pageSize).After(after).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).EndTime(endTime).Cursor(cursor).Metadata(metadata).Execute()
 
 List transactions from a ledger
 
@@ -407,23 +403,19 @@ import (
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
     pageSize := int64(100) // int64 | The maximum number of results to return per page.  (optional) (default to 15)
-    pageSize2 := int64(100) // int64 | The maximum number of results to return per page. Deprecated, please use `pageSize` instead.  (optional) (default to 15)
     after := "1234" // string | Pagination cursor, will return transactions after given txid (in descending order). (optional)
     reference := "ref:001" // string | Find transactions by reference field. (optional)
     account := "users:001" // string | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
     source := "users:001" // string | Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
     destination := "users:001" // string | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
     startTime := time.Now() // time.Time | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).  (optional)
-    startTime2 := time.Now() // time.Time | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute). Deprecated, please use `startTime` instead.  (optional)
     endTime := time.Now() // time.Time | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).  (optional)
-    endTime2 := time.Now() // time.Time | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute). Deprecated, please use `endTime` instead.  (optional)
     cursor := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
-    paginationToken := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use `cursor` instead.  (optional)
     metadata := map[string]interface{}{"key": map[string]interface{}(123)} // map[string]interface{} | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.TransactionsApi.ListTransactions(context.Background(), ledger).PageSize(pageSize).PageSize2(pageSize2).After(after).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).StartTime2(startTime2).EndTime(endTime).EndTime2(endTime2).Cursor(cursor).PaginationToken(paginationToken).Metadata(metadata).Execute()
+    resp, r, err := apiClient.TransactionsApi.ListTransactions(context.Background(), ledger).PageSize(pageSize).After(after).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).EndTime(endTime).Cursor(cursor).Metadata(metadata).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.ListTransactions``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -439,7 +431,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
+**ledger** | **string** | Name of the ledger. | 
 
 ### Other Parameters
 
@@ -450,19 +442,15 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **pageSize** | **int64** | The maximum number of results to return per page.  | [default to 15]
- **pageSize2** | **int64** | The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead.  | [default to 15]
- **after** | **string** | Pagination cursor, will return transactions after given txid (in descending order). |
- **reference** | **string** | Find transactions by reference field. |
- **account** | **string** | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). |
- **source** | **string** | Filter transactions with postings involving given account at source (regular expression placed between ^ and $). |
- **destination** | **string** | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). |
- **startTime** | **time.Time** | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  |
- **startTime2** | **time.Time** | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead.  |
- **endTime** | **time.Time** | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  |
- **endTime2** | **time.Time** | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead.  |
- **cursor** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  |
- **paginationToken** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead.  |
- **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. |
+ **after** | **string** | Pagination cursor, will return transactions after given txid (in descending order). | 
+ **reference** | **string** | Find transactions by reference field. | 
+ **account** | **string** | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). | 
+ **source** | **string** | Filter transactions with postings involving given account at source (regular expression placed between ^ and $). | 
+ **destination** | **string** | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). | 
+ **startTime** | **time.Time** | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  | 
+ **endTime** | **time.Time** | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  | 
+ **cursor** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | 
+ **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | 
 
 ### Return type
 
@@ -522,8 +510,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. |
-**txid** | **int64** | Transaction ID. |
+**ledger** | **string** | Name of the ledger. | 
+**txid** | **int64** | Transaction ID. | 
 
 ### Other Parameters
 
@@ -551,3 +539,4 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+

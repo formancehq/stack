@@ -56,12 +56,12 @@ func BalanceFromAccount(account Account) Balance {
 
 type ExpandedBalance struct {
 	Balance
-	Assets map[string]int32 `json:"assets"`
+	Assets map[string]int64 `json:"assets"`
 }
 
 func ExpandedBalanceFromAccount(account interface {
 	Account
-	GetBalances() map[string]int32
+	GetBalances() map[string]int64
 },
 ) ExpandedBalance {
 	return ExpandedBalance{

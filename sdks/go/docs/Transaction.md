@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Timestamp** | **time.Time** |  |
-**Postings** | [**[]Posting**](Posting.md) |  |
-**Reference** | Pointer to **string** |  | [optional]
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional]
-**Txid** | **int64** |  |
-**PreCommitVolumes** | Pointer to [**map[string]map[string]Volume**](map.md) |  | [optional]
-**PostCommitVolumes** | Pointer to [**map[string]map[string]Volume**](map.md) |  | [optional]
+**Timestamp** | **time.Time** |  | 
+**Postings** | [**[]Posting**](Posting.md) |  | 
+**Reference** | Pointer to **string** |  | [optional] 
+**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
+**Txid** | **int64** |  | 
+**PreCommitVolumes** | Pointer to [**map[string]map[string]Volume**](map.md) |  | [optional] 
+**PostCommitVolumes** | Pointer to [**map[string]map[string]Volume**](map.md) |  | [optional] 
 
 ## Methods
 
@@ -203,3 +203,5 @@ HasPostCommitVolumes returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

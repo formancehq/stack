@@ -518,7 +518,7 @@ components:
           enum:
           - TARGET
           - SOURCE
-          
+
     ListConnectorsResponse:
       type: object
       required:

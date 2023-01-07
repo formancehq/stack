@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Postings** | [**[]Posting**](Posting.md) |  |
-**Reference** | Pointer to **string** |  | [optional]
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional]
-**Timestamp** | Pointer to **time.Time** |  | [optional]
+**Postings** | [**[]Posting**](Posting.md) |  | 
+**Reference** | Pointer to **string** |  | [optional] 
+**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
+**Timestamp** | Pointer to **time.Time** |  | [optional] 
 
 ## Methods
 
@@ -135,3 +135,5 @@ HasTimestamp returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

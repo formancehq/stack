@@ -40,7 +40,7 @@ import (
 )
 
 func main() {
-    stripeTransferRequest := *client.NewStripeTransferRequest() // StripeTransferRequest |
+    stripeTransferRequest := *client.NewStripeTransferRequest() // StripeTransferRequest | 
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -63,7 +63,7 @@ Other parameters are passed through a pointer to a apiConnectorsStripeTransferRe
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **stripeTransferRequest** | [**StripeTransferRequest**](StripeTransferRequest.md) |  |
+ **stripeTransferRequest** | [**StripeTransferRequest**](StripeTransferRequest.md) |  | 
 
 ### Return type
 
@@ -247,8 +247,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code |
-**taskId** | **string** | The task id |
+**connector** | [**Connectors**](.md) | The connector code | 
+**taskId** | **string** | The task id | 
 
 ### Other Parameters
 
@@ -317,7 +317,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**paymentId** | **string** | The payment id |
+**paymentId** | **string** | The payment id | 
 
 ### Other Parameters
 
@@ -368,7 +368,7 @@ import (
 
 func main() {
     connector := client.Connectors("STRIPE") // Connectors | The connector code
-    connectorConfig := client.ConnectorConfig{BankingCircleConfig: client.NewBankingCircleConfig("XXX", "XXX", "XXX", "XXX")} // ConnectorConfig |
+    connectorConfig := client.ConnectorConfig{BankingCircleConfig: client.NewBankingCircleConfig("XXX", "XXX", "XXX", "XXX")} // ConnectorConfig | 
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -386,7 +386,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code |
+**connector** | [**Connectors**](.md) | The connector code | 
 
 ### Other Parameters
 
@@ -396,7 +396,7 @@ Other parameters are passed through a pointer to a apiInstallConnectorRequest st
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **connectorConfig** | [**ConnectorConfig**](ConnectorConfig.md) |  |
+ **connectorConfig** | [**ConnectorConfig**](ConnectorConfig.md) |  | 
 
 ### Return type
 
@@ -457,7 +457,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code |
+**connector** | [**Connectors**](.md) | The connector code | 
 
 ### Other Parameters
 
@@ -532,9 +532,9 @@ Other parameters are passed through a pointer to a apiListPaymentsRequest struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **limit** | **int32** | Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. |
- **skip** | **int32** | How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. |
- **sort** | **[]string** | Field used to sort payments (Default is by date). |
+ **limit** | **int32** | Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | 
+ **skip** | **int32** | How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | 
+ **sort** | **[]string** | Field used to sort payments (Default is by date). | 
 
 ### Return type
 
@@ -600,9 +600,9 @@ Other parameters are passed through a pointer to a apiPaymentslistAccountsReques
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **limit** | **int32** | Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. |
- **skip** | **int32** | How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. |
- **sort** | **[]string** | Field used to sort payments (Default is by date). |
+ **limit** | **int32** | Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | 
+ **skip** | **int32** | How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | 
+ **sort** | **[]string** | Field used to sort payments (Default is by date). | 
 
 ### Return type
 
@@ -663,7 +663,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code |
+**connector** | [**Connectors**](.md) | The connector code | 
 
 ### Other Parameters
 
@@ -731,7 +731,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code |
+**connector** | [**Connectors**](.md) | The connector code | 
 
 ### Other Parameters
 
@@ -799,7 +799,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code |
+**connector** | [**Connectors**](.md) | The connector code | 
 
 ### Other Parameters
 
@@ -826,3 +826,4 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+

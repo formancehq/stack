@@ -17,7 +17,7 @@ func TestWalletsGet(t *testing.T) {
 	t.Parallel()
 
 	w := wallet.NewWallet(uuid.NewString(), metadata.Metadata{})
-	balances := map[string]int32{
+	balances := map[string]int64{
 		"USD": 100,
 	}
 

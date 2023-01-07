@@ -124,19 +124,6 @@ paths:
             minimum: 1
             maximum: 1000
             default: 15
-        - name: page_size
-          in: query
-          description: |
-            The maximum number of results to return per page.
-            Deprecated, please use `pageSize` instead.
-          example: 100
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-            maximum: 1000
-            default: 15
-          deprecated: true
         - name: after
           in: query
           description: Pagination cursor, will return accounts after given address, in descending order.
@@ -174,16 +161,6 @@ paths:
             type: string
             enum: [gte, lte, gt, lt, e, ne]
             example: gte
-        - name: balance_operator
-          in: query
-          description: |
-            Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
-            Deprecated, please use `balanceOperator` instead.
-          schema:
-            type: string
-            enum: [gte, lte, gt, lt, e, ne]
-            example: gte
-          deprecated: true
         - name: cursor
           in: query
           description: |
@@ -194,18 +171,6 @@ paths:
           schema:
             type: string
             example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-        - name: pagination_token
-          in: query
-          description: |
-            Parameter used in pagination requests. Maximum page size is set to 15.
-            Set to the value of next for the next page of results.
-            Set to the value of previous for the previous page of results.
-            No other parameters can be set when this parameter is set.
-            Deprecated, please use `cursor` instead.
-          schema:
-            type: string
-            example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-          deprecated: true
       responses:
         "200":
           description: OK
@@ -484,16 +449,6 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: start_time
-          in: query
-          description: |
-            Filter transactions that occurred after this timestamp.
-            The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-            Deprecated, please use `startTime` instead.
-          schema:
-            type: string
-            format: date-time
-          deprecated: true
         - name: endTime
           in: query
           description: |
@@ -502,16 +457,6 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: end_time
-          in: query
-          description: |
-            Filter transactions that occurred before this timestamp.
-            The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-            Deprecated, please use `endTime` instead.
-          schema:
-            type: string
-            format: date-time
-          deprecated: true
         - name: metadata
           in: query
           description: Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
@@ -562,19 +507,6 @@ paths:
             minimum: 1
             maximum: 1000
             default: 15
-        - name: page_size
-          in: query
-          description: |
-            The maximum number of results to return per page.
-            Deprecated, please use `pageSize` instead.
-          example: 100
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-            maximum: 1000
-            default: 15
-          deprecated: true
         - name: after
           in: query
           description: Pagination cursor, will return transactions after given txid
@@ -615,16 +547,6 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: start_time
-          in: query
-          description: |
-            Filter transactions that occurred after this timestamp.
-            The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-            Deprecated, please use `startTime` instead.
-          schema:
-            type: string
-            format: date-time
-          deprecated: true
         - name: endTime
           in: query
           description: |
@@ -633,16 +555,6 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: end_time
-          in: query
-          description: |
-            Filter transactions that occurred before this timestamp.
-            The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-            Deprecated, please use `endTime` instead.
-          schema:
-            type: string
-            format: date-time
-          deprecated: true
         - name: cursor
           in: query
           description: |
@@ -653,18 +565,6 @@ paths:
           schema:
             type: string
             example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-        - name: pagination_token
-          in: query
-          description: |
-            Parameter used in pagination requests. Maximum page size is set to 15.
-            Set to the value of next for the next page of results.
-            Set to the value of previous for the previous page of results.
-            No other parameters can be set when this parameter is set.
-            Deprecated, please use `cursor` instead.
-          schema:
-            type: string
-            example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-          deprecated: true
         - name: metadata
           in: query
           description: Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
@@ -916,17 +816,6 @@ paths:
           schema:
             type: string
             example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-        - name: pagination_token
-          in: query
-          description: |-
-            Parameter used in pagination requests.
-            Set to the value of next for the next page of results.
-            Set to the value of previous for the previous page of results.
-            Deprecated, please use `cursor` instead.
-          schema:
-            type: string
-            example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-          deprecated: true
       responses:
         "200":
           description: OK
@@ -1002,19 +891,6 @@ paths:
             minimum: 1
             maximum: 1000
             default: 15
-        - name: page_size
-          in: query
-          description: |
-            The maximum number of results to return per page.
-            Deprecated, please use `pageSize` instead.
-          example: 100
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
-            maximum: 1000
-            default: 15
-          deprecated: true
         - name: after
           in: query
           description: Pagination cursor, will return the logs after a given ID.
@@ -1030,16 +906,6 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: start_time
-          in: query
-          description: |
-            Filter transactions that occurred after this timestamp.
-            The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-            Deprecated, please use `startTime` instead.
-          schema:
-            type: string
-            format: date-time
-          deprecated: true
         - name: endTime
           in: query
           description: |
@@ -1048,16 +914,6 @@ paths:
           schema:
             type: string
             format: date-time
-        - name: end_time
-          in: query
-          description: |
-            Filter transactions that occurred before this timestamp.
-            The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-            Deprecated, please use `endTime` instead.
-          schema:
-            type: string
-            format: date-time
-          deprecated: true
         - name: cursor
           in: query
           description: |
@@ -1068,18 +924,6 @@ paths:
           schema:
             type: string
             example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-        - name: pagination_token
-          in: query
-          description: |
-            Parameter used in pagination requests. Maximum page size is set to 15.
-            Set to the value of next for the next page of results.
-            Set to the value of previous for the previous page of results.
-            No other parameters can be set when this parameter is set.
-            Deprecated, please use `cursor` instead.
-          schema:
-            type: string
-            example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-          deprecated: true
       responses:
         "200":
           description: OK
@@ -1292,22 +1136,6 @@ components:
         details:
           type: string
           example: "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
-        error_code:
-          type: string
-          enum:
-            - INTERNAL
-            - INSUFFICIENT_FUND
-            - VALIDATION
-            - CONFLICT
-            - NO_SCRIPT
-            - COMPILATION_FAILED
-            - METADATA_OVERRIDE
-          example: INSUFFICIENT_FUND
-          deprecated: true
-        error_message:
-          type: string
-          example: "[INSUFFICIENT_FUND] account had insufficient funds"
-          deprecated: true
         transaction:
           $ref: '#/components/schemas/Transaction'
 

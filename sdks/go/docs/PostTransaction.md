@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Timestamp** | Pointer to **time.Time** |  | [optional]
-**Postings** | Pointer to [**[]Posting**](Posting.md) |  | [optional]
-**Script** | Pointer to [**PostTransactionScript**](PostTransactionScript.md) |  | [optional]
-**Reference** | Pointer to **string** |  | [optional]
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional]
+**Timestamp** | Pointer to **time.Time** |  | [optional] 
+**Postings** | Pointer to [**[]Posting**](Posting.md) |  | [optional] 
+**Script** | Pointer to [**PostTransactionScript**](PostTransactionScript.md) |  | [optional] 
+**Reference** | Pointer to **string** |  | [optional] 
+**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
 
 ## Methods
 
@@ -166,3 +166,5 @@ HasMetadata returns a boolean if a field has been set.
 UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

@@ -51,7 +51,7 @@ func NewSetMetadataCommand() *cobra.Command {
 			}
 
 			_, err = ledgerClient.TransactionsApi.
-				AddMetadataOnTransaction(cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag), int32(transactionID)).
+				AddMetadataOnTransaction(cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag), transactionID).
 				RequestBody(metadata).
 				Execute()
 			if err != nil {

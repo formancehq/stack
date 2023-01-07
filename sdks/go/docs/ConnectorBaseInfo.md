@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Provider** | Pointer to **string** |  | [optional]
-**Disabled** | Pointer to **bool** |  | [optional]
+**Provider** | Pointer to **string** |  | [optional] 
+**Disabled** | Pointer to **bool** |  | [optional] 
 
 ## Methods
 
@@ -78,3 +78,5 @@ HasDisabled returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

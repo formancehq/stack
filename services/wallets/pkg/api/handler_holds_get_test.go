@@ -28,10 +28,10 @@ func TestHoldsGet(t *testing.T) {
 		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
-			balances := map[string]int32{
+			balances := map[string]int64{
 				"USD": 50,
 			}
-			volumes := map[string]map[string]int32{
+			volumes := map[string]map[string]int64{
 				"USD": {
 					"input": 100,
 				},

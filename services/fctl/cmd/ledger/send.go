@@ -59,7 +59,7 @@ func NewSendCommand() *cobra.Command {
 				asset = args[3]
 			}
 
-			amount, err := strconv.ParseInt(amountStr, 10, 32)
+			amount, err := strconv.ParseInt(amountStr, 10, 64)
 			if err != nil {
 				return err
 			}
@@ -72,9 +72,9 @@ func NewSendCommand() *cobra.Command {
 			reference := fctl.GetString(cmd, referenceFlag)
 			response, _, err := ledgerClient.TransactionsApi.
 				CreateTransaction(cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag)).
-				TransactionData(formance.TransactionData{
+				PostTransaction(formance.PostTransaction{
 					Postings: []formance.Posting{{
-						Amount:      int32(amount),
+						Amount:      amount,
 						Asset:       asset,
 						Destination: destination,
 						Source:      source,

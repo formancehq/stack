@@ -65,17 +65,34 @@ func NewListCommand() *cobra.Command {
 				return err
 			}
 
+			var (
+				endTime   time.Time
+				startTime time.Time
+			)
+			if startTimeStr := fctl.GetString(cmd, startTimeFlag); startTimeStr != "" {
+				startTime, err = time.Parse(time.RFC3339Nano, startTimeStr)
+				if err != nil {
+					return err
+				}
+			}
+			if endTimeStr := fctl.GetString(cmd, endTimeFlag); endTimeStr != "" {
+				endTime, err = time.Parse(time.RFC3339Nano, endTimeStr)
+				if err != nil {
+					return err
+				}
+			}
+
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
 			rsp, _, err := ledgerClient.TransactionsApi.
 				ListTransactions(cmd.Context(), ledger).
-				PageSize(int32(fctl.GetInt(cmd, pageSizeFlag))).
+				PageSize(int64(fctl.GetInt(cmd, pageSizeFlag))).
 				Reference(fctl.GetString(cmd, referenceFlag)).
 				Account(fctl.GetString(cmd, accountFlag)).
 				Destination(fctl.GetString(cmd, destinationFlag)).
 				Source(fctl.GetString(cmd, sourceFlag)).
 				After(fctl.GetString(cmd, afterFlag)).
-				EndTime(fctl.GetString(cmd, endTimeFlag)).
-				StartTime(fctl.GetString(cmd, startTimeFlag)).
+				EndTime(endTime).
+				StartTime(startTime).
 				Metadata(metadata).
 				Execute()
 			if err != nil {

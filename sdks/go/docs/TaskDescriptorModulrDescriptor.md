@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | Pointer to **string** |  | [optional]
-**Key** | Pointer to **string** |  | [optional]
-**AccountID** | Pointer to **string** |  | [optional]
+**Name** | Pointer to **string** |  | [optional] 
+**Key** | Pointer to **string** |  | [optional] 
+**AccountID** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -104,3 +104,5 @@ HasAccountID returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

@@ -72,11 +72,34 @@ func getInfoFromRequest(req op.TokenRequest) (clientID string, authTime time.Tim
 	return "", time.Time{}, nil
 }
 
+// Go workspaces force to use the same set of dependencies of other projects
+// FCTL use a forked version og the oidc library
+// We need to refine this forked version to make these methods optional
 type storageFacade struct {
 	Storage
 	signingKey    signingKey
 	relyingParty  rp.RelyingParty
 	staticClients []auth.StaticClient
+}
+
+func (s *storageFacade) CreateDeviceCode(ctx context.Context, id string, scopes []string, interval, expiresIn int) (op.DeviceCode, error) {
+	panic("not implemented")
+}
+
+func (s *storageFacade) DeviceCodeByUserCode(ctx context.Context, code string) (op.DeviceCode, error) {
+	panic("not implemented")
+}
+
+func (s *storageFacade) DeviceCodeByDeviceCode(ctx context.Context, code string) (op.DeviceCode, error) {
+	panic("not implemented")
+}
+
+func (s *storageFacade) DeleteDeviceCode(ctx context.Context, id string) error {
+	panic("not implemented")
+}
+
+func (s *storageFacade) UpdateDeviceCodeLastCheck(ctx context.Context, code op.DeviceCode, now time.Time) error {
+	panic("not implemented")
 }
 
 // CreateAuthRequest implements the op.Storage interface

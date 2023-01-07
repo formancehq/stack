@@ -37,23 +37,23 @@ func TestTransactionsList(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithListTransactions(func(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*sdk.ListTransactions200ResponseCursor, error) {
-			if query.PaginationToken != "" {
-				page, err := strconv.ParseInt(query.PaginationToken, 10, 64)
+		WithListTransactions(func(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error) {
+			if query.Cursor != "" {
+				page, err := strconv.ParseInt(query.Cursor, 10, 64)
 				if err != nil {
 					panic(err)
 				}
 
 				if page >= numberOfPages-1 {
-					return &sdk.ListTransactions200ResponseCursor{}, nil
+					return &sdk.TransactionsCursorResponseCursor{}, nil
 				}
 				hasMore := page < numberOfPages-1
 				previous := fmt.Sprint(page - 1)
 				next := fmt.Sprint(page + 1)
 
-				return &sdk.ListTransactions200ResponseCursor{
+				return &sdk.TransactionsCursorResponseCursor{
 					PageSize: pageSize,
-					HasMore:  &hasMore,
+					HasMore:  hasMore,
 					Previous: &previous,
 					Next:     &next,
 					Data:     transactions[page*pageSize : (page+1)*pageSize],
@@ -67,9 +67,9 @@ func TestTransactionsList(t *testing.T) {
 			hasMore := true
 			next := "1"
 
-			return &sdk.ListTransactions200ResponseCursor{
+			return &sdk.TransactionsCursorResponseCursor{
 				PageSize: pageSize,
-				HasMore:  &hasMore,
+				HasMore:  hasMore,
 				Next:     &next,
 				Data:     transactions[:pageSize],
 			}, nil

@@ -44,7 +44,7 @@ func NewRevertCommand() *cobra.Command {
 				return err
 			}
 
-			rsp, _, err := ledgerClient.TransactionsApi.RevertTransaction(cmd.Context(), ledger, int32(txId)).Execute()
+			rsp, _, err := ledgerClient.TransactionsApi.RevertTransaction(cmd.Context(), ledger, txId).Execute()
 			if err != nil {
 				return errors.Wrapf(err, "reverting transaction")
 			}

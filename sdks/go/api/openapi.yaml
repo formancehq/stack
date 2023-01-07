@@ -509,22 +509,6 @@ paths:
           minimum: 1
           type: integer
         style: form
-      - deprecated: true
-        description: |
-          The maximum number of results to return per page.
-          Deprecated, please use `pageSize` instead.
-        example: 100
-        explode: true
-        in: query
-        name: page_size
-        required: false
-        schema:
-          default: 15
-          format: int64
-          maximum: 1000
-          minimum: 1
-          type: integer
-        style: form
       - description: "Pagination cursor, will return accounts after given address,\
           \ in descending order."
         explode: true
@@ -584,25 +568,6 @@ paths:
           example: gte
           type: string
         style: form
-      - deprecated: true
-        description: |
-          Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
-          Deprecated, please use `balanceOperator` instead.
-        explode: true
-        in: query
-        name: balance_operator
-        required: false
-        schema:
-          enum:
-          - gte
-          - lte
-          - gt
-          - lt
-          - e
-          - ne
-          example: gte
-          type: string
-        style: form
       - description: |
           Parameter used in pagination requests. Maximum page size is set to 15.
           Set to the value of next for the next page of results.
@@ -611,21 +576,6 @@ paths:
         explode: true
         in: query
         name: cursor
-        required: false
-        schema:
-          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-          type: string
-        style: form
-      - deprecated: true
-        description: |
-          Parameter used in pagination requests. Maximum page size is set to 15.
-          Set to the value of next for the next page of results.
-          Set to the value of previous for the previous page of results.
-          No other parameters can be set when this parameter is set.
-          Deprecated, please use `cursor` instead.
-        explode: true
-        in: query
-        name: pagination_token
         required: false
         schema:
           example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
@@ -959,22 +909,6 @@ paths:
           minimum: 1
           type: integer
         style: form
-      - deprecated: true
-        description: |
-          The maximum number of results to return per page.
-          Deprecated, please use `pageSize` instead.
-        example: 100
-        explode: true
-        in: query
-        name: page_size
-        required: false
-        schema:
-          default: 15
-          format: int64
-          maximum: 1000
-          minimum: 1
-          type: integer
-        style: form
       - description: "Pagination cursor, will return transactions after given txid\
           \ (in descending order)."
         explode: true
@@ -1035,38 +969,12 @@ paths:
           format: date-time
           type: string
         style: form
-      - deprecated: true
-        description: |
-          Filter transactions that occurred after this timestamp.
-          The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-          Deprecated, please use `startTime` instead.
-        explode: true
-        in: query
-        name: start_time
-        required: false
-        schema:
-          format: date-time
-          type: string
-        style: form
       - description: |
           Filter transactions that occurred before this timestamp.
           The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
         explode: true
         in: query
         name: endTime
-        required: false
-        schema:
-          format: date-time
-          type: string
-        style: form
-      - deprecated: true
-        description: |
-          Filter transactions that occurred before this timestamp.
-          The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-          Deprecated, please use `endTime` instead.
-        explode: true
-        in: query
-        name: end_time
         required: false
         schema:
           format: date-time
@@ -1080,21 +988,6 @@ paths:
         explode: true
         in: query
         name: cursor
-        required: false
-        schema:
-          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-          type: string
-        style: form
-      - deprecated: true
-        description: |
-          Parameter used in pagination requests. Maximum page size is set to 15.
-          Set to the value of next for the next page of results.
-          Set to the value of previous for the previous page of results.
-          No other parameters can be set when this parameter is set.
-          Deprecated, please use `cursor` instead.
-        explode: true
-        in: query
-        name: pagination_token
         required: false
         schema:
           example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
@@ -1189,38 +1082,12 @@ paths:
           format: date-time
           type: string
         style: form
-      - deprecated: true
-        description: |
-          Filter transactions that occurred after this timestamp.
-          The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-          Deprecated, please use `startTime` instead.
-        explode: true
-        in: query
-        name: start_time
-        required: false
-        schema:
-          format: date-time
-          type: string
-        style: form
       - description: |
           Filter transactions that occurred before this timestamp.
           The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
         explode: true
         in: query
         name: endTime
-        required: false
-        schema:
-          format: date-time
-          type: string
-        style: form
-      - deprecated: true
-        description: |
-          Filter transactions that occurred before this timestamp.
-          The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-          Deprecated, please use `endTime` instead.
-        explode: true
-        in: query
-        name: end_time
         required: false
         schema:
           format: date-time
@@ -1509,20 +1376,6 @@ paths:
           example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
           type: string
         style: form
-      - deprecated: true
-        description: |-
-          Parameter used in pagination requests.
-          Set to the value of next for the next page of results.
-          Set to the value of previous for the previous page of results.
-          Deprecated, please use `cursor` instead.
-        explode: true
-        in: query
-        name: pagination_token
-        required: false
-        schema:
-          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-          type: string
-        style: form
       responses:
         "200":
           content:
@@ -1606,22 +1459,6 @@ paths:
           minimum: 1
           type: integer
         style: form
-      - deprecated: true
-        description: |
-          The maximum number of results to return per page.
-          Deprecated, please use `pageSize` instead.
-        example: 100
-        explode: true
-        in: query
-        name: page_size
-        required: false
-        schema:
-          default: 15
-          format: int64
-          maximum: 1000
-          minimum: 1
-          type: integer
-        style: form
       - description: "Pagination cursor, will return the logs after a given ID. (in\
           \ descending order)."
         explode: true
@@ -1643,38 +1480,12 @@ paths:
           format: date-time
           type: string
         style: form
-      - deprecated: true
-        description: |
-          Filter transactions that occurred after this timestamp.
-          The format is RFC3339 and is inclusive (for example, "2023-01-02T15:04:01Z" includes the first second of 4th minute).
-          Deprecated, please use `startTime` instead.
-        explode: true
-        in: query
-        name: start_time
-        required: false
-        schema:
-          format: date-time
-          type: string
-        style: form
       - description: |
           Filter transactions that occurred before this timestamp.
           The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
         explode: true
         in: query
         name: endTime
-        required: false
-        schema:
-          format: date-time
-          type: string
-        style: form
-      - deprecated: true
-        description: |
-          Filter transactions that occurred before this timestamp.
-          The format is RFC3339 and is exclusive (for example, "2023-01-02T15:04:01Z" excludes the first second of 4th minute).
-          Deprecated, please use `endTime` instead.
-        explode: true
-        in: query
-        name: end_time
         required: false
         schema:
           format: date-time
@@ -1688,21 +1499,6 @@ paths:
         explode: true
         in: query
         name: cursor
-        required: false
-        schema:
-          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
-          type: string
-        style: form
-      - deprecated: true
-        description: |
-          Parameter used in pagination requests. Maximum page size is set to 15.
-          Set to the value of next for the next page of results.
-          Set to the value of previous for the previous page of results.
-          No other parameters can be set when this parameter is set.
-          Deprecated, please use `cursor` instead.
-        explode: true
-        in: query
-        name: pagination_token
         required: false
         schema:
           example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
@@ -3253,11 +3049,9 @@ components:
       type: object
     ScriptResponse:
       example:
-        error_message: "[INSUFFICIENT_FUND] account had insufficient funds"
         errorMessage: account had insufficient funds
         errorCode: INSUFFICIENT_FUND
         details: https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9
-        error_code: INSUFFICIENT_FUND
         transaction:
           reference: ref:001
           metadata:
@@ -3306,22 +3100,6 @@ components:
           type: string
         details:
           example: https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9
-          type: string
-        error_code:
-          deprecated: true
-          enum:
-          - INTERNAL
-          - INSUFFICIENT_FUND
-          - VALIDATION
-          - CONFLICT
-          - NO_SCRIPT
-          - COMPILATION_FAILED
-          - METADATA_OVERRIDE
-          example: INSUFFICIENT_FUND
-          type: string
-        error_message:
-          deprecated: true
-          example: "[INSUFFICIENT_FUND] account had insufficient funds"
           type: string
         transaction:
           $ref: '#/components/schemas/Transaction'
@@ -4761,66 +4539,12 @@ components:
       type: object
     ConfigsResponse:
       example:
-        cursor:
-          data:
-          - createdAt: 2000-01-23T04:56:07.000+00:00
-            endpoint: https://example.com
-            active: true
-            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-            secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
-            eventTypes:
-            - TYPE1
-            - TYPE2
-            updatedAt: 2000-01-23T04:56:07.000+00:00
-          - createdAt: 2000-01-23T04:56:07.000+00:00
-            endpoint: https://example.com
-            active: true
-            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-            secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
-            eventTypes:
-            - TYPE1
-            - TYPE2
-            updatedAt: 2000-01-23T04:56:07.000+00:00
-          hasMore: false
+        cursor: null
       properties:
         cursor:
-          $ref: '#/components/schemas/Cursor'
+          $ref: '#/components/schemas/ConfigsResponse_cursor'
       required:
       - cursor
-      type: object
-    Cursor:
-      example:
-        data:
-        - createdAt: 2000-01-23T04:56:07.000+00:00
-          endpoint: https://example.com
-          active: true
-          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
-          eventTypes:
-          - TYPE1
-          - TYPE2
-          updatedAt: 2000-01-23T04:56:07.000+00:00
-        - createdAt: 2000-01-23T04:56:07.000+00:00
-          endpoint: https://example.com
-          active: true
-          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
-          secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
-          eventTypes:
-          - TYPE1
-          - TYPE2
-          updatedAt: 2000-01-23T04:56:07.000+00:00
-        hasMore: false
-      properties:
-        hasMore:
-          example: false
-          type: boolean
-        data:
-          items:
-            $ref: '#/components/schemas/webhooksConfig'
-          type: array
-      required:
-      - data
-      - hasMore
       type: object
     ConfigResponse:
       example:
@@ -5175,7 +4899,7 @@ components:
       - timestamp
       - txid
       type: object
-    walletsCursor:
+    Cursor:
       properties:
         pageSize:
           example: 15
@@ -5893,6 +5617,19 @@ components:
           type: array
       title: cursor
       type: object
+    ConfigsResponse_cursor_allOf:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/webhooksConfig'
+          type: array
+      required:
+      - data
+      type: object
+    ConfigsResponse_cursor:
+      allOf:
+      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/ConfigsResponse_cursor_allOf'
     WalletWithBalances_balances:
       example:
         main:
@@ -5932,7 +5669,7 @@ components:
       type: object
     ListWalletsResponse_cursor:
       allOf:
-      - $ref: '#/components/schemas/walletsCursor'
+      - $ref: '#/components/schemas/Cursor'
       - $ref: '#/components/schemas/ListWalletsResponse_cursor_allOf'
     GetTransactionsResponse_cursor_allOf:
       properties:
@@ -5945,7 +5682,7 @@ components:
       type: object
     GetTransactionsResponse_cursor:
       allOf:
-      - $ref: '#/components/schemas/walletsCursor'
+      - $ref: '#/components/schemas/Cursor'
       - $ref: '#/components/schemas/GetTransactionsResponse_cursor_allOf'
     GetHoldsResponse_cursor_allOf:
       properties:
@@ -5958,7 +5695,7 @@ components:
       type: object
     GetHoldsResponse_cursor:
       allOf:
-      - $ref: '#/components/schemas/walletsCursor'
+      - $ref: '#/components/schemas/Cursor'
       - $ref: '#/components/schemas/GetHoldsResponse_cursor_allOf'
     ListBalancesResponse_cursor_allOf:
       properties:
@@ -5971,7 +5708,7 @@ components:
       type: object
     ListBalancesResponse_cursor:
       allOf:
-      - $ref: '#/components/schemas/walletsCursor'
+      - $ref: '#/components/schemas/Cursor'
       - $ref: '#/components/schemas/ListBalancesResponse_cursor_allOf'
   securitySchemes:
     Authorization:

@@ -40,7 +40,7 @@ type Wallet struct {
 
 type WithBalances struct {
 	Wallet
-	Balances map[string]int32 `json:"balances"`
+	Balances map[string]int64 `json:"balances"`
 }
 
 func (w *WithBalances) UnmarshalJSON(data []byte) error {
@@ -119,7 +119,7 @@ func FromAccount(account Account) Wallet {
 
 func WithBalancesFromAccount(account interface {
 	Account
-	GetBalances() map[string]int32
+	GetBalances() map[string]int64
 },
 ) WithBalances {
 	return WithBalances{

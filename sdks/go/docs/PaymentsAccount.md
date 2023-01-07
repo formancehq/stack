@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** |  |
-**CreatedAt** | **time.Time** |  |
-**Provider** | **string** |  |
-**Reference** | **string** |  |
-**Type** | **string** |  |
+**Id** | **string** |  | 
+**CreatedAt** | **time.Time** |  | 
+**Provider** | **string** |  | 
+**Reference** | **string** |  | 
+**Type** | **string** |  | 
 
 ## Methods
 
@@ -131,3 +131,5 @@ SetType sets Type field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

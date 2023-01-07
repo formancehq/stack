@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**PageSize** | **int64** |  |
-**HasMore** | **bool** |  |
-**Previous** | Pointer to **string** |  | [optional]
-**Next** | Pointer to **string** |  | [optional]
-**Data** | [**[]Transaction**](Transaction.md) |  |
+**PageSize** | **int64** |  | 
+**HasMore** | **bool** |  | 
+**Previous** | Pointer to **string** |  | [optional] 
+**Next** | Pointer to **string** |  | [optional] 
+**Data** | [**[]Transaction**](Transaction.md) |  | 
 
 ## Methods
 
@@ -141,3 +141,5 @@ SetData sets Data field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

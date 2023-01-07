@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ErrorCode** | Pointer to [**ErrorsEnum**](ErrorsEnum.md) |  | [optional]
-**ErrorMessage** | Pointer to **string** |  | [optional]
-**Details** | Pointer to **string** |  | [optional]
+**ErrorCode** | Pointer to [**ErrorsEnum**](ErrorsEnum.md) |  | [optional] 
+**ErrorMessage** | Pointer to **string** |  | [optional] 
+**Details** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -104,3 +104,5 @@ HasDetails returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

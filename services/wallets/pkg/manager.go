@@ -237,13 +237,13 @@ func (m *Manager) runScript(ctx context.Context, script sdk.Script) error {
 	if ret.ErrorCode == nil {
 		return nil
 	}
-	if *ret.ErrorCode == string(sdk.INSUFFICIENT_FUND) {
+	if *ret.ErrorCode == sdk.INSUFFICIENT_FUND {
 		return ErrInsufficientFundError
 	}
 	if ret.ErrorMessage != nil {
 		return errors.New(*ret.ErrorMessage)
 	}
-	return errors.New(*ret.ErrorCode)
+	return errors.New(string(*ret.ErrorCode))
 }
 
 func (m *Manager) ListWallets(ctx context.Context, query ListQuery[ListWallets]) (*ListResponse[Wallet], error) {
@@ -303,7 +303,7 @@ func (m *Manager) ListBalances(ctx context.Context, query ListQuery[ListBalances
 
 func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTransactions]) (*ListResponse[sdk.Transaction], error) {
 	var (
-		response *sdk.ListTransactions200ResponseCursor
+		response *sdk.TransactionsCursorResponseCursor
 		err      error
 	)
 	if query.PaginationToken == "" {
@@ -319,7 +319,7 @@ func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTran
 		})
 	} else {
 		response, err = m.client.ListTransactions(ctx, m.ledgerName, ListTransactionsQuery{
-			PaginationToken: query.PaginationToken,
+			Cursor: query.PaginationToken,
 		})
 	}
 	if err != nil {
@@ -444,7 +444,7 @@ type mapAccountListQuery struct {
 
 func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountListQuery, mapper mapper[Account, TO]) (*ListResponse[TO], error) {
 	var (
-		response *sdk.ListAccounts200ResponseCursor
+		response *sdk.AccountsCursorResponseCursor
 		err      error
 	)
 	if query.PaginationToken == "" {
@@ -454,7 +454,7 @@ func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountLis
 		})
 	} else {
 		response, err = r.client.ListAccounts(ctx, r.ledgerName, ListAccountsQuery{
-			PaginationToken: query.PaginationToken,
+			Cursor: query.PaginationToken,
 		})
 	}
 	if err != nil {

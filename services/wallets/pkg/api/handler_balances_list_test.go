@@ -28,15 +28,15 @@ func TestBalancesList(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.ListAccounts200ResponseCursor, error) {
-			if query.PaginationToken != "" {
-				page, err := strconv.ParseInt(query.PaginationToken, 10, 64)
+		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
+			if query.Cursor != "" {
+				page, err := strconv.ParseInt(query.Cursor, 10, 64)
 				if err != nil {
 					panic(err)
 				}
 
 				if page >= numberOfPages-1 {
-					return &sdk.ListAccounts200ResponseCursor{}, nil
+					return &sdk.AccountsCursorResponseCursor{}, nil
 				}
 				hasMore := page < numberOfPages-1
 				previous := fmt.Sprint(page - 1)
@@ -48,9 +48,9 @@ func TestBalancesList(t *testing.T) {
 						Metadata: balance.LedgerMetadata(walletID),
 					})
 				}
-				return &sdk.ListAccounts200ResponseCursor{
+				return &sdk.AccountsCursorResponseCursor{
 					PageSize: pageSize,
-					HasMore:  &hasMore,
+					HasMore:  hasMore,
 					Previous: &previous,
 					Next:     &next,
 					Data:     accounts,
@@ -73,9 +73,9 @@ func TestBalancesList(t *testing.T) {
 					Metadata: balance.LedgerMetadata(walletID),
 				})
 			}
-			return &sdk.ListAccounts200ResponseCursor{
+			return &sdk.AccountsCursorResponseCursor{
 				PageSize: pageSize,
-				HasMore:  &hasMore,
+				HasMore:  hasMore,
 				Next:     &next,
 				Data:     accounts,
 			}, nil

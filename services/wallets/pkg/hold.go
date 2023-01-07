@@ -84,15 +84,15 @@ func (h ExpandedDebitHold) IsClosed() bool {
 
 func ExpandedDebitHoldFromLedgerAccount(account interface {
 	Account
-	GetVolumes() map[string]map[string]int32
-	GetBalances() map[string]int32
+	GetVolumes() map[string]map[string]int64
+	GetBalances() map[string]int64
 },
 ) ExpandedDebitHold {
 	hold := ExpandedDebitHold{
 		DebitHold: DebitHoldFromLedgerAccount(account),
 	}
-	hold.OriginalAmount = *NewMonetaryInt(int64(account.GetVolumes()[hold.Asset]["input"]))
-	hold.Remaining = *NewMonetaryInt(int64(account.GetBalances()[hold.Asset]))
+	hold.OriginalAmount = *NewMonetaryInt(account.GetVolumes()[hold.Asset]["input"])
+	hold.Remaining = *NewMonetaryInt(account.GetBalances()[hold.Asset])
 	return hold
 }
 

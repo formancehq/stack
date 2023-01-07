@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** |  |
-**Transient** | Pointer to **[]string** |  | [optional]
+**Id** | **string** |  | 
+**Transient** | Pointer to **[]string** |  | [optional] 
 
 ## Methods
 
@@ -73,3 +73,5 @@ HasTransient returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

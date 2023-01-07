@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **PollingPeriod** | Pointer to **string** | The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe api | [optional] [default to "120s"]
-**ApiKey** | **string** |  |
+**ApiKey** | **string** |  | 
 **PageSize** | Pointer to **float32** | Number of BalanceTransaction to fetch at each polling interval.  | [optional] [default to 10]
 
 ## Methods
@@ -99,3 +99,5 @@ HasPageSize returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

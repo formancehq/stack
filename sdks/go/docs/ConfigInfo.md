@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Config** | [**Config**](Config.md) |  |
-**Server** | **string** |  |
-**Version** | **string** |  |
+**Config** | [**Config**](Config.md) |  | 
+**Server** | **string** |  | 
+**Version** | **string** |  | 
 
 ## Methods
 
@@ -89,3 +89,5 @@ SetVersion sets Version field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

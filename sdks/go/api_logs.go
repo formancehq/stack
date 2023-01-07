@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
 
 API version: develop
 Contact: support@formance.com
@@ -48,26 +48,15 @@ type ApiListLogsRequest struct {
 	ApiService LogsApi
 	ledger string
 	pageSize *int64
-	pageSize2 *int64
 	after *string
 	startTime *time.Time
-	startTime2 *time.Time
 	endTime *time.Time
-	endTime2 *time.Time
 	cursor *string
-	paginationToken *string
 }
 
-// The maximum number of results to return per page.
+// The maximum number of results to return per page. 
 func (r ApiListLogsRequest) PageSize(pageSize int64) ApiListLogsRequest {
 	r.pageSize = &pageSize
-	return r
-}
-
-// The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead.
-// Deprecated
-func (r ApiListLogsRequest) PageSize2(pageSize2 int64) ApiListLogsRequest {
-	r.pageSize2 = &pageSize2
 	return r
 }
 
@@ -77,42 +66,21 @@ func (r ApiListLogsRequest) After(after string) ApiListLogsRequest {
 	return r
 }
 
-// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).
+// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). 
 func (r ApiListLogsRequest) StartTime(startTime time.Time) ApiListLogsRequest {
 	r.startTime = &startTime
 	return r
 }
 
-// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead.
-// Deprecated
-func (r ApiListLogsRequest) StartTime2(startTime2 time.Time) ApiListLogsRequest {
-	r.startTime2 = &startTime2
-	return r
-}
-
-// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).
+// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
 func (r ApiListLogsRequest) EndTime(endTime time.Time) ApiListLogsRequest {
 	r.endTime = &endTime
 	return r
 }
 
-// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead.
-// Deprecated
-func (r ApiListLogsRequest) EndTime2(endTime2 time.Time) ApiListLogsRequest {
-	r.endTime2 = &endTime2
-	return r
-}
-
-// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
+// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
 func (r ApiListLogsRequest) Cursor(cursor string) ApiListLogsRequest {
 	r.cursor = &cursor
-	return r
-}
-
-// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead.
-// Deprecated
-func (r ApiListLogsRequest) PaginationToken(paginationToken string) ApiListLogsRequest {
-	r.paginationToken = &paginationToken
 	return r
 }
 
@@ -162,29 +130,17 @@ func (a *LogsApiService) ListLogsExecute(r ApiListLogsRequest) (*LogsCursorRespo
 	if r.pageSize != nil {
 		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
 	}
-	if r.pageSize2 != nil {
-		localVarQueryParams.Add("page_size", parameterToString(*r.pageSize2, ""))
-	}
 	if r.after != nil {
 		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
 	}
 	if r.startTime != nil {
 		localVarQueryParams.Add("startTime", parameterToString(*r.startTime, ""))
 	}
-	if r.startTime2 != nil {
-		localVarQueryParams.Add("start_time", parameterToString(*r.startTime2, ""))
-	}
 	if r.endTime != nil {
 		localVarQueryParams.Add("endTime", parameterToString(*r.endTime, ""))
 	}
-	if r.endTime2 != nil {
-		localVarQueryParams.Add("end_time", parameterToString(*r.endTime2, ""))
-	}
 	if r.cursor != nil {
 		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
-	}
-	if r.paginationToken != nil {
-		localVarQueryParams.Add("pagination_token", parameterToString(*r.paginationToken, ""))
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

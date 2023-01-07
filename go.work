@@ -1,6 +1,7 @@
 go 1.19
 
 use (
+	.
 	./libs/go-libs
 	./sdks/go
 	./services/auth
@@ -8,6 +9,7 @@ use (
 	./services/fctl/membershipclient
 	./services/ledger
 	./services/payments
+	./services/payments/client
 	./services/search
 	./services/wallets
 	./services/webhooks

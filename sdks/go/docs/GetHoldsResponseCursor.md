@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**PageSize** | **int64** |  |
-**HasMore** | Pointer to **bool** |  | [optional]
-**Previous** | Pointer to **string** |  | [optional]
-**Next** | Pointer to **string** |  | [optional]
-**Data** | [**[]Hold**](Hold.md) |  |
+**PageSize** | **int64** |  | 
+**HasMore** | Pointer to **bool** |  | [optional] 
+**Previous** | Pointer to **string** |  | [optional] 
+**Next** | Pointer to **string** |  | [optional] 
+**Data** | [**[]Hold**](Hold.md) |  | 
 
 ## Methods
 
@@ -146,3 +146,5 @@ SetData sets Data field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

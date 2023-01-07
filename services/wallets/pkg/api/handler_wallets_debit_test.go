@@ -16,7 +16,7 @@ import (
 type testCase struct {
 	name               string
 	request            wallet.DebitRequest
-	scriptResult       sdk.ScriptResult
+	scriptResult       sdk.ScriptResponse
 	expectedScript     func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.Script
 	expectedStatusCode int
 	expectedErrorCode  string
@@ -87,9 +87,9 @@ var walletDebitTestCases = []testCase{
 		request: wallet.DebitRequest{
 			Amount: wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
 		},
-		scriptResult: sdk.ScriptResult{
-			ErrorCode: func() *string {
-				ret := string(sdk.INSUFFICIENT_FUND)
+		scriptResult: sdk.ScriptResponse{
+			ErrorCode: func() *sdk.ErrorsEnum {
+				ret := sdk.INSUFFICIENT_FUND
 				return &ret
 			}(),
 		},
@@ -231,10 +231,10 @@ func TestWalletsDebit(t *testing.T) {
 					holdAccountMetadata = m
 					return nil
 				}),
-				WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.ListAccounts200ResponseCursor, error) {
+				WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					require.Equal(t, query.Metadata, wallet.BalancesMetadataFilter(walletID))
-					return &sdk.ListAccounts200ResponseCursor{
+					return &sdk.AccountsCursorResponseCursor{
 						Data: []sdk.Account{{
 							Address: testEnv.Chart().GetBalanceAccount(walletID, "secondary"),
 							Type:    nil,
@@ -244,7 +244,7 @@ func TestWalletsDebit(t *testing.T) {
 						}},
 					}, nil
 				}),
-				WithRunScript(func(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResult, error) {
+				WithRunScript(func(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResponse, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					executedScript = script
 					return &testCase.scriptResult, nil

@@ -15,7 +15,7 @@ func TransactionIDOrLastN(ctx context.Context, ledgerClient *formance.APIClient,
 		sub := int64(0)
 		if id != "" {
 			var err error
-			sub, err = strconv.ParseInt(id, 10, 32)
+			sub, err = strconv.ParseInt(id, 10, 64)
 			if err != nil {
 				return 0, err
 			}
@@ -30,8 +30,8 @@ func TransactionIDOrLastN(ctx context.Context, ledgerClient *formance.APIClient,
 		if len(response.Cursor.Data) == 0 {
 			return 0, errors.New("no transaction found")
 		}
-		return int64(response.Cursor.Data[0].Txid) + sub, nil
+		return response.Cursor.Data[0].Txid + sub, nil
 	}
 
-	return strconv.ParseInt(id, 10, 32)
+	return strconv.ParseInt(id, 10, 64)
 }

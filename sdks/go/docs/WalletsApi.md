@@ -12,7 +12,7 @@ Method | HTTP request | Description
 [**GetBalance**](WalletsApi.md#GetBalance) | **Get** /api/wallets/wallets/{id}/balances/{balanceName} | Get detailed balance
 [**GetHold**](WalletsApi.md#GetHold) | **Get** /api/wallets/holds/{holdID} | Get a hold
 [**GetHolds**](WalletsApi.md#GetHolds) | **Get** /api/wallets/holds | Get all holds for a wallet
-[**GetTransactions**](WalletsApi.md#GetTransactions) | **Get** /api/wallets/transactions |
+[**GetTransactions**](WalletsApi.md#GetTransactions) | **Get** /api/wallets/transactions | 
 [**GetWallet**](WalletsApi.md#GetWallet) | **Get** /api/wallets/wallets/{id} | Get a wallet
 [**ListBalances**](WalletsApi.md#ListBalances) | **Get** /api/wallets/wallets/{id}/balances | List balances of a wallet
 [**ListWallets**](WalletsApi.md#ListWallets) | **Get** /api/wallets/wallets | List all wallets
@@ -41,7 +41,7 @@ import (
 )
 
 func main() {
-    holdId := "holdId_example" // string |
+    holdId := "holdId_example" // string | 
     confirmHoldRequest := *client.NewConfirmHoldRequest() // ConfirmHoldRequest |  (optional)
 
     configuration := client.NewConfiguration()
@@ -60,7 +60,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**holdId** | **string** |  |
+**holdId** | **string** |  | 
 
 ### Other Parameters
 
@@ -70,7 +70,7 @@ Other parameters are passed through a pointer to a apiConfirmHoldRequest struct 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **confirmHoldRequest** | [**ConfirmHoldRequest**](ConfirmHoldRequest.md) |  |
+ **confirmHoldRequest** | [**ConfirmHoldRequest**](ConfirmHoldRequest.md) |  | 
 
 ### Return type
 
@@ -109,7 +109,7 @@ import (
 )
 
 func main() {
-    id := "id_example" // string |
+    id := "id_example" // string | 
     body := Balance(987) // Balance |  (optional)
 
     configuration := client.NewConfiguration()
@@ -130,7 +130,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** |  |
+**id** | **string** |  | 
 
 ### Other Parameters
 
@@ -140,7 +140,7 @@ Other parameters are passed through a pointer to a apiCreateBalanceRequest struc
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **body** | **Balance** |  |
+ **body** | **Balance** |  | 
 
 ### Return type
 
@@ -204,7 +204,7 @@ Other parameters are passed through a pointer to a apiCreateWalletRequest struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **createWalletRequest** | [**CreateWalletRequest**](CreateWalletRequest.md) |  |
+ **createWalletRequest** | [**CreateWalletRequest**](CreateWalletRequest.md) |  | 
 
 ### Return type
 
@@ -243,7 +243,7 @@ import (
 )
 
 func main() {
-    id := "id_example" // string |
+    id := "id_example" // string | 
     creditWalletRequest := *client.NewCreditWalletRequest(*client.NewMonetary("Asset_example", int64(123)), []client.Subject{client.Subject{LedgerAccountSubject: client.NewLedgerAccountSubject("Type_example", "Identifier_example")}}) // CreditWalletRequest |  (optional)
 
     configuration := client.NewConfiguration()
@@ -262,7 +262,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** |  |
+**id** | **string** |  | 
 
 ### Other Parameters
 
@@ -272,7 +272,7 @@ Other parameters are passed through a pointer to a apiCreditWalletRequest struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **creditWalletRequest** | [**CreditWalletRequest**](CreditWalletRequest.md) |  |
+ **creditWalletRequest** | [**CreditWalletRequest**](CreditWalletRequest.md) |  | 
 
 ### Return type
 
@@ -311,7 +311,7 @@ import (
 )
 
 func main() {
-    id := "id_example" // string |
+    id := "id_example" // string | 
     debitWalletRequest := *client.NewDebitWalletRequest(*client.NewMonetary("Asset_example", int64(123))) // DebitWalletRequest |  (optional)
 
     configuration := client.NewConfiguration()
@@ -332,7 +332,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** |  |
+**id** | **string** |  | 
 
 ### Other Parameters
 
@@ -342,7 +342,7 @@ Other parameters are passed through a pointer to a apiDebitWalletRequest struct 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **debitWalletRequest** | [**DebitWalletRequest**](DebitWalletRequest.md) |  |
+ **debitWalletRequest** | [**DebitWalletRequest**](DebitWalletRequest.md) |  | 
 
 ### Return type
 
@@ -381,8 +381,8 @@ import (
 )
 
 func main() {
-    id := "id_example" // string |
-    balanceName := "balanceName_example" // string |
+    id := "id_example" // string | 
+    balanceName := "balanceName_example" // string | 
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -402,8 +402,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** |  |
-**balanceName** | **string** |  |
+**id** | **string** |  | 
+**balanceName** | **string** |  | 
 
 ### Other Parameters
 
@@ -472,7 +472,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**holdID** | **string** | The hold ID |
+**holdID** | **string** | The hold ID | 
 
 ### Other Parameters
 
@@ -549,9 +549,9 @@ Other parameters are passed through a pointer to a apiGetHoldsRequest struct via
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **pageSize** | **int32** | The maximum number of results to return per page | [default to 15]
- **walletID** | **string** | The wallet to filter on |
- **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. |
- **cursor** | **string** | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  |
+ **walletID** | **string** | The wallet to filter on | 
+ **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. | 
+ **cursor** | **string** | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  | 
 
 ### Return type
 
@@ -618,8 +618,8 @@ Other parameters are passed through a pointer to a apiGetTransactionsRequest str
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **pageSize** | **int32** | The maximum number of results to return per page | [default to 15]
- **walletId** | **string** | A wallet ID to filter on |
- **cursor** | **string** | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.  |
+ **walletId** | **string** | A wallet ID to filter on | 
+ **cursor** | **string** | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.  | 
 
 ### Return type
 
@@ -658,7 +658,7 @@ import (
 )
 
 func main() {
-    id := "id_example" // string |
+    id := "id_example" // string | 
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -678,7 +678,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** |  |
+**id** | **string** |  | 
 
 ### Other Parameters
 
@@ -726,7 +726,7 @@ import (
 )
 
 func main() {
-    id := "id_example" // string |
+    id := "id_example" // string | 
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -746,7 +746,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** |  |
+**id** | **string** |  | 
 
 ### Other Parameters
 
@@ -822,10 +822,10 @@ Other parameters are passed through a pointer to a apiListWalletsRequest struct 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **name** | **string** | Filter on wallet name |
- **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. |
+ **name** | **string** | Filter on wallet name | 
+ **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. | 
  **pageSize** | **int32** | The maximum number of results to return per page | [default to 15]
- **cursor** | **string** | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  |
+ **cursor** | **string** | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  | 
 
 ### Return type
 
@@ -864,7 +864,7 @@ import (
 )
 
 func main() {
-    id := "id_example" // string |
+    id := "id_example" // string | 
     updateWalletRequest := *client.NewUpdateWalletRequest() // UpdateWalletRequest |  (optional)
 
     configuration := client.NewConfiguration()
@@ -883,7 +883,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** |  |
+**id** | **string** |  | 
 
 ### Other Parameters
 
@@ -893,7 +893,7 @@ Other parameters are passed through a pointer to a apiUpdateWalletRequest struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **updateWalletRequest** | [**UpdateWalletRequest**](UpdateWalletRequest.md) |  |
+ **updateWalletRequest** | [**UpdateWalletRequest**](UpdateWalletRequest.md) |  | 
 
 ### Return type
 
@@ -932,7 +932,7 @@ import (
 )
 
 func main() {
-    holdId := "holdId_example" // string |
+    holdId := "holdId_example" // string | 
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -950,7 +950,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**holdId** | **string** |  |
+**holdId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1036,3 +1036,4 @@ Other parameters are passed through a pointer to a apiWalletsgetServerInfoReques
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+

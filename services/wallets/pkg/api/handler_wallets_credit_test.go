@@ -19,7 +19,7 @@ func TestWalletsCredit(t *testing.T) {
 	type testCase struct {
 		name               string
 		request            wallet.CreditRequest
-		scriptResult       sdk.ScriptResult
+		scriptResult       sdk.ScriptResponse
 		expectedScript     func(testEnv *testEnv, walletID string) sdk.Script
 		expectedStatusCode int
 		expectedErrorCode  string
@@ -145,7 +145,7 @@ func TestWalletsCredit(t *testing.T) {
 				executedScript sdk.Script
 			)
 			testEnv = newTestEnv(
-				WithRunScript(func(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResult, error) {
+				WithRunScript(func(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResponse, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					executedScript = script
 					return &testCase.scriptResult, nil

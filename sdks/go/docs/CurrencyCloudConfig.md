@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ApiKey** | **string** |  |
-**LoginID** | **string** | Username of the API Key holder |
-**PollingPeriod** | Pointer to **string** | The frequency at which the connector will fetch transactions | [optional]
-**Endpoint** | Pointer to **string** | The endpoint to use for the API. Defaults to https://devapi.currencycloud.com | [optional]
+**ApiKey** | **string** |  | 
+**LoginID** | **string** | Username of the API Key holder | 
+**PollingPeriod** | Pointer to **string** | The frequency at which the connector will fetch transactions | [optional] 
+**Endpoint** | Pointer to **string** | The endpoint to use for the API. Defaults to https://devapi.currencycloud.com | [optional] 
 
 ## Methods
 
@@ -120,3 +120,5 @@ HasEndpoint returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

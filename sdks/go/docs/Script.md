@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Plain** | **string** |  |
-**Vars** | Pointer to **map[string]interface{}** |  | [optional]
-**Reference** | Pointer to **string** | Reference to attach to the generated transaction | [optional]
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional]
+**Plain** | **string** |  | 
+**Vars** | Pointer to **map[string]interface{}** |  | [optional] 
+**Reference** | Pointer to **string** | Reference to attach to the generated transaction | [optional] 
+**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
 
 ## Methods
 
@@ -135,3 +135,5 @@ HasMetadata returns a boolean if a field has been set.
 UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+
