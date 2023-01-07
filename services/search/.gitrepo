@@ -5,8 +5,8 @@
 ;
 [subrepo]
 	remote = search
-	branch = main
+	branch = chore/backports
 	commit = bf92fe058ce34ce507b9a288a489ffd592a9810e
-	parent = 07c56762a71e9851102829f4ea6b72bb841a7e65
+	parent = c72a61f4664b84cb5d9aca6aef514833a18d6711
 	method = merge
 	cmdver = 0.4.5
