@@ -11,7 +11,7 @@ on:
         type: string
         required: true
 
-name: ${{ inputs.SERVICE_NAME }}
+name: Services
 defaults:
   run:
     working-directory: "./services/${{ inputs.SERVICE_NAME }}"
