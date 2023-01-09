@@ -132,7 +132,7 @@ Class | Method | HTTP request | Description
 *ScopesApi* | [**UpdateScope**](docs/ScopesApi.md#updatescope) | **Put** /api/auth/scopes/{scopeId} | Update scope
 *ScriptApi* | [**RunScript**](docs/ScriptApi.md#runscript) | **Post** /api/ledger/{ledger}/script | Execute a Numscript
 *SearchApi* | [**Search**](docs/SearchApi.md#search) | **Post** /api/search/ | Search
-*ServerApi* | [**GetInfo2**](docs/ServerApi.md#getinfo2) | **Get** /api/ledger/_info | Show server information
+*ServerApi* | [**GetInfo**](docs/ServerApi.md#getinfo) | **Get** /api/ledger/_info | Show server information
 *StatsApi* | [**ReadStats**](docs/StatsApi.md#readstats) | **Get** /api/ledger/{ledger}/stats | Get statistics from a ledger
 *TransactionsApi* | [**AddMetadataOnTransaction**](docs/TransactionsApi.md#addmetadataontransaction) | **Post** /api/ledger/{ledger}/transactions/{txid}/metadata | Set the metadata of a transaction by its ID
 *TransactionsApi* | [**CountTransactions**](docs/TransactionsApi.md#counttransactions) | **Head** /api/ledger/{ledger}/transactions | Count the transactions from a ledger

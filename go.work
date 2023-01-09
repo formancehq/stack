@@ -9,6 +9,7 @@ use (
 	./services/fctl
 	./services/fctl/membershipclient
 	./services/ledger
+	./services/orchestration
 	./services/payments
 	./services/payments/client
 	./services/search
