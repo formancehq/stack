@@ -12,9 +12,6 @@ on:
         required: true
 
 name: Services
-defaults:
-  run:
-    working-directory: "./services/${{ inputs.SERVICE_NAME }}"
 jobs:
   Lint:
     uses: ./.github/workflows/template_lint.yaml
