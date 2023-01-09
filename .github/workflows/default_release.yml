@@ -18,6 +18,8 @@ jobs:
       SERVICE_NAME: wallets
       GITHUB_EVENT_NAME: release
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
 
   Search:
     uses: ./.github/workflows/service.yaml
@@ -25,6 +27,8 @@ jobs:
       SERVICE_NAME: search
       GITHUB_EVENT_NAME: release
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
 
   Fctl:
     uses: ./.github/workflows/service.yaml
@@ -32,6 +36,8 @@ jobs:
       SERVICE_NAME: fctl
       GITHUB_EVENT_NAME: release
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
 
   Auth:
     uses: ./.github/workflows/service.yaml
@@ -39,13 +45,15 @@ jobs:
       SERVICE_NAME: auth
       GITHUB_EVENT_NAME: release
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
 
-  Ledger:
-    uses: ./.github/workflows/service.yaml
-    with:
-      SERVICE_NAME: ledger
-      GITHUB_EVENT_NAME: release
-      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+#  Ledger:
+#    uses: ./.github/workflows/service.yaml
+#    with:
+#      SERVICE_NAME: ledger
+#      GITHUB_EVENT_NAME: release
+#      GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Payments:
     uses: ./.github/workflows/service.yaml
@@ -53,6 +61,8 @@ jobs:
       SERVICE_NAME: payments
       GITHUB_EVENT_NAME: release
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
 
   Webhooks:
     uses: ./.github/workflows/service.yaml
@@ -60,3 +70,5 @@ jobs:
       SERVICE_NAME: webhooks
       GITHUB_EVENT_NAME: release
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}

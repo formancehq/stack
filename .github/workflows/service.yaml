@@ -1,5 +1,8 @@
 on:
   workflow_call:
+    secrets:
+      NUMARY_GITHUB_TOKEN:
+        required: true
     inputs:
       SERVICE_NAME:
         type: string
@@ -32,20 +35,19 @@ jobs:
       - Lint
       - Test
 
-  Release:
-    if: ${{ inputs.GITHUB_EVENT_NAME }} == 'release'
-    uses: ./.github/workflows/template_goreleaser_release.yaml
-    with:
-      PATH: "./services/${{ inputs.SERVICE_NAME }}"
-    secrets:
-      FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
-      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-    needs:
-      - Lint
-      - Test
+#  Release:
+#    if: ${{ inputs.GITHUB_EVENT_NAME }} == 'release'
+#    uses: ./.github/workflows/template_goreleaser_release.yaml
+#    with:
+#      PATH: "./services/${{ inputs.SERVICE_NAME }}"
+#    secrets:
+#      FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
+#      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+#    needs:
+#      - Lint
+#      - Test
 
   Docker:
-    if: ${{ inputs.GITHUB_EVENT_NAME }} == 'release'
     uses: ./.github/workflows/template_docker.yaml
     with:
       NAME: ${{ inputs.SERVICE_NAME }}
