@@ -9,6 +9,7 @@ tasks:
   sdk:build:
     desc: Build the SDK
     cmds:
+      - yarn install
       - yarn run build
       - sed -i -e "s/SDK_VERSION/{{.VERSION}}/g" build/generate.json
 
