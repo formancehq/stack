@@ -54,6 +54,8 @@ jobs:
 
   Find:
     runs-on: ubuntu-latest
+    outputs:
+      folders: ${{ steps.jobs.outputs.folders }}
     steps:
       - uses: actions/checkout@v3
       - id: jobs
@@ -63,6 +65,9 @@ jobs:
 
   Matrix:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        folder: ${{ fromJson(needs.Find.outputs.folders )}}
     needs:
       - Find
     uses: ./.github/workflows/service_${{ matrix.folder }}.yaml
