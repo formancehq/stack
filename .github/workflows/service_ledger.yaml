@@ -8,7 +8,7 @@ on:
         type: string
         required: true
 
-name: Ledger
+name: ledger
 defaults:
   run:
     working-directory: "./services/ledger"
@@ -23,7 +23,17 @@ jobs:
     with:
       PATH: "./services/ledger"
 
+  Build:
+    if: github.event_name == "pull_request"
+    uses: ./.github/workflows/template_goreleaser_build.yaml
+    with:
+      PATH: "./services/ledger"
+    needs:
+      - Lint
+      - Test
+
   Release:
+    if: github.event_name == 'release'
     uses: ./.github/workflows/template_goreleaser_release.yaml
     with:
       PATH: "./services/ledger"
@@ -35,6 +45,7 @@ jobs:
       - Test
 
   Docker:
+    if: github.event_name == 'release'
     uses: ./.github/workflows/template_docker.yaml
     with:
       NAME: ledger

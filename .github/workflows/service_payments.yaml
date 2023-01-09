@@ -8,25 +8,35 @@ on:
         type: string
         required: true
 
-name: fctl
+name: payments
 defaults:
   run:
-    working-directory: "./services/fctl"
+    working-directory: "./services/payments"
 jobs:
   Lint:
     uses: ./.github/workflows/template_lint.yaml
     with:
-      PATH: "./services/fctl"
+      PATH: "./services/payments"
 
   Test:
     uses: ./.github/workflows/template_tests.yaml
     with:
-      PATH: "./services/fctl"
+      PATH: "./services/payments"
+
+  Build:
+    if: github.event_name == "pull_request"
+    uses: ./.github/workflows/template_goreleaser_build.yaml
+    with:
+      PATH: "./services/payments"
+    needs:
+      - Lint
+      - Test
 
   Release:
+    if: github.event_name == 'release'
     uses: ./.github/workflows/template_goreleaser_release.yaml
     with:
-      PATH: "./services/fctl"
+      PATH: "./services/payments"
     secrets:
       FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
@@ -35,10 +45,11 @@ jobs:
       - Test
 
   Docker:
+    if: github.event_name == 'release'
     uses: ./.github/workflows/template_docker.yaml
     with:
-      NAME: fctl
-      PATH: "./services/fctl"
+      NAME: payments
+      PATH: "./services/payments"
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
     secrets:
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
