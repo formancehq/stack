@@ -20,10 +20,6 @@ type ScriptResponse struct {
 	ErrorCode *ErrorsEnum `json:"errorCode,omitempty"`
 	ErrorMessage *string `json:"errorMessage,omitempty"`
 	Details *string `json:"details,omitempty"`
-	// Deprecated
-	ErrorCode *string `json:"error_code,omitempty"`
-	// Deprecated
-	ErrorMessage *string `json:"error_message,omitempty"`
 	Transaction *Transaction `json:"transaction,omitempty"`
 }
 
@@ -140,76 +136,6 @@ func (o *ScriptResponse) SetDetails(v string) {
 	o.Details = &v
 }
 
-// GetErrorCode returns the ErrorCode field value if set, zero value otherwise.
-// Deprecated
-func (o *ScriptResponse) GetErrorCode() string {
-	if o == nil || isNil(o.ErrorCode) {
-		var ret string
-		return ret
-	}
-	return *o.ErrorCode
-}
-
-// GetErrorCodeOk returns a tuple with the ErrorCode field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-// Deprecated
-func (o *ScriptResponse) GetErrorCodeOk() (*string, bool) {
-	if o == nil || isNil(o.ErrorCode) {
-    return nil, false
-	}
-	return o.ErrorCode, true
-}
-
-// HasErrorCode returns a boolean if a field has been set.
-func (o *ScriptResponse) HasErrorCode() bool {
-	if o != nil && !isNil(o.ErrorCode) {
-		return true
-	}
-
-	return false
-}
-
-// SetErrorCode gets a reference to the given string and assigns it to the ErrorCode field.
-// Deprecated
-func (o *ScriptResponse) SetErrorCode(v string) {
-	o.ErrorCode = &v
-}
-
-// GetErrorMessage returns the ErrorMessage field value if set, zero value otherwise.
-// Deprecated
-func (o *ScriptResponse) GetErrorMessage() string {
-	if o == nil || isNil(o.ErrorMessage) {
-		var ret string
-		return ret
-	}
-	return *o.ErrorMessage
-}
-
-// GetErrorMessageOk returns a tuple with the ErrorMessage field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-// Deprecated
-func (o *ScriptResponse) GetErrorMessageOk() (*string, bool) {
-	if o == nil || isNil(o.ErrorMessage) {
-    return nil, false
-	}
-	return o.ErrorMessage, true
-}
-
-// HasErrorMessage returns a boolean if a field has been set.
-func (o *ScriptResponse) HasErrorMessage() bool {
-	if o != nil && !isNil(o.ErrorMessage) {
-		return true
-	}
-
-	return false
-}
-
-// SetErrorMessage gets a reference to the given string and assigns it to the ErrorMessage field.
-// Deprecated
-func (o *ScriptResponse) SetErrorMessage(v string) {
-	o.ErrorMessage = &v
-}
-
 // GetTransaction returns the Transaction field value if set, zero value otherwise.
 func (o *ScriptResponse) GetTransaction() Transaction {
 	if o == nil || isNil(o.Transaction) {
@@ -252,12 +178,6 @@ func (o ScriptResponse) MarshalJSON() ([]byte, error) {
 	}
 	if !isNil(o.Details) {
 		toSerialize["details"] = o.Details
-	}
-	if !isNil(o.ErrorCode) {
-		toSerialize["error_code"] = o.ErrorCode
-	}
-	if !isNil(o.ErrorMessage) {
-		toSerialize["error_message"] = o.ErrorMessage
 	}
 	if !isNil(o.Transaction) {
 		toSerialize["transaction"] = o.Transaction

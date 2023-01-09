@@ -74,8 +74,8 @@ github.com/formancehq/cobra v0.0.0-20221112160629-60a6d6d55ef9 h1:vix/rzvBgwdc0/
 github.com/formancehq/cobra v0.0.0-20221112160629-60a6d6d55ef9/go.mod h1:IOw/AERYS7UzyrGinqmz6HLUo219MORXGxhbaJUqzrY=
 github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20230105103853-efecdbdedb04 h1:nvoqEs24kaTvoimyI8CNUgsV2D4HNzIt4AGp6LpmWcU=
 github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20230105103853-efecdbdedb04/go.mod h1:8/3set1MEjevx4epBHjwBQxDrXVeliF7kzHFOzZC/yI=
-github.com/formancehq/oidc v0.0.0-20220922145049-a6daec727711 h1:FlfsWVuJWpIA+FasyDRNExFSp9VnmuR+BlIT6Tyjabw=
-github.com/formancehq/oidc v0.0.0-20220922145049-a6daec727711/go.mod h1:vcDdyFgHzwPIPgoXO1u1UCJQjv2gJBq832VZx13sWBE=
+github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c h1:artlSyY/egK+XF+cdSsf/USNwIxUCLasRHbQoLNs9wY=
+github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c/go.mod h1:vcDdyFgHzwPIPgoXO1u1UCJQjv2gJBq832VZx13sWBE=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20200222043503-6f7a984d4dc4/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=

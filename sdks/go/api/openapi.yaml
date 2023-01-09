@@ -3253,11 +3253,9 @@ components:
       type: object
     ScriptResponse:
       example:
-        error_message: "[INSUFFICIENT_FUND] account had insufficient funds"
         errorMessage: account had insufficient funds
         errorCode: INSUFFICIENT_FUND
         details: https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9
-        error_code: INSUFFICIENT_FUND
         transaction:
           reference: ref:001
           metadata:
@@ -3306,22 +3304,6 @@ components:
           type: string
         details:
           example: https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9
-          type: string
-        error_code:
-          deprecated: true
-          enum:
-          - INTERNAL
-          - INSUFFICIENT_FUND
-          - VALIDATION
-          - CONFLICT
-          - NO_SCRIPT
-          - COMPILATION_FAILED
-          - METADATA_OVERRIDE
-          example: INSUFFICIENT_FUND
-          type: string
-        error_message:
-          deprecated: true
-          example: "[INSUFFICIENT_FUND] account had insufficient funds"
           type: string
         transaction:
           $ref: '#/components/schemas/Transaction'
