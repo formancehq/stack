@@ -6,7 +6,7 @@
 [subrepo]
 	remote = auth
 	branch = chore/backports
-	commit = b000d34164de0ca2ea4b8a8080fce7e51e9d6819
-	parent = 32719482419d6099c111e58638820f9481129b20
+	commit = d2b031806f1fd950eeac8f1855e85b1a79f176aa
+	parent = a44ff2be4463f4f000aafdd3e85e4ff688b75607
 	method = merge
 	cmdver = 0.4.5
