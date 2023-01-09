@@ -4,8 +4,6 @@ go 1.18
 
 require (
 	github.com/formancehq/go-libs v1.4.1
-	github.com/formancehq/go-libs/sharedhealth v0.0.0-20221123112229-2c8ab193c63c
-	github.com/formancehq/go-libs/sharedotlp v0.0.0-20221123112229-2c8ab193c63c
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/riandyrn/otelchi v0.5.0
 	github.com/sirupsen/logrus v1.9.0

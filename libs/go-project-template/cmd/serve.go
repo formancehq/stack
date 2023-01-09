@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	sharedhealth "github.com/formancehq/go-libs/sharedhealth/pkg"
-	"github.com/formancehq/go-libs/sharedotlp/pkg/sharedotlptraces"
+	"github.com/formancehq/go-libs/health"
+	"github.com/formancehq/go-libs/otlp/otlptraces"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/riandyrn/otelchi"
@@ -26,7 +26,7 @@ func newRouter() *chi.Mux {
 func apiModule() fx.Option {
 	return fx.Options(
 		fx.Provide(newRouter),
-		fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux, healthController *sharedhealth.HealthController) {
+		fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux, healthController *health.HealthController) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					rootRouter := chi.NewRouter()
@@ -47,11 +47,11 @@ func apiModule() fx.Option {
 
 func healthCheckModule() fx.Option {
 	return fx.Options(
-		// The module will expose a *sharedhealth.HealthController
+		// The module will expose a *health.HealthController
 		// You must mount it on your api
-		sharedhealth.Module(),
-		sharedhealth.ProvideHealthCheck(func() sharedhealth.NamedCheck {
-			return sharedhealth.NewNamedCheck("default", sharedhealth.CheckFn(func(ctx context.Context) error {
+		health.Module(),
+		health.ProvideHealthCheck(func() health.NamedCheck {
+			return health.NewNamedCheck("default", health.CheckFn(func(ctx context.Context) error {
 				// TODO: Implements your own logic
 				return nil
 			}))
@@ -71,7 +71,7 @@ var serveCmd = &cobra.Command{
 			fx.NopLogger,
 			// This will set up the telemetry stack
 			// You have to add a middleware on your router to traces http requests
-			sharedotlptraces.CLITracesModule(viper.GetViper()),
+			otlptraces.CLITracesModule(viper.GetViper()),
 		}
 
 		app := fx.New(options...)
