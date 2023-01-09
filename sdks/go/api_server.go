@@ -23,38 +23,38 @@ import (
 type ServerApi interface {
 
 	/*
-	GetInfo Show server information
+	GetInfo2 Show server information
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetInfoRequest
+	@return ApiGetInfo2Request
 	*/
-	GetInfo(ctx context.Context) ApiGetInfoRequest
+	GetInfo2(ctx context.Context) ApiGetInfo2Request
 
-	// GetInfoExecute executes the request
+	// GetInfo2Execute executes the request
 	//  @return ConfigInfoResponse
-	GetInfoExecute(r ApiGetInfoRequest) (*ConfigInfoResponse, *http.Response, error)
+	GetInfo2Execute(r ApiGetInfo2Request) (*ConfigInfoResponse, *http.Response, error)
 }
 
 // ServerApiService ServerApi service
 type ServerApiService service
 
-type ApiGetInfoRequest struct {
+type ApiGetInfo2Request struct {
 	ctx context.Context
 	ApiService ServerApi
 }
 
-func (r ApiGetInfoRequest) Execute() (*ConfigInfoResponse, *http.Response, error) {
-	return r.ApiService.GetInfoExecute(r)
+func (r ApiGetInfo2Request) Execute() (*ConfigInfoResponse, *http.Response, error) {
+	return r.ApiService.GetInfo2Execute(r)
 }
 
 /*
-GetInfo Show server information
+GetInfo2 Show server information
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiGetInfoRequest
+ @return ApiGetInfo2Request
 */
-func (a *ServerApiService) GetInfo(ctx context.Context) ApiGetInfoRequest {
-	return ApiGetInfoRequest{
+func (a *ServerApiService) GetInfo2(ctx context.Context) ApiGetInfo2Request {
+	return ApiGetInfo2Request{
 		ApiService: a,
 		ctx: ctx,
 	}
@@ -62,7 +62,7 @@ func (a *ServerApiService) GetInfo(ctx context.Context) ApiGetInfoRequest {
 
 // Execute executes the request
 //  @return ConfigInfoResponse
-func (a *ServerApiService) GetInfoExecute(r ApiGetInfoRequest) (*ConfigInfoResponse, *http.Response, error) {
+func (a *ServerApiService) GetInfo2Execute(r ApiGetInfo2Request) (*ConfigInfoResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -70,7 +70,7 @@ func (a *ServerApiService) GetInfoExecute(r ApiGetInfoRequest) (*ConfigInfoRespo
 		localVarReturnValue  *ConfigInfoResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ServerApiService.GetInfo")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ServerApiService.GetInfo2")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}

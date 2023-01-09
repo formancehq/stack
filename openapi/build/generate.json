@@ -615,7 +615,7 @@
           "Server"
         ],
         "summary": "Show server information",
-        "operationId": "getInfo",
+        "operationId": "getInfo2",
         "responses": {
           "200": {
             "description": "OK",

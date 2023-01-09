@@ -435,7 +435,7 @@ paths:
       - Users
   /api/ledger/_info:
     get:
-      operationId: getInfo
+      operationId: getInfo2
       responses:
         "200":
           content:
