@@ -47,7 +47,7 @@ require (
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )
 
-replace github.com/zitadel/oidc => github.com/formancehq/oidc v0.0.0-20220922145049-a6daec727711
+replace github.com/zitadel/oidc => github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c
 
 replace github.com/formancehq/fctl/membershipclient => ./membershipclient
 
