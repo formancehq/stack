@@ -1,6 +1,9 @@
 on:
   workflow_call:
     inputs:
+      SERVICE_NAME:
+        type: string
+        required: true
       GITHUB_EVENT_NAME:
         type: string
         required: true
@@ -8,26 +11,26 @@ on:
         type: string
         required: true
 
-name: wallets
+name: ${{ inputs.SERVICE_NAME }}
 defaults:
   run:
-    working-directory: "./services/wallets"
+    working-directory: "./services/${{ inputs.SERVICE_NAME }}"
 jobs:
   Lint:
     uses: ./.github/workflows/template_lint.yaml
     with:
-      PATH: "./services/wallets"
+      PATH: "./services/${{ inputs.SERVICE_NAME }}"
 
   Test:
     uses: ./.github/workflows/template_tests.yaml
     with:
-      PATH: "./services/wallets"
+      PATH: "./services/${{ inputs.SERVICE_NAME }}"
 
   Build:
     if: github.event_name == "pull_request"
     uses: ./.github/workflows/template_goreleaser_build.yaml
     with:
-      PATH: "./services/wallets"
+      PATH: "./services/${{ inputs.SERVICE_NAME }}"
     needs:
       - Lint
       - Test
@@ -36,7 +39,7 @@ jobs:
     if: github.event_name == 'release'
     uses: ./.github/workflows/template_goreleaser_release.yaml
     with:
-      PATH: "./services/wallets"
+      PATH: "./services/${{ inputs.SERVICE_NAME }}"
     secrets:
       FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
@@ -48,8 +51,8 @@ jobs:
     if: github.event_name == 'release'
     uses: ./.github/workflows/template_docker.yaml
     with:
-      NAME: wallets
-      PATH: "./services/wallets"
+      NAME: ${{ inputs.SERVICE_NAME }}
+      PATH: "./services/${{ inputs.SERVICE_NAME }}"
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
     secrets:
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}

@@ -26,108 +26,91 @@ jobs:
     secrets:
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
 
-#  Changes:
-#    runs-on: ubuntu-latest
-#    outputs:
-#      wallets: ${{ steps.filter.outputs.wallets }}
-#      search: ${{ steps.filter.outputs.search }}
-#      fctl: ${{ steps.filter.outputs.fctl }}
-#      auth: ${{ steps.filter.outputs.auth }}
-#      ledger: ${{ steps.filter.outputs.ledger }}
-#      payments: ${{ steps.filter.outputs.payments }}
-#      webhooks: ${{ steps.filter.outputs.webhooks }}
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Check which services were modified
-#        uses: dorny/paths-filter@v2
-#        id: filter
-#        with:
-#          list-files: shell
-#          filters: |
-#            wallets: 'services/wallets/**'
-#            search: 'services/search/**'
-#            fctl: 'services/fctl/**'
-#            auth: 'services/auth/**'
-#            ledger: 'services/ledger/**'
-#            payments: 'services/payments/**'
-#            webhooks: 'services/webhooks/**'
-
-  Find:
+  Changes:
     runs-on: ubuntu-latest
     outputs:
-      folders: ${{ steps.jobs.outputs.folders }}
+      wallets: ${{ steps.filter.outputs.wallets }}
+      search: ${{ steps.filter.outputs.search }}
+      fctl: ${{ steps.filter.outputs.fctl }}
+      auth: ${{ steps.filter.outputs.auth }}
+      ledger: ${{ steps.filter.outputs.ledger }}
+      payments: ${{ steps.filter.outputs.payments }}
+      webhooks: ${{ steps.filter.outputs.webhooks }}
     steps:
       - uses: actions/checkout@v3
-      - id: jobs
-        uses: philips-labs/list-folders-action@v1
+      - name: Check which services were modified
+        uses: dorny/paths-filter@v2
+        id: filter
         with:
-          path: ./services/
+          list-files: shell
+          filters: |
+            wallets: 'services/wallets/**'
+            search: 'services/search/**'
+            fctl: 'services/fctl/**'
+            auth: 'services/auth/**'
+            ledger: 'services/ledger/**'
+            payments: 'services/payments/**'
+            webhooks: 'services/webhooks/**'
 
-  Matrix:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        folder: ${{ fromJson(needs.Find.outputs.folders )}}
-    needs:
-      - Find
-    uses: ./.github/workflows/service_${{ matrix.folder }}.yaml
+  Wallets:
+    if: needs.Changes.outputs.wallets == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service.yaml
     with:
+      SERVICE_NAME: wallets
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
+  Search:
+    if: needs.Changes.outputs.search == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service.yaml
+    with:
+      SERVICE_NAME: search
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
-#  Wallets:
-#    if: needs.Changes.outputs.wallets == 'true'
-#    needs: Changes
-#    uses: ./.github/workflows/service_wallets.yaml
-#    with:
-#      GITHUB_EVENT_NAME: ${{ github.event_name }}
-#      GITHUB_EVENT_ACTION: ${{ github.event.action }}
-#
-#  Search:
-#    if: needs.Changes.outputs.search == 'true'
-#    needs: Changes
-#    uses: ./.github/workflows/service_search.yaml
-#    with:
-#      GITHUB_EVENT_NAME: ${{ github.event_name }}
-#      GITHUB_EVENT_ACTION: ${{ github.event.action }}
-#
-#  Fctl:
-#    if: needs.Changes.outputs.fctl == 'true'
-#    needs: Changes
-#    uses: ./.github/workflows/service_fctl.yaml
-#    with:
-#      GITHUB_EVENT_NAME: ${{ github.event_name }}
-#      GITHUB_EVENT_ACTION: ${{ github.event.action }}
-#
-#  Auth:
-#    if: needs.Changes.outputs.auth == 'true'
-#    needs: Changes
-#    uses: ./.github/workflows/service_auth.yaml
-#    with:
-#      GITHUB_EVENT_NAME: ${{ github.event_name }}
-#      GITHUB_EVENT_ACTION: ${{ github.event.action }}
-#
-#  Ledger:
-#    if: needs.Changes.outputs.ledger == 'true'
-#    needs: Changes
-#    uses: ./.github/workflows/service_ledger.yaml
-#    with:
-#      GITHUB_EVENT_NAME: ${{ github.event_name }}
-#      GITHUB_EVENT_ACTION: ${{ github.event.action }}
-#
-#  Payments:
-#    if: needs.Changes.outputs.payments == 'true'
-#    needs: Changes
-#    uses: ./.github/workflows/service_payments.yaml
-#    with:
-#      GITHUB_EVENT_NAME: ${{ github.event_name }}
-#      GITHUB_EVENT_ACTION: ${{ github.event.action }}
-#
-#  Webhooks:
-#    if: needs.Changes.outputs.webhooks == 'true'
-#    needs: Changes
-#    uses: ./.github/workflows/service_webhooks.yaml
-#    with:
-#      GITHUB_EVENT_NAME: ${{ github.event_name }}
-#      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+  Fctl:
+    if: needs.Changes.outputs.fctl == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service.yaml
+    with:
+      SERVICE_NAME: fctl
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Auth:
+    if: needs.Changes.outputs.auth == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service.yaml
+    with:
+      SERVICE_NAME: auth
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Ledger:
+    if: needs.Changes.outputs.ledger == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service.yaml
+    with:
+      SERVICE_NAME: ledger
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Payments:
+    if: needs.Changes.outputs.payments == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service.yaml
+    with:
+      SERVICE_NAME: payments
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Webhooks:
+    if: needs.Changes.outputs.webhooks == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service.yaml
+    with:
+      SERVICE_NAME: webhooks
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
