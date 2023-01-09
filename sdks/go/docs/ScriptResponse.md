@@ -7,6 +7,8 @@ Name | Type | Description | Notes
 **ErrorCode** | Pointer to [**ErrorsEnum**](ErrorsEnum.md) |  | [optional] 
 **ErrorMessage** | Pointer to **string** |  | [optional] 
 **Details** | Pointer to **string** |  | [optional] 
+**ErrorCode** | Pointer to **string** |  | [optional] 
+**ErrorMessage** | Pointer to **string** |  | [optional] 
 **Transaction** | Pointer to [**Transaction**](Transaction.md) |  | [optional] 
 
 ## Methods
@@ -102,6 +104,56 @@ SetDetails sets Details field to given value.
 `func (o *ScriptResponse) HasDetails() bool`
 
 HasDetails returns a boolean if a field has been set.
+
+### GetErrorCode
+
+`func (o *ScriptResponse) GetErrorCode() string`
+
+GetErrorCode returns the ErrorCode field if non-nil, zero value otherwise.
+
+### GetErrorCodeOk
+
+`func (o *ScriptResponse) GetErrorCodeOk() (*string, bool)`
+
+GetErrorCodeOk returns a tuple with the ErrorCode field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetErrorCode
+
+`func (o *ScriptResponse) SetErrorCode(v string)`
+
+SetErrorCode sets ErrorCode field to given value.
+
+### HasErrorCode
+
+`func (o *ScriptResponse) HasErrorCode() bool`
+
+HasErrorCode returns a boolean if a field has been set.
+
+### GetErrorMessage
+
+`func (o *ScriptResponse) GetErrorMessage() string`
+
+GetErrorMessage returns the ErrorMessage field if non-nil, zero value otherwise.
+
+### GetErrorMessageOk
+
+`func (o *ScriptResponse) GetErrorMessageOk() (*string, bool)`
+
+GetErrorMessageOk returns a tuple with the ErrorMessage field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetErrorMessage
+
+`func (o *ScriptResponse) SetErrorMessage(v string)`
+
+SetErrorMessage sets ErrorMessage field to given value.
+
+### HasErrorMessage
+
+`func (o *ScriptResponse) HasErrorMessage() bool`
+
+HasErrorMessage returns a boolean if a field has been set.
 
 ### GetTransaction
 
