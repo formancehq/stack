@@ -29,3 +29,27 @@ jobs:
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Auth:
+    uses: ./.github/workflows/service_release_auth.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Ledger:
+    uses: ./.github/workflows/service_release_ledger.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Payments:
+    uses: ./.github/workflows/service_release_payments.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Webhooks:
+    uses: ./.github/workflows/service_release_webhooks.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}

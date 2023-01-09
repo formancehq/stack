@@ -32,6 +32,10 @@ jobs:
       wallets: ${{ steps.filter.outputs.wallets }}
       search: ${{ steps.filter.outputs.search }}
       fctl: ${{ steps.filter.outputs.fctl }}
+      auth: ${{ steps.filter.outputs.auth }}
+      ledger: ${{ steps.filter.outputs.ledger }}
+      payments: ${{ steps.filter.outputs.payments }}
+      webhooks: ${{ steps.filter.outputs.webhooks }}
     steps:
       - uses: actions/checkout@v3
       - name: Check which services were modified
@@ -43,6 +47,10 @@ jobs:
             wallets: 'services/wallets/**'
             search: 'services/search/**'
             fctl: 'services/fctl/**'
+            auth: 'services/auth/**'
+            ledger: 'services/ledger/**'
+            payments: 'services/payments/**'
+            webhooks: 'services/webhooks/**'
 
   Wallets:
     if: needs.Changes.outputs.wallets == 'true'
@@ -64,6 +72,38 @@ jobs:
     if: needs.Changes.outputs.fctl == 'true'
     needs: Changes
     uses: ./.github/workflows/service_pr_fctl.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Auth:
+    if: needs.Changes.outputs.auth == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service_pr_auth.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Ledger:
+    if: needs.Changes.outputs.ledger == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service_pr_ledger.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Payments:
+    if: needs.Changes.outputs.payments == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service_pr_payments.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Webhooks:
+    if: needs.Changes.outputs.webhooks == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service_pr_webhooks.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
