@@ -3,6 +3,7 @@ go 1.19
 use (
 	.
 	./libs/go-libs
+	./libs/go-project-template
 	./sdks/go
 	./services/auth
 	./services/fctl

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/formancehq/go-libs/sharedlogging"
-	"github.com/formancehq/go-libs/sharedlogging/sharedlogginglogrus"
+	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/go-libs/logging/logginglogrus"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -34,8 +34,8 @@ var rootCmd = &cobra.Command{
 			logrusLogger.SetLevel(logrus.DebugLevel)
 			logrusLogger.Infof("Debug mode enabled.")
 		}
-		logger := sharedlogginglogrus.New(logrusLogger)
-		sharedlogging.SetFactory(sharedlogging.StaticLoggerFactory(logger))
+		logger := logginglogrus.New(logrusLogger)
+		logging.SetFactory(logging.StaticLoggerFactory(logger))
 
 		return nil
 	},
