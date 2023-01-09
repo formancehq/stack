@@ -24,7 +24,7 @@ jobs:
       PATH: "./services/${{ inputs.SERVICE_NAME }}"
 
   Build:
-    if: ${{ inputs.GITHUB_EVENT_NAME }} == "pull_request"
+    if: ${{ inputs.GITHUB_EVENT_NAME }} == "pr"
     uses: ./.github/workflows/template_goreleaser_build.yaml
     with:
       PATH: "./services/${{ inputs.SERVICE_NAME }}"

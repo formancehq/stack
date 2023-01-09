@@ -21,7 +21,7 @@ jobs:
   OpenAPI:
     uses: ./.github/workflows/service_pr_openapi.yaml
     with:
-      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_NAME: pr
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
     secrets:
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
@@ -58,7 +58,7 @@ jobs:
     uses: ./.github/workflows/service.yaml
     with:
       SERVICE_NAME: wallets
-      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_NAME: pr
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Search:
@@ -67,7 +67,7 @@ jobs:
     uses: ./.github/workflows/service.yaml
     with:
       SERVICE_NAME: search
-      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_NAME: pr
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Fctl:
@@ -76,7 +76,7 @@ jobs:
     uses: ./.github/workflows/service.yaml
     with:
       SERVICE_NAME: fctl
-      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_NAME: pr
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Auth:
@@ -85,7 +85,7 @@ jobs:
     uses: ./.github/workflows/service.yaml
     with:
       SERVICE_NAME: auth
-      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_NAME: pr
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Ledger:
@@ -94,7 +94,7 @@ jobs:
     uses: ./.github/workflows/service.yaml
     with:
       SERVICE_NAME: ledger
-      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_NAME: pr
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Payments:
@@ -103,7 +103,7 @@ jobs:
     uses: ./.github/workflows/service.yaml
     with:
       SERVICE_NAME: payments
-      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_NAME: pr
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Webhooks:
@@ -112,5 +112,5 @@ jobs:
     uses: ./.github/workflows/service.yaml
     with:
       SERVICE_NAME: webhooks
-      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_NAME: pr
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
