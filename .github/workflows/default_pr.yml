@@ -19,7 +19,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   OpenAPI:
-    uses: ./.github/workflows/service_openapi.yaml
+    uses: ./.github/workflows/service_pr_openapi.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
