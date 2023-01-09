@@ -1,0 +1,69 @@
+name: Default - PR
+on:
+  pull_request:
+    types: [ assigned, opened, synchronize, reopened ]
+
+jobs:
+  PR:
+    if: github.event_name == 'pull_request'
+    name: Check PR Style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aslafy-z/conventional-pr-title-action@v2.2.5
+        with:
+          success-state: Title follows the specification.
+          failure-state: Title does not follow the specification.
+          context-name: conventional-pr-title
+          preset: conventional-changelog-angular@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  OpenAPI:
+    uses: ./.github/workflows/service_pr_openapi.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+    secrets:
+      NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+
+  Changes:
+    runs-on: ubuntu-latest
+    outputs:
+      wallets: ${{ steps.filter.outputs.wallets }}
+      search: ${{ steps.filter.outputs.search }}
+      fctl: ${{ steps.filter.outputs.fctl }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check which services were modified
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          list-files: shell
+          filters: |
+            wallets: 'services/wallets/**'
+            search: 'services/search/**'
+            fctl: 'services/fctl/**'
+
+  Wallets:
+    if: needs.Changes.outputs.wallets == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service_pr_wallets.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Search:
+    if: needs.Changes.outputs.search == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service_pr_search.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}
+
+  Fctl:
+    if: needs.Changes.outputs.fctl == 'true'
+    needs: Changes
+    uses: ./.github/workflows/service_pr_fctl.yaml
+    with:
+      GITHUB_EVENT_NAME: ${{ github.event_name }}
+      GITHUB_EVENT_ACTION: ${{ github.event.action }}

@@ -1,0 +1,803 @@
+openapi: 3.1.0
+info:
+  title: Payments API
+  version: 1.0.0
+paths:
+  /payments:
+    get:
+      summary: Returns a list of payments.
+      operationId: listPayments
+      tags:
+      - Payments
+      parameters:
+      - name: limit
+        in: query
+        schema:
+          type: integer
+        description: Limit the number of payments to return, pagination can be achieved in conjunction with 'skip' parameter.
+        example: 10
+      - name: skip
+        in: query
+        schema:
+          type: integer
+        description: How many payments to skip, pagination can be achieved in conjunction with 'limit' parameter.
+        example: 100
+      - name: sort
+        in: query
+        schema:
+          type: array
+          items:
+            type: string
+        description: Field used to sort payments (Default is by date).
+        example: status
+      responses:
+        '200':    # status code
+          description: A JSON array of payments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPaymentsResponse'
+  '/payments/{paymentId}':
+    get:
+      summary: Returns a payment.
+      tags:
+      - Payments
+      operationId: getPayment
+      parameters:
+      - name: paymentId
+        in: path
+        schema:
+          type: string
+        description: The payment id
+        example: XXX
+        required: true
+      responses:
+        '200': # status code
+          description: A payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+  /accounts:
+      get:
+        summary: Returns a list of accounts.
+        operationId: listAccounts
+        tags:
+        - Payments
+        parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          description: Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter.
+          example: 10
+        - name: skip
+          in: query
+          schema:
+            type: integer
+          description: How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter.
+          example: 100
+        - name: sort
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+          description: Field used to sort payments (Default is by date).
+          example: status
+        responses:
+          '200':    # status code
+            description: A JSON array of accounts
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/ListAccountsResponse'
+  /connectors:
+    get:
+      summary: Get all installed connectors
+      tags:
+      - Payments
+      operationId: getAllConnectors
+      description: Get all installed connectors
+      responses:
+        200:
+          description: List of installed connectors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListConnectorsResponse'
+  /connectors/configs:
+    get:
+      summary: Get all available connectors configs
+      tags:
+      - Payments
+      operationId: getAllConnectorsConfigs
+      description: Get all available connectors configs
+      responses:
+        200:
+          description: List of available connectors configs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListConnectorsConfigsResponse'
+  '/connectors/{connector}':
+    post:
+      summary: Install connector
+      tags:
+      - Payments
+      operationId: installConnector
+      description: Install connector
+      parameters:
+      - name: connector
+        description: The connector code
+        in: path
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorConfig'
+      responses:
+        204:
+          description: Connector has been installed
+    delete:
+      summary: Uninstall connector
+      tags:
+      - Payments
+      operationId: uninstallConnector
+      description: Uninstall  connector
+      parameters:
+      - name: connector
+        description: The connector code
+        in: path
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        required: true
+      responses:
+        204:
+          description: Connector has been uninstalled
+  '/connectors/{connector}/config':
+    get:
+      summary: Read connector config
+      tags:
+      - Payments
+      operationId: readConnectorConfig
+      description: Read connector config
+      parameters:
+      - name: connector
+        description: The connector code
+        in: path
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        required: true
+      responses:
+        200:
+          description: Connector config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectorConfig'
+  '/connectors/{connector}/reset':
+    post:
+      summary: Reset connector
+      tags:
+      - Payments
+      operationId: resetConnector
+      description: Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
+      parameters:
+      - name: connector
+        description: The connector code
+        in: path
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        required: true
+      responses:
+        204:
+          description: Connector has been reset
+  '/connectors/{connector}/tasks':
+    get:
+      summary: List connector tasks
+      tags:
+      - Payments
+      operationId: listConnectorTasks
+      description: List all tasks associated with this connector.
+      parameters:
+      - name: connector
+        description: The connector code
+        in: path
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        required: true
+      responses:
+        200:
+          description: Task list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/TaskDescriptorStripe'
+                    - $ref: '#/components/schemas/TaskDescriptorWise'
+                    - $ref: '#/components/schemas/TaskDescriptorCurrencyCloud'
+                    - $ref: '#/components/schemas/TaskDescriptorDummyPay'
+                    - $ref: '#/components/schemas/TaskDescriptorModulr'
+                    - $ref: '#/components/schemas/TaskDescriptorBankingCircle'
+  '/connectors/{connector}/tasks/{taskId}':
+    get:
+      summary: Read a specific task of the connector
+      tags:
+      - Payments
+      operationId: getConnectorTask
+      description: Get a specific task associated to the connector
+      parameters:
+      - name: connector
+        description: The connector code
+        in: path
+        schema:
+          $ref: '#/components/schemas/Connectors'
+        required: true
+      - name: taskId
+        description: The task id
+        example: task1
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        200:
+          description: The specified task
+          content:
+            application/json:
+              schema:
+                oneOf:
+                    - $ref: '#/components/schemas/TaskDescriptorStripe'
+                    - $ref: '#/components/schemas/TaskDescriptorWise'
+                    - $ref: '#/components/schemas/TaskDescriptorCurrencyCloud'
+                    - $ref: '#/components/schemas/TaskDescriptorDummyPay'
+                    - $ref: '#/components/schemas/TaskDescriptorModulr'
+                    - $ref: '#/components/schemas/TaskDescriptorBankingCircle'
+  /connectors/stripe/transfer:
+    post:
+      summary: Transfer funds between Stripe accounts
+      tags:
+      - Payments
+      operationId: connectorsStripeTransfer
+      description: Execute a transfer between two Stripe accounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StripeTransferRequest'
+      responses:
+        200:
+          description: Transfer has been executed
+components:
+  schemas:
+    Connectors:
+      type: string
+      enum:
+        - STRIPE
+        - DUMMY-PAY
+        - SIE
+        - MODULR
+        - CURRENCY-CLOUD
+        - BANKING-CIRCLE
+
+    ConnectorConfig:
+      oneOf:
+      - $ref: '#/components/schemas/StripeConfig'
+      - $ref: '#/components/schemas/DummyPayConfig'
+      - $ref: '#/components/schemas/WiseConfig'
+      - $ref: '#/components/schemas/ModulrConfig'
+      - $ref: '#/components/schemas/CurrencyCloudConfig'
+      - $ref: '#/components/schemas/BankingCircleConfig'
+
+    StripeConfig:
+      type: object
+      required:
+      - apiKey
+      properties:
+        pollingPeriod:
+          type: string
+          example: '60s'
+          description: The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe api
+          default: '120s'
+        apiKey:
+          type: string
+          example: XXX
+        pageSize:
+          type: number
+          description: |
+            Number of BalanceTransaction to fetch at each polling interval.
+          default: 10
+          example: 50
+    StripeTask:
+      type: object
+      properties:
+        oldestId:
+          type: string
+          description: The id of the oldest BalanceTransaction fetched from stripe for this account
+        oldestDate:
+          type: string
+          format: date-time
+          description: The creation date of the oldest BalanceTransaction fetched from stripe for this account
+        moreRecentId:
+          type: string
+          description: The id of the more recent BalanceTransaction fetched from stripe for this account
+        moreRecentDate:
+          type: string
+          format: date-time
+          description: The creation date of the more recent BalanceTransaction fetched from stripe for this account
+        noMoreHistory:
+          type: boolean
+    DummyPayConfig:
+      type: object
+      required:
+      - directory
+      properties:
+        filePollingPeriod:
+          type: string
+          example: '60s'
+          description: The frequency at which the connector will try to fetch new payment objects from the directory
+          default: '10s'
+        fileGenerationPeriod:
+          type: string
+          example: '60s'
+          description: The frequency at which the connector will create new payment objects in the directory
+          default: '10s'
+        directory:
+          type: string
+          example: '/tmp/dummypay'
+    WiseConfig:
+      type: object
+      required:
+      - apiKey
+      properties:
+        apiKey:
+          type: string
+          example: 'XXX'
+    ModulrConfig:
+      type: object
+      required:
+      - apiKey
+      - apiSecret
+      properties:
+        apiKey:
+          type: string
+          example: 'XXX'
+        apiSecret:
+          type: string
+          example: 'XXX'
+        endpoint:
+          type: string
+          example: 'XXX'
+    BankingCircleConfig:
+      type: object
+      required:
+      - username
+      - password
+      - endpoint
+      - authorizationEndpoint
+      properties:
+        username:
+          type: string
+          example: 'XXX'
+        password:
+          type: string
+          example: 'XXX'
+        endpoint:
+          type: string
+          example: 'XXX'
+        authorizationEndpoint:
+          type: string
+          example: 'XXX'
+    CurrencyCloudConfig:
+      type: object
+      required:
+      - apiKey
+      - loginID
+      properties:
+        apiKey:
+          type: string
+          example: 'XXX'
+        loginID:
+          type: string
+          example: 'XXX'
+          description: 'Username of the API Key holder'
+        pollingPeriod:
+          type: string
+          example: '60s'
+          description: The frequency at which the connector will fetch transactions
+        endpoint:
+          type: string
+          example: 'XXX'
+          description: 'The endpoint to use for the API. Defaults to https://devapi.currencycloud.com'
+    ListPaymentsResponse:
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+    GetPaymentResponse:
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          $ref: '#/components/schemas/Payment'
+    Payment:
+      type: object
+      required:
+      - provider
+      - status
+      - asset
+      - amount
+      - date
+      - id
+      - type
+      - scheme
+      properties:
+        provider:
+          type: string
+        reference:
+          type: string
+        scheme:
+          type: string
+          enum:
+          - visa
+          - mastercard
+          - apple pay
+          - google pay
+          - sepa debit
+          - sepa credit
+          - sepa
+          - a2a
+          - ach debit
+          - ach
+          - rtp
+          - other
+        status:
+          type: string
+        type:
+          type: string
+          enum:
+          - pay-in
+          - payout
+          - other
+        id:
+          type: string
+          example: XXX
+        amount:
+          type: integer
+          example: 100
+        asset:
+          type: string
+          example: USD
+        date:
+          type: string
+          format: date-time
+        raw:
+          nullable: true
+    ListAccountsResponse:
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+    Account:
+      type: object
+      required:
+      - id
+      - createdAt
+      - provider
+      - reference
+      - type
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        provider:
+          type: string
+        reference:
+          type: string
+        type:
+          type: string
+          enum:
+          - TARGET
+          - SOURCE
+
+    ListConnectorsResponse:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConnectorBaseInfo'
+
+    ListConnectorsConfigsResponse:
+      type: object
+      properties:
+        connector:
+          type: object
+          properties:
+            key:
+              type: object
+              properties:
+                datatype:
+                  type: string
+                required:
+                  type: boolean
+
+    ConnectorBaseInfo:
+      type: object
+      properties:
+        provider:
+          type: string
+          example: stripe
+        disabled:
+          type: boolean
+          example: false
+
+    StripeTransferRequest:
+      type: object
+      properties:
+        amount:
+          type: integer
+          example: 100
+        asset:
+          type: string
+          example: USD
+        destination:
+          type: string
+          example: acct_1Gqj58KZcSIg2N2q
+        metadata:
+          type: object
+          description: |
+            A set of key/value pairs that you can attach to a transfer object.
+            It can be useful for storing additional information about the transfer in a structured format.
+          example:
+            order_id: '6735'
+
+    TaskDescriptorStripe:
+      type: object
+      properties:
+        provider:
+          type: string
+          description: The connector code
+          example: stripe
+        createdAt:
+          type: string
+          format: date-time
+          description: The date when the task was created
+          example: '2020-01-01T00:00:00.000Z'
+        status:
+          type: string
+          description: The task status
+          example: stopped
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+        error:
+          type: string
+          description: The error message if the task failed
+          example: 'Error: Something went wrong'
+        state:
+          type: object
+          description: The task state
+          example: { }
+        descriptor:
+          type: object
+          properties:
+            name:
+              type: string
+            main:
+              type: boolean
+            account:
+              type: string
+    TaskDescriptorWise:
+      type: object
+      properties:
+        provider:
+          type: string
+          description: The connector code
+          example: stripe
+        createdAt:
+          type: string
+          format: date-time
+          description: The date when the task was created
+          example: '2020-01-01T00:00:00.000Z'
+        status:
+          type: string
+          description: The task status
+          example: stopped
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+        error:
+          type: string
+          description: The error message if the task failed
+          example: 'Error: Something went wrong'
+        state:
+          type: object
+          description: The task state
+          example: { }
+        descriptor:
+          type: object
+          properties:
+            name:
+              type: string
+            key:
+              type: string
+            profileID:
+              type: integer
+    TaskDescriptorModulr:
+      type: object
+      properties:
+        provider:
+          type: string
+          description: The connector code
+          example: stripe
+        createdAt:
+          type: string
+          format: date-time
+          description: The date when the task was created
+          example: '2020-01-01T00:00:00.000Z'
+        status:
+          type: string
+          description: The task status
+          example: stopped
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+        error:
+          type: string
+          description: The error message if the task failed
+          example: 'Error: Something went wrong'
+        state:
+          type: object
+          description: The task state
+          example: { }
+        descriptor:
+          type: object
+          properties:
+            name:
+              type: string
+            key:
+              type: string
+            accountID:
+              type: string
+    TaskDescriptorDummyPay:
+      type: object
+      properties:
+        provider:
+          type: string
+          description: The connector code
+          example: stripe
+        createdAt:
+          type: string
+          format: date-time
+          description: The date when the task was created
+          example: '2020-01-01T00:00:00.000Z'
+        status:
+          type: string
+          description: The task status
+          example: stopped
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+        error:
+          type: string
+          description: The error message if the task failed
+          example: 'Error: Something went wrong'
+        state:
+          type: object
+          description: The task state
+          example: { }
+        descriptor:
+          type: object
+          properties:
+            name:
+              type: string
+            key:
+              type: string
+            fileName:
+              type: string
+    TaskDescriptorCurrencyCloud:
+      type: object
+      properties:
+        provider:
+          type: string
+          description: The connector code
+          example: stripe
+        createdAt:
+          type: string
+          format: date-time
+          description: The date when the task was created
+          example: '2020-01-01T00:00:00.000Z'
+        status:
+          type: string
+          description: The task status
+          example: stopped
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+        error:
+          type: string
+          description: The error message if the task failed
+          example: 'Error: Something went wrong'
+        state:
+          type: object
+          description: The task state
+          example: { }
+        descriptor:
+          type: object
+          properties:
+            name:
+              type: string
+    TaskDescriptorBankingCircle:
+      type: object
+      properties:
+        provider:
+          type: string
+          description: The connector code
+          example: stripe
+        createdAt:
+          type: string
+          format: date-time
+          description: The date when the task was created
+          example: '2020-01-01T00:00:00.000Z'
+        status:
+          type: string
+          description: The task status
+          example: stopped
+          enum:
+          - stopped
+          - pending
+          - terminated
+          - active
+          - failed
+        error:
+          type: string
+          description: The error message if the task failed
+          example: 'Error: Something went wrong'
+        state:
+          type: object
+          description: The task state
+          example: { }
+        descriptor:
+          type: object
+          properties:
+            name:
+              type: string
+            key:
+              type: string

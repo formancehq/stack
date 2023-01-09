@@ -21,3 +21,8 @@ tasks:
     cmds:
       - docker-compose {{.COMPOSE_FILE}} rm -f
       - docker volume prune -f
+
+includes:
+  openapi:
+    taskfile: ./openapi
+    dir: ./openapi
