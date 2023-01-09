@@ -17,7 +17,7 @@ func NewShowCommand() *cobra.Command {
 		fctl.WithShortDescription("Show a wallets"),
 		fctl.WithAliases("sh"),
 		fctl.WithConfirmFlag(),
-		fctl.WithArgs(cobra.ExactArgs(1)),
+		fctl.WithArgs(cobra.ExactArgs(0)),
 		internal.WithTargetingWalletByID(),
 		internal.WithTargetingWalletByName(),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
