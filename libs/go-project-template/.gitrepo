@@ -6,7 +6,7 @@
 [subrepo]
 	remote = go-project-template
 	branch = main
-	commit = 467c0ece1a433ceb04ff3ceb7126c49919edf8a3
-	parent = f93aabc21d897e3eb6bf113cbc0b215c480a2c12
+	commit = 40e49f067b2b4d71871f3cb20feb93c8375b1d97
+	parent = 295f8152d64eeb62172454825314987ac5598450
 	method = merge
 	cmdver = 0.4.5
