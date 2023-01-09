@@ -5,7 +5,7 @@ on:
 
 jobs:
   OpenAPI:
-    uses: ./.github/workflows/service_release_openapi.yaml
+    uses: ./.github/workflows/service_openapi.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
@@ -13,43 +13,43 @@ jobs:
       NUMARY_GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
 
   Wallets:
-    uses: ./.github/workflows/service_release_wallets.yaml
+    uses: ./.github/workflows/service_wallets.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Search:
-    uses: ./.github/workflows/service_release_search.yaml
+    uses: ./.github/workflows/service_search.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Fctl:
-    uses: ./.github/workflows/service_release_fctl.yaml
+    uses: ./.github/workflows/service_fctl.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Auth:
-    uses: ./.github/workflows/service_release_auth.yaml
+    uses: ./.github/workflows/service_auth.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Ledger:
-    uses: ./.github/workflows/service_release_ledger.yaml
+    uses: ./.github/workflows/service_ledger.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Payments:
-    uses: ./.github/workflows/service_release_payments.yaml
+    uses: ./.github/workflows/service_payments.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
 
   Webhooks:
-    uses: ./.github/workflows/service_release_webhooks.yaml
+    uses: ./.github/workflows/service_webhooks.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}

@@ -19,7 +19,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   OpenAPI:
-    uses: ./.github/workflows/service_pr_openapi.yaml
+    uses: ./.github/workflows/service_openapi.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
@@ -55,7 +55,7 @@ jobs:
   Wallets:
     if: needs.Changes.outputs.wallets == 'true'
     needs: Changes
-    uses: ./.github/workflows/service_pr_wallets.yaml
+    uses: ./.github/workflows/service_wallets.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
@@ -63,7 +63,7 @@ jobs:
   Search:
     if: needs.Changes.outputs.search == 'true'
     needs: Changes
-    uses: ./.github/workflows/service_pr_search.yaml
+    uses: ./.github/workflows/service_search.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
@@ -71,7 +71,7 @@ jobs:
   Fctl:
     if: needs.Changes.outputs.fctl == 'true'
     needs: Changes
-    uses: ./.github/workflows/service_pr_fctl.yaml
+    uses: ./.github/workflows/service_fctl.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
@@ -79,7 +79,7 @@ jobs:
   Auth:
     if: needs.Changes.outputs.auth == 'true'
     needs: Changes
-    uses: ./.github/workflows/service_pr_auth.yaml
+    uses: ./.github/workflows/service_auth.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
@@ -87,7 +87,7 @@ jobs:
   Ledger:
     if: needs.Changes.outputs.ledger == 'true'
     needs: Changes
-    uses: ./.github/workflows/service_pr_ledger.yaml
+    uses: ./.github/workflows/service_ledger.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
@@ -95,7 +95,7 @@ jobs:
   Payments:
     if: needs.Changes.outputs.payments == 'true'
     needs: Changes
-    uses: ./.github/workflows/service_pr_payments.yaml
+    uses: ./.github/workflows/service_payments.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
@@ -103,7 +103,7 @@ jobs:
   Webhooks:
     if: needs.Changes.outputs.webhooks == 'true'
     needs: Changes
-    uses: ./.github/workflows/service_pr_webhooks.yaml
+    uses: ./.github/workflows/service_webhooks.yaml
     with:
       GITHUB_EVENT_NAME: ${{ github.event_name }}
       GITHUB_EVENT_ACTION: ${{ github.event.action }}
