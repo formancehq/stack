@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        option: [ gosdk, gofmt, goimports, gomodtidy, golangci-lint, gotests, commitlint ]
+        option: [ gosdk, gomodtidy, golangci-lint, gotests, commitlint ]
     steps:
       - uses: actions/checkout@v3
       - name: Install Task
@@ -17,9 +17,11 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - uses: actions/setup-python@v3
       - run: |
-          go install golang.org/x/tools/cmd/goimports@latest
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
       - uses: pre-commit/action@v3.0.0
         with:
