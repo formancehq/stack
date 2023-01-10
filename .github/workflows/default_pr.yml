@@ -22,6 +22,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - run: npm install -g @commitlint/cli
       - uses: actions/setup-python@v3
       - run: |
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
