@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | **interface{}** |  | 
+**Data** | [**[]ConnectorBaseInfo**](ConnectorBaseInfo.md) |  | 
 
 ## Methods
 
 ### NewListConnectorsResponse
 
-`func NewListConnectorsResponse(data interface{}, ) *ListConnectorsResponse`
+`func NewListConnectorsResponse(data []ConnectorBaseInfo, ) *ListConnectorsResponse`
 
 NewListConnectorsResponse instantiates a new ListConnectorsResponse object
 This constructor will assign default values to properties that have it defined,
@@ -27,34 +27,24 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *ListConnectorsResponse) GetData() interface{}`
+`func (o *ListConnectorsResponse) GetData() []ConnectorBaseInfo`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *ListConnectorsResponse) GetDataOk() (*interface{}, bool)`
+`func (o *ListConnectorsResponse) GetDataOk() (*[]ConnectorBaseInfo, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *ListConnectorsResponse) SetData(v interface{})`
+`func (o *ListConnectorsResponse) SetData(v []ConnectorBaseInfo)`
 
 SetData sets Data field to given value.
 
 
-### SetDataNil
-
-`func (o *ListConnectorsResponse) SetDataNil(b bool)`
-
- SetDataNil sets the value for Data to be an explicit nil
-
-### UnsetData
-`func (o *ListConnectorsResponse) UnsetData()`
-
-UnsetData ensures that no value is present for Data, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

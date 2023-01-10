@@ -14,13 +14,16 @@ import (
 	"encoding/json"
 )
 
+// checks if the StripeTransferRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &StripeTransferRequest{}
+
 // StripeTransferRequest struct for StripeTransferRequest
 type StripeTransferRequest struct {
-	Amount      interface{} `json:"amount,omitempty"`
-	Asset       interface{} `json:"asset,omitempty"`
-	Destination interface{} `json:"destination,omitempty"`
+	Amount      *int32  `json:"amount,omitempty"`
+	Asset       *string `json:"asset,omitempty"`
+	Destination *string `json:"destination,omitempty"`
 	// A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.
-	Metadata interface{} `json:"metadata,omitempty"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // NewStripeTransferRequest instantiates a new StripeTransferRequest object
@@ -40,109 +43,106 @@ func NewStripeTransferRequestWithDefaults() *StripeTransferRequest {
 	return &this
 }
 
-// GetAmount returns the Amount field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *StripeTransferRequest) GetAmount() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetAmount returns the Amount field value if set, zero value otherwise.
+func (o *StripeTransferRequest) GetAmount() int32 {
+	if o == nil || isNil(o.Amount) {
+		var ret int32
 		return ret
 	}
-	return o.Amount
+	return *o.Amount
 }
 
 // GetAmountOk returns a tuple with the Amount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *StripeTransferRequest) GetAmountOk() (*interface{}, bool) {
+func (o *StripeTransferRequest) GetAmountOk() (*int32, bool) {
 	if o == nil || isNil(o.Amount) {
 		return nil, false
 	}
-	return &o.Amount, true
+	return o.Amount, true
 }
 
 // HasAmount returns a boolean if a field has been set.
 func (o *StripeTransferRequest) HasAmount() bool {
-	if o != nil && isNil(o.Amount) {
+	if o != nil && !isNil(o.Amount) {
 		return true
 	}
 
 	return false
 }
 
-// SetAmount gets a reference to the given interface{} and assigns it to the Amount field.
-func (o *StripeTransferRequest) SetAmount(v interface{}) {
-	o.Amount = v
+// SetAmount gets a reference to the given int32 and assigns it to the Amount field.
+func (o *StripeTransferRequest) SetAmount(v int32) {
+	o.Amount = &v
 }
 
-// GetAsset returns the Asset field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *StripeTransferRequest) GetAsset() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetAsset returns the Asset field value if set, zero value otherwise.
+func (o *StripeTransferRequest) GetAsset() string {
+	if o == nil || isNil(o.Asset) {
+		var ret string
 		return ret
 	}
-	return o.Asset
+	return *o.Asset
 }
 
 // GetAssetOk returns a tuple with the Asset field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *StripeTransferRequest) GetAssetOk() (*interface{}, bool) {
+func (o *StripeTransferRequest) GetAssetOk() (*string, bool) {
 	if o == nil || isNil(o.Asset) {
 		return nil, false
 	}
-	return &o.Asset, true
+	return o.Asset, true
 }
 
 // HasAsset returns a boolean if a field has been set.
 func (o *StripeTransferRequest) HasAsset() bool {
-	if o != nil && isNil(o.Asset) {
+	if o != nil && !isNil(o.Asset) {
 		return true
 	}
 
 	return false
 }
 
-// SetAsset gets a reference to the given interface{} and assigns it to the Asset field.
-func (o *StripeTransferRequest) SetAsset(v interface{}) {
-	o.Asset = v
+// SetAsset gets a reference to the given string and assigns it to the Asset field.
+func (o *StripeTransferRequest) SetAsset(v string) {
+	o.Asset = &v
 }
 
-// GetDestination returns the Destination field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *StripeTransferRequest) GetDestination() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetDestination returns the Destination field value if set, zero value otherwise.
+func (o *StripeTransferRequest) GetDestination() string {
+	if o == nil || isNil(o.Destination) {
+		var ret string
 		return ret
 	}
-	return o.Destination
+	return *o.Destination
 }
 
 // GetDestinationOk returns a tuple with the Destination field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *StripeTransferRequest) GetDestinationOk() (*interface{}, bool) {
+func (o *StripeTransferRequest) GetDestinationOk() (*string, bool) {
 	if o == nil || isNil(o.Destination) {
 		return nil, false
 	}
-	return &o.Destination, true
+	return o.Destination, true
 }
 
 // HasDestination returns a boolean if a field has been set.
 func (o *StripeTransferRequest) HasDestination() bool {
-	if o != nil && isNil(o.Destination) {
+	if o != nil && !isNil(o.Destination) {
 		return true
 	}
 
 	return false
 }
 
-// SetDestination gets a reference to the given interface{} and assigns it to the Destination field.
-func (o *StripeTransferRequest) SetDestination(v interface{}) {
-	o.Destination = v
+// SetDestination gets a reference to the given string and assigns it to the Destination field.
+func (o *StripeTransferRequest) SetDestination(v string) {
+	o.Destination = &v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *StripeTransferRequest) GetMetadata() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *StripeTransferRequest) GetMetadata() map[string]interface{} {
+	if o == nil || isNil(o.Metadata) {
+		var ret map[string]interface{}
 		return ret
 	}
 	return o.Metadata
@@ -150,43 +150,50 @@ func (o *StripeTransferRequest) GetMetadata() interface{} {
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *StripeTransferRequest) GetMetadataOk() (*interface{}, bool) {
+func (o *StripeTransferRequest) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return nil, false
+		return map[string]interface{}{}, false
 	}
-	return &o.Metadata, true
+	return o.Metadata, true
 }
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *StripeTransferRequest) HasMetadata() bool {
-	if o != nil && isNil(o.Metadata) {
+	if o != nil && !isNil(o.Metadata) {
 		return true
 	}
 
 	return false
 }
 
-// SetMetadata gets a reference to the given interface{} and assigns it to the Metadata field.
-func (o *StripeTransferRequest) SetMetadata(v interface{}) {
+// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
+func (o *StripeTransferRequest) SetMetadata(v map[string]interface{}) {
 	o.Metadata = v
 }
 
 func (o StripeTransferRequest) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Amount != nil {
-		toSerialize["amount"] = o.Amount
-	}
-	if o.Asset != nil {
-		toSerialize["asset"] = o.Asset
-	}
-	if o.Destination != nil {
-		toSerialize["destination"] = o.Destination
-	}
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o StripeTransferRequest) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	if !isNil(o.Amount) {
+		toSerialize["amount"] = o.Amount
+	}
+	if !isNil(o.Asset) {
+		toSerialize["asset"] = o.Asset
+	}
+	if !isNil(o.Destination) {
+		toSerialize["destination"] = o.Destination
+	}
+	if !isNil(o.Metadata) {
+		toSerialize["metadata"] = o.Metadata
+	}
+	return toSerialize, nil
 }
 
 type NullableStripeTransferRequest struct {

@@ -19,14 +19,14 @@ var _ MappedNullable = &ServerInfo{}
 
 // ServerInfo struct for ServerInfo
 type ServerInfo struct {
-	Version interface{} `json:"version"`
+	Version string `json:"version"`
 }
 
 // NewServerInfo instantiates a new ServerInfo object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewServerInfo(version interface{}) *ServerInfo {
+func NewServerInfo(version string) *ServerInfo {
 	this := ServerInfo{}
 	this.Version = version
 	return &this
@@ -41,10 +41,9 @@ func NewServerInfoWithDefaults() *ServerInfo {
 }
 
 // GetVersion returns the Version field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *ServerInfo) GetVersion() interface{} {
+func (o *ServerInfo) GetVersion() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -53,21 +52,20 @@ func (o *ServerInfo) GetVersion() interface{} {
 
 // GetVersionOk returns a tuple with the Version field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ServerInfo) GetVersionOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Version) {
+func (o *ServerInfo) GetVersionOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Version, true
 }
 
 // SetVersion sets field value
-func (o *ServerInfo) SetVersion(v interface{}) {
+func (o *ServerInfo) SetVersion(v string) {
 	o.Version = v
 }
 
 func (o ServerInfo) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -76,9 +74,7 @@ func (o ServerInfo) MarshalJSON() ([]byte, error) {
 
 func (o ServerInfo) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Version != nil {
-		toSerialize["version"] = o.Version
-	}
+	toSerialize["version"] = o.Version
 	return toSerialize, nil
 }
 
@@ -117,3 +113,5 @@ func (v *NullableServerInfo) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

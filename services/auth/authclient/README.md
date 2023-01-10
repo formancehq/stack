@@ -15,7 +15,6 @@ Install the following dependencies:
 
 ```shell
 go get github.com/stretchr/testify/assert
-go get golang.org/x/oauth2
 go get golang.org/x/net/context
 ```
 
@@ -101,6 +100,8 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [Client](docs/Client.md)
+ - [ClientAllOf](docs/ClientAllOf.md)
  - [ClientOptions](docs/ClientOptions.md)
  - [ClientSecret](docs/ClientSecret.md)
  - [CreateClientResponse](docs/CreateClientResponse.md)
@@ -111,7 +112,11 @@ Class | Method | HTTP request | Description
  - [ListUsersResponse](docs/ListUsersResponse.md)
  - [ReadClientResponse](docs/ReadClientResponse.md)
  - [ReadUserResponse](docs/ReadUserResponse.md)
+ - [Scope](docs/Scope.md)
+ - [ScopeAllOf](docs/ScopeAllOf.md)
  - [ScopeOptions](docs/ScopeOptions.md)
+ - [Secret](docs/Secret.md)
+ - [SecretAllOf](docs/SecretAllOf.md)
  - [SecretOptions](docs/SecretOptions.md)
  - [ServerInfo](docs/ServerInfo.md)
  - [User](docs/User.md)
@@ -139,3 +144,6 @@ Each of these functions takes a value of the given basic type and returns a poin
 * `PtrTime`
 
 ## Author
+
+
+

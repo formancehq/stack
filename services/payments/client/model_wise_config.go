@@ -14,16 +14,19 @@ import (
 	"encoding/json"
 )
 
+// checks if the WiseConfig type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &WiseConfig{}
+
 // WiseConfig struct for WiseConfig
 type WiseConfig struct {
-	ApiKey interface{} `json:"apiKey"`
+	ApiKey string `json:"apiKey"`
 }
 
 // NewWiseConfig instantiates a new WiseConfig object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWiseConfig(apiKey interface{}) *WiseConfig {
+func NewWiseConfig(apiKey string) *WiseConfig {
 	this := WiseConfig{}
 	this.ApiKey = apiKey
 	return &this
@@ -38,10 +41,9 @@ func NewWiseConfigWithDefaults() *WiseConfig {
 }
 
 // GetApiKey returns the ApiKey field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *WiseConfig) GetApiKey() interface{} {
+func (o *WiseConfig) GetApiKey() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -50,25 +52,30 @@ func (o *WiseConfig) GetApiKey() interface{} {
 
 // GetApiKeyOk returns a tuple with the ApiKey field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *WiseConfig) GetApiKeyOk() (*interface{}, bool) {
-	if o == nil || isNil(o.ApiKey) {
+func (o *WiseConfig) GetApiKeyOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.ApiKey, true
 }
 
 // SetApiKey sets field value
-func (o *WiseConfig) SetApiKey(v interface{}) {
+func (o *WiseConfig) SetApiKey(v string) {
 	o.ApiKey = v
 }
 
 func (o WiseConfig) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.ApiKey != nil {
-		toSerialize["apiKey"] = o.ApiKey
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o WiseConfig) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["apiKey"] = o.ApiKey
+	return toSerialize, nil
 }
 
 type NullableWiseConfig struct {

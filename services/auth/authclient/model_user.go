@@ -19,9 +19,9 @@ var _ MappedNullable = &User{}
 
 // User struct for User
 type User struct {
-	Id      interface{} `json:"id,omitempty"`
-	Subject interface{} `json:"subject,omitempty"`
-	Email   interface{} `json:"email,omitempty"`
+	Id *string `json:"id,omitempty"`
+	Subject *string `json:"subject,omitempty"`
+	Email *string `json:"email,omitempty"`
 }
 
 // NewUser instantiates a new User object
@@ -41,107 +41,104 @@ func NewUserWithDefaults() *User {
 	return &this
 }
 
-// GetId returns the Id field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *User) GetId() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *User) GetId() string {
+	if o == nil || isNil(o.Id) {
+		var ret string
 		return ret
 	}
-	return o.Id
+	return *o.Id
 }
 
 // GetIdOk returns a tuple with the Id field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *User) GetIdOk() (*interface{}, bool) {
+func (o *User) GetIdOk() (*string, bool) {
 	if o == nil || isNil(o.Id) {
 		return nil, false
 	}
-	return &o.Id, true
+	return o.Id, true
 }
 
 // HasId returns a boolean if a field has been set.
 func (o *User) HasId() bool {
-	if o != nil && isNil(o.Id) {
+	if o != nil && !isNil(o.Id) {
 		return true
 	}
 
 	return false
 }
 
-// SetId gets a reference to the given interface{} and assigns it to the Id field.
-func (o *User) SetId(v interface{}) {
-	o.Id = v
+// SetId gets a reference to the given string and assigns it to the Id field.
+func (o *User) SetId(v string) {
+	o.Id = &v
 }
 
-// GetSubject returns the Subject field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *User) GetSubject() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetSubject returns the Subject field value if set, zero value otherwise.
+func (o *User) GetSubject() string {
+	if o == nil || isNil(o.Subject) {
+		var ret string
 		return ret
 	}
-	return o.Subject
+	return *o.Subject
 }
 
 // GetSubjectOk returns a tuple with the Subject field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *User) GetSubjectOk() (*interface{}, bool) {
+func (o *User) GetSubjectOk() (*string, bool) {
 	if o == nil || isNil(o.Subject) {
 		return nil, false
 	}
-	return &o.Subject, true
+	return o.Subject, true
 }
 
 // HasSubject returns a boolean if a field has been set.
 func (o *User) HasSubject() bool {
-	if o != nil && isNil(o.Subject) {
+	if o != nil && !isNil(o.Subject) {
 		return true
 	}
 
 	return false
 }
 
-// SetSubject gets a reference to the given interface{} and assigns it to the Subject field.
-func (o *User) SetSubject(v interface{}) {
-	o.Subject = v
+// SetSubject gets a reference to the given string and assigns it to the Subject field.
+func (o *User) SetSubject(v string) {
+	o.Subject = &v
 }
 
-// GetEmail returns the Email field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *User) GetEmail() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetEmail returns the Email field value if set, zero value otherwise.
+func (o *User) GetEmail() string {
+	if o == nil || isNil(o.Email) {
+		var ret string
 		return ret
 	}
-	return o.Email
+	return *o.Email
 }
 
 // GetEmailOk returns a tuple with the Email field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *User) GetEmailOk() (*interface{}, bool) {
+func (o *User) GetEmailOk() (*string, bool) {
 	if o == nil || isNil(o.Email) {
 		return nil, false
 	}
-	return &o.Email, true
+	return o.Email, true
 }
 
 // HasEmail returns a boolean if a field has been set.
 func (o *User) HasEmail() bool {
-	if o != nil && isNil(o.Email) {
+	if o != nil && !isNil(o.Email) {
 		return true
 	}
 
 	return false
 }
 
-// SetEmail gets a reference to the given interface{} and assigns it to the Email field.
-func (o *User) SetEmail(v interface{}) {
-	o.Email = v
+// SetEmail gets a reference to the given string and assigns it to the Email field.
+func (o *User) SetEmail(v string) {
+	o.Email = &v
 }
 
 func (o User) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -150,13 +147,13 @@ func (o User) MarshalJSON() ([]byte, error) {
 
 func (o User) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Id != nil {
+	if !isNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
-	if o.Subject != nil {
+	if !isNil(o.Subject) {
 		toSerialize["subject"] = o.Subject
 	}
-	if o.Email != nil {
+	if !isNil(o.Email) {
 		toSerialize["email"] = o.Email
 	}
 	return toSerialize, nil
@@ -197,3 +194,5 @@ func (v *NullableUser) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

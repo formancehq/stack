@@ -12,19 +12,23 @@ package client
 
 import (
 	"encoding/json"
+	"time"
 )
+
+// checks if the StripeTask type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &StripeTask{}
 
 // StripeTask struct for StripeTask
 type StripeTask struct {
 	// The id of the oldest BalanceTransaction fetched from stripe for this account
-	OldestId interface{} `json:"oldestId,omitempty"`
+	OldestId *string `json:"oldestId,omitempty"`
 	// The creation date of the oldest BalanceTransaction fetched from stripe for this account
-	OldestDate interface{} `json:"oldestDate,omitempty"`
+	OldestDate *time.Time `json:"oldestDate,omitempty"`
 	// The id of the more recent BalanceTransaction fetched from stripe for this account
-	MoreRecentId interface{} `json:"moreRecentId,omitempty"`
+	MoreRecentId *string `json:"moreRecentId,omitempty"`
 	// The creation date of the more recent BalanceTransaction fetched from stripe for this account
-	MoreRecentDate interface{} `json:"moreRecentDate,omitempty"`
-	NoMoreHistory  interface{} `json:"noMoreHistory,omitempty"`
+	MoreRecentDate *time.Time `json:"moreRecentDate,omitempty"`
+	NoMoreHistory  *bool      `json:"noMoreHistory,omitempty"`
 }
 
 // NewStripeTask instantiates a new StripeTask object
@@ -44,189 +48,192 @@ func NewStripeTaskWithDefaults() *StripeTask {
 	return &this
 }
 
-// GetOldestId returns the OldestId field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *StripeTask) GetOldestId() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetOldestId returns the OldestId field value if set, zero value otherwise.
+func (o *StripeTask) GetOldestId() string {
+	if o == nil || isNil(o.OldestId) {
+		var ret string
 		return ret
 	}
-	return o.OldestId
+	return *o.OldestId
 }
 
 // GetOldestIdOk returns a tuple with the OldestId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *StripeTask) GetOldestIdOk() (*interface{}, bool) {
+func (o *StripeTask) GetOldestIdOk() (*string, bool) {
 	if o == nil || isNil(o.OldestId) {
 		return nil, false
 	}
-	return &o.OldestId, true
+	return o.OldestId, true
 }
 
 // HasOldestId returns a boolean if a field has been set.
 func (o *StripeTask) HasOldestId() bool {
-	if o != nil && isNil(o.OldestId) {
+	if o != nil && !isNil(o.OldestId) {
 		return true
 	}
 
 	return false
 }
 
-// SetOldestId gets a reference to the given interface{} and assigns it to the OldestId field.
-func (o *StripeTask) SetOldestId(v interface{}) {
-	o.OldestId = v
+// SetOldestId gets a reference to the given string and assigns it to the OldestId field.
+func (o *StripeTask) SetOldestId(v string) {
+	o.OldestId = &v
 }
 
-// GetOldestDate returns the OldestDate field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *StripeTask) GetOldestDate() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetOldestDate returns the OldestDate field value if set, zero value otherwise.
+func (o *StripeTask) GetOldestDate() time.Time {
+	if o == nil || isNil(o.OldestDate) {
+		var ret time.Time
 		return ret
 	}
-	return o.OldestDate
+	return *o.OldestDate
 }
 
 // GetOldestDateOk returns a tuple with the OldestDate field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *StripeTask) GetOldestDateOk() (*interface{}, bool) {
+func (o *StripeTask) GetOldestDateOk() (*time.Time, bool) {
 	if o == nil || isNil(o.OldestDate) {
 		return nil, false
 	}
-	return &o.OldestDate, true
+	return o.OldestDate, true
 }
 
 // HasOldestDate returns a boolean if a field has been set.
 func (o *StripeTask) HasOldestDate() bool {
-	if o != nil && isNil(o.OldestDate) {
+	if o != nil && !isNil(o.OldestDate) {
 		return true
 	}
 
 	return false
 }
 
-// SetOldestDate gets a reference to the given interface{} and assigns it to the OldestDate field.
-func (o *StripeTask) SetOldestDate(v interface{}) {
-	o.OldestDate = v
+// SetOldestDate gets a reference to the given time.Time and assigns it to the OldestDate field.
+func (o *StripeTask) SetOldestDate(v time.Time) {
+	o.OldestDate = &v
 }
 
-// GetMoreRecentId returns the MoreRecentId field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *StripeTask) GetMoreRecentId() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetMoreRecentId returns the MoreRecentId field value if set, zero value otherwise.
+func (o *StripeTask) GetMoreRecentId() string {
+	if o == nil || isNil(o.MoreRecentId) {
+		var ret string
 		return ret
 	}
-	return o.MoreRecentId
+	return *o.MoreRecentId
 }
 
 // GetMoreRecentIdOk returns a tuple with the MoreRecentId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *StripeTask) GetMoreRecentIdOk() (*interface{}, bool) {
+func (o *StripeTask) GetMoreRecentIdOk() (*string, bool) {
 	if o == nil || isNil(o.MoreRecentId) {
 		return nil, false
 	}
-	return &o.MoreRecentId, true
+	return o.MoreRecentId, true
 }
 
 // HasMoreRecentId returns a boolean if a field has been set.
 func (o *StripeTask) HasMoreRecentId() bool {
-	if o != nil && isNil(o.MoreRecentId) {
+	if o != nil && !isNil(o.MoreRecentId) {
 		return true
 	}
 
 	return false
 }
 
-// SetMoreRecentId gets a reference to the given interface{} and assigns it to the MoreRecentId field.
-func (o *StripeTask) SetMoreRecentId(v interface{}) {
-	o.MoreRecentId = v
+// SetMoreRecentId gets a reference to the given string and assigns it to the MoreRecentId field.
+func (o *StripeTask) SetMoreRecentId(v string) {
+	o.MoreRecentId = &v
 }
 
-// GetMoreRecentDate returns the MoreRecentDate field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *StripeTask) GetMoreRecentDate() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetMoreRecentDate returns the MoreRecentDate field value if set, zero value otherwise.
+func (o *StripeTask) GetMoreRecentDate() time.Time {
+	if o == nil || isNil(o.MoreRecentDate) {
+		var ret time.Time
 		return ret
 	}
-	return o.MoreRecentDate
+	return *o.MoreRecentDate
 }
 
 // GetMoreRecentDateOk returns a tuple with the MoreRecentDate field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *StripeTask) GetMoreRecentDateOk() (*interface{}, bool) {
+func (o *StripeTask) GetMoreRecentDateOk() (*time.Time, bool) {
 	if o == nil || isNil(o.MoreRecentDate) {
 		return nil, false
 	}
-	return &o.MoreRecentDate, true
+	return o.MoreRecentDate, true
 }
 
 // HasMoreRecentDate returns a boolean if a field has been set.
 func (o *StripeTask) HasMoreRecentDate() bool {
-	if o != nil && isNil(o.MoreRecentDate) {
+	if o != nil && !isNil(o.MoreRecentDate) {
 		return true
 	}
 
 	return false
 }
 
-// SetMoreRecentDate gets a reference to the given interface{} and assigns it to the MoreRecentDate field.
-func (o *StripeTask) SetMoreRecentDate(v interface{}) {
-	o.MoreRecentDate = v
+// SetMoreRecentDate gets a reference to the given time.Time and assigns it to the MoreRecentDate field.
+func (o *StripeTask) SetMoreRecentDate(v time.Time) {
+	o.MoreRecentDate = &v
 }
 
-// GetNoMoreHistory returns the NoMoreHistory field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *StripeTask) GetNoMoreHistory() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetNoMoreHistory returns the NoMoreHistory field value if set, zero value otherwise.
+func (o *StripeTask) GetNoMoreHistory() bool {
+	if o == nil || isNil(o.NoMoreHistory) {
+		var ret bool
 		return ret
 	}
-	return o.NoMoreHistory
+	return *o.NoMoreHistory
 }
 
 // GetNoMoreHistoryOk returns a tuple with the NoMoreHistory field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *StripeTask) GetNoMoreHistoryOk() (*interface{}, bool) {
+func (o *StripeTask) GetNoMoreHistoryOk() (*bool, bool) {
 	if o == nil || isNil(o.NoMoreHistory) {
 		return nil, false
 	}
-	return &o.NoMoreHistory, true
+	return o.NoMoreHistory, true
 }
 
 // HasNoMoreHistory returns a boolean if a field has been set.
 func (o *StripeTask) HasNoMoreHistory() bool {
-	if o != nil && isNil(o.NoMoreHistory) {
+	if o != nil && !isNil(o.NoMoreHistory) {
 		return true
 	}
 
 	return false
 }
 
-// SetNoMoreHistory gets a reference to the given interface{} and assigns it to the NoMoreHistory field.
-func (o *StripeTask) SetNoMoreHistory(v interface{}) {
-	o.NoMoreHistory = v
+// SetNoMoreHistory gets a reference to the given bool and assigns it to the NoMoreHistory field.
+func (o *StripeTask) SetNoMoreHistory(v bool) {
+	o.NoMoreHistory = &v
 }
 
 func (o StripeTask) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.OldestId != nil {
-		toSerialize["oldestId"] = o.OldestId
-	}
-	if o.OldestDate != nil {
-		toSerialize["oldestDate"] = o.OldestDate
-	}
-	if o.MoreRecentId != nil {
-		toSerialize["moreRecentId"] = o.MoreRecentId
-	}
-	if o.MoreRecentDate != nil {
-		toSerialize["moreRecentDate"] = o.MoreRecentDate
-	}
-	if o.NoMoreHistory != nil {
-		toSerialize["noMoreHistory"] = o.NoMoreHistory
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o StripeTask) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	if !isNil(o.OldestId) {
+		toSerialize["oldestId"] = o.OldestId
+	}
+	if !isNil(o.OldestDate) {
+		toSerialize["oldestDate"] = o.OldestDate
+	}
+	if !isNil(o.MoreRecentId) {
+		toSerialize["moreRecentId"] = o.MoreRecentId
+	}
+	if !isNil(o.MoreRecentDate) {
+		toSerialize["moreRecentDate"] = o.MoreRecentDate
+	}
+	if !isNil(o.NoMoreHistory) {
+		toSerialize["noMoreHistory"] = o.NoMoreHistory
+	}
+	return toSerialize, nil
 }
 
 type NullableStripeTask struct {

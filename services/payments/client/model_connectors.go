@@ -12,32 +12,73 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
-// Connectors struct for Connectors
-type Connectors struct {
+// Connectors the model 'Connectors'
+type Connectors string
+
+// List of Connectors
+const (
+	STRIPE         Connectors = "STRIPE"
+	DUMMY_PAY      Connectors = "DUMMY-PAY"
+	SIE            Connectors = "SIE"
+	MODULR         Connectors = "MODULR"
+	CURRENCY_CLOUD Connectors = "CURRENCY-CLOUD"
+	BANKING_CIRCLE Connectors = "BANKING-CIRCLE"
+)
+
+// All allowed values of Connectors enum
+var AllowedConnectorsEnumValues = []Connectors{
+	"STRIPE",
+	"DUMMY-PAY",
+	"SIE",
+	"MODULR",
+	"CURRENCY-CLOUD",
+	"BANKING-CIRCLE",
 }
 
-// NewConnectors instantiates a new Connectors object
-// This constructor will assign default values to properties that have it defined,
-// and makes sure properties required by API are set, but the set of arguments
-// will change when the set of required properties is changed
-func NewConnectors() *Connectors {
-	this := Connectors{}
-	return &this
+func (v *Connectors) UnmarshalJSON(src []byte) error {
+	var value string
+	err := json.Unmarshal(src, &value)
+	if err != nil {
+		return err
+	}
+	enumTypeValue := Connectors(value)
+	for _, existing := range AllowedConnectorsEnumValues {
+		if existing == enumTypeValue {
+			*v = enumTypeValue
+			return nil
+		}
+	}
+
+	return fmt.Errorf("%+v is not a valid Connectors", value)
 }
 
-// NewConnectorsWithDefaults instantiates a new Connectors object
-// This constructor will only assign default values to properties that have it defined,
-// but it doesn't guarantee that properties required by API are set
-func NewConnectorsWithDefaults() *Connectors {
-	this := Connectors{}
-	return &this
+// NewConnectorsFromValue returns a pointer to a valid Connectors
+// for the value passed as argument, or an error if the value passed is not allowed by the enum
+func NewConnectorsFromValue(v string) (*Connectors, error) {
+	ev := Connectors(v)
+	if ev.IsValid() {
+		return &ev, nil
+	} else {
+		return nil, fmt.Errorf("invalid value '%v' for Connectors: valid values are %v", v, AllowedConnectorsEnumValues)
+	}
 }
 
-func (o Connectors) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	return json.Marshal(toSerialize)
+// IsValid return true if the value is valid for the enum, false otherwise
+func (v Connectors) IsValid() bool {
+	for _, existing := range AllowedConnectorsEnumValues {
+		if existing == v {
+			return true
+		}
+	}
+	return false
+}
+
+// Ptr returns reference to Connectors value
+func (v Connectors) Ptr() *Connectors {
+	return &v
 }
 
 type NullableConnectors struct {

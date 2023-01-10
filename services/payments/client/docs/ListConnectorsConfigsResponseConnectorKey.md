@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Datatype** | Pointer to **interface{}** |  | [optional] 
-**Required** | Pointer to **interface{}** |  | [optional] 
+**Datatype** | Pointer to **string** |  | [optional] 
+**Required** | Pointer to **bool** |  | [optional] 
 
 ## Methods
 
@@ -28,20 +28,20 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetDatatype
 
-`func (o *ListConnectorsConfigsResponseConnectorKey) GetDatatype() interface{}`
+`func (o *ListConnectorsConfigsResponseConnectorKey) GetDatatype() string`
 
 GetDatatype returns the Datatype field if non-nil, zero value otherwise.
 
 ### GetDatatypeOk
 
-`func (o *ListConnectorsConfigsResponseConnectorKey) GetDatatypeOk() (*interface{}, bool)`
+`func (o *ListConnectorsConfigsResponseConnectorKey) GetDatatypeOk() (*string, bool)`
 
 GetDatatypeOk returns a tuple with the Datatype field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetDatatype
 
-`func (o *ListConnectorsConfigsResponseConnectorKey) SetDatatype(v interface{})`
+`func (o *ListConnectorsConfigsResponseConnectorKey) SetDatatype(v string)`
 
 SetDatatype sets Datatype field to given value.
 
@@ -51,32 +51,22 @@ SetDatatype sets Datatype field to given value.
 
 HasDatatype returns a boolean if a field has been set.
 
-### SetDatatypeNil
-
-`func (o *ListConnectorsConfigsResponseConnectorKey) SetDatatypeNil(b bool)`
-
- SetDatatypeNil sets the value for Datatype to be an explicit nil
-
-### UnsetDatatype
-`func (o *ListConnectorsConfigsResponseConnectorKey) UnsetDatatype()`
-
-UnsetDatatype ensures that no value is present for Datatype, not even an explicit nil
 ### GetRequired
 
-`func (o *ListConnectorsConfigsResponseConnectorKey) GetRequired() interface{}`
+`func (o *ListConnectorsConfigsResponseConnectorKey) GetRequired() bool`
 
 GetRequired returns the Required field if non-nil, zero value otherwise.
 
 ### GetRequiredOk
 
-`func (o *ListConnectorsConfigsResponseConnectorKey) GetRequiredOk() (*interface{}, bool)`
+`func (o *ListConnectorsConfigsResponseConnectorKey) GetRequiredOk() (*bool, bool)`
 
 GetRequiredOk returns a tuple with the Required field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetRequired
 
-`func (o *ListConnectorsConfigsResponseConnectorKey) SetRequired(v interface{})`
+`func (o *ListConnectorsConfigsResponseConnectorKey) SetRequired(v bool)`
 
 SetRequired sets Required field to given value.
 
@@ -86,16 +76,6 @@ SetRequired sets Required field to given value.
 
 HasRequired returns a boolean if a field has been set.
 
-### SetRequiredNil
-
-`func (o *ListConnectorsConfigsResponseConnectorKey) SetRequiredNil(b bool)`
-
- SetRequiredNil sets the value for Required to be an explicit nil
-
-### UnsetRequired
-`func (o *ListConnectorsConfigsResponseConnectorKey) UnsetRequired()`
-
-UnsetRequired ensures that no value is present for Required, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

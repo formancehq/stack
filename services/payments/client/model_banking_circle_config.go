@@ -14,19 +14,22 @@ import (
 	"encoding/json"
 )
 
+// checks if the BankingCircleConfig type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &BankingCircleConfig{}
+
 // BankingCircleConfig struct for BankingCircleConfig
 type BankingCircleConfig struct {
-	Username              interface{} `json:"username"`
-	Password              interface{} `json:"password"`
-	Endpoint              interface{} `json:"endpoint"`
-	AuthorizationEndpoint interface{} `json:"authorizationEndpoint"`
+	Username              string `json:"username"`
+	Password              string `json:"password"`
+	Endpoint              string `json:"endpoint"`
+	AuthorizationEndpoint string `json:"authorizationEndpoint"`
 }
 
 // NewBankingCircleConfig instantiates a new BankingCircleConfig object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewBankingCircleConfig(username interface{}, password interface{}, endpoint interface{}, authorizationEndpoint interface{}) *BankingCircleConfig {
+func NewBankingCircleConfig(username string, password string, endpoint string, authorizationEndpoint string) *BankingCircleConfig {
 	this := BankingCircleConfig{}
 	this.Username = username
 	this.Password = password
@@ -44,10 +47,9 @@ func NewBankingCircleConfigWithDefaults() *BankingCircleConfig {
 }
 
 // GetUsername returns the Username field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *BankingCircleConfig) GetUsername() interface{} {
+func (o *BankingCircleConfig) GetUsername() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -56,24 +58,22 @@ func (o *BankingCircleConfig) GetUsername() interface{} {
 
 // GetUsernameOk returns a tuple with the Username field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *BankingCircleConfig) GetUsernameOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Username) {
+func (o *BankingCircleConfig) GetUsernameOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Username, true
 }
 
 // SetUsername sets field value
-func (o *BankingCircleConfig) SetUsername(v interface{}) {
+func (o *BankingCircleConfig) SetUsername(v string) {
 	o.Username = v
 }
 
 // GetPassword returns the Password field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *BankingCircleConfig) GetPassword() interface{} {
+func (o *BankingCircleConfig) GetPassword() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -82,24 +82,22 @@ func (o *BankingCircleConfig) GetPassword() interface{} {
 
 // GetPasswordOk returns a tuple with the Password field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *BankingCircleConfig) GetPasswordOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Password) {
+func (o *BankingCircleConfig) GetPasswordOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Password, true
 }
 
 // SetPassword sets field value
-func (o *BankingCircleConfig) SetPassword(v interface{}) {
+func (o *BankingCircleConfig) SetPassword(v string) {
 	o.Password = v
 }
 
 // GetEndpoint returns the Endpoint field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *BankingCircleConfig) GetEndpoint() interface{} {
+func (o *BankingCircleConfig) GetEndpoint() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -108,24 +106,22 @@ func (o *BankingCircleConfig) GetEndpoint() interface{} {
 
 // GetEndpointOk returns a tuple with the Endpoint field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *BankingCircleConfig) GetEndpointOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Endpoint) {
+func (o *BankingCircleConfig) GetEndpointOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Endpoint, true
 }
 
 // SetEndpoint sets field value
-func (o *BankingCircleConfig) SetEndpoint(v interface{}) {
+func (o *BankingCircleConfig) SetEndpoint(v string) {
 	o.Endpoint = v
 }
 
 // GetAuthorizationEndpoint returns the AuthorizationEndpoint field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *BankingCircleConfig) GetAuthorizationEndpoint() interface{} {
+func (o *BankingCircleConfig) GetAuthorizationEndpoint() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -134,34 +130,33 @@ func (o *BankingCircleConfig) GetAuthorizationEndpoint() interface{} {
 
 // GetAuthorizationEndpointOk returns a tuple with the AuthorizationEndpoint field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *BankingCircleConfig) GetAuthorizationEndpointOk() (*interface{}, bool) {
-	if o == nil || isNil(o.AuthorizationEndpoint) {
+func (o *BankingCircleConfig) GetAuthorizationEndpointOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.AuthorizationEndpoint, true
 }
 
 // SetAuthorizationEndpoint sets field value
-func (o *BankingCircleConfig) SetAuthorizationEndpoint(v interface{}) {
+func (o *BankingCircleConfig) SetAuthorizationEndpoint(v string) {
 	o.AuthorizationEndpoint = v
 }
 
 func (o BankingCircleConfig) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Username != nil {
-		toSerialize["username"] = o.Username
-	}
-	if o.Password != nil {
-		toSerialize["password"] = o.Password
-	}
-	if o.Endpoint != nil {
-		toSerialize["endpoint"] = o.Endpoint
-	}
-	if o.AuthorizationEndpoint != nil {
-		toSerialize["authorizationEndpoint"] = o.AuthorizationEndpoint
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o BankingCircleConfig) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["username"] = o.Username
+	toSerialize["password"] = o.Password
+	toSerialize["endpoint"] = o.Endpoint
+	toSerialize["authorizationEndpoint"] = o.AuthorizationEndpoint
+	return toSerialize, nil
 }
 
 type NullableBankingCircleConfig struct {

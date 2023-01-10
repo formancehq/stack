@@ -15,7 +15,6 @@ Install the following dependencies:
 
 ```shell
 go get github.com/stretchr/testify/assert
-go get golang.org/x/oauth2
 go get golang.org/x/net/context
 ```
 
@@ -84,6 +83,7 @@ Class | Method | HTTP request | Description
 *PaymentsApi* | [**GetConnectorTask**](docs/PaymentsApi.md#getconnectortask) | **Get** /connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 *PaymentsApi* | [**GetPayment**](docs/PaymentsApi.md#getpayment) | **Get** /payments/{paymentId} | Returns a payment.
 *PaymentsApi* | [**InstallConnector**](docs/PaymentsApi.md#installconnector) | **Post** /connectors/{connector} | Install connector
+*PaymentsApi* | [**ListAccounts**](docs/PaymentsApi.md#listaccounts) | **Get** /accounts | Returns a list of accounts.
 *PaymentsApi* | [**ListConnectorTasks**](docs/PaymentsApi.md#listconnectortasks) | **Get** /connectors/{connector}/tasks | List connector tasks
 *PaymentsApi* | [**ListPayments**](docs/PaymentsApi.md#listpayments) | **Get** /payments | Returns a list of payments.
 *PaymentsApi* | [**ReadConnectorConfig**](docs/PaymentsApi.md#readconnectorconfig) | **Get** /connectors/{connector}/config | Read connector config
@@ -93,13 +93,16 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [Account](docs/Account.md)
  - [BankingCircleConfig](docs/BankingCircleConfig.md)
  - [ConnectorBaseInfo](docs/ConnectorBaseInfo.md)
- - [ConnectorTaskBase](docs/ConnectorTaskBase.md)
+ - [ConnectorConfig](docs/ConnectorConfig.md)
  - [Connectors](docs/Connectors.md)
  - [CurrencyCloudConfig](docs/CurrencyCloudConfig.md)
  - [DummyPayConfig](docs/DummyPayConfig.md)
  - [GetPaymentResponse](docs/GetPaymentResponse.md)
+ - [ListAccountsResponse](docs/ListAccountsResponse.md)
+ - [ListConnectorTasks200ResponseInner](docs/ListConnectorTasks200ResponseInner.md)
  - [ListConnectorsConfigsResponse](docs/ListConnectorsConfigsResponse.md)
  - [ListConnectorsConfigsResponseConnector](docs/ListConnectorsConfigsResponseConnector.md)
  - [ListConnectorsConfigsResponseConnectorKey](docs/ListConnectorsConfigsResponseConnectorKey.md)
@@ -110,6 +113,18 @@ Class | Method | HTTP request | Description
  - [StripeConfig](docs/StripeConfig.md)
  - [StripeTask](docs/StripeTask.md)
  - [StripeTransferRequest](docs/StripeTransferRequest.md)
+ - [TaskDescriptorBankingCircle](docs/TaskDescriptorBankingCircle.md)
+ - [TaskDescriptorBankingCircleDescriptor](docs/TaskDescriptorBankingCircleDescriptor.md)
+ - [TaskDescriptorCurrencyCloud](docs/TaskDescriptorCurrencyCloud.md)
+ - [TaskDescriptorCurrencyCloudDescriptor](docs/TaskDescriptorCurrencyCloudDescriptor.md)
+ - [TaskDescriptorDummyPay](docs/TaskDescriptorDummyPay.md)
+ - [TaskDescriptorDummyPayDescriptor](docs/TaskDescriptorDummyPayDescriptor.md)
+ - [TaskDescriptorModulr](docs/TaskDescriptorModulr.md)
+ - [TaskDescriptorModulrDescriptor](docs/TaskDescriptorModulrDescriptor.md)
+ - [TaskDescriptorStripe](docs/TaskDescriptorStripe.md)
+ - [TaskDescriptorStripeDescriptor](docs/TaskDescriptorStripeDescriptor.md)
+ - [TaskDescriptorWise](docs/TaskDescriptorWise.md)
+ - [TaskDescriptorWiseDescriptor](docs/TaskDescriptorWiseDescriptor.md)
  - [WiseConfig](docs/WiseConfig.md)
 
 

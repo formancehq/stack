@@ -4,22 +4,22 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Provider** | **interface{}** |  | 
-**Reference** | Pointer to **interface{}** |  | [optional] 
-**Scheme** | **interface{}** |  | 
-**Status** | **interface{}** |  | 
-**Type** | **interface{}** |  | 
-**Id** | **interface{}** |  | 
-**Amount** | **interface{}** |  | 
-**Asset** | **interface{}** |  | 
-**Date** | **interface{}** |  | 
+**Provider** | **string** |  | 
+**Reference** | Pointer to **string** |  | [optional] 
+**Scheme** | **string** |  | 
+**Status** | **string** |  | 
+**Type** | **string** |  | 
+**Id** | **string** |  | 
+**Amount** | **int32** |  | 
+**Asset** | **string** |  | 
+**Date** | **time.Time** |  | 
 **Raw** | Pointer to **interface{}** |  | [optional] 
 
 ## Methods
 
 ### NewPayment
 
-`func NewPayment(provider interface{}, scheme interface{}, status interface{}, type_ interface{}, id interface{}, amount interface{}, asset interface{}, date interface{}, ) *Payment`
+`func NewPayment(provider string, scheme string, status string, type_ string, id string, amount int32, asset string, date time.Time, ) *Payment`
 
 NewPayment instantiates a new Payment object
 This constructor will assign default values to properties that have it defined,
@@ -36,50 +36,40 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetProvider
 
-`func (o *Payment) GetProvider() interface{}`
+`func (o *Payment) GetProvider() string`
 
 GetProvider returns the Provider field if non-nil, zero value otherwise.
 
 ### GetProviderOk
 
-`func (o *Payment) GetProviderOk() (*interface{}, bool)`
+`func (o *Payment) GetProviderOk() (*string, bool)`
 
 GetProviderOk returns a tuple with the Provider field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetProvider
 
-`func (o *Payment) SetProvider(v interface{})`
+`func (o *Payment) SetProvider(v string)`
 
 SetProvider sets Provider field to given value.
 
 
-### SetProviderNil
-
-`func (o *Payment) SetProviderNil(b bool)`
-
- SetProviderNil sets the value for Provider to be an explicit nil
-
-### UnsetProvider
-`func (o *Payment) UnsetProvider()`
-
-UnsetProvider ensures that no value is present for Provider, not even an explicit nil
 ### GetReference
 
-`func (o *Payment) GetReference() interface{}`
+`func (o *Payment) GetReference() string`
 
 GetReference returns the Reference field if non-nil, zero value otherwise.
 
 ### GetReferenceOk
 
-`func (o *Payment) GetReferenceOk() (*interface{}, bool)`
+`func (o *Payment) GetReferenceOk() (*string, bool)`
 
 GetReferenceOk returns a tuple with the Reference field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetReference
 
-`func (o *Payment) SetReference(v interface{})`
+`func (o *Payment) SetReference(v string)`
 
 SetReference sets Reference field to given value.
 
@@ -89,226 +79,146 @@ SetReference sets Reference field to given value.
 
 HasReference returns a boolean if a field has been set.
 
-### SetReferenceNil
-
-`func (o *Payment) SetReferenceNil(b bool)`
-
- SetReferenceNil sets the value for Reference to be an explicit nil
-
-### UnsetReference
-`func (o *Payment) UnsetReference()`
-
-UnsetReference ensures that no value is present for Reference, not even an explicit nil
 ### GetScheme
 
-`func (o *Payment) GetScheme() interface{}`
+`func (o *Payment) GetScheme() string`
 
 GetScheme returns the Scheme field if non-nil, zero value otherwise.
 
 ### GetSchemeOk
 
-`func (o *Payment) GetSchemeOk() (*interface{}, bool)`
+`func (o *Payment) GetSchemeOk() (*string, bool)`
 
 GetSchemeOk returns a tuple with the Scheme field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetScheme
 
-`func (o *Payment) SetScheme(v interface{})`
+`func (o *Payment) SetScheme(v string)`
 
 SetScheme sets Scheme field to given value.
 
 
-### SetSchemeNil
-
-`func (o *Payment) SetSchemeNil(b bool)`
-
- SetSchemeNil sets the value for Scheme to be an explicit nil
-
-### UnsetScheme
-`func (o *Payment) UnsetScheme()`
-
-UnsetScheme ensures that no value is present for Scheme, not even an explicit nil
 ### GetStatus
 
-`func (o *Payment) GetStatus() interface{}`
+`func (o *Payment) GetStatus() string`
 
 GetStatus returns the Status field if non-nil, zero value otherwise.
 
 ### GetStatusOk
 
-`func (o *Payment) GetStatusOk() (*interface{}, bool)`
+`func (o *Payment) GetStatusOk() (*string, bool)`
 
 GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetStatus
 
-`func (o *Payment) SetStatus(v interface{})`
+`func (o *Payment) SetStatus(v string)`
 
 SetStatus sets Status field to given value.
 
 
-### SetStatusNil
-
-`func (o *Payment) SetStatusNil(b bool)`
-
- SetStatusNil sets the value for Status to be an explicit nil
-
-### UnsetStatus
-`func (o *Payment) UnsetStatus()`
-
-UnsetStatus ensures that no value is present for Status, not even an explicit nil
 ### GetType
 
-`func (o *Payment) GetType() interface{}`
+`func (o *Payment) GetType() string`
 
 GetType returns the Type field if non-nil, zero value otherwise.
 
 ### GetTypeOk
 
-`func (o *Payment) GetTypeOk() (*interface{}, bool)`
+`func (o *Payment) GetTypeOk() (*string, bool)`
 
 GetTypeOk returns a tuple with the Type field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetType
 
-`func (o *Payment) SetType(v interface{})`
+`func (o *Payment) SetType(v string)`
 
 SetType sets Type field to given value.
 
 
-### SetTypeNil
-
-`func (o *Payment) SetTypeNil(b bool)`
-
- SetTypeNil sets the value for Type to be an explicit nil
-
-### UnsetType
-`func (o *Payment) UnsetType()`
-
-UnsetType ensures that no value is present for Type, not even an explicit nil
 ### GetId
 
-`func (o *Payment) GetId() interface{}`
+`func (o *Payment) GetId() string`
 
 GetId returns the Id field if non-nil, zero value otherwise.
 
 ### GetIdOk
 
-`func (o *Payment) GetIdOk() (*interface{}, bool)`
+`func (o *Payment) GetIdOk() (*string, bool)`
 
 GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetId
 
-`func (o *Payment) SetId(v interface{})`
+`func (o *Payment) SetId(v string)`
 
 SetId sets Id field to given value.
 
 
-### SetIdNil
-
-`func (o *Payment) SetIdNil(b bool)`
-
- SetIdNil sets the value for Id to be an explicit nil
-
-### UnsetId
-`func (o *Payment) UnsetId()`
-
-UnsetId ensures that no value is present for Id, not even an explicit nil
 ### GetAmount
 
-`func (o *Payment) GetAmount() interface{}`
+`func (o *Payment) GetAmount() int32`
 
 GetAmount returns the Amount field if non-nil, zero value otherwise.
 
 ### GetAmountOk
 
-`func (o *Payment) GetAmountOk() (*interface{}, bool)`
+`func (o *Payment) GetAmountOk() (*int32, bool)`
 
 GetAmountOk returns a tuple with the Amount field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetAmount
 
-`func (o *Payment) SetAmount(v interface{})`
+`func (o *Payment) SetAmount(v int32)`
 
 SetAmount sets Amount field to given value.
 
 
-### SetAmountNil
-
-`func (o *Payment) SetAmountNil(b bool)`
-
- SetAmountNil sets the value for Amount to be an explicit nil
-
-### UnsetAmount
-`func (o *Payment) UnsetAmount()`
-
-UnsetAmount ensures that no value is present for Amount, not even an explicit nil
 ### GetAsset
 
-`func (o *Payment) GetAsset() interface{}`
+`func (o *Payment) GetAsset() string`
 
 GetAsset returns the Asset field if non-nil, zero value otherwise.
 
 ### GetAssetOk
 
-`func (o *Payment) GetAssetOk() (*interface{}, bool)`
+`func (o *Payment) GetAssetOk() (*string, bool)`
 
 GetAssetOk returns a tuple with the Asset field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetAsset
 
-`func (o *Payment) SetAsset(v interface{})`
+`func (o *Payment) SetAsset(v string)`
 
 SetAsset sets Asset field to given value.
 
 
-### SetAssetNil
-
-`func (o *Payment) SetAssetNil(b bool)`
-
- SetAssetNil sets the value for Asset to be an explicit nil
-
-### UnsetAsset
-`func (o *Payment) UnsetAsset()`
-
-UnsetAsset ensures that no value is present for Asset, not even an explicit nil
 ### GetDate
 
-`func (o *Payment) GetDate() interface{}`
+`func (o *Payment) GetDate() time.Time`
 
 GetDate returns the Date field if non-nil, zero value otherwise.
 
 ### GetDateOk
 
-`func (o *Payment) GetDateOk() (*interface{}, bool)`
+`func (o *Payment) GetDateOk() (*time.Time, bool)`
 
 GetDateOk returns a tuple with the Date field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetDate
 
-`func (o *Payment) SetDate(v interface{})`
+`func (o *Payment) SetDate(v time.Time)`
 
 SetDate sets Date field to given value.
 
 
-### SetDateNil
-
-`func (o *Payment) SetDateNil(b bool)`
-
- SetDateNil sets the value for Date to be an explicit nil
-
-### UnsetDate
-`func (o *Payment) UnsetDate()`
-
-UnsetDate ensures that no value is present for Date, not even an explicit nil
 ### GetRaw
 
 `func (o *Payment) GetRaw() interface{}`

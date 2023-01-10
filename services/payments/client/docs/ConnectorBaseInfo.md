@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Provider** | Pointer to **interface{}** |  | [optional] 
-**Disabled** | Pointer to **interface{}** |  | [optional] 
+**Provider** | Pointer to **string** |  | [optional] 
+**Disabled** | Pointer to **bool** |  | [optional] 
 
 ## Methods
 
@@ -28,20 +28,20 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetProvider
 
-`func (o *ConnectorBaseInfo) GetProvider() interface{}`
+`func (o *ConnectorBaseInfo) GetProvider() string`
 
 GetProvider returns the Provider field if non-nil, zero value otherwise.
 
 ### GetProviderOk
 
-`func (o *ConnectorBaseInfo) GetProviderOk() (*interface{}, bool)`
+`func (o *ConnectorBaseInfo) GetProviderOk() (*string, bool)`
 
 GetProviderOk returns a tuple with the Provider field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetProvider
 
-`func (o *ConnectorBaseInfo) SetProvider(v interface{})`
+`func (o *ConnectorBaseInfo) SetProvider(v string)`
 
 SetProvider sets Provider field to given value.
 
@@ -51,32 +51,22 @@ SetProvider sets Provider field to given value.
 
 HasProvider returns a boolean if a field has been set.
 
-### SetProviderNil
-
-`func (o *ConnectorBaseInfo) SetProviderNil(b bool)`
-
- SetProviderNil sets the value for Provider to be an explicit nil
-
-### UnsetProvider
-`func (o *ConnectorBaseInfo) UnsetProvider()`
-
-UnsetProvider ensures that no value is present for Provider, not even an explicit nil
 ### GetDisabled
 
-`func (o *ConnectorBaseInfo) GetDisabled() interface{}`
+`func (o *ConnectorBaseInfo) GetDisabled() bool`
 
 GetDisabled returns the Disabled field if non-nil, zero value otherwise.
 
 ### GetDisabledOk
 
-`func (o *ConnectorBaseInfo) GetDisabledOk() (*interface{}, bool)`
+`func (o *ConnectorBaseInfo) GetDisabledOk() (*bool, bool)`
 
 GetDisabledOk returns a tuple with the Disabled field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetDisabled
 
-`func (o *ConnectorBaseInfo) SetDisabled(v interface{})`
+`func (o *ConnectorBaseInfo) SetDisabled(v bool)`
 
 SetDisabled sets Disabled field to given value.
 
@@ -86,16 +76,6 @@ SetDisabled sets Disabled field to given value.
 
 HasDisabled returns a boolean if a field has been set.
 
-### SetDisabledNil
-
-`func (o *ConnectorBaseInfo) SetDisabledNil(b bool)`
-
- SetDisabledNil sets the value for Disabled to be an explicit nil
-
-### UnsetDisabled
-`func (o *ConnectorBaseInfo) UnsetDisabled()`
-
-UnsetDisabled ensures that no value is present for Disabled, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

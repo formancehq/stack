@@ -19,14 +19,15 @@ import (
 	"strings"
 )
 
+
 // ScopesApiService ScopesApi service
 type ScopesApiService service
 
 type ApiAddTransientScopeRequest struct {
-	ctx              context.Context
-	ApiService       *ScopesApiService
-	scopeId          interface{}
-	transientScopeId interface{}
+	ctx context.Context
+	ApiService *ScopesApiService
+	scopeId string
+	transientScopeId string
 }
 
 func (r ApiAddTransientScopeRequest) Execute() (*http.Response, error) {
@@ -38,16 +39,16 @@ AddTransientScope Add a transient scope to a scope
 
 Add a transient scope to a scope
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param scopeId Scope ID
-	@param transientScopeId Transient scope ID
-	@return ApiAddTransientScopeRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param scopeId Scope ID
+ @param transientScopeId Transient scope ID
+ @return ApiAddTransientScopeRequest
 */
-func (a *ScopesApiService) AddTransientScope(ctx context.Context, scopeId interface{}, transientScopeId interface{}) ApiAddTransientScopeRequest {
+func (a *ScopesApiService) AddTransientScope(ctx context.Context, scopeId string, transientScopeId string) ApiAddTransientScopeRequest {
 	return ApiAddTransientScopeRequest{
-		ApiService:       a,
-		ctx:              ctx,
-		scopeId:          scopeId,
+		ApiService: a,
+		ctx: ctx,
+		scopeId: scopeId,
 		transientScopeId: transientScopeId,
 	}
 }
@@ -55,9 +56,9 @@ func (a *ScopesApiService) AddTransientScope(ctx context.Context, scopeId interf
 // Execute executes the request
 func (a *ScopesApiService) AddTransientScopeExecute(r ApiAddTransientScopeRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodPut
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodPut
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ScopesApiService.AddTransientScope")
@@ -119,9 +120,9 @@ func (a *ScopesApiService) AddTransientScopeExecute(r ApiAddTransientScopeReques
 }
 
 type ApiCreateScopeRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService *ScopesApiService
-	body       *ScopeOptions
+	body *ScopeOptions
 }
 
 func (r ApiCreateScopeRequest) Body(body ScopeOptions) ApiCreateScopeRequest {
@@ -138,25 +139,24 @@ CreateScope Create scope
 
 Create scope
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiCreateScopeRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiCreateScopeRequest
 */
 func (a *ScopesApiService) CreateScope(ctx context.Context) ApiCreateScopeRequest {
 	return ApiCreateScopeRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return CreateScopeResponse
+//  @return CreateScopeResponse
 func (a *ScopesApiService) CreateScopeExecute(r ApiCreateScopeRequest) (*CreateScopeResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *CreateScopeResponse
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateScopeResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ScopesApiService.CreateScope")
@@ -227,9 +227,9 @@ func (a *ScopesApiService) CreateScopeExecute(r ApiCreateScopeRequest) (*CreateS
 }
 
 type ApiDeleteScopeRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService *ScopesApiService
-	scopeId    interface{}
+	scopeId string
 }
 
 func (r ApiDeleteScopeRequest) Execute() (*http.Response, error) {
@@ -241,24 +241,24 @@ DeleteScope Delete scope
 
 Delete scope
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param scopeId Scope ID
-	@return ApiDeleteScopeRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param scopeId Scope ID
+ @return ApiDeleteScopeRequest
 */
-func (a *ScopesApiService) DeleteScope(ctx context.Context, scopeId interface{}) ApiDeleteScopeRequest {
+func (a *ScopesApiService) DeleteScope(ctx context.Context, scopeId string) ApiDeleteScopeRequest {
 	return ApiDeleteScopeRequest{
 		ApiService: a,
-		ctx:        ctx,
-		scopeId:    scopeId,
+		ctx: ctx,
+		scopeId: scopeId,
 	}
 }
 
 // Execute executes the request
 func (a *ScopesApiService) DeleteScopeExecute(r ApiDeleteScopeRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodDelete
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodDelete
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ScopesApiService.DeleteScope")
@@ -319,10 +319,10 @@ func (a *ScopesApiService) DeleteScopeExecute(r ApiDeleteScopeRequest) (*http.Re
 }
 
 type ApiDeleteTransientScopeRequest struct {
-	ctx              context.Context
-	ApiService       *ScopesApiService
-	scopeId          interface{}
-	transientScopeId interface{}
+	ctx context.Context
+	ApiService *ScopesApiService
+	scopeId string
+	transientScopeId string
 }
 
 func (r ApiDeleteTransientScopeRequest) Execute() (*http.Response, error) {
@@ -334,16 +334,16 @@ DeleteTransientScope Delete a transient scope from a scope
 
 Delete a transient scope from a scope
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param scopeId Scope ID
-	@param transientScopeId Transient scope ID
-	@return ApiDeleteTransientScopeRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param scopeId Scope ID
+ @param transientScopeId Transient scope ID
+ @return ApiDeleteTransientScopeRequest
 */
-func (a *ScopesApiService) DeleteTransientScope(ctx context.Context, scopeId interface{}, transientScopeId interface{}) ApiDeleteTransientScopeRequest {
+func (a *ScopesApiService) DeleteTransientScope(ctx context.Context, scopeId string, transientScopeId string) ApiDeleteTransientScopeRequest {
 	return ApiDeleteTransientScopeRequest{
-		ApiService:       a,
-		ctx:              ctx,
-		scopeId:          scopeId,
+		ApiService: a,
+		ctx: ctx,
+		scopeId: scopeId,
 		transientScopeId: transientScopeId,
 	}
 }
@@ -351,9 +351,9 @@ func (a *ScopesApiService) DeleteTransientScope(ctx context.Context, scopeId int
 // Execute executes the request
 func (a *ScopesApiService) DeleteTransientScopeExecute(r ApiDeleteTransientScopeRequest) (*http.Response, error) {
 	var (
-		localVarHTTPMethod = http.MethodDelete
-		localVarPostBody   interface{}
-		formFiles          []formFile
+		localVarHTTPMethod   = http.MethodDelete
+		localVarPostBody     interface{}
+		formFiles            []formFile
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ScopesApiService.DeleteTransientScope")
@@ -415,7 +415,7 @@ func (a *ScopesApiService) DeleteTransientScopeExecute(r ApiDeleteTransientScope
 }
 
 type ApiListScopesRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService *ScopesApiService
 }
 
@@ -428,25 +428,24 @@ ListScopes List scopes
 
 List Scopes
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiListScopesRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiListScopesRequest
 */
 func (a *ScopesApiService) ListScopes(ctx context.Context) ApiListScopesRequest {
 	return ApiListScopesRequest{
 		ApiService: a,
-		ctx:        ctx,
+		ctx: ctx,
 	}
 }
 
 // Execute executes the request
-//
-//	@return ListScopesResponse
+//  @return ListScopesResponse
 func (a *ScopesApiService) ListScopesExecute(r ApiListScopesRequest) (*ListScopesResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ListScopesResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListScopesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ScopesApiService.ListScopes")
@@ -515,9 +514,9 @@ func (a *ScopesApiService) ListScopesExecute(r ApiListScopesRequest) (*ListScope
 }
 
 type ApiReadScopeRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService *ScopesApiService
-	scopeId    interface{}
+	scopeId string
 }
 
 func (r ApiReadScopeRequest) Execute() (*CreateScopeResponse, *http.Response, error) {
@@ -529,27 +528,26 @@ ReadScope Read scope
 
 Read scope
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param scopeId Scope ID
-	@return ApiReadScopeRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param scopeId Scope ID
+ @return ApiReadScopeRequest
 */
-func (a *ScopesApiService) ReadScope(ctx context.Context, scopeId interface{}) ApiReadScopeRequest {
+func (a *ScopesApiService) ReadScope(ctx context.Context, scopeId string) ApiReadScopeRequest {
 	return ApiReadScopeRequest{
 		ApiService: a,
-		ctx:        ctx,
-		scopeId:    scopeId,
+		ctx: ctx,
+		scopeId: scopeId,
 	}
 }
 
 // Execute executes the request
-//
-//	@return CreateScopeResponse
+//  @return CreateScopeResponse
 func (a *ScopesApiService) ReadScopeExecute(r ApiReadScopeRequest) (*CreateScopeResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *CreateScopeResponse
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateScopeResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ScopesApiService.ReadScope")
@@ -619,10 +617,10 @@ func (a *ScopesApiService) ReadScopeExecute(r ApiReadScopeRequest) (*CreateScope
 }
 
 type ApiUpdateScopeRequest struct {
-	ctx        context.Context
+	ctx context.Context
 	ApiService *ScopesApiService
-	scopeId    interface{}
-	body       *ScopeOptions
+	scopeId string
+	body *ScopeOptions
 }
 
 func (r ApiUpdateScopeRequest) Body(body ScopeOptions) ApiUpdateScopeRequest {
@@ -639,27 +637,26 @@ UpdateScope Update scope
 
 Update scope
 
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param scopeId Scope ID
-	@return ApiUpdateScopeRequest
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param scopeId Scope ID
+ @return ApiUpdateScopeRequest
 */
-func (a *ScopesApiService) UpdateScope(ctx context.Context, scopeId interface{}) ApiUpdateScopeRequest {
+func (a *ScopesApiService) UpdateScope(ctx context.Context, scopeId string) ApiUpdateScopeRequest {
 	return ApiUpdateScopeRequest{
 		ApiService: a,
-		ctx:        ctx,
-		scopeId:    scopeId,
+		ctx: ctx,
+		scopeId: scopeId,
 	}
 }
 
 // Execute executes the request
-//
-//	@return CreateScopeResponse
+//  @return CreateScopeResponse
 func (a *ScopesApiService) UpdateScopeExecute(r ApiUpdateScopeRequest) (*CreateScopeResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPut
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *CreateScopeResponse
+		localVarHTTPMethod   = http.MethodPut
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *CreateScopeResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ScopesApiService.UpdateScope")

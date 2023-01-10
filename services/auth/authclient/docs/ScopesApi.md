@@ -35,8 +35,8 @@ import (
 )
 
 func main() {
-    scopeId := TODO // interface{} | Scope ID
-    transientScopeId := TODO // interface{} | Transient scope ID
+    scopeId := "scopeId_example" // string | Scope ID
+    transientScopeId := "transientScopeId_example" // string | Transient scope ID
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -54,8 +54,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**scopeId** | [**interface{}**](.md) | Scope ID |
-**transientScopeId** | [**interface{}**](.md) | Transient scope ID |
+**scopeId** | **string** | Scope ID | 
+**transientScopeId** | **string** | Transient scope ID | 
 
 ### Other Parameters
 
@@ -131,7 +131,7 @@ Other parameters are passed through a pointer to a apiCreateScopeRequest struct 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | **ScopeOptions** |  |
+ **body** | **ScopeOptions** |  | 
 
 ### Return type
 
@@ -172,7 +172,7 @@ import (
 )
 
 func main() {
-    scopeId := TODO // interface{} | Scope ID
+    scopeId := "scopeId_example" // string | Scope ID
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -190,7 +190,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**scopeId** | [**interface{}**](.md) | Scope ID |
+**scopeId** | **string** | Scope ID | 
 
 ### Other Parameters
 
@@ -240,8 +240,8 @@ import (
 )
 
 func main() {
-    scopeId := TODO // interface{} | Scope ID
-    transientScopeId := TODO // interface{} | Transient scope ID
+    scopeId := "scopeId_example" // string | Scope ID
+    transientScopeId := "transientScopeId_example" // string | Transient scope ID
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -259,8 +259,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**scopeId** | [**interface{}**](.md) | Scope ID |
-**transientScopeId** | [**interface{}**](.md) | Transient scope ID |
+**scopeId** | **string** | Scope ID | 
+**transientScopeId** | **string** | Transient scope ID | 
 
 ### Other Parameters
 
@@ -372,7 +372,7 @@ import (
 )
 
 func main() {
-    scopeId := TODO // interface{} | Scope ID
+    scopeId := "scopeId_example" // string | Scope ID
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -392,7 +392,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**scopeId** | [**interface{}**](.md) | Scope ID |
+**scopeId** | **string** | Scope ID | 
 
 ### Other Parameters
 
@@ -442,7 +442,7 @@ import (
 )
 
 func main() {
-    scopeId := TODO // interface{} | Scope ID
+    scopeId := "scopeId_example" // string | Scope ID
     body := ScopeOptions(987) // ScopeOptions |  (optional)
 
     configuration := openapiclient.NewConfiguration()
@@ -463,7 +463,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**scopeId** | [**interface{}**](.md) | Scope ID |
+**scopeId** | **string** | Scope ID | 
 
 ### Other Parameters
 
@@ -473,7 +473,7 @@ Other parameters are passed through a pointer to a apiUpdateScopeRequest struct 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **body** | **ScopeOptions** |  |
+ **body** | **ScopeOptions** |  | 
 
 ### Return type
 
@@ -491,3 +491,4 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+

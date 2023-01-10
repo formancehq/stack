@@ -19,17 +19,17 @@ var _ MappedNullable = &ClientSecret{}
 
 // ClientSecret struct for ClientSecret
 type ClientSecret struct {
-	LastDigits interface{}            `json:"lastDigits"`
-	Name       interface{}            `json:"name"`
-	Id         interface{}            `json:"id"`
-	Metadata   map[string]interface{} `json:"metadata,omitempty"`
+	LastDigits string `json:"lastDigits"`
+	Name string `json:"name"`
+	Id string `json:"id"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // NewClientSecret instantiates a new ClientSecret object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewClientSecret(lastDigits interface{}, name interface{}, id interface{}) *ClientSecret {
+func NewClientSecret(lastDigits string, name string, id string) *ClientSecret {
 	this := ClientSecret{}
 	this.LastDigits = lastDigits
 	this.Name = name
@@ -46,10 +46,9 @@ func NewClientSecretWithDefaults() *ClientSecret {
 }
 
 // GetLastDigits returns the LastDigits field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *ClientSecret) GetLastDigits() interface{} {
+func (o *ClientSecret) GetLastDigits() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -58,24 +57,22 @@ func (o *ClientSecret) GetLastDigits() interface{} {
 
 // GetLastDigitsOk returns a tuple with the LastDigits field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClientSecret) GetLastDigitsOk() (*interface{}, bool) {
-	if o == nil || isNil(o.LastDigits) {
+func (o *ClientSecret) GetLastDigitsOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.LastDigits, true
 }
 
 // SetLastDigits sets field value
-func (o *ClientSecret) SetLastDigits(v interface{}) {
+func (o *ClientSecret) SetLastDigits(v string) {
 	o.LastDigits = v
 }
 
 // GetName returns the Name field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *ClientSecret) GetName() interface{} {
+func (o *ClientSecret) GetName() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -84,24 +81,22 @@ func (o *ClientSecret) GetName() interface{} {
 
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClientSecret) GetNameOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Name) {
+func (o *ClientSecret) GetNameOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Name, true
 }
 
 // SetName sets field value
-func (o *ClientSecret) SetName(v interface{}) {
+func (o *ClientSecret) SetName(v string) {
 	o.Name = v
 }
 
 // GetId returns the Id field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *ClientSecret) GetId() interface{} {
+func (o *ClientSecret) GetId() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -110,22 +105,21 @@ func (o *ClientSecret) GetId() interface{} {
 
 // GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClientSecret) GetIdOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Id) {
+func (o *ClientSecret) GetIdOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Id, true
 }
 
 // SetId sets field value
-func (o *ClientSecret) SetId(v interface{}) {
+func (o *ClientSecret) SetId(v string) {
 	o.Id = v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *ClientSecret) GetMetadata() map[string]interface{} {
-	if o == nil {
+	if o == nil || isNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -134,17 +128,16 @@ func (o *ClientSecret) GetMetadata() map[string]interface{} {
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ClientSecret) GetMetadataOk() (*map[string]interface{}, bool) {
+func (o *ClientSecret) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return nil, false
+		return map[string]interface{}{}, false
 	}
-	return &o.Metadata, true
+	return o.Metadata, true
 }
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *ClientSecret) HasMetadata() bool {
-	if o != nil && isNil(o.Metadata) {
+	if o != nil && !isNil(o.Metadata) {
 		return true
 	}
 
@@ -157,7 +150,7 @@ func (o *ClientSecret) SetMetadata(v map[string]interface{}) {
 }
 
 func (o ClientSecret) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -166,16 +159,10 @@ func (o ClientSecret) MarshalJSON() ([]byte, error) {
 
 func (o ClientSecret) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.LastDigits != nil {
-		toSerialize["lastDigits"] = o.LastDigits
-	}
-	if o.Name != nil {
-		toSerialize["name"] = o.Name
-	}
-	if o.Id != nil {
-		toSerialize["id"] = o.Id
-	}
-	if o.Metadata != nil {
+	toSerialize["lastDigits"] = o.LastDigits
+	toSerialize["name"] = o.Name
+	toSerialize["id"] = o.Id
+	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	return toSerialize, nil
@@ -216,3 +203,5 @@ func (v *NullableClientSecret) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

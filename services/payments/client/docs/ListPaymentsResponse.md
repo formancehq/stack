@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | **interface{}** |  | 
+**Data** | [**[]Payment**](Payment.md) |  | 
 
 ## Methods
 
 ### NewListPaymentsResponse
 
-`func NewListPaymentsResponse(data interface{}, ) *ListPaymentsResponse`
+`func NewListPaymentsResponse(data []Payment, ) *ListPaymentsResponse`
 
 NewListPaymentsResponse instantiates a new ListPaymentsResponse object
 This constructor will assign default values to properties that have it defined,
@@ -27,34 +27,24 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *ListPaymentsResponse) GetData() interface{}`
+`func (o *ListPaymentsResponse) GetData() []Payment`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *ListPaymentsResponse) GetDataOk() (*interface{}, bool)`
+`func (o *ListPaymentsResponse) GetDataOk() (*[]Payment, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *ListPaymentsResponse) SetData(v interface{})`
+`func (o *ListPaymentsResponse) SetData(v []Payment)`
 
 SetData sets Data field to given value.
 
 
-### SetDataNil
-
-`func (o *ListPaymentsResponse) SetDataNil(b bool)`
-
- SetDataNil sets the value for Data to be an explicit nil
-
-### UnsetData
-`func (o *ListPaymentsResponse) UnsetData()`
-
-UnsetData ensures that no value is present for Data, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

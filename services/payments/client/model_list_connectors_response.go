@@ -14,16 +14,19 @@ import (
 	"encoding/json"
 )
 
+// checks if the ListConnectorsResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ListConnectorsResponse{}
+
 // ListConnectorsResponse struct for ListConnectorsResponse
 type ListConnectorsResponse struct {
-	Data interface{} `json:"data"`
+	Data []ConnectorBaseInfo `json:"data"`
 }
 
 // NewListConnectorsResponse instantiates a new ListConnectorsResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListConnectorsResponse(data interface{}) *ListConnectorsResponse {
+func NewListConnectorsResponse(data []ConnectorBaseInfo) *ListConnectorsResponse {
 	this := ListConnectorsResponse{}
 	this.Data = data
 	return &this
@@ -38,10 +41,9 @@ func NewListConnectorsResponseWithDefaults() *ListConnectorsResponse {
 }
 
 // GetData returns the Data field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *ListConnectorsResponse) GetData() interface{} {
+func (o *ListConnectorsResponse) GetData() []ConnectorBaseInfo {
 	if o == nil {
-		var ret interface{}
+		var ret []ConnectorBaseInfo
 		return ret
 	}
 
@@ -50,25 +52,30 @@ func (o *ListConnectorsResponse) GetData() interface{} {
 
 // GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ListConnectorsResponse) GetDataOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Data) {
+func (o *ListConnectorsResponse) GetDataOk() ([]ConnectorBaseInfo, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return &o.Data, true
+	return o.Data, true
 }
 
 // SetData sets field value
-func (o *ListConnectorsResponse) SetData(v interface{}) {
+func (o *ListConnectorsResponse) SetData(v []ConnectorBaseInfo) {
 	o.Data = v
 }
 
 func (o ListConnectorsResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Data != nil {
-		toSerialize["data"] = o.Data
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ListConnectorsResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableListConnectorsResponse struct {

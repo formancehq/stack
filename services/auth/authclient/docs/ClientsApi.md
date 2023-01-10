@@ -35,8 +35,8 @@ import (
 )
 
 func main() {
-    clientId := TODO // interface{} | Client ID
-    scopeId := TODO // interface{} | Scope ID
+    clientId := "clientId_example" // string | Client ID
+    scopeId := "scopeId_example" // string | Scope ID
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -54,8 +54,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | [**interface{}**](.md) | Client ID |
-**scopeId** | [**interface{}**](.md) | Scope ID |
+**clientId** | **string** | Client ID | 
+**scopeId** | **string** | Scope ID | 
 
 ### Other Parameters
 
@@ -129,7 +129,7 @@ Other parameters are passed through a pointer to a apiCreateClientRequest struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | **ClientOptions** |  |
+ **body** | **ClientOptions** |  | 
 
 ### Return type
 
@@ -168,7 +168,7 @@ import (
 )
 
 func main() {
-    clientId := TODO // interface{} | Client ID
+    clientId := "clientId_example" // string | Client ID
     body := SecretOptions(987) // SecretOptions |  (optional)
 
     configuration := openapiclient.NewConfiguration()
@@ -189,7 +189,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | [**interface{}**](.md) | Client ID |
+**clientId** | **string** | Client ID | 
 
 ### Other Parameters
 
@@ -199,7 +199,7 @@ Other parameters are passed through a pointer to a apiCreateSecretRequest struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **body** | **SecretOptions** |  |
+ **body** | **SecretOptions** |  | 
 
 ### Return type
 
@@ -238,7 +238,7 @@ import (
 )
 
 func main() {
-    clientId := TODO // interface{} | Client ID
+    clientId := "clientId_example" // string | Client ID
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -256,7 +256,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | [**interface{}**](.md) | Client ID |
+**clientId** | **string** | Client ID | 
 
 ### Other Parameters
 
@@ -304,8 +304,8 @@ import (
 )
 
 func main() {
-    clientId := TODO // interface{} | Client ID
-    scopeId := TODO // interface{} | Scope ID
+    clientId := "clientId_example" // string | Client ID
+    scopeId := "scopeId_example" // string | Scope ID
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -323,8 +323,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | [**interface{}**](.md) | Client ID |
-**scopeId** | [**interface{}**](.md) | Scope ID |
+**clientId** | **string** | Client ID | 
+**scopeId** | **string** | Scope ID | 
 
 ### Other Parameters
 
@@ -373,8 +373,8 @@ import (
 )
 
 func main() {
-    clientId := TODO // interface{} | Client ID
-    secretId := TODO // interface{} | Secret ID
+    clientId := "clientId_example" // string | Client ID
+    secretId := "secretId_example" // string | Secret ID
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -392,8 +392,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | [**interface{}**](.md) | Client ID |
-**secretId** | [**interface{}**](.md) | Secret ID |
+**clientId** | **string** | Client ID | 
+**secretId** | **string** | Secret ID | 
 
 ### Other Parameters
 
@@ -501,7 +501,7 @@ import (
 )
 
 func main() {
-    clientId := TODO // interface{} | Client ID
+    clientId := "clientId_example" // string | Client ID
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -521,7 +521,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | [**interface{}**](.md) | Client ID |
+**clientId** | **string** | Client ID | 
 
 ### Other Parameters
 
@@ -569,7 +569,7 @@ import (
 )
 
 func main() {
-    clientId := TODO // interface{} | Client ID
+    clientId := "clientId_example" // string | Client ID
     body := ClientOptions(987) // ClientOptions |  (optional)
 
     configuration := openapiclient.NewConfiguration()
@@ -590,7 +590,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**clientId** | [**interface{}**](.md) | Client ID |
+**clientId** | **string** | Client ID | 
 
 ### Other Parameters
 
@@ -600,7 +600,7 @@ Other parameters are passed through a pointer to a apiUpdateClientRequest struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **body** | **ClientOptions** |  |
+ **body** | **ClientOptions** |  | 
 
 ### Return type
 
@@ -618,3 +618,4 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+

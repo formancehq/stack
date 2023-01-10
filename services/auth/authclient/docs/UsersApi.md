@@ -91,7 +91,7 @@ import (
 )
 
 func main() {
-    userId := TODO // interface{} | User ID
+    userId := "userId_example" // string | User ID
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -111,7 +111,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**userId** | [**interface{}**](.md) | User ID |
+**userId** | **string** | User ID | 
 
 ### Other Parameters
 
@@ -138,3 +138,4 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+

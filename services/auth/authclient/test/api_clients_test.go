@@ -11,11 +11,10 @@ package authclient
 
 import (
 	"context"
-	"testing"
-
-	openapiclient "github.com/formancehq/auth/authclient"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
+	openapiclient "github.com/formancehq/auth/authclient"
 )
 
 func Test_authclient_ClientsApiService(t *testing.T) {
@@ -25,10 +24,10 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService AddScopeToClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var clientId interface{}
-		var scopeId interface{}
+		var clientId string
+		var scopeId string
 
 		httpRes, err := apiClient.ClientsApi.AddScopeToClient(context.Background(), clientId, scopeId).Execute()
 
@@ -39,7 +38,7 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService CreateClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.ClientsApi.CreateClient(context.Background()).Execute()
 
@@ -51,9 +50,9 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService CreateSecret", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var clientId interface{}
+		var clientId string
 
 		resp, httpRes, err := apiClient.ClientsApi.CreateSecret(context.Background(), clientId).Execute()
 
@@ -65,9 +64,9 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService DeleteClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var clientId interface{}
+		var clientId string
 
 		httpRes, err := apiClient.ClientsApi.DeleteClient(context.Background(), clientId).Execute()
 
@@ -78,10 +77,10 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService DeleteScopeFromClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var clientId interface{}
-		var scopeId interface{}
+		var clientId string
+		var scopeId string
 
 		httpRes, err := apiClient.ClientsApi.DeleteScopeFromClient(context.Background(), clientId, scopeId).Execute()
 
@@ -92,10 +91,10 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService DeleteSecret", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var clientId interface{}
-		var secretId interface{}
+		var clientId string
+		var secretId string
 
 		httpRes, err := apiClient.ClientsApi.DeleteSecret(context.Background(), clientId, secretId).Execute()
 
@@ -106,7 +105,7 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService ListClients", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.ClientsApi.ListClients(context.Background()).Execute()
 
@@ -118,9 +117,9 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService ReadClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var clientId interface{}
+		var clientId string
 
 		resp, httpRes, err := apiClient.ClientsApi.ReadClient(context.Background(), clientId).Execute()
 
@@ -132,9 +131,9 @@ func Test_authclient_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService UpdateClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var clientId interface{}
+		var clientId string
 
 		resp, httpRes, err := apiClient.ClientsApi.UpdateClient(context.Background(), clientId).Execute()
 

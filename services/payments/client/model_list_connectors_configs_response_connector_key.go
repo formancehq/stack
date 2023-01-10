@@ -14,10 +14,13 @@ import (
 	"encoding/json"
 )
 
+// checks if the ListConnectorsConfigsResponseConnectorKey type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ListConnectorsConfigsResponseConnectorKey{}
+
 // ListConnectorsConfigsResponseConnectorKey struct for ListConnectorsConfigsResponseConnectorKey
 type ListConnectorsConfigsResponseConnectorKey struct {
-	Datatype interface{} `json:"datatype,omitempty"`
-	Required interface{} `json:"required,omitempty"`
+	Datatype *string `json:"datatype,omitempty"`
+	Required *bool   `json:"required,omitempty"`
 }
 
 // NewListConnectorsConfigsResponseConnectorKey instantiates a new ListConnectorsConfigsResponseConnectorKey object
@@ -37,81 +40,87 @@ func NewListConnectorsConfigsResponseConnectorKeyWithDefaults() *ListConnectorsC
 	return &this
 }
 
-// GetDatatype returns the Datatype field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *ListConnectorsConfigsResponseConnectorKey) GetDatatype() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetDatatype returns the Datatype field value if set, zero value otherwise.
+func (o *ListConnectorsConfigsResponseConnectorKey) GetDatatype() string {
+	if o == nil || isNil(o.Datatype) {
+		var ret string
 		return ret
 	}
-	return o.Datatype
+	return *o.Datatype
 }
 
 // GetDatatypeOk returns a tuple with the Datatype field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ListConnectorsConfigsResponseConnectorKey) GetDatatypeOk() (*interface{}, bool) {
+func (o *ListConnectorsConfigsResponseConnectorKey) GetDatatypeOk() (*string, bool) {
 	if o == nil || isNil(o.Datatype) {
 		return nil, false
 	}
-	return &o.Datatype, true
+	return o.Datatype, true
 }
 
 // HasDatatype returns a boolean if a field has been set.
 func (o *ListConnectorsConfigsResponseConnectorKey) HasDatatype() bool {
-	if o != nil && isNil(o.Datatype) {
+	if o != nil && !isNil(o.Datatype) {
 		return true
 	}
 
 	return false
 }
 
-// SetDatatype gets a reference to the given interface{} and assigns it to the Datatype field.
-func (o *ListConnectorsConfigsResponseConnectorKey) SetDatatype(v interface{}) {
-	o.Datatype = v
+// SetDatatype gets a reference to the given string and assigns it to the Datatype field.
+func (o *ListConnectorsConfigsResponseConnectorKey) SetDatatype(v string) {
+	o.Datatype = &v
 }
 
-// GetRequired returns the Required field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *ListConnectorsConfigsResponseConnectorKey) GetRequired() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetRequired returns the Required field value if set, zero value otherwise.
+func (o *ListConnectorsConfigsResponseConnectorKey) GetRequired() bool {
+	if o == nil || isNil(o.Required) {
+		var ret bool
 		return ret
 	}
-	return o.Required
+	return *o.Required
 }
 
 // GetRequiredOk returns a tuple with the Required field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ListConnectorsConfigsResponseConnectorKey) GetRequiredOk() (*interface{}, bool) {
+func (o *ListConnectorsConfigsResponseConnectorKey) GetRequiredOk() (*bool, bool) {
 	if o == nil || isNil(o.Required) {
 		return nil, false
 	}
-	return &o.Required, true
+	return o.Required, true
 }
 
 // HasRequired returns a boolean if a field has been set.
 func (o *ListConnectorsConfigsResponseConnectorKey) HasRequired() bool {
-	if o != nil && isNil(o.Required) {
+	if o != nil && !isNil(o.Required) {
 		return true
 	}
 
 	return false
 }
 
-// SetRequired gets a reference to the given interface{} and assigns it to the Required field.
-func (o *ListConnectorsConfigsResponseConnectorKey) SetRequired(v interface{}) {
-	o.Required = v
+// SetRequired gets a reference to the given bool and assigns it to the Required field.
+func (o *ListConnectorsConfigsResponseConnectorKey) SetRequired(v bool) {
+	o.Required = &v
 }
 
 func (o ListConnectorsConfigsResponseConnectorKey) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Datatype != nil {
-		toSerialize["datatype"] = o.Datatype
-	}
-	if o.Required != nil {
-		toSerialize["required"] = o.Required
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ListConnectorsConfigsResponseConnectorKey) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	if !isNil(o.Datatype) {
+		toSerialize["datatype"] = o.Datatype
+	}
+	if !isNil(o.Required) {
+		toSerialize["required"] = o.Required
+	}
+	return toSerialize, nil
 }
 
 type NullableListConnectorsConfigsResponseConnectorKey struct {

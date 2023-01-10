@@ -1,4 +1,3 @@
-
 # https://taskfile.dev
 version: "3"
 
@@ -15,11 +14,11 @@ tasks:
 
   sdk:generate:
     desc: Generate client code
-    workdir: .
     preconditions:
       - sh: '[ "{{.CLI_ARGS}}" != "" ]'
         msg: Please specify generator as first cli arg (ie "task generate -- go")
     cmds:
+      - rm -rf ./sdks/{{.CLI_ARGS}}
       - >
         docker run --rm -w /local -v ${PWD}/..:/local openapitools/openapi-generator-cli:v6.2.1 generate
         -i ./openapi/build/generate.json
@@ -52,6 +51,23 @@ tasks:
     - sh: "[ \"{{.CLI_ARGS}}\" != \"\" ]"
       msg: Please specify generator as first cli arg (ie "task template -- go")
     cmds:
-    - >
-      docker run --rm -w /local -v ${PWD}:/local openapitools/openapi-generator-cli:v6.2.1 author
-      template -g {{.CLI_ARGS}} -o templates/{{.CLI_ARGS}}
+      - >
+        docker run --rm -w /local -v ${PWD}:/local
+        openapitools/openapi-generator-cli:v6.2.1 author
+        template -g {{.CLI_ARGS}} -o templates/{{.CLI_ARGS}}
+
+  generate:authclient:
+    desc: Generate auth Go client
+    cmds:
+      - rm -rf ./services/auth/swagger.yaml
+      - >
+        docker run --rm -w /local -v ${PWD}/..:/local
+        openapitools/openapi-generator-cli:v6.2.1 generate
+        -i ./services/auth/swagger.yaml
+        -g go
+        -o ../services/auth/authclient
+        --git-user-id=formancehq
+        --git-repo-id=auth
+        -p packageVersion=latest
+        -p isGoSubmodule=true
+        -p packageName=authclient

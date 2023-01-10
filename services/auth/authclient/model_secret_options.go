@@ -19,7 +19,7 @@ var _ MappedNullable = &SecretOptions{}
 
 // SecretOptions struct for SecretOptions
 type SecretOptions struct {
-	Name     interface{}            `json:"name"`
+	Name string `json:"name"`
 	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
@@ -27,7 +27,7 @@ type SecretOptions struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewSecretOptions(name interface{}) *SecretOptions {
+func NewSecretOptions(name string) *SecretOptions {
 	this := SecretOptions{}
 	this.Name = name
 	return &this
@@ -42,10 +42,9 @@ func NewSecretOptionsWithDefaults() *SecretOptions {
 }
 
 // GetName returns the Name field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *SecretOptions) GetName() interface{} {
+func (o *SecretOptions) GetName() string {
 	if o == nil {
-		var ret interface{}
+		var ret string
 		return ret
 	}
 
@@ -54,22 +53,21 @@ func (o *SecretOptions) GetName() interface{} {
 
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *SecretOptions) GetNameOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Name) {
+func (o *SecretOptions) GetNameOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return &o.Name, true
 }
 
 // SetName sets field value
-func (o *SecretOptions) SetName(v interface{}) {
+func (o *SecretOptions) SetName(v string) {
 	o.Name = v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *SecretOptions) GetMetadata() map[string]interface{} {
-	if o == nil {
+	if o == nil || isNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -78,17 +76,16 @@ func (o *SecretOptions) GetMetadata() map[string]interface{} {
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *SecretOptions) GetMetadataOk() (*map[string]interface{}, bool) {
+func (o *SecretOptions) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-		return nil, false
+		return map[string]interface{}{}, false
 	}
-	return &o.Metadata, true
+	return o.Metadata, true
 }
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *SecretOptions) HasMetadata() bool {
-	if o != nil && isNil(o.Metadata) {
+	if o != nil && !isNil(o.Metadata) {
 		return true
 	}
 
@@ -101,7 +98,7 @@ func (o *SecretOptions) SetMetadata(v map[string]interface{}) {
 }
 
 func (o SecretOptions) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -110,10 +107,8 @@ func (o SecretOptions) MarshalJSON() ([]byte, error) {
 
 func (o SecretOptions) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Name != nil {
-		toSerialize["name"] = o.Name
-	}
-	if o.Metadata != nil {
+	toSerialize["name"] = o.Name
+	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	return toSerialize, nil
@@ -154,3 +149,5 @@ func (v *NullableSecretOptions) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

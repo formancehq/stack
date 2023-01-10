@@ -15,7 +15,11 @@ repos:
     entry: ./scripts/update-sdk.sh
     description: "Update Go SDK"
     language: script
-    files: swagger.yaml|swagger.yml|openapi.yml|openapi.yaml # TODO: Refine when all specs will be on the same location
+  - id: generate-authclient
+    name: generate-authclient
+    entry: ./scripts/generate-authclient.sh
+    description: "Update Auth Go Client"
+    language: script
   - id: gofmt
     name: gofmt
     entry: ./scripts/gofmt.sh
@@ -53,6 +57,10 @@ repos:
     require_serial: true
     # Test requires to start a docker compose, we need to remove this need or find a generic way to start/stop dependencies
     exclude: services/webhooks
+  - id: touch-commit-editmsg
+    name: touch-commit-editmsg
+    entry: ./scripts/touch-commit-editmsg.sh
+    language: script
   - id: commitlint
     name: commitlint
     description: Commitlint hook

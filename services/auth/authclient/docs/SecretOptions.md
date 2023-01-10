@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | **interface{}** |  |
-**Metadata** | Pointer to  |  | [optional]
+**Name** | **string** |  | 
+**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
 
 ## Methods
 
 ### NewSecretOptions
 
-`func NewSecretOptions(name interface{}, ) *SecretOptions`
+`func NewSecretOptions(name string, ) *SecretOptions`
 
 NewSecretOptions instantiates a new SecretOptions object
 This constructor will assign default values to properties that have it defined,
@@ -28,34 +28,24 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetName
 
-`func (o *SecretOptions) GetName() interface{}`
+`func (o *SecretOptions) GetName() string`
 
 GetName returns the Name field if non-nil, zero value otherwise.
 
 ### GetNameOk
 
-`func (o *SecretOptions) GetNameOk() (*interface{}, bool)`
+`func (o *SecretOptions) GetNameOk() (*string, bool)`
 
 GetNameOk returns a tuple with the Name field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetName
 
-`func (o *SecretOptions) SetName(v interface{})`
+`func (o *SecretOptions) SetName(v string)`
 
 SetName sets Name field to given value.
 
 
-### SetNameNil
-
-`func (o *SecretOptions) SetNameNil(b bool)`
-
- SetNameNil sets the value for Name to be an explicit nil
-
-### UnsetName
-`func (o *SecretOptions) UnsetName()`
-
-UnsetName ensures that no value is present for Name, not even an explicit nil
 ### GetMetadata
 
 `func (o *SecretOptions) GetMetadata() map[string]interface{}`
@@ -81,15 +71,7 @@ SetMetadata sets Metadata field to given value.
 
 HasMetadata returns a boolean if a field has been set.
 
-### SetMetadataNil
-
-`func (o *SecretOptions) SetMetadataNil(b bool)`
-
- SetMetadataNil sets the value for Metadata to be an explicit nil
-
-### UnsetMetadata
-`func (o *SecretOptions) UnsetMetadata()`
-
-UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

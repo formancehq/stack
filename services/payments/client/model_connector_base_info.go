@@ -14,10 +14,13 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConnectorBaseInfo type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConnectorBaseInfo{}
+
 // ConnectorBaseInfo struct for ConnectorBaseInfo
 type ConnectorBaseInfo struct {
-	Provider interface{} `json:"provider,omitempty"`
-	Disabled interface{} `json:"disabled,omitempty"`
+	Provider *string `json:"provider,omitempty"`
+	Disabled *bool   `json:"disabled,omitempty"`
 }
 
 // NewConnectorBaseInfo instantiates a new ConnectorBaseInfo object
@@ -37,81 +40,87 @@ func NewConnectorBaseInfoWithDefaults() *ConnectorBaseInfo {
 	return &this
 }
 
-// GetProvider returns the Provider field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *ConnectorBaseInfo) GetProvider() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetProvider returns the Provider field value if set, zero value otherwise.
+func (o *ConnectorBaseInfo) GetProvider() string {
+	if o == nil || isNil(o.Provider) {
+		var ret string
 		return ret
 	}
-	return o.Provider
+	return *o.Provider
 }
 
 // GetProviderOk returns a tuple with the Provider field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ConnectorBaseInfo) GetProviderOk() (*interface{}, bool) {
+func (o *ConnectorBaseInfo) GetProviderOk() (*string, bool) {
 	if o == nil || isNil(o.Provider) {
 		return nil, false
 	}
-	return &o.Provider, true
+	return o.Provider, true
 }
 
 // HasProvider returns a boolean if a field has been set.
 func (o *ConnectorBaseInfo) HasProvider() bool {
-	if o != nil && isNil(o.Provider) {
+	if o != nil && !isNil(o.Provider) {
 		return true
 	}
 
 	return false
 }
 
-// SetProvider gets a reference to the given interface{} and assigns it to the Provider field.
-func (o *ConnectorBaseInfo) SetProvider(v interface{}) {
-	o.Provider = v
+// SetProvider gets a reference to the given string and assigns it to the Provider field.
+func (o *ConnectorBaseInfo) SetProvider(v string) {
+	o.Provider = &v
 }
 
-// GetDisabled returns the Disabled field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *ConnectorBaseInfo) GetDisabled() interface{} {
-	if o == nil {
-		var ret interface{}
+// GetDisabled returns the Disabled field value if set, zero value otherwise.
+func (o *ConnectorBaseInfo) GetDisabled() bool {
+	if o == nil || isNil(o.Disabled) {
+		var ret bool
 		return ret
 	}
-	return o.Disabled
+	return *o.Disabled
 }
 
 // GetDisabledOk returns a tuple with the Disabled field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ConnectorBaseInfo) GetDisabledOk() (*interface{}, bool) {
+func (o *ConnectorBaseInfo) GetDisabledOk() (*bool, bool) {
 	if o == nil || isNil(o.Disabled) {
 		return nil, false
 	}
-	return &o.Disabled, true
+	return o.Disabled, true
 }
 
 // HasDisabled returns a boolean if a field has been set.
 func (o *ConnectorBaseInfo) HasDisabled() bool {
-	if o != nil && isNil(o.Disabled) {
+	if o != nil && !isNil(o.Disabled) {
 		return true
 	}
 
 	return false
 }
 
-// SetDisabled gets a reference to the given interface{} and assigns it to the Disabled field.
-func (o *ConnectorBaseInfo) SetDisabled(v interface{}) {
-	o.Disabled = v
+// SetDisabled gets a reference to the given bool and assigns it to the Disabled field.
+func (o *ConnectorBaseInfo) SetDisabled(v bool) {
+	o.Disabled = &v
 }
 
 func (o ConnectorBaseInfo) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Provider != nil {
-		toSerialize["provider"] = o.Provider
-	}
-	if o.Disabled != nil {
-		toSerialize["disabled"] = o.Disabled
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ConnectorBaseInfo) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	if !isNil(o.Provider) {
+		toSerialize["provider"] = o.Provider
+	}
+	if !isNil(o.Disabled) {
+		toSerialize["disabled"] = o.Disabled
+	}
+	return toSerialize, nil
 }
 
 type NullableConnectorBaseInfo struct {

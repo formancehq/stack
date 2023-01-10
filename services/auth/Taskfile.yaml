@@ -65,7 +65,7 @@ tasks:
         docker run --rm
         -w /local
         -v ${PWD}:/local
-        openapitools/openapi-generator-cli:latest generate
+        openapitools/openapi-generator-cli:v6.2.1 generate
         -i swagger.yaml
         -g go
         -o ./authclient

@@ -14,16 +14,19 @@ import (
 	"encoding/json"
 )
 
+// checks if the ListPaymentsResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ListPaymentsResponse{}
+
 // ListPaymentsResponse struct for ListPaymentsResponse
 type ListPaymentsResponse struct {
-	Data interface{} `json:"data"`
+	Data []Payment `json:"data"`
 }
 
 // NewListPaymentsResponse instantiates a new ListPaymentsResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListPaymentsResponse(data interface{}) *ListPaymentsResponse {
+func NewListPaymentsResponse(data []Payment) *ListPaymentsResponse {
 	this := ListPaymentsResponse{}
 	this.Data = data
 	return &this
@@ -38,10 +41,9 @@ func NewListPaymentsResponseWithDefaults() *ListPaymentsResponse {
 }
 
 // GetData returns the Data field value
-// If the value is explicit nil, the zero value for interface{} will be returned
-func (o *ListPaymentsResponse) GetData() interface{} {
+func (o *ListPaymentsResponse) GetData() []Payment {
 	if o == nil {
-		var ret interface{}
+		var ret []Payment
 		return ret
 	}
 
@@ -50,25 +52,30 @@ func (o *ListPaymentsResponse) GetData() interface{} {
 
 // GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ListPaymentsResponse) GetDataOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Data) {
+func (o *ListPaymentsResponse) GetDataOk() ([]Payment, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return &o.Data, true
+	return o.Data, true
 }
 
 // SetData sets field value
-func (o *ListPaymentsResponse) SetData(v interface{}) {
+func (o *ListPaymentsResponse) SetData(v []Payment) {
 	o.Data = v
 }
 
 func (o ListPaymentsResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if o.Data != nil {
-		toSerialize["data"] = o.Data
+	toSerialize, err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ListPaymentsResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableListPaymentsResponse struct {
