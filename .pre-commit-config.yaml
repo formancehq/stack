@@ -61,3 +61,5 @@ repos:
     always_run: true
     pass_filenames: false
     additional_dependencies: ['@commitlint/config-conventional']
+    stages:
+    - commit-msg
