@@ -47,6 +47,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: './go.work'
+      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
       - run: task ${{ matrix.folder }}:lint
 
   Tests:
