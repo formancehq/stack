@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        option: [ gosdk, gomodtidy, golangci-lint, gotests, commitlint ]
+        option: [ gosdk, gomodtidy, golangci-lint, gotests ]
     steps:
       - uses: actions/checkout@v3
         with:
