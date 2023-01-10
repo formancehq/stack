@@ -11,7 +11,7 @@ tasks:
     cmds:
       - npm install
       - npm run build
-      - sed -i '.bak' "s/SDK_VERSION/{{.VERSION}}/g" build/generate.json
+      - sed -i -e "s/SDK_VERSION/{{.VERSION}}/g" build/generate.json
 
   sdk:generate:
     desc: Generate client code
