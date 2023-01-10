@@ -11,7 +11,7 @@ tasks:
     cmds:
       - yarn install
       - yarn run build
-      - sed -i -e "s/SDK_VERSION/{{.VERSION}}/g" build/generate.json
+      - sed -i '.bak' "s/SDK_VERSION/{{.VERSION}}/g" build/generate.json
 
   sdk:generate:
     desc: Generate client code
