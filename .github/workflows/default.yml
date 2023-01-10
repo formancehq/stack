@@ -2,8 +2,6 @@ name: Default - PR
 on:
   pull_request:
     types: [ assigned, opened, synchronize, reopened ]
-  release:
-    types: [ prereleased, released ]
 
 jobs:
   PR:
@@ -73,3 +71,58 @@ jobs:
         with:
           go-version-file: './go.work'
       - run: task ${{ matrix.folder }}:tests
+
+  Docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        folder: ${{ fromJson(needs.Find.outputs.folders )}}
+    needs:
+      - Find
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: "NumaryBot"
+          password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          file: ./services/${{ matrix.folder }}/Dockerfile
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/formancehq/${{ matrix.folder }}:${{ github.sha }}
+          build-args: |
+            APP_SHA=${{ github.sha }}
+            VERSION=develop
+
+  GoReleaserBuild:
+    name: GoReleaser Build
+    strategy:
+      matrix:
+        folder: ${{ fromJson(needs.Find.outputs.folders )}}
+    needs:
+      - Find
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version-file: '${{ matrix.folder }}/go.mod'
+          cache-dependency-path: '${{ matrix.folder }}/go.sum'
+          cache: true
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          version: latest
+          args: build --parallelism 4 --rm-dist --skip-validate --snapshot
+          workdir: ${{ matrix.folder }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
