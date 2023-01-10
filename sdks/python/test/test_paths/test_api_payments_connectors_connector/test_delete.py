@@ -21,7 +21,7 @@ from .. import ApiTestMixin
 class TestApiPaymentsConnectorsConnector(ApiTestMixin, unittest.TestCase):
     """
     ApiPaymentsConnectorsConnector unit test stubs
-        Uninstall connector  # noqa: E501
+        Uninstall a connector  # noqa: E501
     """
     _configuration = configuration.Configuration()
 

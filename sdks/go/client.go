@@ -64,6 +64,8 @@ type APIClient struct {
 
 	MappingApi MappingApi
 
+	OrchestrationApi OrchestrationApi
+
 	PaymentsApi PaymentsApi
 
 	ScopesApi ScopesApi
@@ -108,6 +110,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.LedgerApi = (*LedgerApiService)(&c.common)
 	c.LogsApi = (*LogsApiService)(&c.common)
 	c.MappingApi = (*MappingApiService)(&c.common)
+	c.OrchestrationApi = (*OrchestrationApiService)(&c.common)
 	c.PaymentsApi = (*PaymentsApiService)(&c.common)
 	c.ScopesApi = (*ScopesApiService)(&c.common)
 	c.ScriptApi = (*ScriptApiService)(&c.common)

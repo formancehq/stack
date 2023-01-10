@@ -25,13 +25,13 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.connector_config import ConnectorConfig
-from Formance.model.connectors import Connectors
+from Formance.model.connector_config_response import ConnectorConfigResponse
+from Formance.model.connector import Connector
 
 from . import path
 
 # Path params
-ConnectorSchema = Connectors
+ConnectorSchema = Connector
 RequestRequiredPathParams = typing_extensions.TypedDict(
     'RequestRequiredPathParams',
     {
@@ -59,7 +59,7 @@ request_path_connector = api_client.PathParameter(
 _auth = [
     'Authorization',
 ]
-SchemaFor200ResponseBodyApplicationJson = ConnectorConfig
+SchemaFor200ResponseBodyApplicationJson = ConnectorConfigResponse
 
 
 @dataclass
@@ -131,7 +131,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: bool = False,
     ):
         """
-        Read connector config
+        Read the config of a connector
         :param skip_deserialization: If true then api_response.response will be set but
             api_response.body and api_response.headers will not be deserialized into schema
             class instances

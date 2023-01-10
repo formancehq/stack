@@ -62,7 +62,8 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
         'metadata' => 'array<string,mixed>',
         'name' => 'string',
         'created_at' => '\DateTime',
-        'balances' => '\Formance\Model\WalletWithBalancesBalances'
+        'balances' => '\Formance\Model\WalletWithBalancesBalances',
+        'ledger' => 'string'
     ];
 
     /**
@@ -77,7 +78,8 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
         'metadata' => null,
         'name' => null,
         'created_at' => 'date-time',
-        'balances' => null
+        'balances' => null,
+        'ledger' => null
     ];
 
     /**
@@ -90,7 +92,8 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
 		'metadata' => false,
 		'name' => false,
 		'created_at' => false,
-		'balances' => false
+		'balances' => false,
+		'ledger' => false
     ];
 
     /**
@@ -183,7 +186,8 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
         'metadata' => 'metadata',
         'name' => 'name',
         'created_at' => 'createdAt',
-        'balances' => 'balances'
+        'balances' => 'balances',
+        'ledger' => 'ledger'
     ];
 
     /**
@@ -196,7 +200,8 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
         'metadata' => 'setMetadata',
         'name' => 'setName',
         'created_at' => 'setCreatedAt',
-        'balances' => 'setBalances'
+        'balances' => 'setBalances',
+        'ledger' => 'setLedger'
     ];
 
     /**
@@ -209,7 +214,8 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
         'metadata' => 'getMetadata',
         'name' => 'getName',
         'created_at' => 'getCreatedAt',
-        'balances' => 'getBalances'
+        'balances' => 'getBalances',
+        'ledger' => 'getLedger'
     ];
 
     /**
@@ -274,6 +280,7 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
         $this->setIfExists('name', $data ?? [], null);
         $this->setIfExists('created_at', $data ?? [], null);
         $this->setIfExists('balances', $data ?? [], null);
+        $this->setIfExists('ledger', $data ?? [], null);
     }
 
     /**
@@ -317,6 +324,9 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
         }
         if ($this->container['balances'] === null) {
             $invalidProperties[] = "'balances' can't be null";
+        }
+        if ($this->container['ledger'] === null) {
+            $invalidProperties[] = "'ledger' can't be null";
         }
         return $invalidProperties;
     }
@@ -474,6 +484,35 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
         }
 
         $this->container['balances'] = $balances;
+
+        return $this;
+    }
+
+    /**
+     * Gets ledger
+     *
+     * @return string
+     */
+    public function getLedger()
+    {
+        return $this->container['ledger'];
+    }
+
+    /**
+     * Sets ledger
+     *
+     * @param string $ledger ledger
+     *
+     * @return self
+     */
+    public function setLedger($ledger)
+    {
+
+        if (is_null($ledger)) {
+            throw new \InvalidArgumentException('non-nullable ledger cannot be null');
+        }
+
+        $this->container['ledger'] = $ledger;
 
         return $this;
     }

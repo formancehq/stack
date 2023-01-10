@@ -16,4 +16,4 @@ COPY --from=builder /src/components/orchestration/orchestration /orchestration
 EXPOSE 3068
 ENV OTEL_SERVICE_NAME orchestration
 ENTRYPOINT ["/orchestration"]
-CMD ["server"]
+CMD ["serve"]

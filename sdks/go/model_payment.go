@@ -18,32 +18,40 @@ import (
 
 // Payment struct for Payment
 type Payment struct {
-	Provider string `json:"provider"`
-	Reference *string `json:"reference,omitempty"`
-	Scheme string `json:"scheme"`
-	Status string `json:"status"`
-	Type string `json:"type"`
 	Id string `json:"id"`
-	Amount int32 `json:"amount"`
+	Reference string `json:"reference"`
+	AccountID string `json:"accountID"`
+	Type string `json:"type"`
+	Provider Connector `json:"provider"`
+	Status PaymentStatus `json:"status"`
+	InitialAmount int64 `json:"initialAmount"`
+	Scheme string `json:"scheme"`
 	Asset string `json:"asset"`
-	Date time.Time `json:"date"`
-	Raw interface{} `json:"raw,omitempty"`
+	CreatedAt time.Time `json:"createdAt"`
+	Raw map[string]interface{} `json:"raw"`
+	Adjustments []PaymentAdjustment `json:"adjustments"`
+	Metadata []PaymentMetadata `json:"metadata"`
 }
 
 // NewPayment instantiates a new Payment object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPayment(provider string, scheme string, status string, type_ string, id string, amount int32, asset string, date time.Time) *Payment {
+func NewPayment(id string, reference string, accountID string, type_ string, provider Connector, status PaymentStatus, initialAmount int64, scheme string, asset string, createdAt time.Time, raw map[string]interface{}, adjustments []PaymentAdjustment, metadata []PaymentMetadata) *Payment {
 	this := Payment{}
-	this.Provider = provider
-	this.Scheme = scheme
-	this.Status = status
-	this.Type = type_
 	this.Id = id
-	this.Amount = amount
+	this.Reference = reference
+	this.AccountID = accountID
+	this.Type = type_
+	this.Provider = provider
+	this.Status = status
+	this.InitialAmount = initialAmount
+	this.Scheme = scheme
 	this.Asset = asset
-	this.Date = date
+	this.CreatedAt = createdAt
+	this.Raw = raw
+	this.Adjustments = adjustments
+	this.Metadata = metadata
 	return &this
 }
 
@@ -53,134 +61,6 @@ func NewPayment(provider string, scheme string, status string, type_ string, id 
 func NewPaymentWithDefaults() *Payment {
 	this := Payment{}
 	return &this
-}
-
-// GetProvider returns the Provider field value
-func (o *Payment) GetProvider() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Provider
-}
-
-// GetProviderOk returns a tuple with the Provider field value
-// and a boolean to check if the value has been set.
-func (o *Payment) GetProviderOk() (*string, bool) {
-	if o == nil {
-    return nil, false
-	}
-	return &o.Provider, true
-}
-
-// SetProvider sets field value
-func (o *Payment) SetProvider(v string) {
-	o.Provider = v
-}
-
-// GetReference returns the Reference field value if set, zero value otherwise.
-func (o *Payment) GetReference() string {
-	if o == nil || isNil(o.Reference) {
-		var ret string
-		return ret
-	}
-	return *o.Reference
-}
-
-// GetReferenceOk returns a tuple with the Reference field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Payment) GetReferenceOk() (*string, bool) {
-	if o == nil || isNil(o.Reference) {
-    return nil, false
-	}
-	return o.Reference, true
-}
-
-// HasReference returns a boolean if a field has been set.
-func (o *Payment) HasReference() bool {
-	if o != nil && !isNil(o.Reference) {
-		return true
-	}
-
-	return false
-}
-
-// SetReference gets a reference to the given string and assigns it to the Reference field.
-func (o *Payment) SetReference(v string) {
-	o.Reference = &v
-}
-
-// GetScheme returns the Scheme field value
-func (o *Payment) GetScheme() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Scheme
-}
-
-// GetSchemeOk returns a tuple with the Scheme field value
-// and a boolean to check if the value has been set.
-func (o *Payment) GetSchemeOk() (*string, bool) {
-	if o == nil {
-    return nil, false
-	}
-	return &o.Scheme, true
-}
-
-// SetScheme sets field value
-func (o *Payment) SetScheme(v string) {
-	o.Scheme = v
-}
-
-// GetStatus returns the Status field value
-func (o *Payment) GetStatus() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Status
-}
-
-// GetStatusOk returns a tuple with the Status field value
-// and a boolean to check if the value has been set.
-func (o *Payment) GetStatusOk() (*string, bool) {
-	if o == nil {
-    return nil, false
-	}
-	return &o.Status, true
-}
-
-// SetStatus sets field value
-func (o *Payment) SetStatus(v string) {
-	o.Status = v
-}
-
-// GetType returns the Type field value
-func (o *Payment) GetType() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Type
-}
-
-// GetTypeOk returns a tuple with the Type field value
-// and a boolean to check if the value has been set.
-func (o *Payment) GetTypeOk() (*string, bool) {
-	if o == nil {
-    return nil, false
-	}
-	return &o.Type, true
-}
-
-// SetType sets field value
-func (o *Payment) SetType(v string) {
-	o.Type = v
 }
 
 // GetId returns the Id field value
@@ -207,28 +87,172 @@ func (o *Payment) SetId(v string) {
 	o.Id = v
 }
 
-// GetAmount returns the Amount field value
-func (o *Payment) GetAmount() int32 {
+// GetReference returns the Reference field value
+func (o *Payment) GetReference() string {
 	if o == nil {
-		var ret int32
+		var ret string
 		return ret
 	}
 
-	return o.Amount
+	return o.Reference
 }
 
-// GetAmountOk returns a tuple with the Amount field value
+// GetReferenceOk returns a tuple with the Reference field value
 // and a boolean to check if the value has been set.
-func (o *Payment) GetAmountOk() (*int32, bool) {
+func (o *Payment) GetReferenceOk() (*string, bool) {
 	if o == nil {
     return nil, false
 	}
-	return &o.Amount, true
+	return &o.Reference, true
 }
 
-// SetAmount sets field value
-func (o *Payment) SetAmount(v int32) {
-	o.Amount = v
+// SetReference sets field value
+func (o *Payment) SetReference(v string) {
+	o.Reference = v
+}
+
+// GetAccountID returns the AccountID field value
+func (o *Payment) GetAccountID() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.AccountID
+}
+
+// GetAccountIDOk returns a tuple with the AccountID field value
+// and a boolean to check if the value has been set.
+func (o *Payment) GetAccountIDOk() (*string, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return &o.AccountID, true
+}
+
+// SetAccountID sets field value
+func (o *Payment) SetAccountID(v string) {
+	o.AccountID = v
+}
+
+// GetType returns the Type field value
+func (o *Payment) GetType() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Type
+}
+
+// GetTypeOk returns a tuple with the Type field value
+// and a boolean to check if the value has been set.
+func (o *Payment) GetTypeOk() (*string, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return &o.Type, true
+}
+
+// SetType sets field value
+func (o *Payment) SetType(v string) {
+	o.Type = v
+}
+
+// GetProvider returns the Provider field value
+func (o *Payment) GetProvider() Connector {
+	if o == nil {
+		var ret Connector
+		return ret
+	}
+
+	return o.Provider
+}
+
+// GetProviderOk returns a tuple with the Provider field value
+// and a boolean to check if the value has been set.
+func (o *Payment) GetProviderOk() (*Connector, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return &o.Provider, true
+}
+
+// SetProvider sets field value
+func (o *Payment) SetProvider(v Connector) {
+	o.Provider = v
+}
+
+// GetStatus returns the Status field value
+func (o *Payment) GetStatus() PaymentStatus {
+	if o == nil {
+		var ret PaymentStatus
+		return ret
+	}
+
+	return o.Status
+}
+
+// GetStatusOk returns a tuple with the Status field value
+// and a boolean to check if the value has been set.
+func (o *Payment) GetStatusOk() (*PaymentStatus, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return &o.Status, true
+}
+
+// SetStatus sets field value
+func (o *Payment) SetStatus(v PaymentStatus) {
+	o.Status = v
+}
+
+// GetInitialAmount returns the InitialAmount field value
+func (o *Payment) GetInitialAmount() int64 {
+	if o == nil {
+		var ret int64
+		return ret
+	}
+
+	return o.InitialAmount
+}
+
+// GetInitialAmountOk returns a tuple with the InitialAmount field value
+// and a boolean to check if the value has been set.
+func (o *Payment) GetInitialAmountOk() (*int64, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return &o.InitialAmount, true
+}
+
+// SetInitialAmount sets field value
+func (o *Payment) SetInitialAmount(v int64) {
+	o.InitialAmount = v
+}
+
+// GetScheme returns the Scheme field value
+func (o *Payment) GetScheme() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Scheme
+}
+
+// GetSchemeOk returns a tuple with the Scheme field value
+// and a boolean to check if the value has been set.
+func (o *Payment) GetSchemeOk() (*string, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return &o.Scheme, true
+}
+
+// SetScheme sets field value
+func (o *Payment) SetScheme(v string) {
+	o.Scheme = v
 }
 
 // GetAsset returns the Asset field value
@@ -255,94 +279,142 @@ func (o *Payment) SetAsset(v string) {
 	o.Asset = v
 }
 
-// GetDate returns the Date field value
-func (o *Payment) GetDate() time.Time {
+// GetCreatedAt returns the CreatedAt field value
+func (o *Payment) GetCreatedAt() time.Time {
 	if o == nil {
 		var ret time.Time
 		return ret
 	}
 
-	return o.Date
+	return o.CreatedAt
 }
 
-// GetDateOk returns a tuple with the Date field value
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
-func (o *Payment) GetDateOk() (*time.Time, bool) {
+func (o *Payment) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
     return nil, false
 	}
-	return &o.Date, true
+	return &o.CreatedAt, true
 }
 
-// SetDate sets field value
-func (o *Payment) SetDate(v time.Time) {
-	o.Date = v
+// SetCreatedAt sets field value
+func (o *Payment) SetCreatedAt(v time.Time) {
+	o.CreatedAt = v
 }
 
-// GetRaw returns the Raw field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Payment) GetRaw() interface{} {
+// GetRaw returns the Raw field value
+func (o *Payment) GetRaw() map[string]interface{} {
 	if o == nil {
-		var ret interface{}
+		var ret map[string]interface{}
 		return ret
 	}
+
 	return o.Raw
 }
 
-// GetRawOk returns a tuple with the Raw field value if set, nil otherwise
+// GetRawOk returns a tuple with the Raw field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Payment) GetRawOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Raw) {
+func (o *Payment) GetRawOk() (map[string]interface{}, bool) {
+	if o == nil {
+    return map[string]interface{}{}, false
+	}
+	return o.Raw, true
+}
+
+// SetRaw sets field value
+func (o *Payment) SetRaw(v map[string]interface{}) {
+	o.Raw = v
+}
+
+// GetAdjustments returns the Adjustments field value
+func (o *Payment) GetAdjustments() []PaymentAdjustment {
+	if o == nil {
+		var ret []PaymentAdjustment
+		return ret
+	}
+
+	return o.Adjustments
+}
+
+// GetAdjustmentsOk returns a tuple with the Adjustments field value
+// and a boolean to check if the value has been set.
+func (o *Payment) GetAdjustmentsOk() ([]PaymentAdjustment, bool) {
+	if o == nil {
     return nil, false
 	}
-	return &o.Raw, true
+	return o.Adjustments, true
 }
 
-// HasRaw returns a boolean if a field has been set.
-func (o *Payment) HasRaw() bool {
-	if o != nil && isNil(o.Raw) {
-		return true
+// SetAdjustments sets field value
+func (o *Payment) SetAdjustments(v []PaymentAdjustment) {
+	o.Adjustments = v
+}
+
+// GetMetadata returns the Metadata field value
+func (o *Payment) GetMetadata() []PaymentMetadata {
+	if o == nil {
+		var ret []PaymentMetadata
+		return ret
 	}
 
-	return false
+	return o.Metadata
 }
 
-// SetRaw gets a reference to the given interface{} and assigns it to the Raw field.
-func (o *Payment) SetRaw(v interface{}) {
-	o.Raw = v
+// GetMetadataOk returns a tuple with the Metadata field value
+// and a boolean to check if the value has been set.
+func (o *Payment) GetMetadataOk() ([]PaymentMetadata, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return o.Metadata, true
+}
+
+// SetMetadata sets field value
+func (o *Payment) SetMetadata(v []PaymentMetadata) {
+	o.Metadata = v
 }
 
 func (o Payment) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["provider"] = o.Provider
+		toSerialize["id"] = o.Id
 	}
-	if !isNil(o.Reference) {
+	if true {
 		toSerialize["reference"] = o.Reference
 	}
 	if true {
-		toSerialize["scheme"] = o.Scheme
-	}
-	if true {
-		toSerialize["status"] = o.Status
+		toSerialize["accountID"] = o.AccountID
 	}
 	if true {
 		toSerialize["type"] = o.Type
 	}
 	if true {
-		toSerialize["id"] = o.Id
+		toSerialize["provider"] = o.Provider
 	}
 	if true {
-		toSerialize["amount"] = o.Amount
+		toSerialize["status"] = o.Status
+	}
+	if true {
+		toSerialize["initialAmount"] = o.InitialAmount
+	}
+	if true {
+		toSerialize["scheme"] = o.Scheme
 	}
 	if true {
 		toSerialize["asset"] = o.Asset
 	}
 	if true {
-		toSerialize["date"] = o.Date
+		toSerialize["createdAt"] = o.CreatedAt
 	}
-	if o.Raw != nil {
+	if true {
 		toSerialize["raw"] = o.Raw
+	}
+	if true {
+		toSerialize["adjustments"] = o.Adjustments
+	}
+	if true {
+		toSerialize["metadata"] = o.Metadata
 	}
 	return json.Marshal(toSerialize)
 }

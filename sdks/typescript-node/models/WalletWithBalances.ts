@@ -25,6 +25,7 @@ export class WalletWithBalances {
     'name': string;
     'createdAt': Date;
     'balances': WalletWithBalancesBalances;
+    'ledger': string;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -57,6 +58,12 @@ export class WalletWithBalances {
             "name": "balances",
             "baseName": "balances",
             "type": "WalletWithBalancesBalances",
+            "format": ""
+        },
+        {
+            "name": "ledger",
+            "baseName": "ledger",
+            "type": "string",
             "format": ""
         }    ];
 

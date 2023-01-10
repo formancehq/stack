@@ -15,6 +15,10 @@ package com.formance.formance.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import com.formance.formance.model.Connector;
+import com.formance.formance.model.PaymentAdjustment;
+import com.formance.formance.model.PaymentMetadata;
+import com.formance.formance.model.PaymentStatus;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -24,19 +28,92 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Payment
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class Payment {
-  public static final String SERIALIZED_NAME_PROVIDER = "provider";
-  @SerializedName(SERIALIZED_NAME_PROVIDER)
-  private String provider;
+  public static final String SERIALIZED_NAME_ID = "id";
+  @SerializedName(SERIALIZED_NAME_ID)
+  private String id;
 
   public static final String SERIALIZED_NAME_REFERENCE = "reference";
   @SerializedName(SERIALIZED_NAME_REFERENCE)
   private String reference;
+
+  public static final String SERIALIZED_NAME_ACCOUNT_I_D = "accountID";
+  @SerializedName(SERIALIZED_NAME_ACCOUNT_I_D)
+  private String accountID;
+
+  /**
+   * Gets or Sets type
+   */
+  @JsonAdapter(TypeEnum.Adapter.class)
+  public enum TypeEnum {
+    PAY_IN("PAY-IN"),
+    
+    PAYOUT("PAYOUT"),
+    
+    TRANSFER("TRANSFER"),
+    
+    OTHER("OTHER");
+
+    private String value;
+
+    TypeEnum(String value) {
+      this.value = value;
+    }
+
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    public static TypeEnum fromValue(String value) {
+      for (TypeEnum b : TypeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+
+    public static class Adapter extends TypeAdapter<TypeEnum> {
+      @Override
+      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
+        jsonWriter.value(enumeration.getValue());
+      }
+
+      @Override
+      public TypeEnum read(final JsonReader jsonReader) throws IOException {
+        String value =  jsonReader.nextString();
+        return TypeEnum.fromValue(value);
+      }
+    }
+  }
+
+  public static final String SERIALIZED_NAME_TYPE = "type";
+  @SerializedName(SERIALIZED_NAME_TYPE)
+  private TypeEnum type;
+
+  public static final String SERIALIZED_NAME_PROVIDER = "provider";
+  @SerializedName(SERIALIZED_NAME_PROVIDER)
+  private Connector provider;
+
+  public static final String SERIALIZED_NAME_STATUS = "status";
+  @SerializedName(SERIALIZED_NAME_STATUS)
+  private PaymentStatus status;
+
+  public static final String SERIALIZED_NAME_INITIAL_AMOUNT = "initialAmount";
+  @SerializedName(SERIALIZED_NAME_INITIAL_AMOUNT)
+  private Long initialAmount;
 
   /**
    * Gets or Sets scheme
@@ -47,15 +124,25 @@ public class Payment {
     
     MASTERCARD("mastercard"),
     
-    APPLE_PAY("apple pay"),
+    AMEX("amex"),
     
-    GOOGLE_PAY("google pay"),
+    DINERS("diners"),
+    
+    DISCOVER("discover"),
+    
+    JCB("jcb"),
+    
+    UNIONPAY("unionpay"),
     
     SEPA_DEBIT("sepa debit"),
     
     SEPA_CREDIT("sepa credit"),
     
     SEPA("sepa"),
+    
+    APPLE_PAY("apple pay"),
+    
+    GOOGLE_PAY("google pay"),
     
     A2A("a2a"),
     
@@ -64,6 +151,8 @@ public class Payment {
     ACH("ach"),
     
     RTP("rtp"),
+    
+    UNKNOWN("unknown"),
     
     OTHER("other");
 
@@ -109,106 +198,49 @@ public class Payment {
   @SerializedName(SERIALIZED_NAME_SCHEME)
   private SchemeEnum scheme;
 
-  public static final String SERIALIZED_NAME_STATUS = "status";
-  @SerializedName(SERIALIZED_NAME_STATUS)
-  private String status;
-
-  /**
-   * Gets or Sets type
-   */
-  @JsonAdapter(TypeEnum.Adapter.class)
-  public enum TypeEnum {
-    PAY_IN("pay-in"),
-    
-    PAYOUT("payout"),
-    
-    OTHER("other");
-
-    private String value;
-
-    TypeEnum(String value) {
-      this.value = value;
-    }
-
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    public static TypeEnum fromValue(String value) {
-      for (TypeEnum b : TypeEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-
-    public static class Adapter extends TypeAdapter<TypeEnum> {
-      @Override
-      public void write(final JsonWriter jsonWriter, final TypeEnum enumeration) throws IOException {
-        jsonWriter.value(enumeration.getValue());
-      }
-
-      @Override
-      public TypeEnum read(final JsonReader jsonReader) throws IOException {
-        String value =  jsonReader.nextString();
-        return TypeEnum.fromValue(value);
-      }
-    }
-  }
-
-  public static final String SERIALIZED_NAME_TYPE = "type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
-  private TypeEnum type;
-
-  public static final String SERIALIZED_NAME_ID = "id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  private String id;
-
-  public static final String SERIALIZED_NAME_AMOUNT = "amount";
-  @SerializedName(SERIALIZED_NAME_AMOUNT)
-  private Integer amount;
-
   public static final String SERIALIZED_NAME_ASSET = "asset";
   @SerializedName(SERIALIZED_NAME_ASSET)
   private String asset;
 
-  public static final String SERIALIZED_NAME_DATE = "date";
-  @SerializedName(SERIALIZED_NAME_DATE)
-  private OffsetDateTime date;
+  public static final String SERIALIZED_NAME_CREATED_AT = "createdAt";
+  @SerializedName(SERIALIZED_NAME_CREATED_AT)
+  private OffsetDateTime createdAt;
 
   public static final String SERIALIZED_NAME_RAW = "raw";
   @SerializedName(SERIALIZED_NAME_RAW)
-  private Object raw = null;
+  private Object raw;
+
+  public static final String SERIALIZED_NAME_ADJUSTMENTS = "adjustments";
+  @SerializedName(SERIALIZED_NAME_ADJUSTMENTS)
+  private List<PaymentAdjustment> adjustments = new ArrayList<>();
+
+  public static final String SERIALIZED_NAME_METADATA = "metadata";
+  @SerializedName(SERIALIZED_NAME_METADATA)
+  private List<PaymentMetadata> metadata = new ArrayList<>();
 
   public Payment() {
   }
 
-  public Payment provider(String provider) {
+  public Payment id(String id) {
     
-    this.provider = provider;
+    this.id = id;
     return this;
   }
 
    /**
-   * Get provider
-   * @return provider
+   * Get id
+   * @return id
   **/
   @javax.annotation.Nonnull
-  @ApiModelProperty(required = true, value = "")
+  @ApiModelProperty(example = "XXX", required = true, value = "")
 
-  public String getProvider() {
-    return provider;
+  public String getId() {
+    return id;
   }
 
 
-  public void setProvider(String provider) {
-    this.provider = provider;
+  public void setId(String id) {
+    this.id = id;
   }
 
 
@@ -222,8 +254,8 @@ public class Payment {
    * Get reference
    * @return reference
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public String getReference() {
     return reference;
@@ -235,49 +267,26 @@ public class Payment {
   }
 
 
-  public Payment scheme(SchemeEnum scheme) {
+  public Payment accountID(String accountID) {
     
-    this.scheme = scheme;
+    this.accountID = accountID;
     return this;
   }
 
    /**
-   * Get scheme
-   * @return scheme
+   * Get accountID
+   * @return accountID
   **/
   @javax.annotation.Nonnull
   @ApiModelProperty(required = true, value = "")
 
-  public SchemeEnum getScheme() {
-    return scheme;
+  public String getAccountID() {
+    return accountID;
   }
 
 
-  public void setScheme(SchemeEnum scheme) {
-    this.scheme = scheme;
-  }
-
-
-  public Payment status(String status) {
-    
-    this.status = status;
-    return this;
-  }
-
-   /**
-   * Get status
-   * @return status
-  **/
-  @javax.annotation.Nonnull
-  @ApiModelProperty(required = true, value = "")
-
-  public String getStatus() {
-    return status;
-  }
-
-
-  public void setStatus(String status) {
-    this.status = status;
+  public void setAccountID(String accountID) {
+    this.accountID = accountID;
   }
 
 
@@ -304,49 +313,96 @@ public class Payment {
   }
 
 
-  public Payment id(String id) {
+  public Payment provider(Connector provider) {
     
-    this.id = id;
+    this.provider = provider;
     return this;
   }
 
    /**
-   * Get id
-   * @return id
+   * Get provider
+   * @return provider
   **/
   @javax.annotation.Nonnull
-  @ApiModelProperty(example = "XXX", required = true, value = "")
+  @ApiModelProperty(required = true, value = "")
 
-  public String getId() {
-    return id;
+  public Connector getProvider() {
+    return provider;
   }
 
 
-  public void setId(String id) {
-    this.id = id;
+  public void setProvider(Connector provider) {
+    this.provider = provider;
   }
 
 
-  public Payment amount(Integer amount) {
+  public Payment status(PaymentStatus status) {
     
-    this.amount = amount;
+    this.status = status;
     return this;
   }
 
    /**
-   * Get amount
-   * @return amount
+   * Get status
+   * @return status
+  **/
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
+
+  public PaymentStatus getStatus() {
+    return status;
+  }
+
+
+  public void setStatus(PaymentStatus status) {
+    this.status = status;
+  }
+
+
+  public Payment initialAmount(Long initialAmount) {
+    
+    this.initialAmount = initialAmount;
+    return this;
+  }
+
+   /**
+   * Get initialAmount
+   * minimum: 0
+   * @return initialAmount
   **/
   @javax.annotation.Nonnull
   @ApiModelProperty(example = "100", required = true, value = "")
 
-  public Integer getAmount() {
-    return amount;
+  public Long getInitialAmount() {
+    return initialAmount;
   }
 
 
-  public void setAmount(Integer amount) {
-    this.amount = amount;
+  public void setInitialAmount(Long initialAmount) {
+    this.initialAmount = initialAmount;
+  }
+
+
+  public Payment scheme(SchemeEnum scheme) {
+    
+    this.scheme = scheme;
+    return this;
+  }
+
+   /**
+   * Get scheme
+   * @return scheme
+  **/
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
+
+  public SchemeEnum getScheme() {
+    return scheme;
+  }
+
+
+  public void setScheme(SchemeEnum scheme) {
+    this.scheme = scheme;
   }
 
 
@@ -373,26 +429,26 @@ public class Payment {
   }
 
 
-  public Payment date(OffsetDateTime date) {
+  public Payment createdAt(OffsetDateTime createdAt) {
     
-    this.date = date;
+    this.createdAt = createdAt;
     return this;
   }
 
    /**
-   * Get date
-   * @return date
+   * Get createdAt
+   * @return createdAt
   **/
   @javax.annotation.Nonnull
   @ApiModelProperty(required = true, value = "")
 
-  public OffsetDateTime getDate() {
-    return date;
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
   }
 
 
-  public void setDate(OffsetDateTime date) {
-    this.date = date;
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
 
@@ -406,8 +462,8 @@ public class Payment {
    * Get raw
    * @return raw
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public Object getRaw() {
     return raw;
@@ -416,6 +472,62 @@ public class Payment {
 
   public void setRaw(Object raw) {
     this.raw = raw;
+  }
+
+
+  public Payment adjustments(List<PaymentAdjustment> adjustments) {
+    
+    this.adjustments = adjustments;
+    return this;
+  }
+
+  public Payment addAdjustmentsItem(PaymentAdjustment adjustmentsItem) {
+    this.adjustments.add(adjustmentsItem);
+    return this;
+  }
+
+   /**
+   * Get adjustments
+   * @return adjustments
+  **/
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
+
+  public List<PaymentAdjustment> getAdjustments() {
+    return adjustments;
+  }
+
+
+  public void setAdjustments(List<PaymentAdjustment> adjustments) {
+    this.adjustments = adjustments;
+  }
+
+
+  public Payment metadata(List<PaymentMetadata> metadata) {
+    
+    this.metadata = metadata;
+    return this;
+  }
+
+  public Payment addMetadataItem(PaymentMetadata metadataItem) {
+    this.metadata.add(metadataItem);
+    return this;
+  }
+
+   /**
+   * Get metadata
+   * @return metadata
+  **/
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
+
+  public List<PaymentMetadata> getMetadata() {
+    return metadata;
+  }
+
+
+  public void setMetadata(List<PaymentMetadata> metadata) {
+    this.metadata = metadata;
   }
 
 
@@ -428,37 +540,43 @@ public class Payment {
       return false;
     }
     Payment payment = (Payment) o;
-    return Objects.equals(this.provider, payment.provider) &&
+    return Objects.equals(this.id, payment.id) &&
         Objects.equals(this.reference, payment.reference) &&
-        Objects.equals(this.scheme, payment.scheme) &&
-        Objects.equals(this.status, payment.status) &&
+        Objects.equals(this.accountID, payment.accountID) &&
         Objects.equals(this.type, payment.type) &&
-        Objects.equals(this.id, payment.id) &&
-        Objects.equals(this.amount, payment.amount) &&
+        Objects.equals(this.provider, payment.provider) &&
+        Objects.equals(this.status, payment.status) &&
+        Objects.equals(this.initialAmount, payment.initialAmount) &&
+        Objects.equals(this.scheme, payment.scheme) &&
         Objects.equals(this.asset, payment.asset) &&
-        Objects.equals(this.date, payment.date) &&
-        Objects.equals(this.raw, payment.raw);
+        Objects.equals(this.createdAt, payment.createdAt) &&
+        Objects.equals(this.raw, payment.raw) &&
+        Objects.equals(this.adjustments, payment.adjustments) &&
+        Objects.equals(this.metadata, payment.metadata);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(provider, reference, scheme, status, type, id, amount, asset, date, raw);
+    return Objects.hash(id, reference, accountID, type, provider, status, initialAmount, scheme, asset, createdAt, raw, adjustments, metadata);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class Payment {\n");
-    sb.append("    provider: ").append(toIndentedString(provider)).append("\n");
-    sb.append("    reference: ").append(toIndentedString(reference)).append("\n");
-    sb.append("    scheme: ").append(toIndentedString(scheme)).append("\n");
-    sb.append("    status: ").append(toIndentedString(status)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    amount: ").append(toIndentedString(amount)).append("\n");
+    sb.append("    reference: ").append(toIndentedString(reference)).append("\n");
+    sb.append("    accountID: ").append(toIndentedString(accountID)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    provider: ").append(toIndentedString(provider)).append("\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    initialAmount: ").append(toIndentedString(initialAmount)).append("\n");
+    sb.append("    scheme: ").append(toIndentedString(scheme)).append("\n");
     sb.append("    asset: ").append(toIndentedString(asset)).append("\n");
-    sb.append("    date: ").append(toIndentedString(date)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    raw: ").append(toIndentedString(raw)).append("\n");
+    sb.append("    adjustments: ").append(toIndentedString(adjustments)).append("\n");
+    sb.append("    metadata: ").append(toIndentedString(metadata)).append("\n");
     sb.append("}");
     return sb.toString();
   }

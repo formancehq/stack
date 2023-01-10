@@ -58,16 +58,19 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var string[]
       */
     protected static $openAPITypes = [
-        'provider' => 'string',
-        'reference' => 'string',
-        'scheme' => 'string',
-        'status' => 'string',
-        'type' => 'string',
         'id' => 'string',
-        'amount' => 'int',
+        'reference' => 'string',
+        'account_id' => 'string',
+        'type' => 'string',
+        'provider' => '\Formance\Model\Connector',
+        'status' => '\Formance\Model\PaymentStatus',
+        'initial_amount' => 'int',
+        'scheme' => 'string',
         'asset' => 'string',
-        'date' => '\DateTime',
-        'raw' => 'mixed'
+        'created_at' => '\DateTime',
+        'raw' => 'object',
+        'adjustments' => '\Formance\Model\PaymentAdjustment[]',
+        'metadata' => '\Formance\Model\PaymentMetadata[]'
     ];
 
     /**
@@ -78,16 +81,19 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'provider' => null,
-        'reference' => null,
-        'scheme' => null,
-        'status' => null,
-        'type' => null,
         'id' => null,
-        'amount' => null,
+        'reference' => null,
+        'account_id' => null,
+        'type' => null,
+        'provider' => null,
+        'status' => null,
+        'initial_amount' => 'int64',
+        'scheme' => null,
         'asset' => null,
-        'date' => 'date-time',
-        'raw' => null
+        'created_at' => 'date-time',
+        'raw' => null,
+        'adjustments' => null,
+        'metadata' => null
     ];
 
     /**
@@ -96,16 +102,19 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'provider' => false,
+        'id' => false,
 		'reference' => false,
-		'scheme' => false,
-		'status' => false,
+		'account_id' => false,
 		'type' => false,
-		'id' => false,
-		'amount' => false,
+		'provider' => false,
+		'status' => false,
+		'initial_amount' => false,
+		'scheme' => false,
 		'asset' => false,
-		'date' => false,
-		'raw' => true
+		'created_at' => false,
+		'raw' => false,
+		'adjustments' => false,
+		'metadata' => false
     ];
 
     /**
@@ -194,16 +203,19 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'provider' => 'provider',
-        'reference' => 'reference',
-        'scheme' => 'scheme',
-        'status' => 'status',
-        'type' => 'type',
         'id' => 'id',
-        'amount' => 'amount',
+        'reference' => 'reference',
+        'account_id' => 'accountID',
+        'type' => 'type',
+        'provider' => 'provider',
+        'status' => 'status',
+        'initial_amount' => 'initialAmount',
+        'scheme' => 'scheme',
         'asset' => 'asset',
-        'date' => 'date',
-        'raw' => 'raw'
+        'created_at' => 'createdAt',
+        'raw' => 'raw',
+        'adjustments' => 'adjustments',
+        'metadata' => 'metadata'
     ];
 
     /**
@@ -212,16 +224,19 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'provider' => 'setProvider',
-        'reference' => 'setReference',
-        'scheme' => 'setScheme',
-        'status' => 'setStatus',
-        'type' => 'setType',
         'id' => 'setId',
-        'amount' => 'setAmount',
+        'reference' => 'setReference',
+        'account_id' => 'setAccountId',
+        'type' => 'setType',
+        'provider' => 'setProvider',
+        'status' => 'setStatus',
+        'initial_amount' => 'setInitialAmount',
+        'scheme' => 'setScheme',
         'asset' => 'setAsset',
-        'date' => 'setDate',
-        'raw' => 'setRaw'
+        'created_at' => 'setCreatedAt',
+        'raw' => 'setRaw',
+        'adjustments' => 'setAdjustments',
+        'metadata' => 'setMetadata'
     ];
 
     /**
@@ -230,16 +245,19 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'provider' => 'getProvider',
-        'reference' => 'getReference',
-        'scheme' => 'getScheme',
-        'status' => 'getStatus',
-        'type' => 'getType',
         'id' => 'getId',
-        'amount' => 'getAmount',
+        'reference' => 'getReference',
+        'account_id' => 'getAccountId',
+        'type' => 'getType',
+        'provider' => 'getProvider',
+        'status' => 'getStatus',
+        'initial_amount' => 'getInitialAmount',
+        'scheme' => 'getScheme',
         'asset' => 'getAsset',
-        'date' => 'getDate',
-        'raw' => 'getRaw'
+        'created_at' => 'getCreatedAt',
+        'raw' => 'getRaw',
+        'adjustments' => 'getAdjustments',
+        'metadata' => 'getMetadata'
     ];
 
     /**
@@ -283,44 +301,28 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
         return self::$openAPIModelName;
     }
 
+    public const TYPE_PAY_IN = 'PAY-IN';
+    public const TYPE_PAYOUT = 'PAYOUT';
+    public const TYPE_TRANSFER = 'TRANSFER';
+    public const TYPE_OTHER = 'OTHER';
     public const SCHEME_VISA = 'visa';
     public const SCHEME_MASTERCARD = 'mastercard';
-    public const SCHEME_APPLE_PAY = 'apple pay';
-    public const SCHEME_GOOGLE_PAY = 'google pay';
+    public const SCHEME_AMEX = 'amex';
+    public const SCHEME_DINERS = 'diners';
+    public const SCHEME_DISCOVER = 'discover';
+    public const SCHEME_JCB = 'jcb';
+    public const SCHEME_UNIONPAY = 'unionpay';
     public const SCHEME_SEPA_DEBIT = 'sepa debit';
     public const SCHEME_SEPA_CREDIT = 'sepa credit';
     public const SCHEME_SEPA = 'sepa';
+    public const SCHEME_APPLE_PAY = 'apple pay';
+    public const SCHEME_GOOGLE_PAY = 'google pay';
     public const SCHEME_A2A = 'a2a';
     public const SCHEME_ACH_DEBIT = 'ach debit';
     public const SCHEME_ACH = 'ach';
     public const SCHEME_RTP = 'rtp';
+    public const SCHEME_UNKNOWN = 'unknown';
     public const SCHEME_OTHER = 'other';
-    public const TYPE_PAY_IN = 'pay-in';
-    public const TYPE_PAYOUT = 'payout';
-    public const TYPE_OTHER = 'other';
-
-    /**
-     * Gets allowable values of the enum
-     *
-     * @return string[]
-     */
-    public function getSchemeAllowableValues()
-    {
-        return [
-            self::SCHEME_VISA,
-            self::SCHEME_MASTERCARD,
-            self::SCHEME_APPLE_PAY,
-            self::SCHEME_GOOGLE_PAY,
-            self::SCHEME_SEPA_DEBIT,
-            self::SCHEME_SEPA_CREDIT,
-            self::SCHEME_SEPA,
-            self::SCHEME_A2A,
-            self::SCHEME_ACH_DEBIT,
-            self::SCHEME_ACH,
-            self::SCHEME_RTP,
-            self::SCHEME_OTHER,
-        ];
-    }
 
     /**
      * Gets allowable values of the enum
@@ -332,7 +334,37 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
         return [
             self::TYPE_PAY_IN,
             self::TYPE_PAYOUT,
+            self::TYPE_TRANSFER,
             self::TYPE_OTHER,
+        ];
+    }
+
+    /**
+     * Gets allowable values of the enum
+     *
+     * @return string[]
+     */
+    public function getSchemeAllowableValues()
+    {
+        return [
+            self::SCHEME_VISA,
+            self::SCHEME_MASTERCARD,
+            self::SCHEME_AMEX,
+            self::SCHEME_DINERS,
+            self::SCHEME_DISCOVER,
+            self::SCHEME_JCB,
+            self::SCHEME_UNIONPAY,
+            self::SCHEME_SEPA_DEBIT,
+            self::SCHEME_SEPA_CREDIT,
+            self::SCHEME_SEPA,
+            self::SCHEME_APPLE_PAY,
+            self::SCHEME_GOOGLE_PAY,
+            self::SCHEME_A2A,
+            self::SCHEME_ACH_DEBIT,
+            self::SCHEME_ACH,
+            self::SCHEME_RTP,
+            self::SCHEME_UNKNOWN,
+            self::SCHEME_OTHER,
         ];
     }
 
@@ -351,16 +383,19 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(array $data = null)
     {
-        $this->setIfExists('provider', $data ?? [], null);
-        $this->setIfExists('reference', $data ?? [], null);
-        $this->setIfExists('scheme', $data ?? [], null);
-        $this->setIfExists('status', $data ?? [], null);
-        $this->setIfExists('type', $data ?? [], null);
         $this->setIfExists('id', $data ?? [], null);
-        $this->setIfExists('amount', $data ?? [], null);
+        $this->setIfExists('reference', $data ?? [], null);
+        $this->setIfExists('account_id', $data ?? [], null);
+        $this->setIfExists('type', $data ?? [], null);
+        $this->setIfExists('provider', $data ?? [], null);
+        $this->setIfExists('status', $data ?? [], null);
+        $this->setIfExists('initial_amount', $data ?? [], null);
+        $this->setIfExists('scheme', $data ?? [], null);
         $this->setIfExists('asset', $data ?? [], null);
-        $this->setIfExists('date', $data ?? [], null);
+        $this->setIfExists('created_at', $data ?? [], null);
         $this->setIfExists('raw', $data ?? [], null);
+        $this->setIfExists('adjustments', $data ?? [], null);
+        $this->setIfExists('metadata', $data ?? [], null);
     }
 
     /**
@@ -390,23 +425,14 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['provider'] === null) {
-            $invalidProperties[] = "'provider' can't be null";
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
         }
-        if ($this->container['scheme'] === null) {
-            $invalidProperties[] = "'scheme' can't be null";
+        if ($this->container['reference'] === null) {
+            $invalidProperties[] = "'reference' can't be null";
         }
-        $allowedValues = $this->getSchemeAllowableValues();
-        if (!is_null($this->container['scheme']) && !in_array($this->container['scheme'], $allowedValues, true)) {
-            $invalidProperties[] = sprintf(
-                "invalid value '%s' for 'scheme', must be one of '%s'",
-                $this->container['scheme'],
-                implode("', '", $allowedValues)
-            );
-        }
-
-        if ($this->container['status'] === null) {
-            $invalidProperties[] = "'status' can't be null";
+        if ($this->container['account_id'] === null) {
+            $invalidProperties[] = "'account_id' can't be null";
         }
         if ($this->container['type'] === null) {
             $invalidProperties[] = "'type' can't be null";
@@ -420,17 +446,45 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
             );
         }
 
-        if ($this->container['id'] === null) {
-            $invalidProperties[] = "'id' can't be null";
+        if ($this->container['provider'] === null) {
+            $invalidProperties[] = "'provider' can't be null";
         }
-        if ($this->container['amount'] === null) {
-            $invalidProperties[] = "'amount' can't be null";
+        if ($this->container['status'] === null) {
+            $invalidProperties[] = "'status' can't be null";
         }
+        if ($this->container['initial_amount'] === null) {
+            $invalidProperties[] = "'initial_amount' can't be null";
+        }
+        if (($this->container['initial_amount'] < 0)) {
+            $invalidProperties[] = "invalid value for 'initial_amount', must be bigger than or equal to 0.";
+        }
+
+        if ($this->container['scheme'] === null) {
+            $invalidProperties[] = "'scheme' can't be null";
+        }
+        $allowedValues = $this->getSchemeAllowableValues();
+        if (!is_null($this->container['scheme']) && !in_array($this->container['scheme'], $allowedValues, true)) {
+            $invalidProperties[] = sprintf(
+                "invalid value '%s' for 'scheme', must be one of '%s'",
+                $this->container['scheme'],
+                implode("', '", $allowedValues)
+            );
+        }
+
         if ($this->container['asset'] === null) {
             $invalidProperties[] = "'asset' can't be null";
         }
-        if ($this->container['date'] === null) {
-            $invalidProperties[] = "'date' can't be null";
+        if ($this->container['created_at'] === null) {
+            $invalidProperties[] = "'created_at' can't be null";
+        }
+        if ($this->container['raw'] === null) {
+            $invalidProperties[] = "'raw' can't be null";
+        }
+        if ($this->container['adjustments'] === null) {
+            $invalidProperties[] = "'adjustments' can't be null";
+        }
+        if ($this->container['metadata'] === null) {
+            $invalidProperties[] = "'metadata' can't be null";
         }
         return $invalidProperties;
     }
@@ -448,30 +502,30 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
 
 
     /**
-     * Gets provider
+     * Gets id
      *
      * @return string
      */
-    public function getProvider()
+    public function getId()
     {
-        return $this->container['provider'];
+        return $this->container['id'];
     }
 
     /**
-     * Sets provider
+     * Sets id
      *
-     * @param string $provider provider
+     * @param string $id id
      *
      * @return self
      */
-    public function setProvider($provider)
+    public function setId($id)
     {
 
-        if (is_null($provider)) {
-            throw new \InvalidArgumentException('non-nullable provider cannot be null');
+        if (is_null($id)) {
+            throw new \InvalidArgumentException('non-nullable id cannot be null');
         }
 
-        $this->container['provider'] = $provider;
+        $this->container['id'] = $id;
 
         return $this;
     }
@@ -479,7 +533,7 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets reference
      *
-     * @return string|null
+     * @return string
      */
     public function getReference()
     {
@@ -489,7 +543,7 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets reference
      *
-     * @param string|null $reference reference
+     * @param string $reference reference
      *
      * @return self
      */
@@ -506,69 +560,30 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     }
 
     /**
-     * Gets scheme
+     * Gets account_id
      *
      * @return string
      */
-    public function getScheme()
+    public function getAccountId()
     {
-        return $this->container['scheme'];
+        return $this->container['account_id'];
     }
 
     /**
-     * Sets scheme
+     * Sets account_id
      *
-     * @param string $scheme scheme
+     * @param string $account_id account_id
      *
      * @return self
      */
-    public function setScheme($scheme)
-    {
-        $allowedValues = $this->getSchemeAllowableValues();
-        if (!in_array($scheme, $allowedValues, true)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    "Invalid value '%s' for 'scheme', must be one of '%s'",
-                    $scheme,
-                    implode("', '", $allowedValues)
-                )
-            );
-        }
-
-        if (is_null($scheme)) {
-            throw new \InvalidArgumentException('non-nullable scheme cannot be null');
-        }
-
-        $this->container['scheme'] = $scheme;
-
-        return $this;
-    }
-
-    /**
-     * Gets status
-     *
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->container['status'];
-    }
-
-    /**
-     * Sets status
-     *
-     * @param string $status status
-     *
-     * @return self
-     */
-    public function setStatus($status)
+    public function setAccountId($account_id)
     {
 
-        if (is_null($status)) {
-            throw new \InvalidArgumentException('non-nullable status cannot be null');
+        if (is_null($account_id)) {
+            throw new \InvalidArgumentException('non-nullable account_id cannot be null');
         }
 
-        $this->container['status'] = $status;
+        $this->container['account_id'] = $account_id;
 
         return $this;
     }
@@ -613,59 +628,132 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     }
 
     /**
-     * Gets id
+     * Gets provider
      *
-     * @return string
+     * @return \Formance\Model\Connector
      */
-    public function getId()
+    public function getProvider()
     {
-        return $this->container['id'];
+        return $this->container['provider'];
     }
 
     /**
-     * Sets id
+     * Sets provider
      *
-     * @param string $id id
+     * @param \Formance\Model\Connector $provider provider
      *
      * @return self
      */
-    public function setId($id)
+    public function setProvider($provider)
     {
 
-        if (is_null($id)) {
-            throw new \InvalidArgumentException('non-nullable id cannot be null');
+        if (is_null($provider)) {
+            throw new \InvalidArgumentException('non-nullable provider cannot be null');
         }
 
-        $this->container['id'] = $id;
+        $this->container['provider'] = $provider;
 
         return $this;
     }
 
     /**
-     * Gets amount
+     * Gets status
      *
-     * @return int
+     * @return \Formance\Model\PaymentStatus
      */
-    public function getAmount()
+    public function getStatus()
     {
-        return $this->container['amount'];
+        return $this->container['status'];
     }
 
     /**
-     * Sets amount
+     * Sets status
      *
-     * @param int $amount amount
+     * @param \Formance\Model\PaymentStatus $status status
      *
      * @return self
      */
-    public function setAmount($amount)
+    public function setStatus($status)
     {
 
-        if (is_null($amount)) {
-            throw new \InvalidArgumentException('non-nullable amount cannot be null');
+        if (is_null($status)) {
+            throw new \InvalidArgumentException('non-nullable status cannot be null');
         }
 
-        $this->container['amount'] = $amount;
+        $this->container['status'] = $status;
+
+        return $this;
+    }
+
+    /**
+     * Gets initial_amount
+     *
+     * @return int
+     */
+    public function getInitialAmount()
+    {
+        return $this->container['initial_amount'];
+    }
+
+    /**
+     * Sets initial_amount
+     *
+     * @param int $initial_amount initial_amount
+     *
+     * @return self
+     */
+    public function setInitialAmount($initial_amount)
+    {
+
+        if (($initial_amount < 0)) {
+            throw new \InvalidArgumentException('invalid value for $initial_amount when calling Payment., must be bigger than or equal to 0.');
+        }
+
+
+        if (is_null($initial_amount)) {
+            throw new \InvalidArgumentException('non-nullable initial_amount cannot be null');
+        }
+
+        $this->container['initial_amount'] = $initial_amount;
+
+        return $this;
+    }
+
+    /**
+     * Gets scheme
+     *
+     * @return string
+     */
+    public function getScheme()
+    {
+        return $this->container['scheme'];
+    }
+
+    /**
+     * Sets scheme
+     *
+     * @param string $scheme scheme
+     *
+     * @return self
+     */
+    public function setScheme($scheme)
+    {
+        $allowedValues = $this->getSchemeAllowableValues();
+        if (!in_array($scheme, $allowedValues, true)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    "Invalid value '%s' for 'scheme', must be one of '%s'",
+                    $scheme,
+                    implode("', '", $allowedValues)
+                )
+            );
+        }
+
+        if (is_null($scheme)) {
+            throw new \InvalidArgumentException('non-nullable scheme cannot be null');
+        }
+
+        $this->container['scheme'] = $scheme;
 
         return $this;
     }
@@ -700,30 +788,30 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     }
 
     /**
-     * Gets date
+     * Gets created_at
      *
      * @return \DateTime
      */
-    public function getDate()
+    public function getCreatedAt()
     {
-        return $this->container['date'];
+        return $this->container['created_at'];
     }
 
     /**
-     * Sets date
+     * Sets created_at
      *
-     * @param \DateTime $date date
+     * @param \DateTime $created_at created_at
      *
      * @return self
      */
-    public function setDate($date)
+    public function setCreatedAt($created_at)
     {
 
-        if (is_null($date)) {
-            throw new \InvalidArgumentException('non-nullable date cannot be null');
+        if (is_null($created_at)) {
+            throw new \InvalidArgumentException('non-nullable created_at cannot be null');
         }
 
-        $this->container['date'] = $date;
+        $this->container['created_at'] = $created_at;
 
         return $this;
     }
@@ -731,7 +819,7 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets raw
      *
-     * @return mixed|null
+     * @return object
      */
     public function getRaw()
     {
@@ -741,7 +829,7 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets raw
      *
-     * @param mixed|null $raw raw
+     * @param object $raw raw
      *
      * @return self
      */
@@ -749,17 +837,68 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     {
 
         if (is_null($raw)) {
-            array_push($this->openAPINullablesSetToNull, 'raw');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('raw', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
+            throw new \InvalidArgumentException('non-nullable raw cannot be null');
         }
 
         $this->container['raw'] = $raw;
+
+        return $this;
+    }
+
+    /**
+     * Gets adjustments
+     *
+     * @return \Formance\Model\PaymentAdjustment[]
+     */
+    public function getAdjustments()
+    {
+        return $this->container['adjustments'];
+    }
+
+    /**
+     * Sets adjustments
+     *
+     * @param \Formance\Model\PaymentAdjustment[] $adjustments adjustments
+     *
+     * @return self
+     */
+    public function setAdjustments($adjustments)
+    {
+
+        if (is_null($adjustments)) {
+            throw new \InvalidArgumentException('non-nullable adjustments cannot be null');
+        }
+
+        $this->container['adjustments'] = $adjustments;
+
+        return $this;
+    }
+
+    /**
+     * Gets metadata
+     *
+     * @return \Formance\Model\PaymentMetadata[]
+     */
+    public function getMetadata()
+    {
+        return $this->container['metadata'];
+    }
+
+    /**
+     * Sets metadata
+     *
+     * @param \Formance\Model\PaymentMetadata[] $metadata metadata
+     *
+     * @return self
+     */
+    public function setMetadata($metadata)
+    {
+
+        if (is_null($metadata)) {
+            throw new \InvalidArgumentException('non-nullable metadata cannot be null');
+        }
+
+        $this->container['metadata'] = $metadata;
 
         return $this;
     }

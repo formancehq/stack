@@ -75,6 +75,9 @@ class DefaultApi
         'getServerInfo' => [
             'application/json',
         ],
+        'paymentsgetServerInfo' => [
+            'application/json',
+        ],
         'searchgetServerInfo' => [
             'application/json',
         ],
@@ -326,6 +329,273 @@ class DefaultApi
 
 
         $resourcePath = '/api/auth/_info';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation paymentsgetServerInfo
+     *
+     * Get server info
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['paymentsgetServerInfo'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Formance\Model\ServerInfo
+     */
+    public function paymentsgetServerInfo(string $contentType = self::contentTypes['paymentsgetServerInfo'][0])
+    {
+        list($response) = $this->paymentsgetServerInfoWithHttpInfo($contentType);
+        return $response;
+    }
+
+    /**
+     * Operation paymentsgetServerInfoWithHttpInfo
+     *
+     * Get server info
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['paymentsgetServerInfo'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Formance\Model\ServerInfo, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function paymentsgetServerInfoWithHttpInfo(string $contentType = self::contentTypes['paymentsgetServerInfo'][0])
+    {
+        $request = $this->paymentsgetServerInfoRequest($contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            switch($statusCode) {
+                case 200:
+                    if ('\Formance\Model\ServerInfo' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\ServerInfo' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ServerInfo', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Formance\Model\ServerInfo';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\ServerInfo',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation paymentsgetServerInfoAsync
+     *
+     * Get server info
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['paymentsgetServerInfo'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function paymentsgetServerInfoAsync(string $contentType = self::contentTypes['paymentsgetServerInfo'][0])
+    {
+        return $this->paymentsgetServerInfoAsyncWithHttpInfo($contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation paymentsgetServerInfoAsyncWithHttpInfo
+     *
+     * Get server info
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['paymentsgetServerInfo'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function paymentsgetServerInfoAsyncWithHttpInfo(string $contentType = self::contentTypes['paymentsgetServerInfo'][0])
+    {
+        $returnType = '\Formance\Model\ServerInfo';
+        $request = $this->paymentsgetServerInfoRequest($contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'paymentsgetServerInfo'
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['paymentsgetServerInfo'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function paymentsgetServerInfoRequest(string $contentType = self::contentTypes['paymentsgetServerInfo'][0])
+    {
+
+
+        $resourcePath = '/api/payments/_info';
         $formParams = [];
         $queryParams = [];
         $headerParams = [];

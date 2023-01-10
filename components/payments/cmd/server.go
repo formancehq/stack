@@ -6,6 +6,7 @@ import (
 	"github.com/formancehq/go-libs/otlp/otlptraces"
 
 	"github.com/bombsimon/logrusr/v3"
+	sharedapi "github.com/formancehq/go-libs/api"
 	"github.com/formancehq/payments/internal/app/api"
 	"github.com/formancehq/payments/internal/app/storage"
 	"github.com/pkg/errors"
@@ -83,7 +84,9 @@ func runServer(cmd *cobra.Command, args []string) error {
 			return publish.NewTopicMapperPublisher(p, topicsMapping())
 		}, fx.As(new(publish.Publisher)))))
 
-	options = append(options, api.HTTPModule())
+	options = append(options, api.HTTPModule(sharedapi.ServiceInfo{
+		Version: Version,
+	}))
 	options = append(options, publish.Module())
 
 	switch {

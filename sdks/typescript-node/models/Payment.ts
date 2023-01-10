@@ -10,26 +10,33 @@
  * Do not edit the class manually.
  */
 
+import { Connector } from '../models/Connector';
+import { PaymentAdjustment } from '../models/PaymentAdjustment';
+import { PaymentMetadata } from '../models/PaymentMetadata';
+import { PaymentStatus } from '../models/PaymentStatus';
 import { HttpFile } from '../http/http';
 
 export class Payment {
-    'provider': string;
-    'reference'?: string;
-    'scheme': PaymentSchemeEnum;
-    'status': string;
-    'type': PaymentTypeEnum;
     'id': string;
-    'amount': number;
+    'reference': string;
+    'accountID': string;
+    'type': PaymentTypeEnum;
+    'provider': Connector;
+    'status': PaymentStatus;
+    'initialAmount': number;
+    'scheme': PaymentSchemeEnum;
     'asset': string;
-    'date': Date;
-    'raw'?: any;
+    'createdAt': Date;
+    'raw': any;
+    'adjustments': Array<PaymentAdjustment>;
+    'metadata': Array<PaymentMetadata>;
 
     static readonly discriminator: string | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "provider",
-            "baseName": "provider",
+            "name": "id",
+            "baseName": "id",
             "type": "string",
             "format": ""
         },
@@ -40,14 +47,8 @@ export class Payment {
             "format": ""
         },
         {
-            "name": "scheme",
-            "baseName": "scheme",
-            "type": "PaymentSchemeEnum",
-            "format": ""
-        },
-        {
-            "name": "status",
-            "baseName": "status",
+            "name": "accountID",
+            "baseName": "accountID",
             "type": "string",
             "format": ""
         },
@@ -58,15 +59,27 @@ export class Payment {
             "format": ""
         },
         {
-            "name": "id",
-            "baseName": "id",
-            "type": "string",
+            "name": "provider",
+            "baseName": "provider",
+            "type": "Connector",
             "format": ""
         },
         {
-            "name": "amount",
-            "baseName": "amount",
+            "name": "status",
+            "baseName": "status",
+            "type": "PaymentStatus",
+            "format": ""
+        },
+        {
+            "name": "initialAmount",
+            "baseName": "initialAmount",
             "type": "number",
+            "format": "int64"
+        },
+        {
+            "name": "scheme",
+            "baseName": "scheme",
+            "type": "PaymentSchemeEnum",
             "format": ""
         },
         {
@@ -76,8 +89,8 @@ export class Payment {
             "format": ""
         },
         {
-            "name": "date",
-            "baseName": "date",
+            "name": "createdAt",
+            "baseName": "createdAt",
             "type": "Date",
             "format": "date-time"
         },
@@ -85,6 +98,18 @@ export class Payment {
             "name": "raw",
             "baseName": "raw",
             "type": "any",
+            "format": ""
+        },
+        {
+            "name": "adjustments",
+            "baseName": "adjustments",
+            "type": "Array<PaymentAdjustment>",
+            "format": ""
+        },
+        {
+            "name": "metadata",
+            "baseName": "metadata",
+            "type": "Array<PaymentMetadata>",
             "format": ""
         }    ];
 
@@ -97,6 +122,6 @@ export class Payment {
 }
 
 
-export type PaymentSchemeEnum = "visa" | "mastercard" | "apple pay" | "google pay" | "sepa debit" | "sepa credit" | "sepa" | "a2a" | "ach debit" | "ach" | "rtp" | "other" ;
-export type PaymentTypeEnum = "pay-in" | "payout" | "other" ;
+export type PaymentTypeEnum = "PAY-IN" | "PAYOUT" | "TRANSFER" | "OTHER" ;
+export type PaymentSchemeEnum = "visa" | "mastercard" | "amex" | "diners" | "discover" | "jcb" | "unionpay" | "sepa debit" | "sepa credit" | "sepa" | "apple pay" | "google pay" | "a2a" | "ach debit" | "ach" | "rtp" | "unknown" | "other" ;
 

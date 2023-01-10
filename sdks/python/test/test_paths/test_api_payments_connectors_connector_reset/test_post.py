@@ -21,7 +21,7 @@ from .. import ApiTestMixin
 class TestApiPaymentsConnectorsConnectorReset(ApiTestMixin, unittest.TestCase):
     """
     ApiPaymentsConnectorsConnectorReset unit test stubs
-        Reset connector  # noqa: E501
+        Reset a connector  # noqa: E501
     """
     _configuration = configuration.Configuration()
 

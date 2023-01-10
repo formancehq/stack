@@ -61,7 +61,8 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => 'string',
         'metadata' => 'array<string,mixed>',
         'name' => 'string',
-        'created_at' => '\DateTime'
+        'created_at' => '\DateTime',
+        'ledger' => 'string'
     ];
 
     /**
@@ -75,7 +76,8 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => 'uuid',
         'metadata' => null,
         'name' => null,
-        'created_at' => 'date-time'
+        'created_at' => 'date-time',
+        'ledger' => null
     ];
 
     /**
@@ -87,7 +89,8 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => false,
 		'metadata' => false,
 		'name' => false,
-		'created_at' => false
+		'created_at' => false,
+		'ledger' => false
     ];
 
     /**
@@ -179,7 +182,8 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => 'id',
         'metadata' => 'metadata',
         'name' => 'name',
-        'created_at' => 'createdAt'
+        'created_at' => 'createdAt',
+        'ledger' => 'ledger'
     ];
 
     /**
@@ -191,7 +195,8 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => 'setId',
         'metadata' => 'setMetadata',
         'name' => 'setName',
-        'created_at' => 'setCreatedAt'
+        'created_at' => 'setCreatedAt',
+        'ledger' => 'setLedger'
     ];
 
     /**
@@ -203,7 +208,8 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => 'getId',
         'metadata' => 'getMetadata',
         'name' => 'getName',
-        'created_at' => 'getCreatedAt'
+        'created_at' => 'getCreatedAt',
+        'ledger' => 'getLedger'
     ];
 
     /**
@@ -267,6 +273,7 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('metadata', $data ?? [], null);
         $this->setIfExists('name', $data ?? [], null);
         $this->setIfExists('created_at', $data ?? [], null);
+        $this->setIfExists('ledger', $data ?? [], null);
     }
 
     /**
@@ -307,6 +314,9 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
         }
         if ($this->container['created_at'] === null) {
             $invalidProperties[] = "'created_at' can't be null";
+        }
+        if ($this->container['ledger'] === null) {
+            $invalidProperties[] = "'ledger' can't be null";
         }
         return $invalidProperties;
     }
@@ -435,6 +445,35 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
         }
 
         $this->container['created_at'] = $created_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets ledger
+     *
+     * @return string
+     */
+    public function getLedger()
+    {
+        return $this->container['ledger'];
+    }
+
+    /**
+     * Sets ledger
+     *
+     * @param string $ledger ledger
+     *
+     * @return self
+     */
+    public function setLedger($ledger)
+    {
+
+        if (is_null($ledger)) {
+            throw new \InvalidArgumentException('non-nullable ledger cannot be null');
+        }
+
+        $this->container['ledger'] = $ledger;
 
         return $this;
     }

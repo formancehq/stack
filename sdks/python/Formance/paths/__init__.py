@@ -33,6 +33,7 @@ class PathValues(str, enum.Enum):
     API_LEDGER_LEDGER_BALANCES = "/api/ledger/{ledger}/balances"
     API_LEDGER_LEDGER_AGGREGATE_BALANCES = "/api/ledger/{ledger}/aggregate/balances"
     API_LEDGER_LEDGER_LOG = "/api/ledger/{ledger}/log"
+    API_PAYMENTS__INFO = "/api/payments/_info"
     API_PAYMENTS_PAYMENTS = "/api/payments/payments"
     API_PAYMENTS_PAYMENTS_PAYMENT_ID = "/api/payments/payments/{paymentId}"
     API_PAYMENTS_ACCOUNTS = "/api/payments/accounts"

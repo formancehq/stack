@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -18,7 +18,7 @@ import (
 // ConnectorBaseInfo struct for ConnectorBaseInfo
 type ConnectorBaseInfo struct {
 	Provider *string `json:"provider,omitempty"`
-	Disabled *bool `json:"disabled,omitempty"`
+	Disabled *bool   `json:"disabled,omitempty"`
 }
 
 // NewConnectorBaseInfo instantiates a new ConnectorBaseInfo object
@@ -51,7 +51,7 @@ func (o *ConnectorBaseInfo) GetProvider() string {
 // and a boolean to check if the value has been set.
 func (o *ConnectorBaseInfo) GetProviderOk() (*string, bool) {
 	if o == nil || isNil(o.Provider) {
-    return nil, false
+		return nil, false
 	}
 	return o.Provider, true
 }
@@ -83,7 +83,7 @@ func (o *ConnectorBaseInfo) GetDisabled() bool {
 // and a boolean to check if the value has been set.
 func (o *ConnectorBaseInfo) GetDisabledOk() (*bool, bool) {
 	if o == nil || isNil(o.Disabled) {
-    return nil, false
+		return nil, false
 	}
 	return o.Disabled, true
 }
@@ -148,5 +148,3 @@ func (v *NullableConnectorBaseInfo) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

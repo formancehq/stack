@@ -21,7 +21,7 @@ from .. import ApiTestMixin
 class TestApiPaymentsPayments(ApiTestMixin, unittest.TestCase):
     """
     ApiPaymentsPayments unit test stubs
-        Returns a list of payments.  # noqa: E501
+        List payments  # noqa: E501
     """
     _configuration = configuration.Configuration()
 

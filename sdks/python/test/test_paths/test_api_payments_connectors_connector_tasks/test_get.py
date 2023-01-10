@@ -21,7 +21,7 @@ from .. import ApiTestMixin
 class TestApiPaymentsConnectorsConnectorTasks(ApiTestMixin, unittest.TestCase):
     """
     ApiPaymentsConnectorsConnectorTasks unit test stubs
-        List connector tasks  # noqa: E501
+        List tasks from a connector  # noqa: E501
     """
     _configuration = configuration.Configuration()
 

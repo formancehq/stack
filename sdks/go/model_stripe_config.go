@@ -17,11 +17,11 @@ import (
 
 // StripeConfig struct for StripeConfig
 type StripeConfig struct {
-	// The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe api
+	// The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API. 
 	PollingPeriod *string `json:"pollingPeriod,omitempty"`
 	ApiKey string `json:"apiKey"`
 	// Number of BalanceTransaction to fetch at each polling interval. 
-	PageSize *float32 `json:"pageSize,omitempty"`
+	PageSize *int64 `json:"pageSize,omitempty"`
 }
 
 // NewStripeConfig instantiates a new StripeConfig object
@@ -33,7 +33,7 @@ func NewStripeConfig(apiKey string) *StripeConfig {
 	var pollingPeriod string = "120s"
 	this.PollingPeriod = &pollingPeriod
 	this.ApiKey = apiKey
-	var pageSize float32 = 10
+	var pageSize int64 = 10
 	this.PageSize = &pageSize
 	return &this
 }
@@ -45,7 +45,7 @@ func NewStripeConfigWithDefaults() *StripeConfig {
 	this := StripeConfig{}
 	var pollingPeriod string = "120s"
 	this.PollingPeriod = &pollingPeriod
-	var pageSize float32 = 10
+	var pageSize int64 = 10
 	this.PageSize = &pageSize
 	return &this
 }
@@ -107,9 +107,9 @@ func (o *StripeConfig) SetApiKey(v string) {
 }
 
 // GetPageSize returns the PageSize field value if set, zero value otherwise.
-func (o *StripeConfig) GetPageSize() float32 {
+func (o *StripeConfig) GetPageSize() int64 {
 	if o == nil || isNil(o.PageSize) {
-		var ret float32
+		var ret int64
 		return ret
 	}
 	return *o.PageSize
@@ -117,7 +117,7 @@ func (o *StripeConfig) GetPageSize() float32 {
 
 // GetPageSizeOk returns a tuple with the PageSize field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *StripeConfig) GetPageSizeOk() (*float32, bool) {
+func (o *StripeConfig) GetPageSizeOk() (*int64, bool) {
 	if o == nil || isNil(o.PageSize) {
     return nil, false
 	}
@@ -133,8 +133,8 @@ func (o *StripeConfig) HasPageSize() bool {
 	return false
 }
 
-// SetPageSize gets a reference to the given float32 and assigns it to the PageSize field.
-func (o *StripeConfig) SetPageSize(v float32) {
+// SetPageSize gets a reference to the given int64 and assigns it to the PageSize field.
+func (o *StripeConfig) SetPageSize(v int64) {
 	o.PageSize = &v
 }
 

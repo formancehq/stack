@@ -6,6 +6,8 @@ import { AccountResponse } from '../models/AccountResponse';
 import { AccountWithVolumesAndBalances } from '../models/AccountWithVolumesAndBalances';
 import { AccountsCursorResponse } from '../models/AccountsCursorResponse';
 import { AccountsCursorResponseCursor } from '../models/AccountsCursorResponseCursor';
+import { AccountsResponse } from '../models/AccountsResponse';
+import { AccountsResponseCursor } from '../models/AccountsResponseCursor';
 import { AggregateBalancesResponse } from '../models/AggregateBalancesResponse';
 import { AssetHolder } from '../models/AssetHolder';
 import { Attempt } from '../models/Attempt';
@@ -29,9 +31,15 @@ import { ConfigsResponse } from '../models/ConfigsResponse';
 import { ConfigsResponseCursor } from '../models/ConfigsResponseCursor';
 import { ConfigsResponseCursorAllOf } from '../models/ConfigsResponseCursorAllOf';
 import { ConfirmHoldRequest } from '../models/ConfirmHoldRequest';
-import { ConnectorBaseInfo } from '../models/ConnectorBaseInfo';
+import { Connector } from '../models/Connector';
 import { ConnectorConfig } from '../models/ConnectorConfig';
-import { Connectors } from '../models/Connectors';
+import { ConnectorConfigResponse } from '../models/ConnectorConfigResponse';
+import { ConnectorsConfigsResponse } from '../models/ConnectorsConfigsResponse';
+import { ConnectorsConfigsResponseData } from '../models/ConnectorsConfigsResponseData';
+import { ConnectorsConfigsResponseDataConnector } from '../models/ConnectorsConfigsResponseDataConnector';
+import { ConnectorsConfigsResponseDataConnectorKey } from '../models/ConnectorsConfigsResponseDataConnectorKey';
+import { ConnectorsResponse } from '../models/ConnectorsResponse';
+import { ConnectorsResponseDataInner } from '../models/ConnectorsResponseDataInner';
 import { Contract } from '../models/Contract';
 import { CreateBalanceResponse } from '../models/CreateBalanceResponse';
 import { CreateClientResponse } from '../models/CreateClientResponse';
@@ -54,7 +62,6 @@ import { GetHoldResponse } from '../models/GetHoldResponse';
 import { GetHoldsResponse } from '../models/GetHoldsResponse';
 import { GetHoldsResponseCursor } from '../models/GetHoldsResponseCursor';
 import { GetHoldsResponseCursorAllOf } from '../models/GetHoldsResponseCursorAllOf';
-import { GetPaymentResponse } from '../models/GetPaymentResponse';
 import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
@@ -65,17 +72,10 @@ import { LedgerInfo } from '../models/LedgerInfo';
 import { LedgerInfoResponse } from '../models/LedgerInfoResponse';
 import { LedgerInfoStorage } from '../models/LedgerInfoStorage';
 import { LedgerStorage } from '../models/LedgerStorage';
-import { ListAccountsResponse } from '../models/ListAccountsResponse';
 import { ListBalancesResponse } from '../models/ListBalancesResponse';
 import { ListBalancesResponseCursor } from '../models/ListBalancesResponseCursor';
 import { ListBalancesResponseCursorAllOf } from '../models/ListBalancesResponseCursorAllOf';
 import { ListClientsResponse } from '../models/ListClientsResponse';
-import { ListConnectorTasks200ResponseInner } from '../models/ListConnectorTasks200ResponseInner';
-import { ListConnectorsConfigsResponse } from '../models/ListConnectorsConfigsResponse';
-import { ListConnectorsConfigsResponseConnector } from '../models/ListConnectorsConfigsResponseConnector';
-import { ListConnectorsConfigsResponseConnectorKey } from '../models/ListConnectorsConfigsResponseConnectorKey';
-import { ListConnectorsResponse } from '../models/ListConnectorsResponse';
-import { ListPaymentsResponse } from '../models/ListPaymentsResponse';
 import { ListScopesResponse } from '../models/ListScopesResponse';
 import { ListUsersResponse } from '../models/ListUsersResponse';
 import { ListWalletsResponse } from '../models/ListWalletsResponse';
@@ -90,7 +90,14 @@ import { MigrationInfo } from '../models/MigrationInfo';
 import { ModulrConfig } from '../models/ModulrConfig';
 import { Monetary } from '../models/Monetary';
 import { Payment } from '../models/Payment';
+import { PaymentAdjustment } from '../models/PaymentAdjustment';
+import { PaymentMetadata } from '../models/PaymentMetadata';
+import { PaymentMetadataChangelog } from '../models/PaymentMetadataChangelog';
+import { PaymentResponse } from '../models/PaymentResponse';
+import { PaymentStatus } from '../models/PaymentStatus';
 import { PaymentsAccount } from '../models/PaymentsAccount';
+import { PaymentsResponse } from '../models/PaymentsResponse';
+import { PaymentsResponseCursor } from '../models/PaymentsResponseCursor';
 import { PostTransaction } from '../models/PostTransaction';
 import { PostTransactionScript } from '../models/PostTransactionScript';
 import { Posting } from '../models/Posting';
@@ -110,21 +117,25 @@ import { ServerInfo } from '../models/ServerInfo';
 import { Stats } from '../models/Stats';
 import { StatsResponse } from '../models/StatsResponse';
 import { StripeConfig } from '../models/StripeConfig';
-import { StripeTask } from '../models/StripeTask';
+import { StripeTimelineState } from '../models/StripeTimelineState';
 import { StripeTransferRequest } from '../models/StripeTransferRequest';
 import { Subject } from '../models/Subject';
-import { TaskDescriptorBankingCircle } from '../models/TaskDescriptorBankingCircle';
-import { TaskDescriptorBankingCircleDescriptor } from '../models/TaskDescriptorBankingCircleDescriptor';
-import { TaskDescriptorCurrencyCloud } from '../models/TaskDescriptorCurrencyCloud';
-import { TaskDescriptorCurrencyCloudDescriptor } from '../models/TaskDescriptorCurrencyCloudDescriptor';
-import { TaskDescriptorDummyPay } from '../models/TaskDescriptorDummyPay';
-import { TaskDescriptorDummyPayDescriptor } from '../models/TaskDescriptorDummyPayDescriptor';
-import { TaskDescriptorModulr } from '../models/TaskDescriptorModulr';
-import { TaskDescriptorModulrDescriptor } from '../models/TaskDescriptorModulrDescriptor';
-import { TaskDescriptorStripe } from '../models/TaskDescriptorStripe';
-import { TaskDescriptorStripeDescriptor } from '../models/TaskDescriptorStripeDescriptor';
-import { TaskDescriptorWise } from '../models/TaskDescriptorWise';
-import { TaskDescriptorWiseDescriptor } from '../models/TaskDescriptorWiseDescriptor';
+import { TaskBankingCircle } from '../models/TaskBankingCircle';
+import { TaskBankingCircleDescriptor } from '../models/TaskBankingCircleDescriptor';
+import { TaskCurrencyCloud } from '../models/TaskCurrencyCloud';
+import { TaskCurrencyCloudDescriptor } from '../models/TaskCurrencyCloudDescriptor';
+import { TaskDummyPay } from '../models/TaskDummyPay';
+import { TaskDummyPayDescriptor } from '../models/TaskDummyPayDescriptor';
+import { TaskModulr } from '../models/TaskModulr';
+import { TaskModulrDescriptor } from '../models/TaskModulrDescriptor';
+import { TaskResponse } from '../models/TaskResponse';
+import { TaskResponseData } from '../models/TaskResponseData';
+import { TaskStripe } from '../models/TaskStripe';
+import { TaskStripeDescriptor } from '../models/TaskStripeDescriptor';
+import { TaskWise } from '../models/TaskWise';
+import { TaskWiseDescriptor } from '../models/TaskWiseDescriptor';
+import { TasksResponse } from '../models/TasksResponse';
+import { TasksResponseCursor } from '../models/TasksResponseCursor';
 import { Total } from '../models/Total';
 import { Transaction } from '../models/Transaction';
 import { TransactionData } from '../models/TransactionData';
@@ -588,6 +599,9 @@ import { DefaultApiRequestFactory, DefaultApiResponseProcessor} from "../apis/De
 export interface DefaultApiGetServerInfoRequest {
 }
 
+export interface DefaultApiPaymentsgetServerInfoRequest {
+}
+
 export interface DefaultApiSearchgetServerInfoRequest {
 }
 
@@ -604,6 +618,14 @@ export class ObjectDefaultApi {
      */
     public getServerInfo(param: DefaultApiGetServerInfoRequest = {}, options?: Configuration): Promise<ServerInfo> {
         return this.api.getServerInfo( options).toPromise();
+    }
+
+    /**
+     * Get server info
+     * @param param the request object
+     */
+    public paymentsgetServerInfo(param: DefaultApiPaymentsgetServerInfoRequest = {}, options?: Configuration): Promise<ServerInfo> {
+        return this.api.paymentsgetServerInfo( options).toPromise();
     }
 
     /**
@@ -793,21 +815,15 @@ export interface PaymentsApiConnectorsStripeTransferRequest {
     stripeTransferRequest: StripeTransferRequest
 }
 
-export interface PaymentsApiGetAllConnectorsRequest {
-}
-
-export interface PaymentsApiGetAllConnectorsConfigsRequest {
-}
-
 export interface PaymentsApiGetConnectorTaskRequest {
     /**
-     * The connector code
-     * @type Connectors
+     * The name of the connector.
+     * @type Connector
      * @memberof PaymentsApigetConnectorTask
      */
-    connector: Connectors
+    connector: Connector
     /**
-     * The task id
+     * The task ID.
      * @type string
      * @memberof PaymentsApigetConnectorTask
      */
@@ -816,7 +832,7 @@ export interface PaymentsApiGetConnectorTaskRequest {
 
 export interface PaymentsApiGetPaymentRequest {
     /**
-     * The payment id
+     * The payment ID.
      * @type string
      * @memberof PaymentsApigetPayment
      */
@@ -825,11 +841,11 @@ export interface PaymentsApiGetPaymentRequest {
 
 export interface PaymentsApiInstallConnectorRequest {
     /**
-     * The connector code
-     * @type Connectors
+     * The name of the connector.
+     * @type Connector
      * @memberof PaymentsApiinstallConnector
      */
-    connector: Connectors
+    connector: Connector
     /**
      * 
      * @type ConnectorConfig
@@ -838,30 +854,48 @@ export interface PaymentsApiInstallConnectorRequest {
     connectorConfig: ConnectorConfig
 }
 
+export interface PaymentsApiListAllConnectorsRequest {
+}
+
+export interface PaymentsApiListConfigsAvailableConnectorsRequest {
+}
+
 export interface PaymentsApiListConnectorTasksRequest {
     /**
-     * The connector code
-     * @type Connectors
+     * The name of the connector.
+     * @type Connector
      * @memberof PaymentsApilistConnectorTasks
      */
-    connector: Connectors
+    connector: Connector
+    /**
+     * The maximum number of results to return per page. 
+     * @type number
+     * @memberof PaymentsApilistConnectorTasks
+     */
+    pageSize?: number
+    /**
+     * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
+     * @type string
+     * @memberof PaymentsApilistConnectorTasks
+     */
+    cursor?: string
 }
 
 export interface PaymentsApiListPaymentsRequest {
     /**
-     * Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.
+     * The maximum number of results to return per page. 
      * @type number
      * @memberof PaymentsApilistPayments
      */
-    limit?: number
+    pageSize?: number
     /**
-     * How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.
-     * @type number
+     * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
+     * @type string
      * @memberof PaymentsApilistPayments
      */
-    skip?: number
+    cursor?: string
     /**
-     * Field used to sort payments (Default is by date).
+     * Fields used to sort payments (default is date:desc).
      * @type Array&lt;string&gt;
      * @memberof PaymentsApilistPayments
      */
@@ -870,13 +904,13 @@ export interface PaymentsApiListPaymentsRequest {
 
 export interface PaymentsApiPaymentslistAccountsRequest {
     /**
-     * Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.
+     * Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. 
      * @type number
      * @memberof PaymentsApipaymentslistAccounts
      */
     limit?: number
     /**
-     * How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.
+     * How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. 
      * @type number
      * @memberof PaymentsApipaymentslistAccounts
      */
@@ -891,29 +925,29 @@ export interface PaymentsApiPaymentslistAccountsRequest {
 
 export interface PaymentsApiReadConnectorConfigRequest {
     /**
-     * The connector code
-     * @type Connectors
+     * The name of the connector.
+     * @type Connector
      * @memberof PaymentsApireadConnectorConfig
      */
-    connector: Connectors
+    connector: Connector
 }
 
 export interface PaymentsApiResetConnectorRequest {
     /**
-     * The connector code
-     * @type Connectors
+     * The name of the connector.
+     * @type Connector
      * @memberof PaymentsApiresetConnector
      */
-    connector: Connectors
+    connector: Connector
 }
 
 export interface PaymentsApiUninstallConnectorRequest {
     /**
-     * The connector code
-     * @type Connectors
+     * The name of the connector.
+     * @type Connector
      * @memberof PaymentsApiuninstallConnector
      */
-    connector: Connectors
+    connector: Connector
 }
 
 export class ObjectPaymentsApi {
@@ -924,52 +958,34 @@ export class ObjectPaymentsApi {
     }
 
     /**
-     * Execute a transfer between two Stripe accounts
+     * Execute a transfer between two Stripe accounts.
      * Transfer funds between Stripe accounts
      * @param param the request object
      */
-    public connectorsStripeTransfer(param: PaymentsApiConnectorsStripeTransferRequest, options?: Configuration): Promise<void> {
+    public connectorsStripeTransfer(param: PaymentsApiConnectorsStripeTransferRequest, options?: Configuration): Promise<any> {
         return this.api.connectorsStripeTransfer(param.stripeTransferRequest,  options).toPromise();
     }
 
     /**
-     * Get all installed connectors
-     * Get all installed connectors
-     * @param param the request object
-     */
-    public getAllConnectors(param: PaymentsApiGetAllConnectorsRequest = {}, options?: Configuration): Promise<ListConnectorsResponse> {
-        return this.api.getAllConnectors( options).toPromise();
-    }
-
-    /**
-     * Get all available connectors configs
-     * Get all available connectors configs
-     * @param param the request object
-     */
-    public getAllConnectorsConfigs(param: PaymentsApiGetAllConnectorsConfigsRequest = {}, options?: Configuration): Promise<ListConnectorsConfigsResponse> {
-        return this.api.getAllConnectorsConfigs( options).toPromise();
-    }
-
-    /**
-     * Get a specific task associated to the connector
+     * Get a specific task associated to the connector.
      * Read a specific task of the connector
      * @param param the request object
      */
-    public getConnectorTask(param: PaymentsApiGetConnectorTaskRequest, options?: Configuration): Promise<ListConnectorTasks200ResponseInner> {
+    public getConnectorTask(param: PaymentsApiGetConnectorTaskRequest, options?: Configuration): Promise<TaskResponse> {
         return this.api.getConnectorTask(param.connector, param.taskId,  options).toPromise();
     }
 
     /**
-     * Returns a payment.
+     * Get a payment
      * @param param the request object
      */
-    public getPayment(param: PaymentsApiGetPaymentRequest, options?: Configuration): Promise<Payment> {
+    public getPayment(param: PaymentsApiGetPaymentRequest, options?: Configuration): Promise<PaymentResponse> {
         return this.api.getPayment(param.paymentId,  options).toPromise();
     }
 
     /**
-     * Install connector
-     * Install connector
+     * Install a connector by its name and config.
+     * Install a connector
      * @param param the request object
      */
     public installConnector(param: PaymentsApiInstallConnectorRequest, options?: Configuration): Promise<void> {
@@ -977,42 +993,60 @@ export class ObjectPaymentsApi {
     }
 
     /**
+     * List all installed connectors.
+     * List all installed connectors
+     * @param param the request object
+     */
+    public listAllConnectors(param: PaymentsApiListAllConnectorsRequest = {}, options?: Configuration): Promise<ConnectorsResponse> {
+        return this.api.listAllConnectors( options).toPromise();
+    }
+
+    /**
+     * List the configs of each available connector.
+     * List the configs of each available connector
+     * @param param the request object
+     */
+    public listConfigsAvailableConnectors(param: PaymentsApiListConfigsAvailableConnectorsRequest = {}, options?: Configuration): Promise<ConnectorsConfigsResponse> {
+        return this.api.listConfigsAvailableConnectors( options).toPromise();
+    }
+
+    /**
      * List all tasks associated with this connector.
-     * List connector tasks
+     * List tasks from a connector
      * @param param the request object
      */
-    public listConnectorTasks(param: PaymentsApiListConnectorTasksRequest, options?: Configuration): Promise<Array<ListConnectorTasks200ResponseInner>> {
-        return this.api.listConnectorTasks(param.connector,  options).toPromise();
+    public listConnectorTasks(param: PaymentsApiListConnectorTasksRequest, options?: Configuration): Promise<TasksResponse> {
+        return this.api.listConnectorTasks(param.connector, param.pageSize, param.cursor,  options).toPromise();
     }
 
     /**
-     * Returns a list of payments.
+     * List payments
      * @param param the request object
      */
-    public listPayments(param: PaymentsApiListPaymentsRequest = {}, options?: Configuration): Promise<ListPaymentsResponse> {
-        return this.api.listPayments(param.limit, param.skip, param.sort,  options).toPromise();
+    public listPayments(param: PaymentsApiListPaymentsRequest = {}, options?: Configuration): Promise<PaymentsResponse> {
+        return this.api.listPayments(param.pageSize, param.cursor, param.sort,  options).toPromise();
     }
 
     /**
-     * Returns a list of accounts.
+     * List accounts
      * @param param the request object
      */
-    public paymentslistAccounts(param: PaymentsApiPaymentslistAccountsRequest = {}, options?: Configuration): Promise<ListAccountsResponse> {
+    public paymentslistAccounts(param: PaymentsApiPaymentslistAccountsRequest = {}, options?: Configuration): Promise<AccountsResponse> {
         return this.api.paymentslistAccounts(param.limit, param.skip, param.sort,  options).toPromise();
     }
 
     /**
      * Read connector config
-     * Read connector config
+     * Read the config of a connector
      * @param param the request object
      */
-    public readConnectorConfig(param: PaymentsApiReadConnectorConfigRequest, options?: Configuration): Promise<ConnectorConfig> {
+    public readConnectorConfig(param: PaymentsApiReadConnectorConfigRequest, options?: Configuration): Promise<ConnectorConfigResponse> {
         return this.api.readConnectorConfig(param.connector,  options).toPromise();
     }
 
     /**
-     * Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
-     * Reset connector
+     * Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it. 
+     * Reset a connector
      * @param param the request object
      */
     public resetConnector(param: PaymentsApiResetConnectorRequest, options?: Configuration): Promise<void> {
@@ -1020,8 +1054,8 @@ export class ObjectPaymentsApi {
     }
 
     /**
-     * Uninstall  connector
-     * Uninstall connector
+     * Uninstall a connector by its name.
+     * Uninstall a connector
      * @param param the request object
      */
     public uninstallConnector(param: PaymentsApiUninstallConnectorRequest, options?: Configuration): Promise<void> {

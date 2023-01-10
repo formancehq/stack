@@ -5,9 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/formancehq/payments/internal/pkg/configtemplate"
-
 	"github.com/formancehq/payments/internal/app/connectors"
+	"github.com/formancehq/payments/internal/pkg/configtemplate"
 )
 
 type Config struct {

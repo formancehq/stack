@@ -3,18 +3,17 @@ package api
 import (
 	"net/http"
 
-	"github.com/formancehq/payments/internal/app/models"
-
-	"github.com/formancehq/payments/internal/app/storage"
-
+	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/go-libs/auth"
 	"github.com/formancehq/payments/internal/app/integration"
+	"github.com/formancehq/payments/internal/app/models"
+	"github.com/formancehq/payments/internal/app/storage"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 )
 
-func httpRouter(store *storage.Storage, connectorHandlers []connectorHandler) (*mux.Router, error) {
+func httpRouter(store *storage.Storage, serviceInfo api.ServiceInfo, connectorHandlers []connectorHandler) (*mux.Router, error) {
 	rootMux := mux.NewRouter()
 
 	if viper.GetBool(otelTracesFlag) {
@@ -27,6 +26,7 @@ func httpRouter(store *storage.Storage, connectorHandlers []connectorHandler) (*
 
 	rootMux.Path("/_health").Handler(healthHandler(store))
 	rootMux.Path("/_live").Handler(liveHandler())
+	rootMux.Path("/_info").Handler(api.InfoHandler(serviceInfo))
 
 	authGroup := rootMux.Name("authenticated").Subrouter()
 

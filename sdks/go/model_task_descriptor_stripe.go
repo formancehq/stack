@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -27,7 +27,7 @@ type TaskDescriptorStripe struct {
 	// The error message if the task failed
 	Error *string `json:"error,omitempty"`
 	// The task state
-	State map[string]interface{} `json:"state,omitempty"`
+	State      map[string]interface{}          `json:"state,omitempty"`
 	Descriptor *TaskDescriptorStripeDescriptor `json:"descriptor,omitempty"`
 }
 
@@ -61,7 +61,7 @@ func (o *TaskDescriptorStripe) GetProvider() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorStripe) GetProviderOk() (*string, bool) {
 	if o == nil || isNil(o.Provider) {
-    return nil, false
+		return nil, false
 	}
 	return o.Provider, true
 }
@@ -93,7 +93,7 @@ func (o *TaskDescriptorStripe) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorStripe) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.CreatedAt) {
-    return nil, false
+		return nil, false
 	}
 	return o.CreatedAt, true
 }
@@ -125,7 +125,7 @@ func (o *TaskDescriptorStripe) GetStatus() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorStripe) GetStatusOk() (*string, bool) {
 	if o == nil || isNil(o.Status) {
-    return nil, false
+		return nil, false
 	}
 	return o.Status, true
 }
@@ -157,7 +157,7 @@ func (o *TaskDescriptorStripe) GetError() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorStripe) GetErrorOk() (*string, bool) {
 	if o == nil || isNil(o.Error) {
-    return nil, false
+		return nil, false
 	}
 	return o.Error, true
 }
@@ -189,7 +189,7 @@ func (o *TaskDescriptorStripe) GetState() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorStripe) GetStateOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.State) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.State, true
 }
@@ -221,7 +221,7 @@ func (o *TaskDescriptorStripe) GetDescriptor() TaskDescriptorStripeDescriptor {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorStripe) GetDescriptorOk() (*TaskDescriptorStripeDescriptor, bool) {
 	if o == nil || isNil(o.Descriptor) {
-    return nil, false
+		return nil, false
 	}
 	return o.Descriptor, true
 }
@@ -298,5 +298,3 @@ func (v *NullableTaskDescriptorStripe) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

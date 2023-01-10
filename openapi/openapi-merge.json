@@ -62,6 +62,18 @@
       "dispute": {
         "prefix": "wallets"
       }
+    },
+    {
+      "inputFile": "./../components/orchestration/openapi.yml",
+      "pathModification":{
+        "prepend": "/api/orchestration"
+      },
+      "operationSelection": {
+        "excludeTags": ["Health"]
+      },
+      "dispute": {
+        "prefix": "orchestration"
+      }
     }
   ],
   "output": "./build/generate.json"

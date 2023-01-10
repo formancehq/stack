@@ -244,7 +244,7 @@ import (
 
 func main() {
     id := "id_example" // string | 
-    creditWalletRequest := *client.NewCreditWalletRequest(*client.NewMonetary("Asset_example", int64(123)), []client.Subject{client.Subject{LedgerAccountSubject: client.NewLedgerAccountSubject("Type_example", "Identifier_example")}}) // CreditWalletRequest |  (optional)
+    creditWalletRequest := *client.NewCreditWalletRequest(*client.NewMonetary("Asset_example", int64(123)), []client.Subject{*client.NewSubject("Type_example", "Identifier_example")}) // CreditWalletRequest |  (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)

@@ -15,6 +15,7 @@ package com.formance.formance.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import com.formance.formance.model.Connector;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -40,7 +41,7 @@ public class PaymentsAccount {
 
   public static final String SERIALIZED_NAME_PROVIDER = "provider";
   @SerializedName(SERIALIZED_NAME_PROVIDER)
-  private String provider;
+  private Connector provider;
 
   public static final String SERIALIZED_NAME_REFERENCE = "reference";
   @SerializedName(SERIALIZED_NAME_REFERENCE)
@@ -146,7 +147,7 @@ public class PaymentsAccount {
   }
 
 
-  public PaymentsAccount provider(String provider) {
+  public PaymentsAccount provider(Connector provider) {
     
     this.provider = provider;
     return this;
@@ -159,12 +160,12 @@ public class PaymentsAccount {
   @javax.annotation.Nonnull
   @ApiModelProperty(required = true, value = "")
 
-  public String getProvider() {
+  public Connector getProvider() {
     return provider;
   }
 
 
-  public void setProvider(String provider) {
+  public void setProvider(Connector provider) {
     this.provider = provider;
   }
 

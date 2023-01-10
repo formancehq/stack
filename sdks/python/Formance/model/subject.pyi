@@ -49,7 +49,7 @@ class Subject(
         
         @classmethod
         @functools.lru_cache()
-        def one_of(cls):
+        def any_of(cls):
             # we need this here to make our import statements work
             # we must store _composed_schemas in here so the code is only run
             # when we invoke this method. If we kept this at the class

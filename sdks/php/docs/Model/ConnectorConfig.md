@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **polling_period** | **string** | The frequency at which the connector will fetch transactions | [optional]
 **api_key** | **string** |  |
-**page_size** | **float** | Number of BalanceTransaction to fetch at each polling interval. | [optional] [default to 10]
+**page_size** | **int** | Number of BalanceTransaction to fetch at each polling interval. | [optional] [default to 10]
 **file_polling_period** | **string** | The frequency at which the connector will try to fetch new payment objects from the directory | [optional] [default to '10s']
 **file_generation_period** | **string** | The frequency at which the connector will create new payment objects in the directory | [optional] [default to '10s']
 **directory** | **string** |  |

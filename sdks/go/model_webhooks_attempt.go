@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -18,16 +18,16 @@ import (
 
 // WebhooksAttempt struct for WebhooksAttempt
 type WebhooksAttempt struct {
-	Id *string `json:"id,omitempty"`
-	WebhookID *string `json:"webhookID,omitempty"`
-	CreatedAt *time.Time `json:"createdAt,omitempty"`
-	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
-	Config *WebhooksConfig `json:"config,omitempty"`
-	Payload *string `json:"payload,omitempty"`
-	StatusCode *int32 `json:"statusCode,omitempty"`
-	RetryAttempt *int32 `json:"retryAttempt,omitempty"`
-	Status *string `json:"status,omitempty"`
-	NextRetryAfter *time.Time `json:"nextRetryAfter,omitempty"`
+	Id             *string         `json:"id,omitempty"`
+	WebhookID      *string         `json:"webhookID,omitempty"`
+	CreatedAt      *time.Time      `json:"createdAt,omitempty"`
+	UpdatedAt      *time.Time      `json:"updatedAt,omitempty"`
+	Config         *WebhooksConfig `json:"config,omitempty"`
+	Payload        *string         `json:"payload,omitempty"`
+	StatusCode     *int32          `json:"statusCode,omitempty"`
+	RetryAttempt   *int32          `json:"retryAttempt,omitempty"`
+	Status         *string         `json:"status,omitempty"`
+	NextRetryAfter *time.Time      `json:"nextRetryAfter,omitempty"`
 }
 
 // NewWebhooksAttempt instantiates a new WebhooksAttempt object
@@ -60,7 +60,7 @@ func (o *WebhooksAttempt) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *WebhooksAttempt) GetIdOk() (*string, bool) {
 	if o == nil || isNil(o.Id) {
-    return nil, false
+		return nil, false
 	}
 	return o.Id, true
 }
@@ -92,7 +92,7 @@ func (o *WebhooksAttempt) GetWebhookID() string {
 // and a boolean to check if the value has been set.
 func (o *WebhooksAttempt) GetWebhookIDOk() (*string, bool) {
 	if o == nil || isNil(o.WebhookID) {
-    return nil, false
+		return nil, false
 	}
 	return o.WebhookID, true
 }
@@ -124,7 +124,7 @@ func (o *WebhooksAttempt) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WebhooksAttempt) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.CreatedAt) {
-    return nil, false
+		return nil, false
 	}
 	return o.CreatedAt, true
 }
@@ -156,7 +156,7 @@ func (o *WebhooksAttempt) GetUpdatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WebhooksAttempt) GetUpdatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.UpdatedAt) {
-    return nil, false
+		return nil, false
 	}
 	return o.UpdatedAt, true
 }
@@ -188,7 +188,7 @@ func (o *WebhooksAttempt) GetConfig() WebhooksConfig {
 // and a boolean to check if the value has been set.
 func (o *WebhooksAttempt) GetConfigOk() (*WebhooksConfig, bool) {
 	if o == nil || isNil(o.Config) {
-    return nil, false
+		return nil, false
 	}
 	return o.Config, true
 }
@@ -220,7 +220,7 @@ func (o *WebhooksAttempt) GetPayload() string {
 // and a boolean to check if the value has been set.
 func (o *WebhooksAttempt) GetPayloadOk() (*string, bool) {
 	if o == nil || isNil(o.Payload) {
-    return nil, false
+		return nil, false
 	}
 	return o.Payload, true
 }
@@ -252,7 +252,7 @@ func (o *WebhooksAttempt) GetStatusCode() int32 {
 // and a boolean to check if the value has been set.
 func (o *WebhooksAttempt) GetStatusCodeOk() (*int32, bool) {
 	if o == nil || isNil(o.StatusCode) {
-    return nil, false
+		return nil, false
 	}
 	return o.StatusCode, true
 }
@@ -284,7 +284,7 @@ func (o *WebhooksAttempt) GetRetryAttempt() int32 {
 // and a boolean to check if the value has been set.
 func (o *WebhooksAttempt) GetRetryAttemptOk() (*int32, bool) {
 	if o == nil || isNil(o.RetryAttempt) {
-    return nil, false
+		return nil, false
 	}
 	return o.RetryAttempt, true
 }
@@ -316,7 +316,7 @@ func (o *WebhooksAttempt) GetStatus() string {
 // and a boolean to check if the value has been set.
 func (o *WebhooksAttempt) GetStatusOk() (*string, bool) {
 	if o == nil || isNil(o.Status) {
-    return nil, false
+		return nil, false
 	}
 	return o.Status, true
 }
@@ -348,7 +348,7 @@ func (o *WebhooksAttempt) GetNextRetryAfter() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WebhooksAttempt) GetNextRetryAfterOk() (*time.Time, bool) {
 	if o == nil || isNil(o.NextRetryAfter) {
-    return nil, false
+		return nil, false
 	}
 	return o.NextRetryAfter, true
 }
@@ -437,5 +437,3 @@ func (v *NullableWebhooksAttempt) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

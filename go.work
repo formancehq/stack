@@ -2,18 +2,19 @@ go 1.19
 
 use (
 	.
-	./libs/go-libs
-	./libs/go-project-template
-	./sdks/go
 	./components/auth
 	./components/fctl
 	./components/fctl/membershipclient
 	./components/ledger
 	./components/machine
+	./components/operator
 	./components/orchestration
 	./components/payments
 	./components/payments/client
 	./components/search
 	./components/wallets
 	./components/webhooks
+	./libs/go-libs
+	./libs/go-project-template
+	./sdks/go
 )

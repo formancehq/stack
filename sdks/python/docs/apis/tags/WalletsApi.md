@@ -469,10 +469,7 @@ with Formance.ApiClient(configuration) as api_client:
         ),
         reference="reference_example",
         sources=[
-            Subject(
-                type="ACCOUNT",
-                identifier="identifier_example",
-            )
+            Subject(None)
         ],
         balance="balance_example",
     )
@@ -617,10 +614,7 @@ with Formance.ApiClient(configuration) as api_client:
             "key": None,
         ),
         description="description_example",
-        destination=Subject(
-            type="ACCOUNT",
-            identifier="identifier_example",
-        ),
+        destination=Subject(None),
         balances=[
             "balances_example"
         ],

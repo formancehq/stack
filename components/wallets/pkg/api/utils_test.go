@@ -16,7 +16,6 @@ import (
 	"github.com/formancehq/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
@@ -81,7 +80,7 @@ func newTestEnv(opts ...Option) *testEnv {
 	ret := &testEnv{}
 	ledgerMock := NewLedgerMock(opts...)
 	ret.chart = wallet.NewChart("")
-	ret.ledgerName = uuid.NewString()
+	ret.ledgerName = "default"
 	manager := wallet.NewManager(ret.ledgerName, ledgerMock, ret.chart)
 	ret.router = NewRouter(manager, &sharedhealth.HealthController{}, sharedapi.ServiceInfo{
 		Version: "latest",

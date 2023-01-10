@@ -21,7 +21,7 @@ func TestWalletsList(t *testing.T) {
 
 	var wallets []wallet.Wallet
 	for i := 0; i < 10; i++ {
-		wallets = append(wallets, wallet.NewWallet(uuid.NewString(), metadata.Metadata{}))
+		wallets = append(wallets, wallet.NewWallet(uuid.NewString(), "default", metadata.Metadata{}))
 	}
 	const pageSize = 2
 	numberOfPages := int64(len(wallets) / pageSize)
@@ -105,7 +105,7 @@ func TestWalletsListByName(t *testing.T) {
 
 	var wallets []wallet.Wallet
 	for i := 0; i < 10; i++ {
-		wallets = append(wallets, wallet.NewWallet(uuid.NewString(), metadata.Metadata{}))
+		wallets = append(wallets, wallet.NewWallet(uuid.NewString(), "default", metadata.Metadata{}))
 	}
 
 	var testEnv *testEnv
@@ -148,7 +148,7 @@ func TestWalletsListFilterMetadata(t *testing.T) {
 
 	var wallets []wallet.Wallet
 	for i := 0; i < 10; i++ {
-		wallets = append(wallets, wallet.NewWallet(uuid.NewString(), metadata.Metadata{
+		wallets = append(wallets, wallet.NewWallet(uuid.NewString(), "default", metadata.Metadata{
 			"wallet": float64(i),
 		}))
 	}

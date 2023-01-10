@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Endpoint** | **string** |  | 
-**Secret** | Pointer to **string** |  | [optional] 
-**EventTypes** | **[]string** |  | 
+**Endpoint** | **string** |  |
+**Secret** | Pointer to **string** |  | [optional]
+**EventTypes** | **[]string** |  |
 
 ## Methods
 
@@ -94,5 +94,3 @@ SetEventTypes sets EventTypes field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

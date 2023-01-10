@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **string** |  |
 **created_at** | **\DateTime** |  |
-**provider** | **string** |  |
+**provider** | [**\Formance\Model\Connector**](Connector.md) |  |
 **reference** | **string** |  |
 **type** | **string** |  |
 

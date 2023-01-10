@@ -1,0 +1,197 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cors-all
+spec:
+  headers:
+    accessControlAllowOriginList:
+    - "*"
+    accessControlAllowHeaders:
+    - "Authorization"
+    - "content-type"
+    accessControlAllowMethods:
+    - "*"
+    accessControlAllowCredentials: true
+    accessControlMaxAge: 100
+    addVaryHeader: true
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+    - /api/auth
+    - /api/dex
+    - /api/jaeger
+    - /api/ledger
+    - /api/webhooks
+---
+apiVersion: stack.formance.com/v1beta2
+kind: Configuration
+metadata:
+  name: stacks
+spec:
+  # Define global ingress configuration
+  ingress:
+    annotations:
+      traefik.ingress.kubernetes.io/router.middlewares: default-stripprefix@kubernetescrd, default-cors-all@kubernetescrd
+  monitoring:
+    traces:
+      otlp:
+        endpoint: otel-collector-opentelemetry-collector.default.svc.cluster.local
+        insecure: true
+        mode: grpc
+        port: 4317
+        resourceAttributes: "foo=bar"
+  temporal:
+    address: "local-operator.sihc8.tmprl.cloud:7233"
+    namespace: "local-operator.sihc8"
+    tls:
+      crt: |
+        -----BEGIN CERTIFICATE-----
+        MIID0TCCArmgAwIBAgIUBWL9JuGsVD+6XDPlYG9CO4DhU7UwDQYJKoZIhvcNAQEL
+        BQAwFjEUMBIGA1UEAxMLZXhhbXBsZS5jb20wHhcNMjMwMTE4MTY0NzAxWhcNMjMw
+        MTE5MTY0NzMxWjAjMSEwHwYDVQQDDBgqLnN0YWdpbmcuZm9ybWFuY2UuY2xvdWQw
+        ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC1QOnOJGbaP3xM6Q1ClpCV
+        Lo8X4eoy32qrfAOosk1C3YRBKF2xzY0R0dHFMI0d50jzhmzrL1wEyGBeavB6YJnP
+        LJoMPVroxiZlCEcSRvu0ruLS60roKM8sxuy/0A78qBsUd/yboipr5pAGVVeGF8+o
+        yPpNjdKcwwELuAZYOPad4YILYT325bibENLLnsEFNz/4jC7YEWgYkIL2Gdy+EtPh
+        LrXK1XGoNFug59ID0UPzS5Eyi8JHQlBErS/KP7QqixF0CZt4z4ZIpcKbhWxIgmoq
+        lZMx3BNE21vJH3lOUbxxCYGwQDTqRZkXB1Opalwaw4vufNjcnlb1l/oYLmHlCoUh
+        AgMBAAGjggEIMIIBBDAOBgNVHQ8BAf8EBAMCA6gwHQYDVR0lBBYwFAYIKwYBBQUH
+        AwEGCCsGAQUFBwMCMB0GA1UdDgQWBBS6eqKHhB1yOVQi9L9SS6yH7r5zODAfBgNV
+        HSMEGDAWgBR91stiPF2+ODXK9y4VtRkAESIMKjA7BggrBgEFBQcBAQQvMC0wKwYI
+        KwYBBQUHMAKGH2h0dHA6Ly8xMjcuMC4wLjE6ODIwMC92MS9wa2kvY2EwIwYDVR0R
+        BBwwGoIYKi5zdGFnaW5nLmZvcm1hbmNlLmNsb3VkMDEGA1UdHwQqMCgwJqAkoCKG
+        IGh0dHA6Ly8xMjcuMC4wLjE6ODIwMC92MS9wa2kvY3JsMA0GCSqGSIb3DQEBCwUA
+        A4IBAQB4riIRRz5RYbLOFQMXvNd393uguYxlmBDocVPZEuNg7RLqMVTTJ/kkiF/k
+        pkwdjZcIK6oTFbXe/y0wSyJRQIr9CjMMh5NTpehfGRDee9PYR1V9sWs9iUrBsp9S
+        hiXtFm469b2LlwNS64/s4tiPVNyZ1wAk1svfLApjqEzW6Vjp6I9pUL0QwKoH8TF8
+        5wmWMmT/dPX2AQ4fOgQ7KeVp9+PfPRbuHgn+3LhlkoGna4kdKKTK/UQg852UwayX
+        24jqDza8vzyvipfk7/3Pq8eChLIsL4eiMP9MsOcQ3vFK3YhTgpSy1YfgJ0SYcy04
+        Fyh+WJN3w7rJkp7uZ8fpgMAJQ03L
+        -----END CERTIFICATE-----
+      key: |
+        -----BEGIN RSA PRIVATE KEY-----
+        MIIEowIBAAKCAQEAtUDpziRm2j98TOkNQpaQlS6PF+HqMt9qq3wDqLJNQt2EQShd
+        sc2NEdHRxTCNHedI84Zs6y9cBMhgXmrwemCZzyyaDD1a6MYmZQhHEkb7tK7i0utK
+        6CjPLMbsv9AO/KgbFHf8m6Iqa+aQBlVXhhfPqMj6TY3SnMMBC7gGWDj2neGCC2E9
+        9uW4mxDSy57BBTc/+Iwu2BFoGJCC9hncvhLT4S61ytVxqDRboOfSA9FD80uRMovC
+        R0JQRK0vyj+0KosRdAmbeM+GSKXCm4VsSIJqKpWTMdwTRNtbyR95TlG8cQmBsEA0
+        6kWZFwdTqWpcGsOL7nzY3J5W9Zf6GC5h5QqFIQIDAQABAoIBAA572nMbm5BzJEat
+        FN8uUu1o5AxfhCx+h/KeHVi8rsnaE7h1Nk+AAnbbEm00fQJXug+jvU5p4WuMa47/
+        8qmE0KWqhcDWok4Zj3XhXHSMcY61rvB11u2IXU3Rs5d8U8ZC1K8lC22QXt1ydi3b
+        YfwYKQLu1HmgDKV0O8Ao+3DPVH23JgJGvSmCt8SmkpncuYuCkX3KixKe2QUeN01G
+        4PcrdfkfCtQyWpl/Gaxse8DByinrGCvCrQoQsardVlyHx/LqZOrPVkI51aqeOliD
+        0XIzgjoTRIhsqqYhtBtWHfCxFJSvuHV/8U28NBkWr8octCnsQg8S4LSeqipzo4hn
+        +DMhjPECgYEA5eMF2cFeGYmg5/+qTvZHfQDhFZg4ma/qzSrNroqDbXngv+q+38HR
+        uD09BO6Hm4X/+FdEYMj//83PbdmfdwOpXdgnPInNGiM2joHZtF7FkP9oHHBPG/OC
+        ZDy9Ygl5ZWPF51ecCM8DQLpkXJvJMLrD6IsP2+LHTzTMgH0F58O1/tUCgYEAydep
+        4EMG/ydq97q7bZk4jFj+G8iHCu1zY5kJfgZfGL+7p/49cRtXF/MVA96DJex54oe+
+        z8kpJxUAmZ4zywZoFshOcpsfK77JDVlCbSuJTgTtTLtVL+KcRGPyLy6aMk2g0MqE
+        2RHyVPmDMnSzGJLEcR7YlyDhHFO/G7+mLKVTix0CgYAf4cFQ9tlXD1hKdJGpC8zU
+        UEfnF8pZviUBOTt3Rmx9xVZfJ247WAT+2TdaNL6H2iiqx2eLSLUARAnNgU31UoOt
+        qSmf4riYNGP/lZCczDv4JQPKVeUSyk2+GxJkw02bux+aOvM/4X3g/zimA1D+uhgr
+        awXTB/t+R6NI+o3UG7dk1QKBgE+tmfrUmtt4pQpcJYcTWDZXHyC6nUycBdQIYq3k
+        OAAeGCct/vU6dLwYknAvk5gR7N+W9KUz5NHvwYfi4tE/mzF7KzSktb5gFx/033sX
+        F6G74i1LOkqn60Y4Ki+j9uzqphQmDiFeq0oOIVN2rAiET5XUNm4aZaL4EFYU5rVz
+        IjKlAoGBAIY0XVafqLiF6nv5uwEe/HYg9+swVfLbc/PYtq8zBSwYRPH4zO1E39KL
+        Q3cYpk+6kLpqNMXtZAFdrn/iXdlAV9pD8x3d4PlfKb1JumaU46Dm9bPKn7GwYIk9
+        1Djb9v8NVcnggwwAxJeCxxWmk+1uGPUZjOdq/k5Ypwmxbt+OX5V/
+        -----END RSA PRIVATE KEY-----
+  kafka:
+    brokers:
+      - redpanda.default.svc.cluster.local:9092
+  services:
+    auth:
+      postgres:
+        host: postgres-postgresql.default.svc.cluster.local
+        port: 5432
+        username: formance
+        password: formance
+      staticClients:
+      - id: foo
+        public: true
+        secrets:
+        - bar
+    ledger:
+      postgres:
+        host: postgres-postgresql.default.svc.cluster.local
+        port: 5432
+        username: formance
+        password: formance
+        disableSSLMode: true
+      locking:
+        strategy: redis
+        redis:
+          uri: redis://redis-headless.default.svc.cluster.local:6379
+    payments:
+      postgres:
+        host: postgres-postgresql.default.svc.cluster.local
+        port: 5432
+        username: formance
+        password: formance
+        disableSSLMode: true
+    orchestration:
+      postgres:
+        host: postgres-postgresql.default.svc.cluster.local
+        port: 5432
+        username: formance
+        password: formance
+        disableSSLMode: true
+    search:
+      elasticSearch:
+        host: zinc.default.svc.cluster.local
+        port: 4080
+        scheme: http
+        pathPrefix: /api
+        useZinc: true
+        basicAuth:
+          username: admin
+          password: "Complexpass#123"
+    webhooks:
+      postgres:
+        host: postgres-postgresql.default.svc.cluster.local
+        port: 5432
+        username: formance
+        password: formance
+        disableSSLMode: true
+    counterparties:
+      postgres:
+        host: postgres-postgresql.default.svc.cluster.local
+        port: 5432
+        username: formance
+        password: formance
+        disableSSLMode: true
+---
+apiVersion: stack.formance.com/v1beta2
+kind: Versions
+metadata:
+  name: default
+spec:
+  control: 59e871d64514ec01c84ea18b34cf0788d17d7f63
+  search: fa29fbcfa983990ef1042274e3d928713865b6a7
+  orchestration: 6d3e981b6d05224caca139f3920373a8cee0ba3c
+---
+apiVersion: stack.formance.com/v1beta2
+kind: Stack
+metadata:
+  name: stack1
+spec:
+  debug: true
+  dev: true
+  scheme: http
+  host: host.k3d.internal
+  seed: stacks
+  auth:
+    delegatedOIDCServer:
+      issuer: http://host.k3d.internal/api/dex
+      clientID: dexclient
+      clientSecret: dexclient
+    staticClients:
+    - id: foo2
+      secrets:
+      - bar2

@@ -9,5 +9,6 @@ Name | Type | Description | Notes
 **name** | **string** |  |
 **created_at** | **\DateTime** |  |
 **balances** | [**\Formance\Model\WalletWithBalancesBalances**](WalletWithBalancesBalances.md) |  |
+**ledger** | **string** |  |
 
 [[Back to Model list]](../../README.md#models) [[Back to API list]](../../README.md#endpoints) [[Back to README]](../../README.md)

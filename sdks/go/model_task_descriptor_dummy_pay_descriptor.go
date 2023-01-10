@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -17,8 +17,8 @@ import (
 
 // TaskDescriptorDummyPayDescriptor struct for TaskDescriptorDummyPayDescriptor
 type TaskDescriptorDummyPayDescriptor struct {
-	Name *string `json:"name,omitempty"`
-	Key *string `json:"key,omitempty"`
+	Name     *string `json:"name,omitempty"`
+	Key      *string `json:"key,omitempty"`
 	FileName *string `json:"fileName,omitempty"`
 }
 
@@ -52,7 +52,7 @@ func (o *TaskDescriptorDummyPayDescriptor) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorDummyPayDescriptor) GetNameOk() (*string, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return o.Name, true
 }
@@ -84,7 +84,7 @@ func (o *TaskDescriptorDummyPayDescriptor) GetKey() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorDummyPayDescriptor) GetKeyOk() (*string, bool) {
 	if o == nil || isNil(o.Key) {
-    return nil, false
+		return nil, false
 	}
 	return o.Key, true
 }
@@ -116,7 +116,7 @@ func (o *TaskDescriptorDummyPayDescriptor) GetFileName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorDummyPayDescriptor) GetFileNameOk() (*string, bool) {
 	if o == nil || isNil(o.FileName) {
-    return nil, false
+		return nil, false
 	}
 	return o.FileName, true
 }
@@ -184,5 +184,3 @@ func (v *NullableTaskDescriptorDummyPayDescriptor) UnmarshalJSON(src []byte) err
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

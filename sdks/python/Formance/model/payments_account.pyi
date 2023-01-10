@@ -46,7 +46,10 @@ class PaymentsAccount(
         class properties:
             id = schemas.StrSchema
             createdAt = schemas.DateTimeSchema
-            provider = schemas.StrSchema
+        
+            @staticmethod
+            def provider() -> typing.Type['Connector']:
+                return Connector
             reference = schemas.StrSchema
             
             
@@ -72,7 +75,7 @@ class PaymentsAccount(
     
     reference: MetaOapg.properties.reference
     createdAt: MetaOapg.properties.createdAt
-    provider: MetaOapg.properties.provider
+    provider: 'Connector'
     id: MetaOapg.properties.id
     type: MetaOapg.properties.type
     
@@ -83,7 +86,7 @@ class PaymentsAccount(
     def __getitem__(self, name: typing_extensions.Literal["createdAt"]) -> MetaOapg.properties.createdAt: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["provider"]) -> MetaOapg.properties.provider: ...
+    def __getitem__(self, name: typing_extensions.Literal["provider"]) -> 'Connector': ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["reference"]) -> MetaOapg.properties.reference: ...
@@ -106,7 +109,7 @@ class PaymentsAccount(
     def get_item_oapg(self, name: typing_extensions.Literal["createdAt"]) -> MetaOapg.properties.createdAt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["provider"]) -> MetaOapg.properties.provider: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["provider"]) -> 'Connector': ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["reference"]) -> MetaOapg.properties.reference: ...
@@ -126,7 +129,7 @@ class PaymentsAccount(
         *args: typing.Union[dict, frozendict.frozendict, ],
         reference: typing.Union[MetaOapg.properties.reference, str, ],
         createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, ],
-        provider: typing.Union[MetaOapg.properties.provider, str, ],
+        provider: 'Connector',
         id: typing.Union[MetaOapg.properties.id, str, ],
         type: typing.Union[MetaOapg.properties.type, str, ],
         _configuration: typing.Optional[schemas.Configuration] = None,
@@ -143,3 +146,5 @@ class PaymentsAccount(
             _configuration=_configuration,
             **kwargs,
         )
+
+from Formance.model.connector import Connector

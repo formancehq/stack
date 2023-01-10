@@ -263,7 +263,9 @@ func (m *Manager) ListWallets(ctx context.Context, query ListQuery[ListWallets])
 			}
 			return metadata
 		},
-	}, FromAccount)
+	}, func(account Account) Wallet {
+		return FromAccount(m.ledgerName, account)
+	})
 }
 
 func (m *Manager) ListHolds(ctx context.Context, query ListQuery[ListHolds]) (*ListResponse[DebitHold], error) {
@@ -332,7 +334,7 @@ func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTran
 }
 
 func (m *Manager) CreateWallet(ctx context.Context, data *CreateRequest) (*Wallet, error) {
-	wallet := NewWallet(data.Name, data.Metadata)
+	wallet := NewWallet(data.Name, m.ledgerName, data.Metadata)
 
 	if err := m.client.AddMetadataToAccount(
 		ctx,
@@ -387,7 +389,7 @@ func (m *Manager) GetWallet(ctx context.Context, id string) (*WithBalances, erro
 		return nil, ErrWalletNotFound
 	}
 
-	return Ptr(WithBalancesFromAccount(account)), nil
+	return Ptr(WithBalancesFromAccount(m.ledgerName, account)), nil
 }
 
 func (m *Manager) GetHold(ctx context.Context, id string) (*ExpandedDebitHold, error) {

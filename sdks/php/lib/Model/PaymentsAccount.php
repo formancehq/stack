@@ -60,7 +60,7 @@ class PaymentsAccount implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPITypes = [
         'id' => 'string',
         'created_at' => '\DateTime',
-        'provider' => 'string',
+        'provider' => '\Formance\Model\Connector',
         'reference' => 'string',
         'type' => 'string'
     ];
@@ -418,7 +418,7 @@ class PaymentsAccount implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets provider
      *
-     * @return string
+     * @return \Formance\Model\Connector
      */
     public function getProvider()
     {
@@ -428,7 +428,7 @@ class PaymentsAccount implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets provider
      *
-     * @param string $provider provider
+     * @param \Formance\Model\Connector $provider provider
      *
      * @return self
      */

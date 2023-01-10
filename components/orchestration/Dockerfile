@@ -23,4 +23,4 @@ RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lis
 COPY --from=builder /go/src/github.com/formancehq/orchestration/orchestration /usr/local/bin/orchestration
 EXPOSE 8080
 ENTRYPOINT ["orchestration"]
-CMD ["server"]
+CMD ["serve"]

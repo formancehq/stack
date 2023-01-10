@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -26,7 +26,7 @@ type StripeTask struct {
 	MoreRecentId *string `json:"moreRecentId,omitempty"`
 	// The creation date of the more recent BalanceTransaction fetched from stripe for this account
 	MoreRecentDate *time.Time `json:"moreRecentDate,omitempty"`
-	NoMoreHistory *bool `json:"noMoreHistory,omitempty"`
+	NoMoreHistory  *bool      `json:"noMoreHistory,omitempty"`
 }
 
 // NewStripeTask instantiates a new StripeTask object
@@ -59,7 +59,7 @@ func (o *StripeTask) GetOldestId() string {
 // and a boolean to check if the value has been set.
 func (o *StripeTask) GetOldestIdOk() (*string, bool) {
 	if o == nil || isNil(o.OldestId) {
-    return nil, false
+		return nil, false
 	}
 	return o.OldestId, true
 }
@@ -91,7 +91,7 @@ func (o *StripeTask) GetOldestDate() time.Time {
 // and a boolean to check if the value has been set.
 func (o *StripeTask) GetOldestDateOk() (*time.Time, bool) {
 	if o == nil || isNil(o.OldestDate) {
-    return nil, false
+		return nil, false
 	}
 	return o.OldestDate, true
 }
@@ -123,7 +123,7 @@ func (o *StripeTask) GetMoreRecentId() string {
 // and a boolean to check if the value has been set.
 func (o *StripeTask) GetMoreRecentIdOk() (*string, bool) {
 	if o == nil || isNil(o.MoreRecentId) {
-    return nil, false
+		return nil, false
 	}
 	return o.MoreRecentId, true
 }
@@ -155,7 +155,7 @@ func (o *StripeTask) GetMoreRecentDate() time.Time {
 // and a boolean to check if the value has been set.
 func (o *StripeTask) GetMoreRecentDateOk() (*time.Time, bool) {
 	if o == nil || isNil(o.MoreRecentDate) {
-    return nil, false
+		return nil, false
 	}
 	return o.MoreRecentDate, true
 }
@@ -187,7 +187,7 @@ func (o *StripeTask) GetNoMoreHistory() bool {
 // and a boolean to check if the value has been set.
 func (o *StripeTask) GetNoMoreHistoryOk() (*bool, bool) {
 	if o == nil || isNil(o.NoMoreHistory) {
-    return nil, false
+		return nil, false
 	}
 	return o.NoMoreHistory, true
 }
@@ -261,5 +261,3 @@ func (v *NullableStripeTask) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

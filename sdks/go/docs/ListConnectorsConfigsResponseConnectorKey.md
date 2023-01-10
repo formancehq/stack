@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Datatype** | Pointer to **string** |  | [optional] 
-**Required** | Pointer to **bool** |  | [optional] 
+**Datatype** | Pointer to **string** |  | [optional]
+**Required** | Pointer to **bool** |  | [optional]
 
 ## Methods
 
@@ -78,5 +78,3 @@ HasRequired returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

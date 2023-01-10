@@ -1,0 +1,10 @@
+---
+kind: Module
+description: Temporal
+type: container
+name: temporal
+services:
+- name: temporal
+  ports:
+  - name: grpc
+    containerPort: 7233

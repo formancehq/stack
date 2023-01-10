@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/fctl/cmd/auth"
 	"github.com/formancehq/fctl/cmd/cloud"
 	"github.com/formancehq/fctl/cmd/ledger"
+	"github.com/formancehq/fctl/cmd/orchestration"
 	"github.com/formancehq/fctl/cmd/payments"
 	"github.com/formancehq/fctl/cmd/profiles"
 	"github.com/formancehq/fctl/cmd/search"
@@ -17,6 +18,7 @@ import (
 	"github.com/formancehq/fctl/cmd/wallets"
 	"github.com/formancehq/fctl/cmd/webhooks"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -49,6 +51,7 @@ func NewRootCommand() *cobra.Command {
 			search.NewCommand(),
 			webhooks.NewCommand(),
 			wallets.NewCommand(),
+			orchestration.NewCommand(),
 		),
 		fctl.WithPersistentStringPFlag(fctl.ProfileFlag, "p", "", "config profile to use"),
 		fctl.WithPersistentStringPFlag(fctl.FileFlag, "c", fmt.Sprintf("%s/.formance/fctl.config", homedir), "Debug mode"),
@@ -110,8 +113,8 @@ func Execute() {
 		case errors.Is(err, fctl.ErrMissingApproval):
 			fctl.Error(os.Stderr, "Command aborted as you didn't approve.")
 			os.Exit(1)
-		case fctl.ExtractOpenAPIErrorMessage(err) != nil:
-			fctl.Error(os.Stderr, fctl.ExtractOpenAPIErrorMessage(err).Error())
+		case formance.ExtractOpenAPIErrorMessage(err) != nil:
+			fctl.Error(os.Stderr, formance.ExtractOpenAPIErrorMessage(err).Error())
 			os.Exit(2)
 		default:
 			fctl.Error(os.Stderr, err.Error())

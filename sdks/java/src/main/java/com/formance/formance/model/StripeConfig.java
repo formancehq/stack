@@ -23,7 +23,6 @@ import com.google.gson.stream.JsonWriter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
-import java.math.BigDecimal;
 
 /**
  * StripeConfig
@@ -40,7 +39,7 @@ public class StripeConfig {
 
   public static final String SERIALIZED_NAME_PAGE_SIZE = "pageSize";
   @SerializedName(SERIALIZED_NAME_PAGE_SIZE)
-  private BigDecimal pageSize = new BigDecimal("10");
+  private Long pageSize = 10l;
 
   public StripeConfig() {
   }
@@ -52,11 +51,11 @@ public class StripeConfig {
   }
 
    /**
-   * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe api
+   * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API. 
    * @return pollingPeriod
   **/
   @javax.annotation.Nullable
-  @ApiModelProperty(example = "60s", value = "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe api")
+  @ApiModelProperty(example = "60s", value = "The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API. ")
 
   public String getPollingPeriod() {
     return pollingPeriod;
@@ -91,7 +90,7 @@ public class StripeConfig {
   }
 
 
-  public StripeConfig pageSize(BigDecimal pageSize) {
+  public StripeConfig pageSize(Long pageSize) {
     
     this.pageSize = pageSize;
     return this;
@@ -99,17 +98,18 @@ public class StripeConfig {
 
    /**
    * Number of BalanceTransaction to fetch at each polling interval. 
+   * minimum: 0
    * @return pageSize
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(example = "50", value = "Number of BalanceTransaction to fetch at each polling interval. ")
 
-  public BigDecimal getPageSize() {
+  public Long getPageSize() {
     return pageSize;
   }
 
 
-  public void setPageSize(BigDecimal pageSize) {
+  public void setPageSize(Long pageSize) {
     this.pageSize = pageSize;
   }
 

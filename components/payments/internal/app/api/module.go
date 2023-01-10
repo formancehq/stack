@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"runtime/debug"
+	"strconv"
 	"strings"
 	"time"
 
@@ -41,7 +42,7 @@ const (
 	serviceName = "Payments"
 )
 
-func HTTPModule() fx.Option {
+func HTTPModule(serviceInfo api.ServiceInfo) fx.Option {
 	return fx.Options(
 		fx.Invoke(func(m *mux.Router, lc fx.Lifecycle) {
 			lc.Append(fx.Hook{
@@ -65,7 +66,8 @@ func HTTPModule() fx.Option {
 				},
 			})
 		}),
-		fx.Provide(fx.Annotate(httpRouter, fx.ParamTags(``, `group:"connectorHandlers"`))),
+		fx.Supply(serviceInfo),
+		fx.Provide(fx.Annotate(httpRouter, fx.ParamTags(``, ``, `group:"connectorHandlers"`))),
 		addConnector[dummypay.Config](dummypay.NewLoader()),
 		addConnector[modulr.Config](modulr.NewLoader()),
 		addConnector[stripe.Config](stripe.NewLoader()),
@@ -152,4 +154,17 @@ func handleValidationError(w http.ResponseWriter, r *http.Request, err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func pageSizeQueryParam(r *http.Request) (int, error) {
+	if value := r.URL.Query().Get("pageSize"); value != "" {
+		ret, err := strconv.ParseInt(value, 10, 32)
+		if err != nil {
+			return 0, err
+		}
+
+		return int(ret), nil
+	}
+
+	return 0, nil
 }

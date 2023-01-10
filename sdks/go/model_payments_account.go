@@ -20,7 +20,7 @@ import (
 type PaymentsAccount struct {
 	Id string `json:"id"`
 	CreatedAt time.Time `json:"createdAt"`
-	Provider string `json:"provider"`
+	Provider Connector `json:"provider"`
 	Reference string `json:"reference"`
 	Type string `json:"type"`
 }
@@ -29,7 +29,7 @@ type PaymentsAccount struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPaymentsAccount(id string, createdAt time.Time, provider string, reference string, type_ string) *PaymentsAccount {
+func NewPaymentsAccount(id string, createdAt time.Time, provider Connector, reference string, type_ string) *PaymentsAccount {
 	this := PaymentsAccount{}
 	this.Id = id
 	this.CreatedAt = createdAt
@@ -96,9 +96,9 @@ func (o *PaymentsAccount) SetCreatedAt(v time.Time) {
 }
 
 // GetProvider returns the Provider field value
-func (o *PaymentsAccount) GetProvider() string {
+func (o *PaymentsAccount) GetProvider() Connector {
 	if o == nil {
-		var ret string
+		var ret Connector
 		return ret
 	}
 
@@ -107,7 +107,7 @@ func (o *PaymentsAccount) GetProvider() string {
 
 // GetProviderOk returns a tuple with the Provider field value
 // and a boolean to check if the value has been set.
-func (o *PaymentsAccount) GetProviderOk() (*string, bool) {
+func (o *PaymentsAccount) GetProviderOk() (*Connector, bool) {
 	if o == nil {
     return nil, false
 	}
@@ -115,7 +115,7 @@ func (o *PaymentsAccount) GetProviderOk() (*string, bool) {
 }
 
 // SetProvider sets field value
-func (o *PaymentsAccount) SetProvider(v string) {
+func (o *PaymentsAccount) SetProvider(v Connector) {
 	o.Provider = v
 }
 

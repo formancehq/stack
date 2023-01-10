@@ -25,14 +25,14 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.list_connectors_response import ListConnectorsResponse
+from Formance.model.connectors_response import ConnectorsResponse
 
 from . import path
 
 _auth = [
     'Authorization',
 ]
-SchemaFor200ResponseBodyApplicationJson = ListConnectorsResponse
+SchemaFor200ResponseBodyApplicationJson = ConnectorsResponse
 
 
 @dataclass
@@ -61,7 +61,7 @@ _all_accept_content_types = (
 
 class BaseApi(api_client.Api):
     @typing.overload
-    def _get_all_connectors_oapg(
+    def _list_all_connectors_oapg(
         self,
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -72,7 +72,7 @@ class BaseApi(api_client.Api):
     ]: ...
 
     @typing.overload
-    def _get_all_connectors_oapg(
+    def _list_all_connectors_oapg(
         self,
         skip_deserialization: typing_extensions.Literal[True],
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -81,7 +81,7 @@ class BaseApi(api_client.Api):
     ) -> api_client.ApiResponseWithoutDeserialization: ...
 
     @typing.overload
-    def _get_all_connectors_oapg(
+    def _list_all_connectors_oapg(
         self,
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -92,7 +92,7 @@ class BaseApi(api_client.Api):
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
 
-    def _get_all_connectors_oapg(
+    def _list_all_connectors_oapg(
         self,
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -100,7 +100,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: bool = False,
     ):
         """
-        Get all installed connectors
+        List all installed connectors
         :param skip_deserialization: If true then api_response.response will be set but
             api_response.body and api_response.headers will not be deserialized into schema
             class instances
@@ -137,11 +137,11 @@ class BaseApi(api_client.Api):
         return api_response
 
 
-class GetAllConnectors(BaseApi):
+class ListAllConnectors(BaseApi):
     # this class is used by api classes that refer to endpoints with operationId fn names
 
     @typing.overload
-    def get_all_connectors(
+    def list_all_connectors(
         self,
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -152,7 +152,7 @@ class GetAllConnectors(BaseApi):
     ]: ...
 
     @typing.overload
-    def get_all_connectors(
+    def list_all_connectors(
         self,
         skip_deserialization: typing_extensions.Literal[True],
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -161,7 +161,7 @@ class GetAllConnectors(BaseApi):
     ) -> api_client.ApiResponseWithoutDeserialization: ...
 
     @typing.overload
-    def get_all_connectors(
+    def list_all_connectors(
         self,
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -172,14 +172,14 @@ class GetAllConnectors(BaseApi):
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
 
-    def get_all_connectors(
+    def list_all_connectors(
         self,
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = False,
     ):
-        return self._get_all_connectors_oapg(
+        return self._list_all_connectors_oapg(
             accept_content_types=accept_content_types,
             stream=stream,
             timeout=timeout,
@@ -229,7 +229,7 @@ class ApiForget(BaseApi):
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = False,
     ):
-        return self._get_all_connectors_oapg(
+        return self._list_all_connectors_oapg(
             accept_content_types=accept_content_types,
             stream=stream,
             timeout=timeout,

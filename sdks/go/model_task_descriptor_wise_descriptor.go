@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -17,9 +17,9 @@ import (
 
 // TaskDescriptorWiseDescriptor struct for TaskDescriptorWiseDescriptor
 type TaskDescriptorWiseDescriptor struct {
-	Name *string `json:"name,omitempty"`
-	Key *string `json:"key,omitempty"`
-	ProfileID *int32 `json:"profileID,omitempty"`
+	Name      *string `json:"name,omitempty"`
+	Key       *string `json:"key,omitempty"`
+	ProfileID *int32  `json:"profileID,omitempty"`
 }
 
 // NewTaskDescriptorWiseDescriptor instantiates a new TaskDescriptorWiseDescriptor object
@@ -52,7 +52,7 @@ func (o *TaskDescriptorWiseDescriptor) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorWiseDescriptor) GetNameOk() (*string, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return o.Name, true
 }
@@ -84,7 +84,7 @@ func (o *TaskDescriptorWiseDescriptor) GetKey() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorWiseDescriptor) GetKeyOk() (*string, bool) {
 	if o == nil || isNil(o.Key) {
-    return nil, false
+		return nil, false
 	}
 	return o.Key, true
 }
@@ -116,7 +116,7 @@ func (o *TaskDescriptorWiseDescriptor) GetProfileID() int32 {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorWiseDescriptor) GetProfileIDOk() (*int32, bool) {
 	if o == nil || isNil(o.ProfileID) {
-    return nil, false
+		return nil, false
 	}
 	return o.ProfileID, true
 }
@@ -184,5 +184,3 @@ func (v *NullableTaskDescriptorWiseDescriptor) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/go-libs/api"
+
 	"github.com/formancehq/payments/internal/app/models"
 
 	"github.com/pkg/errors"
@@ -97,9 +99,9 @@ func handleStripeTransfers(repo stripeTransfersRepository) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-
-		err = json.NewEncoder(w).Encode(transferResponse)
+		err = json.NewEncoder(w).Encode(api.BaseResponse[stripe.Transfer]{
+			Data: transferResponse,
+		})
 		if err != nil {
 			handleServerError(w, r, err)
 

@@ -36,21 +36,21 @@ func NewGetConfigCommand() *cobra.Command {
 				return err
 			}
 
-			connectorConfig, _, err := client.PaymentsApi.ReadConnectorConfig(cmd.Context(), formance.Connectors(args[0])).Execute()
+			connectorConfig, _, err := client.PaymentsApi.ReadConnectorConfig(cmd.Context(), formance.Connector(args[0])).Execute()
 			if err != nil {
 				return fctl.WrapError(err, "reading connector config")
 			}
 			switch args[0] {
 			case internal.StripeConnector:
-				err = displayStripeConfig(cmd, connectorConfig)
+				err = displayStripeConfig(cmd, connectorConfig.Data)
 			case internal.ModulrConnector:
-				err = displayModulrConfig(cmd, connectorConfig)
+				err = displayModulrConfig(cmd, connectorConfig.Data)
 			case internal.BankingCircleConnector:
-				err = displayBankingCircleConfig(cmd, connectorConfig)
+				err = displayBankingCircleConfig(cmd, connectorConfig.Data)
 			case internal.CurrencyCloudConnector:
-				err = displayCurrencyCloudConfig(cmd, connectorConfig)
+				err = displayCurrencyCloudConfig(cmd, connectorConfig.Data)
 			case internal.WiseConnector:
-				err = displayWiseConfig(cmd, connectorConfig)
+				err = displayWiseConfig(cmd, connectorConfig.Data)
 			default:
 				fctl.Error(cmd.ErrOrStderr(), "Connection unknown.")
 			}

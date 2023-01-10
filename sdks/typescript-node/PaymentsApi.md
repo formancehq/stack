@@ -5,23 +5,23 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**connectorsStripeTransfer**](PaymentsApi.md#connectorsStripeTransfer) | **POST** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
-[**getAllConnectors**](PaymentsApi.md#getAllConnectors) | **GET** /api/payments/connectors | Get all installed connectors
-[**getAllConnectorsConfigs**](PaymentsApi.md#getAllConnectorsConfigs) | **GET** /api/payments/connectors/configs | Get all available connectors configs
 [**getConnectorTask**](PaymentsApi.md#getConnectorTask) | **GET** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
-[**getPayment**](PaymentsApi.md#getPayment) | **GET** /api/payments/payments/{paymentId} | Returns a payment.
-[**installConnector**](PaymentsApi.md#installConnector) | **POST** /api/payments/connectors/{connector} | Install connector
-[**listConnectorTasks**](PaymentsApi.md#listConnectorTasks) | **GET** /api/payments/connectors/{connector}/tasks | List connector tasks
-[**listPayments**](PaymentsApi.md#listPayments) | **GET** /api/payments/payments | Returns a list of payments.
-[**paymentslistAccounts**](PaymentsApi.md#paymentslistAccounts) | **GET** /api/payments/accounts | Returns a list of accounts.
-[**readConnectorConfig**](PaymentsApi.md#readConnectorConfig) | **GET** /api/payments/connectors/{connector}/config | Read connector config
-[**resetConnector**](PaymentsApi.md#resetConnector) | **POST** /api/payments/connectors/{connector}/reset | Reset connector
-[**uninstallConnector**](PaymentsApi.md#uninstallConnector) | **DELETE** /api/payments/connectors/{connector} | Uninstall connector
+[**getPayment**](PaymentsApi.md#getPayment) | **GET** /api/payments/payments/{paymentId} | Get a payment
+[**installConnector**](PaymentsApi.md#installConnector) | **POST** /api/payments/connectors/{connector} | Install a connector
+[**listAllConnectors**](PaymentsApi.md#listAllConnectors) | **GET** /api/payments/connectors | List all installed connectors
+[**listConfigsAvailableConnectors**](PaymentsApi.md#listConfigsAvailableConnectors) | **GET** /api/payments/connectors/configs | List the configs of each available connector
+[**listConnectorTasks**](PaymentsApi.md#listConnectorTasks) | **GET** /api/payments/connectors/{connector}/tasks | List tasks from a connector
+[**listPayments**](PaymentsApi.md#listPayments) | **GET** /api/payments/payments | List payments
+[**paymentslistAccounts**](PaymentsApi.md#paymentslistAccounts) | **GET** /api/payments/accounts | List accounts
+[**readConnectorConfig**](PaymentsApi.md#readConnectorConfig) | **GET** /api/payments/connectors/{connector}/config | Read the config of a connector
+[**resetConnector**](PaymentsApi.md#resetConnector) | **POST** /api/payments/connectors/{connector}/reset | Reset a connector
+[**uninstallConnector**](PaymentsApi.md#uninstallConnector) | **DELETE** /api/payments/connectors/{connector} | Uninstall a connector
 
 
 # **connectorsStripeTransfer**
-> void connectorsStripeTransfer(stripeTransferRequest)
+> any connectorsStripeTransfer(stripeTransferRequest)
 
-Execute a transfer between two Stripe accounts
+Execute a transfer between two Stripe accounts.
 
 ### Example
 
@@ -58,7 +58,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**void**
+**any**
 
 ### Authorization
 
@@ -67,116 +67,20 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
  - **Content-Type**: application/json
- - **Accept**: Not defined
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | Transfer has been executed |  -  |
-
-[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
-
-# **getAllConnectors**
-> ListConnectorsResponse getAllConnectors()
-
-Get all installed connectors
-
-### Example
-
-
-```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
-import * as fs from 'fs';
-
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
-
-let body:any = {};
-
-apiInstance.getAllConnectors(body).then((data:any) => {
-  console.log('API called successfully. Returned data: ' + data);
-}).catch((error:any) => console.error(error));
-```
-
-
-### Parameters
-This endpoint does not need any parameter.
-
-
-### Return type
-
-**ListConnectorsResponse**
-
-### Authorization
-
-[Authorization](README.md#Authorization)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
  - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | List of installed connectors |  -  |
-
-[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
-
-# **getAllConnectorsConfigs**
-> ListConnectorsConfigsResponse getAllConnectorsConfigs()
-
-Get all available connectors configs
-
-### Example
-
-
-```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
-import * as fs from 'fs';
-
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
-
-let body:any = {};
-
-apiInstance.getAllConnectorsConfigs(body).then((data:any) => {
-  console.log('API called successfully. Returned data: ' + data);
-}).catch((error:any) => console.error(error));
-```
-
-
-### Parameters
-This endpoint does not need any parameter.
-
-
-### Return type
-
-**ListConnectorsConfigsResponse**
-
-### Authorization
-
-[Authorization](README.md#Authorization)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | List of available connectors configs |  -  |
+**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **getConnectorTask**
-> ListConnectorTasks200ResponseInner getConnectorTask()
+> TaskResponse getConnectorTask()
 
-Get a specific task associated to the connector
+Get a specific task associated to the connector.
 
 ### Example
 
@@ -189,9 +93,9 @@ const configuration = createConfiguration();
 const apiInstance = new PaymentsApi(configuration);
 
 let body:PaymentsApiGetConnectorTaskRequest = {
-  // Connectors | The connector code
+  // Connector | The name of the connector.
   connector: "STRIPE",
-  // string | The task id
+  // string | The task ID.
   taskId: "task1",
 };
 
@@ -205,13 +109,13 @@ apiInstance.getConnectorTask(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **connector** | **Connectors** | The connector code | defaults to undefined
- **taskId** | [**string**] | The task id | defaults to undefined
+ **connector** | **Connector** | The name of the connector. | defaults to undefined
+ **taskId** | [**string**] | The task ID. | defaults to undefined
 
 
 ### Return type
 
-**ListConnectorTasks200ResponseInner**
+**TaskResponse**
 
 ### Authorization
 
@@ -226,12 +130,12 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | The specified task |  -  |
+**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **getPayment**
-> Payment getPayment()
+> PaymentResponse getPayment()
 
 
 ### Example
@@ -245,7 +149,7 @@ const configuration = createConfiguration();
 const apiInstance = new PaymentsApi(configuration);
 
 let body:PaymentsApiGetPaymentRequest = {
-  // string | The payment id
+  // string | The payment ID.
   paymentId: "XXX",
 };
 
@@ -259,12 +163,12 @@ apiInstance.getPayment(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **paymentId** | [**string**] | The payment id | defaults to undefined
+ **paymentId** | [**string**] | The payment ID. | defaults to undefined
 
 
 ### Return type
 
-**Payment**
+**PaymentResponse**
 
 ### Authorization
 
@@ -279,14 +183,14 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | A payment |  -  |
+**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **installConnector**
 > void installConnector(connectorConfig)
 
-Install connector
+Install a connector by its name and config.
 
 ### Example
 
@@ -299,7 +203,7 @@ const configuration = createConfiguration();
 const apiInstance = new PaymentsApi(configuration);
 
 let body:PaymentsApiInstallConnectorRequest = {
-  // Connectors | The connector code
+  // Connector | The name of the connector.
   connector: "STRIPE",
   // ConnectorConfig
   connectorConfig: null,
@@ -316,7 +220,7 @@ apiInstance.installConnector(body).then((data:any) => {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **connectorConfig** | **ConnectorConfig**|  |
- **connector** | **Connectors** | The connector code | defaults to undefined
+ **connector** | **Connector** | The name of the connector. | defaults to undefined
 
 
 ### Return type
@@ -336,12 +240,108 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**204** | Connector has been installed |  -  |
+**204** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **listAllConnectors**
+> ConnectorsResponse listAllConnectors()
+
+List all installed connectors.
+
+### Example
+
+
+```typescript
+import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new PaymentsApi(configuration);
+
+let body:any = {};
+
+apiInstance.listAllConnectors(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+This endpoint does not need any parameter.
+
+
+### Return type
+
+**ConnectorsResponse**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **listConfigsAvailableConnectors**
+> ConnectorsConfigsResponse listConfigsAvailableConnectors()
+
+List the configs of each available connector.
+
+### Example
+
+
+```typescript
+import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new PaymentsApi(configuration);
+
+let body:any = {};
+
+apiInstance.listConfigsAvailableConnectors(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+This endpoint does not need any parameter.
+
+
+### Return type
+
+**ConnectorsConfigsResponse**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **listConnectorTasks**
-> Array<ListConnectorTasks200ResponseInner> listConnectorTasks()
+> TasksResponse listConnectorTasks()
 
 List all tasks associated with this connector.
 
@@ -356,8 +356,12 @@ const configuration = createConfiguration();
 const apiInstance = new PaymentsApi(configuration);
 
 let body:PaymentsApiListConnectorTasksRequest = {
-  // Connectors | The connector code
+  // Connector | The name of the connector.
   connector: "STRIPE",
+  // number | The maximum number of results to return per page.  (optional)
+  pageSize: 100,
+  // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
+  cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
 };
 
 apiInstance.listConnectorTasks(body).then((data:any) => {
@@ -370,12 +374,14 @@ apiInstance.listConnectorTasks(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **connector** | **Connectors** | The connector code | defaults to undefined
+ **connector** | **Connector** | The name of the connector. | defaults to undefined
+ **pageSize** | [**number**] | The maximum number of results to return per page.  | (optional) defaults to 15
+ **cursor** | [**string**] | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | (optional) defaults to undefined
 
 
 ### Return type
 
-**Array<ListConnectorTasks200ResponseInner>**
+**TasksResponse**
 
 ### Authorization
 
@@ -390,12 +396,12 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Task list |  -  |
+**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **listPayments**
-> ListPaymentsResponse listPayments()
+> PaymentsResponse listPayments()
 
 
 ### Example
@@ -409,13 +415,13 @@ const configuration = createConfiguration();
 const apiInstance = new PaymentsApi(configuration);
 
 let body:PaymentsApiListPaymentsRequest = {
-  // number | Limit the number of payments to return, pagination can be achieved in conjunction with 'skip' parameter. (optional)
-  limit: 10,
-  // number | How many payments to skip, pagination can be achieved in conjunction with 'limit' parameter. (optional)
-  skip: 100,
-  // Array<string> | Field used to sort payments (Default is by date). (optional)
+  // number | The maximum number of results to return per page.  (optional)
+  pageSize: 100,
+  // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
+  cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
+  // Array<string> | Fields used to sort payments (default is date:desc). (optional)
   sort: [
-    "status",
+    "date:asc,status:desc",
   ],
 };
 
@@ -429,14 +435,14 @@ apiInstance.listPayments(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **limit** | [**number**] | Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | (optional) defaults to undefined
- **skip** | [**number**] | How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | (optional) defaults to undefined
- **sort** | **Array&lt;string&gt;** | Field used to sort payments (Default is by date). | (optional) defaults to undefined
+ **pageSize** | [**number**] | The maximum number of results to return per page.  | (optional) defaults to 15
+ **cursor** | [**string**] | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | (optional) defaults to undefined
+ **sort** | **Array&lt;string&gt;** | Fields used to sort payments (default is date:desc). | (optional) defaults to undefined
 
 
 ### Return type
 
-**ListPaymentsResponse**
+**PaymentsResponse**
 
 ### Authorization
 
@@ -451,12 +457,12 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | A JSON array of payments |  -  |
+**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **paymentslistAccounts**
-> ListAccountsResponse paymentslistAccounts()
+> AccountsResponse paymentslistAccounts()
 
 
 ### Example
@@ -470,9 +476,9 @@ const configuration = createConfiguration();
 const apiInstance = new PaymentsApi(configuration);
 
 let body:PaymentsApiPaymentslistAccountsRequest = {
-  // number | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter. (optional)
+  // number | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter.  (optional)
   limit: 10,
-  // number | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter. (optional)
+  // number | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter.  (optional)
   skip: 100,
   // Array<string> | Field used to sort payments (Default is by date). (optional)
   sort: [
@@ -490,14 +496,14 @@ apiInstance.paymentslistAccounts(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **limit** | [**number**] | Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | (optional) defaults to undefined
- **skip** | [**number**] | How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | (optional) defaults to undefined
+ **limit** | [**number**] | Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.  | (optional) defaults to undefined
+ **skip** | [**number**] | How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.  | (optional) defaults to undefined
  **sort** | **Array&lt;string&gt;** | Field used to sort payments (Default is by date). | (optional) defaults to undefined
 
 
 ### Return type
 
-**ListAccountsResponse**
+**AccountsResponse**
 
 ### Authorization
 
@@ -512,12 +518,12 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | A JSON array of accounts |  -  |
+**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **readConnectorConfig**
-> ConnectorConfig readConnectorConfig()
+> ConnectorConfigResponse readConnectorConfig()
 
 Read connector config
 
@@ -532,7 +538,7 @@ const configuration = createConfiguration();
 const apiInstance = new PaymentsApi(configuration);
 
 let body:PaymentsApiReadConnectorConfigRequest = {
-  // Connectors | The connector code
+  // Connector | The name of the connector.
   connector: "STRIPE",
 };
 
@@ -546,12 +552,12 @@ apiInstance.readConnectorConfig(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **connector** | **Connectors** | The connector code | defaults to undefined
+ **connector** | **Connector** | The name of the connector. | defaults to undefined
 
 
 ### Return type
 
-**ConnectorConfig**
+**ConnectorConfigResponse**
 
 ### Authorization
 
@@ -566,14 +572,14 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Connector config |  -  |
+**200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **resetConnector**
 > void resetConnector()
 
-Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
+Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it. 
 
 ### Example
 
@@ -586,7 +592,7 @@ const configuration = createConfiguration();
 const apiInstance = new PaymentsApi(configuration);
 
 let body:PaymentsApiResetConnectorRequest = {
-  // Connectors | The connector code
+  // Connector | The name of the connector.
   connector: "STRIPE",
 };
 
@@ -600,7 +606,7 @@ apiInstance.resetConnector(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **connector** | **Connectors** | The connector code | defaults to undefined
+ **connector** | **Connector** | The name of the connector. | defaults to undefined
 
 
 ### Return type
@@ -620,14 +626,14 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**204** | Connector has been reset |  -  |
+**204** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **uninstallConnector**
 > void uninstallConnector()
 
-Uninstall  connector
+Uninstall a connector by its name.
 
 ### Example
 
@@ -640,7 +646,7 @@ const configuration = createConfiguration();
 const apiInstance = new PaymentsApi(configuration);
 
 let body:PaymentsApiUninstallConnectorRequest = {
-  // Connectors | The connector code
+  // Connector | The name of the connector.
   connector: "STRIPE",
 };
 
@@ -654,7 +660,7 @@ apiInstance.uninstallConnector(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **connector** | **Connectors** | The connector code | defaults to undefined
+ **connector** | **Connector** | The name of the connector. | defaults to undefined
 
 
 ### Return type
@@ -674,7 +680,7 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**204** | Connector has been uninstalled |  -  |
+**204** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 

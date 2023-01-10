@@ -10,12 +10,13 @@
  * Do not edit the class manually.
  */
 
+import { Connector } from '../models/Connector';
 import { HttpFile } from '../http/http';
 
 export class PaymentsAccount {
     'id': string;
     'createdAt': Date;
-    'provider': string;
+    'provider': Connector;
     'reference': string;
     'type': PaymentsAccountTypeEnum;
 
@@ -37,7 +38,7 @@ export class PaymentsAccount {
         {
             "name": "provider",
             "baseName": "provider",
-            "type": "string",
+            "type": "Connector",
             "format": ""
         },
         {

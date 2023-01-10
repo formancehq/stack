@@ -9,12 +9,13 @@ Name | Type | Description | Notes
 **Name** | **string** |  | 
 **CreatedAt** | **time.Time** |  | 
 **Balances** | [**WalletWithBalancesBalances**](WalletWithBalancesBalances.md) |  | 
+**Ledger** | **string** |  | 
 
 ## Methods
 
 ### NewWalletWithBalances
 
-`func NewWalletWithBalances(id string, metadata map[string]interface{}, name string, createdAt time.Time, balances WalletWithBalancesBalances, ) *WalletWithBalances`
+`func NewWalletWithBalances(id string, metadata map[string]interface{}, name string, createdAt time.Time, balances WalletWithBalancesBalances, ledger string, ) *WalletWithBalances`
 
 NewWalletWithBalances instantiates a new WalletWithBalances object
 This constructor will assign default values to properties that have it defined,
@@ -127,6 +128,26 @@ and a boolean to check if the value has been set.
 `func (o *WalletWithBalances) SetBalances(v WalletWithBalancesBalances)`
 
 SetBalances sets Balances field to given value.
+
+
+### GetLedger
+
+`func (o *WalletWithBalances) GetLedger() string`
+
+GetLedger returns the Ledger field if non-nil, zero value otherwise.
+
+### GetLedgerOk
+
+`func (o *WalletWithBalances) GetLedgerOk() (*string, bool)`
+
+GetLedgerOk returns a tuple with the Ledger field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetLedger
+
+`func (o *WalletWithBalances) SetLedger(v string)`
+
+SetLedger sets Ledger field to given value.
 
 
 

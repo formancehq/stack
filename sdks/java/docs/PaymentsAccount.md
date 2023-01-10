@@ -9,7 +9,7 @@
 |------------ | ------------- | ------------- | -------------|
 |**id** | **String** |  |  |
 |**createdAt** | **OffsetDateTime** |  |  |
-|**provider** | **String** |  |  |
+|**provider** | **Connector** |  |  |
 |**reference** | **String** |  |  |
 |**type** | [**TypeEnum**](#TypeEnum) |  |  |
 

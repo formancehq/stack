@@ -6,7 +6,7 @@ source "${dir}"/common.sh
 for mod in $(find-updated-modules $@); do
   echo "Run tests on ${mod}"
   pushd ${mod} >/dev/null
-  task tests
+  [[ -e Taskfile.yml ]] && task tests
   popd >/dev/null
 done
 

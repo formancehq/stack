@@ -4,16 +4,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | Pointer to **string** |  | [optional] 
-**WebhookID** | Pointer to **string** |  | [optional] 
-**CreatedAt** | Pointer to **time.Time** |  | [optional] 
-**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
-**Config** | Pointer to [**WebhooksConfig**](WebhooksConfig.md) |  | [optional] 
-**Payload** | Pointer to **string** |  | [optional] 
-**StatusCode** | Pointer to **int32** |  | [optional] 
-**RetryAttempt** | Pointer to **int32** |  | [optional] 
-**Status** | Pointer to **string** |  | [optional] 
-**NextRetryAfter** | Pointer to **time.Time** |  | [optional] 
+**Id** | Pointer to **string** |  | [optional]
+**WebhookID** | Pointer to **string** |  | [optional]
+**CreatedAt** | Pointer to **time.Time** |  | [optional]
+**UpdatedAt** | Pointer to **time.Time** |  | [optional]
+**Config** | Pointer to [**WebhooksConfig**](WebhooksConfig.md) |  | [optional]
+**Payload** | Pointer to **string** |  | [optional]
+**StatusCode** | Pointer to **int32** |  | [optional]
+**RetryAttempt** | Pointer to **int32** |  | [optional]
+**Status** | Pointer to **string** |  | [optional]
+**NextRetryAfter** | Pointer to **time.Time** |  | [optional]
 
 ## Methods
 
@@ -286,5 +286,3 @@ HasNextRetryAfter returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

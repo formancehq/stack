@@ -1774,32 +1774,51 @@ paths:
       tags:
       - Logs
       x-accepts: application/json
+  /api/payments/_info:
+    get:
+      operationId: paymentsgetServerInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerInfo'
+          description: Server information
+      summary: Get server info
+      x-accepts: application/json
   /api/payments/payments:
     get:
       operationId: listPayments
       parameters:
-      - description: "Limit the number of payments to return, pagination can be achieved\
-          \ in conjunction with 'skip' parameter."
-        example: 10
-        explode: true
-        in: query
-        name: limit
-        required: false
-        schema:
-          type: integer
-        style: form
-      - description: "How many payments to skip, pagination can be achieved in conjunction\
-          \ with 'limit' parameter."
+      - description: |
+          The maximum number of results to return per page.
         example: 100
         explode: true
         in: query
-        name: skip
+        name: pageSize
         required: false
         schema:
+          default: 15
+          format: int64
+          maximum: 1000
+          minimum: 1
           type: integer
         style: form
-      - description: Field used to sort payments (Default is by date).
-        example: status
+      - description: |
+          Parameter used in pagination requests. Maximum page size is set to 15.
+          Set to the value of next for the next page of results.
+          Set to the value of previous for the previous page of results.
+          No other parameters can be set when this parameter is set.
+        explode: true
+        in: query
+        name: cursor
+        required: false
+        schema:
+          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+          type: string
+        style: form
+      - description: Fields used to sort payments (default is date:desc).
+        example: "date:asc,status:desc"
         explode: true
         in: query
         name: sort
@@ -1814,9 +1833,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListPaymentsResponse'
-          description: A JSON array of payments
-      summary: Returns a list of payments.
+                $ref: '#/components/schemas/PaymentsResponse'
+          description: OK
+      summary: List payments
       tags:
       - Payments
       x-accepts: application/json
@@ -1824,7 +1843,7 @@ paths:
     get:
       operationId: getPayment
       parameters:
-      - description: The payment id
+      - description: The payment ID.
         example: XXX
         explode: false
         in: path
@@ -1838,9 +1857,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Payment'
-          description: A payment
-      summary: Returns a payment.
+                $ref: '#/components/schemas/PaymentResponse'
+          description: OK
+      summary: Get a payment
       tags:
       - Payments
       x-accepts: application/json
@@ -1848,24 +1867,28 @@ paths:
     get:
       operationId: paymentslistAccounts
       parameters:
-      - description: "Limit the number of accounts to return, pagination can be achieved\
-          \ in conjunction with 'skip' parameter."
-        example: 10
+      - description: |
+          Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter.
         explode: true
         in: query
         name: limit
         required: false
         schema:
+          example: 10
+          format: int64
+          minimum: 0
           type: integer
         style: form
-      - description: "How many accounts to skip, pagination can be achieved in conjunction\
-          \ with 'limit' parameter."
+      - description: |
+          How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter.
         example: 100
         explode: true
         in: query
         name: skip
         required: false
         schema:
+          format: int64
+          minimum: 0
           type: integer
         style: form
       - description: Field used to sort payments (Default is by date).
@@ -1884,73 +1907,73 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListAccountsResponse'
-          description: A JSON array of accounts
-      summary: Returns a list of accounts.
+                $ref: '#/components/schemas/AccountsResponse'
+          description: OK
+      summary: List accounts
       tags:
       - Payments
       x-accepts: application/json
   /api/payments/connectors:
     get:
-      description: Get all installed connectors
-      operationId: getAllConnectors
+      description: List all installed connectors.
+      operationId: listAllConnectors
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListConnectorsResponse'
-          description: List of installed connectors
-      summary: Get all installed connectors
+                $ref: '#/components/schemas/ConnectorsResponse'
+          description: OK
+      summary: List all installed connectors
       tags:
       - Payments
       x-accepts: application/json
   /api/payments/connectors/configs:
     get:
-      description: Get all available connectors configs
-      operationId: getAllConnectorsConfigs
+      description: List the configs of each available connector.
+      operationId: listConfigsAvailableConnectors
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListConnectorsConfigsResponse'
-          description: List of available connectors configs
-      summary: Get all available connectors configs
+                $ref: '#/components/schemas/ConnectorsConfigsResponse'
+          description: OK
+      summary: List the configs of each available connector
       tags:
       - Payments
       x-accepts: application/json
   /api/payments/connectors/{connector}:
     delete:
-      description: Uninstall  connector
+      description: Uninstall a connector by its name.
       operationId: uninstallConnector
       parameters:
-      - description: The connector code
+      - description: The name of the connector.
         explode: false
         in: path
         name: connector
         required: true
         schema:
-          $ref: '#/components/schemas/Connectors'
+          $ref: '#/components/schemas/Connector'
         style: simple
       responses:
         "204":
-          description: Connector has been uninstalled
-      summary: Uninstall connector
+          description: OK
+      summary: Uninstall a connector
       tags:
       - Payments
       x-accepts: application/json
     post:
-      description: Install connector
+      description: Install a connector by its name and config.
       operationId: installConnector
       parameters:
-      - description: The connector code
+      - description: The name of the connector.
         explode: false
         in: path
         name: connector
         required: true
         schema:
-          $ref: '#/components/schemas/Connectors'
+          $ref: '#/components/schemas/Connector'
         style: simple
       requestBody:
         content:
@@ -1960,8 +1983,8 @@ paths:
         required: true
       responses:
         "204":
-          description: Connector has been installed
-      summary: Install connector
+          description: OK
+      summary: Install a connector
       tags:
       - Payments
       x-content-type: application/json
@@ -1971,43 +1994,43 @@ paths:
       description: Read connector config
       operationId: readConnectorConfig
       parameters:
-      - description: The connector code
+      - description: The name of the connector.
         explode: false
         in: path
         name: connector
         required: true
         schema:
-          $ref: '#/components/schemas/Connectors'
+          $ref: '#/components/schemas/Connector'
         style: simple
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectorConfig'
-          description: Connector config
-      summary: Read connector config
+                $ref: '#/components/schemas/ConnectorConfigResponse'
+          description: OK
+      summary: Read the config of a connector
       tags:
       - Payments
       x-accepts: application/json
   /api/payments/connectors/{connector}/reset:
     post:
-      description: Reset connector. Will remove the connector and ALL PAYMENTS generated
-        with it.
+      description: |
+        Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it.
       operationId: resetConnector
       parameters:
-      - description: The connector code
+      - description: The name of the connector.
         explode: false
         in: path
         name: connector
         required: true
         schema:
-          $ref: '#/components/schemas/Connectors'
+          $ref: '#/components/schemas/Connector'
         style: simple
       responses:
         "204":
-          description: Connector has been reset
-      summary: Reset connector
+          description: OK
+      summary: Reset a connector
       tags:
       - Payments
       x-accepts: application/json
@@ -2016,41 +2039,66 @@ paths:
       description: List all tasks associated with this connector.
       operationId: listConnectorTasks
       parameters:
-      - description: The connector code
+      - description: The name of the connector.
         explode: false
         in: path
         name: connector
         required: true
         schema:
-          $ref: '#/components/schemas/Connectors'
+          $ref: '#/components/schemas/Connector'
         style: simple
+      - description: |
+          The maximum number of results to return per page.
+        example: 100
+        explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 15
+          format: int64
+          maximum: 1000
+          minimum: 1
+          type: integer
+        style: form
+      - description: |
+          Parameter used in pagination requests. Maximum page size is set to 15.
+          Set to the value of next for the next page of results.
+          Set to the value of previous for the previous page of results.
+          No other parameters can be set when this parameter is set.
+        explode: true
+        in: query
+        name: cursor
+        required: false
+        schema:
+          example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
+          type: string
+        style: form
       responses:
         "200":
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/listConnectorTasks_200_response_inner'
-                type: array
-          description: Task list
-      summary: List connector tasks
+                $ref: '#/components/schemas/TasksResponse'
+          description: OK
+      summary: List tasks from a connector
       tags:
       - Payments
       x-accepts: application/json
   /api/payments/connectors/{connector}/tasks/{taskId}:
     get:
-      description: Get a specific task associated to the connector
+      description: Get a specific task associated to the connector.
       operationId: getConnectorTask
       parameters:
-      - description: The connector code
+      - description: The name of the connector.
         explode: false
         in: path
         name: connector
         required: true
         schema:
-          $ref: '#/components/schemas/Connectors'
+          $ref: '#/components/schemas/Connector'
         style: simple
-      - description: The task id
+      - description: The task ID.
         example: task1
         explode: false
         in: path
@@ -2064,15 +2112,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/listConnectorTasks_200_response_inner'
-          description: The specified task
+                $ref: '#/components/schemas/TaskResponse'
+          description: OK
       summary: Read a specific task of the connector
       tags:
       - Payments
       x-accepts: application/json
   /api/payments/connectors/stripe/transfer:
     post:
-      description: Execute a transfer between two Stripe accounts
+      description: Execute a transfer between two Stripe accounts.
       operationId: connectorsStripeTransfer
       requestBody:
         content:
@@ -2082,7 +2130,11 @@ paths:
         required: true
       responses:
         "200":
-          description: Transfer has been executed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripeTransferResponse'
+          description: OK
       summary: Transfer funds between Stripe accounts
       tags:
       - Payments
@@ -4193,11 +4245,215 @@ components:
           - done
           type: string
       type: object
-    Connectors:
+    ConnectorConfigResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/ConnectorConfig'
+      type: object
+    PaymentsResponse:
+      example:
+        cursor:
+          next: ""
+          previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          data:
+          - metadata:
+            - changelog:
+                value: value
+                timestamp: 2000-01-23T04:56:07.000+00:00
+              value: value
+              key: key
+            - changelog:
+                value: value
+                timestamp: 2000-01-23T04:56:07.000+00:00
+              value: value
+              key: key
+            adjustments:
+            - date: 2000-01-23T04:56:07.000+00:00
+              amount: 100
+              absolute: true
+              raw: "{}"
+              status: null
+            - date: 2000-01-23T04:56:07.000+00:00
+              amount: 100
+              absolute: true
+              raw: "{}"
+              status: null
+            scheme: visa
+            raw: "{}"
+            type: PAY-IN
+            reference: reference
+            accountID: accountID
+            createdAt: 2000-01-23T04:56:07.000+00:00
+            provider: null
+            initialAmount: 100
+            id: XXX
+            asset: USD
+            status: null
+          - metadata:
+            - changelog:
+                value: value
+                timestamp: 2000-01-23T04:56:07.000+00:00
+              value: value
+              key: key
+            - changelog:
+                value: value
+                timestamp: 2000-01-23T04:56:07.000+00:00
+              value: value
+              key: key
+            adjustments:
+            - date: 2000-01-23T04:56:07.000+00:00
+              amount: 100
+              absolute: true
+              raw: "{}"
+              status: null
+            - date: 2000-01-23T04:56:07.000+00:00
+              amount: 100
+              absolute: true
+              raw: "{}"
+              status: null
+            scheme: visa
+            raw: "{}"
+            type: PAY-IN
+            reference: reference
+            accountID: accountID
+            createdAt: 2000-01-23T04:56:07.000+00:00
+            provider: null
+            initialAmount: 100
+            id: XXX
+            asset: USD
+            status: null
+          hasMore: false
+          pageSize: 15
+      properties:
+        cursor:
+          $ref: '#/components/schemas/PaymentsResponse_cursor'
+      required:
+      - cursor
+      type: object
+    PaymentResponse:
+      example:
+        data:
+          metadata:
+          - changelog:
+              value: value
+              timestamp: 2000-01-23T04:56:07.000+00:00
+            value: value
+            key: key
+          - changelog:
+              value: value
+              timestamp: 2000-01-23T04:56:07.000+00:00
+            value: value
+            key: key
+          adjustments:
+          - date: 2000-01-23T04:56:07.000+00:00
+            amount: 100
+            absolute: true
+            raw: "{}"
+            status: null
+          - date: 2000-01-23T04:56:07.000+00:00
+            amount: 100
+            absolute: true
+            raw: "{}"
+            status: null
+          scheme: visa
+          raw: "{}"
+          type: PAY-IN
+          reference: reference
+          accountID: accountID
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          provider: null
+          initialAmount: 100
+          id: XXX
+          asset: USD
+          status: null
+      properties:
+        data:
+          $ref: '#/components/schemas/Payment'
+      type: object
+    AccountsResponse:
+      example:
+        cursor:
+          next: ""
+          previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          data:
+          - reference: reference
+            createdAt: 2000-01-23T04:56:07.000+00:00
+            provider: null
+            id: id
+            type: TARGET
+          - reference: reference
+            createdAt: 2000-01-23T04:56:07.000+00:00
+            provider: null
+            id: id
+            type: TARGET
+          hasMore: false
+          pageSize: 15
+      properties:
+        cursor:
+          $ref: '#/components/schemas/AccountsResponse_cursor'
+      required:
+      - cursor
+      type: object
+    ConnectorsResponse:
+      example:
+        data:
+        - provider: null
+          disabled: false
+          enabled: true
+        - provider: null
+          disabled: false
+          enabled: true
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/ConnectorsResponse_data_inner'
+          type: array
+      required:
+      - data
+      type: object
+    ConnectorsConfigsResponse:
+      example:
+        data:
+          connector:
+            key:
+              dataType: dataType
+              required: true
+      properties:
+        data:
+          $ref: '#/components/schemas/ConnectorsConfigsResponse_data'
+      required:
+      - data
+      type: object
+    TaskResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/TaskResponse_data'
+      type: object
+    TasksResponse:
+      example:
+        cursor:
+          next: ""
+          previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          data:
+          - null
+          - null
+          hasMore: false
+          pageSize: 15
+      properties:
+        cursor:
+          $ref: '#/components/schemas/TasksResponse_cursor'
+      required:
+      - cursor
+      type: object
+    Connector:
       enum:
       - STRIPE
       - DUMMY-PAY
-      - SIE
+      - WISE
       - MODULR
       - CURRENCY-CLOUD
       - BANKING-CIRCLE
@@ -4214,8 +4470,8 @@ components:
       properties:
         pollingPeriod:
           default: 120s
-          description: The frequency at which the connector will try to fetch new
-            BalanceTransaction objects from Stripe api
+          description: |
+            The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
           example: 60s
           type: string
         apiKey:
@@ -4226,32 +4482,11 @@ components:
           description: |
             Number of BalanceTransaction to fetch at each polling interval.
           example: 50
-          type: number
+          format: int64
+          minimum: 0
+          type: integer
       required:
       - apiKey
-      type: object
-    StripeTask:
-      properties:
-        oldestId:
-          description: The id of the oldest BalanceTransaction fetched from stripe
-            for this account
-          type: string
-        oldestDate:
-          description: The creation date of the oldest BalanceTransaction fetched
-            from stripe for this account
-          format: date-time
-          type: string
-        moreRecentId:
-          description: The id of the more recent BalanceTransaction fetched from stripe
-            for this account
-          type: string
-        moreRecentDate:
-          description: The creation date of the more recent BalanceTransaction fetched
-            from stripe for this account
-          format: date-time
-          type: string
-        noMoreHistory:
-          type: boolean
       type: object
     DummyPayConfig:
       properties:
@@ -4337,134 +4572,171 @@ components:
       - apiKey
       - loginID
       type: object
-    ListPaymentsResponse:
-      example:
-        data:
-        - reference: reference
-          date: 2000-01-23T04:56:07.000+00:00
-          amount: 100
-          scheme: visa
-          provider: provider
-          raw: ""
-          id: XXX
-          type: pay-in
-          asset: USD
-          status: status
-        - reference: reference
-          date: 2000-01-23T04:56:07.000+00:00
-          amount: 100
-          scheme: visa
-          provider: provider
-          raw: ""
-          id: XXX
-          type: pay-in
-          asset: USD
-          status: status
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Payment'
-          type: array
-      required:
-      - data
-      type: object
-    GetPaymentResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/Payment'
-      required:
-      - data
-      type: object
     Payment:
       example:
-        reference: reference
-        date: 2000-01-23T04:56:07.000+00:00
-        amount: 100
+        metadata:
+        - changelog:
+            value: value
+            timestamp: 2000-01-23T04:56:07.000+00:00
+          value: value
+          key: key
+        - changelog:
+            value: value
+            timestamp: 2000-01-23T04:56:07.000+00:00
+          value: value
+          key: key
+        adjustments:
+        - date: 2000-01-23T04:56:07.000+00:00
+          amount: 100
+          absolute: true
+          raw: "{}"
+          status: null
+        - date: 2000-01-23T04:56:07.000+00:00
+          amount: 100
+          absolute: true
+          raw: "{}"
+          status: null
         scheme: visa
-        provider: provider
-        raw: ""
+        raw: "{}"
+        type: PAY-IN
+        reference: reference
+        accountID: accountID
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        provider: null
+        initialAmount: 100
         id: XXX
-        type: pay-in
         asset: USD
-        status: status
+        status: null
       properties:
-        provider:
+        id:
+          example: XXX
           type: string
         reference:
           type: string
+        accountID:
+          type: string
+        type:
+          enum:
+          - PAY-IN
+          - PAYOUT
+          - TRANSFER
+          - OTHER
+          type: string
+        provider:
+          $ref: '#/components/schemas/Connector'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        initialAmount:
+          example: 100
+          format: int64
+          minimum: 0
+          type: integer
         scheme:
           enum:
           - visa
           - mastercard
-          - apple pay
-          - google pay
+          - amex
+          - diners
+          - discover
+          - jcb
+          - unionpay
           - sepa debit
           - sepa credit
           - sepa
+          - apple pay
+          - google pay
           - a2a
           - ach debit
           - ach
           - rtp
+          - unknown
           - other
           type: string
-        status:
-          type: string
-        type:
-          enum:
-          - pay-in
-          - payout
-          - other
-          type: string
-        id:
-          example: XXX
-          type: string
-        amount:
-          example: 100
-          type: integer
         asset:
           example: USD
           type: string
-        date:
+        createdAt:
           format: date-time
           type: string
         raw:
-          nullable: true
+          type: object
+        adjustments:
+          items:
+            $ref: '#/components/schemas/PaymentAdjustment'
+          type: array
+        metadata:
+          items:
+            $ref: '#/components/schemas/PaymentMetadata'
+          type: array
       required:
-      - amount
+      - accountID
+      - adjustments
       - asset
-      - date
+      - createdAt
       - id
+      - initialAmount
+      - metadata
       - provider
+      - raw
+      - reference
       - scheme
       - status
       - type
       type: object
-    ListAccountsResponse:
+    PaymentAdjustment:
       example:
-        data:
-        - reference: reference
-          createdAt: 2000-01-23T04:56:07.000+00:00
-          provider: provider
-          id: id
-          type: TARGET
-        - reference: reference
-          createdAt: 2000-01-23T04:56:07.000+00:00
-          provider: provider
-          id: id
-          type: TARGET
+        date: 2000-01-23T04:56:07.000+00:00
+        amount: 100
+        absolute: true
+        raw: "{}"
+        status: null
       properties:
-        data:
-          items:
-            $ref: '#/components/schemas/paymentsAccount'
-          type: array
-      required:
-      - data
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        amount:
+          example: 100
+          format: int64
+          minimum: 0
+          type: integer
+        date:
+          format: date-time
+          type: string
+        raw:
+          type: object
+        absolute:
+          type: boolean
+      type: object
+    PaymentMetadata:
+      example:
+        changelog:
+          value: value
+          timestamp: 2000-01-23T04:56:07.000+00:00
+        value: value
+        key: key
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+        changelog:
+          $ref: '#/components/schemas/PaymentMetadataChangelog'
+      type: object
+    PaymentMetadataChangelog:
+      example:
+        value: value
+        timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        timestamp:
+          format: date-time
+          type: string
+        value:
+          type: string
       type: object
     paymentsAccount:
       example:
         reference: reference
         createdAt: 2000-01-23T04:56:07.000+00:00
-        provider: provider
+        provider: null
         id: id
         type: TARGET
       properties:
@@ -4474,7 +4746,7 @@ components:
           format: date-time
           type: string
         provider:
-          type: string
+          $ref: '#/components/schemas/Connector'
         reference:
           type: string
         type:
@@ -4489,42 +4761,143 @@ components:
       - reference
       - type
       type: object
-    ListConnectorsResponse:
-      example:
-        data:
-        - provider: stripe
-          disabled: false
-        - provider: stripe
-          disabled: false
+    TaskStripe:
       properties:
-        data:
-          items:
-            $ref: '#/components/schemas/ConnectorBaseInfo'
-          type: array
-      required:
-      - data
-      type: object
-    ListConnectorsConfigsResponse:
-      example:
-        connector:
-          key:
-            datatype: datatype
-            required: true
-      properties:
-        connector:
-          $ref: '#/components/schemas/ListConnectorsConfigsResponse_connector'
-      type: object
-    ConnectorBaseInfo:
-      example:
-        provider: stripe
-        disabled: false
-      properties:
-        provider:
-          example: stripe
+        id:
+          format: uuid
           type: string
-        disabled:
-          example: false
-          type: boolean
+        connectorID:
+          format: uuid
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        descriptor:
+          $ref: '#/components/schemas/TaskStripe_descriptor'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        state:
+          type: object
+        error:
+          type: string
+      type: object
+    TaskWise:
+      properties:
+        id:
+          format: uuid
+          type: string
+        connectorID:
+          format: uuid
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        descriptor:
+          $ref: '#/components/schemas/TaskWise_descriptor'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        state:
+          type: object
+        error:
+          type: string
+      type: object
+    TaskModulr:
+      properties:
+        id:
+          format: uuid
+          type: string
+        connectorID:
+          format: uuid
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        descriptor:
+          $ref: '#/components/schemas/TaskModulr_descriptor'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        state:
+          type: object
+        error:
+          type: string
+      type: object
+    TaskDummyPay:
+      properties:
+        id:
+          format: uuid
+          type: string
+        connectorID:
+          format: uuid
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        descriptor:
+          $ref: '#/components/schemas/TaskDummyPay_descriptor'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        state:
+          type: object
+        error:
+          type: string
+      type: object
+    TaskCurrencyCloud:
+      properties:
+        id:
+          format: uuid
+          type: string
+        connectorID:
+          format: uuid
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        descriptor:
+          $ref: '#/components/schemas/TaskCurrencyCloud_descriptor'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        state:
+          type: object
+        error:
+          type: string
+      type: object
+    TaskBankingCircle:
+      properties:
+        id:
+          format: uuid
+          type: string
+        connectorID:
+          format: uuid
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+        descriptor:
+          $ref: '#/components/schemas/TaskBankingCircle_descriptor'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        state:
+          type: object
+        error:
+          type: string
       type: object
     StripeTransferRequest:
       example:
@@ -4536,6 +4909,8 @@ components:
       properties:
         amount:
           example: 100
+          format: int64
+          minimum: 0
           type: integer
         asset:
           example: USD
@@ -4551,197 +4926,37 @@ components:
             order_id: "6735"
           type: object
       type: object
-    TaskDescriptorStripe:
-      properties:
-        provider:
-          description: The connector code
-          example: stripe
-          type: string
-        createdAt:
-          description: The date when the task was created
-          example: 2020-01-01T00:00:00Z
-          format: date-time
-          type: string
-        status:
-          description: The task status
-          enum:
-          - stopped
-          - pending
-          - terminated
-          - active
-          - failed
-          example: stopped
-          type: string
-        error:
-          description: The error message if the task failed
-          example: "Error: Something went wrong"
-          type: string
-        state:
-          description: The task state
-          example: {}
-          type: object
-        descriptor:
-          $ref: '#/components/schemas/TaskDescriptorStripe_descriptor'
+    StripeTransferResponse:
       type: object
-    TaskDescriptorWise:
+    PaymentStatus:
+      enum:
+      - PENDING
+      - ACTIVE
+      - TERMINATED
+      - FAILED
+      type: string
+    StripeTimelineState:
       properties:
-        provider:
-          description: The connector code
-          example: stripe
+        oldestId:
+          description: The id of the oldest BalanceTransaction fetched from stripe
+            for this account
           type: string
-        createdAt:
-          description: The date when the task was created
-          example: 2020-01-01T00:00:00Z
+        oldestDate:
+          description: The creation date of the oldest BalanceTransaction fetched
+            from stripe for this account
           format: date-time
           type: string
-        status:
-          description: The task status
-          enum:
-          - stopped
-          - pending
-          - terminated
-          - active
-          - failed
-          example: stopped
+        moreRecentId:
+          description: The id of the more recent BalanceTransaction fetched from stripe
+            for this account
           type: string
-        error:
-          description: The error message if the task failed
-          example: "Error: Something went wrong"
-          type: string
-        state:
-          description: The task state
-          example: {}
-          type: object
-        descriptor:
-          $ref: '#/components/schemas/TaskDescriptorWise_descriptor'
-      type: object
-    TaskDescriptorModulr:
-      properties:
-        provider:
-          description: The connector code
-          example: stripe
-          type: string
-        createdAt:
-          description: The date when the task was created
-          example: 2020-01-01T00:00:00Z
+        moreRecentDate:
+          description: The creation date of the more recent BalanceTransaction fetched
+            from stripe for this account
           format: date-time
           type: string
-        status:
-          description: The task status
-          enum:
-          - stopped
-          - pending
-          - terminated
-          - active
-          - failed
-          example: stopped
-          type: string
-        error:
-          description: The error message if the task failed
-          example: "Error: Something went wrong"
-          type: string
-        state:
-          description: The task state
-          example: {}
-          type: object
-        descriptor:
-          $ref: '#/components/schemas/TaskDescriptorModulr_descriptor'
-      type: object
-    TaskDescriptorDummyPay:
-      properties:
-        provider:
-          description: The connector code
-          example: stripe
-          type: string
-        createdAt:
-          description: The date when the task was created
-          example: 2020-01-01T00:00:00Z
-          format: date-time
-          type: string
-        status:
-          description: The task status
-          enum:
-          - stopped
-          - pending
-          - terminated
-          - active
-          - failed
-          example: stopped
-          type: string
-        error:
-          description: The error message if the task failed
-          example: "Error: Something went wrong"
-          type: string
-        state:
-          description: The task state
-          example: {}
-          type: object
-        descriptor:
-          $ref: '#/components/schemas/TaskDescriptorDummyPay_descriptor'
-      type: object
-    TaskDescriptorCurrencyCloud:
-      properties:
-        provider:
-          description: The connector code
-          example: stripe
-          type: string
-        createdAt:
-          description: The date when the task was created
-          example: 2020-01-01T00:00:00Z
-          format: date-time
-          type: string
-        status:
-          description: The task status
-          enum:
-          - stopped
-          - pending
-          - terminated
-          - active
-          - failed
-          example: stopped
-          type: string
-        error:
-          description: The error message if the task failed
-          example: "Error: Something went wrong"
-          type: string
-        state:
-          description: The task state
-          example: {}
-          type: object
-        descriptor:
-          $ref: '#/components/schemas/TaskDescriptorCurrencyCloud_descriptor'
-      type: object
-    TaskDescriptorBankingCircle:
-      properties:
-        provider:
-          description: The connector code
-          example: stripe
-          type: string
-        createdAt:
-          description: The date when the task was created
-          example: 2020-01-01T00:00:00Z
-          format: date-time
-          type: string
-        status:
-          description: The task status
-          enum:
-          - stopped
-          - pending
-          - terminated
-          - active
-          - failed
-          example: stopped
-          type: string
-        error:
-          description: The error message if the task failed
-          example: "Error: Something went wrong"
-          type: string
-        state:
-          description: The task state
-          example: {}
-          type: object
-        descriptor:
-          $ref: '#/components/schemas/TaskDescriptorBankingCircle_descriptor'
+        noMoreHistory:
+          type: boolean
       type: object
     Query:
       example:
@@ -5008,6 +5223,7 @@ components:
       type: object
     Wallet:
       example:
+        ledger: ledger
         createdAt: 2000-01-23T04:56:07.000+00:00
         metadata:
           key: ""
@@ -5027,14 +5243,18 @@ components:
         createdAt:
           format: date-time
           type: string
+        ledger:
+          type: string
       required:
       - createdAt
       - id
+      - ledger
       - metadata
       - name
       type: object
     WalletWithBalances:
       example:
+        ledger: ledger
         createdAt: 2000-01-23T04:56:07.000+00:00
         metadata:
           key: ""
@@ -5060,10 +5280,13 @@ components:
           type: string
         balances:
           $ref: '#/components/schemas/WalletWithBalances_balances'
+        ledger:
+          type: string
       required:
       - balances
       - createdAt
       - id
+      - ledger
       - metadata
       - name
       type: object
@@ -5113,6 +5336,7 @@ components:
     CreateWalletResponse:
       example:
         data:
+          ledger: ledger
           createdAt: 2000-01-23T04:56:07.000+00:00
           metadata:
             key: ""
@@ -5127,6 +5351,7 @@ components:
     GetWalletResponse:
       example:
         data:
+          ledger: ledger
           createdAt: 2000-01-23T04:56:07.000+00:00
           metadata:
             key: ""
@@ -5329,14 +5554,14 @@ components:
       - identifier
       - type
     Subject:
+      anyOf:
+      - $ref: '#/components/schemas/LedgerAccountSubject'
+      - $ref: '#/components/schemas/WalletSubject'
       discriminator:
         mapping:
           ACCOUNT: '#/components/schemas/LedgerAccountSubject'
           WALLET: '#/components/schemas/WalletSubject'
         propertyName: type
-      oneOf:
-      - $ref: '#/components/schemas/LedgerAccountSubject'
-      - $ref: '#/components/schemas/WalletSubject'
     CreditWalletRequest:
       example:
         reference: reference
@@ -5465,14 +5690,6 @@ components:
       - errorCode
       - errorMessage
       type: object
-    listConnectorTasks_200_response_inner:
-      oneOf:
-      - $ref: '#/components/schemas/TaskDescriptorStripe'
-      - $ref: '#/components/schemas/TaskDescriptorWise'
-      - $ref: '#/components/schemas/TaskDescriptorCurrencyCloud'
-      - $ref: '#/components/schemas/TaskDescriptorDummyPay'
-      - $ref: '#/components/schemas/TaskDescriptorModulr'
-      - $ref: '#/components/schemas/TaskDescriptorBankingCircle'
     updateWallet_request:
       properties:
         metadata:
@@ -5802,26 +6019,233 @@ components:
             $ref: '#/components/schemas/MigrationInfo'
           type: array
       type: object
-    ListConnectorsConfigsResponse_connector_key:
+    PaymentsResponse_cursor:
       example:
-        datatype: datatype
+        next: ""
+        previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+        data:
+        - metadata:
+          - changelog:
+              value: value
+              timestamp: 2000-01-23T04:56:07.000+00:00
+            value: value
+            key: key
+          - changelog:
+              value: value
+              timestamp: 2000-01-23T04:56:07.000+00:00
+            value: value
+            key: key
+          adjustments:
+          - date: 2000-01-23T04:56:07.000+00:00
+            amount: 100
+            absolute: true
+            raw: "{}"
+            status: null
+          - date: 2000-01-23T04:56:07.000+00:00
+            amount: 100
+            absolute: true
+            raw: "{}"
+            status: null
+          scheme: visa
+          raw: "{}"
+          type: PAY-IN
+          reference: reference
+          accountID: accountID
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          provider: null
+          initialAmount: 100
+          id: XXX
+          asset: USD
+          status: null
+        - metadata:
+          - changelog:
+              value: value
+              timestamp: 2000-01-23T04:56:07.000+00:00
+            value: value
+            key: key
+          - changelog:
+              value: value
+              timestamp: 2000-01-23T04:56:07.000+00:00
+            value: value
+            key: key
+          adjustments:
+          - date: 2000-01-23T04:56:07.000+00:00
+            amount: 100
+            absolute: true
+            raw: "{}"
+            status: null
+          - date: 2000-01-23T04:56:07.000+00:00
+            amount: 100
+            absolute: true
+            raw: "{}"
+            status: null
+          scheme: visa
+          raw: "{}"
+          type: PAY-IN
+          reference: reference
+          accountID: accountID
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          provider: null
+          initialAmount: 100
+          id: XXX
+          asset: USD
+          status: null
+        hasMore: false
+        pageSize: 15
+      properties:
+        pageSize:
+          example: 15
+          format: int64
+          maximum: 1000
+          minimum: 1
+          type: integer
+        hasMore:
+          example: false
+          type: boolean
+        previous:
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          type: string
+        next:
+          example: ""
+          type: string
+        data:
+          items:
+            $ref: '#/components/schemas/Payment'
+          type: array
+      required:
+      - data
+      - hasMore
+      - pageSize
+      type: object
+    AccountsResponse_cursor:
+      example:
+        next: ""
+        previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+        data:
+        - reference: reference
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          provider: null
+          id: id
+          type: TARGET
+        - reference: reference
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          provider: null
+          id: id
+          type: TARGET
+        hasMore: false
+        pageSize: 15
+      properties:
+        pageSize:
+          example: 15
+          format: int64
+          maximum: 1000
+          minimum: 1
+          type: integer
+        hasMore:
+          example: false
+          type: boolean
+        previous:
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          type: string
+        next:
+          example: ""
+          type: string
+        data:
+          items:
+            $ref: '#/components/schemas/paymentsAccount'
+          type: array
+      required:
+      - data
+      - hasMore
+      - pageSize
+      type: object
+    ConnectorsResponse_data_inner:
+      example:
+        provider: null
+        disabled: false
+        enabled: true
+      properties:
+        provider:
+          $ref: '#/components/schemas/Connector'
+        enabled:
+          example: true
+          type: boolean
+        disabled:
+          example: false
+          type: boolean
+      type: object
+    ConnectorsConfigsResponse_data_connector_key:
+      example:
+        dataType: dataType
         required: true
       properties:
-        datatype:
+        dataType:
           type: string
         required:
           type: boolean
       type: object
-    ListConnectorsConfigsResponse_connector:
+    ConnectorsConfigsResponse_data_connector:
       example:
         key:
-          datatype: datatype
+          dataType: dataType
           required: true
       properties:
         key:
-          $ref: '#/components/schemas/ListConnectorsConfigsResponse_connector_key'
+          $ref: '#/components/schemas/ConnectorsConfigsResponse_data_connector_key'
       type: object
-    TaskDescriptorStripe_descriptor:
+    ConnectorsConfigsResponse_data:
+      example:
+        connector:
+          key:
+            dataType: dataType
+            required: true
+      properties:
+        connector:
+          $ref: '#/components/schemas/ConnectorsConfigsResponse_data_connector'
+      type: object
+    TaskResponse_data:
+      oneOf:
+      - $ref: '#/components/schemas/TaskStripe'
+      - $ref: '#/components/schemas/TaskWise'
+      - $ref: '#/components/schemas/TaskCurrencyCloud'
+      - $ref: '#/components/schemas/TaskDummyPay'
+      - $ref: '#/components/schemas/TaskModulr'
+      - $ref: '#/components/schemas/TaskBankingCircle'
+    TasksResponse_cursor:
+      example:
+        next: ""
+        previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+        data:
+        - null
+        - null
+        hasMore: false
+        pageSize: 15
+      properties:
+        pageSize:
+          example: 15
+          format: int64
+          maximum: 1000
+          minimum: 1
+          type: integer
+        hasMore:
+          example: false
+          type: boolean
+        previous:
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          type: string
+        next:
+          example: ""
+          type: string
+        data:
+          items:
+            $ref: '#/components/schemas/TaskResponse_data'
+          type: array
+      required:
+      - data
+      - hasMore
+      - pageSize
+      type: object
+    TaskStripe_descriptor:
       properties:
         name:
           type: string
@@ -5829,17 +6253,21 @@ components:
           type: boolean
         account:
           type: string
+      required:
+      - name
       type: object
-    TaskDescriptorWise_descriptor:
+    TaskWise_descriptor:
       properties:
         name:
           type: string
         key:
           type: string
         profileID:
+          format: int64
+          minimum: 0
           type: integer
       type: object
-    TaskDescriptorModulr_descriptor:
+    TaskModulr_descriptor:
       properties:
         name:
           type: string
@@ -5848,7 +6276,7 @@ components:
         accountID:
           type: string
       type: object
-    TaskDescriptorDummyPay_descriptor:
+    TaskDummyPay_descriptor:
       properties:
         name:
           type: string
@@ -5857,12 +6285,12 @@ components:
         fileName:
           type: string
       type: object
-    TaskDescriptorCurrencyCloud_descriptor:
+    TaskCurrencyCloud_descriptor:
       properties:
         name:
           type: string
       type: object
-    TaskDescriptorBankingCircle_descriptor:
+    TaskBankingCircle_descriptor:
       properties:
         name:
           type: string

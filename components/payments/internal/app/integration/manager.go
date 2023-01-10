@@ -222,7 +222,7 @@ func (l *ConnectorManager[ConnectorConfig]) IsInstalled(ctx context.Context) (bo
 }
 
 func (l *ConnectorManager[ConnectorConfig]) ListTasksStates(ctx context.Context, pagination storage.Paginator,
-) ([]models.Task, error) {
+) ([]models.Task, storage.PaginationDetails, error) {
 	return l.scheduler.ListTasks(ctx, pagination)
 }
 

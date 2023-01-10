@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Amount** | Pointer to **int32** |  | [optional] 
+**Amount** | Pointer to **int64** |  | [optional] 
 **Asset** | Pointer to **string** |  | [optional] 
 **Destination** | Pointer to **string** |  | [optional] 
 **Metadata** | Pointer to **map[string]interface{}** | A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.  | [optional] 
@@ -30,20 +30,20 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetAmount
 
-`func (o *StripeTransferRequest) GetAmount() int32`
+`func (o *StripeTransferRequest) GetAmount() int64`
 
 GetAmount returns the Amount field if non-nil, zero value otherwise.
 
 ### GetAmountOk
 
-`func (o *StripeTransferRequest) GetAmountOk() (*int32, bool)`
+`func (o *StripeTransferRequest) GetAmountOk() (*int64, bool)`
 
 GetAmountOk returns a tuple with the Amount field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetAmount
 
-`func (o *StripeTransferRequest) SetAmount(v int32)`
+`func (o *StripeTransferRequest) SetAmount(v int64)`
 
 SetAmount sets Amount field to given value.
 

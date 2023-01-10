@@ -72,7 +72,7 @@ class StripeTransferRequest implements ModelInterface, ArrayAccess, \JsonSeriali
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'amount' => null,
+        'amount' => 'int64',
         'asset' => null,
         'destination' => null,
         'metadata' => null
@@ -296,6 +296,10 @@ class StripeTransferRequest implements ModelInterface, ArrayAccess, \JsonSeriali
     {
         $invalidProperties = [];
 
+        if (!is_null($this->container['amount']) && ($this->container['amount'] < 0)) {
+            $invalidProperties[] = "invalid value for 'amount', must be bigger than or equal to 0.";
+        }
+
         return $invalidProperties;
     }
 
@@ -330,6 +334,11 @@ class StripeTransferRequest implements ModelInterface, ArrayAccess, \JsonSeriali
      */
     public function setAmount($amount)
     {
+
+        if (!is_null($amount) && ($amount < 0)) {
+            throw new \InvalidArgumentException('invalid value for $amount when calling StripeTransferRequest., must be bigger than or equal to 0.');
+        }
+
 
         if (is_null($amount)) {
             throw new \InvalidArgumentException('non-nullable amount cannot be null');

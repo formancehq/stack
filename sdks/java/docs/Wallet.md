@@ -11,6 +11,7 @@
 |**metadata** | **Map&lt;String, Object&gt;** | Metadata associated with the wallet. |  |
 |**name** | **String** |  |  |
 |**createdAt** | **OffsetDateTime** |  |  |
+|**ledger** | **String** |  |  |
 
 
 

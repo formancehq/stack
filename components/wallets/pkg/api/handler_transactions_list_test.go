@@ -19,7 +19,7 @@ import (
 func TestTransactionsList(t *testing.T) {
 	t.Parallel()
 
-	w := wallet.NewWallet(uuid.NewString(), metadata.Metadata{})
+	w := wallet.NewWallet(uuid.NewString(), "default", metadata.Metadata{})
 
 	var transactions []sdk.Transaction
 	for i := 0; i < 10; i++ {

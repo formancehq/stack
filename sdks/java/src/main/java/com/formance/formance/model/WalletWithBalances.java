@@ -54,6 +54,10 @@ public class WalletWithBalances {
   @SerializedName(SERIALIZED_NAME_BALANCES)
   private WalletWithBalancesBalances balances;
 
+  public static final String SERIALIZED_NAME_LEDGER = "ledger";
+  @SerializedName(SERIALIZED_NAME_LEDGER)
+  private String ledger;
+
   public WalletWithBalances() {
   }
 
@@ -177,6 +181,29 @@ public class WalletWithBalances {
   }
 
 
+  public WalletWithBalances ledger(String ledger) {
+    
+    this.ledger = ledger;
+    return this;
+  }
+
+   /**
+   * Get ledger
+   * @return ledger
+  **/
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
+
+  public String getLedger() {
+    return ledger;
+  }
+
+
+  public void setLedger(String ledger) {
+    this.ledger = ledger;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -190,12 +217,13 @@ public class WalletWithBalances {
         Objects.equals(this.metadata, walletWithBalances.metadata) &&
         Objects.equals(this.name, walletWithBalances.name) &&
         Objects.equals(this.createdAt, walletWithBalances.createdAt) &&
-        Objects.equals(this.balances, walletWithBalances.balances);
+        Objects.equals(this.balances, walletWithBalances.balances) &&
+        Objects.equals(this.ledger, walletWithBalances.ledger);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, metadata, name, createdAt, balances);
+    return Objects.hash(id, metadata, name, createdAt, balances, ledger);
   }
 
   @Override
@@ -207,6 +235,7 @@ public class WalletWithBalances {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    balances: ").append(toIndentedString(balances)).append("\n");
+    sb.append("    ledger: ").append(toIndentedString(ledger)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -17,8 +17,8 @@ import (
 
 // TaskDescriptorModulrDescriptor struct for TaskDescriptorModulrDescriptor
 type TaskDescriptorModulrDescriptor struct {
-	Name *string `json:"name,omitempty"`
-	Key *string `json:"key,omitempty"`
+	Name      *string `json:"name,omitempty"`
+	Key       *string `json:"key,omitempty"`
 	AccountID *string `json:"accountID,omitempty"`
 }
 
@@ -52,7 +52,7 @@ func (o *TaskDescriptorModulrDescriptor) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorModulrDescriptor) GetNameOk() (*string, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return o.Name, true
 }
@@ -84,7 +84,7 @@ func (o *TaskDescriptorModulrDescriptor) GetKey() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorModulrDescriptor) GetKeyOk() (*string, bool) {
 	if o == nil || isNil(o.Key) {
-    return nil, false
+		return nil, false
 	}
 	return o.Key, true
 }
@@ -116,7 +116,7 @@ func (o *TaskDescriptorModulrDescriptor) GetAccountID() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorModulrDescriptor) GetAccountIDOk() (*string, bool) {
 	if o == nil || isNil(o.AccountID) {
-    return nil, false
+		return nil, false
 	}
 	return o.AccountID, true
 }
@@ -184,5 +184,3 @@ func (v *NullableTaskDescriptorModulrDescriptor) UnmarshalJSON(src []byte) error
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -36,6 +36,7 @@ class Wallet(
 
     class MetaOapg:
         required = {
+            "ledger",
             "createdAt",
             "metadata",
             "name",
@@ -75,13 +76,16 @@ class Wallet(
                     )
             name = schemas.StrSchema
             createdAt = schemas.DateTimeSchema
+            ledger = schemas.StrSchema
             __annotations__ = {
                 "id": id,
                 "metadata": metadata,
                 "name": name,
                 "createdAt": createdAt,
+                "ledger": ledger,
             }
     
+    ledger: MetaOapg.properties.ledger
     createdAt: MetaOapg.properties.createdAt
     metadata: MetaOapg.properties.metadata
     name: MetaOapg.properties.name
@@ -100,9 +104,12 @@ class Wallet(
     def __getitem__(self, name: typing_extensions.Literal["createdAt"]) -> MetaOapg.properties.createdAt: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["ledger"]) -> MetaOapg.properties.ledger: ...
+    
+    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "metadata", "name", "createdAt", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "metadata", "name", "createdAt", "ledger", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -120,15 +127,19 @@ class Wallet(
     def get_item_oapg(self, name: typing_extensions.Literal["createdAt"]) -> MetaOapg.properties.createdAt: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["ledger"]) -> MetaOapg.properties.ledger: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "metadata", "name", "createdAt", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "metadata", "name", "createdAt", "ledger", ], str]):
         return super().get_item_oapg(name)
     
 
     def __new__(
         cls,
         *args: typing.Union[dict, frozendict.frozendict, ],
+        ledger: typing.Union[MetaOapg.properties.ledger, str, ],
         createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, ],
         metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, ],
         name: typing.Union[MetaOapg.properties.name, str, ],
@@ -139,6 +150,7 @@ class Wallet(
         return super().__new__(
             cls,
             *args,
+            ledger=ledger,
             createdAt=createdAt,
             metadata=metadata,
             name=name,

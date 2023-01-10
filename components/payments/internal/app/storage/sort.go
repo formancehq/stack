@@ -14,8 +14,8 @@ const (
 )
 
 type sortExpression struct {
-	Column string
-	Order  SortOrder
+	Column string    `json:"column"`
+	Order  SortOrder `json:"order"`
 }
 
 type Sorter []sortExpression

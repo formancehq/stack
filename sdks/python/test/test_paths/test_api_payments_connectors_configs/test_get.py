@@ -21,7 +21,7 @@ from .. import ApiTestMixin
 class TestApiPaymentsConnectorsConfigs(ApiTestMixin, unittest.TestCase):
     """
     ApiPaymentsConnectorsConfigs unit test stubs
-        Get all available connectors configs  # noqa: E501
+        List the configs of each available connector  # noqa: E501
     """
     _configuration = configuration.Configuration()
 

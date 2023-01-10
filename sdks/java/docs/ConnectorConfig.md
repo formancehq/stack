@@ -9,7 +9,7 @@
 |------------ | ------------- | ------------- | -------------|
 |**pollingPeriod** | **String** | The frequency at which the connector will fetch transactions |  [optional] |
 |**apiKey** | **String** |  |  |
-|**pageSize** | **BigDecimal** | Number of BalanceTransaction to fetch at each polling interval.  |  [optional] |
+|**pageSize** | **Long** | Number of BalanceTransaction to fetch at each polling interval.  |  [optional] |
 |**filePollingPeriod** | **String** | The frequency at which the connector will try to fetch new payment objects from the directory |  [optional] |
 |**fileGenerationPeriod** | **String** | The frequency at which the connector will create new payment objects in the directory |  [optional] |
 |**directory** | **String** |  |  |

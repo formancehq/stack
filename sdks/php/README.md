@@ -105,23 +105,24 @@ Class | Method | HTTP request | Description
 *ClientsApi* | [**readClient**](docs/Api/ClientsApi.md#readclient) | **GET** /api/auth/clients/{clientId} | Read client
 *ClientsApi* | [**updateClient**](docs/Api/ClientsApi.md#updateclient) | **PUT** /api/auth/clients/{clientId} | Update client
 *DefaultApi* | [**getServerInfo**](docs/Api/DefaultApi.md#getserverinfo) | **GET** /api/auth/_info | Get server info
+*DefaultApi* | [**paymentsgetServerInfo**](docs/Api/DefaultApi.md#paymentsgetserverinfo) | **GET** /api/payments/_info | Get server info
 *DefaultApi* | [**searchgetServerInfo**](docs/Api/DefaultApi.md#searchgetserverinfo) | **GET** /api/search/_info | Get server info
 *LedgerApi* | [**getLedgerInfo**](docs/Api/LedgerApi.md#getledgerinfo) | **GET** /api/ledger/{ledger}/_info | Get information about a ledger
 *LogsApi* | [**listLogs**](docs/Api/LogsApi.md#listlogs) | **GET** /api/ledger/{ledger}/log | List the logs from a ledger
 *MappingApi* | [**getMapping**](docs/Api/MappingApi.md#getmapping) | **GET** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
 *MappingApi* | [**updateMapping**](docs/Api/MappingApi.md#updatemapping) | **PUT** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
 *PaymentsApi* | [**connectorsStripeTransfer**](docs/Api/PaymentsApi.md#connectorsstripetransfer) | **POST** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
-*PaymentsApi* | [**getAllConnectors**](docs/Api/PaymentsApi.md#getallconnectors) | **GET** /api/payments/connectors | Get all installed connectors
-*PaymentsApi* | [**getAllConnectorsConfigs**](docs/Api/PaymentsApi.md#getallconnectorsconfigs) | **GET** /api/payments/connectors/configs | Get all available connectors configs
 *PaymentsApi* | [**getConnectorTask**](docs/Api/PaymentsApi.md#getconnectortask) | **GET** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
-*PaymentsApi* | [**getPayment**](docs/Api/PaymentsApi.md#getpayment) | **GET** /api/payments/payments/{paymentId} | Returns a payment.
-*PaymentsApi* | [**installConnector**](docs/Api/PaymentsApi.md#installconnector) | **POST** /api/payments/connectors/{connector} | Install connector
-*PaymentsApi* | [**listConnectorTasks**](docs/Api/PaymentsApi.md#listconnectortasks) | **GET** /api/payments/connectors/{connector}/tasks | List connector tasks
-*PaymentsApi* | [**listPayments**](docs/Api/PaymentsApi.md#listpayments) | **GET** /api/payments/payments | Returns a list of payments.
-*PaymentsApi* | [**paymentslistAccounts**](docs/Api/PaymentsApi.md#paymentslistaccounts) | **GET** /api/payments/accounts | Returns a list of accounts.
-*PaymentsApi* | [**readConnectorConfig**](docs/Api/PaymentsApi.md#readconnectorconfig) | **GET** /api/payments/connectors/{connector}/config | Read connector config
-*PaymentsApi* | [**resetConnector**](docs/Api/PaymentsApi.md#resetconnector) | **POST** /api/payments/connectors/{connector}/reset | Reset connector
-*PaymentsApi* | [**uninstallConnector**](docs/Api/PaymentsApi.md#uninstallconnector) | **DELETE** /api/payments/connectors/{connector} | Uninstall connector
+*PaymentsApi* | [**getPayment**](docs/Api/PaymentsApi.md#getpayment) | **GET** /api/payments/payments/{paymentId} | Get a payment
+*PaymentsApi* | [**installConnector**](docs/Api/PaymentsApi.md#installconnector) | **POST** /api/payments/connectors/{connector} | Install a connector
+*PaymentsApi* | [**listAllConnectors**](docs/Api/PaymentsApi.md#listallconnectors) | **GET** /api/payments/connectors | List all installed connectors
+*PaymentsApi* | [**listConfigsAvailableConnectors**](docs/Api/PaymentsApi.md#listconfigsavailableconnectors) | **GET** /api/payments/connectors/configs | List the configs of each available connector
+*PaymentsApi* | [**listConnectorTasks**](docs/Api/PaymentsApi.md#listconnectortasks) | **GET** /api/payments/connectors/{connector}/tasks | List tasks from a connector
+*PaymentsApi* | [**listPayments**](docs/Api/PaymentsApi.md#listpayments) | **GET** /api/payments/payments | List payments
+*PaymentsApi* | [**paymentslistAccounts**](docs/Api/PaymentsApi.md#paymentslistaccounts) | **GET** /api/payments/accounts | List accounts
+*PaymentsApi* | [**readConnectorConfig**](docs/Api/PaymentsApi.md#readconnectorconfig) | **GET** /api/payments/connectors/{connector}/config | Read the config of a connector
+*PaymentsApi* | [**resetConnector**](docs/Api/PaymentsApi.md#resetconnector) | **POST** /api/payments/connectors/{connector}/reset | Reset a connector
+*PaymentsApi* | [**uninstallConnector**](docs/Api/PaymentsApi.md#uninstallconnector) | **DELETE** /api/payments/connectors/{connector} | Uninstall a connector
 *ScopesApi* | [**addTransientScope**](docs/Api/ScopesApi.md#addtransientscope) | **PUT** /api/auth/scopes/{scopeId}/transient/{transientScopeId} | Add a transient scope to a scope
 *ScopesApi* | [**createScope**](docs/Api/ScopesApi.md#createscope) | **POST** /api/auth/scopes | Create scope
 *ScopesApi* | [**deleteScope**](docs/Api/ScopesApi.md#deletescope) | **DELETE** /api/auth/scopes/{scopeId} | Delete scope
@@ -172,6 +173,8 @@ Class | Method | HTTP request | Description
 - [AccountWithVolumesAndBalances](docs/Model/AccountWithVolumesAndBalances.md)
 - [AccountsCursorResponse](docs/Model/AccountsCursorResponse.md)
 - [AccountsCursorResponseCursor](docs/Model/AccountsCursorResponseCursor.md)
+- [AccountsResponse](docs/Model/AccountsResponse.md)
+- [AccountsResponseCursor](docs/Model/AccountsResponseCursor.md)
 - [AggregateBalancesResponse](docs/Model/AggregateBalancesResponse.md)
 - [AssetHolder](docs/Model/AssetHolder.md)
 - [Attempt](docs/Model/Attempt.md)
@@ -195,9 +198,15 @@ Class | Method | HTTP request | Description
 - [ConfigsResponseCursor](docs/Model/ConfigsResponseCursor.md)
 - [ConfigsResponseCursorAllOf](docs/Model/ConfigsResponseCursorAllOf.md)
 - [ConfirmHoldRequest](docs/Model/ConfirmHoldRequest.md)
-- [ConnectorBaseInfo](docs/Model/ConnectorBaseInfo.md)
+- [Connector](docs/Model/Connector.md)
 - [ConnectorConfig](docs/Model/ConnectorConfig.md)
-- [Connectors](docs/Model/Connectors.md)
+- [ConnectorConfigResponse](docs/Model/ConnectorConfigResponse.md)
+- [ConnectorsConfigsResponse](docs/Model/ConnectorsConfigsResponse.md)
+- [ConnectorsConfigsResponseData](docs/Model/ConnectorsConfigsResponseData.md)
+- [ConnectorsConfigsResponseDataConnector](docs/Model/ConnectorsConfigsResponseDataConnector.md)
+- [ConnectorsConfigsResponseDataConnectorKey](docs/Model/ConnectorsConfigsResponseDataConnectorKey.md)
+- [ConnectorsResponse](docs/Model/ConnectorsResponse.md)
+- [ConnectorsResponseDataInner](docs/Model/ConnectorsResponseDataInner.md)
 - [Contract](docs/Model/Contract.md)
 - [CreateBalanceResponse](docs/Model/CreateBalanceResponse.md)
 - [CreateClientResponse](docs/Model/CreateClientResponse.md)
@@ -220,7 +229,6 @@ Class | Method | HTTP request | Description
 - [GetHoldsResponse](docs/Model/GetHoldsResponse.md)
 - [GetHoldsResponseCursor](docs/Model/GetHoldsResponseCursor.md)
 - [GetHoldsResponseCursorAllOf](docs/Model/GetHoldsResponseCursorAllOf.md)
-- [GetPaymentResponse](docs/Model/GetPaymentResponse.md)
 - [GetTransactionsResponse](docs/Model/GetTransactionsResponse.md)
 - [GetTransactionsResponseCursor](docs/Model/GetTransactionsResponseCursor.md)
 - [GetTransactionsResponseCursorAllOf](docs/Model/GetTransactionsResponseCursorAllOf.md)
@@ -231,17 +239,10 @@ Class | Method | HTTP request | Description
 - [LedgerInfoResponse](docs/Model/LedgerInfoResponse.md)
 - [LedgerInfoStorage](docs/Model/LedgerInfoStorage.md)
 - [LedgerStorage](docs/Model/LedgerStorage.md)
-- [ListAccountsResponse](docs/Model/ListAccountsResponse.md)
 - [ListBalancesResponse](docs/Model/ListBalancesResponse.md)
 - [ListBalancesResponseCursor](docs/Model/ListBalancesResponseCursor.md)
 - [ListBalancesResponseCursorAllOf](docs/Model/ListBalancesResponseCursorAllOf.md)
 - [ListClientsResponse](docs/Model/ListClientsResponse.md)
-- [ListConnectorTasks200ResponseInner](docs/Model/ListConnectorTasks200ResponseInner.md)
-- [ListConnectorsConfigsResponse](docs/Model/ListConnectorsConfigsResponse.md)
-- [ListConnectorsConfigsResponseConnector](docs/Model/ListConnectorsConfigsResponseConnector.md)
-- [ListConnectorsConfigsResponseConnectorKey](docs/Model/ListConnectorsConfigsResponseConnectorKey.md)
-- [ListConnectorsResponse](docs/Model/ListConnectorsResponse.md)
-- [ListPaymentsResponse](docs/Model/ListPaymentsResponse.md)
 - [ListScopesResponse](docs/Model/ListScopesResponse.md)
 - [ListUsersResponse](docs/Model/ListUsersResponse.md)
 - [ListWalletsResponse](docs/Model/ListWalletsResponse.md)
@@ -256,7 +257,14 @@ Class | Method | HTTP request | Description
 - [ModulrConfig](docs/Model/ModulrConfig.md)
 - [Monetary](docs/Model/Monetary.md)
 - [Payment](docs/Model/Payment.md)
+- [PaymentAdjustment](docs/Model/PaymentAdjustment.md)
+- [PaymentMetadata](docs/Model/PaymentMetadata.md)
+- [PaymentMetadataChangelog](docs/Model/PaymentMetadataChangelog.md)
+- [PaymentResponse](docs/Model/PaymentResponse.md)
+- [PaymentStatus](docs/Model/PaymentStatus.md)
 - [PaymentsAccount](docs/Model/PaymentsAccount.md)
+- [PaymentsResponse](docs/Model/PaymentsResponse.md)
+- [PaymentsResponseCursor](docs/Model/PaymentsResponseCursor.md)
 - [PostTransaction](docs/Model/PostTransaction.md)
 - [PostTransactionScript](docs/Model/PostTransactionScript.md)
 - [Posting](docs/Model/Posting.md)
@@ -276,21 +284,25 @@ Class | Method | HTTP request | Description
 - [Stats](docs/Model/Stats.md)
 - [StatsResponse](docs/Model/StatsResponse.md)
 - [StripeConfig](docs/Model/StripeConfig.md)
-- [StripeTask](docs/Model/StripeTask.md)
+- [StripeTimelineState](docs/Model/StripeTimelineState.md)
 - [StripeTransferRequest](docs/Model/StripeTransferRequest.md)
 - [Subject](docs/Model/Subject.md)
-- [TaskDescriptorBankingCircle](docs/Model/TaskDescriptorBankingCircle.md)
-- [TaskDescriptorBankingCircleDescriptor](docs/Model/TaskDescriptorBankingCircleDescriptor.md)
-- [TaskDescriptorCurrencyCloud](docs/Model/TaskDescriptorCurrencyCloud.md)
-- [TaskDescriptorCurrencyCloudDescriptor](docs/Model/TaskDescriptorCurrencyCloudDescriptor.md)
-- [TaskDescriptorDummyPay](docs/Model/TaskDescriptorDummyPay.md)
-- [TaskDescriptorDummyPayDescriptor](docs/Model/TaskDescriptorDummyPayDescriptor.md)
-- [TaskDescriptorModulr](docs/Model/TaskDescriptorModulr.md)
-- [TaskDescriptorModulrDescriptor](docs/Model/TaskDescriptorModulrDescriptor.md)
-- [TaskDescriptorStripe](docs/Model/TaskDescriptorStripe.md)
-- [TaskDescriptorStripeDescriptor](docs/Model/TaskDescriptorStripeDescriptor.md)
-- [TaskDescriptorWise](docs/Model/TaskDescriptorWise.md)
-- [TaskDescriptorWiseDescriptor](docs/Model/TaskDescriptorWiseDescriptor.md)
+- [TaskBankingCircle](docs/Model/TaskBankingCircle.md)
+- [TaskBankingCircleDescriptor](docs/Model/TaskBankingCircleDescriptor.md)
+- [TaskCurrencyCloud](docs/Model/TaskCurrencyCloud.md)
+- [TaskCurrencyCloudDescriptor](docs/Model/TaskCurrencyCloudDescriptor.md)
+- [TaskDummyPay](docs/Model/TaskDummyPay.md)
+- [TaskDummyPayDescriptor](docs/Model/TaskDummyPayDescriptor.md)
+- [TaskModulr](docs/Model/TaskModulr.md)
+- [TaskModulrDescriptor](docs/Model/TaskModulrDescriptor.md)
+- [TaskResponse](docs/Model/TaskResponse.md)
+- [TaskResponseData](docs/Model/TaskResponseData.md)
+- [TaskStripe](docs/Model/TaskStripe.md)
+- [TaskStripeDescriptor](docs/Model/TaskStripeDescriptor.md)
+- [TaskWise](docs/Model/TaskWise.md)
+- [TaskWiseDescriptor](docs/Model/TaskWiseDescriptor.md)
+- [TasksResponse](docs/Model/TasksResponse.md)
+- [TasksResponseCursor](docs/Model/TasksResponseCursor.md)
 - [Total](docs/Model/Total.md)
 - [Transaction](docs/Model/Transaction.md)
 - [TransactionData](docs/Model/TransactionData.md)

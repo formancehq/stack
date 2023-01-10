@@ -24,10 +24,10 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.connectors import Connectors
+from Formance.model.connector import Connector
 
 # Path params
-ConnectorSchema = Connectors
+ConnectorSchema = Connector
 RequestRequiredPathParams = typing_extensions.TypedDict(
     'RequestRequiredPathParams',
     {
@@ -107,7 +107,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: bool = False,
     ):
         """
-        Uninstall connector
+        Uninstall a connector
         :param skip_deserialization: If true then api_response.response will be set but
             api_response.body and api_response.headers will not be deserialized into schema
             class instances

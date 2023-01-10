@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -20,10 +20,10 @@ import (
 type ListConnectorTasks200ResponseInner struct {
 	TaskDescriptorBankingCircle *TaskDescriptorBankingCircle
 	TaskDescriptorCurrencyCloud *TaskDescriptorCurrencyCloud
-	TaskDescriptorDummyPay *TaskDescriptorDummyPay
-	TaskDescriptorModulr *TaskDescriptorModulr
-	TaskDescriptorStripe *TaskDescriptorStripe
-	TaskDescriptorWise *TaskDescriptorWise
+	TaskDescriptorDummyPay      *TaskDescriptorDummyPay
+	TaskDescriptorModulr        *TaskDescriptorModulr
+	TaskDescriptorStripe        *TaskDescriptorStripe
+	TaskDescriptorWise          *TaskDescriptorWise
 }
 
 // TaskDescriptorBankingCircleAsListConnectorTasks200ResponseInner is a convenience function that returns TaskDescriptorBankingCircle wrapped in ListConnectorTasks200ResponseInner
@@ -67,7 +67,6 @@ func TaskDescriptorWiseAsListConnectorTasks200ResponseInner(v *TaskDescriptorWis
 		TaskDescriptorWise: v,
 	}
 }
-
 
 // Unmarshal JSON data into one of the pointers in the struct
 func (dst *ListConnectorTasks200ResponseInner) UnmarshalJSON(data []byte) error {
@@ -198,7 +197,7 @@ func (src ListConnectorTasks200ResponseInner) MarshalJSON() ([]byte, error) {
 }
 
 // Get the actual instance
-func (obj *ListConnectorTasks200ResponseInner) GetActualInstance() (interface{}) {
+func (obj *ListConnectorTasks200ResponseInner) GetActualInstance() interface{} {
 	if obj == nil {
 		return nil
 	}
@@ -265,5 +264,3 @@ func (v *NullableListConnectorTasks200ResponseInner) UnmarshalJSON(src []byte) e
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -53,7 +53,7 @@ type DefaultTaskScheduler struct {
 	stopped          bool
 }
 
-func (s *DefaultTaskScheduler) ListTasks(ctx context.Context, pagination storage.Paginator) ([]models.Task, error) {
+func (s *DefaultTaskScheduler) ListTasks(ctx context.Context, pagination storage.Paginator) ([]models.Task, storage.PaginationDetails, error) {
 	return s.store.ListTasks(ctx, s.provider, pagination)
 }
 

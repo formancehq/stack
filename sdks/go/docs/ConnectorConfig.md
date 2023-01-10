@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **PollingPeriod** | Pointer to **string** | The frequency at which the connector will fetch transactions | [optional] 
 **ApiKey** | **string** |  | 
-**PageSize** | Pointer to **float32** | Number of BalanceTransaction to fetch at each polling interval.  | [optional] [default to 10]
+**PageSize** | Pointer to **int64** | Number of BalanceTransaction to fetch at each polling interval.  | [optional] [default to 10]
 **FilePollingPeriod** | Pointer to **string** | The frequency at which the connector will try to fetch new payment objects from the directory | [optional] [default to "10s"]
 **FileGenerationPeriod** | Pointer to **string** | The frequency at which the connector will create new payment objects in the directory | [optional] [default to "10s"]
 **Directory** | **string** |  | 
@@ -83,20 +83,20 @@ SetApiKey sets ApiKey field to given value.
 
 ### GetPageSize
 
-`func (o *ConnectorConfig) GetPageSize() float32`
+`func (o *ConnectorConfig) GetPageSize() int64`
 
 GetPageSize returns the PageSize field if non-nil, zero value otherwise.
 
 ### GetPageSizeOk
 
-`func (o *ConnectorConfig) GetPageSizeOk() (*float32, bool)`
+`func (o *ConnectorConfig) GetPageSizeOk() (*int64, bool)`
 
 GetPageSizeOk returns a tuple with the PageSize field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetPageSize
 
-`func (o *ConnectorConfig) SetPageSize(v float32)`
+`func (o *ConnectorConfig) SetPageSize(v int64)`
 
 SetPageSize sets PageSize field to given value.
 

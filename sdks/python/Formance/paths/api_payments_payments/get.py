@@ -25,13 +25,23 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.list_payments_response import ListPaymentsResponse
+from Formance.model.payments_response import PaymentsResponse
 
 from . import path
 
 # Query params
-LimitSchema = schemas.IntSchema
-SkipSchema = schemas.IntSchema
+
+
+class PageSizeSchema(
+    schemas.Int64Schema
+):
+
+
+    class MetaOapg:
+        format = 'int64'
+        inclusive_maximum = 1000
+        inclusive_minimum = 1
+CursorSchema = schemas.StrSchema
 
 
 class SortSchema(
@@ -63,8 +73,8 @@ RequestRequiredQueryParams = typing_extensions.TypedDict(
 RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
-        'limit': typing.Union[LimitSchema, decimal.Decimal, int, ],
-        'skip': typing.Union[SkipSchema, decimal.Decimal, int, ],
+        'pageSize': typing.Union[PageSizeSchema, decimal.Decimal, int, ],
+        'cursor': typing.Union[CursorSchema, str, ],
         'sort': typing.Union[SortSchema, list, tuple, ],
     },
     total=False
@@ -75,16 +85,16 @@ class RequestQueryParams(RequestRequiredQueryParams, RequestOptionalQueryParams)
     pass
 
 
-request_query_limit = api_client.QueryParameter(
-    name="limit",
+request_query_page_size = api_client.QueryParameter(
+    name="pageSize",
     style=api_client.ParameterStyle.FORM,
-    schema=LimitSchema,
+    schema=PageSizeSchema,
     explode=True,
 )
-request_query_skip = api_client.QueryParameter(
-    name="skip",
+request_query_cursor = api_client.QueryParameter(
+    name="cursor",
     style=api_client.ParameterStyle.FORM,
-    schema=SkipSchema,
+    schema=CursorSchema,
     explode=True,
 )
 request_query_sort = api_client.QueryParameter(
@@ -96,7 +106,7 @@ request_query_sort = api_client.QueryParameter(
 _auth = [
     'Authorization',
 ]
-SchemaFor200ResponseBodyApplicationJson = ListPaymentsResponse
+SchemaFor200ResponseBodyApplicationJson = PaymentsResponse
 
 
 @dataclass
@@ -168,7 +178,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: bool = False,
     ):
         """
-        Returns a list of payments.
+        List payments
         :param skip_deserialization: If true then api_response.response will be set but
             api_response.body and api_response.headers will not be deserialized into schema
             class instances
@@ -178,8 +188,8 @@ class BaseApi(api_client.Api):
 
         prefix_separator_iterator = None
         for parameter in (
-            request_query_limit,
-            request_query_skip,
+            request_query_page_size,
+            request_query_cursor,
             request_query_sort,
         ):
             parameter_data = query_params.get(parameter.name, schemas.unset)

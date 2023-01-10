@@ -23,7 +23,7 @@ func TestWalletsPatch(t *testing.T) {
 			"foo":  "baz",
 		},
 	}
-	w := wallet.NewWallet(uuid.NewString(), metadata.Metadata{
+	w := wallet.NewWallet(uuid.NewString(), "default", metadata.Metadata{
 		"foo": "bar",
 	})
 

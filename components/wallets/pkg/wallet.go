@@ -36,6 +36,7 @@ type Wallet struct {
 	Name      string            `json:"name"`
 	Metadata  metadata.Metadata `json:"metadata"`
 	CreatedAt time.Time         `json:"createdAt"`
+	Ledger    string            `json:"ledger"`
 }
 
 type WithBalances struct {
@@ -91,7 +92,7 @@ func (w Wallet) LedgerMetadata() metadata.Metadata {
 	}
 }
 
-func NewWallet(name string, m metadata.Metadata) Wallet {
+func NewWallet(name, ledger string, m metadata.Metadata) Wallet {
 	if m == nil {
 		m = metadata.Metadata{}
 	}
@@ -100,10 +101,11 @@ func NewWallet(name string, m metadata.Metadata) Wallet {
 		Metadata:  m,
 		Name:      name,
 		CreatedAt: time.Now().UTC().Round(time.Nanosecond),
+		Ledger:    ledger,
 	}
 }
 
-func FromAccount(account Account) Wallet {
+func FromAccount(ledger string, account Account) Wallet {
 	createdAt, err := time.Parse(time.RFC3339Nano, GetMetadata(account, MetadataKeyCreatedAt).(string))
 	if err != nil {
 		panic(err)
@@ -114,16 +116,17 @@ func FromAccount(account Account) Wallet {
 		Name:      GetMetadata(account, MetadataKeyWalletName).(string),
 		Metadata:  GetMetadata(account, MetadataKeyWalletCustomData).(map[string]any),
 		CreatedAt: createdAt,
+		Ledger:    ledger,
 	}
 }
 
-func WithBalancesFromAccount(account interface {
+func WithBalancesFromAccount(ledger string, account interface {
 	Account
 	GetBalances() map[string]int64
 },
 ) WithBalances {
 	return WithBalances{
-		Wallet:   FromAccount(account),
+		Wallet:   FromAccount(ledger, account),
 		Balances: account.GetBalances(),
 	}
 }

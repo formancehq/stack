@@ -31,7 +31,7 @@ import java.io.IOException;
 public class StripeTransferRequest {
   public static final String SERIALIZED_NAME_AMOUNT = "amount";
   @SerializedName(SERIALIZED_NAME_AMOUNT)
-  private Integer amount;
+  private Long amount;
 
   public static final String SERIALIZED_NAME_ASSET = "asset";
   @SerializedName(SERIALIZED_NAME_ASSET)
@@ -48,7 +48,7 @@ public class StripeTransferRequest {
   public StripeTransferRequest() {
   }
 
-  public StripeTransferRequest amount(Integer amount) {
+  public StripeTransferRequest amount(Long amount) {
     
     this.amount = amount;
     return this;
@@ -56,17 +56,18 @@ public class StripeTransferRequest {
 
    /**
    * Get amount
+   * minimum: 0
    * @return amount
   **/
   @javax.annotation.Nullable
   @ApiModelProperty(example = "100", value = "")
 
-  public Integer getAmount() {
+  public Long getAmount() {
     return amount;
   }
 
 
-  public void setAmount(Integer amount) {
+  public void setAmount(Long amount) {
     this.amount = amount;
   }
 

@@ -36,18 +36,74 @@ class Payment(
 
     class MetaOapg:
         required = {
-            "date",
-            "amount",
+            "metadata",
+            "adjustments",
             "scheme",
+            "raw",
+            "type",
+            "reference",
+            "accountID",
+            "createdAt",
             "provider",
+            "initialAmount",
             "id",
             "asset",
-            "type",
             "status",
         }
         
         class properties:
-            provider = schemas.StrSchema
+            id = schemas.StrSchema
+            reference = schemas.StrSchema
+            accountID = schemas.StrSchema
+            
+            
+            class type(
+                schemas.EnumBase,
+                schemas.StrSchema
+            ):
+            
+            
+                class MetaOapg:
+                    enum_value_to_name = {
+                        "PAY-IN": "PAYIN",
+                        "PAYOUT": "PAYOUT",
+                        "TRANSFER": "TRANSFER",
+                        "OTHER": "OTHER",
+                    }
+                
+                @schemas.classproperty
+                def PAYIN(cls):
+                    return cls("PAY-IN")
+                
+                @schemas.classproperty
+                def PAYOUT(cls):
+                    return cls("PAYOUT")
+                
+                @schemas.classproperty
+                def TRANSFER(cls):
+                    return cls("TRANSFER")
+                
+                @schemas.classproperty
+                def OTHER(cls):
+                    return cls("OTHER")
+        
+            @staticmethod
+            def provider() -> typing.Type['Connector']:
+                return Connector
+        
+            @staticmethod
+            def status() -> typing.Type['PaymentStatus']:
+                return PaymentStatus
+            
+            
+            class initialAmount(
+                schemas.Int64Schema
+            ):
+            
+            
+                class MetaOapg:
+                    format = 'int64'
+                    inclusive_minimum = 0
             
             
             class scheme(
@@ -60,15 +116,21 @@ class Payment(
                     enum_value_to_name = {
                         "visa": "VISA",
                         "mastercard": "MASTERCARD",
-                        "apple pay": "APPLE_PAY",
-                        "google pay": "GOOGLE_PAY",
+                        "amex": "AMEX",
+                        "diners": "DINERS",
+                        "discover": "DISCOVER",
+                        "jcb": "JCB",
+                        "unionpay": "UNIONPAY",
                         "sepa debit": "SEPA_DEBIT",
                         "sepa credit": "SEPA_CREDIT",
                         "sepa": "SEPA",
+                        "apple pay": "APPLE_PAY",
+                        "google pay": "GOOGLE_PAY",
                         "a2a": "A2A",
                         "ach debit": "ACH_DEBIT",
                         "ach": "ACH",
                         "rtp": "RTP",
+                        "unknown": "UNKNOWN",
                         "other": "OTHER",
                     }
                 
@@ -81,12 +143,24 @@ class Payment(
                     return cls("mastercard")
                 
                 @schemas.classproperty
-                def APPLE_PAY(cls):
-                    return cls("apple pay")
+                def AMEX(cls):
+                    return cls("amex")
                 
                 @schemas.classproperty
-                def GOOGLE_PAY(cls):
-                    return cls("google pay")
+                def DINERS(cls):
+                    return cls("diners")
+                
+                @schemas.classproperty
+                def DISCOVER(cls):
+                    return cls("discover")
+                
+                @schemas.classproperty
+                def JCB(cls):
+                    return cls("jcb")
+                
+                @schemas.classproperty
+                def UNIONPAY(cls):
+                    return cls("unionpay")
                 
                 @schemas.classproperty
                 def SEPA_DEBIT(cls):
@@ -99,6 +173,14 @@ class Payment(
                 @schemas.classproperty
                 def SEPA(cls):
                     return cls("sepa")
+                
+                @schemas.classproperty
+                def APPLE_PAY(cls):
+                    return cls("apple pay")
+                
+                @schemas.classproperty
+                def GOOGLE_PAY(cls):
+                    return cls("google pay")
                 
                 @schemas.classproperty
                 def A2A(cls):
@@ -117,167 +199,230 @@ class Payment(
                     return cls("rtp")
                 
                 @schemas.classproperty
+                def UNKNOWN(cls):
+                    return cls("unknown")
+                
+                @schemas.classproperty
                 def OTHER(cls):
                     return cls("other")
-            status = schemas.StrSchema
+            asset = schemas.StrSchema
+            createdAt = schemas.DateTimeSchema
+            raw = schemas.DictSchema
             
             
-            class type(
-                schemas.EnumBase,
-                schemas.StrSchema
+            class adjustments(
+                schemas.ListSchema
             ):
             
             
                 class MetaOapg:
-                    enum_value_to_name = {
-                        "pay-in": "PAYIN",
-                        "payout": "PAYOUT",
-                        "other": "OTHER",
-                    }
-                
-                @schemas.classproperty
-                def PAYIN(cls):
-                    return cls("pay-in")
-                
-                @schemas.classproperty
-                def PAYOUT(cls):
-                    return cls("payout")
-                
-                @schemas.classproperty
-                def OTHER(cls):
-                    return cls("other")
-            id = schemas.StrSchema
-            amount = schemas.IntSchema
-            asset = schemas.StrSchema
-            date = schemas.DateTimeSchema
-            reference = schemas.StrSchema
-            raw = schemas.AnyTypeSchema
+                    
+                    @staticmethod
+                    def items() -> typing.Type['PaymentAdjustment']:
+                        return PaymentAdjustment
+            
+                def __new__(
+                    cls,
+                    arg: typing.Union[typing.Tuple['PaymentAdjustment'], typing.List['PaymentAdjustment']],
+                    _configuration: typing.Optional[schemas.Configuration] = None,
+                ) -> 'adjustments':
+                    return super().__new__(
+                        cls,
+                        arg,
+                        _configuration=_configuration,
+                    )
+            
+                def __getitem__(self, i: int) -> 'PaymentAdjustment':
+                    return super().__getitem__(i)
+            
+            
+            class metadata(
+                schemas.ListSchema
+            ):
+            
+            
+                class MetaOapg:
+                    
+                    @staticmethod
+                    def items() -> typing.Type['PaymentMetadata']:
+                        return PaymentMetadata
+            
+                def __new__(
+                    cls,
+                    arg: typing.Union[typing.Tuple['PaymentMetadata'], typing.List['PaymentMetadata']],
+                    _configuration: typing.Optional[schemas.Configuration] = None,
+                ) -> 'metadata':
+                    return super().__new__(
+                        cls,
+                        arg,
+                        _configuration=_configuration,
+                    )
+            
+                def __getitem__(self, i: int) -> 'PaymentMetadata':
+                    return super().__getitem__(i)
             __annotations__ = {
-                "provider": provider,
-                "scheme": scheme,
-                "status": status,
-                "type": type,
                 "id": id,
-                "amount": amount,
-                "asset": asset,
-                "date": date,
                 "reference": reference,
+                "accountID": accountID,
+                "type": type,
+                "provider": provider,
+                "status": status,
+                "initialAmount": initialAmount,
+                "scheme": scheme,
+                "asset": asset,
+                "createdAt": createdAt,
                 "raw": raw,
+                "adjustments": adjustments,
+                "metadata": metadata,
             }
     
-    date: MetaOapg.properties.date
-    amount: MetaOapg.properties.amount
+    metadata: MetaOapg.properties.metadata
+    adjustments: MetaOapg.properties.adjustments
     scheme: MetaOapg.properties.scheme
-    provider: MetaOapg.properties.provider
+    raw: MetaOapg.properties.raw
+    type: MetaOapg.properties.type
+    reference: MetaOapg.properties.reference
+    accountID: MetaOapg.properties.accountID
+    createdAt: MetaOapg.properties.createdAt
+    provider: 'Connector'
+    initialAmount: MetaOapg.properties.initialAmount
     id: MetaOapg.properties.id
     asset: MetaOapg.properties.asset
-    type: MetaOapg.properties.type
-    status: MetaOapg.properties.status
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["provider"]) -> MetaOapg.properties.provider: ...
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["scheme"]) -> MetaOapg.properties.scheme: ...
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["status"]) -> MetaOapg.properties.status: ...
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["type"]) -> MetaOapg.properties.type: ...
+    status: 'PaymentStatus'
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["amount"]) -> MetaOapg.properties.amount: ...
+    def __getitem__(self, name: typing_extensions.Literal["reference"]) -> MetaOapg.properties.reference: ...
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["accountID"]) -> MetaOapg.properties.accountID: ...
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["type"]) -> MetaOapg.properties.type: ...
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["provider"]) -> 'Connector': ...
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["status"]) -> 'PaymentStatus': ...
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["initialAmount"]) -> MetaOapg.properties.initialAmount: ...
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["scheme"]) -> MetaOapg.properties.scheme: ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["asset"]) -> MetaOapg.properties.asset: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["date"]) -> MetaOapg.properties.date: ...
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["reference"]) -> MetaOapg.properties.reference: ...
+    def __getitem__(self, name: typing_extensions.Literal["createdAt"]) -> MetaOapg.properties.createdAt: ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["raw"]) -> MetaOapg.properties.raw: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["adjustments"]) -> MetaOapg.properties.adjustments: ...
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
+    
+    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["provider", "scheme", "status", "type", "id", "amount", "asset", "date", "reference", "raw", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "reference", "accountID", "type", "provider", "status", "initialAmount", "scheme", "asset", "createdAt", "raw", "adjustments", "metadata", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["provider"]) -> MetaOapg.properties.provider: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["scheme"]) -> MetaOapg.properties.scheme: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["reference"]) -> MetaOapg.properties.reference: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["status"]) -> MetaOapg.properties.status: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["accountID"]) -> MetaOapg.properties.accountID: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["type"]) -> MetaOapg.properties.type: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["provider"]) -> 'Connector': ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["amount"]) -> MetaOapg.properties.amount: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["status"]) -> 'PaymentStatus': ...
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["initialAmount"]) -> MetaOapg.properties.initialAmount: ...
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["scheme"]) -> MetaOapg.properties.scheme: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["asset"]) -> MetaOapg.properties.asset: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["date"]) -> MetaOapg.properties.date: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["createdAt"]) -> MetaOapg.properties.createdAt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["reference"]) -> typing.Union[MetaOapg.properties.reference, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["raw"]) -> MetaOapg.properties.raw: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["raw"]) -> typing.Union[MetaOapg.properties.raw, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["adjustments"]) -> MetaOapg.properties.adjustments: ...
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["provider", "scheme", "status", "type", "id", "amount", "asset", "date", "reference", "raw", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "reference", "accountID", "type", "provider", "status", "initialAmount", "scheme", "asset", "createdAt", "raw", "adjustments", "metadata", ], str]):
         return super().get_item_oapg(name)
     
 
     def __new__(
         cls,
         *args: typing.Union[dict, frozendict.frozendict, ],
-        date: typing.Union[MetaOapg.properties.date, str, datetime, ],
-        amount: typing.Union[MetaOapg.properties.amount, decimal.Decimal, int, ],
+        metadata: typing.Union[MetaOapg.properties.metadata, list, tuple, ],
+        adjustments: typing.Union[MetaOapg.properties.adjustments, list, tuple, ],
         scheme: typing.Union[MetaOapg.properties.scheme, str, ],
-        provider: typing.Union[MetaOapg.properties.provider, str, ],
+        raw: typing.Union[MetaOapg.properties.raw, dict, frozendict.frozendict, ],
+        type: typing.Union[MetaOapg.properties.type, str, ],
+        reference: typing.Union[MetaOapg.properties.reference, str, ],
+        accountID: typing.Union[MetaOapg.properties.accountID, str, ],
+        createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, ],
+        provider: 'Connector',
+        initialAmount: typing.Union[MetaOapg.properties.initialAmount, decimal.Decimal, int, ],
         id: typing.Union[MetaOapg.properties.id, str, ],
         asset: typing.Union[MetaOapg.properties.asset, str, ],
-        type: typing.Union[MetaOapg.properties.type, str, ],
-        status: typing.Union[MetaOapg.properties.status, str, ],
-        reference: typing.Union[MetaOapg.properties.reference, str, schemas.Unset] = schemas.unset,
-        raw: typing.Union[MetaOapg.properties.raw, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, schemas.Unset] = schemas.unset,
+        status: 'PaymentStatus',
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'Payment':
         return super().__new__(
             cls,
             *args,
-            date=date,
-            amount=amount,
+            metadata=metadata,
+            adjustments=adjustments,
             scheme=scheme,
+            raw=raw,
+            type=type,
+            reference=reference,
+            accountID=accountID,
+            createdAt=createdAt,
             provider=provider,
+            initialAmount=initialAmount,
             id=id,
             asset=asset,
-            type=type,
             status=status,
-            reference=reference,
-            raw=raw,
             _configuration=_configuration,
             **kwargs,
         )
+
+from Formance.model.connector import Connector
+from Formance.model.payment_adjustment import PaymentAdjustment
+from Formance.model.payment_metadata import PaymentMetadata
+from Formance.model.payment_status import PaymentStatus

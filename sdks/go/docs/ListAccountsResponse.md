@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | [**[]PaymentsAccount**](PaymentsAccount.md) |  | 
+**Data** | [**[]PaymentsAccount**](PaymentsAccount.md) |  |
 
 ## Methods
 
@@ -47,5 +47,3 @@ SetData sets Data field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

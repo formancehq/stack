@@ -3,6 +3,8 @@ package storage
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -106,25 +108,44 @@ func (s *Storage) ListTasksByStatus(ctx context.Context, provider models.Connect
 	return tasks, nil
 }
 
-func (s *Storage) ListTasks(ctx context.Context, provider models.ConnectorProvider, pagination Paginator) ([]models.Task, error) {
+func (s *Storage) ListTasks(ctx context.Context, provider models.ConnectorProvider, pagination Paginator) ([]models.Task, PaginationDetails, error) {
 	connector, err := s.GetConnector(ctx, provider)
 	if err != nil {
-		return nil, e("failed to get connector", err)
+		return nil, PaginationDetails{}, e("failed to get connector", err)
 	}
 
 	var tasks []models.Task
 
-	q := s.db.NewSelect().Model(&tasks).
+	query := s.db.NewSelect().Model(&tasks).
 		Where("connector_id = ?", connector.ID)
 
-	pagination.apply(q)
+	query = pagination.apply(query, "task.created_at")
 
-	err = q.Scan(ctx)
+	err = query.Scan(ctx)
 	if err != nil {
-		return nil, e("failed to get tasks", err)
+		return nil, PaginationDetails{}, e("failed to get tasks", err)
 	}
 
-	return tasks, nil
+	var (
+		hasMore                       = len(tasks) > pagination.pageSize
+		firstReference, lastReference string
+	)
+
+	if hasMore {
+		tasks = tasks[:pagination.pageSize]
+	}
+
+	if len(tasks) > 0 {
+		firstReference = tasks[0].CreatedAt.Format(time.RFC3339Nano)
+		lastReference = tasks[len(tasks)-1].CreatedAt.Format(time.RFC3339Nano)
+	}
+
+	paginationDetails, err := pagination.paginationDetails(hasMore, firstReference, lastReference)
+	if err != nil {
+		return nil, PaginationDetails{}, fmt.Errorf("failed to get pagination details: %w", err)
+	}
+
+	return tasks, paginationDetails, nil
 }
 
 func (s *Storage) ReadOldestPendingTask(ctx context.Context, provider models.ConnectorProvider) (*models.Task, error) {

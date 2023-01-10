@@ -31,6 +31,15 @@ public interface DefaultApi {
    * 
    * @return Call&lt;ServerInfo&gt;
    */
+  @GET("api/payments/_info")
+  Call<ServerInfo> paymentsgetServerInfo();
+    
+
+  /**
+   * Get server info
+   * 
+   * @return Call&lt;ServerInfo&gt;
+   */
   @GET("api/search/_info")
   Call<ServerInfo> searchgetServerInfo();
     

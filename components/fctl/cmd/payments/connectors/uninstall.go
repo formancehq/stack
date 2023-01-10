@@ -40,7 +40,7 @@ func NewUninstallCommand() *cobra.Command {
 				return err
 			}
 
-			_, err = client.PaymentsApi.UninstallConnector(cmd.Context(), formance.Connectors(args[0])).Execute()
+			_, err = client.PaymentsApi.UninstallConnector(cmd.Context(), formance.Connector(args[0])).Execute()
 			if err != nil {
 				return fctl.WrapError(err, "uninstalling connector")
 			}

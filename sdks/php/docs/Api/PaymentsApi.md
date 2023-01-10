@@ -5,28 +5,28 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 | Method | HTTP request | Description |
 | ------------- | ------------- | ------------- |
 | [**connectorsStripeTransfer()**](PaymentsApi.md#connectorsStripeTransfer) | **POST** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts |
-| [**getAllConnectors()**](PaymentsApi.md#getAllConnectors) | **GET** /api/payments/connectors | Get all installed connectors |
-| [**getAllConnectorsConfigs()**](PaymentsApi.md#getAllConnectorsConfigs) | **GET** /api/payments/connectors/configs | Get all available connectors configs |
 | [**getConnectorTask()**](PaymentsApi.md#getConnectorTask) | **GET** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector |
-| [**getPayment()**](PaymentsApi.md#getPayment) | **GET** /api/payments/payments/{paymentId} | Returns a payment. |
-| [**installConnector()**](PaymentsApi.md#installConnector) | **POST** /api/payments/connectors/{connector} | Install connector |
-| [**listConnectorTasks()**](PaymentsApi.md#listConnectorTasks) | **GET** /api/payments/connectors/{connector}/tasks | List connector tasks |
-| [**listPayments()**](PaymentsApi.md#listPayments) | **GET** /api/payments/payments | Returns a list of payments. |
-| [**paymentslistAccounts()**](PaymentsApi.md#paymentslistAccounts) | **GET** /api/payments/accounts | Returns a list of accounts. |
-| [**readConnectorConfig()**](PaymentsApi.md#readConnectorConfig) | **GET** /api/payments/connectors/{connector}/config | Read connector config |
-| [**resetConnector()**](PaymentsApi.md#resetConnector) | **POST** /api/payments/connectors/{connector}/reset | Reset connector |
-| [**uninstallConnector()**](PaymentsApi.md#uninstallConnector) | **DELETE** /api/payments/connectors/{connector} | Uninstall connector |
+| [**getPayment()**](PaymentsApi.md#getPayment) | **GET** /api/payments/payments/{paymentId} | Get a payment |
+| [**installConnector()**](PaymentsApi.md#installConnector) | **POST** /api/payments/connectors/{connector} | Install a connector |
+| [**listAllConnectors()**](PaymentsApi.md#listAllConnectors) | **GET** /api/payments/connectors | List all installed connectors |
+| [**listConfigsAvailableConnectors()**](PaymentsApi.md#listConfigsAvailableConnectors) | **GET** /api/payments/connectors/configs | List the configs of each available connector |
+| [**listConnectorTasks()**](PaymentsApi.md#listConnectorTasks) | **GET** /api/payments/connectors/{connector}/tasks | List tasks from a connector |
+| [**listPayments()**](PaymentsApi.md#listPayments) | **GET** /api/payments/payments | List payments |
+| [**paymentslistAccounts()**](PaymentsApi.md#paymentslistAccounts) | **GET** /api/payments/accounts | List accounts |
+| [**readConnectorConfig()**](PaymentsApi.md#readConnectorConfig) | **GET** /api/payments/connectors/{connector}/config | Read the config of a connector |
+| [**resetConnector()**](PaymentsApi.md#resetConnector) | **POST** /api/payments/connectors/{connector}/reset | Reset a connector |
+| [**uninstallConnector()**](PaymentsApi.md#uninstallConnector) | **DELETE** /api/payments/connectors/{connector} | Uninstall a connector |
 
 
 ## `connectorsStripeTransfer()`
 
 ```php
-connectorsStripeTransfer($stripe_transfer_request)
+connectorsStripeTransfer($stripe_transfer_request): object
 ```
 
 Transfer funds between Stripe accounts
 
-Execute a transfer between two Stripe accounts
+Execute a transfer between two Stripe accounts.
 
 ### Example
 
@@ -48,7 +48,8 @@ $apiInstance = new Formance\Api\PaymentsApi(
 $stripe_transfer_request = new \Formance\Model\StripeTransferRequest(); // \Formance\Model\StripeTransferRequest
 
 try {
-    $apiInstance->connectorsStripeTransfer($stripe_transfer_request);
+    $result = $apiInstance->connectorsStripeTransfer($stripe_transfer_request);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling PaymentsApi->connectorsStripeTransfer: ', $e->getMessage(), PHP_EOL;
 }
@@ -62,7 +63,7 @@ try {
 
 ### Return type
 
-void (empty response body)
+**object**
 
 ### Authorization
 
@@ -71,120 +72,6 @@ void (empty response body)
 ### HTTP request headers
 
 - **Content-Type**: `application/json`
-- **Accept**: Not defined
-
-[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
-[[Back to Model list]](../../README.md#models)
-[[Back to README]](../../README.md)
-
-## `getAllConnectors()`
-
-```php
-getAllConnectors(): \Formance\Model\ListConnectorsResponse
-```
-
-Get all installed connectors
-
-Get all installed connectors
-
-### Example
-
-```php
-<?php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-
-// Configure OAuth2 access token for authorization: Authorization
-$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
-
-
-$apiInstance = new Formance\Api\PaymentsApi(
-    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
-    // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client(),
-    $config
-);
-
-try {
-    $result = $apiInstance->getAllConnectors();
-    print_r($result);
-} catch (Exception $e) {
-    echo 'Exception when calling PaymentsApi->getAllConnectors: ', $e->getMessage(), PHP_EOL;
-}
-```
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**\Formance\Model\ListConnectorsResponse**](../Model/ListConnectorsResponse.md)
-
-### Authorization
-
-[Authorization](../../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: `application/json`
-
-[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
-[[Back to Model list]](../../README.md#models)
-[[Back to README]](../../README.md)
-
-## `getAllConnectorsConfigs()`
-
-```php
-getAllConnectorsConfigs(): \Formance\Model\ListConnectorsConfigsResponse
-```
-
-Get all available connectors configs
-
-Get all available connectors configs
-
-### Example
-
-```php
-<?php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-
-// Configure OAuth2 access token for authorization: Authorization
-$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
-
-
-$apiInstance = new Formance\Api\PaymentsApi(
-    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
-    // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client(),
-    $config
-);
-
-try {
-    $result = $apiInstance->getAllConnectorsConfigs();
-    print_r($result);
-} catch (Exception $e) {
-    echo 'Exception when calling PaymentsApi->getAllConnectorsConfigs: ', $e->getMessage(), PHP_EOL;
-}
-```
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**\Formance\Model\ListConnectorsConfigsResponse**](../Model/ListConnectorsConfigsResponse.md)
-
-### Authorization
-
-[Authorization](../../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
 - **Accept**: `application/json`
 
 [[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
@@ -194,12 +81,12 @@ This endpoint does not need any parameter.
 ## `getConnectorTask()`
 
 ```php
-getConnectorTask($connector, $task_id): \Formance\Model\ListConnectorTasks200ResponseInner
+getConnectorTask($connector, $task_id): \Formance\Model\TaskResponse
 ```
 
 Read a specific task of the connector
 
-Get a specific task associated to the connector
+Get a specific task associated to the connector.
 
 ### Example
 
@@ -218,8 +105,8 @@ $apiInstance = new Formance\Api\PaymentsApi(
     new GuzzleHttp\Client(),
     $config
 );
-$connector = new \Formance\Model\Connectors(); // Connectors | The connector code
-$task_id = task1; // string | The task id
+$connector = new \Formance\Model\Connector(); // Connector | The name of the connector.
+$task_id = task1; // string | The task ID.
 
 try {
     $result = $apiInstance->getConnectorTask($connector, $task_id);
@@ -233,12 +120,12 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **connector** | [**Connectors**](../Model/.md)| The connector code | |
-| **task_id** | **string**| The task id | |
+| **connector** | [**Connector**](../Model/.md)| The name of the connector. | |
+| **task_id** | **string**| The task ID. | |
 
 ### Return type
 
-[**\Formance\Model\ListConnectorTasks200ResponseInner**](../Model/ListConnectorTasks200ResponseInner.md)
+[**\Formance\Model\TaskResponse**](../Model/TaskResponse.md)
 
 ### Authorization
 
@@ -256,10 +143,10 @@ try {
 ## `getPayment()`
 
 ```php
-getPayment($payment_id): \Formance\Model\Payment
+getPayment($payment_id): \Formance\Model\PaymentResponse
 ```
 
-Returns a payment.
+Get a payment
 
 ### Example
 
@@ -278,7 +165,7 @@ $apiInstance = new Formance\Api\PaymentsApi(
     new GuzzleHttp\Client(),
     $config
 );
-$payment_id = XXX; // string | The payment id
+$payment_id = XXX; // string | The payment ID.
 
 try {
     $result = $apiInstance->getPayment($payment_id);
@@ -292,11 +179,11 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **payment_id** | **string**| The payment id | |
+| **payment_id** | **string**| The payment ID. | |
 
 ### Return type
 
-[**\Formance\Model\Payment**](../Model/Payment.md)
+[**\Formance\Model\PaymentResponse**](../Model/PaymentResponse.md)
 
 ### Authorization
 
@@ -317,9 +204,9 @@ try {
 installConnector($connector, $connector_config)
 ```
 
-Install connector
+Install a connector
 
-Install connector
+Install a connector by its name and config.
 
 ### Example
 
@@ -338,7 +225,7 @@ $apiInstance = new Formance\Api\PaymentsApi(
     new GuzzleHttp\Client(),
     $config
 );
-$connector = new \Formance\Model\Connectors(); // Connectors | The connector code
+$connector = new \Formance\Model\Connector(); // Connector | The name of the connector.
 $connector_config = new \Formance\Model\ConnectorConfig(); // \Formance\Model\ConnectorConfig
 
 try {
@@ -352,7 +239,7 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **connector** | [**Connectors**](../Model/.md)| The connector code | |
+| **connector** | [**Connector**](../Model/.md)| The name of the connector. | |
 | **connector_config** | [**\Formance\Model\ConnectorConfig**](../Model/ConnectorConfig.md)|  | |
 
 ### Return type
@@ -372,13 +259,127 @@ void (empty response body)
 [[Back to Model list]](../../README.md#models)
 [[Back to README]](../../README.md)
 
+## `listAllConnectors()`
+
+```php
+listAllConnectors(): \Formance\Model\ConnectorsResponse
+```
+
+List all installed connectors
+
+List all installed connectors.
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\PaymentsApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+
+try {
+    $result = $apiInstance->listAllConnectors();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling PaymentsApi->listAllConnectors: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**\Formance\Model\ConnectorsResponse**](../Model/ConnectorsResponse.md)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `listConfigsAvailableConnectors()`
+
+```php
+listConfigsAvailableConnectors(): \Formance\Model\ConnectorsConfigsResponse
+```
+
+List the configs of each available connector
+
+List the configs of each available connector.
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\PaymentsApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+
+try {
+    $result = $apiInstance->listConfigsAvailableConnectors();
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling PaymentsApi->listConfigsAvailableConnectors: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**\Formance\Model\ConnectorsConfigsResponse**](../Model/ConnectorsConfigsResponse.md)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
 ## `listConnectorTasks()`
 
 ```php
-listConnectorTasks($connector): \Formance\Model\ListConnectorTasks200ResponseInner[]
+listConnectorTasks($connector, $page_size, $cursor): \Formance\Model\TasksResponse
 ```
 
-List connector tasks
+List tasks from a connector
 
 List all tasks associated with this connector.
 
@@ -399,10 +400,12 @@ $apiInstance = new Formance\Api\PaymentsApi(
     new GuzzleHttp\Client(),
     $config
 );
-$connector = new \Formance\Model\Connectors(); // Connectors | The connector code
+$connector = new \Formance\Model\Connector(); // Connector | The name of the connector.
+$page_size = 100; // int | The maximum number of results to return per page.
+$cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
 
 try {
-    $result = $apiInstance->listConnectorTasks($connector);
+    $result = $apiInstance->listConnectorTasks($connector, $page_size, $cursor);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling PaymentsApi->listConnectorTasks: ', $e->getMessage(), PHP_EOL;
@@ -413,11 +416,13 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **connector** | [**Connectors**](../Model/.md)| The connector code | |
+| **connector** | [**Connector**](../Model/.md)| The name of the connector. | |
+| **page_size** | **int**| The maximum number of results to return per page. | [optional] [default to 15] |
+| **cursor** | **string**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. | [optional] |
 
 ### Return type
 
-[**\Formance\Model\ListConnectorTasks200ResponseInner[]**](../Model/ListConnectorTasks200ResponseInner.md)
+[**\Formance\Model\TasksResponse**](../Model/TasksResponse.md)
 
 ### Authorization
 
@@ -435,10 +440,10 @@ try {
 ## `listPayments()`
 
 ```php
-listPayments($limit, $skip, $sort): \Formance\Model\ListPaymentsResponse
+listPayments($page_size, $cursor, $sort): \Formance\Model\PaymentsResponse
 ```
 
-Returns a list of payments.
+List payments
 
 ### Example
 
@@ -457,12 +462,12 @@ $apiInstance = new Formance\Api\PaymentsApi(
     new GuzzleHttp\Client(),
     $config
 );
-$limit = 10; // int | Limit the number of payments to return, pagination can be achieved in conjunction with 'skip' parameter.
-$skip = 100; // int | How many payments to skip, pagination can be achieved in conjunction with 'limit' parameter.
-$sort = status; // string[] | Field used to sort payments (Default is by date).
+$page_size = 100; // int | The maximum number of results to return per page.
+$cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
+$sort = date:asc,status:desc; // string[] | Fields used to sort payments (default is date:desc).
 
 try {
-    $result = $apiInstance->listPayments($limit, $skip, $sort);
+    $result = $apiInstance->listPayments($page_size, $cursor, $sort);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling PaymentsApi->listPayments: ', $e->getMessage(), PHP_EOL;
@@ -473,13 +478,13 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **limit** | **int**| Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | [optional] |
-| **skip** | **int**| How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | [optional] |
-| **sort** | [**string[]**](../Model/string.md)| Field used to sort payments (Default is by date). | [optional] |
+| **page_size** | **int**| The maximum number of results to return per page. | [optional] [default to 15] |
+| **cursor** | **string**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. | [optional] |
+| **sort** | [**string[]**](../Model/string.md)| Fields used to sort payments (default is date:desc). | [optional] |
 
 ### Return type
 
-[**\Formance\Model\ListPaymentsResponse**](../Model/ListPaymentsResponse.md)
+[**\Formance\Model\PaymentsResponse**](../Model/PaymentsResponse.md)
 
 ### Authorization
 
@@ -497,10 +502,10 @@ try {
 ## `paymentslistAccounts()`
 
 ```php
-paymentslistAccounts($limit, $skip, $sort): \Formance\Model\ListAccountsResponse
+paymentslistAccounts($limit, $skip, $sort): \Formance\Model\AccountsResponse
 ```
 
-Returns a list of accounts.
+List accounts
 
 ### Example
 
@@ -541,7 +546,7 @@ try {
 
 ### Return type
 
-[**\Formance\Model\ListAccountsResponse**](../Model/ListAccountsResponse.md)
+[**\Formance\Model\AccountsResponse**](../Model/AccountsResponse.md)
 
 ### Authorization
 
@@ -559,10 +564,10 @@ try {
 ## `readConnectorConfig()`
 
 ```php
-readConnectorConfig($connector): \Formance\Model\ConnectorConfig
+readConnectorConfig($connector): \Formance\Model\ConnectorConfigResponse
 ```
 
-Read connector config
+Read the config of a connector
 
 Read connector config
 
@@ -583,7 +588,7 @@ $apiInstance = new Formance\Api\PaymentsApi(
     new GuzzleHttp\Client(),
     $config
 );
-$connector = new \Formance\Model\Connectors(); // Connectors | The connector code
+$connector = new \Formance\Model\Connector(); // Connector | The name of the connector.
 
 try {
     $result = $apiInstance->readConnectorConfig($connector);
@@ -597,11 +602,11 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **connector** | [**Connectors**](../Model/.md)| The connector code | |
+| **connector** | [**Connector**](../Model/.md)| The name of the connector. | |
 
 ### Return type
 
-[**\Formance\Model\ConnectorConfig**](../Model/ConnectorConfig.md)
+[**\Formance\Model\ConnectorConfigResponse**](../Model/ConnectorConfigResponse.md)
 
 ### Authorization
 
@@ -622,9 +627,9 @@ try {
 resetConnector($connector)
 ```
 
-Reset connector
+Reset a connector
 
-Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
+Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it.
 
 ### Example
 
@@ -643,7 +648,7 @@ $apiInstance = new Formance\Api\PaymentsApi(
     new GuzzleHttp\Client(),
     $config
 );
-$connector = new \Formance\Model\Connectors(); // Connectors | The connector code
+$connector = new \Formance\Model\Connector(); // Connector | The name of the connector.
 
 try {
     $apiInstance->resetConnector($connector);
@@ -656,7 +661,7 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **connector** | [**Connectors**](../Model/.md)| The connector code | |
+| **connector** | [**Connector**](../Model/.md)| The name of the connector. | |
 
 ### Return type
 
@@ -681,9 +686,9 @@ void (empty response body)
 uninstallConnector($connector)
 ```
 
-Uninstall connector
+Uninstall a connector
 
-Uninstall  connector
+Uninstall a connector by its name.
 
 ### Example
 
@@ -702,7 +707,7 @@ $apiInstance = new Formance\Api\PaymentsApi(
     new GuzzleHttp\Client(),
     $config
 );
-$connector = new \Formance\Model\Connectors(); // Connectors | The connector code
+$connector = new \Formance\Model\Connector(); // Connector | The name of the connector.
 
 try {
     $apiInstance->uninstallConnector($connector);
@@ -715,7 +720,7 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **connector** | [**Connectors**](../Model/.md)| The connector code | |
+| **connector** | [**Connector**](../Model/.md)| The name of the connector. | |
 
 ### Return type
 

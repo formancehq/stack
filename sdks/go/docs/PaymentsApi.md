@@ -5,23 +5,23 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**ConnectorsStripeTransfer**](PaymentsApi.md#ConnectorsStripeTransfer) | **Post** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
-[**GetAllConnectors**](PaymentsApi.md#GetAllConnectors) | **Get** /api/payments/connectors | Get all installed connectors
-[**GetAllConnectorsConfigs**](PaymentsApi.md#GetAllConnectorsConfigs) | **Get** /api/payments/connectors/configs | Get all available connectors configs
 [**GetConnectorTask**](PaymentsApi.md#GetConnectorTask) | **Get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
-[**GetPayment**](PaymentsApi.md#GetPayment) | **Get** /api/payments/payments/{paymentId} | Returns a payment.
-[**InstallConnector**](PaymentsApi.md#InstallConnector) | **Post** /api/payments/connectors/{connector} | Install connector
-[**ListConnectorTasks**](PaymentsApi.md#ListConnectorTasks) | **Get** /api/payments/connectors/{connector}/tasks | List connector tasks
-[**ListPayments**](PaymentsApi.md#ListPayments) | **Get** /api/payments/payments | Returns a list of payments.
-[**PaymentslistAccounts**](PaymentsApi.md#PaymentslistAccounts) | **Get** /api/payments/accounts | Returns a list of accounts.
-[**ReadConnectorConfig**](PaymentsApi.md#ReadConnectorConfig) | **Get** /api/payments/connectors/{connector}/config | Read connector config
-[**ResetConnector**](PaymentsApi.md#ResetConnector) | **Post** /api/payments/connectors/{connector}/reset | Reset connector
-[**UninstallConnector**](PaymentsApi.md#UninstallConnector) | **Delete** /api/payments/connectors/{connector} | Uninstall connector
+[**GetPayment**](PaymentsApi.md#GetPayment) | **Get** /api/payments/payments/{paymentId} | Get a payment
+[**InstallConnector**](PaymentsApi.md#InstallConnector) | **Post** /api/payments/connectors/{connector} | Install a connector
+[**ListAllConnectors**](PaymentsApi.md#ListAllConnectors) | **Get** /api/payments/connectors | List all installed connectors
+[**ListConfigsAvailableConnectors**](PaymentsApi.md#ListConfigsAvailableConnectors) | **Get** /api/payments/connectors/configs | List the configs of each available connector
+[**ListConnectorTasks**](PaymentsApi.md#ListConnectorTasks) | **Get** /api/payments/connectors/{connector}/tasks | List tasks from a connector
+[**ListPayments**](PaymentsApi.md#ListPayments) | **Get** /api/payments/payments | List payments
+[**PaymentslistAccounts**](PaymentsApi.md#PaymentslistAccounts) | **Get** /api/payments/accounts | List accounts
+[**ReadConnectorConfig**](PaymentsApi.md#ReadConnectorConfig) | **Get** /api/payments/connectors/{connector}/config | Read the config of a connector
+[**ResetConnector**](PaymentsApi.md#ResetConnector) | **Post** /api/payments/connectors/{connector}/reset | Reset a connector
+[**UninstallConnector**](PaymentsApi.md#UninstallConnector) | **Delete** /api/payments/connectors/{connector} | Uninstall a connector
 
 
 
 ## ConnectorsStripeTransfer
 
-> ConnectorsStripeTransfer(ctx).StripeTransferRequest(stripeTransferRequest).Execute()
+> map[string]interface{} ConnectorsStripeTransfer(ctx).StripeTransferRequest(stripeTransferRequest).Execute()
 
 Transfer funds between Stripe accounts
 
@@ -49,6 +49,8 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ConnectorsStripeTransfer``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
+    // response from `ConnectorsStripeTransfer`: map[string]interface{}
+    fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.ConnectorsStripeTransfer`: %v\n", resp)
 }
 ```
 
@@ -67,7 +69,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
- (empty response body)
+**map[string]interface{}**
 
 ### Authorization
 
@@ -76,128 +78,6 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: Not defined
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## GetAllConnectors
-
-> ListConnectorsResponse GetAllConnectors(ctx).Execute()
-
-Get all installed connectors
-
-
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    client "./openapi"
-)
-
-func main() {
-
-    configuration := client.NewConfiguration()
-    apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.PaymentsApi.GetAllConnectors(context.Background()).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.GetAllConnectors``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `GetAllConnectors`: ListConnectorsResponse
-    fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.GetAllConnectors`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-This endpoint does not need any parameter.
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiGetAllConnectorsRequest struct via the builder pattern
-
-
-### Return type
-
-[**ListConnectorsResponse**](ListConnectorsResponse.md)
-
-### Authorization
-
-[Authorization](../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## GetAllConnectorsConfigs
-
-> ListConnectorsConfigsResponse GetAllConnectorsConfigs(ctx).Execute()
-
-Get all available connectors configs
-
-
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    client "./openapi"
-)
-
-func main() {
-
-    configuration := client.NewConfiguration()
-    apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.PaymentsApi.GetAllConnectorsConfigs(context.Background()).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.GetAllConnectorsConfigs``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `GetAllConnectorsConfigs`: ListConnectorsConfigsResponse
-    fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.GetAllConnectorsConfigs`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-This endpoint does not need any parameter.
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiGetAllConnectorsConfigsRequest struct via the builder pattern
-
-
-### Return type
-
-[**ListConnectorsConfigsResponse**](ListConnectorsConfigsResponse.md)
-
-### Authorization
-
-[Authorization](../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
@@ -207,7 +87,7 @@ Other parameters are passed through a pointer to a apiGetAllConnectorsConfigsReq
 
 ## GetConnectorTask
 
-> ListConnectorTasks200ResponseInner GetConnectorTask(ctx, connector, taskId).Execute()
+> TaskResponse GetConnectorTask(ctx, connector, taskId).Execute()
 
 Read a specific task of the connector
 
@@ -226,8 +106,8 @@ import (
 )
 
 func main() {
-    connector := client.Connectors("STRIPE") // Connectors | The connector code
-    taskId := "task1" // string | The task id
+    connector := client.Connector("STRIPE") // Connector | The name of the connector.
+    taskId := "task1" // string | The task ID.
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -236,7 +116,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.GetConnectorTask``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `GetConnectorTask`: ListConnectorTasks200ResponseInner
+    // response from `GetConnectorTask`: TaskResponse
     fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.GetConnectorTask`: %v\n", resp)
 }
 ```
@@ -247,8 +127,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code | 
-**taskId** | **string** | The task id | 
+**connector** | [**Connector**](.md) | The name of the connector. | 
+**taskId** | **string** | The task ID. | 
 
 ### Other Parameters
 
@@ -262,7 +142,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ListConnectorTasks200ResponseInner**](ListConnectorTasks200ResponseInner.md)
+[**TaskResponse**](TaskResponse.md)
 
 ### Authorization
 
@@ -280,9 +160,9 @@ Name | Type | Description  | Notes
 
 ## GetPayment
 
-> Payment GetPayment(ctx, paymentId).Execute()
+> PaymentResponse GetPayment(ctx, paymentId).Execute()
 
-Returns a payment.
+Get a payment
 
 ### Example
 
@@ -297,7 +177,7 @@ import (
 )
 
 func main() {
-    paymentId := "XXX" // string | The payment id
+    paymentId := "XXX" // string | The payment ID.
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -306,7 +186,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.GetPayment``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `GetPayment`: Payment
+    // response from `GetPayment`: PaymentResponse
     fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.GetPayment`: %v\n", resp)
 }
 ```
@@ -317,7 +197,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**paymentId** | **string** | The payment id | 
+**paymentId** | **string** | The payment ID. | 
 
 ### Other Parameters
 
@@ -330,7 +210,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Payment**](Payment.md)
+[**PaymentResponse**](PaymentResponse.md)
 
 ### Authorization
 
@@ -350,7 +230,7 @@ Name | Type | Description  | Notes
 
 > InstallConnector(ctx, connector).ConnectorConfig(connectorConfig).Execute()
 
-Install connector
+Install a connector
 
 
 
@@ -367,7 +247,7 @@ import (
 )
 
 func main() {
-    connector := client.Connectors("STRIPE") // Connectors | The connector code
+    connector := client.Connector("STRIPE") // Connector | The name of the connector.
     connectorConfig := client.ConnectorConfig{BankingCircleConfig: client.NewBankingCircleConfig("XXX", "XXX", "XXX", "XXX")} // ConnectorConfig | 
 
     configuration := client.NewConfiguration()
@@ -386,7 +266,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code | 
+**connector** | [**Connector**](.md) | The name of the connector. | 
 
 ### Other Parameters
 
@@ -416,11 +296,11 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## ListConnectorTasks
+## ListAllConnectors
 
-> []ListConnectorTasks200ResponseInner ListConnectorTasks(ctx, connector).Execute()
+> ConnectorsResponse ListAllConnectors(ctx).Execute()
 
-List connector tasks
+List all installed connectors
 
 
 
@@ -437,16 +317,140 @@ import (
 )
 
 func main() {
-    connector := client.Connectors("STRIPE") // Connectors | The connector code
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.PaymentsApi.ListConnectorTasks(context.Background(), connector).Execute()
+    resp, r, err := apiClient.PaymentsApi.ListAllConnectors(context.Background()).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ListAllConnectors``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `ListAllConnectors`: ConnectorsResponse
+    fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.ListAllConnectors`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListAllConnectorsRequest struct via the builder pattern
+
+
+### Return type
+
+[**ConnectorsResponse**](ConnectorsResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ListConfigsAvailableConnectors
+
+> ConnectorsConfigsResponse ListConfigsAvailableConnectors(ctx).Execute()
+
+List the configs of each available connector
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.PaymentsApi.ListConfigsAvailableConnectors(context.Background()).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ListConfigsAvailableConnectors``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `ListConfigsAvailableConnectors`: ConnectorsConfigsResponse
+    fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.ListConfigsAvailableConnectors`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListConfigsAvailableConnectorsRequest struct via the builder pattern
+
+
+### Return type
+
+[**ConnectorsConfigsResponse**](ConnectorsConfigsResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ListConnectorTasks
+
+> TasksResponse ListConnectorTasks(ctx, connector).PageSize(pageSize).Cursor(cursor).Execute()
+
+List tasks from a connector
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    connector := client.Connector("STRIPE") // Connector | The name of the connector.
+    pageSize := int64(100) // int64 | The maximum number of results to return per page.  (optional) (default to 15)
+    cursor := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.PaymentsApi.ListConnectorTasks(context.Background(), connector).PageSize(pageSize).Cursor(cursor).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ListConnectorTasks``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ListConnectorTasks`: []ListConnectorTasks200ResponseInner
+    // response from `ListConnectorTasks`: TasksResponse
     fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.ListConnectorTasks`: %v\n", resp)
 }
 ```
@@ -457,7 +461,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code | 
+**connector** | [**Connector**](.md) | The name of the connector. | 
 
 ### Other Parameters
 
@@ -467,10 +471,12 @@ Other parameters are passed through a pointer to a apiListConnectorTasksRequest 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
+ **pageSize** | **int64** | The maximum number of results to return per page.  | [default to 15]
+ **cursor** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | 
 
 ### Return type
 
-[**[]ListConnectorTasks200ResponseInner**](ListConnectorTasks200ResponseInner.md)
+[**TasksResponse**](TasksResponse.md)
 
 ### Authorization
 
@@ -488,9 +494,9 @@ Name | Type | Description  | Notes
 
 ## ListPayments
 
-> ListPaymentsResponse ListPayments(ctx).Limit(limit).Skip(skip).Sort(sort).Execute()
+> PaymentsResponse ListPayments(ctx).PageSize(pageSize).Cursor(cursor).Sort(sort).Execute()
 
-Returns a list of payments.
+List payments
 
 ### Example
 
@@ -505,18 +511,18 @@ import (
 )
 
 func main() {
-    limit := int32(10) // int32 | Limit the number of payments to return, pagination can be achieved in conjunction with 'skip' parameter. (optional)
-    skip := int32(100) // int32 | How many payments to skip, pagination can be achieved in conjunction with 'limit' parameter. (optional)
-    sort := []string{"Inner_example"} // []string | Field used to sort payments (Default is by date). (optional)
+    pageSize := int64(100) // int64 | The maximum number of results to return per page.  (optional) (default to 15)
+    cursor := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
+    sort := []string{"Inner_example"} // []string | Fields used to sort payments (default is date:desc). (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.PaymentsApi.ListPayments(context.Background()).Limit(limit).Skip(skip).Sort(sort).Execute()
+    resp, r, err := apiClient.PaymentsApi.ListPayments(context.Background()).PageSize(pageSize).Cursor(cursor).Sort(sort).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ListPayments``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ListPayments`: ListPaymentsResponse
+    // response from `ListPayments`: PaymentsResponse
     fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.ListPayments`: %v\n", resp)
 }
 ```
@@ -532,13 +538,13 @@ Other parameters are passed through a pointer to a apiListPaymentsRequest struct
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **limit** | **int32** | Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | 
- **skip** | **int32** | How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | 
- **sort** | **[]string** | Field used to sort payments (Default is by date). | 
+ **pageSize** | **int64** | The maximum number of results to return per page.  | [default to 15]
+ **cursor** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | 
+ **sort** | **[]string** | Fields used to sort payments (default is date:desc). | 
 
 ### Return type
 
-[**ListPaymentsResponse**](ListPaymentsResponse.md)
+[**PaymentsResponse**](PaymentsResponse.md)
 
 ### Authorization
 
@@ -556,9 +562,9 @@ Name | Type | Description  | Notes
 
 ## PaymentslistAccounts
 
-> ListAccountsResponse PaymentslistAccounts(ctx).Limit(limit).Skip(skip).Sort(sort).Execute()
+> AccountsResponse PaymentslistAccounts(ctx).Limit(limit).Skip(skip).Sort(sort).Execute()
 
-Returns a list of accounts.
+List accounts
 
 ### Example
 
@@ -573,8 +579,8 @@ import (
 )
 
 func main() {
-    limit := int32(10) // int32 | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter. (optional)
-    skip := int32(100) // int32 | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter. (optional)
+    limit := int64(10) // int64 | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter.  (optional)
+    skip := int64(100) // int64 | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter.  (optional)
     sort := []string{"Inner_example"} // []string | Field used to sort payments (Default is by date). (optional)
 
     configuration := client.NewConfiguration()
@@ -584,7 +590,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.PaymentslistAccounts``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `PaymentslistAccounts`: ListAccountsResponse
+    // response from `PaymentslistAccounts`: AccountsResponse
     fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.PaymentslistAccounts`: %v\n", resp)
 }
 ```
@@ -600,13 +606,13 @@ Other parameters are passed through a pointer to a apiPaymentslistAccountsReques
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **limit** | **int32** | Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | 
- **skip** | **int32** | How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | 
+ **limit** | **int64** | Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.  | 
+ **skip** | **int64** | How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.  | 
  **sort** | **[]string** | Field used to sort payments (Default is by date). | 
 
 ### Return type
 
-[**ListAccountsResponse**](ListAccountsResponse.md)
+[**AccountsResponse**](AccountsResponse.md)
 
 ### Authorization
 
@@ -624,9 +630,9 @@ Name | Type | Description  | Notes
 
 ## ReadConnectorConfig
 
-> ConnectorConfig ReadConnectorConfig(ctx, connector).Execute()
+> ConnectorConfigResponse ReadConnectorConfig(ctx, connector).Execute()
 
-Read connector config
+Read the config of a connector
 
 
 
@@ -643,7 +649,7 @@ import (
 )
 
 func main() {
-    connector := client.Connectors("STRIPE") // Connectors | The connector code
+    connector := client.Connector("STRIPE") // Connector | The name of the connector.
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -652,7 +658,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ReadConnectorConfig``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ReadConnectorConfig`: ConnectorConfig
+    // response from `ReadConnectorConfig`: ConnectorConfigResponse
     fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.ReadConnectorConfig`: %v\n", resp)
 }
 ```
@@ -663,7 +669,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code | 
+**connector** | [**Connector**](.md) | The name of the connector. | 
 
 ### Other Parameters
 
@@ -676,7 +682,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**ConnectorConfig**](ConnectorConfig.md)
+[**ConnectorConfigResponse**](ConnectorConfigResponse.md)
 
 ### Authorization
 
@@ -696,7 +702,7 @@ Name | Type | Description  | Notes
 
 > ResetConnector(ctx, connector).Execute()
 
-Reset connector
+Reset a connector
 
 
 
@@ -713,7 +719,7 @@ import (
 )
 
 func main() {
-    connector := client.Connectors("STRIPE") // Connectors | The connector code
+    connector := client.Connector("STRIPE") // Connector | The name of the connector.
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -731,7 +737,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code | 
+**connector** | [**Connector**](.md) | The name of the connector. | 
 
 ### Other Parameters
 
@@ -764,7 +770,7 @@ Name | Type | Description  | Notes
 
 > UninstallConnector(ctx, connector).Execute()
 
-Uninstall connector
+Uninstall a connector
 
 
 
@@ -781,7 +787,7 @@ import (
 )
 
 func main() {
-    connector := client.Connectors("STRIPE") // Connectors | The connector code
+    connector := client.Connector("STRIPE") // Connector | The name of the connector.
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -799,7 +805,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**connector** | [**Connectors**](.md) | The connector code | 
+**connector** | [**Connector**](.md) | The name of the connector. | 
 
 ### Other Parameters
 

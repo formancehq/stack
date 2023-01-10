@@ -25,18 +25,57 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.task_descriptor_dummy_pay import TaskDescriptorDummyPay
-from Formance.model.task_descriptor_wise import TaskDescriptorWise
-from Formance.model.task_descriptor_modulr import TaskDescriptorModulr
-from Formance.model.task_descriptor_stripe import TaskDescriptorStripe
-from Formance.model.connectors import Connectors
-from Formance.model.task_descriptor_banking_circle import TaskDescriptorBankingCircle
-from Formance.model.task_descriptor_currency_cloud import TaskDescriptorCurrencyCloud
+from Formance.model.tasks_response import TasksResponse
+from Formance.model.connector import Connector
 
 from . import path
 
+# Query params
+
+
+class PageSizeSchema(
+    schemas.Int64Schema
+):
+
+
+    class MetaOapg:
+        format = 'int64'
+        inclusive_maximum = 1000
+        inclusive_minimum = 1
+CursorSchema = schemas.StrSchema
+RequestRequiredQueryParams = typing_extensions.TypedDict(
+    'RequestRequiredQueryParams',
+    {
+    }
+)
+RequestOptionalQueryParams = typing_extensions.TypedDict(
+    'RequestOptionalQueryParams',
+    {
+        'pageSize': typing.Union[PageSizeSchema, decimal.Decimal, int, ],
+        'cursor': typing.Union[CursorSchema, str, ],
+    },
+    total=False
+)
+
+
+class RequestQueryParams(RequestRequiredQueryParams, RequestOptionalQueryParams):
+    pass
+
+
+request_query_page_size = api_client.QueryParameter(
+    name="pageSize",
+    style=api_client.ParameterStyle.FORM,
+    schema=PageSizeSchema,
+    explode=True,
+)
+request_query_cursor = api_client.QueryParameter(
+    name="cursor",
+    style=api_client.ParameterStyle.FORM,
+    schema=CursorSchema,
+    explode=True,
+)
 # Path params
-ConnectorSchema = Connectors
+ConnectorSchema = Connector
 RequestRequiredPathParams = typing_extensions.TypedDict(
     'RequestRequiredPathParams',
     {
@@ -64,69 +103,7 @@ request_path_connector = api_client.PathParameter(
 _auth = [
     'Authorization',
 ]
-
-
-class SchemaFor200ResponseBodyApplicationJson(
-    schemas.ListSchema
-):
-
-
-    class MetaOapg:
-        
-        
-        class items(
-            schemas.ComposedSchema,
-        ):
-        
-        
-            class MetaOapg:
-                
-                @classmethod
-                @functools.lru_cache()
-                def one_of(cls):
-                    # we need this here to make our import statements work
-                    # we must store _composed_schemas in here so the code is only run
-                    # when we invoke this method. If we kept this at the class
-                    # level we would get an error because the class level
-                    # code would be run when this module is imported, and these composed
-                    # classes don't exist yet because their module has not finished
-                    # loading
-                    return [
-                        TaskDescriptorStripe,
-                        TaskDescriptorWise,
-                        TaskDescriptorCurrencyCloud,
-                        TaskDescriptorDummyPay,
-                        TaskDescriptorModulr,
-                        TaskDescriptorBankingCircle,
-                    ]
-        
-        
-            def __new__(
-                cls,
-                *args: typing.Union[dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
-                _configuration: typing.Optional[schemas.Configuration] = None,
-                **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
-            ) -> 'items':
-                return super().__new__(
-                    cls,
-                    *args,
-                    _configuration=_configuration,
-                    **kwargs,
-                )
-
-    def __new__(
-        cls,
-        arg: typing.Union[typing.Tuple[typing.Union[MetaOapg.items, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ]], typing.List[typing.Union[MetaOapg.items, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ]]],
-        _configuration: typing.Optional[schemas.Configuration] = None,
-    ) -> 'SchemaFor200ResponseBodyApplicationJson':
-        return super().__new__(
-            cls,
-            arg,
-            _configuration=_configuration,
-        )
-
-    def __getitem__(self, i: int) -> MetaOapg.items:
-        return super().__getitem__(i)
+SchemaFor200ResponseBodyApplicationJson = TasksResponse
 
 
 @dataclass
@@ -157,6 +134,7 @@ class BaseApi(api_client.Api):
     @typing.overload
     def _list_connector_tasks_oapg(
         self,
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -170,6 +148,7 @@ class BaseApi(api_client.Api):
     def _list_connector_tasks_oapg(
         self,
         skip_deserialization: typing_extensions.Literal[True],
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -179,6 +158,7 @@ class BaseApi(api_client.Api):
     @typing.overload
     def _list_connector_tasks_oapg(
         self,
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -191,6 +171,7 @@ class BaseApi(api_client.Api):
 
     def _list_connector_tasks_oapg(
         self,
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -198,11 +179,12 @@ class BaseApi(api_client.Api):
         skip_deserialization: bool = False,
     ):
         """
-        List connector tasks
+        List tasks from a connector
         :param skip_deserialization: If true then api_response.response will be set but
             api_response.body and api_response.headers will not be deserialized into schema
             class instances
         """
+        self._verify_typed_dict_inputs_oapg(RequestQueryParams, query_params)
         self._verify_typed_dict_inputs_oapg(RequestPathParams, path_params)
         used_path = path.value
 
@@ -218,6 +200,20 @@ class BaseApi(api_client.Api):
 
         for k, v in _path_params.items():
             used_path = used_path.replace('{%s}' % k, v)
+
+        prefix_separator_iterator = None
+        for parameter in (
+            request_query_page_size,
+            request_query_cursor,
+        ):
+            parameter_data = query_params.get(parameter.name, schemas.unset)
+            if parameter_data is schemas.unset:
+                continue
+            if prefix_separator_iterator is None:
+                prefix_separator_iterator = parameter.get_prefix_separator_iterator()
+            serialized_data = parameter.serialize(parameter_data, prefix_separator_iterator)
+            for serialized_value in serialized_data.values():
+                used_path += serialized_value
 
         _headers = HTTPHeaderDict()
         # TODO add cookie handling
@@ -255,6 +251,7 @@ class ListConnectorTasks(BaseApi):
     @typing.overload
     def list_connector_tasks(
         self,
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -268,6 +265,7 @@ class ListConnectorTasks(BaseApi):
     def list_connector_tasks(
         self,
         skip_deserialization: typing_extensions.Literal[True],
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -277,6 +275,7 @@ class ListConnectorTasks(BaseApi):
     @typing.overload
     def list_connector_tasks(
         self,
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -289,6 +288,7 @@ class ListConnectorTasks(BaseApi):
 
     def list_connector_tasks(
         self,
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -296,6 +296,7 @@ class ListConnectorTasks(BaseApi):
         skip_deserialization: bool = False,
     ):
         return self._list_connector_tasks_oapg(
+            query_params=query_params,
             path_params=path_params,
             accept_content_types=accept_content_types,
             stream=stream,
@@ -310,6 +311,7 @@ class ApiForget(BaseApi):
     @typing.overload
     def get(
         self,
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -323,6 +325,7 @@ class ApiForget(BaseApi):
     def get(
         self,
         skip_deserialization: typing_extensions.Literal[True],
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -332,6 +335,7 @@ class ApiForget(BaseApi):
     @typing.overload
     def get(
         self,
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -344,6 +348,7 @@ class ApiForget(BaseApi):
 
     def get(
         self,
+        query_params: RequestQueryParams = frozendict.frozendict(),
         path_params: RequestPathParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -351,6 +356,7 @@ class ApiForget(BaseApi):
         skip_deserialization: bool = False,
     ):
         return self._list_connector_tasks_oapg(
+            query_params=query_params,
             path_params=path_params,
             accept_content_types=accept_content_types,
             stream=stream,

@@ -25,13 +25,31 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.list_accounts_response import ListAccountsResponse
+from Formance.model.accounts_response import AccountsResponse
 
 from . import path
 
 # Query params
-LimitSchema = schemas.IntSchema
-SkipSchema = schemas.IntSchema
+
+
+class LimitSchema(
+    schemas.Int64Schema
+):
+
+
+    class MetaOapg:
+        format = 'int64'
+        inclusive_minimum = 0
+
+
+class SkipSchema(
+    schemas.Int64Schema
+):
+
+
+    class MetaOapg:
+        format = 'int64'
+        inclusive_minimum = 0
 
 
 class SortSchema(
@@ -96,7 +114,7 @@ request_query_sort = api_client.QueryParameter(
 _auth = [
     'Authorization',
 ]
-SchemaFor200ResponseBodyApplicationJson = ListAccountsResponse
+SchemaFor200ResponseBodyApplicationJson = AccountsResponse
 
 
 @dataclass
@@ -168,7 +186,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: bool = False,
     ):
         """
-        Returns a list of accounts.
+        List accounts
         :param skip_deserialization: If true then api_response.response will be set but
             api_response.body and api_response.headers will not be deserialized into schema
             class instances

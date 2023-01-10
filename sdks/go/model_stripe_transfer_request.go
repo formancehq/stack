@@ -17,7 +17,7 @@ import (
 
 // StripeTransferRequest struct for StripeTransferRequest
 type StripeTransferRequest struct {
-	Amount *int32 `json:"amount,omitempty"`
+	Amount *int64 `json:"amount,omitempty"`
 	Asset *string `json:"asset,omitempty"`
 	Destination *string `json:"destination,omitempty"`
 	// A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format. 
@@ -42,9 +42,9 @@ func NewStripeTransferRequestWithDefaults() *StripeTransferRequest {
 }
 
 // GetAmount returns the Amount field value if set, zero value otherwise.
-func (o *StripeTransferRequest) GetAmount() int32 {
+func (o *StripeTransferRequest) GetAmount() int64 {
 	if o == nil || isNil(o.Amount) {
-		var ret int32
+		var ret int64
 		return ret
 	}
 	return *o.Amount
@@ -52,7 +52,7 @@ func (o *StripeTransferRequest) GetAmount() int32 {
 
 // GetAmountOk returns a tuple with the Amount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *StripeTransferRequest) GetAmountOk() (*int32, bool) {
+func (o *StripeTransferRequest) GetAmountOk() (*int64, bool) {
 	if o == nil || isNil(o.Amount) {
     return nil, false
 	}
@@ -68,8 +68,8 @@ func (o *StripeTransferRequest) HasAmount() bool {
 	return false
 }
 
-// SetAmount gets a reference to the given int32 and assigns it to the Amount field.
-func (o *StripeTransferRequest) SetAmount(v int32) {
+// SetAmount gets a reference to the given int64 and assigns it to the Amount field.
+func (o *StripeTransferRequest) SetAmount(v int64) {
 	o.Amount = &v
 }
 

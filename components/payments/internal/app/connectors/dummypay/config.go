@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/formancehq/payments/internal/pkg/configtemplate"
-
 	"github.com/formancehq/payments/internal/app/connectors"
+	"github.com/formancehq/payments/internal/pkg/configtemplate"
 )
 
 // Config is the configuration for the dummy payment connector.

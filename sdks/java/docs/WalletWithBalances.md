@@ -12,6 +12,7 @@
 |**name** | **String** |  |  |
 |**createdAt** | **OffsetDateTime** |  |  |
 |**balances** | [**WalletWithBalancesBalances**](WalletWithBalancesBalances.md) |  |  |
+|**ledger** | **String** |  |  |
 
 
 

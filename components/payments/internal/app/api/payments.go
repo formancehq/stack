@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -18,12 +17,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	maxPerPage = 100
-)
-
 type listPaymentsRepository interface {
-	ListPayments(ctx context.Context, sort storage.Sorter, pagination storage.Paginator) ([]*models.Payment, error)
+	ListPayments(ctx context.Context, pagination storage.Paginator) ([]*models.Payment, storage.PaginationDetails, error)
 }
 
 type paymentResponse struct {
@@ -44,7 +39,7 @@ type paymentResponse struct {
 
 type paymentMetadata struct {
 	Key       string                     `json:"key"`
-	Value     string                     `json:"value:"`
+	Value     string                     `json:"value"`
 	Changelog []paymentMetadataChangelog `json:"changelog"`
 }
 
@@ -92,25 +87,21 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 			}
 		}
 
-		skip, err := integerWithDefault(r, "skip", 0)
+		pageSize, err := pageSizeQueryParam(r)
 		if err != nil {
 			handleValidationError(w, r, err)
 
 			return
 		}
 
-		limit, err := integerWithDefault(r, "limit", maxPerPage)
+		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter)
 		if err != nil {
 			handleValidationError(w, r, err)
 
 			return
 		}
 
-		if limit > maxPerPage {
-			limit = maxPerPage
-		}
-
-		ret, err := repo.ListPayments(r.Context(), sorter, storage.Paginate(skip, limit))
+		ret, paginationDetails, err := repo.ListPayments(r.Context(), pagination)
 		if err != nil {
 			handleServerError(w, r, err)
 
@@ -165,8 +156,14 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 			}
 		}
 
-		err = json.NewEncoder(w).Encode(api.BaseResponse[[]*paymentResponse]{
-			Data: &data,
+		err = json.NewEncoder(w).Encode(api.BaseResponse[*paymentResponse]{
+			Cursor: &api.Cursor[*paymentResponse]{
+				PageSize: paginationDetails.PageSize,
+				HasMore:  paginationDetails.HasMore,
+				Previous: paginationDetails.PreviousPage,
+				Next:     paginationDetails.NextPage,
+				Data:     data,
+			},
 		})
 		if err != nil {
 			handleServerError(w, r, err)
@@ -247,30 +244,4 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 			return
 		}
 	}
-}
-
-func integer(r *http.Request, key string) (int, bool, error) {
-	if value := r.URL.Query().Get(key); value != "" {
-		ret, err := strconv.ParseInt(value, 10, 32)
-		if err != nil {
-			return 0, false, err
-		}
-
-		return int(ret), true, nil
-	}
-
-	return 0, false, nil
-}
-
-func integerWithDefault(r *http.Request, key string, def int) (int, error) {
-	value, ok, err := integer(r, key)
-	if err != nil {
-		return 0, err
-	}
-
-	if !ok || value < 0 {
-		return def, nil
-	}
-
-	return value, nil
 }

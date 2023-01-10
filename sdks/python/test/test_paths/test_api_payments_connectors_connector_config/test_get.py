@@ -21,7 +21,7 @@ from .. import ApiTestMixin
 class TestApiPaymentsConnectorsConnectorConfig(ApiTestMixin, unittest.TestCase):
     """
     ApiPaymentsConnectorsConnectorConfig unit test stubs
-        Read connector config  # noqa: E501
+        Read the config of a connector  # noqa: E501
     """
     _configuration = configuration.Configuration()
 

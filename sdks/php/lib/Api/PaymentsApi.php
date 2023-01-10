@@ -75,12 +75,6 @@ class PaymentsApi
         'connectorsStripeTransfer' => [
             'application/json',
         ],
-        'getAllConnectors' => [
-            'application/json',
-        ],
-        'getAllConnectorsConfigs' => [
-            'application/json',
-        ],
         'getConnectorTask' => [
             'application/json',
         ],
@@ -88,6 +82,12 @@ class PaymentsApi
             'application/json',
         ],
         'installConnector' => [
+            'application/json',
+        ],
+        'listAllConnectors' => [
+            'application/json',
+        ],
+        'listConfigsAvailableConnectors' => [
             'application/json',
         ],
         'listConnectorTasks' => [
@@ -166,11 +166,12 @@ class PaymentsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return object
      */
     public function connectorsStripeTransfer($stripe_transfer_request, string $contentType = self::contentTypes['connectorsStripeTransfer'][0])
     {
-        $this->connectorsStripeTransferWithHttpInfo($stripe_transfer_request, $contentType);
+        list($response) = $this->connectorsStripeTransferWithHttpInfo($stripe_transfer_request, $contentType);
+        return $response;
     }
 
     /**
@@ -183,7 +184,7 @@ class PaymentsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function connectorsStripeTransferWithHttpInfo($stripe_transfer_request, string $contentType = self::contentTypes['connectorsStripeTransfer'][0])
     {
@@ -224,10 +225,50 @@ class PaymentsApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            switch($statusCode) {
+                case 200:
+                    if ('object' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('object' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'object', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'object';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'object',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -267,14 +308,27 @@ class PaymentsApi
      */
     public function connectorsStripeTransferAsyncWithHttpInfo($stripe_transfer_request, string $contentType = self::contentTypes['connectorsStripeTransfer'][0])
     {
-        $returnType = '';
+        $returnType = 'object';
         $request = $this->connectorsStripeTransferRequest($stripe_transfer_request, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -325,7 +379,7 @@ class PaymentsApi
 
 
         $headers = $this->headerSelector->selectHeaders(
-            [],
+            ['application/json', ],
             $contentType,
             $multipart
         );
@@ -389,551 +443,17 @@ class PaymentsApi
     }
 
     /**
-     * Operation getAllConnectors
-     *
-     * Get all installed connectors
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAllConnectors'] to see the possible values for this operation
-     *
-     * @throws \Formance\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return \Formance\Model\ListConnectorsResponse
-     */
-    public function getAllConnectors(string $contentType = self::contentTypes['getAllConnectors'][0])
-    {
-        list($response) = $this->getAllConnectorsWithHttpInfo($contentType);
-        return $response;
-    }
-
-    /**
-     * Operation getAllConnectorsWithHttpInfo
-     *
-     * Get all installed connectors
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAllConnectors'] to see the possible values for this operation
-     *
-     * @throws \Formance\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ListConnectorsResponse, HTTP status code, HTTP response headers (array of strings)
-     */
-    public function getAllConnectorsWithHttpInfo(string $contentType = self::contentTypes['getAllConnectors'][0])
-    {
-        $request = $this->getAllConnectorsRequest($contentType);
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    (int) $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            } catch (ConnectException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    (int) $e->getCode(),
-                    null,
-                    null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        (string) $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    (string) $response->getBody()
-                );
-            }
-
-            switch($statusCode) {
-                case 200:
-                    if ('\Formance\Model\ListConnectorsResponse' === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ('\Formance\Model\ListConnectorsResponse' !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\ListConnectorsResponse', []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-            }
-
-            $returnType = '\Formance\Model\ListConnectorsResponse';
-            if ($returnType === '\SplFileObject') {
-                $content = $response->getBody(); //stream goes to serializer
-            } else {
-                $content = (string) $response->getBody();
-                if ($returnType !== 'string') {
-                    $content = json_decode($content);
-                }
-            }
-
-            return [
-                ObjectSerializer::deserialize($content, $returnType, []),
-                $response->getStatusCode(),
-                $response->getHeaders()
-            ];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Formance\Model\ListConnectorsResponse',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation getAllConnectorsAsync
-     *
-     * Get all installed connectors
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAllConnectors'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function getAllConnectorsAsync(string $contentType = self::contentTypes['getAllConnectors'][0])
-    {
-        return $this->getAllConnectorsAsyncWithHttpInfo($contentType)
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation getAllConnectorsAsyncWithHttpInfo
-     *
-     * Get all installed connectors
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAllConnectors'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function getAllConnectorsAsyncWithHttpInfo(string $contentType = self::contentTypes['getAllConnectors'][0])
-    {
-        $returnType = '\Formance\Model\ListConnectorsResponse';
-        $request = $this->getAllConnectorsRequest($contentType);
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    if ($returnType === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ($returnType !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, $returnType, []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'getAllConnectors'
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAllConnectors'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    public function getAllConnectorsRequest(string $contentType = self::contentTypes['getAllConnectors'][0])
-    {
-
-
-        $resourcePath = '/api/payments/connectors';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-
-
-
-        $headers = $this->headerSelector->selectHeaders(
-            ['application/json', ],
-            $contentType,
-            $multipart
-        );
-
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
-                # if Content-Type contains "application/json", json_encode the form parameters
-                $httpBody = \GuzzleHttp\json_encode($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = ObjectSerializer::buildQuery($formParams);
-            }
-        }
-
-        // this endpoint requires OAuth (access token)
-        if (!empty($this->config->getAccessToken())) {
-            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
-        }
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $operationHost = $this->config->getHost();
-        $query = ObjectSerializer::buildQuery($queryParams);
-        return new Request(
-            'GET',
-            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
-     * Operation getAllConnectorsConfigs
-     *
-     * Get all available connectors configs
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAllConnectorsConfigs'] to see the possible values for this operation
-     *
-     * @throws \Formance\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return \Formance\Model\ListConnectorsConfigsResponse
-     */
-    public function getAllConnectorsConfigs(string $contentType = self::contentTypes['getAllConnectorsConfigs'][0])
-    {
-        list($response) = $this->getAllConnectorsConfigsWithHttpInfo($contentType);
-        return $response;
-    }
-
-    /**
-     * Operation getAllConnectorsConfigsWithHttpInfo
-     *
-     * Get all available connectors configs
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAllConnectorsConfigs'] to see the possible values for this operation
-     *
-     * @throws \Formance\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ListConnectorsConfigsResponse, HTTP status code, HTTP response headers (array of strings)
-     */
-    public function getAllConnectorsConfigsWithHttpInfo(string $contentType = self::contentTypes['getAllConnectorsConfigs'][0])
-    {
-        $request = $this->getAllConnectorsConfigsRequest($contentType);
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    (int) $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            } catch (ConnectException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    (int) $e->getCode(),
-                    null,
-                    null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        (string) $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    (string) $response->getBody()
-                );
-            }
-
-            switch($statusCode) {
-                case 200:
-                    if ('\Formance\Model\ListConnectorsConfigsResponse' === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ('\Formance\Model\ListConnectorsConfigsResponse' !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\ListConnectorsConfigsResponse', []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-            }
-
-            $returnType = '\Formance\Model\ListConnectorsConfigsResponse';
-            if ($returnType === '\SplFileObject') {
-                $content = $response->getBody(); //stream goes to serializer
-            } else {
-                $content = (string) $response->getBody();
-                if ($returnType !== 'string') {
-                    $content = json_decode($content);
-                }
-            }
-
-            return [
-                ObjectSerializer::deserialize($content, $returnType, []),
-                $response->getStatusCode(),
-                $response->getHeaders()
-            ];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Formance\Model\ListConnectorsConfigsResponse',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation getAllConnectorsConfigsAsync
-     *
-     * Get all available connectors configs
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAllConnectorsConfigs'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function getAllConnectorsConfigsAsync(string $contentType = self::contentTypes['getAllConnectorsConfigs'][0])
-    {
-        return $this->getAllConnectorsConfigsAsyncWithHttpInfo($contentType)
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation getAllConnectorsConfigsAsyncWithHttpInfo
-     *
-     * Get all available connectors configs
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAllConnectorsConfigs'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function getAllConnectorsConfigsAsyncWithHttpInfo(string $contentType = self::contentTypes['getAllConnectorsConfigs'][0])
-    {
-        $returnType = '\Formance\Model\ListConnectorsConfigsResponse';
-        $request = $this->getAllConnectorsConfigsRequest($contentType);
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    if ($returnType === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ($returnType !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, $returnType, []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'getAllConnectorsConfigs'
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getAllConnectorsConfigs'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    public function getAllConnectorsConfigsRequest(string $contentType = self::contentTypes['getAllConnectorsConfigs'][0])
-    {
-
-
-        $resourcePath = '/api/payments/connectors/configs';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-
-
-
-        $headers = $this->headerSelector->selectHeaders(
-            ['application/json', ],
-            $contentType,
-            $multipart
-        );
-
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
-                # if Content-Type contains "application/json", json_encode the form parameters
-                $httpBody = \GuzzleHttp\json_encode($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = ObjectSerializer::buildQuery($formParams);
-            }
-        }
-
-        // this endpoint requires OAuth (access token)
-        if (!empty($this->config->getAccessToken())) {
-            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
-        }
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $operationHost = $this->config->getHost();
-        $query = ObjectSerializer::buildQuery($queryParams);
-        return new Request(
-            'GET',
-            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
      * Operation getConnectorTask
      *
      * Read a specific task of the connector
      *
-     * @param  Connectors $connector The connector code (required)
-     * @param  string $task_id The task id (required)
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  string $task_id The task ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getConnectorTask'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ListConnectorTasks200ResponseInner
+     * @return \Formance\Model\TaskResponse
      */
     public function getConnectorTask($connector, $task_id, string $contentType = self::contentTypes['getConnectorTask'][0])
     {
@@ -946,13 +466,13 @@ class PaymentsApi
      *
      * Read a specific task of the connector
      *
-     * @param  Connectors $connector The connector code (required)
-     * @param  string $task_id The task id (required)
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  string $task_id The task ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getConnectorTask'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ListConnectorTasks200ResponseInner, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\TaskResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function getConnectorTaskWithHttpInfo($connector, $task_id, string $contentType = self::contentTypes['getConnectorTask'][0])
     {
@@ -995,23 +515,23 @@ class PaymentsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\ListConnectorTasks200ResponseInner' === '\SplFileObject') {
+                    if ('\Formance\Model\TaskResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\ListConnectorTasks200ResponseInner' !== 'string') {
+                        if ('\Formance\Model\TaskResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\ListConnectorTasks200ResponseInner', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\TaskResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\Formance\Model\ListConnectorTasks200ResponseInner';
+            $returnType = '\Formance\Model\TaskResponse';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -1032,7 +552,7 @@ class PaymentsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\ListConnectorTasks200ResponseInner',
+                        '\Formance\Model\TaskResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -1047,8 +567,8 @@ class PaymentsApi
      *
      * Read a specific task of the connector
      *
-     * @param  Connectors $connector The connector code (required)
-     * @param  string $task_id The task id (required)
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  string $task_id The task ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getConnectorTask'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1069,8 +589,8 @@ class PaymentsApi
      *
      * Read a specific task of the connector
      *
-     * @param  Connectors $connector The connector code (required)
-     * @param  string $task_id The task id (required)
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  string $task_id The task ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getConnectorTask'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1078,7 +598,7 @@ class PaymentsApi
      */
     public function getConnectorTaskAsyncWithHttpInfo($connector, $task_id, string $contentType = self::contentTypes['getConnectorTask'][0])
     {
-        $returnType = '\Formance\Model\ListConnectorTasks200ResponseInner';
+        $returnType = '\Formance\Model\TaskResponse';
         $request = $this->getConnectorTaskRequest($connector, $task_id, $contentType);
 
         return $this->client
@@ -1120,8 +640,8 @@ class PaymentsApi
     /**
      * Create request for operation 'getConnectorTask'
      *
-     * @param  Connectors $connector The connector code (required)
-     * @param  string $task_id The task id (required)
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  string $task_id The task ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getConnectorTask'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1232,14 +752,14 @@ class PaymentsApi
     /**
      * Operation getPayment
      *
-     * Returns a payment.
+     * Get a payment
      *
-     * @param  string $payment_id The payment id (required)
+     * @param  string $payment_id The payment ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getPayment'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\Payment
+     * @return \Formance\Model\PaymentResponse
      */
     public function getPayment($payment_id, string $contentType = self::contentTypes['getPayment'][0])
     {
@@ -1250,14 +770,14 @@ class PaymentsApi
     /**
      * Operation getPaymentWithHttpInfo
      *
-     * Returns a payment.
+     * Get a payment
      *
-     * @param  string $payment_id The payment id (required)
+     * @param  string $payment_id The payment ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getPayment'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\Payment, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\PaymentResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function getPaymentWithHttpInfo($payment_id, string $contentType = self::contentTypes['getPayment'][0])
     {
@@ -1300,23 +820,23 @@ class PaymentsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\Payment' === '\SplFileObject') {
+                    if ('\Formance\Model\PaymentResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\Payment' !== 'string') {
+                        if ('\Formance\Model\PaymentResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\Payment', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\PaymentResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\Formance\Model\Payment';
+            $returnType = '\Formance\Model\PaymentResponse';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -1337,7 +857,7 @@ class PaymentsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\Payment',
+                        '\Formance\Model\PaymentResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -1350,9 +870,9 @@ class PaymentsApi
     /**
      * Operation getPaymentAsync
      *
-     * Returns a payment.
+     * Get a payment
      *
-     * @param  string $payment_id The payment id (required)
+     * @param  string $payment_id The payment ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getPayment'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1371,9 +891,9 @@ class PaymentsApi
     /**
      * Operation getPaymentAsyncWithHttpInfo
      *
-     * Returns a payment.
+     * Get a payment
      *
-     * @param  string $payment_id The payment id (required)
+     * @param  string $payment_id The payment ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getPayment'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1381,7 +901,7 @@ class PaymentsApi
      */
     public function getPaymentAsyncWithHttpInfo($payment_id, string $contentType = self::contentTypes['getPayment'][0])
     {
-        $returnType = '\Formance\Model\Payment';
+        $returnType = '\Formance\Model\PaymentResponse';
         $request = $this->getPaymentRequest($payment_id, $contentType);
 
         return $this->client
@@ -1423,7 +943,7 @@ class PaymentsApi
     /**
      * Create request for operation 'getPayment'
      *
-     * @param  string $payment_id The payment id (required)
+     * @param  string $payment_id The payment ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getPayment'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1519,9 +1039,9 @@ class PaymentsApi
     /**
      * Operation installConnector
      *
-     * Install connector
+     * Install a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  \Formance\Model\ConnectorConfig $connector_config connector_config (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['installConnector'] to see the possible values for this operation
      *
@@ -1537,9 +1057,9 @@ class PaymentsApi
     /**
      * Operation installConnectorWithHttpInfo
      *
-     * Install connector
+     * Install a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  \Formance\Model\ConnectorConfig $connector_config (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['installConnector'] to see the possible values for this operation
      *
@@ -1598,9 +1118,9 @@ class PaymentsApi
     /**
      * Operation installConnectorAsync
      *
-     * Install connector
+     * Install a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  \Formance\Model\ConnectorConfig $connector_config (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['installConnector'] to see the possible values for this operation
      *
@@ -1620,9 +1140,9 @@ class PaymentsApi
     /**
      * Operation installConnectorAsyncWithHttpInfo
      *
-     * Install connector
+     * Install a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  \Formance\Model\ConnectorConfig $connector_config (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['installConnector'] to see the possible values for this operation
      *
@@ -1660,7 +1180,7 @@ class PaymentsApi
     /**
      * Create request for operation 'installConnector'
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  \Formance\Model\ConnectorConfig $connector_config (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['installConnector'] to see the possible values for this operation
      *
@@ -1769,38 +1289,36 @@ class PaymentsApi
     }
 
     /**
-     * Operation listConnectorTasks
+     * Operation listAllConnectors
      *
-     * List connector tasks
+     * List all installed connectors
      *
-     * @param  Connectors $connector The connector code (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorTasks'] to see the possible values for this operation
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAllConnectors'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ListConnectorTasks200ResponseInner[]
+     * @return \Formance\Model\ConnectorsResponse
      */
-    public function listConnectorTasks($connector, string $contentType = self::contentTypes['listConnectorTasks'][0])
+    public function listAllConnectors(string $contentType = self::contentTypes['listAllConnectors'][0])
     {
-        list($response) = $this->listConnectorTasksWithHttpInfo($connector, $contentType);
+        list($response) = $this->listAllConnectorsWithHttpInfo($contentType);
         return $response;
     }
 
     /**
-     * Operation listConnectorTasksWithHttpInfo
+     * Operation listAllConnectorsWithHttpInfo
      *
-     * List connector tasks
+     * List all installed connectors
      *
-     * @param  Connectors $connector The connector code (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorTasks'] to see the possible values for this operation
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAllConnectors'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ListConnectorTasks200ResponseInner[], HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\ConnectorsResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listConnectorTasksWithHttpInfo($connector, string $contentType = self::contentTypes['listConnectorTasks'][0])
+    public function listAllConnectorsWithHttpInfo(string $contentType = self::contentTypes['listAllConnectors'][0])
     {
-        $request = $this->listConnectorTasksRequest($connector, $contentType);
+        $request = $this->listAllConnectorsRequest($contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1839,23 +1357,23 @@ class PaymentsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\ListConnectorTasks200ResponseInner[]' === '\SplFileObject') {
+                    if ('\Formance\Model\ConnectorsResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\ListConnectorTasks200ResponseInner[]' !== 'string') {
+                        if ('\Formance\Model\ConnectorsResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\ListConnectorTasks200ResponseInner[]', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ConnectorsResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\Formance\Model\ListConnectorTasks200ResponseInner[]';
+            $returnType = '\Formance\Model\ConnectorsResponse';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -1876,7 +1394,547 @@ class PaymentsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\ListConnectorTasks200ResponseInner[]',
+                        '\Formance\Model\ConnectorsResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation listAllConnectorsAsync
+     *
+     * List all installed connectors
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAllConnectors'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function listAllConnectorsAsync(string $contentType = self::contentTypes['listAllConnectors'][0])
+    {
+        return $this->listAllConnectorsAsyncWithHttpInfo($contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation listAllConnectorsAsyncWithHttpInfo
+     *
+     * List all installed connectors
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAllConnectors'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function listAllConnectorsAsyncWithHttpInfo(string $contentType = self::contentTypes['listAllConnectors'][0])
+    {
+        $returnType = '\Formance\Model\ConnectorsResponse';
+        $request = $this->listAllConnectorsRequest($contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'listAllConnectors'
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAllConnectors'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function listAllConnectorsRequest(string $contentType = self::contentTypes['listAllConnectors'][0])
+    {
+
+
+        $resourcePath = '/api/payments/connectors';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation listConfigsAvailableConnectors
+     *
+     * List the configs of each available connector
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConfigsAvailableConnectors'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Formance\Model\ConnectorsConfigsResponse
+     */
+    public function listConfigsAvailableConnectors(string $contentType = self::contentTypes['listConfigsAvailableConnectors'][0])
+    {
+        list($response) = $this->listConfigsAvailableConnectorsWithHttpInfo($contentType);
+        return $response;
+    }
+
+    /**
+     * Operation listConfigsAvailableConnectorsWithHttpInfo
+     *
+     * List the configs of each available connector
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConfigsAvailableConnectors'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Formance\Model\ConnectorsConfigsResponse, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function listConfigsAvailableConnectorsWithHttpInfo(string $contentType = self::contentTypes['listConfigsAvailableConnectors'][0])
+    {
+        $request = $this->listConfigsAvailableConnectorsRequest($contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            switch($statusCode) {
+                case 200:
+                    if ('\Formance\Model\ConnectorsConfigsResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\ConnectorsConfigsResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ConnectorsConfigsResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Formance\Model\ConnectorsConfigsResponse';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\ConnectorsConfigsResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation listConfigsAvailableConnectorsAsync
+     *
+     * List the configs of each available connector
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConfigsAvailableConnectors'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function listConfigsAvailableConnectorsAsync(string $contentType = self::contentTypes['listConfigsAvailableConnectors'][0])
+    {
+        return $this->listConfigsAvailableConnectorsAsyncWithHttpInfo($contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation listConfigsAvailableConnectorsAsyncWithHttpInfo
+     *
+     * List the configs of each available connector
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConfigsAvailableConnectors'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function listConfigsAvailableConnectorsAsyncWithHttpInfo(string $contentType = self::contentTypes['listConfigsAvailableConnectors'][0])
+    {
+        $returnType = '\Formance\Model\ConnectorsConfigsResponse';
+        $request = $this->listConfigsAvailableConnectorsRequest($contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'listConfigsAvailableConnectors'
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConfigsAvailableConnectors'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function listConfigsAvailableConnectorsRequest(string $contentType = self::contentTypes['listConfigsAvailableConnectors'][0])
+    {
+
+
+        $resourcePath = '/api/payments/connectors/configs';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\json_encode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation listConnectorTasks
+     *
+     * List tasks from a connector
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorTasks'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Formance\Model\TasksResponse
+     */
+    public function listConnectorTasks($connector, $page_size = 15, $cursor = null, string $contentType = self::contentTypes['listConnectorTasks'][0])
+    {
+        list($response) = $this->listConnectorTasksWithHttpInfo($connector, $page_size, $cursor, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation listConnectorTasksWithHttpInfo
+     *
+     * List tasks from a connector
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorTasks'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Formance\Model\TasksResponse, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function listConnectorTasksWithHttpInfo($connector, $page_size = 15, $cursor = null, string $contentType = self::contentTypes['listConnectorTasks'][0])
+    {
+        $request = $this->listConnectorTasksRequest($connector, $page_size, $cursor, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            switch($statusCode) {
+                case 200:
+                    if ('\Formance\Model\TasksResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\TasksResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\TasksResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Formance\Model\TasksResponse';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\TasksResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -1889,17 +1947,19 @@ class PaymentsApi
     /**
      * Operation listConnectorTasksAsync
      *
-     * List connector tasks
+     * List tasks from a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorTasks'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listConnectorTasksAsync($connector, string $contentType = self::contentTypes['listConnectorTasks'][0])
+    public function listConnectorTasksAsync($connector, $page_size = 15, $cursor = null, string $contentType = self::contentTypes['listConnectorTasks'][0])
     {
-        return $this->listConnectorTasksAsyncWithHttpInfo($connector, $contentType)
+        return $this->listConnectorTasksAsyncWithHttpInfo($connector, $page_size, $cursor, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1910,18 +1970,20 @@ class PaymentsApi
     /**
      * Operation listConnectorTasksAsyncWithHttpInfo
      *
-     * List connector tasks
+     * List tasks from a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorTasks'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listConnectorTasksAsyncWithHttpInfo($connector, string $contentType = self::contentTypes['listConnectorTasks'][0])
+    public function listConnectorTasksAsyncWithHttpInfo($connector, $page_size = 15, $cursor = null, string $contentType = self::contentTypes['listConnectorTasks'][0])
     {
-        $returnType = '\Formance\Model\ListConnectorTasks200ResponseInner[]';
-        $request = $this->listConnectorTasksRequest($connector, $contentType);
+        $returnType = '\Formance\Model\TasksResponse';
+        $request = $this->listConnectorTasksRequest($connector, $page_size, $cursor, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1962,13 +2024,15 @@ class PaymentsApi
     /**
      * Create request for operation 'listConnectorTasks'
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorTasks'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listConnectorTasksRequest($connector, string $contentType = self::contentTypes['listConnectorTasks'][0])
+    public function listConnectorTasksRequest($connector, $page_size = 15, $cursor = null, string $contentType = self::contentTypes['listConnectorTasks'][0])
     {
 
         // verify the required parameter 'connector' is set
@@ -1978,6 +2042,14 @@ class PaymentsApi
             );
         }
 
+        if ($page_size !== null && $page_size > 1000) {
+            throw new \InvalidArgumentException('invalid value for "$page_size" when calling PaymentsApi.listConnectorTasks, must be smaller than or equal to 1000.');
+        }
+        if ($page_size !== null && $page_size < 1) {
+            throw new \InvalidArgumentException('invalid value for "$page_size" when calling PaymentsApi.listConnectorTasks, must be bigger than or equal to 1.');
+        }
+        
+
 
         $resourcePath = '/api/payments/connectors/{connector}/tasks';
         $formParams = [];
@@ -1986,6 +2058,24 @@ class PaymentsApi
         $httpBody = '';
         $multipart = false;
 
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $page_size,
+            'pageSize', // param base name
+            'integer', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $cursor,
+            'cursor', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
 
 
         // path params
@@ -2058,40 +2148,40 @@ class PaymentsApi
     /**
      * Operation listPayments
      *
-     * Returns a list of payments.
+     * List payments
      *
-     * @param  int $limit Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
-     * @param  int $skip How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
-     * @param  string[] $sort Field used to sort payments (Default is by date). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string[] $sort Fields used to sort payments (default is date:desc). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listPayments'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ListPaymentsResponse
+     * @return \Formance\Model\PaymentsResponse
      */
-    public function listPayments($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
+    public function listPayments($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
     {
-        list($response) = $this->listPaymentsWithHttpInfo($limit, $skip, $sort, $contentType);
+        list($response) = $this->listPaymentsWithHttpInfo($page_size, $cursor, $sort, $contentType);
         return $response;
     }
 
     /**
      * Operation listPaymentsWithHttpInfo
      *
-     * Returns a list of payments.
+     * List payments
      *
-     * @param  int $limit Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
-     * @param  int $skip How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
-     * @param  string[] $sort Field used to sort payments (Default is by date). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string[] $sort Fields used to sort payments (default is date:desc). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listPayments'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ListPaymentsResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\PaymentsResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listPaymentsWithHttpInfo($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
+    public function listPaymentsWithHttpInfo($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
     {
-        $request = $this->listPaymentsRequest($limit, $skip, $sort, $contentType);
+        $request = $this->listPaymentsRequest($page_size, $cursor, $sort, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -2130,23 +2220,23 @@ class PaymentsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\ListPaymentsResponse' === '\SplFileObject') {
+                    if ('\Formance\Model\PaymentsResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\ListPaymentsResponse' !== 'string') {
+                        if ('\Formance\Model\PaymentsResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\ListPaymentsResponse', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\PaymentsResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\Formance\Model\ListPaymentsResponse';
+            $returnType = '\Formance\Model\PaymentsResponse';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -2167,7 +2257,7 @@ class PaymentsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\ListPaymentsResponse',
+                        '\Formance\Model\PaymentsResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -2180,19 +2270,19 @@ class PaymentsApi
     /**
      * Operation listPaymentsAsync
      *
-     * Returns a list of payments.
+     * List payments
      *
-     * @param  int $limit Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
-     * @param  int $skip How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
-     * @param  string[] $sort Field used to sort payments (Default is by date). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string[] $sort Fields used to sort payments (default is date:desc). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listPayments'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listPaymentsAsync($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
+    public function listPaymentsAsync($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
     {
-        return $this->listPaymentsAsyncWithHttpInfo($limit, $skip, $sort, $contentType)
+        return $this->listPaymentsAsyncWithHttpInfo($page_size, $cursor, $sort, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2203,20 +2293,20 @@ class PaymentsApi
     /**
      * Operation listPaymentsAsyncWithHttpInfo
      *
-     * Returns a list of payments.
+     * List payments
      *
-     * @param  int $limit Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
-     * @param  int $skip How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
-     * @param  string[] $sort Field used to sort payments (Default is by date). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string[] $sort Fields used to sort payments (default is date:desc). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listPayments'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listPaymentsAsyncWithHttpInfo($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
+    public function listPaymentsAsyncWithHttpInfo($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
     {
-        $returnType = '\Formance\Model\ListPaymentsResponse';
-        $request = $this->listPaymentsRequest($limit, $skip, $sort, $contentType);
+        $returnType = '\Formance\Model\PaymentsResponse';
+        $request = $this->listPaymentsRequest($page_size, $cursor, $sort, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2257,18 +2347,24 @@ class PaymentsApi
     /**
      * Create request for operation 'listPayments'
      *
-     * @param  int $limit Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
-     * @param  int $skip How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
-     * @param  string[] $sort Field used to sort payments (Default is by date). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string[] $sort Fields used to sort payments (default is date:desc). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listPayments'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listPaymentsRequest($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
+    public function listPaymentsRequest($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
     {
 
-
+        if ($page_size !== null && $page_size > 1000) {
+            throw new \InvalidArgumentException('invalid value for "$page_size" when calling PaymentsApi.listPayments, must be smaller than or equal to 1000.');
+        }
+        if ($page_size !== null && $page_size < 1) {
+            throw new \InvalidArgumentException('invalid value for "$page_size" when calling PaymentsApi.listPayments, must be bigger than or equal to 1.');
+        }
+        
 
 
 
@@ -2281,8 +2377,8 @@ class PaymentsApi
 
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $limit,
-            'limit', // param base name
+            $page_size,
+            'pageSize', // param base name
             'integer', // openApiType
             'form', // style
             true, // explode
@@ -2290,9 +2386,9 @@ class PaymentsApi
         ) ?? []);
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $skip,
-            'skip', // param base name
-            'integer', // openApiType
+            $cursor,
+            'cursor', // param base name
+            'string', // openApiType
             'form', // style
             true, // explode
             false // required
@@ -2370,7 +2466,7 @@ class PaymentsApi
     /**
      * Operation paymentslistAccounts
      *
-     * Returns a list of accounts.
+     * List accounts
      *
      * @param  int $limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
      * @param  int $skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
@@ -2379,7 +2475,7 @@ class PaymentsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ListAccountsResponse
+     * @return \Formance\Model\AccountsResponse
      */
     public function paymentslistAccounts($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
     {
@@ -2390,7 +2486,7 @@ class PaymentsApi
     /**
      * Operation paymentslistAccountsWithHttpInfo
      *
-     * Returns a list of accounts.
+     * List accounts
      *
      * @param  int $limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
      * @param  int $skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
@@ -2399,7 +2495,7 @@ class PaymentsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ListAccountsResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\AccountsResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function paymentslistAccountsWithHttpInfo($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
     {
@@ -2442,23 +2538,23 @@ class PaymentsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\ListAccountsResponse' === '\SplFileObject') {
+                    if ('\Formance\Model\AccountsResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\ListAccountsResponse' !== 'string') {
+                        if ('\Formance\Model\AccountsResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\ListAccountsResponse', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\AccountsResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\Formance\Model\ListAccountsResponse';
+            $returnType = '\Formance\Model\AccountsResponse';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -2479,7 +2575,7 @@ class PaymentsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\ListAccountsResponse',
+                        '\Formance\Model\AccountsResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -2492,7 +2588,7 @@ class PaymentsApi
     /**
      * Operation paymentslistAccountsAsync
      *
-     * Returns a list of accounts.
+     * List accounts
      *
      * @param  int $limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
      * @param  int $skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
@@ -2515,7 +2611,7 @@ class PaymentsApi
     /**
      * Operation paymentslistAccountsAsyncWithHttpInfo
      *
-     * Returns a list of accounts.
+     * List accounts
      *
      * @param  int $limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
      * @param  int $skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
@@ -2527,7 +2623,7 @@ class PaymentsApi
      */
     public function paymentslistAccountsAsyncWithHttpInfo($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
     {
-        $returnType = '\Formance\Model\ListAccountsResponse';
+        $returnType = '\Formance\Model\AccountsResponse';
         $request = $this->paymentslistAccountsRequest($limit, $skip, $sort, $contentType);
 
         return $this->client
@@ -2580,8 +2676,14 @@ class PaymentsApi
     public function paymentslistAccountsRequest($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
     {
 
-
-
+        if ($limit !== null && $limit < 0) {
+            throw new \InvalidArgumentException('invalid value for "$limit" when calling PaymentsApi.paymentslistAccounts, must be bigger than or equal to 0.');
+        }
+        
+        if ($skip !== null && $skip < 0) {
+            throw new \InvalidArgumentException('invalid value for "$skip" when calling PaymentsApi.paymentslistAccounts, must be bigger than or equal to 0.');
+        }
+        
 
 
         $resourcePath = '/api/payments/accounts';
@@ -2682,14 +2784,14 @@ class PaymentsApi
     /**
      * Operation readConnectorConfig
      *
-     * Read connector config
+     * Read the config of a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['readConnectorConfig'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ConnectorConfig
+     * @return \Formance\Model\ConnectorConfigResponse
      */
     public function readConnectorConfig($connector, string $contentType = self::contentTypes['readConnectorConfig'][0])
     {
@@ -2700,14 +2802,14 @@ class PaymentsApi
     /**
      * Operation readConnectorConfigWithHttpInfo
      *
-     * Read connector config
+     * Read the config of a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['readConnectorConfig'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ConnectorConfig, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\ConnectorConfigResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function readConnectorConfigWithHttpInfo($connector, string $contentType = self::contentTypes['readConnectorConfig'][0])
     {
@@ -2750,23 +2852,23 @@ class PaymentsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\ConnectorConfig' === '\SplFileObject') {
+                    if ('\Formance\Model\ConnectorConfigResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\ConnectorConfig' !== 'string') {
+                        if ('\Formance\Model\ConnectorConfigResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\ConnectorConfig', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ConnectorConfigResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\Formance\Model\ConnectorConfig';
+            $returnType = '\Formance\Model\ConnectorConfigResponse';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -2787,7 +2889,7 @@ class PaymentsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\ConnectorConfig',
+                        '\Formance\Model\ConnectorConfigResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -2800,9 +2902,9 @@ class PaymentsApi
     /**
      * Operation readConnectorConfigAsync
      *
-     * Read connector config
+     * Read the config of a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['readConnectorConfig'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -2821,9 +2923,9 @@ class PaymentsApi
     /**
      * Operation readConnectorConfigAsyncWithHttpInfo
      *
-     * Read connector config
+     * Read the config of a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['readConnectorConfig'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -2831,7 +2933,7 @@ class PaymentsApi
      */
     public function readConnectorConfigAsyncWithHttpInfo($connector, string $contentType = self::contentTypes['readConnectorConfig'][0])
     {
-        $returnType = '\Formance\Model\ConnectorConfig';
+        $returnType = '\Formance\Model\ConnectorConfigResponse';
         $request = $this->readConnectorConfigRequest($connector, $contentType);
 
         return $this->client
@@ -2873,7 +2975,7 @@ class PaymentsApi
     /**
      * Create request for operation 'readConnectorConfig'
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['readConnectorConfig'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -2969,9 +3071,9 @@ class PaymentsApi
     /**
      * Operation resetConnector
      *
-     * Reset connector
+     * Reset a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['resetConnector'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -2986,9 +3088,9 @@ class PaymentsApi
     /**
      * Operation resetConnectorWithHttpInfo
      *
-     * Reset connector
+     * Reset a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['resetConnector'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -3046,9 +3148,9 @@ class PaymentsApi
     /**
      * Operation resetConnectorAsync
      *
-     * Reset connector
+     * Reset a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['resetConnector'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -3067,9 +3169,9 @@ class PaymentsApi
     /**
      * Operation resetConnectorAsyncWithHttpInfo
      *
-     * Reset connector
+     * Reset a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['resetConnector'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -3106,7 +3208,7 @@ class PaymentsApi
     /**
      * Create request for operation 'resetConnector'
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['resetConnector'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -3202,9 +3304,9 @@ class PaymentsApi
     /**
      * Operation uninstallConnector
      *
-     * Uninstall connector
+     * Uninstall a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['uninstallConnector'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -3219,9 +3321,9 @@ class PaymentsApi
     /**
      * Operation uninstallConnectorWithHttpInfo
      *
-     * Uninstall connector
+     * Uninstall a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['uninstallConnector'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -3279,9 +3381,9 @@ class PaymentsApi
     /**
      * Operation uninstallConnectorAsync
      *
-     * Uninstall connector
+     * Uninstall a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['uninstallConnector'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -3300,9 +3402,9 @@ class PaymentsApi
     /**
      * Operation uninstallConnectorAsyncWithHttpInfo
      *
-     * Uninstall connector
+     * Uninstall a connector
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['uninstallConnector'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -3339,7 +3441,7 @@ class PaymentsApi
     /**
      * Create request for operation 'uninstallConnector'
      *
-     * @param  Connectors $connector The connector code (required)
+     * @param  Connector $connector The name of the connector. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['uninstallConnector'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException

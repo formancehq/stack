@@ -60,7 +60,7 @@ class StripeConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPITypes = [
         'polling_period' => 'string',
         'api_key' => 'string',
-        'page_size' => 'float'
+        'page_size' => 'int'
     ];
 
     /**
@@ -73,7 +73,7 @@ class StripeConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPIFormats = [
         'polling_period' => null,
         'api_key' => null,
-        'page_size' => null
+        'page_size' => 'int64'
     ];
 
     /**
@@ -292,6 +292,10 @@ class StripeConfig implements ModelInterface, ArrayAccess, \JsonSerializable
         if ($this->container['api_key'] === null) {
             $invalidProperties[] = "'api_key' can't be null";
         }
+        if (!is_null($this->container['page_size']) && ($this->container['page_size'] < 0)) {
+            $invalidProperties[] = "invalid value for 'page_size', must be bigger than or equal to 0.";
+        }
+
         return $invalidProperties;
     }
 
@@ -320,7 +324,7 @@ class StripeConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets polling_period
      *
-     * @param string|null $polling_period The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe api
+     * @param string|null $polling_period The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.
      *
      * @return self
      */
@@ -368,7 +372,7 @@ class StripeConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets page_size
      *
-     * @return float|null
+     * @return int|null
      */
     public function getPageSize()
     {
@@ -378,12 +382,17 @@ class StripeConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets page_size
      *
-     * @param float|null $page_size Number of BalanceTransaction to fetch at each polling interval.
+     * @param int|null $page_size Number of BalanceTransaction to fetch at each polling interval.
      *
      * @return self
      */
     public function setPageSize($page_size)
     {
+
+        if (!is_null($page_size) && ($page_size < 0)) {
+            throw new \InvalidArgumentException('invalid value for $page_size when calling StripeConfig., must be bigger than or equal to 0.');
+        }
+
 
         if (is_null($page_size)) {
             throw new \InvalidArgumentException('non-nullable page_size cannot be null');

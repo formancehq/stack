@@ -10,28 +10,29 @@ Testing ServerApiService
 package formance
 
 import (
-    "context"
-    "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/require"
-    "testing"
-    client "./openapi"
+	"context"
+	"testing"
+
+	client "./openapi"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_formance_ServerApiService(t *testing.T) {
 
-    configuration := client.NewConfiguration()
-    apiClient := client.NewAPIClient(configuration)
+	configuration := client.NewConfiguration()
+	apiClient := client.NewAPIClient(configuration)
 
-    t.Run("Test ServerApiService GetInfo", func(t *testing.T) {
+	t.Run("Test ServerApiService GetInfo", func(t *testing.T) {
 
-        t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
-        resp, httpRes, err := apiClient.ServerApi.GetInfo(context.Background()).Execute()
+		resp, httpRes, err := apiClient.ServerApi.GetInfo(context.Background()).Execute()
 
-        require.Nil(t, err)
-        require.NotNil(t, resp)
-        assert.Equal(t, 200, httpRes.StatusCode)
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
 
-    })
+	})
 
 }

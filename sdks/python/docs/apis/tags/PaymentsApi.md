@@ -6,25 +6,25 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**connectors_stripe_transfer**](#connectors_stripe_transfer) | **post** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
-[**get_all_connectors**](#get_all_connectors) | **get** /api/payments/connectors | Get all installed connectors
-[**get_all_connectors_configs**](#get_all_connectors_configs) | **get** /api/payments/connectors/configs | Get all available connectors configs
 [**get_connector_task**](#get_connector_task) | **get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
-[**get_payment**](#get_payment) | **get** /api/payments/payments/{paymentId} | Returns a payment.
-[**install_connector**](#install_connector) | **post** /api/payments/connectors/{connector} | Install connector
-[**list_connector_tasks**](#list_connector_tasks) | **get** /api/payments/connectors/{connector}/tasks | List connector tasks
-[**list_payments**](#list_payments) | **get** /api/payments/payments | Returns a list of payments.
-[**paymentslist_accounts**](#paymentslist_accounts) | **get** /api/payments/accounts | Returns a list of accounts.
-[**read_connector_config**](#read_connector_config) | **get** /api/payments/connectors/{connector}/config | Read connector config
-[**reset_connector**](#reset_connector) | **post** /api/payments/connectors/{connector}/reset | Reset connector
-[**uninstall_connector**](#uninstall_connector) | **delete** /api/payments/connectors/{connector} | Uninstall connector
+[**get_payment**](#get_payment) | **get** /api/payments/payments/{paymentId} | Get a payment
+[**install_connector**](#install_connector) | **post** /api/payments/connectors/{connector} | Install a connector
+[**list_all_connectors**](#list_all_connectors) | **get** /api/payments/connectors | List all installed connectors
+[**list_configs_available_connectors**](#list_configs_available_connectors) | **get** /api/payments/connectors/configs | List the configs of each available connector
+[**list_connector_tasks**](#list_connector_tasks) | **get** /api/payments/connectors/{connector}/tasks | List tasks from a connector
+[**list_payments**](#list_payments) | **get** /api/payments/payments | List payments
+[**paymentslist_accounts**](#paymentslist_accounts) | **get** /api/payments/accounts | List accounts
+[**read_connector_config**](#read_connector_config) | **get** /api/payments/connectors/{connector}/config | Read the config of a connector
+[**reset_connector**](#reset_connector) | **post** /api/payments/connectors/{connector}/reset | Reset a connector
+[**uninstall_connector**](#uninstall_connector) | **delete** /api/payments/connectors/{connector} | Uninstall a connector
 
 # **connectors_stripe_transfer**
 <a name="connectors_stripe_transfer"></a>
-> connectors_stripe_transfer(stripe_transfer_request)
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} connectors_stripe_transfer(stripe_transfer_request)
 
 Transfer funds between Stripe accounts
 
-Execute a transfer between two Stripe accounts
+Execute a transfer between two Stripe accounts.
 
 ### Example
 
@@ -67,6 +67,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.connectors_stripe_transfer(
             body=body,
         )
+        pprint(api_response)
     except Formance.ApiException as e:
         print("Exception when calling PaymentsApi->connectors_stripe_transfer: %s\n" % e)
 ```
@@ -76,6 +77,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 body | typing.Union[SchemaForRequestBodyApplicationJson] | required |
 content_type | str | optional, default is 'application/json' | Selects the schema and serialization of the request body
+accept_content_types | typing.Tuple[str] | default is ('application/json', ) | Tells the server the content type(s) that are accepted by the client
 stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
 timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
 skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
@@ -93,162 +95,21 @@ Type | Description  | Notes
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#connectors_stripe_transfer.ApiResponseFor200) | Transfer has been executed
+200 | [ApiResponseFor200](#connectors_stripe_transfer.ApiResponseFor200) | OK
 
 #### connectors_stripe_transfer.ApiResponseFor200
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | Unset | body was not defined |
-headers | Unset | headers were not defined |
-
-### Authorization
-
-[Authorization](../../../README.md#Authorization)
-
-[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
-
-# **get_all_connectors**
-<a name="get_all_connectors"></a>
-> ListConnectorsResponse get_all_connectors()
-
-Get all installed connectors
-
-Get all installed connectors
-
-### Example
-
-* OAuth Authentication (Authorization):
-```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.list_connectors_response import ListConnectorsResponse
-from pprint import pprint
-# Defining the host is optional and defaults to http://localhost
-# See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
-    host = "http://localhost"
-)
-
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost"
-)
-configuration.access_token = 'YOUR_ACCESS_TOKEN'
-# Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = payments_api.PaymentsApi(api_client)
-
-    # example, this endpoint has no required or optional parameters
-    try:
-        # Get all installed connectors
-        api_response = api_instance.get_all_connectors()
-        pprint(api_response)
-    except Formance.ApiException as e:
-        print("Exception when calling PaymentsApi->get_all_connectors: %s\n" % e)
-```
-### Parameters
-This endpoint does not need any parameter.
-
-### Return Types, Responses
-
-Code | Class | Description
-------------- | ------------- | -------------
-n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#get_all_connectors.ApiResponseFor200) | List of installed connectors
-
-#### get_all_connectors.ApiResponseFor200
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-response | urllib3.HTTPResponse | Raw response |
 body | typing.Union[SchemaFor200ResponseBodyApplicationJson, ] |  |
 headers | Unset | headers were not defined |
 
 # SchemaFor200ResponseBodyApplicationJson
-Type | Description  | Notes
-------------- | ------------- | -------------
-[**ListConnectorsResponse**](../../models/ListConnectorsResponse.md) |  | 
 
-
-### Authorization
-
-[Authorization](../../../README.md#Authorization)
-
-[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
-
-# **get_all_connectors_configs**
-<a name="get_all_connectors_configs"></a>
-> ListConnectorsConfigsResponse get_all_connectors_configs()
-
-Get all available connectors configs
-
-Get all available connectors configs
-
-### Example
-
-* OAuth Authentication (Authorization):
-```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.list_connectors_configs_response import ListConnectorsConfigsResponse
-from pprint import pprint
-# Defining the host is optional and defaults to http://localhost
-# See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
-    host = "http://localhost"
-)
-
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost"
-)
-configuration.access_token = 'YOUR_ACCESS_TOKEN'
-# Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = payments_api.PaymentsApi(api_client)
-
-    # example, this endpoint has no required or optional parameters
-    try:
-        # Get all available connectors configs
-        api_response = api_instance.get_all_connectors_configs()
-        pprint(api_response)
-    except Formance.ApiException as e:
-        print("Exception when calling PaymentsApi->get_all_connectors_configs: %s\n" % e)
-```
-### Parameters
-This endpoint does not need any parameter.
-
-### Return Types, Responses
-
-Code | Class | Description
-------------- | ------------- | -------------
-n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#get_all_connectors_configs.ApiResponseFor200) | List of available connectors configs
-
-#### get_all_connectors_configs.ApiResponseFor200
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[SchemaFor200ResponseBodyApplicationJson, ] |  |
-headers | Unset | headers were not defined |
-
-# SchemaFor200ResponseBodyApplicationJson
-Type | Description  | Notes
-------------- | ------------- | -------------
-[**ListConnectorsConfigsResponse**](../../models/ListConnectorsConfigsResponse.md) |  | 
-
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
 
 ### Authorization
 
@@ -258,11 +119,11 @@ Type | Description  | Notes
 
 # **get_connector_task**
 <a name="get_connector_task"></a>
-> bool, date, datetime, dict, float, int, list, str, none_type get_connector_task(connectortask_id)
+> TaskResponse get_connector_task(connectortask_id)
 
 Read a specific task of the connector
 
-Get a specific task associated to the connector
+Get a specific task associated to the connector.
 
 ### Example
 
@@ -270,13 +131,8 @@ Get a specific task associated to the connector
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.task_descriptor_dummy_pay import TaskDescriptorDummyPay
-from Formance.model.task_descriptor_wise import TaskDescriptorWise
-from Formance.model.task_descriptor_modulr import TaskDescriptorModulr
-from Formance.model.task_descriptor_stripe import TaskDescriptorStripe
-from Formance.model.connectors import Connectors
-from Formance.model.task_descriptor_banking_circle import TaskDescriptorBankingCircle
-from Formance.model.task_descriptor_currency_cloud import TaskDescriptorCurrencyCloud
+from Formance.model.task_response import TaskResponse
+from Formance.model.connector import Connector
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -301,7 +157,7 @@ with Formance.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     path_params = {
-        'connector': Connectors("STRIPE"),
+        'connector': Connector("STRIPE"),
         'taskId': "task1",
     }
     try:
@@ -334,7 +190,7 @@ taskId | TaskIdSchema | |
 # ConnectorSchema
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**Connectors**](../../models/Connectors.md) |  | 
+[**Connector**](../../models/Connector.md) |  | 
 
 
 # TaskIdSchema
@@ -349,7 +205,7 @@ str,  | str,  |  |
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#get_connector_task.ApiResponseFor200) | The specified task
+200 | [ApiResponseFor200](#get_connector_task.ApiResponseFor200) | OK
 
 #### get_connector_task.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -359,22 +215,10 @@ body | typing.Union[SchemaFor200ResponseBodyApplicationJson, ] |  |
 headers | Unset | headers were not defined |
 
 # SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**TaskResponse**](../../models/TaskResponse.md) |  | 
 
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO |  | 
-
-### Composed Schemas (allOf/anyOf/oneOf/not)
-#### oneOf
-Class Name | Input Type | Accessed Type | Description | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-[TaskDescriptorStripe]({{complexTypePrefix}}TaskDescriptorStripe.md) | [**TaskDescriptorStripe**]({{complexTypePrefix}}TaskDescriptorStripe.md) | [**TaskDescriptorStripe**]({{complexTypePrefix}}TaskDescriptorStripe.md) |  | 
-[TaskDescriptorWise]({{complexTypePrefix}}TaskDescriptorWise.md) | [**TaskDescriptorWise**]({{complexTypePrefix}}TaskDescriptorWise.md) | [**TaskDescriptorWise**]({{complexTypePrefix}}TaskDescriptorWise.md) |  | 
-[TaskDescriptorCurrencyCloud]({{complexTypePrefix}}TaskDescriptorCurrencyCloud.md) | [**TaskDescriptorCurrencyCloud**]({{complexTypePrefix}}TaskDescriptorCurrencyCloud.md) | [**TaskDescriptorCurrencyCloud**]({{complexTypePrefix}}TaskDescriptorCurrencyCloud.md) |  | 
-[TaskDescriptorDummyPay]({{complexTypePrefix}}TaskDescriptorDummyPay.md) | [**TaskDescriptorDummyPay**]({{complexTypePrefix}}TaskDescriptorDummyPay.md) | [**TaskDescriptorDummyPay**]({{complexTypePrefix}}TaskDescriptorDummyPay.md) |  | 
-[TaskDescriptorModulr]({{complexTypePrefix}}TaskDescriptorModulr.md) | [**TaskDescriptorModulr**]({{complexTypePrefix}}TaskDescriptorModulr.md) | [**TaskDescriptorModulr**]({{complexTypePrefix}}TaskDescriptorModulr.md) |  | 
-[TaskDescriptorBankingCircle]({{complexTypePrefix}}TaskDescriptorBankingCircle.md) | [**TaskDescriptorBankingCircle**]({{complexTypePrefix}}TaskDescriptorBankingCircle.md) | [**TaskDescriptorBankingCircle**]({{complexTypePrefix}}TaskDescriptorBankingCircle.md) |  | 
 
 ### Authorization
 
@@ -384,9 +228,9 @@ Class Name | Input Type | Accessed Type | Description | Notes
 
 # **get_payment**
 <a name="get_payment"></a>
-> Payment get_payment(payment_id)
+> PaymentResponse get_payment(payment_id)
 
-Returns a payment.
+Get a payment
 
 ### Example
 
@@ -394,7 +238,7 @@ Returns a payment.
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.payment import Payment
+from Formance.model.payment_response import PaymentResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -422,7 +266,7 @@ with Formance.ApiClient(configuration) as api_client:
         'paymentId': "XXX",
     }
     try:
-        # Returns a payment.
+        # Get a payment
         api_response = api_instance.get_payment(
             path_params=path_params,
         )
@@ -459,7 +303,7 @@ str,  | str,  |  |
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#get_payment.ApiResponseFor200) | A payment
+200 | [ApiResponseFor200](#get_payment.ApiResponseFor200) | OK
 
 #### get_payment.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -471,7 +315,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**Payment**](../../models/Payment.md) |  | 
+[**PaymentResponse**](../../models/PaymentResponse.md) |  | 
 
 
 ### Authorization
@@ -484,9 +328,9 @@ Type | Description  | Notes
 <a name="install_connector"></a>
 > install_connector(connectorconnector_config)
 
-Install connector
+Install a connector
 
-Install connector
+Install a connector by its name and config.
 
 ### Example
 
@@ -494,8 +338,8 @@ Install connector
 ```python
 import Formance
 from Formance.apis.tags import payments_api
+from Formance.model.connector import Connector
 from Formance.model.connector_config import ConnectorConfig
-from Formance.model.connectors import Connectors
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -520,11 +364,11 @@ with Formance.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     path_params = {
-        'connector': Connectors("STRIPE"),
+        'connector': Connector("STRIPE"),
     }
     body = ConnectorConfig(None)
     try:
-        # Install connector
+        # Install a connector
         api_response = api_instance.install_connector(
             path_params=path_params,
             body=body,
@@ -561,7 +405,7 @@ connector | ConnectorSchema | |
 # ConnectorSchema
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**Connectors**](../../models/Connectors.md) |  | 
+[**Connector**](../../models/Connector.md) |  | 
 
 
 ### Return Types, Responses
@@ -569,7 +413,7 @@ Type | Description  | Notes
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-204 | [ApiResponseFor204](#install_connector.ApiResponseFor204) | Connector has been installed
+204 | [ApiResponseFor204](#install_connector.ApiResponseFor204) | OK
 
 #### install_connector.ApiResponseFor204
 Name | Type | Description  | Notes
@@ -584,11 +428,159 @@ headers | Unset | headers were not defined |
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
+# **list_all_connectors**
+<a name="list_all_connectors"></a>
+> ConnectorsResponse list_all_connectors()
+
+List all installed connectors
+
+List all installed connectors.
+
+### Example
+
+* OAuth Authentication (Authorization):
+```python
+import Formance
+from Formance.apis.tags import payments_api
+from Formance.model.connectors_response import ConnectorsResponse
+from pprint import pprint
+# Defining the host is optional and defaults to http://localhost
+# See configuration.py for a list of all supported configuration parameters.
+configuration = Formance.Configuration(
+    host = "http://localhost"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost"
+)
+configuration.access_token = 'YOUR_ACCESS_TOKEN'
+# Enter a context with an instance of the API client
+with Formance.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = payments_api.PaymentsApi(api_client)
+
+    # example, this endpoint has no required or optional parameters
+    try:
+        # List all installed connectors
+        api_response = api_instance.list_all_connectors()
+        pprint(api_response)
+    except Formance.ApiException as e:
+        print("Exception when calling PaymentsApi->list_all_connectors: %s\n" % e)
+```
+### Parameters
+This endpoint does not need any parameter.
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#list_all_connectors.ApiResponseFor200) | OK
+
+#### list_all_connectors.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**ConnectorsResponse**](../../models/ConnectorsResponse.md) |  | 
+
+
+### Authorization
+
+[Authorization](../../../README.md#Authorization)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **list_configs_available_connectors**
+<a name="list_configs_available_connectors"></a>
+> ConnectorsConfigsResponse list_configs_available_connectors()
+
+List the configs of each available connector
+
+List the configs of each available connector.
+
+### Example
+
+* OAuth Authentication (Authorization):
+```python
+import Formance
+from Formance.apis.tags import payments_api
+from Formance.model.connectors_configs_response import ConnectorsConfigsResponse
+from pprint import pprint
+# Defining the host is optional and defaults to http://localhost
+# See configuration.py for a list of all supported configuration parameters.
+configuration = Formance.Configuration(
+    host = "http://localhost"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost"
+)
+configuration.access_token = 'YOUR_ACCESS_TOKEN'
+# Enter a context with an instance of the API client
+with Formance.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = payments_api.PaymentsApi(api_client)
+
+    # example, this endpoint has no required or optional parameters
+    try:
+        # List the configs of each available connector
+        api_response = api_instance.list_configs_available_connectors()
+        pprint(api_response)
+    except Formance.ApiException as e:
+        print("Exception when calling PaymentsApi->list_configs_available_connectors: %s\n" % e)
+```
+### Parameters
+This endpoint does not need any parameter.
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#list_configs_available_connectors.ApiResponseFor200) | OK
+
+#### list_configs_available_connectors.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**ConnectorsConfigsResponse**](../../models/ConnectorsConfigsResponse.md) |  | 
+
+
+### Authorization
+
+[Authorization](../../../README.md#Authorization)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
 # **list_connector_tasks**
 <a name="list_connector_tasks"></a>
-> [bool, date, datetime, dict, float, int, list, str, none_type] list_connector_tasks(connector)
+> TasksResponse list_connector_tasks(connector)
 
-List connector tasks
+List tasks from a connector
 
 List all tasks associated with this connector.
 
@@ -598,13 +590,8 @@ List all tasks associated with this connector.
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.task_descriptor_dummy_pay import TaskDescriptorDummyPay
-from Formance.model.task_descriptor_wise import TaskDescriptorWise
-from Formance.model.task_descriptor_modulr import TaskDescriptorModulr
-from Formance.model.task_descriptor_stripe import TaskDescriptorStripe
-from Formance.model.connectors import Connectors
-from Formance.model.task_descriptor_banking_circle import TaskDescriptorBankingCircle
-from Formance.model.task_descriptor_currency_cloud import TaskDescriptorCurrencyCloud
+from Formance.model.tasks_response import TasksResponse
+from Formance.model.connector import Connector
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -629,12 +616,33 @@ with Formance.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     path_params = {
-        'connector': Connectors("STRIPE"),
+        'connector': Connector("STRIPE"),
+    }
+    query_params = {
     }
     try:
-        # List connector tasks
+        # List tasks from a connector
         api_response = api_instance.list_connector_tasks(
             path_params=path_params,
+            query_params=query_params,
+        )
+        pprint(api_response)
+    except Formance.ApiException as e:
+        print("Exception when calling PaymentsApi->list_connector_tasks: %s\n" % e)
+
+    # example passing only optional values
+    path_params = {
+        'connector': Connector("STRIPE"),
+    }
+    query_params = {
+        'pageSize': 100,
+        'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
+    }
+    try:
+        # List tasks from a connector
+        api_response = api_instance.list_connector_tasks(
+            path_params=path_params,
+            query_params=query_params,
         )
         pprint(api_response)
     except Formance.ApiException as e:
@@ -644,11 +652,35 @@ with Formance.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+query_params | RequestQueryParams | |
 path_params | RequestPathParams | |
 accept_content_types | typing.Tuple[str] | default is ('application/json', ) | Tells the server the content type(s) that are accepted by the client
 stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
 timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
 skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### query_params
+#### RequestQueryParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+pageSize | PageSizeSchema | | optional
+cursor | CursorSchema | | optional
+
+
+# PageSizeSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+decimal.Decimal, int,  | decimal.Decimal,  |  | if omitted the server will use the default value of 15value must be a 64 bit integer
+
+# CursorSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str,  | str,  |  | 
 
 ### path_params
 #### RequestPathParams
@@ -660,7 +692,7 @@ connector | ConnectorSchema | |
 # ConnectorSchema
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**Connectors**](../../models/Connectors.md) |  | 
+[**Connector**](../../models/Connector.md) |  | 
 
 
 ### Return Types, Responses
@@ -668,7 +700,7 @@ Type | Description  | Notes
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#list_connector_tasks.ApiResponseFor200) | Task list
+200 | [ApiResponseFor200](#list_connector_tasks.ApiResponseFor200) | OK
 
 #### list_connector_tasks.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -678,34 +710,10 @@ body | typing.Union[SchemaFor200ResponseBodyApplicationJson, ] |  |
 headers | Unset | headers were not defined |
 
 # SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**TasksResponse**](../../models/TasksResponse.md) |  | 
 
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-list, tuple,  | tuple,  |  | 
-
-### Tuple Items
-Class Name | Input Type | Accessed Type | Description | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-[items](#items) | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO |  | 
-
-# items
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO |  | 
-
-### Composed Schemas (allOf/anyOf/oneOf/not)
-#### oneOf
-Class Name | Input Type | Accessed Type | Description | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-[TaskDescriptorStripe]({{complexTypePrefix}}TaskDescriptorStripe.md) | [**TaskDescriptorStripe**]({{complexTypePrefix}}TaskDescriptorStripe.md) | [**TaskDescriptorStripe**]({{complexTypePrefix}}TaskDescriptorStripe.md) |  | 
-[TaskDescriptorWise]({{complexTypePrefix}}TaskDescriptorWise.md) | [**TaskDescriptorWise**]({{complexTypePrefix}}TaskDescriptorWise.md) | [**TaskDescriptorWise**]({{complexTypePrefix}}TaskDescriptorWise.md) |  | 
-[TaskDescriptorCurrencyCloud]({{complexTypePrefix}}TaskDescriptorCurrencyCloud.md) | [**TaskDescriptorCurrencyCloud**]({{complexTypePrefix}}TaskDescriptorCurrencyCloud.md) | [**TaskDescriptorCurrencyCloud**]({{complexTypePrefix}}TaskDescriptorCurrencyCloud.md) |  | 
-[TaskDescriptorDummyPay]({{complexTypePrefix}}TaskDescriptorDummyPay.md) | [**TaskDescriptorDummyPay**]({{complexTypePrefix}}TaskDescriptorDummyPay.md) | [**TaskDescriptorDummyPay**]({{complexTypePrefix}}TaskDescriptorDummyPay.md) |  | 
-[TaskDescriptorModulr]({{complexTypePrefix}}TaskDescriptorModulr.md) | [**TaskDescriptorModulr**]({{complexTypePrefix}}TaskDescriptorModulr.md) | [**TaskDescriptorModulr**]({{complexTypePrefix}}TaskDescriptorModulr.md) |  | 
-[TaskDescriptorBankingCircle]({{complexTypePrefix}}TaskDescriptorBankingCircle.md) | [**TaskDescriptorBankingCircle**]({{complexTypePrefix}}TaskDescriptorBankingCircle.md) | [**TaskDescriptorBankingCircle**]({{complexTypePrefix}}TaskDescriptorBankingCircle.md) |  | 
 
 ### Authorization
 
@@ -715,9 +723,9 @@ Class Name | Input Type | Accessed Type | Description | Notes
 
 # **list_payments**
 <a name="list_payments"></a>
-> ListPaymentsResponse list_payments()
+> PaymentsResponse list_payments()
 
-Returns a list of payments.
+List payments
 
 ### Example
 
@@ -725,7 +733,7 @@ Returns a list of payments.
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.list_payments_response import ListPaymentsResponse
+from Formance.model.payments_response import PaymentsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -750,14 +758,14 @@ with Formance.ApiClient(configuration) as api_client:
 
     # example passing only optional values
     query_params = {
-        'limit': 10,
-        'skip': 100,
+        'pageSize': 100,
+        'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
         'sort': [
-        "status"
+        "date:asc,status:desc"
     ],
     }
     try:
-        # Returns a list of payments.
+        # List payments
         api_response = api_instance.list_payments(
             query_params=query_params,
         )
@@ -780,24 +788,24 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-limit | LimitSchema | | optional
-skip | SkipSchema | | optional
+pageSize | PageSizeSchema | | optional
+cursor | CursorSchema | | optional
 sort | SortSchema | | optional
 
 
-# LimitSchema
+# PageSizeSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | 
+decimal.Decimal, int,  | decimal.Decimal,  |  | if omitted the server will use the default value of 15value must be a 64 bit integer
 
-# SkipSchema
+# CursorSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | 
+str,  | str,  |  | 
 
 # SortSchema
 
@@ -816,7 +824,7 @@ items | str,  | str,  |  |
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#list_payments.ApiResponseFor200) | A JSON array of payments
+200 | [ApiResponseFor200](#list_payments.ApiResponseFor200) | OK
 
 #### list_payments.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -828,7 +836,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**ListPaymentsResponse**](../../models/ListPaymentsResponse.md) |  | 
+[**PaymentsResponse**](../../models/PaymentsResponse.md) |  | 
 
 
 ### Authorization
@@ -839,9 +847,9 @@ Type | Description  | Notes
 
 # **paymentslist_accounts**
 <a name="paymentslist_accounts"></a>
-> ListAccountsResponse paymentslist_accounts()
+> AccountsResponse paymentslist_accounts()
 
-Returns a list of accounts.
+List accounts
 
 ### Example
 
@@ -849,7 +857,7 @@ Returns a list of accounts.
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.list_accounts_response import ListAccountsResponse
+from Formance.model.accounts_response import AccountsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -881,7 +889,7 @@ with Formance.ApiClient(configuration) as api_client:
     ],
     }
     try:
-        # Returns a list of accounts.
+        # List accounts
         api_response = api_instance.paymentslist_accounts(
             query_params=query_params,
         )
@@ -914,14 +922,14 @@ sort | SortSchema | | optional
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | 
+decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 
 # SkipSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | 
+decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 
 # SortSchema
 
@@ -940,7 +948,7 @@ items | str,  | str,  |  |
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#paymentslist_accounts.ApiResponseFor200) | A JSON array of accounts
+200 | [ApiResponseFor200](#paymentslist_accounts.ApiResponseFor200) | OK
 
 #### paymentslist_accounts.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -952,7 +960,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**ListAccountsResponse**](../../models/ListAccountsResponse.md) |  | 
+[**AccountsResponse**](../../models/AccountsResponse.md) |  | 
 
 
 ### Authorization
@@ -963,9 +971,9 @@ Type | Description  | Notes
 
 # **read_connector_config**
 <a name="read_connector_config"></a>
-> ConnectorConfig read_connector_config(connector)
+> ConnectorConfigResponse read_connector_config(connector)
 
-Read connector config
+Read the config of a connector
 
 Read connector config
 
@@ -975,8 +983,8 @@ Read connector config
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.connector_config import ConnectorConfig
-from Formance.model.connectors import Connectors
+from Formance.model.connector_config_response import ConnectorConfigResponse
+from Formance.model.connector import Connector
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -1001,10 +1009,10 @@ with Formance.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     path_params = {
-        'connector': Connectors("STRIPE"),
+        'connector': Connector("STRIPE"),
     }
     try:
-        # Read connector config
+        # Read the config of a connector
         api_response = api_instance.read_connector_config(
             path_params=path_params,
         )
@@ -1032,7 +1040,7 @@ connector | ConnectorSchema | |
 # ConnectorSchema
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**Connectors**](../../models/Connectors.md) |  | 
+[**Connector**](../../models/Connector.md) |  | 
 
 
 ### Return Types, Responses
@@ -1040,7 +1048,7 @@ Type | Description  | Notes
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#read_connector_config.ApiResponseFor200) | Connector config
+200 | [ApiResponseFor200](#read_connector_config.ApiResponseFor200) | OK
 
 #### read_connector_config.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -1052,7 +1060,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**ConnectorConfig**](../../models/ConnectorConfig.md) |  | 
+[**ConnectorConfigResponse**](../../models/ConnectorConfigResponse.md) |  | 
 
 
 ### Authorization
@@ -1065,9 +1073,9 @@ Type | Description  | Notes
 <a name="reset_connector"></a>
 > reset_connector(connector)
 
-Reset connector
+Reset a connector
 
-Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
+Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it. 
 
 ### Example
 
@@ -1075,7 +1083,7 @@ Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.connectors import Connectors
+from Formance.model.connector import Connector
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -1100,10 +1108,10 @@ with Formance.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     path_params = {
-        'connector': Connectors("STRIPE"),
+        'connector': Connector("STRIPE"),
     }
     try:
-        # Reset connector
+        # Reset a connector
         api_response = api_instance.reset_connector(
             path_params=path_params,
         )
@@ -1129,7 +1137,7 @@ connector | ConnectorSchema | |
 # ConnectorSchema
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**Connectors**](../../models/Connectors.md) |  | 
+[**Connector**](../../models/Connector.md) |  | 
 
 
 ### Return Types, Responses
@@ -1137,7 +1145,7 @@ Type | Description  | Notes
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-204 | [ApiResponseFor204](#reset_connector.ApiResponseFor204) | Connector has been reset
+204 | [ApiResponseFor204](#reset_connector.ApiResponseFor204) | OK
 
 #### reset_connector.ApiResponseFor204
 Name | Type | Description  | Notes
@@ -1156,9 +1164,9 @@ headers | Unset | headers were not defined |
 <a name="uninstall_connector"></a>
 > uninstall_connector(connector)
 
-Uninstall connector
+Uninstall a connector
 
-Uninstall  connector
+Uninstall a connector by its name.
 
 ### Example
 
@@ -1166,7 +1174,7 @@ Uninstall  connector
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.connectors import Connectors
+from Formance.model.connector import Connector
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -1191,10 +1199,10 @@ with Formance.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     path_params = {
-        'connector': Connectors("STRIPE"),
+        'connector': Connector("STRIPE"),
     }
     try:
-        # Uninstall connector
+        # Uninstall a connector
         api_response = api_instance.uninstall_connector(
             path_params=path_params,
         )
@@ -1220,7 +1228,7 @@ connector | ConnectorSchema | |
 # ConnectorSchema
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**Connectors**](../../models/Connectors.md) |  | 
+[**Connector**](../../models/Connector.md) |  | 
 
 
 ### Return Types, Responses
@@ -1228,7 +1236,7 @@ Type | Description  | Notes
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-204 | [ApiResponseFor204](#uninstall_connector.ApiResponseFor204) | Connector has been uninstalled
+204 | [ApiResponseFor204](#uninstall_connector.ApiResponseFor204) | OK
 
 #### uninstall_connector.ApiResponseFor204
 Name | Type | Description  | Notes

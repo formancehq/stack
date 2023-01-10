@@ -37,7 +37,16 @@ class StripeTransferRequest(
     class MetaOapg:
         
         class properties:
-            amount = schemas.IntSchema
+            
+            
+            class amount(
+                schemas.Int64Schema
+            ):
+            
+            
+                class MetaOapg:
+                    format = 'int64'
+                    inclusive_minimum = 0
             asset = schemas.StrSchema
             destination = schemas.StrSchema
             metadata = schemas.DictSchema

@@ -28,7 +28,7 @@ export class StripeTransferRequest {
             "name": "amount",
             "baseName": "amount",
             "type": "number",
-            "format": ""
+            "format": "int64"
         },
         {
             "name": "asset",

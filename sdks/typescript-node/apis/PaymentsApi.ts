@@ -10,15 +10,17 @@ import {canConsumeForm, isCodeInRange} from '../util';
 import {SecurityAuthentication} from '../auth/auth';
 
 
+import { AccountsResponse } from '../models/AccountsResponse';
+import { Connector } from '../models/Connector';
 import { ConnectorConfig } from '../models/ConnectorConfig';
-import { Connectors } from '../models/Connectors';
-import { ListAccountsResponse } from '../models/ListAccountsResponse';
-import { ListConnectorTasks200ResponseInner } from '../models/ListConnectorTasks200ResponseInner';
-import { ListConnectorsConfigsResponse } from '../models/ListConnectorsConfigsResponse';
-import { ListConnectorsResponse } from '../models/ListConnectorsResponse';
-import { ListPaymentsResponse } from '../models/ListPaymentsResponse';
-import { Payment } from '../models/Payment';
+import { ConnectorConfigResponse } from '../models/ConnectorConfigResponse';
+import { ConnectorsConfigsResponse } from '../models/ConnectorsConfigsResponse';
+import { ConnectorsResponse } from '../models/ConnectorsResponse';
+import { PaymentResponse } from '../models/PaymentResponse';
+import { PaymentsResponse } from '../models/PaymentsResponse';
 import { StripeTransferRequest } from '../models/StripeTransferRequest';
+import { TaskResponse } from '../models/TaskResponse';
+import { TasksResponse } from '../models/TasksResponse';
 
 /**
  * no description
@@ -26,7 +28,7 @@ import { StripeTransferRequest } from '../models/StripeTransferRequest';
 export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
-     * Execute a transfer between two Stripe accounts
+     * Execute a transfer between two Stripe accounts.
      * Transfer funds between Stripe accounts
      * @param stripeTransferRequest 
      */
@@ -74,72 +76,12 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
     }
 
     /**
-     * Get all installed connectors
-     * Get all installed connectors
-     */
-    public async getAllConnectors(_options?: Configuration): Promise<RequestContext> {
-        let _config = _options || this.configuration;
-
-        // Path Params
-        const localVarPath = '/api/payments/connectors';
-
-        // Make Request Context
-        const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.GET);
-        requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
-
-
-        let authMethod: SecurityAuthentication | undefined;
-        // Apply auth methods
-        authMethod = _config.authMethods["Authorization"]
-        if (authMethod?.applySecurityAuthentication) {
-            await authMethod?.applySecurityAuthentication(requestContext);
-        }
-        
-        const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
-        if (defaultAuth?.applySecurityAuthentication) {
-            await defaultAuth?.applySecurityAuthentication(requestContext);
-        }
-
-        return requestContext;
-    }
-
-    /**
-     * Get all available connectors configs
-     * Get all available connectors configs
-     */
-    public async getAllConnectorsConfigs(_options?: Configuration): Promise<RequestContext> {
-        let _config = _options || this.configuration;
-
-        // Path Params
-        const localVarPath = '/api/payments/connectors/configs';
-
-        // Make Request Context
-        const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.GET);
-        requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
-
-
-        let authMethod: SecurityAuthentication | undefined;
-        // Apply auth methods
-        authMethod = _config.authMethods["Authorization"]
-        if (authMethod?.applySecurityAuthentication) {
-            await authMethod?.applySecurityAuthentication(requestContext);
-        }
-        
-        const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
-        if (defaultAuth?.applySecurityAuthentication) {
-            await defaultAuth?.applySecurityAuthentication(requestContext);
-        }
-
-        return requestContext;
-    }
-
-    /**
-     * Get a specific task associated to the connector
+     * Get a specific task associated to the connector.
      * Read a specific task of the connector
-     * @param connector The connector code
-     * @param taskId The task id
+     * @param connector The name of the connector.
+     * @param taskId The task ID.
      */
-    public async getConnectorTask(connector: Connectors, taskId: string, _options?: Configuration): Promise<RequestContext> {
+    public async getConnectorTask(connector: Connector, taskId: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'connector' is not null or undefined
@@ -180,8 +122,8 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
     }
 
     /**
-     * Returns a payment.
-     * @param paymentId The payment id
+     * Get a payment
+     * @param paymentId The payment ID.
      */
     public async getPayment(paymentId: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
@@ -217,12 +159,12 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
     }
 
     /**
-     * Install connector
-     * Install connector
-     * @param connector The connector code
+     * Install a connector by its name and config.
+     * Install a connector
+     * @param connector The name of the connector.
      * @param connectorConfig 
      */
-    public async installConnector(connector: Connectors, connectorConfig: ConnectorConfig, _options?: Configuration): Promise<RequestContext> {
+    public async installConnector(connector: Connector, connectorConfig: ConnectorConfig, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'connector' is not null or undefined
@@ -273,22 +215,14 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
     }
 
     /**
-     * List all tasks associated with this connector.
-     * List connector tasks
-     * @param connector The connector code
+     * List all installed connectors.
+     * List all installed connectors
      */
-    public async listConnectorTasks(connector: Connectors, _options?: Configuration): Promise<RequestContext> {
+    public async listAllConnectors(_options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
-        // verify required parameter 'connector' is not null or undefined
-        if (connector === null || connector === undefined) {
-            throw new RequiredError("PaymentsApi", "listConnectorTasks", "connector");
-        }
-
-
         // Path Params
-        const localVarPath = '/api/payments/connectors/{connector}/tasks'
-            .replace('{' + 'connector' + '}', encodeURIComponent(String(connector)));
+        const localVarPath = '/api/payments/connectors';
 
         // Make Request Context
         const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.GET);
@@ -311,12 +245,94 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
     }
 
     /**
-     * Returns a list of payments.
-     * @param limit Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.
-     * @param skip How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.
-     * @param sort Field used to sort payments (Default is by date).
+     * List the configs of each available connector.
+     * List the configs of each available connector
      */
-    public async listPayments(limit?: number, skip?: number, sort?: Array<string>, _options?: Configuration): Promise<RequestContext> {
+    public async listConfigsAvailableConnectors(_options?: Configuration): Promise<RequestContext> {
+        let _config = _options || this.configuration;
+
+        // Path Params
+        const localVarPath = '/api/payments/connectors/configs';
+
+        // Make Request Context
+        const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.GET);
+        requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
+
+
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
+        
+        const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
+        if (defaultAuth?.applySecurityAuthentication) {
+            await defaultAuth?.applySecurityAuthentication(requestContext);
+        }
+
+        return requestContext;
+    }
+
+    /**
+     * List all tasks associated with this connector.
+     * List tasks from a connector
+     * @param connector The name of the connector.
+     * @param pageSize The maximum number of results to return per page. 
+     * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
+     */
+    public async listConnectorTasks(connector: Connector, pageSize?: number, cursor?: string, _options?: Configuration): Promise<RequestContext> {
+        let _config = _options || this.configuration;
+
+        // verify required parameter 'connector' is not null or undefined
+        if (connector === null || connector === undefined) {
+            throw new RequiredError("PaymentsApi", "listConnectorTasks", "connector");
+        }
+
+
+
+
+        // Path Params
+        const localVarPath = '/api/payments/connectors/{connector}/tasks'
+            .replace('{' + 'connector' + '}', encodeURIComponent(String(connector)));
+
+        // Make Request Context
+        const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.GET);
+        requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
+
+        // Query Params
+        if (pageSize !== undefined) {
+            requestContext.setQueryParam("pageSize", ObjectSerializer.serialize(pageSize, "number", "int64"));
+        }
+
+        // Query Params
+        if (cursor !== undefined) {
+            requestContext.setQueryParam("cursor", ObjectSerializer.serialize(cursor, "string", ""));
+        }
+
+
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
+        
+        const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
+        if (defaultAuth?.applySecurityAuthentication) {
+            await defaultAuth?.applySecurityAuthentication(requestContext);
+        }
+
+        return requestContext;
+    }
+
+    /**
+     * List payments
+     * @param pageSize The maximum number of results to return per page. 
+     * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
+     * @param sort Fields used to sort payments (default is date:desc).
+     */
+    public async listPayments(pageSize?: number, cursor?: string, sort?: Array<string>, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
 
@@ -330,13 +346,13 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
         requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
 
         // Query Params
-        if (limit !== undefined) {
-            requestContext.setQueryParam("limit", ObjectSerializer.serialize(limit, "number", ""));
+        if (pageSize !== undefined) {
+            requestContext.setQueryParam("pageSize", ObjectSerializer.serialize(pageSize, "number", "int64"));
         }
 
         // Query Params
-        if (skip !== undefined) {
-            requestContext.setQueryParam("skip", ObjectSerializer.serialize(skip, "number", ""));
+        if (cursor !== undefined) {
+            requestContext.setQueryParam("cursor", ObjectSerializer.serialize(cursor, "string", ""));
         }
 
         // Query Params
@@ -361,9 +377,9 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
     }
 
     /**
-     * Returns a list of accounts.
-     * @param limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.
-     * @param skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.
+     * List accounts
+     * @param limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. 
+     * @param skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. 
      * @param sort Field used to sort payments (Default is by date).
      */
     public async paymentslistAccounts(limit?: number, skip?: number, sort?: Array<string>, _options?: Configuration): Promise<RequestContext> {
@@ -381,12 +397,12 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
 
         // Query Params
         if (limit !== undefined) {
-            requestContext.setQueryParam("limit", ObjectSerializer.serialize(limit, "number", ""));
+            requestContext.setQueryParam("limit", ObjectSerializer.serialize(limit, "number", "int64"));
         }
 
         // Query Params
         if (skip !== undefined) {
-            requestContext.setQueryParam("skip", ObjectSerializer.serialize(skip, "number", ""));
+            requestContext.setQueryParam("skip", ObjectSerializer.serialize(skip, "number", "int64"));
         }
 
         // Query Params
@@ -412,10 +428,10 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Read connector config
-     * Read connector config
-     * @param connector The connector code
+     * Read the config of a connector
+     * @param connector The name of the connector.
      */
-    public async readConnectorConfig(connector: Connectors, _options?: Configuration): Promise<RequestContext> {
+    public async readConnectorConfig(connector: Connector, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'connector' is not null or undefined
@@ -449,11 +465,11 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
     }
 
     /**
-     * Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
-     * Reset connector
-     * @param connector The connector code
+     * Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it. 
+     * Reset a connector
+     * @param connector The name of the connector.
      */
-    public async resetConnector(connector: Connectors, _options?: Configuration): Promise<RequestContext> {
+    public async resetConnector(connector: Connector, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'connector' is not null or undefined
@@ -487,11 +503,11 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
     }
 
     /**
-     * Uninstall  connector
-     * Uninstall connector
-     * @param connector The connector code
+     * Uninstall a connector by its name.
+     * Uninstall a connector
+     * @param connector The name of the connector.
      */
-    public async uninstallConnector(connector: Connectors, _options?: Configuration): Promise<RequestContext> {
+    public async uninstallConnector(connector: Connector, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'connector' is not null or undefined
@@ -535,76 +551,22 @@ export class PaymentsApiResponseProcessor {
      * @params response Response returned by the server for a request to connectorsStripeTransfer
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async connectorsStripeTransfer(response: ResponseContext): Promise<void > {
+     public async connectorsStripeTransfer(response: ResponseContext): Promise<any > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            return;
-        }
-
-        // Work around for missing responses in specification, e.g. for petstore.yaml
-        if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: void = ObjectSerializer.deserialize(
+            const body: any = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "void", ""
-            ) as void;
-            return body;
-        }
-
-        throw new ApiException<string | Buffer | undefined>(response.httpStatusCode, "Unknown API Status Code!", await response.getBodyAsAny(), response.headers);
-    }
-
-    /**
-     * Unwraps the actual response sent by the server from the response context and deserializes the response content
-     * to the expected objects
-     *
-     * @params response Response returned by the server for a request to getAllConnectors
-     * @throws ApiException if the response code was not in [200, 299]
-     */
-     public async getAllConnectors(response: ResponseContext): Promise<ListConnectorsResponse > {
-        const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
-        if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: ListConnectorsResponse = ObjectSerializer.deserialize(
-                ObjectSerializer.parse(await response.body.text(), contentType),
-                "ListConnectorsResponse", ""
-            ) as ListConnectorsResponse;
+                "any", ""
+            ) as any;
             return body;
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: ListConnectorsResponse = ObjectSerializer.deserialize(
+            const body: any = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ListConnectorsResponse", ""
-            ) as ListConnectorsResponse;
-            return body;
-        }
-
-        throw new ApiException<string | Buffer | undefined>(response.httpStatusCode, "Unknown API Status Code!", await response.getBodyAsAny(), response.headers);
-    }
-
-    /**
-     * Unwraps the actual response sent by the server from the response context and deserializes the response content
-     * to the expected objects
-     *
-     * @params response Response returned by the server for a request to getAllConnectorsConfigs
-     * @throws ApiException if the response code was not in [200, 299]
-     */
-     public async getAllConnectorsConfigs(response: ResponseContext): Promise<ListConnectorsConfigsResponse > {
-        const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
-        if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: ListConnectorsConfigsResponse = ObjectSerializer.deserialize(
-                ObjectSerializer.parse(await response.body.text(), contentType),
-                "ListConnectorsConfigsResponse", ""
-            ) as ListConnectorsConfigsResponse;
-            return body;
-        }
-
-        // Work around for missing responses in specification, e.g. for petstore.yaml
-        if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: ListConnectorsConfigsResponse = ObjectSerializer.deserialize(
-                ObjectSerializer.parse(await response.body.text(), contentType),
-                "ListConnectorsConfigsResponse", ""
-            ) as ListConnectorsConfigsResponse;
+                "any", ""
+            ) as any;
             return body;
         }
 
@@ -618,22 +580,22 @@ export class PaymentsApiResponseProcessor {
      * @params response Response returned by the server for a request to getConnectorTask
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async getConnectorTask(response: ResponseContext): Promise<ListConnectorTasks200ResponseInner > {
+     public async getConnectorTask(response: ResponseContext): Promise<TaskResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: ListConnectorTasks200ResponseInner = ObjectSerializer.deserialize(
+            const body: TaskResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ListConnectorTasks200ResponseInner", ""
-            ) as ListConnectorTasks200ResponseInner;
+                "TaskResponse", ""
+            ) as TaskResponse;
             return body;
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: ListConnectorTasks200ResponseInner = ObjectSerializer.deserialize(
+            const body: TaskResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ListConnectorTasks200ResponseInner", ""
-            ) as ListConnectorTasks200ResponseInner;
+                "TaskResponse", ""
+            ) as TaskResponse;
             return body;
         }
 
@@ -647,22 +609,22 @@ export class PaymentsApiResponseProcessor {
      * @params response Response returned by the server for a request to getPayment
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async getPayment(response: ResponseContext): Promise<Payment > {
+     public async getPayment(response: ResponseContext): Promise<PaymentResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: Payment = ObjectSerializer.deserialize(
+            const body: PaymentResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "Payment", ""
-            ) as Payment;
+                "PaymentResponse", ""
+            ) as PaymentResponse;
             return body;
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: Payment = ObjectSerializer.deserialize(
+            const body: PaymentResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "Payment", ""
-            ) as Payment;
+                "PaymentResponse", ""
+            ) as PaymentResponse;
             return body;
         }
 
@@ -698,25 +660,83 @@ export class PaymentsApiResponseProcessor {
      * Unwraps the actual response sent by the server from the response context and deserializes the response content
      * to the expected objects
      *
-     * @params response Response returned by the server for a request to listConnectorTasks
+     * @params response Response returned by the server for a request to listAllConnectors
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async listConnectorTasks(response: ResponseContext): Promise<Array<ListConnectorTasks200ResponseInner> > {
+     public async listAllConnectors(response: ResponseContext): Promise<ConnectorsResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: Array<ListConnectorTasks200ResponseInner> = ObjectSerializer.deserialize(
+            const body: ConnectorsResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "Array<ListConnectorTasks200ResponseInner>", ""
-            ) as Array<ListConnectorTasks200ResponseInner>;
+                "ConnectorsResponse", ""
+            ) as ConnectorsResponse;
             return body;
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: Array<ListConnectorTasks200ResponseInner> = ObjectSerializer.deserialize(
+            const body: ConnectorsResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "Array<ListConnectorTasks200ResponseInner>", ""
-            ) as Array<ListConnectorTasks200ResponseInner>;
+                "ConnectorsResponse", ""
+            ) as ConnectorsResponse;
+            return body;
+        }
+
+        throw new ApiException<string | Buffer | undefined>(response.httpStatusCode, "Unknown API Status Code!", await response.getBodyAsAny(), response.headers);
+    }
+
+    /**
+     * Unwraps the actual response sent by the server from the response context and deserializes the response content
+     * to the expected objects
+     *
+     * @params response Response returned by the server for a request to listConfigsAvailableConnectors
+     * @throws ApiException if the response code was not in [200, 299]
+     */
+     public async listConfigsAvailableConnectors(response: ResponseContext): Promise<ConnectorsConfigsResponse > {
+        const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
+        if (isCodeInRange("200", response.httpStatusCode)) {
+            const body: ConnectorsConfigsResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "ConnectorsConfigsResponse", ""
+            ) as ConnectorsConfigsResponse;
+            return body;
+        }
+
+        // Work around for missing responses in specification, e.g. for petstore.yaml
+        if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
+            const body: ConnectorsConfigsResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "ConnectorsConfigsResponse", ""
+            ) as ConnectorsConfigsResponse;
+            return body;
+        }
+
+        throw new ApiException<string | Buffer | undefined>(response.httpStatusCode, "Unknown API Status Code!", await response.getBodyAsAny(), response.headers);
+    }
+
+    /**
+     * Unwraps the actual response sent by the server from the response context and deserializes the response content
+     * to the expected objects
+     *
+     * @params response Response returned by the server for a request to listConnectorTasks
+     * @throws ApiException if the response code was not in [200, 299]
+     */
+     public async listConnectorTasks(response: ResponseContext): Promise<TasksResponse > {
+        const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
+        if (isCodeInRange("200", response.httpStatusCode)) {
+            const body: TasksResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "TasksResponse", ""
+            ) as TasksResponse;
+            return body;
+        }
+
+        // Work around for missing responses in specification, e.g. for petstore.yaml
+        if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
+            const body: TasksResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "TasksResponse", ""
+            ) as TasksResponse;
             return body;
         }
 
@@ -730,22 +750,22 @@ export class PaymentsApiResponseProcessor {
      * @params response Response returned by the server for a request to listPayments
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async listPayments(response: ResponseContext): Promise<ListPaymentsResponse > {
+     public async listPayments(response: ResponseContext): Promise<PaymentsResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: ListPaymentsResponse = ObjectSerializer.deserialize(
+            const body: PaymentsResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ListPaymentsResponse", ""
-            ) as ListPaymentsResponse;
+                "PaymentsResponse", ""
+            ) as PaymentsResponse;
             return body;
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: ListPaymentsResponse = ObjectSerializer.deserialize(
+            const body: PaymentsResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ListPaymentsResponse", ""
-            ) as ListPaymentsResponse;
+                "PaymentsResponse", ""
+            ) as PaymentsResponse;
             return body;
         }
 
@@ -759,22 +779,22 @@ export class PaymentsApiResponseProcessor {
      * @params response Response returned by the server for a request to paymentslistAccounts
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async paymentslistAccounts(response: ResponseContext): Promise<ListAccountsResponse > {
+     public async paymentslistAccounts(response: ResponseContext): Promise<AccountsResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: ListAccountsResponse = ObjectSerializer.deserialize(
+            const body: AccountsResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ListAccountsResponse", ""
-            ) as ListAccountsResponse;
+                "AccountsResponse", ""
+            ) as AccountsResponse;
             return body;
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: ListAccountsResponse = ObjectSerializer.deserialize(
+            const body: AccountsResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ListAccountsResponse", ""
-            ) as ListAccountsResponse;
+                "AccountsResponse", ""
+            ) as AccountsResponse;
             return body;
         }
 
@@ -788,22 +808,22 @@ export class PaymentsApiResponseProcessor {
      * @params response Response returned by the server for a request to readConnectorConfig
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async readConnectorConfig(response: ResponseContext): Promise<ConnectorConfig > {
+     public async readConnectorConfig(response: ResponseContext): Promise<ConnectorConfigResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: ConnectorConfig = ObjectSerializer.deserialize(
+            const body: ConnectorConfigResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ConnectorConfig", ""
-            ) as ConnectorConfig;
+                "ConnectorConfigResponse", ""
+            ) as ConnectorConfigResponse;
             return body;
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: ConnectorConfig = ObjectSerializer.deserialize(
+            const body: ConnectorConfigResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ConnectorConfig", ""
-            ) as ConnectorConfig;
+                "ConnectorConfigResponse", ""
+            ) as ConnectorConfigResponse;
             return body;
         }
 

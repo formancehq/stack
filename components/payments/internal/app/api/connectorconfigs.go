@@ -4,14 +4,15 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/payments/internal/pkg/configtemplate"
+
 	"github.com/formancehq/payments/internal/app/connectors/bankingcircle"
 	"github.com/formancehq/payments/internal/app/connectors/currencycloud"
 	"github.com/formancehq/payments/internal/app/connectors/dummypay"
 	"github.com/formancehq/payments/internal/app/connectors/modulr"
 	"github.com/formancehq/payments/internal/app/connectors/stripe"
 	"github.com/formancehq/payments/internal/app/connectors/wise"
-
-	"github.com/formancehq/payments/internal/pkg/configtemplate"
 )
 
 func connectorConfigsHandler() http.HandlerFunc {
@@ -28,9 +29,9 @@ func connectorConfigsHandler() http.HandlerFunc {
 			wise.Config{},
 		)
 
-		w.Header().Set("Content-Type", "application/json")
-
-		err := json.NewEncoder(w).Encode(configs)
+		err := json.NewEncoder(w).Encode(api.BaseResponse[configtemplate.Configs]{
+			Data: &configs,
+		})
 		if err != nil {
 			handleServerError(w, r, err)
 

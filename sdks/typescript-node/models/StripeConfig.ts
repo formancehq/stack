@@ -14,7 +14,7 @@ import { HttpFile } from '../http/http';
 
 export class StripeConfig {
     /**
-    * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe api
+    * The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API. 
     */
     'pollingPeriod'?: string;
     'apiKey': string;
@@ -42,7 +42,7 @@ export class StripeConfig {
             "name": "pageSize",
             "baseName": "pageSize",
             "type": "number",
-            "format": ""
+            "format": "int64"
         }    ];
 
     static getAttributeTypeMap() {

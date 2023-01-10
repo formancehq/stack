@@ -105,8 +105,6 @@ jobs:
         folder: ${{ fromJson(needs.Find.outputs.folders )}}
     needs:
       - Find
-      - Lint
-      - Tests
     steps:
       - uses: actions/checkout@v3
       - name: Install Task
@@ -130,7 +128,7 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/formancehq/${{ matrix.folder }}:${{ github.sha }}
+          tags: ghcr.io/formancehq/${{ matrix.folder }}:${{ github.event.pull_request.head.sha }}
           build-args: |
-            APP_SHA=${{ github.sha }}
+            APP_SHA=${{ github.event.pull_request.head.sha }}
             VERSION=develop

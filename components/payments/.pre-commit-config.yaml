@@ -13,7 +13,7 @@ repos:
   rev: dd079f7c30ad72446d615f55a000d4f875e79633
   hooks:
   - id: gogenerate
-    files: swagger.yaml
+    files: swagger.yml
   - id: gomodtidy
   - id: goimports
   - id: gofmt

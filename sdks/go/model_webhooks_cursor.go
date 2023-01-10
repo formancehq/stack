@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -17,8 +17,8 @@ import (
 
 // WebhooksCursor struct for WebhooksCursor
 type WebhooksCursor struct {
-	HasMore bool `json:"hasMore"`
-	Data []WebhooksConfig `json:"data"`
+	HasMore bool             `json:"hasMore"`
+	Data    []WebhooksConfig `json:"data"`
 }
 
 // NewWebhooksCursor instantiates a new WebhooksCursor object
@@ -54,7 +54,7 @@ func (o *WebhooksCursor) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *WebhooksCursor) GetHasMoreOk() (*bool, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.HasMore, true
 }
@@ -78,7 +78,7 @@ func (o *WebhooksCursor) GetData() []WebhooksConfig {
 // and a boolean to check if the value has been set.
 func (o *WebhooksCursor) GetDataOk() ([]WebhooksConfig, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -134,5 +134,3 @@ func (v *NullableWebhooksCursor) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

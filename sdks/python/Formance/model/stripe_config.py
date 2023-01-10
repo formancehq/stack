@@ -42,7 +42,16 @@ class StripeConfig(
         class properties:
             apiKey = schemas.StrSchema
             pollingPeriod = schemas.StrSchema
-            pageSize = schemas.NumberSchema
+            
+            
+            class pageSize(
+                schemas.Int64Schema
+            ):
+            
+            
+                class MetaOapg:
+                    format = 'int64'
+                    inclusive_minimum = 0
             __annotations__ = {
                 "apiKey": apiKey,
                 "pollingPeriod": pollingPeriod,
@@ -89,7 +98,7 @@ class StripeConfig(
         *args: typing.Union[dict, frozendict.frozendict, ],
         apiKey: typing.Union[MetaOapg.properties.apiKey, str, ],
         pollingPeriod: typing.Union[MetaOapg.properties.pollingPeriod, str, schemas.Unset] = schemas.unset,
-        pageSize: typing.Union[MetaOapg.properties.pageSize, decimal.Decimal, int, float, schemas.Unset] = schemas.unset,
+        pageSize: typing.Union[MetaOapg.properties.pageSize, decimal.Decimal, int, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'StripeConfig':

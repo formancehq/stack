@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**PollingPeriod** | Pointer to **string** | The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe api | [optional] [default to "120s"]
+**PollingPeriod** | Pointer to **string** | The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API.  | [optional] [default to "120s"]
 **ApiKey** | **string** |  | 
-**PageSize** | Pointer to **float32** | Number of BalanceTransaction to fetch at each polling interval.  | [optional] [default to 10]
+**PageSize** | Pointer to **int64** | Number of BalanceTransaction to fetch at each polling interval.  | [optional] [default to 10]
 
 ## Methods
 
@@ -74,20 +74,20 @@ SetApiKey sets ApiKey field to given value.
 
 ### GetPageSize
 
-`func (o *StripeConfig) GetPageSize() float32`
+`func (o *StripeConfig) GetPageSize() int64`
 
 GetPageSize returns the PageSize field if non-nil, zero value otherwise.
 
 ### GetPageSizeOk
 
-`func (o *StripeConfig) GetPageSizeOk() (*float32, bool)`
+`func (o *StripeConfig) GetPageSizeOk() (*int64, bool)`
 
 GetPageSizeOk returns a tuple with the PageSize field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetPageSize
 
-`func (o *StripeConfig) SetPageSize(v float32)`
+`func (o *StripeConfig) SetPageSize(v int64)`
 
 SetPageSize sets PageSize field to given value.
 

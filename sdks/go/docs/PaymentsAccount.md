@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | **string** |  | 
 **CreatedAt** | **time.Time** |  | 
-**Provider** | **string** |  | 
+**Provider** | [**Connector**](Connector.md) |  | 
 **Reference** | **string** |  | 
 **Type** | **string** |  | 
 
@@ -14,7 +14,7 @@ Name | Type | Description | Notes
 
 ### NewPaymentsAccount
 
-`func NewPaymentsAccount(id string, createdAt time.Time, provider string, reference string, type_ string, ) *PaymentsAccount`
+`func NewPaymentsAccount(id string, createdAt time.Time, provider Connector, reference string, type_ string, ) *PaymentsAccount`
 
 NewPaymentsAccount instantiates a new PaymentsAccount object
 This constructor will assign default values to properties that have it defined,
@@ -71,20 +71,20 @@ SetCreatedAt sets CreatedAt field to given value.
 
 ### GetProvider
 
-`func (o *PaymentsAccount) GetProvider() string`
+`func (o *PaymentsAccount) GetProvider() Connector`
 
 GetProvider returns the Provider field if non-nil, zero value otherwise.
 
 ### GetProviderOk
 
-`func (o *PaymentsAccount) GetProviderOk() (*string, bool)`
+`func (o *PaymentsAccount) GetProviderOk() (*Connector, bool)`
 
 GetProviderOk returns a tuple with the Provider field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetProvider
 
-`func (o *PaymentsAccount) SetProvider(v string)`
+`func (o *PaymentsAccount) SetProvider(v Connector)`
 
 SetProvider sets Provider field to given value.
 

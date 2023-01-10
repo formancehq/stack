@@ -16,72 +16,117 @@ import (
 	"fmt"
 )
 
-// Subject - struct for Subject
+// Subject struct for Subject
 type Subject struct {
 	LedgerAccountSubject *LedgerAccountSubject
 	WalletSubject *WalletSubject
 }
 
-// LedgerAccountSubjectAsSubject is a convenience function that returns LedgerAccountSubject wrapped in Subject
-func LedgerAccountSubjectAsSubject(v *LedgerAccountSubject) Subject {
-	return Subject{
-		LedgerAccountSubject: v,
-	}
-}
-
-// WalletSubjectAsSubject is a convenience function that returns WalletSubject wrapped in Subject
-func WalletSubjectAsSubject(v *WalletSubject) Subject {
-	return Subject{
-		WalletSubject: v,
-	}
-}
-
-
-// Unmarshal JSON data into one of the pointers in the struct
+// Unmarshal JSON data into any of the pointers in the struct
 func (dst *Subject) UnmarshalJSON(data []byte) error {
 	var err error
-	match := 0
-	// try to unmarshal data into LedgerAccountSubject
-	err = newStrictDecoder(data).Decode(&dst.LedgerAccountSubject)
+	// use discriminator value to speed up the lookup
+	var jsonDict map[string]interface{}
+	err = json.Unmarshal(data, &jsonDict)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal JSON into map for the discriminator lookup")
+	}
+
+	// check if the discriminator value is 'ACCOUNT'
+	if jsonDict["type"] == "ACCOUNT" {
+		// try to unmarshal JSON data into LedgerAccountSubject
+		err = json.Unmarshal(data, &dst.LedgerAccountSubject);
+		if err == nil {
+			jsonLedgerAccountSubject, _ := json.Marshal(dst.LedgerAccountSubject)
+			if string(jsonLedgerAccountSubject) == "{}" { // empty struct
+				dst.LedgerAccountSubject = nil
+			} else {
+				return nil // data stored in dst.LedgerAccountSubject, return on the first match
+			}
+		} else {
+			dst.LedgerAccountSubject = nil
+		}
+	}
+
+	// check if the discriminator value is 'LedgerAccountSubject'
+	if jsonDict["type"] == "LedgerAccountSubject" {
+		// try to unmarshal JSON data into LedgerAccountSubject
+		err = json.Unmarshal(data, &dst.LedgerAccountSubject);
+		if err == nil {
+			jsonLedgerAccountSubject, _ := json.Marshal(dst.LedgerAccountSubject)
+			if string(jsonLedgerAccountSubject) == "{}" { // empty struct
+				dst.LedgerAccountSubject = nil
+			} else {
+				return nil // data stored in dst.LedgerAccountSubject, return on the first match
+			}
+		} else {
+			dst.LedgerAccountSubject = nil
+		}
+	}
+
+	// check if the discriminator value is 'WALLET'
+	if jsonDict["type"] == "WALLET" {
+		// try to unmarshal JSON data into WalletSubject
+		err = json.Unmarshal(data, &dst.WalletSubject);
+		if err == nil {
+			jsonWalletSubject, _ := json.Marshal(dst.WalletSubject)
+			if string(jsonWalletSubject) == "{}" { // empty struct
+				dst.WalletSubject = nil
+			} else {
+				return nil // data stored in dst.WalletSubject, return on the first match
+			}
+		} else {
+			dst.WalletSubject = nil
+		}
+	}
+
+	// check if the discriminator value is 'WalletSubject'
+	if jsonDict["type"] == "WalletSubject" {
+		// try to unmarshal JSON data into WalletSubject
+		err = json.Unmarshal(data, &dst.WalletSubject);
+		if err == nil {
+			jsonWalletSubject, _ := json.Marshal(dst.WalletSubject)
+			if string(jsonWalletSubject) == "{}" { // empty struct
+				dst.WalletSubject = nil
+			} else {
+				return nil // data stored in dst.WalletSubject, return on the first match
+			}
+		} else {
+			dst.WalletSubject = nil
+		}
+	}
+
+	// try to unmarshal JSON data into LedgerAccountSubject
+	err = json.Unmarshal(data, &dst.LedgerAccountSubject);
 	if err == nil {
 		jsonLedgerAccountSubject, _ := json.Marshal(dst.LedgerAccountSubject)
 		if string(jsonLedgerAccountSubject) == "{}" { // empty struct
 			dst.LedgerAccountSubject = nil
 		} else {
-			match++
+			return nil // data stored in dst.LedgerAccountSubject, return on the first match
 		}
 	} else {
 		dst.LedgerAccountSubject = nil
 	}
 
-	// try to unmarshal data into WalletSubject
-	err = newStrictDecoder(data).Decode(&dst.WalletSubject)
+	// try to unmarshal JSON data into WalletSubject
+	err = json.Unmarshal(data, &dst.WalletSubject);
 	if err == nil {
 		jsonWalletSubject, _ := json.Marshal(dst.WalletSubject)
 		if string(jsonWalletSubject) == "{}" { // empty struct
 			dst.WalletSubject = nil
 		} else {
-			match++
+			return nil // data stored in dst.WalletSubject, return on the first match
 		}
 	} else {
 		dst.WalletSubject = nil
 	}
 
-	if match > 1 { // more than 1 match
-		// reset to nil
-		dst.LedgerAccountSubject = nil
-		dst.WalletSubject = nil
-
-		return fmt.Errorf("data matches more than one schema in oneOf(Subject)")
-	} else if match == 1 {
-		return nil // exactly one match
-	} else { // no match
-		return fmt.Errorf("data failed to match schemas in oneOf(Subject)")
-	}
+	return fmt.Errorf("data failed to match schemas in anyOf(Subject)")
 }
 
 // Marshal data from the first non-nil pointers in the struct to JSON
-func (src Subject) MarshalJSON() ([]byte, error) {
+func (src *Subject) MarshalJSON() ([]byte, error) {
 	if src.LedgerAccountSubject != nil {
 		return json.Marshal(&src.LedgerAccountSubject)
 	}
@@ -90,24 +135,7 @@ func (src Subject) MarshalJSON() ([]byte, error) {
 		return json.Marshal(&src.WalletSubject)
 	}
 
-	return nil, nil // no data in oneOf schemas
-}
-
-// Get the actual instance
-func (obj *Subject) GetActualInstance() (interface{}) {
-	if obj == nil {
-		return nil
-	}
-	if obj.LedgerAccountSubject != nil {
-		return obj.LedgerAccountSubject
-	}
-
-	if obj.WalletSubject != nil {
-		return obj.WalletSubject
-	}
-
-	// all schemas are nil
-	return nil
+	return nil, nil // no data in anyOf schemas
 }
 
 type NullableSubject struct {

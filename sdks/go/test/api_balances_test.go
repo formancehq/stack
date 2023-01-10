@@ -10,44 +10,45 @@ Testing BalancesApiService
 package formance
 
 import (
-    "context"
-    "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/require"
-    "testing"
-    client "./openapi"
+	"context"
+	"testing"
+
+	client "./openapi"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_formance_BalancesApiService(t *testing.T) {
 
-    configuration := client.NewConfiguration()
-    apiClient := client.NewAPIClient(configuration)
+	configuration := client.NewConfiguration()
+	apiClient := client.NewAPIClient(configuration)
 
-    t.Run("Test BalancesApiService GetBalances", func(t *testing.T) {
+	t.Run("Test BalancesApiService GetBalances", func(t *testing.T) {
 
-        t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
-        var ledger string
+		var ledger string
 
-        resp, httpRes, err := apiClient.BalancesApi.GetBalances(context.Background(), ledger).Execute()
+		resp, httpRes, err := apiClient.BalancesApi.GetBalances(context.Background(), ledger).Execute()
 
-        require.Nil(t, err)
-        require.NotNil(t, resp)
-        assert.Equal(t, 200, httpRes.StatusCode)
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
 
-    })
+	})
 
-    t.Run("Test BalancesApiService GetBalancesAggregated", func(t *testing.T) {
+	t.Run("Test BalancesApiService GetBalancesAggregated", func(t *testing.T) {
 
-        t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
-        var ledger string
+		var ledger string
 
-        resp, httpRes, err := apiClient.BalancesApi.GetBalancesAggregated(context.Background(), ledger).Execute()
+		resp, httpRes, err := apiClient.BalancesApi.GetBalancesAggregated(context.Background(), ledger).Execute()
 
-        require.Nil(t, err)
-        require.NotNil(t, resp)
-        assert.Equal(t, 200, httpRes.StatusCode)
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
 
-    })
+	})
 
 }

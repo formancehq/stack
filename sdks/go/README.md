@@ -106,23 +106,31 @@ Class | Method | HTTP request | Description
 *ClientsApi* | [**ReadClient**](docs/ClientsApi.md#readclient) | **Get** /api/auth/clients/{clientId} | Read client
 *ClientsApi* | [**UpdateClient**](docs/ClientsApi.md#updateclient) | **Put** /api/auth/clients/{clientId} | Update client
 *DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /api/auth/_info | Get server info
+*DefaultApi* | [**PaymentsgetServerInfo**](docs/DefaultApi.md#paymentsgetserverinfo) | **Get** /api/payments/_info | Get server info
 *DefaultApi* | [**SearchgetServerInfo**](docs/DefaultApi.md#searchgetserverinfo) | **Get** /api/search/_info | Get server info
 *LedgerApi* | [**GetLedgerInfo**](docs/LedgerApi.md#getledgerinfo) | **Get** /api/ledger/{ledger}/_info | Get information about a ledger
 *LogsApi* | [**ListLogs**](docs/LogsApi.md#listlogs) | **Get** /api/ledger/{ledger}/log | List the logs from a ledger
 *MappingApi* | [**GetMapping**](docs/MappingApi.md#getmapping) | **Get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
 *MappingApi* | [**UpdateMapping**](docs/MappingApi.md#updatemapping) | **Put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
+*OrchestrationApi* | [**CreateWorkflow**](docs/OrchestrationApi.md#createworkflow) | **Post** /api/orchestration/flows | Create workflow
+*OrchestrationApi* | [**GetFlow**](docs/OrchestrationApi.md#getflow) | **Get** /api/orchestration/flows/{flowId} | Get a flow by id
+*OrchestrationApi* | [**GetWorkflowOccurrence**](docs/OrchestrationApi.md#getworkflowoccurrence) | **Get** /api/orchestration/flows/{flowId}/runs/{runId} | Get a workflow occurrence by id
+*OrchestrationApi* | [**ListFlows**](docs/OrchestrationApi.md#listflows) | **Get** /api/orchestration/flows | List registered flows
+*OrchestrationApi* | [**ListRuns**](docs/OrchestrationApi.md#listruns) | **Get** /api/orchestration/flows/{flowId}/runs | List occurrences of a workflow
+*OrchestrationApi* | [**OrchestrationgetServerInfo**](docs/OrchestrationApi.md#orchestrationgetserverinfo) | **Get** /api/orchestration/_info | Get server info
+*OrchestrationApi* | [**RunWorkflow**](docs/OrchestrationApi.md#runworkflow) | **Post** /api/orchestration/flows/{flowId}/runs | Run workflow
 *PaymentsApi* | [**ConnectorsStripeTransfer**](docs/PaymentsApi.md#connectorsstripetransfer) | **Post** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
-*PaymentsApi* | [**GetAllConnectors**](docs/PaymentsApi.md#getallconnectors) | **Get** /api/payments/connectors | Get all installed connectors
-*PaymentsApi* | [**GetAllConnectorsConfigs**](docs/PaymentsApi.md#getallconnectorsconfigs) | **Get** /api/payments/connectors/configs | Get all available connectors configs
 *PaymentsApi* | [**GetConnectorTask**](docs/PaymentsApi.md#getconnectortask) | **Get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
-*PaymentsApi* | [**GetPayment**](docs/PaymentsApi.md#getpayment) | **Get** /api/payments/payments/{paymentId} | Returns a payment.
-*PaymentsApi* | [**InstallConnector**](docs/PaymentsApi.md#installconnector) | **Post** /api/payments/connectors/{connector} | Install connector
-*PaymentsApi* | [**ListConnectorTasks**](docs/PaymentsApi.md#listconnectortasks) | **Get** /api/payments/connectors/{connector}/tasks | List connector tasks
-*PaymentsApi* | [**ListPayments**](docs/PaymentsApi.md#listpayments) | **Get** /api/payments/payments | Returns a list of payments.
-*PaymentsApi* | [**PaymentslistAccounts**](docs/PaymentsApi.md#paymentslistaccounts) | **Get** /api/payments/accounts | Returns a list of accounts.
-*PaymentsApi* | [**ReadConnectorConfig**](docs/PaymentsApi.md#readconnectorconfig) | **Get** /api/payments/connectors/{connector}/config | Read connector config
-*PaymentsApi* | [**ResetConnector**](docs/PaymentsApi.md#resetconnector) | **Post** /api/payments/connectors/{connector}/reset | Reset connector
-*PaymentsApi* | [**UninstallConnector**](docs/PaymentsApi.md#uninstallconnector) | **Delete** /api/payments/connectors/{connector} | Uninstall connector
+*PaymentsApi* | [**GetPayment**](docs/PaymentsApi.md#getpayment) | **Get** /api/payments/payments/{paymentId} | Get a payment
+*PaymentsApi* | [**InstallConnector**](docs/PaymentsApi.md#installconnector) | **Post** /api/payments/connectors/{connector} | Install a connector
+*PaymentsApi* | [**ListAllConnectors**](docs/PaymentsApi.md#listallconnectors) | **Get** /api/payments/connectors | List all installed connectors
+*PaymentsApi* | [**ListConfigsAvailableConnectors**](docs/PaymentsApi.md#listconfigsavailableconnectors) | **Get** /api/payments/connectors/configs | List the configs of each available connector
+*PaymentsApi* | [**ListConnectorTasks**](docs/PaymentsApi.md#listconnectortasks) | **Get** /api/payments/connectors/{connector}/tasks | List tasks from a connector
+*PaymentsApi* | [**ListPayments**](docs/PaymentsApi.md#listpayments) | **Get** /api/payments/payments | List payments
+*PaymentsApi* | [**PaymentslistAccounts**](docs/PaymentsApi.md#paymentslistaccounts) | **Get** /api/payments/accounts | List accounts
+*PaymentsApi* | [**ReadConnectorConfig**](docs/PaymentsApi.md#readconnectorconfig) | **Get** /api/payments/connectors/{connector}/config | Read the config of a connector
+*PaymentsApi* | [**ResetConnector**](docs/PaymentsApi.md#resetconnector) | **Post** /api/payments/connectors/{connector}/reset | Reset a connector
+*PaymentsApi* | [**UninstallConnector**](docs/PaymentsApi.md#uninstallconnector) | **Delete** /api/payments/connectors/{connector} | Uninstall a connector
 *ScopesApi* | [**AddTransientScope**](docs/ScopesApi.md#addtransientscope) | **Put** /api/auth/scopes/{scopeId}/transient/{transientScopeId} | Add a transient scope to a scope
 *ScopesApi* | [**CreateScope**](docs/ScopesApi.md#createscope) | **Post** /api/auth/scopes | Create scope
 *ScopesApi* | [**DeleteScope**](docs/ScopesApi.md#deletescope) | **Delete** /api/auth/scopes/{scopeId} | Delete scope
@@ -174,6 +182,8 @@ Class | Method | HTTP request | Description
  - [AccountWithVolumesAndBalances](docs/AccountWithVolumesAndBalances.md)
  - [AccountsCursorResponse](docs/AccountsCursorResponse.md)
  - [AccountsCursorResponseCursor](docs/AccountsCursorResponseCursor.md)
+ - [AccountsResponse](docs/AccountsResponse.md)
+ - [AccountsResponseCursor](docs/AccountsResponseCursor.md)
  - [AggregateBalancesResponse](docs/AggregateBalancesResponse.md)
  - [AssetHolder](docs/AssetHolder.md)
  - [Attempt](docs/Attempt.md)
@@ -197,9 +207,15 @@ Class | Method | HTTP request | Description
  - [ConfigsResponseCursor](docs/ConfigsResponseCursor.md)
  - [ConfigsResponseCursorAllOf](docs/ConfigsResponseCursorAllOf.md)
  - [ConfirmHoldRequest](docs/ConfirmHoldRequest.md)
- - [ConnectorBaseInfo](docs/ConnectorBaseInfo.md)
+ - [Connector](docs/Connector.md)
  - [ConnectorConfig](docs/ConnectorConfig.md)
- - [Connectors](docs/Connectors.md)
+ - [ConnectorConfigResponse](docs/ConnectorConfigResponse.md)
+ - [ConnectorsConfigsResponse](docs/ConnectorsConfigsResponse.md)
+ - [ConnectorsConfigsResponseData](docs/ConnectorsConfigsResponseData.md)
+ - [ConnectorsConfigsResponseDataConnector](docs/ConnectorsConfigsResponseDataConnector.md)
+ - [ConnectorsConfigsResponseDataConnectorKey](docs/ConnectorsConfigsResponseDataConnectorKey.md)
+ - [ConnectorsResponse](docs/ConnectorsResponse.md)
+ - [ConnectorsResponseDataInner](docs/ConnectorsResponseDataInner.md)
  - [Contract](docs/Contract.md)
  - [CreateBalanceResponse](docs/CreateBalanceResponse.md)
  - [CreateClientResponse](docs/CreateClientResponse.md)
@@ -207,12 +223,14 @@ Class | Method | HTTP request | Description
  - [CreateSecretResponse](docs/CreateSecretResponse.md)
  - [CreateWalletRequest](docs/CreateWalletRequest.md)
  - [CreateWalletResponse](docs/CreateWalletResponse.md)
+ - [CreateWorkflowResponse](docs/CreateWorkflowResponse.md)
  - [CreditWalletRequest](docs/CreditWalletRequest.md)
  - [CurrencyCloudConfig](docs/CurrencyCloudConfig.md)
  - [Cursor](docs/Cursor.md)
  - [DebitWalletRequest](docs/DebitWalletRequest.md)
  - [DebitWalletResponse](docs/DebitWalletResponse.md)
  - [DummyPayConfig](docs/DummyPayConfig.md)
+ - [Error](docs/Error.md)
  - [ErrorResponse](docs/ErrorResponse.md)
  - [ErrorsEnum](docs/ErrorsEnum.md)
  - [ExpandedDebitHold](docs/ExpandedDebitHold.md)
@@ -222,33 +240,33 @@ Class | Method | HTTP request | Description
  - [GetHoldsResponse](docs/GetHoldsResponse.md)
  - [GetHoldsResponseCursor](docs/GetHoldsResponseCursor.md)
  - [GetHoldsResponseCursorAllOf](docs/GetHoldsResponseCursorAllOf.md)
- - [GetPaymentResponse](docs/GetPaymentResponse.md)
  - [GetTransactionsResponse](docs/GetTransactionsResponse.md)
  - [GetTransactionsResponseCursor](docs/GetTransactionsResponseCursor.md)
  - [GetTransactionsResponseCursorAllOf](docs/GetTransactionsResponseCursorAllOf.md)
  - [GetWalletResponse](docs/GetWalletResponse.md)
+ - [GetWorkflowOccurrenceResponse](docs/GetWorkflowOccurrenceResponse.md)
+ - [GetWorkflowResponse](docs/GetWorkflowResponse.md)
  - [Hold](docs/Hold.md)
  - [LedgerAccountSubject](docs/LedgerAccountSubject.md)
  - [LedgerInfo](docs/LedgerInfo.md)
  - [LedgerInfoResponse](docs/LedgerInfoResponse.md)
  - [LedgerInfoStorage](docs/LedgerInfoStorage.md)
  - [LedgerStorage](docs/LedgerStorage.md)
- - [ListAccountsResponse](docs/ListAccountsResponse.md)
  - [ListBalancesResponse](docs/ListBalancesResponse.md)
  - [ListBalancesResponseCursor](docs/ListBalancesResponseCursor.md)
  - [ListBalancesResponseCursorAllOf](docs/ListBalancesResponseCursorAllOf.md)
  - [ListClientsResponse](docs/ListClientsResponse.md)
- - [ListConnectorTasks200ResponseInner](docs/ListConnectorTasks200ResponseInner.md)
- - [ListConnectorsConfigsResponse](docs/ListConnectorsConfigsResponse.md)
- - [ListConnectorsConfigsResponseConnector](docs/ListConnectorsConfigsResponseConnector.md)
- - [ListConnectorsConfigsResponseConnectorKey](docs/ListConnectorsConfigsResponseConnectorKey.md)
- - [ListConnectorsResponse](docs/ListConnectorsResponse.md)
- - [ListPaymentsResponse](docs/ListPaymentsResponse.md)
+ - [ListRunsResponse](docs/ListRunsResponse.md)
+ - [ListRunsResponseCursor](docs/ListRunsResponseCursor.md)
+ - [ListRunsResponseCursorAllOf](docs/ListRunsResponseCursorAllOf.md)
  - [ListScopesResponse](docs/ListScopesResponse.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)
  - [ListWalletsResponse](docs/ListWalletsResponse.md)
  - [ListWalletsResponseCursor](docs/ListWalletsResponseCursor.md)
  - [ListWalletsResponseCursorAllOf](docs/ListWalletsResponseCursorAllOf.md)
+ - [ListWorkflowsResponse](docs/ListWorkflowsResponse.md)
+ - [ListWorkflowsResponseCursor](docs/ListWorkflowsResponseCursor.md)
+ - [ListWorkflowsResponseCursorAllOf](docs/ListWorkflowsResponseCursorAllOf.md)
  - [Log](docs/Log.md)
  - [LogsCursorResponse](docs/LogsCursorResponse.md)
  - [LogsCursorResponseCursor](docs/LogsCursorResponseCursor.md)
@@ -258,14 +276,23 @@ Class | Method | HTTP request | Description
  - [ModulrConfig](docs/ModulrConfig.md)
  - [Monetary](docs/Monetary.md)
  - [Payment](docs/Payment.md)
+ - [PaymentAdjustment](docs/PaymentAdjustment.md)
+ - [PaymentMetadata](docs/PaymentMetadata.md)
+ - [PaymentMetadataChangelog](docs/PaymentMetadataChangelog.md)
+ - [PaymentResponse](docs/PaymentResponse.md)
+ - [PaymentStatus](docs/PaymentStatus.md)
  - [PaymentsAccount](docs/PaymentsAccount.md)
+ - [PaymentsResponse](docs/PaymentsResponse.md)
+ - [PaymentsResponseCursor](docs/PaymentsResponseCursor.md)
  - [PostTransaction](docs/PostTransaction.md)
  - [PostTransactionScript](docs/PostTransactionScript.md)
  - [Posting](docs/Posting.md)
  - [Query](docs/Query.md)
  - [ReadClientResponse](docs/ReadClientResponse.md)
  - [ReadUserResponse](docs/ReadUserResponse.md)
+ - [ReadWorkflowResponse](docs/ReadWorkflowResponse.md)
  - [Response](docs/Response.md)
+ - [RunWorkflowResponse](docs/RunWorkflowResponse.md)
  - [Scope](docs/Scope.md)
  - [ScopeAllOf](docs/ScopeAllOf.md)
  - [ScopeOptions](docs/ScopeOptions.md)
@@ -275,24 +302,29 @@ Class | Method | HTTP request | Description
  - [SecretAllOf](docs/SecretAllOf.md)
  - [SecretOptions](docs/SecretOptions.md)
  - [ServerInfo](docs/ServerInfo.md)
+ - [StageStatus](docs/StageStatus.md)
  - [Stats](docs/Stats.md)
  - [StatsResponse](docs/StatsResponse.md)
  - [StripeConfig](docs/StripeConfig.md)
- - [StripeTask](docs/StripeTask.md)
+ - [StripeTimelineState](docs/StripeTimelineState.md)
  - [StripeTransferRequest](docs/StripeTransferRequest.md)
  - [Subject](docs/Subject.md)
- - [TaskDescriptorBankingCircle](docs/TaskDescriptorBankingCircle.md)
- - [TaskDescriptorBankingCircleDescriptor](docs/TaskDescriptorBankingCircleDescriptor.md)
- - [TaskDescriptorCurrencyCloud](docs/TaskDescriptorCurrencyCloud.md)
- - [TaskDescriptorCurrencyCloudDescriptor](docs/TaskDescriptorCurrencyCloudDescriptor.md)
- - [TaskDescriptorDummyPay](docs/TaskDescriptorDummyPay.md)
- - [TaskDescriptorDummyPayDescriptor](docs/TaskDescriptorDummyPayDescriptor.md)
- - [TaskDescriptorModulr](docs/TaskDescriptorModulr.md)
- - [TaskDescriptorModulrDescriptor](docs/TaskDescriptorModulrDescriptor.md)
- - [TaskDescriptorStripe](docs/TaskDescriptorStripe.md)
- - [TaskDescriptorStripeDescriptor](docs/TaskDescriptorStripeDescriptor.md)
- - [TaskDescriptorWise](docs/TaskDescriptorWise.md)
- - [TaskDescriptorWiseDescriptor](docs/TaskDescriptorWiseDescriptor.md)
+ - [TaskBankingCircle](docs/TaskBankingCircle.md)
+ - [TaskBankingCircleDescriptor](docs/TaskBankingCircleDescriptor.md)
+ - [TaskCurrencyCloud](docs/TaskCurrencyCloud.md)
+ - [TaskCurrencyCloudDescriptor](docs/TaskCurrencyCloudDescriptor.md)
+ - [TaskDummyPay](docs/TaskDummyPay.md)
+ - [TaskDummyPayDescriptor](docs/TaskDummyPayDescriptor.md)
+ - [TaskModulr](docs/TaskModulr.md)
+ - [TaskModulrDescriptor](docs/TaskModulrDescriptor.md)
+ - [TaskResponse](docs/TaskResponse.md)
+ - [TaskResponseData](docs/TaskResponseData.md)
+ - [TaskStripe](docs/TaskStripe.md)
+ - [TaskStripeDescriptor](docs/TaskStripeDescriptor.md)
+ - [TaskWise](docs/TaskWise.md)
+ - [TaskWiseDescriptor](docs/TaskWiseDescriptor.md)
+ - [TasksResponse](docs/TasksResponse.md)
+ - [TasksResponseCursor](docs/TasksResponseCursor.md)
  - [Total](docs/Total.md)
  - [Transaction](docs/Transaction.md)
  - [TransactionData](docs/TransactionData.md)
@@ -313,6 +345,9 @@ Class | Method | HTTP request | Description
  - [WalletsVolume](docs/WalletsVolume.md)
  - [WebhooksConfig](docs/WebhooksConfig.md)
  - [WiseConfig](docs/WiseConfig.md)
+ - [Workflow](docs/Workflow.md)
+ - [WorkflowConfig](docs/WorkflowConfig.md)
+ - [WorkflowOccurrence](docs/WorkflowOccurrence.md)
 
 
 ## Documentation For Authorization

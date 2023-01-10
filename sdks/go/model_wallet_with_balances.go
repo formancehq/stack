@@ -25,19 +25,21 @@ type WalletWithBalances struct {
 	Name string `json:"name"`
 	CreatedAt time.Time `json:"createdAt"`
 	Balances WalletWithBalancesBalances `json:"balances"`
+	Ledger string `json:"ledger"`
 }
 
 // NewWalletWithBalances instantiates a new WalletWithBalances object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWalletWithBalances(id string, metadata map[string]interface{}, name string, createdAt time.Time, balances WalletWithBalancesBalances) *WalletWithBalances {
+func NewWalletWithBalances(id string, metadata map[string]interface{}, name string, createdAt time.Time, balances WalletWithBalancesBalances, ledger string) *WalletWithBalances {
 	this := WalletWithBalances{}
 	this.Id = id
 	this.Metadata = metadata
 	this.Name = name
 	this.CreatedAt = createdAt
 	this.Balances = balances
+	this.Ledger = ledger
 	return &this
 }
 
@@ -169,6 +171,30 @@ func (o *WalletWithBalances) SetBalances(v WalletWithBalancesBalances) {
 	o.Balances = v
 }
 
+// GetLedger returns the Ledger field value
+func (o *WalletWithBalances) GetLedger() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Ledger
+}
+
+// GetLedgerOk returns a tuple with the Ledger field value
+// and a boolean to check if the value has been set.
+func (o *WalletWithBalances) GetLedgerOk() (*string, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return &o.Ledger, true
+}
+
+// SetLedger sets field value
+func (o *WalletWithBalances) SetLedger(v string) {
+	o.Ledger = v
+}
+
 func (o WalletWithBalances) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
@@ -185,6 +211,9 @@ func (o WalletWithBalances) MarshalJSON() ([]byte, error) {
 	}
 	if true {
 		toSerialize["balances"] = o.Balances
+	}
+	if true {
+		toSerialize["ledger"] = o.Ledger
 	}
 	return json.Marshal(toSerialize)
 }

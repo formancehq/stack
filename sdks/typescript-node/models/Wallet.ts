@@ -23,6 +23,7 @@ export class Wallet {
     'metadata': { [key: string]: any; };
     'name': string;
     'createdAt': Date;
+    'ledger': string;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -50,6 +51,12 @@ export class Wallet {
             "baseName": "createdAt",
             "type": "Date",
             "format": "date-time"
+        },
+        {
+            "name": "ledger",
+            "baseName": "ledger",
+            "type": "string",
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {

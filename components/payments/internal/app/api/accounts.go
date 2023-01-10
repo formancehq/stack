@@ -15,7 +15,7 @@ import (
 )
 
 type listAccountsRepository interface {
-	ListAccounts(ctx context.Context, sort storage.Sorter, pagination storage.Paginator) ([]*models.Account, error)
+	ListAccounts(ctx context.Context, pagination storage.Paginator) ([]*models.Account, storage.PaginationDetails, error)
 }
 
 type accountResponse struct {
@@ -58,25 +58,21 @@ func listAccountsHandler(repo listAccountsRepository) http.HandlerFunc {
 			}
 		}
 
-		skip, err := integerWithDefault(r, "skip", 0)
+		pageSize, err := pageSizeQueryParam(r)
 		if err != nil {
 			handleValidationError(w, r, err)
 
 			return
 		}
 
-		limit, err := integerWithDefault(r, "limit", maxPerPage)
+		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), sorter)
 		if err != nil {
 			handleValidationError(w, r, err)
 
 			return
 		}
 
-		if limit > maxPerPage {
-			limit = maxPerPage
-		}
-
-		ret, err := repo.ListAccounts(r.Context(), sorter, storage.Paginate(skip, limit))
+		ret, paginationDetails, err := repo.ListAccounts(r.Context(), pagination)
 		if err != nil {
 			handleServerError(w, r, err)
 
@@ -95,8 +91,14 @@ func listAccountsHandler(repo listAccountsRepository) http.HandlerFunc {
 			}
 		}
 
-		err = json.NewEncoder(w).Encode(api.BaseResponse[[]*accountResponse]{
-			Data: &data,
+		err = json.NewEncoder(w).Encode(api.BaseResponse[*accountResponse]{
+			Cursor: &api.Cursor[*accountResponse]{
+				PageSize: paginationDetails.PageSize,
+				HasMore:  paginationDetails.HasMore,
+				Previous: paginationDetails.PreviousPage,
+				Next:     paginationDetails.NextPage,
+				Data:     data,
+			},
 		})
 		if err != nil {
 			handleServerError(w, r, err)

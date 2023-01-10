@@ -8,12 +8,13 @@ Name | Type | Description | Notes
 **Metadata** | **map[string]interface{}** | Metadata associated with the wallet. | 
 **Name** | **string** |  | 
 **CreatedAt** | **time.Time** |  | 
+**Ledger** | **string** |  | 
 
 ## Methods
 
 ### NewWallet
 
-`func NewWallet(id string, metadata map[string]interface{}, name string, createdAt time.Time, ) *Wallet`
+`func NewWallet(id string, metadata map[string]interface{}, name string, createdAt time.Time, ledger string, ) *Wallet`
 
 NewWallet instantiates a new Wallet object
 This constructor will assign default values to properties that have it defined,
@@ -106,6 +107,26 @@ and a boolean to check if the value has been set.
 `func (o *Wallet) SetCreatedAt(v time.Time)`
 
 SetCreatedAt sets CreatedAt field to given value.
+
+
+### GetLedger
+
+`func (o *Wallet) GetLedger() string`
+
+GetLedger returns the Ledger field if non-nil, zero value otherwise.
+
+### GetLedgerOk
+
+`func (o *Wallet) GetLedgerOk() (*string, bool)`
+
+GetLedgerOk returns a tuple with the Ledger field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetLedger
+
+`func (o *Wallet) SetLedger(v string)`
+
+SetLedger sets Ledger field to given value.
 
 
 

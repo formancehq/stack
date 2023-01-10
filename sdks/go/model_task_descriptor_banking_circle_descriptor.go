@@ -1,7 +1,7 @@
 /*
 Formance Stack API
 
-Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
+Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
 
 API version: develop
 Contact: support@formance.com
@@ -18,7 +18,7 @@ import (
 // TaskDescriptorBankingCircleDescriptor struct for TaskDescriptorBankingCircleDescriptor
 type TaskDescriptorBankingCircleDescriptor struct {
 	Name *string `json:"name,omitempty"`
-	Key *string `json:"key,omitempty"`
+	Key  *string `json:"key,omitempty"`
 }
 
 // NewTaskDescriptorBankingCircleDescriptor instantiates a new TaskDescriptorBankingCircleDescriptor object
@@ -51,7 +51,7 @@ func (o *TaskDescriptorBankingCircleDescriptor) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorBankingCircleDescriptor) GetNameOk() (*string, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return o.Name, true
 }
@@ -83,7 +83,7 @@ func (o *TaskDescriptorBankingCircleDescriptor) GetKey() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDescriptorBankingCircleDescriptor) GetKeyOk() (*string, bool) {
 	if o == nil || isNil(o.Key) {
-    return nil, false
+		return nil, false
 	}
 	return o.Key, true
 }
@@ -148,5 +148,3 @@ func (v *NullableTaskDescriptorBankingCircleDescriptor) UnmarshalJSON(src []byte
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

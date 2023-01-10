@@ -19,7 +19,15 @@ var (
 )
 
 const (
-	debugFlag = "debug"
+	debugFlag                 = "debug"
+	stackURLFlag              = "stack-url"
+	stackClientIDFlag         = "stack-client-id"
+	stackClientSecretFlag     = "stack-client-secret"
+	temporalAddressFlag       = "temporal-address"
+	temporalNamespaceFlag     = "temporal-namespace"
+	temporalSSLClientKeyFlag  = "temporal-ssl-client-key"
+	temporalSSLClientCertFlag = "temporal-ssl-client-cert"
+	postgresDSNFlag           = "postgres-dsn"
 )
 
 var rootCmd = &cobra.Command{
@@ -55,4 +63,12 @@ func Execute() {
 func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.PersistentFlags().BoolP(debugFlag, "d", false, "Debug mode")
+	rootCmd.PersistentFlags().String(stackURLFlag, "", "Stack url")
+	rootCmd.PersistentFlags().String(stackClientIDFlag, "", "Stack client ID")
+	rootCmd.PersistentFlags().String(stackClientSecretFlag, "", "Stack client secret")
+	rootCmd.PersistentFlags().String(temporalAddressFlag, "", "Temporal server address")
+	rootCmd.PersistentFlags().String(temporalNamespaceFlag, "default", "Temporal namespace")
+	rootCmd.PersistentFlags().String(temporalSSLClientKeyFlag, "", "Temporal client key")
+	rootCmd.PersistentFlags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
+	rootCmd.PersistentFlags().String(postgresDSNFlag, "", "Postgres address")
 }

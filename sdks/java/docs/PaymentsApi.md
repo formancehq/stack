@@ -5,27 +5,27 @@ All URIs are relative to *http://localhost*
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
 | [**connectorsStripeTransfer**](PaymentsApi.md#connectorsStripeTransfer) | **POST** api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts |
-| [**getAllConnectors**](PaymentsApi.md#getAllConnectors) | **GET** api/payments/connectors | Get all installed connectors |
-| [**getAllConnectorsConfigs**](PaymentsApi.md#getAllConnectorsConfigs) | **GET** api/payments/connectors/configs | Get all available connectors configs |
 | [**getConnectorTask**](PaymentsApi.md#getConnectorTask) | **GET** api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector |
-| [**getPayment**](PaymentsApi.md#getPayment) | **GET** api/payments/payments/{paymentId} | Returns a payment. |
-| [**installConnector**](PaymentsApi.md#installConnector) | **POST** api/payments/connectors/{connector} | Install connector |
-| [**listConnectorTasks**](PaymentsApi.md#listConnectorTasks) | **GET** api/payments/connectors/{connector}/tasks | List connector tasks |
-| [**listPayments**](PaymentsApi.md#listPayments) | **GET** api/payments/payments | Returns a list of payments. |
-| [**paymentslistAccounts**](PaymentsApi.md#paymentslistAccounts) | **GET** api/payments/accounts | Returns a list of accounts. |
-| [**readConnectorConfig**](PaymentsApi.md#readConnectorConfig) | **GET** api/payments/connectors/{connector}/config | Read connector config |
-| [**resetConnector**](PaymentsApi.md#resetConnector) | **POST** api/payments/connectors/{connector}/reset | Reset connector |
-| [**uninstallConnector**](PaymentsApi.md#uninstallConnector) | **DELETE** api/payments/connectors/{connector} | Uninstall connector |
+| [**getPayment**](PaymentsApi.md#getPayment) | **GET** api/payments/payments/{paymentId} | Get a payment |
+| [**installConnector**](PaymentsApi.md#installConnector) | **POST** api/payments/connectors/{connector} | Install a connector |
+| [**listAllConnectors**](PaymentsApi.md#listAllConnectors) | **GET** api/payments/connectors | List all installed connectors |
+| [**listConfigsAvailableConnectors**](PaymentsApi.md#listConfigsAvailableConnectors) | **GET** api/payments/connectors/configs | List the configs of each available connector |
+| [**listConnectorTasks**](PaymentsApi.md#listConnectorTasks) | **GET** api/payments/connectors/{connector}/tasks | List tasks from a connector |
+| [**listPayments**](PaymentsApi.md#listPayments) | **GET** api/payments/payments | List payments |
+| [**paymentslistAccounts**](PaymentsApi.md#paymentslistAccounts) | **GET** api/payments/accounts | List accounts |
+| [**readConnectorConfig**](PaymentsApi.md#readConnectorConfig) | **GET** api/payments/connectors/{connector}/config | Read the config of a connector |
+| [**resetConnector**](PaymentsApi.md#resetConnector) | **POST** api/payments/connectors/{connector}/reset | Reset a connector |
+| [**uninstallConnector**](PaymentsApi.md#uninstallConnector) | **DELETE** api/payments/connectors/{connector} | Uninstall a connector |
 
 
 
 ## connectorsStripeTransfer
 
-> connectorsStripeTransfer(stripeTransferRequest)
+> Object connectorsStripeTransfer(stripeTransferRequest)
 
 Transfer funds between Stripe accounts
 
-Execute a transfer between two Stripe accounts
+Execute a transfer between two Stripe accounts.
 
 ### Example
 
@@ -50,7 +50,8 @@ public class Example {
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         StripeTransferRequest stripeTransferRequest = new StripeTransferRequest(); // StripeTransferRequest | 
         try {
-            apiInstance.connectorsStripeTransfer(stripeTransferRequest);
+            Object result = apiInstance.connectorsStripeTransfer(stripeTransferRequest);
+            System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PaymentsApi#connectorsStripeTransfer");
             System.err.println("Status code: " + e.getCode());
@@ -71,7 +72,7 @@ public class Example {
 
 ### Return type
 
-null (empty response body)
+**Object**
 
 ### Authorization
 
@@ -80,156 +81,22 @@ null (empty response body)
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: Not defined
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | Transfer has been executed |  -  |
-
-
-## getAllConnectors
-
-> ListConnectorsResponse getAllConnectors()
-
-Get all installed connectors
-
-Get all installed connectors
-
-### Example
-
-```java
-// Import classes:
-import com.formance.formance.ApiClient;
-import com.formance.formance.ApiException;
-import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
-import com.formance.formance.models.*;
-import com.formance.formance.api.PaymentsApi;
-
-public class Example {
-    public static void main(String[] args) {
-        ApiClient defaultClient = Configuration.getDefaultApiClient();
-        defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
-
-        PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        try {
-            ListConnectorsResponse result = apiInstance.getAllConnectors();
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling PaymentsApi#getAllConnectors");
-            System.err.println("Status code: " + e.getCode());
-            System.err.println("Reason: " + e.getResponseBody());
-            System.err.println("Response headers: " + e.getResponseHeaders());
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**ListConnectorsResponse**](ListConnectorsResponse.md)
-
-### Authorization
-
-[Authorization](../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
 - **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | List of installed connectors |  -  |
-
-
-## getAllConnectorsConfigs
-
-> ListConnectorsConfigsResponse getAllConnectorsConfigs()
-
-Get all available connectors configs
-
-Get all available connectors configs
-
-### Example
-
-```java
-// Import classes:
-import com.formance.formance.ApiClient;
-import com.formance.formance.ApiException;
-import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
-import com.formance.formance.models.*;
-import com.formance.formance.api.PaymentsApi;
-
-public class Example {
-    public static void main(String[] args) {
-        ApiClient defaultClient = Configuration.getDefaultApiClient();
-        defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
-
-        PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        try {
-            ListConnectorsConfigsResponse result = apiInstance.getAllConnectorsConfigs();
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling PaymentsApi#getAllConnectorsConfigs");
-            System.err.println("Status code: " + e.getCode());
-            System.err.println("Reason: " + e.getResponseBody());
-            System.err.println("Response headers: " + e.getResponseHeaders());
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**ListConnectorsConfigsResponse**](ListConnectorsConfigsResponse.md)
-
-### Authorization
-
-[Authorization](../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | List of available connectors configs |  -  |
+| **200** | OK |  -  |
 
 
 ## getConnectorTask
 
-> ListConnectorTasks200ResponseInner getConnectorTask(connector, taskId)
+> TaskResponse getConnectorTask(connector, taskId)
 
 Read a specific task of the connector
 
-Get a specific task associated to the connector
+Get a specific task associated to the connector.
 
 ### Example
 
@@ -252,10 +119,10 @@ public class Example {
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        Connectors connector = Connectors.fromValue("STRIPE"); // Connectors | The connector code
-        String taskId = "task1"; // String | The task id
+        Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
+        String taskId = "task1"; // String | The task ID.
         try {
-            ListConnectorTasks200ResponseInner result = apiInstance.getConnectorTask(connector, taskId);
+            TaskResponse result = apiInstance.getConnectorTask(connector, taskId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PaymentsApi#getConnectorTask");
@@ -273,12 +140,12 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **connector** | [**Connectors**](.md)| The connector code | [enum: STRIPE, DUMMY-PAY, SIE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
-| **taskId** | **String**| The task id | |
+| **connector** | [**Connector**](.md)| The name of the connector. | [enum: STRIPE, DUMMY-PAY, WISE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
+| **taskId** | **String**| The task ID. | |
 
 ### Return type
 
-[**ListConnectorTasks200ResponseInner**](ListConnectorTasks200ResponseInner.md)
+[**TaskResponse**](TaskResponse.md)
 
 ### Authorization
 
@@ -293,14 +160,14 @@ public class Example {
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | The specified task |  -  |
+| **200** | OK |  -  |
 
 
 ## getPayment
 
-> Payment getPayment(paymentId)
+> PaymentResponse getPayment(paymentId)
 
-Returns a payment.
+Get a payment
 
 ### Example
 
@@ -323,9 +190,9 @@ public class Example {
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        String paymentId = "XXX"; // String | The payment id
+        String paymentId = "XXX"; // String | The payment ID.
         try {
-            Payment result = apiInstance.getPayment(paymentId);
+            PaymentResponse result = apiInstance.getPayment(paymentId);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PaymentsApi#getPayment");
@@ -343,11 +210,11 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **paymentId** | **String**| The payment id | |
+| **paymentId** | **String**| The payment ID. | |
 
 ### Return type
 
-[**Payment**](Payment.md)
+[**PaymentResponse**](PaymentResponse.md)
 
 ### Authorization
 
@@ -362,16 +229,16 @@ public class Example {
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | A payment |  -  |
+| **200** | OK |  -  |
 
 
 ## installConnector
 
 > installConnector(connector, connectorConfig)
 
-Install connector
+Install a connector
 
-Install connector
+Install a connector by its name and config.
 
 ### Example
 
@@ -394,7 +261,7 @@ public class Example {
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        Connectors connector = Connectors.fromValue("STRIPE"); // Connectors | The connector code
+        Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
         ConnectorConfig connectorConfig = new ConnectorConfig(); // ConnectorConfig | 
         try {
             apiInstance.installConnector(connector, connectorConfig);
@@ -414,7 +281,7 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **connector** | [**Connectors**](.md)| The connector code | [enum: STRIPE, DUMMY-PAY, SIE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
+| **connector** | [**Connector**](.md)| The name of the connector. | [enum: STRIPE, DUMMY-PAY, WISE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
 | **connectorConfig** | [**ConnectorConfig**](ConnectorConfig.md)|  | |
 
 ### Return type
@@ -434,14 +301,148 @@ null (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **204** | Connector has been installed |  -  |
+| **204** | OK |  -  |
+
+
+## listAllConnectors
+
+> ConnectorsResponse listAllConnectors()
+
+List all installed connectors
+
+List all installed connectors.
+
+### Example
+
+```java
+// Import classes:
+import com.formance.formance.ApiClient;
+import com.formance.formance.ApiException;
+import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
+import com.formance.formance.models.*;
+import com.formance.formance.api.PaymentsApi;
+
+public class Example {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
+
+        PaymentsApi apiInstance = new PaymentsApi(defaultClient);
+        try {
+            ConnectorsResponse result = apiInstance.listAllConnectors();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentsApi#listAllConnectors");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**ConnectorsResponse**](ConnectorsResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | OK |  -  |
+
+
+## listConfigsAvailableConnectors
+
+> ConnectorsConfigsResponse listConfigsAvailableConnectors()
+
+List the configs of each available connector
+
+List the configs of each available connector.
+
+### Example
+
+```java
+// Import classes:
+import com.formance.formance.ApiClient;
+import com.formance.formance.ApiException;
+import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
+import com.formance.formance.models.*;
+import com.formance.formance.api.PaymentsApi;
+
+public class Example {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
+
+        PaymentsApi apiInstance = new PaymentsApi(defaultClient);
+        try {
+            ConnectorsConfigsResponse result = apiInstance.listConfigsAvailableConnectors();
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentsApi#listConfigsAvailableConnectors");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**ConnectorsConfigsResponse**](ConnectorsConfigsResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | OK |  -  |
 
 
 ## listConnectorTasks
 
-> List&lt;ListConnectorTasks200ResponseInner&gt; listConnectorTasks(connector)
+> TasksResponse listConnectorTasks(connector, pageSize, cursor)
 
-List connector tasks
+List tasks from a connector
 
 List all tasks associated with this connector.
 
@@ -466,9 +467,11 @@ public class Example {
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        Connectors connector = Connectors.fromValue("STRIPE"); // Connectors | The connector code
+        Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
+        Long pageSize = 15L; // Long | The maximum number of results to return per page. 
+        String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
         try {
-            List<ListConnectorTasks200ResponseInner> result = apiInstance.listConnectorTasks(connector);
+            TasksResponse result = apiInstance.listConnectorTasks(connector, pageSize, cursor);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PaymentsApi#listConnectorTasks");
@@ -486,11 +489,13 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **connector** | [**Connectors**](.md)| The connector code | [enum: STRIPE, DUMMY-PAY, SIE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
+| **connector** | [**Connector**](.md)| The name of the connector. | [enum: STRIPE, DUMMY-PAY, WISE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
+| **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] [default to 15] |
+| **cursor** | **String**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | [optional] |
 
 ### Return type
 
-[**List&lt;ListConnectorTasks200ResponseInner&gt;**](ListConnectorTasks200ResponseInner.md)
+[**TasksResponse**](TasksResponse.md)
 
 ### Authorization
 
@@ -505,14 +510,14 @@ public class Example {
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Task list |  -  |
+| **200** | OK |  -  |
 
 
 ## listPayments
 
-> ListPaymentsResponse listPayments(limit, skip, sort)
+> PaymentsResponse listPayments(pageSize, cursor, sort)
 
-Returns a list of payments.
+List payments
 
 ### Example
 
@@ -535,11 +540,11 @@ public class Example {
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        Integer limit = 10; // Integer | Limit the number of payments to return, pagination can be achieved in conjunction with 'skip' parameter.
-        Integer skip = 100; // Integer | How many payments to skip, pagination can be achieved in conjunction with 'limit' parameter.
-        List<String> sort = Arrays.asList(); // List<String> | Field used to sort payments (Default is by date).
+        Long pageSize = 15L; // Long | The maximum number of results to return per page. 
+        String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
+        List<String> sort = Arrays.asList(); // List<String> | Fields used to sort payments (default is date:desc).
         try {
-            ListPaymentsResponse result = apiInstance.listPayments(limit, skip, sort);
+            PaymentsResponse result = apiInstance.listPayments(pageSize, cursor, sort);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PaymentsApi#listPayments");
@@ -557,13 +562,13 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **limit** | **Integer**| Limit the number of payments to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | [optional] |
-| **skip** | **Integer**| How many payments to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | [optional] |
-| **sort** | [**List&lt;String&gt;**](String.md)| Field used to sort payments (Default is by date). | [optional] |
+| **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] [default to 15] |
+| **cursor** | **String**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | [optional] |
+| **sort** | [**List&lt;String&gt;**](String.md)| Fields used to sort payments (default is date:desc). | [optional] |
 
 ### Return type
 
-[**ListPaymentsResponse**](ListPaymentsResponse.md)
+[**PaymentsResponse**](PaymentsResponse.md)
 
 ### Authorization
 
@@ -578,14 +583,14 @@ public class Example {
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | A JSON array of payments |  -  |
+| **200** | OK |  -  |
 
 
 ## paymentslistAccounts
 
-> ListAccountsResponse paymentslistAccounts(limit, skip, sort)
+> AccountsResponse paymentslistAccounts(limit, skip, sort)
 
-Returns a list of accounts.
+List accounts
 
 ### Example
 
@@ -608,11 +613,11 @@ public class Example {
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        Integer limit = 10; // Integer | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter.
-        Integer skip = 100; // Integer | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter.
+        Long limit = 10L; // Long | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter. 
+        Long skip = 100L; // Long | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter. 
         List<String> sort = Arrays.asList(); // List<String> | Field used to sort payments (Default is by date).
         try {
-            ListAccountsResponse result = apiInstance.paymentslistAccounts(limit, skip, sort);
+            AccountsResponse result = apiInstance.paymentslistAccounts(limit, skip, sort);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PaymentsApi#paymentslistAccounts");
@@ -630,13 +635,13 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **limit** | **Integer**| Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | [optional] |
-| **skip** | **Integer**| How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | [optional] |
+| **limit** | **Long**| Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.  | [optional] |
+| **skip** | **Long**| How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.  | [optional] |
 | **sort** | [**List&lt;String&gt;**](String.md)| Field used to sort payments (Default is by date). | [optional] |
 
 ### Return type
 
-[**ListAccountsResponse**](ListAccountsResponse.md)
+[**AccountsResponse**](AccountsResponse.md)
 
 ### Authorization
 
@@ -651,14 +656,14 @@ public class Example {
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | A JSON array of accounts |  -  |
+| **200** | OK |  -  |
 
 
 ## readConnectorConfig
 
-> ConnectorConfig readConnectorConfig(connector)
+> ConnectorConfigResponse readConnectorConfig(connector)
 
-Read connector config
+Read the config of a connector
 
 Read connector config
 
@@ -683,9 +688,9 @@ public class Example {
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        Connectors connector = Connectors.fromValue("STRIPE"); // Connectors | The connector code
+        Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
         try {
-            ConnectorConfig result = apiInstance.readConnectorConfig(connector);
+            ConnectorConfigResponse result = apiInstance.readConnectorConfig(connector);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PaymentsApi#readConnectorConfig");
@@ -703,11 +708,11 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **connector** | [**Connectors**](.md)| The connector code | [enum: STRIPE, DUMMY-PAY, SIE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
+| **connector** | [**Connector**](.md)| The name of the connector. | [enum: STRIPE, DUMMY-PAY, WISE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
 
 ### Return type
 
-[**ConnectorConfig**](ConnectorConfig.md)
+[**ConnectorConfigResponse**](ConnectorConfigResponse.md)
 
 ### Authorization
 
@@ -722,16 +727,16 @@ public class Example {
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Connector config |  -  |
+| **200** | OK |  -  |
 
 
 ## resetConnector
 
 > resetConnector(connector)
 
-Reset connector
+Reset a connector
 
-Reset connector. Will remove the connector and ALL PAYMENTS generated with it.
+Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it. 
 
 ### Example
 
@@ -754,7 +759,7 @@ public class Example {
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        Connectors connector = Connectors.fromValue("STRIPE"); // Connectors | The connector code
+        Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
         try {
             apiInstance.resetConnector(connector);
         } catch (ApiException e) {
@@ -773,7 +778,7 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **connector** | [**Connectors**](.md)| The connector code | [enum: STRIPE, DUMMY-PAY, SIE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
+| **connector** | [**Connector**](.md)| The name of the connector. | [enum: STRIPE, DUMMY-PAY, WISE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
 
 ### Return type
 
@@ -792,16 +797,16 @@ null (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **204** | Connector has been reset |  -  |
+| **204** | OK |  -  |
 
 
 ## uninstallConnector
 
 > uninstallConnector(connector)
 
-Uninstall connector
+Uninstall a connector
 
-Uninstall  connector
+Uninstall a connector by its name.
 
 ### Example
 
@@ -824,7 +829,7 @@ public class Example {
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        Connectors connector = Connectors.fromValue("STRIPE"); // Connectors | The connector code
+        Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
         try {
             apiInstance.uninstallConnector(connector);
         } catch (ApiException e) {
@@ -843,7 +848,7 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **connector** | [**Connectors**](.md)| The connector code | [enum: STRIPE, DUMMY-PAY, SIE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
+| **connector** | [**Connector**](.md)| The name of the connector. | [enum: STRIPE, DUMMY-PAY, WISE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
 
 ### Return type
 
@@ -862,5 +867,5 @@ null (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **204** | Connector has been uninstalled |  -  |
+| **204** | OK |  -  |
 

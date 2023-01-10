@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.3
 
 info:
   title: Formance Simple Wallets Service API
@@ -486,6 +486,7 @@ components:
       - id
       - metadata
       - createdAt
+      - ledger
       properties:
         id:
           type: string
@@ -500,6 +501,8 @@ components:
         createdAt:
           type: string
           format: date-time
+        ledger:
+          type: string
     WalletWithBalances:
       type: object
       required:
@@ -508,6 +511,7 @@ components:
       - metadata
       - createdAt
       - balances
+      - ledger
       properties:
         id:
           type: string
@@ -529,6 +533,8 @@ components:
           properties:
             main:
               $ref: '#/components/schemas/AssetHolder'
+        ledger:
+          type: string
     Hold:
       type: object
       required:
@@ -802,7 +808,7 @@ components:
         mapping:
           ACCOUNT: '#/components/schemas/LedgerAccountSubject'
           WALLET: '#/components/schemas/WalletSubject'
-      oneOf:
+      anyOf:
       - $ref: '#/components/schemas/LedgerAccountSubject'
       - $ref: '#/components/schemas/WalletSubject'
     CreditWalletRequest:

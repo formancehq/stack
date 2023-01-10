@@ -66,7 +66,7 @@ export class ConnectorConfig {
             "name": "pageSize",
             "baseName": "pageSize",
             "type": "number",
-            "format": ""
+            "format": "int64"
         },
         {
             "name": "filePollingPeriod",

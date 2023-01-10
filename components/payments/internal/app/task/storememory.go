@@ -56,7 +56,7 @@ func (s *InMemoryStore) GetTaskByDescriptor(ctx context.Context, provider models
 func (s *InMemoryStore) ListTasks(ctx context.Context,
 	provider models.ConnectorProvider,
 	pagination storage.Paginator,
-) ([]models.Task, error) {
+) ([]models.Task, storage.PaginationDetails, error) {
 	ret := make([]models.Task, 0)
 
 	for id, status := range s.statuses {
@@ -75,7 +75,7 @@ func (s *InMemoryStore) ListTasks(ctx context.Context,
 		})
 	}
 
-	return ret, nil
+	return ret, storage.PaginationDetails{}, nil
 }
 
 func (s *InMemoryStore) ReadOldestPendingTask(ctx context.Context,
@@ -126,7 +126,7 @@ func (s *InMemoryStore) ReadOldestPendingTask(ctx context.Context,
 func (s *InMemoryStore) ListTasksByStatus(ctx context.Context,
 	provider models.ConnectorProvider, taskStatus models.TaskStatus,
 ) ([]models.Task, error) {
-	all, err := s.ListTasks(ctx, provider, storage.Paginate(0, 0))
+	all, _, err := s.ListTasks(ctx, provider, storage.Paginator{})
 	if err != nil {
 		return nil, err
 	}

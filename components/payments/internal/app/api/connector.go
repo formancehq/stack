@@ -58,7 +58,9 @@ func readConfig[Config models.ConnectorConfigObject](connectorManager *integrati
 			return
 		}
 
-		err = json.NewEncoder(w).Encode(config)
+		err = json.NewEncoder(w).Encode(api.BaseResponse[Config]{
+			Data: config,
+		})
 		if err != nil {
 			panic(err)
 		}
@@ -79,34 +81,30 @@ type listTasksResponseElement struct {
 func listTasks[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		skip, err := integerWithDefault(r, "skip", 0)
+		pageSize, err := pageSizeQueryParam(r)
 		if err != nil {
 			handleValidationError(w, r, err)
 
 			return
 		}
 
-		limit, err := integerWithDefault(r, "limit", maxPerPage)
+		pagination, err := storage.Paginate(pageSize, r.URL.Query().Get("cursor"), nil)
 		if err != nil {
 			handleValidationError(w, r, err)
 
 			return
 		}
 
-		if limit > maxPerPage {
-			limit = maxPerPage
-		}
-
-		tasks, err := connectorManager.ListTasksStates(r.Context(), storage.Paginate(skip, limit))
+		tasks, paginationDetails, err := connectorManager.ListTasksStates(r.Context(), pagination)
 		if err != nil {
 			handleError(w, r, err)
 
 			return
 		}
 
-		response := make([]listTasksResponseElement, len(tasks))
+		data := make([]listTasksResponseElement, len(tasks))
 		for i, task := range tasks {
-			response[i] = listTasksResponseElement{
+			data[i] = listTasksResponseElement{
 				ID:          task.ID.String(),
 				ConnectorID: task.ConnectorID.String(),
 				CreatedAt:   task.CreatedAt.Format(time.RFC3339),
@@ -118,7 +116,15 @@ func listTasks[Config models.ConnectorConfigObject](connectorManager *integratio
 			}
 		}
 
-		err = json.NewEncoder(w).Encode(response)
+		err = json.NewEncoder(w).Encode(api.BaseResponse[listTasksResponseElement]{
+			Cursor: &api.Cursor[listTasksResponseElement]{
+				PageSize: paginationDetails.PageSize,
+				HasMore:  paginationDetails.HasMore,
+				Previous: paginationDetails.PreviousPage,
+				Next:     paginationDetails.NextPage,
+				Data:     data,
+			},
+		})
 		if err != nil {
 			panic(err)
 		}
@@ -142,7 +148,7 @@ func readTask[Config models.ConnectorConfigObject](connectorManager *integration
 			return
 		}
 
-		response := listTasksResponseElement{
+		data := listTasksResponseElement{
 			ID:          task.ID.String(),
 			ConnectorID: task.ConnectorID.String(),
 			CreatedAt:   task.CreatedAt.Format(time.RFC3339),
@@ -153,7 +159,9 @@ func readTask[Config models.ConnectorConfigObject](connectorManager *integration
 			Error:       task.Error,
 		}
 
-		err = json.NewEncoder(w).Encode(response)
+		err = json.NewEncoder(w).Encode(api.BaseResponse[listTasksResponseElement]{
+			Data: &data,
+		})
 		if err != nil {
 			panic(err)
 		}
