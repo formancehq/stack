@@ -25,6 +25,8 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v3
+        with:
+          go-version-file: './go.work'
       - uses: actions/setup-node@v3
         with:
           node-version: 16
