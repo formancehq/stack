@@ -2,3 +2,4 @@
 openapi/build/generate.json-e
 openapi/build/generate.json.bak
 coverage.out
+dist

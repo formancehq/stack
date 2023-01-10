@@ -10,9 +10,9 @@ builds:
   - binary: auth
     id: auth
     ldflags:
-      - -X github.com/formancehq/auth/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/auth/cmd.Version={{ .Version }}
-      - -X github.com/formancehq/auth/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/{{.ProjectName}}/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/{{.ProjectName}}/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/{{.ProjectName}}/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
@@ -27,7 +27,7 @@ builds:
       - -tags=json1
 
 archives:
-  - id: "auth"
+  - id: "{{.ProjectName}}"
     builds:
       - auth
     format: tar.gz
@@ -36,9 +36,8 @@ archives:
         format: zip
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
 
-
 checksum:
-  name_template: 'checksums.txt'
+  name_template: 'checksums_{{.ProjectName}}.txt'
 
 snapshot:
   name_template: "{{ .Tag }}"
@@ -68,23 +67,48 @@ changelog:
 release:
   prerelease: auto
   footer: |
-    **Full Changelog**: https://github.com/formancehq/auth/compare/{{ .PreviousTag }}...{{ .Tag }}
+    **Full Changelog**: https://github.com/formancehq/{{.ProjectName}}/compare/{{ .PreviousTag }}...{{ .Tag }}
     ## What to do next?
     - Read the [documentation](https://docs.formance.com/)
-    - Join our [Discord server](https://discord.gg/xyHvcbzk4w)
+    - Join our [Slack server](https://formance.com/slack)
 
-brews:
-  - tap:
-      owner: formancehq
-      name: homebrew-tap
-    name: auth
-    folder: Formula
-    homepage: https://formance.com
-    skip_upload: 'false'
-    test: |
-      system "#{bin}/auth version"
-    install: |
-      bin.install "auth"
+dockers:
+  - image_templates: ["ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-amd64"]
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/amd64
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/formancehq/{{ .ProjectName }}
+      - --label=org.opencontainers.image.source=https://github.com/formancehq/{{ .ProjectName }}
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
+  - image_templates: [ "ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-arm64v8" ]
+    goarch: arm64
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/arm64/v8
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/formancehq/{{ .ProjectName }}
+      - --label=org.opencontainers.image.source=https://github.com/formancehq/{{ .ProjectName }}
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
+docker_manifests:
+  - name_template: ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}
+    image_templates:
+      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-arm64v8
+  - name_template: ghcr.io/formancehq/{{ .ProjectName }}:latest
+    image_templates:
+      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-arm64v8
 
 nfpms:
   - id: packages
