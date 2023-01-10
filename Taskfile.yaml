@@ -2,6 +2,9 @@
 
 version: '3'
 
+dotenv:
+  - .env
+
 vars:
   COMPOSE_FILE: -f docker-compose.yml
 
@@ -52,12 +55,12 @@ includes:
   fctl:
     taskfile: ./services/fctl
     dir: ./services/fctl
-#  ledger:
-#    taskfile: ./services/ledger
-#    dir: ./services/ledger
-#  machine:
-#    taskfile: ./services/machine
-#    dir: ./services/machine
+  ledger:
+    taskfile: ./services/ledger
+    dir: ./services/ledger
+  machine:
+    taskfile: ./services/machine
+    dir: ./services/machine
   orchestration:
     taskfile: ./services/orchestration
     dir: ./services/orchestration
