@@ -10,7 +10,7 @@ vars:
   RUN: "''"
 
 env:
-  CAOS_OIDC_DEV: true
+  VERSION: "develop"
 
 tasks:
   default:
@@ -35,6 +35,10 @@ tasks:
   tests:
     cmds:
       - go test -race -coverpkg {{.PKG}} -coverprofile coverage.out {{.PKG}}
+
+  docker:
+    cmds:
+      - docker buildx build --push --platform linux/arm64,linux/arm64/v8 -f ./Dockerfile -t ghcr.io/formancehq/{{.COMPONENT}}:{{.VERSION}} .
 
   coverage:
     cmds:
