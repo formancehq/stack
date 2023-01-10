@@ -25,7 +25,7 @@ jobs:
       folders: ${{ steps.jobs.outputs.folders }}
     steps:
       - uses: actions/checkout@v3
-      - run: apt update && apt install tree jq -y
+      - run: sudo apt update && apt install tree jq -y
       - run: echo "::set-output name=folders::$(cd ./services && tree -J -d -L 1 | jq -c '.[0].contents | map(.name)')"
         id: jobs
 
