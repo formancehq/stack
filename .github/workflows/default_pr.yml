@@ -28,4 +28,4 @@ jobs:
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
       - uses: pre-commit/action@v3.0.0
         with:
-          extra_args: ${{ matrix.option }} --all-files --hook-stage commit-msg --commit-msg-filename COMMIT_EDITMSG
+          extra_args: ${{ matrix.option }} --all-files
