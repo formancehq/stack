@@ -12,6 +12,10 @@ jobs:
         option: [ gosdk, gofmt, goimports, gomodtidy, golangci-lint, gotests, commitlint ]
     steps:
       - uses: actions/checkout@v3
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v3
       - uses: actions/setup-python@v3
       - run: |
