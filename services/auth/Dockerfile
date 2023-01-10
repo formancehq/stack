@@ -11,12 +11,11 @@ ARG VERSION
 ARG SEGMENT_WRITE_KEY
 WORKDIR /src
 # get deps first so it's cached
-COPY go.mod .
-COPY go.sum .
+COPY . .
+WORKDIR /src/services/auth
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
     go mod download
-COPY . .
 RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
     CGO_ENABLED=1 GOOS=linux GOARCH=$TARGETARCH \
