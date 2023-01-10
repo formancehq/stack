@@ -123,8 +123,8 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v3
         with:
-          go-version-file: 'go.work'
-          cache: true
+          go-version-file: './go.work'
+#          cache: true
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
