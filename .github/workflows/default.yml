@@ -7,7 +7,7 @@ on:
 
 jobs:
   PR:
-    name: Check PR Style
+    name: Check PR Name
     runs-on: ubuntu-latest
     steps:
       - uses: aslafy-z/conventional-pr-title-action@v2.2.5
@@ -25,10 +25,9 @@ jobs:
       folders: ${{ steps.jobs.outputs.folders }}
     steps:
       - uses: actions/checkout@v3
-      - id: jobs
-        uses: philips-labs/list-folders-action@v1
-        with:
-          path: ./services/
+      - run: apt update && apt install tree jq -y
+      - run: echo "::set-output name=folders::$(cd ./services && tree -J -d -L 1 | jq -c '.[0].contents | map(.name)')"
+        id: jobs
 
   Lint:
     runs-on: ubuntu-latest
