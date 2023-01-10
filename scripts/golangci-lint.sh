@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 dir=$(dirname "$0")
-source ${dir}/common.sh
+source "${dir}"/common.sh
 
 for mod in $(find-updated-modules $@); do
   echo "Run golangci-lint on ${mod}"

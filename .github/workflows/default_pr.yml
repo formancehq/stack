@@ -2,6 +2,8 @@ name: Default - PR
 on:
   pull_request:
     types: [ assigned, opened, synchronize, reopened ]
+  release:
+    types: [ prereleased, released ]
 
 jobs:
   Build:
@@ -14,6 +16,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
       - name: Install Task
         uses: arduino/setup-task@v1
         with:
