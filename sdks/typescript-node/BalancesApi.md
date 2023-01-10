@@ -9,7 +9,7 @@ Method | HTTP request | Description
 
 
 # **getBalances**
-> GetBalances200Response getBalances()
+> BalancesCursorResponse getBalances()
 
 
 ### Example
@@ -29,7 +29,9 @@ let body:BalancesApiGetBalancesRequest = {
   address: "users:001",
   // string | Pagination cursor, will return accounts after given address, in descending order. (optional)
   after: "users:003",
-  // string | Parameter used in pagination requests.  Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. (optional)
+  // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
+  cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
+  // string | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use `cursor` instead. (optional)
   paginationToken: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
 };
 
@@ -46,12 +48,13 @@ Name | Type | Description  | Notes
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
  **address** | [**string**] | Filter balances involving given account, either as source or destination. | (optional) defaults to undefined
  **after** | [**string**] | Pagination cursor, will return accounts after given address, in descending order. | (optional) defaults to undefined
- **paginationToken** | [**string**] | Parameter used in pagination requests.  Set to the value of next for the next page of results.  Set to the value of previous for the previous page of results. | (optional) defaults to undefined
+ **cursor** | [**string**] | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | (optional) defaults to undefined
+ **paginationToken** | [**string**] | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use &#x60;cursor&#x60; instead. | (optional) defaults to undefined
 
 
 ### Return type
 
-**GetBalances200Response**
+**BalancesCursorResponse**
 
 ### Authorization
 
@@ -67,12 +70,12 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | OK |  -  |
-**400** | Bad Request |  -  |
+**0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **getBalancesAggregated**
-> GetBalancesAggregated200Response getBalancesAggregated()
+> AggregateBalancesResponse getBalancesAggregated()
 
 
 ### Example
@@ -108,7 +111,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**GetBalancesAggregated200Response**
+**AggregateBalancesResponse**
 
 ### Authorization
 
@@ -124,6 +127,7 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | OK |  -  |
-**400** | Bad Request |  -  |
+**0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+

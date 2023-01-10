@@ -1,6 +1,6 @@
 /**
  * Formance Stack API
- * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
+ * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
  *
  * OpenAPI spec version: develop
  * Contact: support@formance.com
@@ -10,13 +10,13 @@
  * Do not edit the class manually.
  */
 
-import { WalletsPosting } from '../models/WalletsPosting';
+import { Posting } from '../models/Posting';
 import { WalletsVolume } from '../models/WalletsVolume';
 import { HttpFile } from '../http/http';
 
 export class WalletsTransaction {
     'timestamp': Date;
-    'postings': Array<WalletsPosting>;
+    'postings': Array<Posting>;
     'reference'?: string;
     /**
     * Metadata associated with the wallet.
@@ -38,7 +38,7 @@ export class WalletsTransaction {
         {
             "name": "postings",
             "baseName": "postings",
-            "type": "Array<WalletsPosting>",
+            "type": "Array<Posting>",
             "format": ""
         },
         {
@@ -79,3 +79,4 @@ export class WalletsTransaction {
     public constructor() {
     }
 }
+

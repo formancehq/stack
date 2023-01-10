@@ -1,6 +1,6 @@
 /**
  * Formance Stack API
- * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
+ * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
  *
  * OpenAPI spec version: develop
  * Contact: support@formance.com
@@ -99,3 +99,4 @@ export class Payment {
 
 export type PaymentSchemeEnum = "visa" | "mastercard" | "apple pay" | "google pay" | "sepa debit" | "sepa credit" | "sepa" | "a2a" | "ach debit" | "ach" | "rtp" | "other" ;
 export type PaymentTypeEnum = "pay-in" | "payout" | "other" ;
+

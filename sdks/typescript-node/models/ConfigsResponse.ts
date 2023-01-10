@@ -1,6 +1,6 @@
 /**
  * Formance Stack API
- * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
+ * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
  *
  * OpenAPI spec version: develop
  * Contact: support@formance.com
@@ -10,11 +10,11 @@
  * Do not edit the class manually.
  */
 
-import { WebhooksCursor } from '../models/WebhooksCursor';
+import { ConfigsResponseCursor } from '../models/ConfigsResponseCursor';
 import { HttpFile } from '../http/http';
 
 export class ConfigsResponse {
-    'cursor': WebhooksCursor;
+    'cursor': ConfigsResponseCursor;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -22,7 +22,7 @@ export class ConfigsResponse {
         {
             "name": "cursor",
             "baseName": "cursor",
-            "type": "WebhooksCursor",
+            "type": "ConfigsResponseCursor",
             "format": ""
         }    ];
 
@@ -33,3 +33,4 @@ export class ConfigsResponse {
     public constructor() {
     }
 }
+

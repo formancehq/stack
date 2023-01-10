@@ -4,8 +4,8 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**getMapping**](MappingApi.md#getMapping) | **GET** /api/ledger/{ledger}/mapping | Get the mapping of a ledger.
-[**updateMapping**](MappingApi.md#updateMapping) | **PUT** /api/ledger/{ledger}/mapping | Update the mapping of a ledger.
+[**getMapping**](MappingApi.md#getMapping) | **GET** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
+[**updateMapping**](MappingApi.md#updateMapping) | **PUT** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
 
 
 # **getMapping**
@@ -58,6 +58,7 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | OK |  -  |
+**0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
@@ -121,5 +122,7 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | OK |  -  |
+**0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+

@@ -4,12 +4,13 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**runScript**](ScriptApi.md#runScript) | **POST** /api/ledger/{ledger}/script | Execute a Numscript.
+[**runScript**](ScriptApi.md#runScript) | **POST** /api/ledger/{ledger}/script | Execute a Numscript
 
 
 # **runScript**
-> ScriptResult runScript(script)
+> ScriptResponse runScript(script)
 
+This route is deprecated, and has been merged into `POST /{ledger}/transactions`. 
 
 ### Example
 
@@ -26,10 +27,6 @@ let body:ScriptApiRunScriptRequest = {
   ledger: "ledger001",
   // Script
   script: {
-    reference: "order_1234",
-    metadata: {
-      "key": null,
-    },
     plain: `vars {
 account $user
 }
@@ -39,6 +36,10 @@ send [COIN 10] (
 )
 `,
     vars: {},
+    reference: "order_1234",
+    metadata: {
+      "key": null,
+    },
   },
   // boolean | Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker. (optional)
   preview: true,
@@ -61,7 +62,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**ScriptResult**
+**ScriptResponse**
 
 ### Authorization
 
@@ -76,8 +77,7 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | OK |  -  |
-**400** | Bad Request |  -  |
-**409** | Conflict |  -  |
+**200** | On success, it will return a 200 status code, and the resulting transaction under the &#x60;transaction&#x60; field.  On failure, it will also return a 200 status code, and the following fields:   - &#x60;details&#x60;: contains a URL. When there is an error parsing Numscript, the result can be difficult to read—the provided URL will render the error in an easy-to-read format.   - &#x60;errorCode&#x60; and &#x60;error_code&#x60; (deprecated): contains the string code of the error   - &#x60;errorMessage&#x60; and &#x60;error_message&#x60; (deprecated): contains a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.  |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+

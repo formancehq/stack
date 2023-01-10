@@ -1,6 +1,6 @@
 /**
  * Formance Stack API
- * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
+ * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
  *
  * OpenAPI spec version: develop
  * Contact: support@formance.com
@@ -13,29 +13,17 @@
 import { HttpFile } from '../http/http';
 
 export class Script {
+    'plain': string;
+    'vars'?: any;
     /**
     * Reference to attach to the generated transaction
     */
     'reference'?: string;
     'metadata'?: { [key: string]: any; };
-    'plain': string;
-    'vars'?: any;
 
     static readonly discriminator: string | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
-        {
-            "name": "reference",
-            "baseName": "reference",
-            "type": "string",
-            "format": ""
-        },
-        {
-            "name": "metadata",
-            "baseName": "metadata",
-            "type": "{ [key: string]: any; }",
-            "format": ""
-        },
         {
             "name": "plain",
             "baseName": "plain",
@@ -47,6 +35,18 @@ export class Script {
             "baseName": "vars",
             "type": "any",
             "format": ""
+        },
+        {
+            "name": "reference",
+            "baseName": "reference",
+            "type": "string",
+            "format": ""
+        },
+        {
+            "name": "metadata",
+            "baseName": "metadata",
+            "type": "{ [key: string]: any; }",
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
@@ -56,3 +56,4 @@ export class Script {
     public constructor() {
     }
 }
+

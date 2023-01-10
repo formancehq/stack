@@ -12,7 +12,7 @@ Method | HTTP request | Description
 [**getBalance**](WalletsApi.md#getBalance) | **GET** /api/wallets/wallets/{id}/balances/{balanceName} | Get detailed balance
 [**getHold**](WalletsApi.md#getHold) | **GET** /api/wallets/holds/{holdID} | Get a hold
 [**getHolds**](WalletsApi.md#getHolds) | **GET** /api/wallets/holds | Get all holds for a wallet
-[**getTransactions**](WalletsApi.md#getTransactions) | **GET** /api/wallets/transactions |
+[**getTransactions**](WalletsApi.md#getTransactions) | **GET** /api/wallets/transactions | 
 [**getWallet**](WalletsApi.md#getWallet) | **GET** /api/wallets/wallets/{id} | Get a wallet
 [**listBalances**](WalletsApi.md#listBalances) | **GET** /api/wallets/wallets/{id}/balances | List balances of a wallet
 [**listWallets**](WalletsApi.md#listWallets) | **GET** /api/wallets/wallets | List all wallets
@@ -907,3 +907,4 @@ This endpoint does not need any parameter.
 **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+

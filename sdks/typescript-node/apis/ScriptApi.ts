@@ -10,10 +10,8 @@ import {canConsumeForm, isCodeInRange} from '../util';
 import {SecurityAuthentication} from '../auth/auth';
 
 
-import { AddMetadataToAccount409Response } from '../models/AddMetadataToAccount409Response';
-import { RunScript400Response } from '../models/RunScript400Response';
 import { Script } from '../models/Script';
-import { ScriptResult } from '../models/ScriptResult';
+import { ScriptResponse } from '../models/ScriptResponse';
 
 /**
  * no description
@@ -21,9 +19,10 @@ import { ScriptResult } from '../models/ScriptResult';
 export class ScriptApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
-     * Execute a Numscript.
+     * This route is deprecated, and has been merged into `POST /{ledger}/transactions`. 
+     * Execute a Numscript
      * @param ledger Name of the ledger.
-     * @param script
+     * @param script 
      * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
      */
     public async runScript(ledger: string, script: Script, preview?: boolean, _options?: Configuration): Promise<RequestContext> {
@@ -73,7 +72,7 @@ export class ScriptApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-
+        
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -93,36 +92,22 @@ export class ScriptApiResponseProcessor {
      * @params response Response returned by the server for a request to runScript
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async runScript(response: ResponseContext): Promise<ScriptResult > {
+     public async runScript(response: ResponseContext): Promise<ScriptResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: ScriptResult = ObjectSerializer.deserialize(
+            const body: ScriptResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ScriptResult", ""
-            ) as ScriptResult;
+                "ScriptResponse", ""
+            ) as ScriptResponse;
             return body;
-        }
-        if (isCodeInRange("400", response.httpStatusCode)) {
-            const body: RunScript400Response = ObjectSerializer.deserialize(
-                ObjectSerializer.parse(await response.body.text(), contentType),
-                "RunScript400Response", ""
-            ) as RunScript400Response;
-            throw new ApiException<RunScript400Response>(response.httpStatusCode, "Bad Request", body, response.headers);
-        }
-        if (isCodeInRange("409", response.httpStatusCode)) {
-            const body: AddMetadataToAccount409Response = ObjectSerializer.deserialize(
-                ObjectSerializer.parse(await response.body.text(), contentType),
-                "AddMetadataToAccount409Response", ""
-            ) as AddMetadataToAccount409Response;
-            throw new ApiException<AddMetadataToAccount409Response>(response.httpStatusCode, "Conflict", body, response.headers);
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: ScriptResult = ObjectSerializer.deserialize(
+            const body: ScriptResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ScriptResult", ""
-            ) as ScriptResult;
+                "ScriptResponse", ""
+            ) as ScriptResponse;
             return body;
         }
 

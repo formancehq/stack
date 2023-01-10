@@ -12,6 +12,7 @@ Method | HTTP request | Description
 [**installConnector**](PaymentsApi.md#installConnector) | **POST** /api/payments/connectors/{connector} | Install connector
 [**listConnectorTasks**](PaymentsApi.md#listConnectorTasks) | **GET** /api/payments/connectors/{connector}/tasks | List connector tasks
 [**listPayments**](PaymentsApi.md#listPayments) | **GET** /api/payments/payments | Returns a list of payments.
+[**paymentslistAccounts**](PaymentsApi.md#paymentslistAccounts) | **GET** /api/payments/accounts | Returns a list of accounts.
 [**readConnectorConfig**](PaymentsApi.md#readConnectorConfig) | **GET** /api/payments/connectors/{connector}/config | Read connector config
 [**resetConnector**](PaymentsApi.md#resetConnector) | **POST** /api/payments/connectors/{connector}/reset | Reset connector
 [**uninstallConnector**](PaymentsApi.md#uninstallConnector) | **DELETE** /api/payments/connectors/{connector} | Uninstall connector
@@ -454,6 +455,67 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
+# **paymentslistAccounts**
+> ListAccountsResponse paymentslistAccounts()
+
+
+### Example
+
+
+```typescript
+import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new PaymentsApi(configuration);
+
+let body:PaymentsApiPaymentslistAccountsRequest = {
+  // number | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter. (optional)
+  limit: 10,
+  // number | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter. (optional)
+  skip: 100,
+  // Array<string> | Field used to sort payments (Default is by date). (optional)
+  sort: [
+    "status",
+  ],
+};
+
+apiInstance.paymentslistAccounts(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **limit** | [**number**] | Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | (optional) defaults to undefined
+ **skip** | [**number**] | How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | (optional) defaults to undefined
+ **sort** | **Array&lt;string&gt;** | Field used to sort payments (Default is by date). | (optional) defaults to undefined
+
+
+### Return type
+
+**ListAccountsResponse**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | A JSON array of accounts |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 # **readConnectorConfig**
 > ConnectorConfig readConnectorConfig()
 
@@ -615,3 +677,4 @@ Name | Type | Description  | Notes
 **204** | Connector has been uninstalled |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+

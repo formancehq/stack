@@ -10,6 +10,7 @@ import {canConsumeForm, isCodeInRange} from '../util';
 import {SecurityAuthentication} from '../auth/auth';
 
 
+import { ErrorResponse } from '../models/ErrorResponse';
 import { StatsResponse } from '../models/StatsResponse';
 
 /**
@@ -18,8 +19,8 @@ import { StatsResponse } from '../models/StatsResponse';
 export class StatsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
-     * Get ledger stats (aggregate metrics on accounts and transactions) The stats for account
-     * Get Stats
+     * Get statistics from a ledger. (aggregate metrics on accounts and transactions) 
+     * Get statistics from a ledger
      * @param ledger name of the ledger
      */
     public async readStats(ledger: string, _options?: Configuration): Promise<RequestContext> {
@@ -46,7 +47,7 @@ export class StatsApiRequestFactory extends BaseAPIRequestFactory {
         if (authMethod?.applySecurityAuthentication) {
             await authMethod?.applySecurityAuthentication(requestContext);
         }
-
+        
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
             await defaultAuth?.applySecurityAuthentication(requestContext);
@@ -74,6 +75,13 @@ export class StatsApiResponseProcessor {
                 "StatsResponse", ""
             ) as StatsResponse;
             return body;
+        }
+        if (isCodeInRange("0", response.httpStatusCode)) {
+            const body: ErrorResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "ErrorResponse", ""
+            ) as ErrorResponse;
+            throw new ApiException<ErrorResponse>(response.httpStatusCode, "Error", body, response.headers);
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml

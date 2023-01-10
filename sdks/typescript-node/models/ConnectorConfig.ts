@@ -1,6 +1,6 @@
 /**
  * Formance Stack API
- * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
+ * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
  *
  * OpenAPI spec version: develop
  * Contact: support@formance.com
@@ -25,7 +25,7 @@ export class ConnectorConfig {
     'pollingPeriod'?: string;
     'apiKey': string;
     /**
-    * Number of BalanceTransaction to fetch at each polling interval.
+    * Number of BalanceTransaction to fetch at each polling interval. 
     */
     'pageSize'?: number;
     /**
@@ -130,3 +130,4 @@ export class ConnectorConfig {
     public constructor() {
     }
 }
+
