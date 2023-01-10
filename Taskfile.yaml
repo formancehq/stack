@@ -22,7 +22,54 @@ tasks:
       - docker-compose {{.COMPOSE_FILE}} rm -f
       - docker volume prune -f
 
+  all:tests:
+    cmds:
+      - task auth:tests
+      - task fctl:tests
+      - task orchestration:tests
+      - task payments:tests
+      - task search:tests
+      - task wallets:tests
+      - task webhooks:tests
+
+  all:lint:
+    cmds:
+      - task auth:lint
+      - task fctl:lint
+      - task orchestration:lint
+      - task payments:lint
+      - task search:lint
+      - task wallets:lint
+      - task webhooks:lint
+
 includes:
   openapi:
     taskfile: ./openapi
     dir: ./openapi
+  auth:
+    taskfile: ./services/auth
+    dir: ./services/auth
+  fctl:
+    taskfile: ./services/fctl
+    dir: ./services/fctl
+#  ledger:
+#    taskfile: ./services/ledger
+#    dir: ./services/ledger
+#  machine:
+#    taskfile: ./services/machine
+#    dir: ./services/machine
+  orchestration:
+    taskfile: ./services/orchestration
+    dir: ./services/orchestration
+  payments:
+    taskfile: ./services/payments
+    dir: ./services/payments
+  search:
+    taskfile: ./services/search
+    dir: ./services/search
+  wallets:
+    taskfile: ./services/wallets
+    dir: ./services/wallets
+  webhooks:
+    taskfile: ./services/webhooks
+    dir: ./services/webhooks
