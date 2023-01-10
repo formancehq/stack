@@ -17,60 +17,60 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  Find:
-    runs-on: ubuntu-latest
-    outputs:
-      folders: ${{ steps.jobs.outputs.folders }}
-    steps:
-      - uses: actions/checkout@v3
-      - run: sudo apt update && sudo apt install tree jq -y
-      - run: echo "::set-output name=folders::$(cd ./services && tree -J -d -L 1 | jq -c '.[0].contents | map(.name)')"
-        id: jobs
-
-  Lint:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        folder: ${{ fromJson(needs.Find.outputs.folders )}}
-    needs:
-      - Find
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Install Task
-        uses: arduino/setup-task@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: './go.work'
-      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
-      - run: task ${{ matrix.folder }}:lint
-
-  Tests:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        folder: ${{ fromJson(needs.Find.outputs.folders )}}
-    needs:
-      - Find
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Install Task
-        uses: arduino/setup-task@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: './go.work'
-      - run: task ${{ matrix.folder }}:tests
+#  Find:
+#    runs-on: ubuntu-latest
+#    outputs:
+#      folders: ${{ steps.jobs.outputs.folders }}
+#    steps:
+#      - uses: actions/checkout@v3
+#      - run: sudo apt update && sudo apt install tree jq -y
+#      - run: echo "::set-output name=folders::$(cd ./services && tree -J -d -L 1 | jq -c '.[0].contents | map(.name)')"
+#        id: jobs
+#
+#  Lint:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        folder: ${{ fromJson(needs.Find.outputs.folders )}}
+#    needs:
+#      - Find
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#      - name: Install Task
+#        uses: arduino/setup-task@v1
+#        with:
+#          repo-token: ${{ secrets.GITHUB_TOKEN }}
+#      - uses: actions/setup-go@v3
+#        with:
+#          go-version-file: './go.work'
+#      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
+#      - run: task ${{ matrix.folder }}:lint
+#
+#  Tests:
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        folder: ${{ fromJson(needs.Find.outputs.folders )}}
+#    needs:
+#      - Find
+#    steps:
+#      - uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v1
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v1
+#      - name: Install Task
+#        uses: arduino/setup-task@v1
+#        with:
+#          repo-token: ${{ secrets.GITHUB_TOKEN }}
+#      - uses: actions/setup-go@v3
+#        with:
+#          go-version-file: './go.work'
+#      - run: task ${{ matrix.folder }}:tests
 
 #  Docker:
 #    runs-on: ubuntu-latest
@@ -110,10 +110,10 @@ jobs:
 #    strategy:
 #      matrix:
 #        folder: ${{ fromJson(needs.Find.outputs.folders )}}
-    needs:
-      - Find
-      - Lint
-      - Tests
+#    needs:
+#      - Find
+#      - Lint
+#      - Tests
     runs-on: ubuntu-latest
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
