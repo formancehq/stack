@@ -24,8 +24,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: sudo apt update && sudo apt install tree jq -y
-      - run: echo "::set-output name=folders::$(cd ./services && tree -J -d -L 1 | jq -c '.[0].contents | map(.name)')"
-#      - run: echo "::set-output name=folders::$(echo '["auth","fctl","orchestration","payments","search","wallets"]')"
+#      - run: echo "::set-output name=folders::$(cd ./services && tree -J -d -L 1 | jq -c '.[0].contents | map(.name)')"
+      - run: echo "::set-output name=folders::$(echo '["auth","fctl","orchestration","payments","search","wallets"]')"
         id: jobs
 
   Lint:
