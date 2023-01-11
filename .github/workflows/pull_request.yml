@@ -21,7 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       folders: ${{ steps.result.outputs.folders }}
-#      folders: ${{ steps.changed-files-specific.outputs.all_modified_files }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -41,7 +40,6 @@ jobs:
         run: |
           echo "One or more files in the docs folder has changed."
           echo "List all the files that have changed: ${{ steps.result.outputs.folders }}"
-#          echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_modified_files }}"
 
   Lint:
     runs-on: ubuntu-latest
@@ -124,33 +122,3 @@ jobs:
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=develop
-
-#  GoReleaserBuild:
-#    name: GoReleaser Build
-##    strategy:
-##      matrix:
-##        folder: ${{ fromJson(needs.Find.outputs.folders )}}
-##    needs:
-##      - Find
-##      - Lint
-##      - Tests
-#    runs-on: ubuntu-latest
-#    env:
-#      DOCKER_CLI_EXPERIMENTAL: "enabled"
-#    steps:
-#      - uses: actions/checkout@v3
-#        with:
-#          fetch-depth: 0
-#      - uses: actions/setup-go@v3
-#        with:
-#          go-version-file: './go.work'
-##          cache: true
-#      - name: Run GoReleaser
-#        uses: goreleaser/goreleaser-action@v2
-#        with:
-#          version: latest
-#          args: release --snapshot --rm-dist
-##          workdir: ${{ matrix.folder }}
-#          workdir: ./services/auth
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
