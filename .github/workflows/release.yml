@@ -1,11 +1,13 @@
-name: Default - PR
+name: Default - Release
 on:
-  pull_request:
-    types: [ assigned, opened, synchronize, reopened ]
+  release:
+    types: [ created, edited, published, released, unpublished ]
+#  pull_request:
+#    types: [ assigned, opened, synchronize, reopened ]
 
 jobs:
   PR:
-    name: Check PR Name
+    name: Check PR Title
     runs-on: ubuntu-latest
     steps:
       - uses: aslafy-z/conventional-pr-title-action@v2.2.5
@@ -26,7 +28,6 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-#      - run: echo "::set-output name=folders::$(node .github/actions/find-directory/index.js)"
       - run: echo "folders=$(node .github/actions/find-directory/index.js)" >> $GITHUB_OUTPUT
         id: jobs
 
