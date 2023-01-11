@@ -17,7 +17,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  Find:
+  FindChanges:
     runs-on: ubuntu-latest
     outputs:
       folders: ${{ steps.result.outputs.folders }}
@@ -41,13 +41,25 @@ jobs:
           echo "One or more files in the docs folder has changed."
           echo "List all the files that have changed: ${{ steps.result.outputs.folders }}"
 
+  Find:
+    runs-on: ubuntu-latest
+    outputs:
+      folders: ${{ steps.find.outputs.folders }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: echo "folders=$(node .github/actions/find-directory/index.js)" >> $GITHUB_OUTPUT
+        id: find
+
   Lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        folder: ${{ fromJson(needs.Find.outputs.folders )}}
+        folder: ${{ fromJson(needs.FindChanges.outputs.folders )}}
     needs:
-      - Find
+      - FindChanges
     steps:
       - uses: actions/checkout@v3
         with:
@@ -66,9 +78,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        folder: ${{ fromJson(needs.Find.outputs.folders )}}
+        folder: ${{ fromJson(needs.FindChanges.outputs.folders )}}
     needs:
-      - Find
+      - FindChanges
     steps:
       - uses: actions/checkout@v3
         with:
@@ -92,7 +104,7 @@ jobs:
       matrix:
         folder: ${{ fromJson(needs.Find.outputs.folders )}}
     needs:
-      - Find
+      - FindChanges
       - Lint
       - Tests
     steps:
