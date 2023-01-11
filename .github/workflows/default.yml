@@ -23,9 +23,12 @@ jobs:
       folders: ${{ steps.jobs.outputs.folders }}
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - run: sudo apt update && sudo apt install tree jq -y
-#      - run: echo "::set-output name=folders::$(cd ./services && tree -J -d -L 1 | jq -c '.[0].contents | map(.name)')"
-      - run: echo "::set-output name=folders::$(echo '["auth","fctl","orchestration","payments","search","wallets"]')"
+#      - run: echo "::set-output name=folders::$(node .github/actions/find-directory/index.js)"
+#      - run: echo "::set-output name=folders::$(echo '["auth","fctl","orchestration","payments","search","wallets"]')"
         id: jobs
 
   Lint:
@@ -109,7 +112,7 @@ jobs:
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=develop
-#
+
 #  GoReleaserBuild:
 #    name: GoReleaser Build
 ##    strategy:
