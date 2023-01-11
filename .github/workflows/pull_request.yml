@@ -104,7 +104,7 @@ jobs:
       matrix:
         folder: ${{ fromJson(needs.Find.outputs.folders )}}
     needs:
-      - FindChanges
+      - Find
       - Lint
       - Tests
     steps:
