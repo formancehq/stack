@@ -20,7 +20,7 @@ jobs:
   Find:
     runs-on: ubuntu-latest
     outputs:
-      folders: ["auth","fctl","orchestration","payments","search","wallets","webhooks"]
+      folders: ["auth","fctl","orchestration","payments","search","wallets"]
 #      folders: ${{ steps.jobs.outputs.folders }}
     steps:
       - uses: actions/checkout@v3
