@@ -20,7 +20,8 @@ jobs:
   Find:
     runs-on: ubuntu-latest
     outputs:
-      folders: ${{ steps.changed-files-specific.outputs.all_modified_files }}
+      folders: ${{ steps.result.outputs.folders }}
+#      folders: ${{ steps.changed-files-specific.outputs.all_modified_files }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -34,10 +35,13 @@ jobs:
           dir_names_max_depth: "2"
           files: |
             services/**
+      - run: echo "folders=$(echo ${{ steps.changed-files-specific.outputs.all_modified_files }} | sed 's/services\///g')" >> $GITHUB_OUTPUT
+        id: result
       - name: Run step if any file(s) in the docs folder change
         run: |
           echo "One or more files in the docs folder has changed."
-          echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_modified_files }}"
+          echo "List all the files that have changed: ${{ steps.result.outputs.folders }}"
+#          echo "List all the files that have changed: ${{ steps.changed-files-specific.outputs.all_modified_files }}"
 
   Lint:
     runs-on: ubuntu-latest
