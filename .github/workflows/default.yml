@@ -26,9 +26,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: sudo apt update && sudo apt install tree jq -y
 #      - run: echo "::set-output name=folders::$(node .github/actions/find-directory/index.js)"
-#      - run: echo "::set-output name=folders::$(echo '["auth","fctl","orchestration","payments","search","wallets"]')"
+      - run: echo "folders=$(node .github/actions/find-directory/index.js)" >> $GITHUB_OUTPUT
         id: jobs
 
   Lint:
