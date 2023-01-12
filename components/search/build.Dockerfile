@@ -3,17 +3,17 @@ ARG APP_SHA
 ARG VERSION
 WORKDIR /src
 COPY . .
-WORKDIR /src/services/fctl
+WORKDIR /src/components/search
 RUN go mod download
-RUN GOOS=linux go build -o fctl \
+RUN GOOS=linux go build -o search \
     -ldflags="-X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Version=${VERSION} \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Commit=${APP_SHA}" ./
 
 FROM ubuntu:jammy
 RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /src/services/fctl/fctl /fctl
+COPY --from=builder /src/components/search/search /search
 EXPOSE 3068
-ENV OTEL_SERVICE_NAME fctl
-ENTRYPOINT ["/fctl"]
-CMD ["--help"]
+ENV OTEL_SERVICE_NAME search
+ENTRYPOINT ["/search"]
+CMD ["serve"]

@@ -3,17 +3,17 @@ ARG APP_SHA
 ARG VERSION
 WORKDIR /src
 COPY . .
-WORKDIR /src/services/search
+WORKDIR /src/components/wallets
 RUN go mod download
-RUN GOOS=linux go build -o search \
+RUN GOOS=linux go build -o wallets \
     -ldflags="-X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Version=${VERSION} \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Commit=${APP_SHA}" ./
 
 FROM ubuntu:jammy
 RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /src/services/search/search /search
+COPY --from=builder /src/components/wallets/wallets /wallets
 EXPOSE 3068
-ENV OTEL_SERVICE_NAME search
-ENTRYPOINT ["/search"]
-CMD ["serve"]
+ENV OTEL_SERVICE_NAME wallets
+ENTRYPOINT ["/wallets"]
+CMD ["server"]

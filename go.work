@@ -5,15 +5,15 @@ use (
 	./libs/go-libs
 	./libs/go-project-template
 	./sdks/go
-	./services/auth
-	./services/fctl
-	./services/fctl/membershipclient
-	./services/ledger
-	./services/machine
-	./services/orchestration
-	./services/payments
-	./services/payments/client
-	./services/search
-	./services/wallets
-	./services/webhooks
+	./components/auth
+	./components/fctl
+	./components/fctl/membershipclient
+	./components/ledger
+	./components/machine
+	./components/orchestration
+	./components/payments
+	./components/payments/client
+	./components/search
+	./components/wallets
+	./components/webhooks
 )

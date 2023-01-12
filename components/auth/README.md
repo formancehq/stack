@@ -24,6 +24,6 @@ Execute command :
 ```bash
 docker compose up
 ```
-will run all required services.
+will run all required components.
 
 Now, you can open http://localhost:3000

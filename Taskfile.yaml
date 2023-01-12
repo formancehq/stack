@@ -50,29 +50,29 @@ includes:
     taskfile: ./openapi
     dir: ./openapi
   auth:
-    taskfile: ./services/auth
-    dir: ./services/auth
+    taskfile: ./components/auth
+    dir: ./components/auth
   fctl:
-    taskfile: ./services/fctl
-    dir: ./services/fctl
+    taskfile: ./components/fctl
+    dir: ./components/fctl
   ledger:
-    taskfile: ./services/ledger
-    dir: ./services/ledger
+    taskfile: ./components/ledger
+    dir: ./components/ledger
   machine:
-    taskfile: ./services/machine
-    dir: ./services/machine
+    taskfile: ./components/machine
+    dir: ./components/machine
   orchestration:
-    taskfile: ./services/orchestration
-    dir: ./services/orchestration
+    taskfile: ./components/orchestration
+    dir: ./components/orchestration
   payments:
-    taskfile: ./services/payments
-    dir: ./services/payments
+    taskfile: ./components/payments
+    dir: ./components/payments
   search:
-    taskfile: ./services/search
-    dir: ./services/search
+    taskfile: ./components/search
+    dir: ./components/search
   wallets:
-    taskfile: ./services/wallets
-    dir: ./services/wallets
+    taskfile: ./components/wallets
+    dir: ./components/wallets
   webhooks:
-    taskfile: ./services/webhooks
-    dir: ./services/webhooks
+    taskfile: ./components/webhooks
+    dir: ./components/webhooks

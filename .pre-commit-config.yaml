@@ -1,5 +1,5 @@
 fail_fast: true
-exclude: ^sdks/|openapi/build|services/payments/client|services/auth/authclient
+exclude: ^sdks/|openapi/build|components/payments/client|components/auth/authclient
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
@@ -52,7 +52,7 @@ repos:
     description: "Runs `go test`, requires golang"
     require_serial: true
     # Test requires to start a docker compose, we need to remove this need or find a generic way to start/stop dependencies
-    exclude: services/webhooks
+    exclude: components/webhooks
   - id: commitlint
     name: commitlint
     description: Commitlint hook

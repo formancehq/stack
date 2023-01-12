@@ -3,17 +3,17 @@ ARG APP_SHA
 ARG VERSION
 WORKDIR /src
 COPY . .
-WORKDIR /src/services/wallets
+WORKDIR /src/components/webhooks
 RUN go mod download
-RUN GOOS=linux go build -o wallets \
+RUN GOOS=linux go build -o webhooks \
     -ldflags="-X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Version=${VERSION} \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Commit=${APP_SHA}" ./
 
 FROM ubuntu:jammy
 RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /src/services/wallets/wallets /wallets
+COPY --from=builder /src/components/webhooks/webhooks /webhooks
 EXPOSE 3068
-ENV OTEL_SERVICE_NAME wallets
-ENTRYPOINT ["/wallets"]
+ENV OTEL_SERVICE_NAME webhooks
+ENTRYPOINT ["/webhooks"]
 CMD ["server"]

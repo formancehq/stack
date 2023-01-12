@@ -33,8 +33,8 @@ jobs:
           json: "true"
           dir_names_max_depth: "2"
           files: |
-            services/**
-      - run: echo "folders=$(echo ${{ steps.changed-files-specific.outputs.all_modified_files }} | sed 's/services\///g')" >> $GITHUB_OUTPUT
+            components/**
+      - run: echo "folders=$(echo ${{ steps.changed-files-specific.outputs.all_modified_files }} | sed 's/components\///g')" >> $GITHUB_OUTPUT
         id: result
       - name: Run step if any file(s) in the docs folder change
         run: |
@@ -126,7 +126,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          file: ./services/${{ matrix.folder }}/build.Dockerfile
+          file: ./components/${{ matrix.folder }}/build.Dockerfile
           context: .
           platforms: linux/amd64
           push: true

@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * CurrencyCloudConfig
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-10T18:47:48.987377Z[Etc/UTC]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-12T08:54:40.542961Z[Etc/UTC]")
 public class CurrencyCloudConfig {
   public static final String SERIALIZED_NAME_API_KEY = "apiKey";
   @SerializedName(SERIALIZED_NAME_API_KEY)
