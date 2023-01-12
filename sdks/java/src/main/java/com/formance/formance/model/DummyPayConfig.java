@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * DummyPayConfig
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-12T09:00:27.971809Z[Etc/UTC]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class DummyPayConfig {
   public static final String SERIALIZED_NAME_FILE_POLLING_PERIOD = "filePollingPeriod";
   @SerializedName(SERIALIZED_NAME_FILE_POLLING_PERIOD)

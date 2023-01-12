@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * TransactionData
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-12T09:00:27.971809Z[Etc/UTC]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class TransactionData {
   public static final String SERIALIZED_NAME_POSTINGS = "postings";
   @SerializedName(SERIALIZED_NAME_POSTINGS)

@@ -27,7 +27,7 @@ import java.io.IOException;
 /**
  * PostTransactionScript
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-12T09:00:27.971809Z[Etc/UTC]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class PostTransactionScript {
   public static final String SERIALIZED_NAME_PLAIN = "plain";
   @SerializedName(SERIALIZED_NAME_PLAIN)

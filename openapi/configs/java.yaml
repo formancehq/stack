@@ -25,6 +25,7 @@ additionalProperties:
   gpg_passphrase: '${{ secrets.GPG_PASSPHRASE }}'
   nexus_username: '${{ secrets.OSSRH_USERNAME }}'
   nexus_password: '${{ secrets.OSSRH_PASSWORD }}'
+  hideGenerationTimestamp: true
 
 inlineSchemaNameMappings:
   getAccount_200_response: GetAccountResponse

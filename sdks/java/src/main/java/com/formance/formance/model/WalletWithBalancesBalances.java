@@ -28,7 +28,7 @@ import java.io.IOException;
 /**
  * WalletWithBalancesBalances
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-12T09:00:27.971809Z[Etc/UTC]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class WalletWithBalancesBalances {
   public static final String SERIALIZED_NAME_MAIN = "main";
   @SerializedName(SERIALIZED_NAME_MAIN)

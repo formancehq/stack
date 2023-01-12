@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Mapping
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-12T09:00:27.971809Z[Etc/UTC]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class Mapping {
   public static final String SERIALIZED_NAME_CONTRACTS = "contracts";
   @SerializedName(SERIALIZED_NAME_CONTRACTS)
