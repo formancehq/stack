@@ -28,7 +28,7 @@ import java.time.OffsetDateTime;
 /**
  * StripeTask
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-12T08:54:40.542961Z[Etc/UTC]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-12T09:00:27.971809Z[Etc/UTC]")
 public class StripeTask {
   public static final String SERIALIZED_NAME_OLDEST_ID = "oldestId";
   @SerializedName(SERIALIZED_NAME_OLDEST_ID)

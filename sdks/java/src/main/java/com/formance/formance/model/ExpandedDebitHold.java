@@ -31,7 +31,7 @@ import java.util.UUID;
 /**
  * ExpandedDebitHold
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-12T08:54:40.542961Z[Etc/UTC]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", date = "2023-01-12T09:00:27.971809Z[Etc/UTC]")
 public class ExpandedDebitHold {
   public static final String SERIALIZED_NAME_ID = "id";
   @SerializedName(SERIALIZED_NAME_ID)
