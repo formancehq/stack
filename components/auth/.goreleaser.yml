@@ -1,10 +1,8 @@
 project_name: auth
-env:
-  - GO111MODULE=on
-  - GOPROXY=https://proxy.golang.org
-before:
-  hooks:
-    - go mod download
+
+monorepo:
+  tag_prefix: components/auth/
+  dir: ./components/auth/
 
 builds:
   - binary: auth
@@ -17,8 +15,6 @@ builds:
     env:
       - CGO_ENABLED=0
     goos:
-#      - windows
-#      - darwin
       - linux
     goarch:
       - amd64
@@ -31,13 +27,10 @@ archives:
     builds:
       - auth
     format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
 
 checksum:
-  name_template: 'checksums_{{.ProjectName}}.txt'
+  name_template: '{{.ProjectName}}_checksums.txt'
 
 snapshot:
   name_template: "{{ .Tag }}"
@@ -66,8 +59,8 @@ changelog:
 
 release:
   prerelease: auto
+  draft: true
   footer: |
-    **Full Changelog**: https://github.com/formancehq/{{.ProjectName}}/compare/{{ .PreviousTag }}...{{ .Tag }}
     ## What to do next?
     - Read the [documentation](https://docs.formance.com/)
     - Join our [Slack server](https://formance.com/slack)

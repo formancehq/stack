@@ -96,12 +96,13 @@ jobs:
           registry: ghcr.io
           username: "NumaryBot"
           password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - run: go mod download
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser-pro
           version: latest
-          args: release --rm-dist -f services/${{ needs.Extract.outputs.service }}/.goreleaser.yml
+          args: release --rm-dist -f components/${{ needs.Extract.outputs.service }}/.goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
