@@ -37,8 +37,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -59,7 +57,7 @@ type SearchMutator struct {
 // +kubebuilder:rbac:groups=components.formance.com,resources=searches/finalizers,verbs=update
 
 func (r *SearchMutator) Mutate(ctx context.Context, search *componentsv1beta2.Search) (*ctrl.Result, error) {
-	deployment, err := r.reconcileDeployment(ctx, search)
+	_, err := r.reconcileDeployment(ctx, search)
 	if err != nil {
 		return nil, pkgError.Wrap(err, "Reconciling deployment")
 	}
@@ -76,16 +74,6 @@ func (r *SearchMutator) Mutate(ctx context.Context, search *componentsv1beta2.Se
 
 	if _, err = r.reconcileBenthosStreamServer(ctx, search); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling benthos stream server")
-	}
-
-	service, _, err := r.reconcileService(ctx, search, deployment)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-	}
-
-	_, _, err = r.reconcileIngress(ctx, search, service)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	if _, _, err := r.reconcileHPA(ctx, search); err != nil {
@@ -159,66 +147,6 @@ func (r *SearchMutator) reconcileDeployment(ctx context.Context, search *compone
 	search.Status.Replicas = *search.Spec.GetReplicas()
 
 	return ret, err
-}
-
-func (r *SearchMutator) reconcileService(ctx context.Context, search *componentsv1beta2.Search, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
-		controllerutils.WithController[*corev1.Service](search, r.Scheme),
-		func(service *corev1.Service) error {
-			service.Spec = corev1.ServiceSpec{
-				Ports: []corev1.ServicePort{{
-					Name:        "http",
-					Port:        deployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort,
-					Protocol:    "TCP",
-					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString(deployment.Spec.Template.Spec.Containers[0].Ports[0].Name),
-				}},
-				Selector: deployment.Spec.Template.Labels,
-			}
-			return nil
-		})
-}
-
-func (r *SearchMutator) reconcileIngress(ctx context.Context, search *componentsv1beta2.Search, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
-	annotations := search.Spec.Ingress.Annotations
-	if annotations == nil {
-		annotations = map[string]string{}
-	}
-	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", search.Namespace)
-	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
-		controllerutils.WithController[*networkingv1.Ingress](search, r.Scheme),
-		func(ingress *networkingv1.Ingress) error {
-			pathType := networkingv1.PathTypePrefix
-			ingress.ObjectMeta.Annotations = annotations
-			ingress.Spec = networkingv1.IngressSpec{
-				TLS: search.Spec.Ingress.TLS.AsK8SIngressTLSSlice(),
-				Rules: []networkingv1.IngressRule{
-					{
-						Host: search.Spec.Ingress.Host,
-						IngressRuleValue: networkingv1.IngressRuleValue{
-							HTTP: &networkingv1.HTTPIngressRuleValue{
-								Paths: []networkingv1.HTTPIngressPath{
-									{
-										Path:     search.Spec.Ingress.Path,
-										PathType: &pathType,
-										Backend: networkingv1.IngressBackend{
-											Service: &networkingv1.IngressServiceBackend{
-												Name: service.Name,
-												Port: networkingv1.ServiceBackendPort{
-													Name: service.Spec.Ports[0].Name,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			}
-			return nil
-		})
 }
 
 func (r *SearchMutator) reconcileHPA(ctx context.Context, search *componentsv1beta2.Search) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {

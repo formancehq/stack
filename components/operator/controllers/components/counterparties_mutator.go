@@ -18,7 +18,6 @@ package components
 
 import (
 	"context"
-	"fmt"
 
 	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
@@ -30,8 +29,6 @@ import (
 	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -55,19 +52,9 @@ func (r *CounterpartiesMutator) Mutate(ctx context.Context, counterparties *comp
 	apisv1beta2.SetProgressing(counterparties)
 
 	if counterparties.Spec.Enabled {
-		deployment, _, err := r.reconcileDeployment(ctx, counterparties)
+		_, _, err := r.reconcileDeployment(ctx, counterparties)
 		if err != nil {
 			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
-		}
-
-		service, _, err := r.reconcileService(ctx, counterparties, deployment)
-		if err != nil {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-		}
-
-		_, _, err = r.reconcileIngress(ctx, counterparties, service)
-		if err != nil {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 		}
 	}
 
@@ -127,66 +114,6 @@ func (r *CounterpartiesMutator) reconcileDeployment(ctx context.Context, counter
 					},
 					Env: counterparties.Spec.Postgres.Env(""),
 				}}
-			}
-			return nil
-		})
-}
-
-func (r *CounterpartiesMutator) reconcileService(ctx context.Context, counterparties *componentsv1beta2.Counterparties, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(counterparties),
-		controllerutils.WithController[*corev1.Service](counterparties, r.Scheme),
-		func(service *corev1.Service) error {
-			service.Spec = corev1.ServiceSpec{
-				Ports: []corev1.ServicePort{{
-					Name:        "counterparties",
-					Port:        deployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort,
-					Protocol:    "TCP",
-					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString(deployment.Spec.Template.Spec.Containers[0].Ports[0].Name),
-				}},
-				Selector: deployment.Spec.Template.Labels,
-			}
-			return nil
-		})
-}
-
-func (r *CounterpartiesMutator) reconcileIngress(ctx context.Context, counterparties *componentsv1beta2.Counterparties, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
-	annotations := counterparties.Spec.Ingress.Annotations
-	if annotations == nil {
-		annotations = map[string]string{}
-	}
-	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", counterparties.Namespace)
-	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(counterparties),
-		controllerutils.WithController[*networkingv1.Ingress](counterparties, r.Scheme),
-		func(ingress *networkingv1.Ingress) error {
-			pathType := networkingv1.PathTypePrefix
-			ingress.ObjectMeta.Annotations = annotations
-			ingress.Spec = networkingv1.IngressSpec{
-				TLS: counterparties.Spec.Ingress.TLS.AsK8SIngressTLSSlice(),
-				Rules: []networkingv1.IngressRule{
-					{
-						Host: counterparties.Spec.Ingress.Host,
-						IngressRuleValue: networkingv1.IngressRuleValue{
-							HTTP: &networkingv1.HTTPIngressRuleValue{
-								Paths: []networkingv1.HTTPIngressPath{
-									{
-										Path:     counterparties.Spec.Ingress.Path,
-										PathType: &pathType,
-										Backend: networkingv1.IngressBackend{
-											Service: &networkingv1.IngressServiceBackend{
-												Name: service.Name,
-												Port: networkingv1.ServiceBackendPort{
-													Name: service.Spec.Ports[0].Name,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
 			}
 			return nil
 		})

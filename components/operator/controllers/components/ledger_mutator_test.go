@@ -8,8 +8,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
-	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -42,10 +40,6 @@ var _ = Describe("Ledger controller", func() {
 								},
 								Topic: "xxx",
 							},
-							Ingress: apisv1beta2.IngressSpec{
-								Path: "/ledger",
-								Host: "localhost",
-							},
 						},
 					}
 					Expect(Create(ledger)).To(BeNil())
@@ -61,28 +55,6 @@ var _ = Describe("Ledger controller", func() {
 					Eventually(Exists(deployment)).Should(BeTrue())
 					Expect(deployment.OwnerReferences).To(HaveLen(1))
 					Expect(deployment.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(ledger)))
-				})
-				It("Should create a service", func() {
-					service := &corev1.Service{
-						ObjectMeta: metav1.ObjectMeta{
-							Name:      ledger.Name,
-							Namespace: ledger.Namespace,
-						},
-					}
-					Eventually(Exists(service)).Should(BeTrue())
-					Expect(service.OwnerReferences).To(HaveLen(1))
-					Expect(service.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(ledger)))
-				})
-				It("Should create a ingress", func() {
-					ingress := &networkingv1.Ingress{
-						ObjectMeta: metav1.ObjectMeta{
-							Name:      ledger.Name,
-							Namespace: ledger.Namespace,
-						},
-					}
-					Eventually(Exists(ingress)).Should(BeTrue())
-					Expect(ingress.OwnerReferences).To(HaveLen(1))
-					Expect(ingress.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(ledger)))
 				})
 			})
 		})

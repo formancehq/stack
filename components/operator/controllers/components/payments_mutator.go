@@ -18,7 +18,6 @@ package components
 
 import (
 	"context"
-	"fmt"
 
 	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
@@ -54,19 +53,9 @@ func (r *PaymentsMutator) Mutate(ctx context.Context, payments *componentsv1beta
 
 	apisv1beta2.SetProgressing(payments)
 
-	deployment, _, err := r.reconcileDeployment(ctx, payments)
+	_, _, err := r.reconcileDeployment(ctx, payments)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
-	}
-
-	service, _, err := r.reconcileService(ctx, payments, deployment)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-	}
-
-	_, _, err = r.reconcileIngress(ctx, payments, service)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	apisv1beta2.SetReady(payments)
@@ -143,66 +132,6 @@ func (r *PaymentsMutator) reconcileDeployment(ctx context.Context, payments *com
 						Env:             env,
 						Command:         []string{"payments", "migrate", "up"},
 					}}
-			}
-			return nil
-		})
-}
-
-func (r *PaymentsMutator) reconcileService(ctx context.Context, payments *componentsv1beta2.Payments, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(payments),
-		controllerutils.WithController[*corev1.Service](payments, r.Scheme),
-		func(service *corev1.Service) error {
-			service.Spec = corev1.ServiceSpec{
-				Ports: []corev1.ServicePort{{
-					Name:        "http",
-					Port:        deployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort,
-					Protocol:    "TCP",
-					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString(deployment.Spec.Template.Spec.Containers[0].Ports[0].Name),
-				}},
-				Selector: deployment.Spec.Template.Labels,
-			}
-			return nil
-		})
-}
-
-func (r *PaymentsMutator) reconcileIngress(ctx context.Context, payments *componentsv1beta2.Payments, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
-	annotations := payments.Spec.Ingress.Annotations
-	if annotations == nil {
-		annotations = map[string]string{}
-	}
-	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", payments.Namespace)
-	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(payments),
-		controllerutils.WithController[*networkingv1.Ingress](payments, r.Scheme),
-		func(ingress *networkingv1.Ingress) error {
-			pathType := networkingv1.PathTypePrefix
-			ingress.ObjectMeta.Annotations = annotations
-			ingress.Spec = networkingv1.IngressSpec{
-				TLS: payments.Spec.Ingress.TLS.AsK8SIngressTLSSlice(),
-				Rules: []networkingv1.IngressRule{
-					{
-						Host: payments.Spec.Ingress.Host,
-						IngressRuleValue: networkingv1.IngressRuleValue{
-							HTTP: &networkingv1.HTTPIngressRuleValue{
-								Paths: []networkingv1.HTTPIngressPath{
-									{
-										Path:     payments.Spec.Ingress.Path,
-										PathType: &pathType,
-										Backend: networkingv1.IngressBackend{
-											Service: &networkingv1.IngressServiceBackend{
-												Name: service.Name,
-												Port: networkingv1.ServiceBackendPort{
-													Name: service.Spec.Ports[0].Name,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
 			}
 			return nil
 		})

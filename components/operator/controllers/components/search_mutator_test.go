@@ -14,8 +14,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
-	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -65,10 +63,6 @@ var _ = Describe("Search controller", func() {
 									Database:       "foo",
 								},
 							},
-							Ingress: apisv1beta2.IngressSpec{
-								Path: "/search",
-								Host: "localhost",
-							},
 						},
 					}
 					Expect(Create(search)).To(BeNil())
@@ -85,17 +79,6 @@ var _ = Describe("Search controller", func() {
 					Expect(deployment.OwnerReferences).To(HaveLen(1))
 					Expect(deployment.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(search)))
 				})
-				It("Should create a service", func() {
-					service := &corev1.Service{
-						ObjectMeta: metav1.ObjectMeta{
-							Name:      search.Name,
-							Namespace: search.Namespace,
-						},
-					}
-					Eventually(Exists(service)).Should(BeTrue())
-					Expect(service.OwnerReferences).To(HaveLen(1))
-					Expect(service.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(search)))
-				})
 				It("Should create a benthos server", func() {
 					Eventually(ConditionStatus(search, componentsv1beta2.ConditionTypeBenthosReady)).Should(Equal(metav1.ConditionTrue))
 					benthosServer := &benthosv1beta2.Server{
@@ -110,17 +93,6 @@ var _ = Describe("Search controller", func() {
 					Expect(benthosServer.Spec.TemplatesConfigMap).To(Equal("benthos-templates-config"))
 					Expect(benthosServer.Spec.ResourcesConfigMap).To(Equal("benthos-resources-config"))
 					Expect(benthosServer.Spec.StreamsConfigMap).To(Equal("benthos-streams-config"))
-				})
-				It("Should create a ingress", func() {
-					ingress := &networkingv1.Ingress{
-						ObjectMeta: metav1.ObjectMeta{
-							Name:      search.Name,
-							Namespace: search.Namespace,
-						},
-					}
-					Eventually(Exists(ingress)).Should(BeTrue())
-					Expect(ingress.OwnerReferences).To(HaveLen(1))
-					Expect(ingress.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(search)))
 				})
 			})
 		})

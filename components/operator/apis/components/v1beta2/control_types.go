@@ -31,14 +31,11 @@ type ControlSpec struct {
 	pkgapisv1beta2.CommonServiceProperties `json:",inline"`
 	pkgapisv1beta2.Scalable                `json:",inline"`
 
-	Ingress pkgapisv1beta2.IngressSpec `json:"ingress"`
 	// +optional
-	Monitoring  *pkgapisv1beta2.MonitoringSpec `json:"monitoring"`
-	ApiURLFront string                         `json:"apiURLFront"`
-	ApiURLBack  string                         `json:"apiURLBack"`
-
-	// +optional
-	AuthClientConfiguration *AuthClientConfiguration `json:"auth"`
+	Monitoring              *pkgapisv1beta2.MonitoringSpec `json:"monitoring"`
+	ApiURLFront             string                         `json:"apiURLFront"`
+	ApiURLBack              string                         `json:"apiURLBack"`
+	AuthClientConfiguration OAuth2ClientConfiguration      `json:"auth"`
 }
 
 //+kubebuilder:object:root=true

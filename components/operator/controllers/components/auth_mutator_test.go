@@ -8,8 +8,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
-	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -41,10 +39,6 @@ var _ = Describe("Auth controller", func() {
 								ClientID:     "foo",
 								ClientSecret: "bar",
 							},
-							Ingress: apisv1beta2.IngressSpec{
-								Path: "/auth",
-								Host: "localhost",
-							},
 						},
 					}
 					Expect(Create(auth)).To(BeNil())
@@ -60,28 +54,6 @@ var _ = Describe("Auth controller", func() {
 					Expect(deployment.OwnerReferences).To(HaveLen(1))
 					Expect(deployment.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(auth)))
 					Expect(deployment.Annotations).To(HaveKey(controllerutils.ReloaderAnnotationKey))
-				})
-				It("Should create a service", func() {
-					service := &corev1.Service{
-						ObjectMeta: metav1.ObjectMeta{
-							Name:      auth.Name,
-							Namespace: auth.Namespace,
-						},
-					}
-					Eventually(Exists(service)).Should(BeTrue())
-					Expect(service.OwnerReferences).To(HaveLen(1))
-					Expect(service.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(auth)))
-				})
-				It("Should create a ingress", func() {
-					ingress := &networkingv1.Ingress{
-						ObjectMeta: metav1.ObjectMeta{
-							Name:      auth.Name,
-							Namespace: auth.Namespace,
-						},
-					}
-					Eventually(Exists(ingress)).Should(BeTrue())
-					Expect(ingress.OwnerReferences).To(HaveLen(1))
-					Expect(ingress.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(auth)))
 				})
 			})
 		})

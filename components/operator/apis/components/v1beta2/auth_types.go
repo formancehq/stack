@@ -76,8 +76,7 @@ type AuthSpec struct {
 	// the env vars of the server using secret mapping.
 	// If not specified, a key will be automatically generated.
 	// +optional
-	SigningKey string                     `json:"signingKey"`
-	Ingress    pkgapisv1beta2.IngressSpec `json:"ingress"`
+	SigningKey string `json:"signingKey"`
 
 	DelegatedOIDCServer DelegatedOIDCServerConfiguration `json:"delegatedOIDCServer"`
 

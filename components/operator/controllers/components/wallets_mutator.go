@@ -31,8 +31,6 @@ import (
 	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -55,19 +53,9 @@ func (r *WalletsMutator) Mutate(ctx context.Context, wallets *componentsv1beta2.
 
 	apisv1beta2.SetProgressing(wallets)
 
-	deployment, _, err := r.reconcileDeployment(ctx, wallets)
+	_, _, err := r.reconcileDeployment(ctx, wallets)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
-	}
-
-	service, _, err := r.reconcileService(ctx, wallets, deployment)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-	}
-
-	_, _, err = r.reconcileIngress(ctx, wallets, service)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	apisv1beta2.SetReady(wallets)
@@ -119,66 +107,6 @@ func (r *WalletsMutator) reconcileDeployment(ctx context.Context, wallets *compo
 							}},
 							LivenessProbe: controllerutils.DefaultLiveness(),
 						}},
-					},
-				},
-			}
-			return nil
-		})
-}
-
-func (r *WalletsMutator) reconcileService(ctx context.Context, wallets *componentsv1beta2.Wallets, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(wallets),
-		controllerutils.WithController[*corev1.Service](wallets, r.Scheme),
-		func(service *corev1.Service) error {
-			service.Spec = corev1.ServiceSpec{
-				Ports: []corev1.ServicePort{{
-					Name:        "wallets",
-					Port:        deployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort,
-					Protocol:    "TCP",
-					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString(deployment.Spec.Template.Spec.Containers[0].Ports[0].Name),
-				}},
-				Selector: deployment.Spec.Template.Labels,
-			}
-			return nil
-		})
-}
-
-func (r *WalletsMutator) reconcileIngress(ctx context.Context, wallets *componentsv1beta2.Wallets, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
-	annotations := wallets.Spec.Ingress.Annotations
-	if annotations == nil {
-		annotations = map[string]string{}
-	}
-	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", wallets.Namespace)
-	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(wallets),
-		controllerutils.WithController[*networkingv1.Ingress](wallets, r.Scheme),
-		func(ingress *networkingv1.Ingress) error {
-			pathType := networkingv1.PathTypePrefix
-			ingress.ObjectMeta.Annotations = annotations
-			ingress.Spec = networkingv1.IngressSpec{
-				TLS: wallets.Spec.Ingress.TLS.AsK8SIngressTLSSlice(),
-				Rules: []networkingv1.IngressRule{
-					{
-						Host: wallets.Spec.Ingress.Host,
-						IngressRuleValue: networkingv1.IngressRuleValue{
-							HTTP: &networkingv1.HTTPIngressRuleValue{
-								Paths: []networkingv1.HTTPIngressPath{
-									{
-										Path:     wallets.Spec.Ingress.Path,
-										PathType: &pathType,
-										Backend: networkingv1.IngressBackend{
-											Service: &networkingv1.IngressServiceBackend{
-												Name: service.Name,
-												Port: networkingv1.ServiceBackendPort{
-													Name: service.Spec.Ports[0].Name,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
 					},
 				},
 			}

@@ -16,8 +16,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -43,19 +41,9 @@ func (m *ControlMutator) SetupWithBuilder(mgr ctrl.Manager, builder *ctrl.Builde
 func (m *ControlMutator) Mutate(ctx context.Context, control *componentsv1beta2.Control) (*ctrl.Result, error) {
 	apisv1beta2.SetProgressing(control)
 
-	deployment, err := m.reconcileDeployment(ctx, control)
+	_, err := m.reconcileDeployment(ctx, control)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
-	}
-
-	service, _, err := m.reconcileService(ctx, control, deployment)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-	}
-
-	_, _, err = m.reconcileIngress(ctx, control, service)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	if _, _, err := m.reconcileHPA(ctx, control); err != nil {
@@ -84,17 +72,14 @@ func (m *ControlMutator) reconcileDeployment(ctx context.Context, control *compo
 		env = append(env, control.Spec.Monitoring.Env("")...)
 	}
 
-	// TODO: Generate value
-	if control.Spec.AuthClientConfiguration != nil {
-		env = append(env,
-			apisv1beta2.Env("ENCRYPTION_KEY", "9h44y2ZqrDuUy5R9NGLA9hca7uRUr932"),
-			apisv1beta2.Env("ENCRYPTION_IV", "b6747T6eP9DnMvEw"),
-			apisv1beta2.Env("CLIENT_ID", control.Spec.AuthClientConfiguration.ClientID),
-			apisv1beta2.Env("CLIENT_SECRET", control.Spec.AuthClientConfiguration.ClientSecret),
-			// TODO: Clean that mess
-			apisv1beta2.Env("REDIRECT_URI", strings.TrimSuffix(control.Spec.ApiURLFront, "/api")),
-		)
-	}
+	env = append(env,
+		apisv1beta2.Env("ENCRYPTION_KEY", "9h44y2ZqrDuUy5R9NGLA9hca7uRUr932"),
+		apisv1beta2.Env("ENCRYPTION_IV", "b6747T6eP9DnMvEw"),
+		apisv1beta2.Env("CLIENT_ID", control.Spec.AuthClientConfiguration.ClientID),
+		apisv1beta2.Env("CLIENT_SECRET", control.Spec.AuthClientConfiguration.ClientSecret),
+		// TODO: Clean that mess
+		apisv1beta2.Env("REDIRECT_URI", strings.TrimSuffix(control.Spec.ApiURLFront, "/api")),
+	)
 
 	ret, _, err := controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
 		controllerutils.WithController[*appsv1.Deployment](control, m.Scheme),
@@ -145,65 +130,11 @@ func (m *ControlMutator) reconcileDeployment(ctx context.Context, control *compo
 	return ret, err
 }
 
-func (m *ControlMutator) reconcileService(ctx context.Context, control *componentsv1beta2.Control, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
-		controllerutils.WithController[*corev1.Service](control, m.Scheme),
-		func(service *corev1.Service) error {
-			service.Spec = corev1.ServiceSpec{
-				Ports: []corev1.ServicePort{{
-					Name:        "http",
-					Port:        deployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort,
-					Protocol:    "TCP",
-					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString(deployment.Spec.Template.Spec.Containers[0].Ports[0].Name),
-				}},
-				Selector: deployment.Spec.Template.Labels,
-			}
-			return nil
-		})
-}
-
 func (m *ControlMutator) reconcileHPA(ctx context.Context, control *componentsv1beta2.Control) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
 	return controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
 		controllerutils.WithController[*autoscallingv2.HorizontalPodAutoscaler](control, m.Scheme),
 		func(hpa *autoscallingv2.HorizontalPodAutoscaler) error {
 			hpa.Spec = control.Spec.GetHPASpec(control)
-			return nil
-		})
-}
-
-func (m *ControlMutator) reconcileIngress(ctx context.Context, control *componentsv1beta2.Control, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
-		controllerutils.WithController[*networkingv1.Ingress](control, m.Scheme),
-		func(ingress *networkingv1.Ingress) error {
-			pathType := networkingv1.PathTypePrefix
-			ingress.ObjectMeta.Annotations = control.Spec.Ingress.Annotations
-			ingress.Spec = networkingv1.IngressSpec{
-				TLS: control.Spec.Ingress.TLS.AsK8SIngressTLSSlice(),
-				Rules: []networkingv1.IngressRule{
-					{
-						Host: control.Spec.Ingress.Host,
-						IngressRuleValue: networkingv1.IngressRuleValue{
-							HTTP: &networkingv1.HTTPIngressRuleValue{
-								Paths: []networkingv1.HTTPIngressPath{
-									{
-										Path:     control.Spec.Ingress.Path,
-										PathType: &pathType,
-										Backend: networkingv1.IngressBackend{
-											Service: &networkingv1.IngressServiceBackend{
-												Name: service.Name,
-												Port: networkingv1.ServiceBackendPort{
-													Name: service.Spec.Ports[0].Name,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			}
 			return nil
 		})
 }

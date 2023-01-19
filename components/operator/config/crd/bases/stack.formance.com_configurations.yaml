@@ -2652,13 +2652,6 @@ spec:
                         type: boolean
                       enabled:
                         type: boolean
-                      ingress:
-                        properties:
-                          annotations:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
                       postgres:
                         properties:
                           disableSSLMode:

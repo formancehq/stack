@@ -19,6 +19,7 @@ package v1beta2
 import (
 	"reflect"
 
+	"github.com/iancoleman/strcase"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -63,7 +64,7 @@ type Versions struct {
 }
 
 func (in *Versions) GetFromServiceName(s string) string {
-	fieldByName := reflect.ValueOf(in.Spec).FieldByName(s)
+	fieldByName := reflect.ValueOf(in.Spec).FieldByName(strcase.ToCamel(s))
 	return fieldByName.String()
 }
 

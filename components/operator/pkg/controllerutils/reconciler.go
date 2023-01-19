@@ -65,6 +65,7 @@ func (r *Reconciler[T]) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.R
 		defer func() {
 			if e := recover(); e != nil {
 				reconcileError = fmt.Errorf("%s", e)
+				log.FromContext(ctx).Error(reconcileError, "reconciling")
 				debug.PrintStack()
 			}
 		}()

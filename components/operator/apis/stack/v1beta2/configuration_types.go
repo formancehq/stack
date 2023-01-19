@@ -18,13 +18,23 @@ package v1beta2
 
 import (
 	"reflect"
+	"strings"
 
+	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
 	"github.com/formancehq/operator/apis/components/v1beta2"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/typeutils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
+
+// +kubebuilder:object:generate=false
+type ServiceConfiguration interface {
+	NeedAuthMiddleware() bool
+	Spec(stack *Stack, configuration ConfigurationSpec) any
+	HTTPPort() int
+	AuthClientConfiguration(stack *Stack) *authcomponentsv1beta2.ClientConfiguration
+}
 
 type ConfigurationServicesSpec struct {
 	Auth           AuthSpec           `json:"auth,omitempty"`
@@ -36,6 +46,27 @@ type ConfigurationServicesSpec struct {
 	Wallets        WalletsSpec        `json:"wallets,omitempty"`
 	Orchestration  OrchestrationSpec  `json:"orchestration,omitempty"`
 	Counterparties CounterpartiesSpec `json:"counterparties,omitempty"`
+}
+
+var (
+	_ ServiceConfiguration = AuthSpec{}
+	_ ServiceConfiguration = ControlSpec{}
+	_ ServiceConfiguration = LedgerSpec{}
+	_ ServiceConfiguration = PaymentsSpec{}
+	_ ServiceConfiguration = SearchSpec{}
+	_ ServiceConfiguration = WebhooksSpec{}
+	_ ServiceConfiguration = WalletsSpec{}
+	_ ServiceConfiguration = OrchestrationSpec{}
+	_ ServiceConfiguration = CounterpartiesSpec{}
+)
+
+func (in *ConfigurationServicesSpec) AsServiceConfigurations() map[string]ServiceConfiguration {
+	valueOf := reflect.ValueOf(*in)
+	ret := make(map[string]ServiceConfiguration)
+	for i := 0; i < valueOf.Type().NumField(); i++ {
+		ret[strings.ToLower(valueOf.Type().Field(i).Name)] = valueOf.Field(i).Interface().(ServiceConfiguration)
+	}
+	return ret
 }
 
 func GetServiceList() []string {
@@ -54,7 +85,7 @@ type ConfigurationSpec struct {
 	// +optional
 	Monitoring *apisv1beta2.MonitoringSpec `json:"monitoring,omitempty"`
 	// +optional
-	Ingress  *IngressGlobalConfig   `json:"ingress,omitempty"`
+	Ingress  IngressGlobalConfig    `json:"ingress,omitempty"`
 	Temporal v1beta2.TemporalConfig `json:"temporal"`
 }
 
@@ -70,6 +101,10 @@ func (in *ConfigurationSpec) Validate() field.ErrorList {
 		typeutils.Map(in.Monitoring.Validate(), apisv1beta2.AddPrefixToFieldError("monitoring")),
 		typeutils.Map(in.Kafka.Validate(), apisv1beta2.AddPrefixToFieldError("kafka")),
 	)
+}
+
+func (in *ConfigurationSpec) GetServices() map[string]ServiceConfiguration {
+	return in.Services.AsServiceConfigurations()
 }
 
 //+kubebuilder:object:root=true

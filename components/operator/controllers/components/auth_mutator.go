@@ -40,8 +40,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/intstr"
-	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -71,19 +69,9 @@ func (r *Mutator) Mutate(ctx context.Context, auth *componentsv1beta2.Auth) (*ct
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling config")
 	}
 
-	deployment, err := r.reconcileDeployment(ctx, auth, config)
+	_, err = r.reconcileDeployment(ctx, auth, config)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
-	}
-
-	service, _, err := r.reconcileService(ctx, auth, deployment)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-	}
-
-	_, _, err = r.reconcileIngress(ctx, auth, service)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	if _, _, err := r.reconcileHPA(ctx, auth); err != nil {
@@ -199,24 +187,6 @@ func (r *Mutator) reconcileDeployment(ctx context.Context, auth *componentsv1bet
 	return ret, err
 }
 
-func (r *Mutator) reconcileService(ctx context.Context, auth *componentsv1beta2.Auth, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(auth),
-		controllerutils.WithController[*corev1.Service](auth, r.Scheme),
-		func(service *corev1.Service) error {
-			service.Spec = corev1.ServiceSpec{
-				Ports: []corev1.ServicePort{{
-					Name:        "http",
-					Port:        deployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort,
-					Protocol:    "TCP",
-					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString(deployment.Spec.Template.Spec.Containers[0].Ports[0].Name),
-				}},
-				Selector: deployment.Spec.Template.Labels,
-			}
-			return nil
-		})
-}
-
 func (r *Mutator) reconcileConfigFile(ctx context.Context, auth *componentsv1beta2.Auth) (*corev1.ConfigMap, controllerutil.OperationResult, error) {
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(auth),
 		controllerutils.WithController[*corev1.ConfigMap](auth, r.Scheme),
@@ -265,42 +235,6 @@ func (r *Mutator) reconcileSigningKeySecret(ctx context.Context, auth *component
 			}
 			t.StringData = map[string]string{
 				"signingKey": signingKey,
-			}
-			return nil
-		})
-}
-
-func (r *Mutator) reconcileIngress(ctx context.Context, auth *componentsv1beta2.Auth, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(auth),
-		controllerutils.WithController[*networkingv1.Ingress](auth, r.Scheme),
-		func(ingress *networkingv1.Ingress) error {
-			pathType := networkingv1.PathTypePrefix
-			ingress.ObjectMeta.Annotations = auth.Spec.Ingress.Annotations
-			ingress.Spec = networkingv1.IngressSpec{
-				TLS: auth.Spec.Ingress.TLS.AsK8SIngressTLSSlice(),
-				Rules: []networkingv1.IngressRule{
-					{
-						Host: auth.Spec.Ingress.Host,
-						IngressRuleValue: networkingv1.IngressRuleValue{
-							HTTP: &networkingv1.HTTPIngressRuleValue{
-								Paths: []networkingv1.HTTPIngressPath{
-									{
-										Path:     auth.Spec.Ingress.Path,
-										PathType: &pathType,
-										Backend: networkingv1.IngressBackend{
-											Service: &networkingv1.IngressServiceBackend{
-												Name: service.Name,
-												Port: networkingv1.ServiceBackendPort{
-													Name: service.Spec.Ports[0].Name,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
 			}
 			return nil
 		})

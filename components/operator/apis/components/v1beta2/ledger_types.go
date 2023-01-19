@@ -102,7 +102,6 @@ type LedgerSpec struct {
 	pkgapisv1beta2.CommonServiceProperties `json:",inline"`
 	pkgapisv1beta2.Scalable                `json:",inline"`
 
-	Ingress pkgapisv1beta2.IngressSpec `json:"ingress"`
 	// +optional
 	Postgres PostgresConfigCreateDatabase `json:"postgres"`
 	// +optional

@@ -2,7 +2,9 @@ package stack
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"sync"
 
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
 	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
@@ -10,8 +12,14 @@ import (
 	"github.com/formancehq/operator/pkg/controllerutils"
 	"github.com/formancehq/operator/pkg/typeutils"
 	"github.com/google/uuid"
+	"github.com/iancoleman/strcase"
+	"github.com/imdario/mergo"
 	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
+	networkingv1 "k8s.io/api/networking/v1"
 	apiextensionv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/utils/pointer"
 
 	stackv1beta2 "github.com/formancehq/operator/apis/stack/v1beta2"
 	pkgError "github.com/pkg/errors"
@@ -29,6 +37,28 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
+
+type serviceErrors struct {
+	errors map[string]error
+	mu     sync.Mutex
+}
+
+func (m *serviceErrors) Error() string {
+	ret := ""
+	for service, err := range m.errors {
+		ret = fmt.Sprintf("%s: %s\r\n", service, err)
+	}
+	return ret
+}
+
+func (m *serviceErrors) setError(service string, err error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.errors == nil {
+		m.errors = map[string]error{}
+	}
+	m.errors[service] = err
+}
 
 // +kubebuilder:rbac:groups=core,resources=namespaces,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cert-manager.io,resources=certificates,verbs=get;list;watch;create;update;patch;delete
@@ -92,7 +122,9 @@ func (r *Mutator) SetupWithBuilder(mgr ctrl.Manager, bldr *ctrl.Builder) error {
 		Owns(&componentsv1beta2.Wallets{}).
 		Owns(&componentsv1beta2.Orchestration{}).
 		Owns(&corev1.Namespace{}).
+		Owns(&corev1.Service{}).
 		Owns(&traefik.Middleware{}).
+		Owns(&networkingv1.Ingress{}).
 		Watches(
 			&source.Kind{Type: &stackv1beta2.Configuration{}},
 			watch(mgr, ".spec.configuration"),
@@ -136,81 +168,173 @@ func (r *Mutator) Mutate(ctx context.Context, stack *stackv1beta2.Stack) (*ctrl.
 		return controllerutils.Requeue(), fmt.Errorf("error retrieving Versions object: %s", err)
 	}
 
-	// Add static clients for app needing it (Actually, control)
-	if stack.Status.StaticAuthClients == nil {
-		stack.Status.StaticAuthClients = map[string]authcomponentsv1beta2.StaticClient{}
-	}
-
-	if _, ok := stack.Status.StaticAuthClients["control"]; !ok {
-		stack.Status.StaticAuthClients["control"] = authcomponentsv1beta2.StaticClient{
-			ID:      "control",
-			Secrets: []string{uuid.NewString()},
-			ClientConfiguration: authcomponentsv1beta2.ClientConfiguration{
-				Scopes: []string{"openid", "profile", "email", "offline"},
-				RedirectUris: []string{
-					fmt.Sprintf("%s/auth/login", stack.URL()),
-				},
-				PostLogoutRedirectUris: []string{
-					fmt.Sprintf("%s/auth/destroy", stack.URL()),
-				},
-			},
-		}
-	}
-	if _, ok := stack.Status.StaticAuthClients["wallets"]; !ok {
-		stack.Status.StaticAuthClients["wallets"] = authcomponentsv1beta2.StaticClient{
-			ID:      "wallets",
-			Secrets: []string{uuid.NewString()},
-			ClientConfiguration: authcomponentsv1beta2.ClientConfiguration{
-				Scopes: []string{"openid"},
-			},
-		}
-	}
-	if _, ok := stack.Status.StaticAuthClients["orchestration"]; !ok {
-		stack.Status.StaticAuthClients["orchestration"] = authcomponentsv1beta2.StaticClient{
-			ID:      "orchestration",
-			Secrets: []string{uuid.NewString()},
-			ClientConfiguration: authcomponentsv1beta2.ClientConfiguration{
-				Scopes: []string{"openid"},
-			},
-		}
-	}
-
 	if _, _, err := r.reconcileNamespace(ctx, stack); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling namespace")
 	}
+
 	if _, _, err := r.reconcileMiddleware(ctx, stack); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling middleware")
 	}
-	if _, _, err := r.reconcileAuth(ctx, stack, &configurationSpec, version.Spec.Auth); err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Auth")
+
+	me := &serviceErrors{}
+	for serviceName, serviceConfiguration := range configuration.Spec.GetServices() {
+		if err := r.createComponent(ctx, stack, configuration, version, serviceName, serviceConfiguration); err != nil {
+			me.setError(serviceName, err)
+		}
 	}
-	if _, _, err := r.reconcileLedger(ctx, stack, &configurationSpec, version.Spec.Ledger); err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Ledger")
-	}
-	if _, _, err := r.reconcilePayment(ctx, stack, &configurationSpec, version.Spec.Payments); err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Payment")
-	}
-	if _, _, err := r.reconcileSearch(ctx, stack, &configurationSpec, version.Spec.Search); err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Search")
-	}
-	if _, _, err := r.reconcileControl(ctx, stack, &configurationSpec, version.Spec.Control); err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Control")
-	}
-	if _, _, err := r.reconcileWebhooks(ctx, stack, &configurationSpec, version.Spec.Webhooks); err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Webhooks")
-	}
-	if _, _, err := r.reconcileWallets(ctx, stack, &configurationSpec, version.Spec.Wallets); err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Wallets")
-	}
-	if _, _, err := r.reconcileOrchestration(ctx, stack, &configurationSpec, version.Spec.Orchestration); err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Wallets")
-	}
-	if _, _, err := r.reconcileCounterparties(ctx, stack, &configurationSpec, version.Spec.Counterparties); err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Counterparties")
+	if len(me.errors) > 0 {
+		return controllerutils.Requeue(), me
 	}
 
 	apisv1beta2.SetReady(stack)
 	return nil, nil
+}
+
+func (r *Mutator) createComponent(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.Configuration, version *stackv1beta2.Versions, name string, serviceConfiguration stackv1beta2.ServiceConfiguration) error {
+	if clientConfiguration := serviceConfiguration.AuthClientConfiguration(stack); clientConfiguration != nil {
+		if stack.Status.StaticAuthClients == nil {
+			stack.Status.StaticAuthClients = map[string]authcomponentsv1beta2.StaticClient{}
+		}
+		stack.Status.StaticAuthClients[name] = authcomponentsv1beta2.StaticClient{
+			ID:                  name,
+			Secrets:             []string{uuid.NewString()},
+			ClientConfiguration: *clientConfiguration,
+		}
+	}
+
+	if _, _, err := r.createService(ctx, stack, name, serviceConfiguration); err != nil {
+		return err
+	}
+
+	if _, _, err := r.createIngress(ctx, stack, configuration, name, serviceConfiguration); err != nil {
+		return err
+	}
+
+	if _, err := r.createComponentObject(ctx, stack, configuration, version, name, serviceConfiguration); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Mutator) createComponentObject(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.Configuration,
+	version *stackv1beta2.Versions, serviceName string, serviceConfiguration stackv1beta2.ServiceConfiguration) (controllerutil.OperationResult, error) {
+	ret := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"kind":       strcase.ToCamel(serviceName),
+			"apiVersion": componentsv1beta2.GroupVersion.String(),
+			"metadata": map[string]any{
+				"name":      stack.ServiceName(serviceName),
+				"namespace": stack.Name,
+			},
+		},
+	}
+	return controllerutil.CreateOrUpdate(ctx, r.client, ret, func() error {
+		updatedPartialSpec := serviceConfiguration.Spec(stack, configuration.Spec)
+
+		data, err := json.Marshal(updatedPartialSpec)
+		if err != nil {
+			panic(err)
+		}
+
+		asMap := make(map[string]any)
+		if err := json.Unmarshal(data, &asMap); err != nil {
+			panic(err)
+		}
+
+		asMap["version"] = version.GetFromServiceName(serviceName)
+		asMap["debug"] = stack.Spec.Debug
+		asMap["dev"] = stack.Spec.Dev
+		asMap["monitoring"] = configuration.Spec.Monitoring
+
+		if clientConfiguration := serviceConfiguration.AuthClientConfiguration(stack); clientConfiguration != nil {
+			asMap["auth"] = map[string]any{
+				"clientId":     stack.Status.StaticAuthClients[serviceName].ID,
+				"clientSecret": stack.Status.StaticAuthClients[serviceName].Secrets[0],
+			}
+		}
+
+		spec, ok := ret.Object["spec"].(map[string]any)
+		if !ok {
+			spec = map[string]any{}
+		}
+		if err := mergo.Merge(&spec, asMap, mergo.WithOverride); err != nil {
+			return pkgError.Wrap(err, "merging spec")
+		}
+
+		ret.Object["spec"] = spec
+		return controllerutil.SetControllerReference(stack, ret, r.scheme)
+	})
+}
+
+func (r *Mutator) createService(ctx context.Context, stack *stackv1beta2.Stack, name string, serviceConfiguration stackv1beta2.ServiceConfiguration) (*corev1.Service, controllerutil.OperationResult, error) {
+	port := serviceConfiguration.HTTPPort()
+	return controllerutils.CreateOrUpdate(ctx, r.client, client.ObjectKey{
+		Namespace: stack.Name,
+		Name:      name,
+	},
+		controllerutils.WithController[*corev1.Service](stack, r.scheme),
+		func(service *corev1.Service) error {
+			service.Spec = corev1.ServiceSpec{
+				Ports: []corev1.ServicePort{{
+					Name:        "http",
+					Port:        int32(port),
+					Protocol:    "TCP",
+					AppProtocol: pointer.String("http"),
+					TargetPort:  intstr.FromInt(port),
+				}},
+				Selector: typeutils.CreateMap("app.kubernetes.io/name", name),
+			}
+			return nil
+		})
+}
+
+func (r *Mutator) createIngress(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.Configuration, name string, serviceConfiguration stackv1beta2.ServiceConfiguration) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
+	annotations := configuration.Spec.Ingress.Annotations
+	if annotations == nil {
+		annotations = map[string]string{}
+	}
+	if serviceConfiguration.NeedAuthMiddleware() {
+		middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", stack.Namespace)
+		annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
+	}
+
+	return controllerutils.CreateOrUpdate(ctx, r.client, client.ObjectKey{
+		Namespace: stack.Name,
+		Name:      fmt.Sprintf("%s-%s", stack.Name, name),
+	},
+		controllerutils.WithController[*networkingv1.Ingress](stack, r.scheme),
+		func(ingress *networkingv1.Ingress) error {
+			pathType := networkingv1.PathTypePrefix
+			ingress.ObjectMeta.Annotations = annotations
+			ingress.Spec = networkingv1.IngressSpec{
+				TLS: []networkingv1.IngressTLS{{}},
+				Rules: []networkingv1.IngressRule{
+					{
+						Host: stack.Spec.Host,
+						IngressRuleValue: networkingv1.IngressRuleValue{
+							HTTP: &networkingv1.HTTPIngressRuleValue{
+								Paths: []networkingv1.HTTPIngressPath{
+									{
+										Path:     fmt.Sprintf("/api/%s", name),
+										PathType: &pathType,
+										Backend: networkingv1.IngressBackend{
+											Service: &networkingv1.IngressServiceBackend{
+												Name: "http",
+												Port: networkingv1.ServiceBackendPort{
+													Name: "http",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}
+			return nil
+		})
 }
 
 func (r *Mutator) reconcileNamespace(ctx context.Context, stack *stackv1beta2.Stack) (*corev1.Namespace, controllerutil.OperationResult, error) {
@@ -231,263 +355,6 @@ func (r *Mutator) reconcileMiddleware(ctx context.Context, stack *stackv1beta2.S
 			Plugin: map[string]apiextensionv1.JSON{
 				"auth": {
 					Raw: []byte(fmt.Sprintf(`{"Issuer": "%s", "RefreshTime": "%s", "ExcludePaths": ["/_health", "/_healthcheck", "/.well-known/openid-configuration"]}`, stack.Spec.Scheme+"://"+stack.Spec.Host+"/api/auth", "10s")),
-				},
-			},
-		}
-		return nil
-	})
-}
-
-func (r *Mutator) reconcileAuth(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Auth, controllerutil.OperationResult, error) {
-	staticClients := append(configuration.Services.Auth.StaticClients, typeutils.SliceFromMap(stack.Status.StaticAuthClients)...)
-	staticClients = append(staticClients, stack.Spec.Auth.StaticClients...)
-	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      stack.ServiceName("auth"),
-	},
-		controllerutils.WithController[*componentsv1beta2.Auth](stack, r.scheme),
-		func(auth *componentsv1beta2.Auth) error {
-			auth.Spec = componentsv1beta2.AuthSpec{
-				Scalable: apisv1beta2.Scalable{
-					Replicas: auth.Spec.Replicas,
-				},
-				Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
-					CreateDatabase: true,
-					PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
-						PostgresConfig: configuration.Services.Auth.Postgres,
-						Database:       fmt.Sprintf("%s-auth", stack.Name),
-					},
-				},
-				BaseURL: fmt.Sprintf("%s://%s/api/auth", stack.Spec.Scheme, stack.Spec.Host),
-				CommonServiceProperties: apisv1beta2.CommonServiceProperties{
-					DevProperties: stack.Spec.DevProperties,
-					Version:       version, //TODO
-				},
-				Ingress:             configuration.Services.Auth.Ingress.Compute(stack, configuration, "/api/auth"),
-				DelegatedOIDCServer: stack.Spec.Auth.DelegatedOIDCServer,
-				Monitoring:          configuration.Monitoring,
-				StaticClients:       staticClients,
-			}
-			return nil
-		})
-}
-
-func (r *Mutator) reconcileLedger(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Ledger, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      stack.ServiceName("ledger"),
-	}, controllerutils.WithController[*componentsv1beta2.Ledger](stack, r.scheme), func(ledger *componentsv1beta2.Ledger) error {
-		ledger.Spec = componentsv1beta2.LedgerSpec{
-			Scalable: configuration.Services.Ledger.Scalable.WithReplicas(ledger.Spec.Replicas),
-			Ingress:  configuration.Services.Ledger.Ingress.Compute(stack, configuration, "/api/ledger"),
-			CommonServiceProperties: apisv1beta2.CommonServiceProperties{
-				DevProperties: stack.Spec.DevProperties,
-				Version:       version,
-			},
-			LockingStrategy: configuration.Services.Ledger.LockingStrategy,
-			Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
-				PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
-					Database:       fmt.Sprintf("%s-ledger", stack.Name),
-					PostgresConfig: configuration.Services.Ledger.Postgres,
-				},
-				CreateDatabase: true,
-			},
-			Monitoring: configuration.Monitoring,
-			Collector: &componentsv1beta2.CollectorConfig{
-				KafkaConfig: configuration.Kafka,
-				Topic:       fmt.Sprintf("%s-ledger", stack.Name),
-			},
-		}
-		return nil
-	})
-}
-
-func (r *Mutator) reconcilePayment(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Payments, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      stack.ServiceName("payments"),
-	}, controllerutils.WithController[*componentsv1beta2.Payments](stack, r.scheme), func(payment *componentsv1beta2.Payments) error {
-		payment.Spec = componentsv1beta2.PaymentsSpec{
-			Ingress: configuration.Services.Payments.Ingress.Compute(stack, configuration, "/api/payments"),
-			CommonServiceProperties: apisv1beta2.CommonServiceProperties{
-				DevProperties: stack.Spec.DevProperties,
-				Version:       version,
-			},
-			Monitoring: configuration.Monitoring,
-			Collector: &componentsv1beta2.CollectorConfig{
-				KafkaConfig: configuration.Kafka,
-				Topic:       fmt.Sprintf("%s-payments", stack.Name),
-			},
-			Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
-				CreateDatabase: true,
-				PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
-					PostgresConfig: configuration.Services.Payments.Postgres,
-					Database:       fmt.Sprintf("%s-payments", stack.Name),
-				},
-			},
-		}
-		return nil
-	})
-}
-
-func (r *Mutator) reconcileWebhooks(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Webhooks, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      stack.ServiceName("webhooks"),
-	}, controllerutils.WithController[*componentsv1beta2.Webhooks](stack, r.scheme), func(webhooks *componentsv1beta2.Webhooks) error {
-		webhooks.Spec = componentsv1beta2.WebhooksSpec{
-			Ingress:    configuration.Services.Webhooks.Ingress.Compute(stack, configuration, "/api/webhooks"),
-			Monitoring: configuration.Monitoring,
-			CommonServiceProperties: apisv1beta2.CommonServiceProperties{
-				DevProperties: stack.Spec.DevProperties,
-				Version:       version,
-			},
-			Collector: &componentsv1beta2.CollectorConfig{
-				KafkaConfig: configuration.Kafka,
-				Topic:       fmt.Sprintf("%s-payments %s-ledger", stack.Name, stack.Name),
-			},
-			Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
-				CreateDatabase: true,
-				PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
-					PostgresConfig: configuration.Services.Webhooks.Postgres,
-					Database:       fmt.Sprintf("%s-webhooks", stack.Name),
-				},
-			},
-		}
-		return nil
-	})
-}
-
-func (r *Mutator) reconcileWallets(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Wallets, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      stack.ServiceName("wallets"),
-	}, controllerutils.WithController[*componentsv1beta2.Wallets](stack, r.scheme), func(wallets *componentsv1beta2.Wallets) error {
-		wallets.Spec = componentsv1beta2.WalletsSpec{
-			Ingress:    configuration.Services.Wallets.Ingress.Compute(stack, configuration, "/api/wallets"),
-			Monitoring: configuration.Monitoring,
-			CommonServiceProperties: apisv1beta2.CommonServiceProperties{
-				DevProperties: stack.Spec.DevProperties,
-				Version:       version,
-			},
-			Auth: componentsv1beta2.ClientCredentialsAuthentication{
-				ClientID:     stack.Status.StaticAuthClients["wallets"].ID,
-				ClientSecret: stack.Status.StaticAuthClients["wallets"].Secrets[0],
-			},
-			StackURL: stack.URL(),
-		}
-		return nil
-	})
-}
-
-func (r *Mutator) reconcileOrchestration(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Orchestration, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      stack.ServiceName("orchestration"),
-	}, controllerutils.WithController[*componentsv1beta2.Orchestration](stack, r.scheme), func(orchestration *componentsv1beta2.Orchestration) error {
-		orchestration.Spec = componentsv1beta2.OrchestrationSpec{
-			Ingress:    configuration.Services.Orchestration.Ingress.Compute(stack, configuration, "/api/orchestration"),
-			Monitoring: configuration.Monitoring,
-			CommonServiceProperties: apisv1beta2.CommonServiceProperties{
-				DevProperties: stack.Spec.DevProperties,
-				Version:       version,
-			},
-			Auth: componentsv1beta2.ClientCredentialsAuthentication{
-				ClientID:     stack.Status.StaticAuthClients["orchestration"].ID,
-				ClientSecret: stack.Status.StaticAuthClients["orchestration"].Secrets[0],
-			},
-			StackURL: stack.URL(),
-			Temporal: configuration.Temporal,
-			Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
-				CreateDatabase: true,
-				PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
-					PostgresConfig: configuration.Services.Orchestration.Postgres,
-					Database:       fmt.Sprintf("%s-orchestration", stack.Name),
-				},
-			},
-		}
-		return nil
-	})
-}
-
-func (r *Mutator) reconcileCounterparties(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Counterparties, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      stack.ServiceName("counterparties"),
-	},
-		controllerutils.WithController[*componentsv1beta2.Counterparties](stack, r.scheme),
-		func(counterparties *componentsv1beta2.Counterparties) error {
-			counterparties.Spec = componentsv1beta2.CounterpartiesSpec{
-				Enabled:    configuration.Services.Counterparties.Enabled,
-				Ingress:    configuration.Services.Counterparties.Ingress.Compute(stack, configuration, "/api/counterparties"),
-				Monitoring: configuration.Monitoring,
-				CommonServiceProperties: apisv1beta2.CommonServiceProperties{
-					DevProperties: stack.Spec.DevProperties,
-					Version:       version,
-				},
-				Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
-					CreateDatabase: true,
-					PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
-						PostgresConfig: configuration.Services.Counterparties.Postgres,
-						Database:       fmt.Sprintf("%s-counterparties", stack.Name),
-					},
-				},
-			}
-			return nil
-		})
-}
-
-func (r *Mutator) reconcileControl(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Control, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      stack.ServiceName("control"),
-	},
-		controllerutils.WithController[*componentsv1beta2.Control](stack, r.scheme),
-		func(control *componentsv1beta2.Control) error {
-			control.Spec = componentsv1beta2.ControlSpec{
-				Scalable: apisv1beta2.Scalable{
-					Replicas: control.Spec.Replicas,
-				},
-				Ingress: configuration.Services.Control.Ingress.Compute(stack, configuration, "/"),
-				CommonServiceProperties: apisv1beta2.CommonServiceProperties{
-					DevProperties: stack.Spec.DevProperties,
-					Version:       version,
-				},
-				Monitoring:  configuration.Monitoring,
-				ApiURLFront: fmt.Sprintf("%s/api", stack.URL()),
-				ApiURLBack:  fmt.Sprintf("%s/api", stack.URL()),
-				AuthClientConfiguration: &componentsv1beta2.AuthClientConfiguration{
-					ClientID:     stack.Status.StaticAuthClients["control"].ID,
-					ClientSecret: stack.Status.StaticAuthClients["control"].Secrets[0],
-				},
-			}
-			return nil
-		})
-}
-
-func (r *Mutator) reconcileSearch(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Search, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
-		Namespace: stack.Name,
-		Name:      stack.ServiceName("search"),
-	}, controllerutils.WithController[*componentsv1beta2.Search](stack, r.scheme), func(search *componentsv1beta2.Search) error {
-		search.Spec = componentsv1beta2.SearchSpec{
-			Scalable: apisv1beta2.Scalable{
-				Replicas: search.Spec.Replicas,
-			},
-			Ingress:    configuration.Services.Search.Ingress.Compute(stack, configuration, "/api/search"),
-			Monitoring: configuration.Monitoring,
-			CommonServiceProperties: apisv1beta2.CommonServiceProperties{
-				DevProperties: stack.Spec.DevProperties,
-				Version:       version,
-			},
-			ElasticSearch: configuration.Services.Search.ElasticSearchConfig,
-			KafkaConfig:   configuration.Kafka,
-			Index:         stack.Name,
-			Batching:      configuration.Services.Search.Batching,
-			PostgresConfigs: componentsv1beta2.SearchPostgresConfigs{
-				Ledger: apisv1beta2.PostgresConfigWithDatabase{
-					PostgresConfig: configuration.Services.Ledger.Postgres,
-					Database:       fmt.Sprintf("%s-ledger", stack.Name),
 				},
 			},
 		}

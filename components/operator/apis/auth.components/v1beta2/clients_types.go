@@ -44,6 +44,27 @@ type ClientConfiguration struct {
 	Scopes []string `json:"scopes,omitempty"`
 }
 
+func (cfg ClientConfiguration) WithAdditionalScopes(scopes ...string) ClientConfiguration {
+	cfg.Scopes = append(cfg.Scopes, scopes...)
+	return cfg
+}
+
+func (cfg ClientConfiguration) WithRedirectUris(redirectUris ...string) ClientConfiguration {
+	cfg.RedirectUris = append(cfg.RedirectUris, redirectUris...)
+	return cfg
+}
+
+func (cfg ClientConfiguration) WithPostLogoutRedirectUris(redirectUris ...string) ClientConfiguration {
+	cfg.PostLogoutRedirectUris = append(cfg.PostLogoutRedirectUris, redirectUris...)
+	return cfg
+}
+
+func NewClientConfiguration() ClientConfiguration {
+	return ClientConfiguration{
+		Scopes: []string{"openid"}, // Required scope
+	}
+}
+
 type StaticClient struct {
 	ClientConfiguration `json:",inline" yaml:",inline"`
 	ID                  string `json:"id" yaml:"id"`

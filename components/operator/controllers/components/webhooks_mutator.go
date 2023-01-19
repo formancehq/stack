@@ -18,7 +18,6 @@ package components
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -57,7 +56,7 @@ func (r *WebhooksMutator) Mutate(ctx context.Context, webhooks *componentsv1beta
 
 	apisv1beta2.SetProgressing(webhooks)
 
-	deployment, _, err := r.reconcileDeployment(ctx, webhooks)
+	_, _, err := r.reconcileDeployment(ctx, webhooks)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
 	}
@@ -65,16 +64,6 @@ func (r *WebhooksMutator) Mutate(ctx context.Context, webhooks *componentsv1beta
 	_, _, err = r.reconcileWorkersDeployment(ctx, webhooks)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling workers deployment")
-	}
-
-	service, _, err := r.reconcileService(ctx, webhooks, deployment)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-	}
-
-	_, _, err = r.reconcileIngress(ctx, webhooks, service)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	apisv1beta2.SetReady(webhooks)
@@ -229,66 +218,6 @@ func (r *WebhooksMutator) reconcileWorkersDeployment(ctx context.Context, webhoo
 					},
 					Env: webhooks.Spec.Postgres.Env(""),
 				}}
-			}
-			return nil
-		})
-}
-
-func (r *WebhooksMutator) reconcileService(ctx context.Context, webhooks *componentsv1beta2.Webhooks, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(webhooks),
-		controllerutils.WithController[*corev1.Service](webhooks, r.Scheme),
-		func(service *corev1.Service) error {
-			service.Spec = corev1.ServiceSpec{
-				Ports: []corev1.ServicePort{{
-					Name:        "webhooks",
-					Port:        deployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort,
-					Protocol:    "TCP",
-					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString(deployment.Spec.Template.Spec.Containers[0].Ports[0].Name),
-				}},
-				Selector: deployment.Spec.Template.Labels,
-			}
-			return nil
-		})
-}
-
-func (r *WebhooksMutator) reconcileIngress(ctx context.Context, webhooks *componentsv1beta2.Webhooks, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
-	annotations := webhooks.Spec.Ingress.Annotations
-	if annotations == nil {
-		annotations = map[string]string{}
-	}
-	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", webhooks.Namespace)
-	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(webhooks),
-		controllerutils.WithController[*networkingv1.Ingress](webhooks, r.Scheme),
-		func(ingress *networkingv1.Ingress) error {
-			pathType := networkingv1.PathTypePrefix
-			ingress.ObjectMeta.Annotations = annotations
-			ingress.Spec = networkingv1.IngressSpec{
-				TLS: webhooks.Spec.Ingress.TLS.AsK8SIngressTLSSlice(),
-				Rules: []networkingv1.IngressRule{
-					{
-						Host: webhooks.Spec.Ingress.Host,
-						IngressRuleValue: networkingv1.IngressRuleValue{
-							HTTP: &networkingv1.HTTPIngressRuleValue{
-								Paths: []networkingv1.HTTPIngressPath{
-									{
-										Path:     webhooks.Spec.Ingress.Path,
-										PathType: &pathType,
-										Backend: networkingv1.IngressBackend{
-											Service: &networkingv1.IngressServiceBackend{
-												Name: service.Name,
-												Port: networkingv1.ServiceBackendPort{
-													Name: service.Spec.Ports[0].Name,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
 			}
 			return nil
 		})

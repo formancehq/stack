@@ -18,7 +18,6 @@ package components
 
 import (
 	"context"
-	"fmt"
 
 	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
@@ -58,19 +57,9 @@ func (r *LedgerMutator) Mutate(ctx context.Context, ledger *componentsv1beta2.Le
 
 	apisv1beta2.SetProgressing(ledger)
 
-	deployment, err := r.reconcileDeployment(ctx, ledger)
+	_, err := r.reconcileDeployment(ctx, ledger)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
-	}
-
-	service, _, err := r.reconcileService(ctx, ledger, deployment)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-	}
-
-	_, _, err = r.reconcileIngress(ctx, ledger, service)
-	if err != nil {
-		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	if _, _, err := r.reconcileHPA(ctx, ledger); err != nil {
@@ -176,66 +165,6 @@ func (r *LedgerMutator) reconcileHPA(ctx context.Context, ledger *componentsv1be
 		controllerutils.WithController[*autoscallingv2.HorizontalPodAutoscaler](ledger, r.Scheme),
 		func(hpa *autoscallingv2.HorizontalPodAutoscaler) error {
 			hpa.Spec = ledger.Spec.GetHPASpec(ledger)
-			return nil
-		})
-}
-
-func (r *LedgerMutator) reconcileService(ctx context.Context, ledger *componentsv1beta2.Ledger, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
-		controllerutils.WithController[*corev1.Service](ledger, r.Scheme),
-		func(service *corev1.Service) error {
-			service.Spec = corev1.ServiceSpec{
-				Ports: []corev1.ServicePort{{
-					Name:        "http",
-					Port:        deployment.Spec.Template.Spec.Containers[0].Ports[0].ContainerPort,
-					Protocol:    "TCP",
-					AppProtocol: pointer.String("http"),
-					TargetPort:  intstr.FromString(deployment.Spec.Template.Spec.Containers[0].Ports[0].Name),
-				}},
-				Selector: deployment.Spec.Template.Labels,
-			}
-			return nil
-		})
-}
-
-func (r *LedgerMutator) reconcileIngress(ctx context.Context, ledger *componentsv1beta2.Ledger, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
-	annotations := ledger.Spec.Ingress.Annotations
-	if annotations == nil {
-		annotations = map[string]string{}
-	}
-	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", ledger.Namespace)
-	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
-		controllerutils.WithController[*networkingv1.Ingress](ledger, r.Scheme),
-		func(ingress *networkingv1.Ingress) error {
-			pathType := networkingv1.PathTypePrefix
-			ingress.ObjectMeta.Annotations = annotations
-			ingress.Spec = networkingv1.IngressSpec{
-				TLS: ledger.Spec.Ingress.TLS.AsK8SIngressTLSSlice(),
-				Rules: []networkingv1.IngressRule{
-					{
-						Host: ledger.Spec.Ingress.Host,
-						IngressRuleValue: networkingv1.IngressRuleValue{
-							HTTP: &networkingv1.HTTPIngressRuleValue{
-								Paths: []networkingv1.HTTPIngressPath{
-									{
-										Path:     ledger.Spec.Ingress.Path,
-										PathType: &pathType,
-										Backend: networkingv1.IngressBackend{
-											Service: &networkingv1.IngressServiceBackend{
-												Name: service.Name,
-												Port: networkingv1.ServiceBackendPort{
-													Name: service.Spec.Ports[0].Name,
-												},
-											},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			}
 			return nil
 		})
 }

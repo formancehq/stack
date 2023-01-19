@@ -18,7 +18,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type ClientCredentialsAuthentication struct {
+type OAuth2ClientConfiguration struct {
 	ClientID     string `json:"clientId"`
 	ClientSecret string `json:"clientSecret"`
 }
@@ -26,10 +26,9 @@ type ClientCredentialsAuthentication struct {
 // WalletsSpec defines the desired state of Wallets
 type WalletsSpec struct {
 	pkgapisv1beta2.CommonServiceProperties `json:",inline"`
-	Auth                                   ClientCredentialsAuthentication `json:"auth"`
-	StackURL                               string                          `json:"stackUrl"`
+	Auth                                   OAuth2ClientConfiguration `json:"auth"`
+	StackURL                               string                    `json:"stackUrl"`
 
-	Ingress pkgapisv1beta2.IngressSpec `json:"ingress"`
 	// +optional
 	Monitoring *pkgapisv1beta2.MonitoringSpec `json:"monitoring"`
 }

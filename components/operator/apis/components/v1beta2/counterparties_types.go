@@ -26,7 +26,6 @@ type CounterpartiesSpec struct {
 	Enabled bool `json:"enabled,omitempty"`
 	// +optional
 	Postgres PostgresConfigCreateDatabase `json:"postgres"`
-	Ingress  pkgapisv1beta2.IngressSpec   `json:"ingress"`
 	// +optional
 	Monitoring *pkgapisv1beta2.MonitoringSpec `json:"monitoring"`
 }

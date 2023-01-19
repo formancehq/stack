@@ -47,7 +47,6 @@ type OrchestrationSpec struct {
 	apisv1beta2.CommonServiceProperties `json:",inline"`
 	apisv1beta2.Scalable                `json:",inline"`
 
-	Ingress apisv1beta2.IngressSpec `json:"ingress"`
 	// +optional
 	Postgres PostgresConfigCreateDatabase `json:"postgres"`
 	// +optional
@@ -55,9 +54,9 @@ type OrchestrationSpec struct {
 	// +optional
 	Collector *CollectorConfig `json:"collector"`
 
-	Auth     ClientCredentialsAuthentication `json:"auth"`
-	StackURL string                          `json:"stackUrl"`
-	Temporal TemporalConfig                  `json:"temporal"`
+	Auth     OAuth2ClientConfiguration `json:"auth"`
+	StackURL string                    `json:"stackUrl"`
+	Temporal TemporalConfig            `json:"temporal"`
 }
 
 //+kubebuilder:object:root=true
