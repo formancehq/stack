@@ -30,7 +30,6 @@ import (
 	autoscallingv2 "k8s.io/api/autoscaling/v2"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -64,30 +63,17 @@ func (r *LedgerMutator) Mutate(ctx context.Context, ledger *componentsv1beta2.Le
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
 	}
 
-	service, err := r.reconcileService(ctx, ledger, deployment)
+	service, _, err := r.reconcileService(ctx, ledger, deployment)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
-	if ledger.Spec.Ingress != nil {
-		_, err = r.reconcileIngress(ctx, ledger, service)
-		if err != nil {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-		}
-	} else {
-		err = r.Client.Delete(ctx, &networkingv1.Ingress{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      ledger.Name,
-				Namespace: ledger.Namespace,
-			},
-		})
-		if err != nil && !errors.IsNotFound(err) {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Deleting ingress")
-		}
-		apisv1beta2.RemoveIngressCondition(ledger)
+	_, _, err = r.reconcileIngress(ctx, ledger, service)
+	if err != nil {
+		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
-	if _, err := r.reconcileHPA(ctx, ledger); err != nil {
+	if _, _, err := r.reconcileHPA(ctx, ledger); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling HPA")
 	}
 
@@ -114,7 +100,7 @@ func (r *LedgerMutator) reconcileDeployment(ctx context.Context, ledger *compone
 		env = append(env, ledger.Spec.Collector.Env("NUMARY_")...)
 	}
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
+	ret, _, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
 		controllerutils.WithController[*appsv1.Deployment](ledger, r.Scheme),
 		func(deployment *appsv1.Deployment) error {
 			deployment.Spec = appsv1.DeploymentSpec{
@@ -170,13 +156,8 @@ func (r *LedgerMutator) reconcileDeployment(ctx context.Context, ledger *compone
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(ledger, err.Error())
+	if err != nil {
 		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(ledger)
 	}
 
 	selector, err := metav1.LabelSelectorAsSelector(ret.Spec.Selector)
@@ -190,26 +171,17 @@ func (r *LedgerMutator) reconcileDeployment(ctx context.Context, ledger *compone
 	return ret, err
 }
 
-func (r *LedgerMutator) reconcileHPA(ctx context.Context, ledger *componentsv1beta2.Ledger) (*autoscallingv2.HorizontalPodAutoscaler, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
+func (r *LedgerMutator) reconcileHPA(ctx context.Context, ledger *componentsv1beta2.Ledger) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
 		controllerutils.WithController[*autoscallingv2.HorizontalPodAutoscaler](ledger, r.Scheme),
 		func(hpa *autoscallingv2.HorizontalPodAutoscaler) error {
 			hpa.Spec = ledger.Spec.GetHPASpec(ledger)
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetHPAError(ledger, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetHPAReady(ledger)
-	}
-	return ret, err
 }
 
-func (r *LedgerMutator) reconcileService(ctx context.Context, ledger *componentsv1beta2.Ledger, deployment *appsv1.Deployment) (*corev1.Service, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
+func (r *LedgerMutator) reconcileService(ctx context.Context, ledger *componentsv1beta2.Ledger, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
 		controllerutils.WithController[*corev1.Service](ledger, r.Scheme),
 		func(service *corev1.Service) error {
 			service.Spec = corev1.ServiceSpec{
@@ -224,25 +196,16 @@ func (r *LedgerMutator) reconcileService(ctx context.Context, ledger *components
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetServiceError(ledger, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetServiceReady(ledger)
-	}
-	return ret, err
 }
 
-func (r *LedgerMutator) reconcileIngress(ctx context.Context, ledger *componentsv1beta2.Ledger, service *corev1.Service) (*networkingv1.Ingress, error) {
+func (r *LedgerMutator) reconcileIngress(ctx context.Context, ledger *componentsv1beta2.Ledger, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
 	annotations := ledger.Spec.Ingress.Annotations
 	if annotations == nil {
 		annotations = map[string]string{}
 	}
 	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", ledger.Namespace)
 	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
 		controllerutils.WithController[*networkingv1.Ingress](ledger, r.Scheme),
 		func(ingress *networkingv1.Ingress) error {
 			pathType := networkingv1.PathTypePrefix
@@ -275,15 +238,6 @@ func (r *LedgerMutator) reconcileIngress(ctx context.Context, ledger *components
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetIngressError(ledger, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetIngressReady(ledger)
-	}
-	return ret, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.

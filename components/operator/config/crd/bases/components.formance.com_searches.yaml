@@ -2407,6 +2407,7 @@ spec:
             - batching
             - elasticsearch
             - index
+            - ingress
             - kafka
             - postgres
             type: object

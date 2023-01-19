@@ -41,6 +41,10 @@ var _ = Describe("Auth controller", func() {
 								ClientID:     "foo",
 								ClientSecret: "bar",
 							},
+							Ingress: apisv1beta2.IngressSpec{
+								Path: "/auth",
+								Host: "localhost",
+							},
 						},
 					}
 					Expect(Create(auth)).To(BeNil())
@@ -68,39 +72,16 @@ var _ = Describe("Auth controller", func() {
 					Expect(service.OwnerReferences).To(HaveLen(1))
 					Expect(service.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(auth)))
 				})
-				Context("Then enable ingress", func() {
-					BeforeEach(func() {
-						auth.Spec.Ingress = &apisv1beta2.IngressSpec{
-							Path: "/auth",
-							Host: "localhost",
-						}
-						Expect(Update(auth)).To(BeNil())
-					})
-					It("Should create a ingress", func() {
-						ingress := &networkingv1.Ingress{
-							ObjectMeta: metav1.ObjectMeta{
-								Name:      auth.Name,
-								Namespace: auth.Namespace,
-							},
-						}
-						Eventually(Exists(ingress)).Should(BeTrue())
-						Expect(ingress.OwnerReferences).To(HaveLen(1))
-						Expect(ingress.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(auth)))
-					})
-					Context("Then disabling ingress support", func() {
-						BeforeEach(func() {
-							auth.Spec.Ingress = nil
-							Expect(Update(auth)).To(BeNil())
-						})
-						It("Should remove the ingress", func() {
-							Eventually(NotFound(&networkingv1.Ingress{
-								ObjectMeta: metav1.ObjectMeta{
-									Name:      auth.Name,
-									Namespace: auth.Namespace,
-								},
-							})).Should(BeTrue())
-						})
-					})
+				It("Should create a ingress", func() {
+					ingress := &networkingv1.Ingress{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      auth.Name,
+							Namespace: auth.Namespace,
+						},
+					}
+					Eventually(Exists(ingress)).Should(BeTrue())
+					Expect(ingress.OwnerReferences).To(HaveLen(1))
+					Expect(ingress.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(auth)))
 				})
 			})
 		})

@@ -107,11 +107,7 @@ func (in *AuthSpec) DeepCopyInto(out *AuthSpec) {
 	out.CommonServiceProperties = in.CommonServiceProperties
 	in.Scalable.DeepCopyInto(&out.Scalable)
 	in.Postgres.DeepCopyInto(&out.Postgres)
-	if in.Ingress != nil {
-		in, out := &in.Ingress, &out.Ingress
-		*out = new(apisv1beta2.IngressSpec)
-		(*in).DeepCopyInto(*out)
-	}
+	in.Ingress.DeepCopyInto(&out.Ingress)
 	in.DelegatedOIDCServer.DeepCopyInto(&out.DelegatedOIDCServer)
 	if in.Monitoring != nil {
 		in, out := &in.Monitoring, &out.Monitoring
@@ -247,11 +243,7 @@ func (in *ControlSpec) DeepCopyInto(out *ControlSpec) {
 	*out = *in
 	out.CommonServiceProperties = in.CommonServiceProperties
 	in.Scalable.DeepCopyInto(&out.Scalable)
-	if in.Ingress != nil {
-		in, out := &in.Ingress, &out.Ingress
-		*out = new(apisv1beta2.IngressSpec)
-		(*in).DeepCopyInto(*out)
-	}
+	in.Ingress.DeepCopyInto(&out.Ingress)
 	if in.Monitoring != nil {
 		in, out := &in.Monitoring, &out.Monitoring
 		*out = new(apisv1beta2.MonitoringSpec)
@@ -338,11 +330,7 @@ func (in *CounterpartiesSpec) DeepCopyInto(out *CounterpartiesSpec) {
 	*out = *in
 	out.CommonServiceProperties = in.CommonServiceProperties
 	in.Postgres.DeepCopyInto(&out.Postgres)
-	if in.Ingress != nil {
-		in, out := &in.Ingress, &out.Ingress
-		*out = new(apisv1beta2.IngressSpec)
-		(*in).DeepCopyInto(*out)
-	}
+	in.Ingress.DeepCopyInto(&out.Ingress)
 	if in.Monitoring != nil {
 		in, out := &in.Monitoring, &out.Monitoring
 		*out = new(apisv1beta2.MonitoringSpec)
@@ -515,11 +503,7 @@ func (in *LedgerSpec) DeepCopyInto(out *LedgerSpec) {
 	*out = *in
 	out.CommonServiceProperties = in.CommonServiceProperties
 	in.Scalable.DeepCopyInto(&out.Scalable)
-	if in.Ingress != nil {
-		in, out := &in.Ingress, &out.Ingress
-		*out = new(apisv1beta2.IngressSpec)
-		(*in).DeepCopyInto(*out)
-	}
+	in.Ingress.DeepCopyInto(&out.Ingress)
 	in.Postgres.DeepCopyInto(&out.Postgres)
 	if in.Monitoring != nil {
 		in, out := &in.Monitoring, &out.Monitoring
@@ -648,11 +632,7 @@ func (in *OrchestrationSpec) DeepCopyInto(out *OrchestrationSpec) {
 	*out = *in
 	out.CommonServiceProperties = in.CommonServiceProperties
 	in.Scalable.DeepCopyInto(&out.Scalable)
-	if in.Ingress != nil {
-		in, out := &in.Ingress, &out.Ingress
-		*out = new(apisv1beta2.IngressSpec)
-		(*in).DeepCopyInto(*out)
-	}
+	in.Ingress.DeepCopyInto(&out.Ingress)
 	in.Postgres.DeepCopyInto(&out.Postgres)
 	if in.Monitoring != nil {
 		in, out := &in.Monitoring, &out.Monitoring
@@ -741,11 +721,7 @@ func (in *PaymentsList) DeepCopyObject() runtime.Object {
 func (in *PaymentsSpec) DeepCopyInto(out *PaymentsSpec) {
 	*out = *in
 	out.CommonServiceProperties = in.CommonServiceProperties
-	if in.Ingress != nil {
-		in, out := &in.Ingress, &out.Ingress
-		*out = new(apisv1beta2.IngressSpec)
-		(*in).DeepCopyInto(*out)
-	}
+	in.Ingress.DeepCopyInto(&out.Ingress)
 	if in.Monitoring != nil {
 		in, out := &in.Monitoring, &out.Monitoring
 		*out = new(apisv1beta2.MonitoringSpec)
@@ -865,11 +841,7 @@ func (in *SearchSpec) DeepCopyInto(out *SearchSpec) {
 	*out = *in
 	out.CommonServiceProperties = in.CommonServiceProperties
 	in.Scalable.DeepCopyInto(&out.Scalable)
-	if in.Ingress != nil {
-		in, out := &in.Ingress, &out.Ingress
-		*out = new(apisv1beta2.IngressSpec)
-		(*in).DeepCopyInto(*out)
-	}
+	in.Ingress.DeepCopyInto(&out.Ingress)
 	if in.Monitoring != nil {
 		in, out := &in.Monitoring, &out.Monitoring
 		*out = new(apisv1beta2.MonitoringSpec)
@@ -986,11 +958,7 @@ func (in *WalletsSpec) DeepCopyInto(out *WalletsSpec) {
 	*out = *in
 	out.CommonServiceProperties = in.CommonServiceProperties
 	out.Auth = in.Auth
-	if in.Ingress != nil {
-		in, out := &in.Ingress, &out.Ingress
-		*out = new(apisv1beta2.IngressSpec)
-		(*in).DeepCopyInto(*out)
-	}
+	in.Ingress.DeepCopyInto(&out.Ingress)
 	if in.Monitoring != nil {
 		in, out := &in.Monitoring, &out.Monitoring
 		*out = new(apisv1beta2.MonitoringSpec)
@@ -1077,11 +1045,7 @@ func (in *WebhooksSpec) DeepCopyInto(out *WebhooksSpec) {
 		(*in).DeepCopyInto(*out)
 	}
 	in.Postgres.DeepCopyInto(&out.Postgres)
-	if in.Ingress != nil {
-		in, out := &in.Ingress, &out.Ingress
-		*out = new(apisv1beta2.IngressSpec)
-		(*in).DeepCopyInto(*out)
-	}
+	in.Ingress.DeepCopyInto(&out.Ingress)
 	if in.Monitoring != nil {
 		in, out := &in.Monitoring, &out.Monitoring
 		*out = new(apisv1beta2.MonitoringSpec)

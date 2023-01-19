@@ -28,7 +28,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -56,32 +55,19 @@ func (r *CounterpartiesMutator) Mutate(ctx context.Context, counterparties *comp
 	apisv1beta2.SetProgressing(counterparties)
 
 	if counterparties.Spec.Enabled {
-		deployment, err := r.reconcileDeployment(ctx, counterparties)
+		deployment, _, err := r.reconcileDeployment(ctx, counterparties)
 		if err != nil {
 			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
 		}
 
-		service, err := r.reconcileService(ctx, counterparties, deployment)
+		service, _, err := r.reconcileService(ctx, counterparties, deployment)
 		if err != nil {
 			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 		}
 
-		if counterparties.Spec.Ingress != nil {
-			_, err = r.reconcileIngress(ctx, counterparties, service)
-			if err != nil {
-				return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-			}
-		} else {
-			err = r.Client.Delete(ctx, &networkingv1.Ingress{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      counterparties.Name,
-					Namespace: counterparties.Namespace,
-				},
-			})
-			if err != nil && !errors.IsNotFound(err) {
-				return controllerutils.Requeue(), pkgError.Wrap(err, "Deleting ingress")
-			}
-			apisv1beta2.RemoveIngressCondition(counterparties)
+		_, _, err = r.reconcileIngress(ctx, counterparties, service)
+		if err != nil {
+			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 		}
 	}
 
@@ -100,10 +86,10 @@ func counterpartiesEnvVars(counterparties *componentsv1beta2.Counterparties) []c
 	return env
 }
 
-func (r *CounterpartiesMutator) reconcileDeployment(ctx context.Context, counterparties *componentsv1beta2.Counterparties) (*appsv1.Deployment, error) {
+func (r *CounterpartiesMutator) reconcileDeployment(ctx context.Context, counterparties *componentsv1beta2.Counterparties) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "counterparties")
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(counterparties),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(counterparties),
 		controllerutils.WithController[*appsv1.Deployment](counterparties, r.Scheme),
 		func(deployment *appsv1.Deployment) error {
 			deployment.Spec = appsv1.DeploymentSpec{
@@ -144,19 +130,10 @@ func (r *CounterpartiesMutator) reconcileDeployment(ctx context.Context, counter
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(counterparties, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(counterparties)
-	}
-	return ret, err
 }
 
-func (r *CounterpartiesMutator) reconcileService(ctx context.Context, counterparties *componentsv1beta2.Counterparties, deployment *appsv1.Deployment) (*corev1.Service, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(counterparties),
+func (r *CounterpartiesMutator) reconcileService(ctx context.Context, counterparties *componentsv1beta2.Counterparties, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(counterparties),
 		controllerutils.WithController[*corev1.Service](counterparties, r.Scheme),
 		func(service *corev1.Service) error {
 			service.Spec = corev1.ServiceSpec{
@@ -171,25 +148,16 @@ func (r *CounterpartiesMutator) reconcileService(ctx context.Context, counterpar
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetServiceError(counterparties, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetServiceReady(counterparties)
-	}
-	return ret, err
 }
 
-func (r *CounterpartiesMutator) reconcileIngress(ctx context.Context, counterparties *componentsv1beta2.Counterparties, service *corev1.Service) (*networkingv1.Ingress, error) {
+func (r *CounterpartiesMutator) reconcileIngress(ctx context.Context, counterparties *componentsv1beta2.Counterparties, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
 	annotations := counterparties.Spec.Ingress.Annotations
 	if annotations == nil {
 		annotations = map[string]string{}
 	}
 	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", counterparties.Namespace)
 	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(counterparties),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(counterparties),
 		controllerutils.WithController[*networkingv1.Ingress](counterparties, r.Scheme),
 		func(ingress *networkingv1.Ingress) error {
 			pathType := networkingv1.PathTypePrefix
@@ -222,15 +190,6 @@ func (r *CounterpartiesMutator) reconcileIngress(ctx context.Context, counterpar
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetIngressError(counterparties, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetIngressReady(counterparties)
-	}
-	return ret, nil
 }
 
 // SetupWithBuilder SetupWithManager sets up the controller with the Manager.

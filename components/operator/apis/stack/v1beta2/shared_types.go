@@ -28,7 +28,7 @@ type IngressConfig struct {
 	Annotations map[string]string `json:"annotations"`
 }
 
-func (cfg *IngressConfig) Compute(stack *Stack, config *ConfigurationSpec, path string) *apisv1beta2.IngressSpec {
+func (cfg *IngressConfig) Compute(stack *Stack, config *ConfigurationSpec, path string) apisv1beta2.IngressSpec {
 	annotations := make(map[string]string)
 	if config.Ingress != nil && config.Ingress.Annotations != nil {
 		annotations = typeutils.MergeMaps(annotations, config.Ingress.Annotations)
@@ -40,7 +40,7 @@ func (cfg *IngressConfig) Compute(stack *Stack, config *ConfigurationSpec, path 
 	if config.Ingress != nil {
 		ingressTLS = config.Ingress.TLS
 	}
-	return &apisv1beta2.IngressSpec{
+	return apisv1beta2.IngressSpec{
 		Path:        path,
 		Host:        stack.Spec.Host,
 		Annotations: annotations,

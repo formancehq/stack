@@ -30,7 +30,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -58,37 +57,24 @@ func (r *WebhooksMutator) Mutate(ctx context.Context, webhooks *componentsv1beta
 
 	apisv1beta2.SetProgressing(webhooks)
 
-	deployment, err := r.reconcileDeployment(ctx, webhooks)
+	deployment, _, err := r.reconcileDeployment(ctx, webhooks)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
 	}
 
-	_, err = r.reconcileWorkersDeployment(ctx, webhooks)
+	_, _, err = r.reconcileWorkersDeployment(ctx, webhooks)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling workers deployment")
 	}
 
-	service, err := r.reconcileService(ctx, webhooks, deployment)
+	service, _, err := r.reconcileService(ctx, webhooks, deployment)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
-	if webhooks.Spec.Ingress != nil {
-		_, err = r.reconcileIngress(ctx, webhooks, service)
-		if err != nil {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-		}
-	} else {
-		err = r.Client.Delete(ctx, &networkingv1.Ingress{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      webhooks.Name,
-				Namespace: webhooks.Namespace,
-			},
-		})
-		if err != nil && !errors.IsNotFound(err) {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Deleting ingress")
-		}
-		apisv1beta2.RemoveIngressCondition(webhooks)
+	_, _, err = r.reconcileIngress(ctx, webhooks, service)
+	if err != nil {
+		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	apisv1beta2.SetReady(webhooks)
@@ -121,10 +107,10 @@ func envVars(webhooks *componentsv1beta2.Webhooks) []corev1.EnvVar {
 	return env
 }
 
-func (r *WebhooksMutator) reconcileDeployment(ctx context.Context, webhooks *componentsv1beta2.Webhooks) (*appsv1.Deployment, error) {
+func (r *WebhooksMutator) reconcileDeployment(ctx context.Context, webhooks *componentsv1beta2.Webhooks) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "webhooks")
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(webhooks),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(webhooks),
 		controllerutils.WithController[*appsv1.Deployment](webhooks, r.Scheme),
 		func(deployment *appsv1.Deployment) error {
 			deployment.Spec = appsv1.DeploymentSpec{
@@ -181,21 +167,12 @@ func (r *WebhooksMutator) reconcileDeployment(ctx context.Context, webhooks *com
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(webhooks, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(webhooks)
-	}
-	return ret, err
 }
 
-func (r *WebhooksMutator) reconcileWorkersDeployment(ctx context.Context, webhooks *componentsv1beta2.Webhooks) (*appsv1.Deployment, error) {
+func (r *WebhooksMutator) reconcileWorkersDeployment(ctx context.Context, webhooks *componentsv1beta2.Webhooks) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "webhooks-workers")
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, types.NamespacedName{
+	return controllerutils.CreateOrUpdate(ctx, r.Client, types.NamespacedName{
 		Namespace: webhooks.Namespace,
 		Name:      webhooks.Name + "-workers",
 	}, controllerutils.WithController[*appsv1.Deployment](webhooks, r.Scheme),
@@ -255,19 +232,10 @@ func (r *WebhooksMutator) reconcileWorkersDeployment(ctx context.Context, webhoo
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(webhooks, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(webhooks)
-	}
-	return ret, err
 }
 
-func (r *WebhooksMutator) reconcileService(ctx context.Context, webhooks *componentsv1beta2.Webhooks, deployment *appsv1.Deployment) (*corev1.Service, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(webhooks),
+func (r *WebhooksMutator) reconcileService(ctx context.Context, webhooks *componentsv1beta2.Webhooks, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(webhooks),
 		controllerutils.WithController[*corev1.Service](webhooks, r.Scheme),
 		func(service *corev1.Service) error {
 			service.Spec = corev1.ServiceSpec{
@@ -282,25 +250,16 @@ func (r *WebhooksMutator) reconcileService(ctx context.Context, webhooks *compon
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetServiceError(webhooks, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetServiceReady(webhooks)
-	}
-	return ret, err
 }
 
-func (r *WebhooksMutator) reconcileIngress(ctx context.Context, webhooks *componentsv1beta2.Webhooks, service *corev1.Service) (*networkingv1.Ingress, error) {
+func (r *WebhooksMutator) reconcileIngress(ctx context.Context, webhooks *componentsv1beta2.Webhooks, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
 	annotations := webhooks.Spec.Ingress.Annotations
 	if annotations == nil {
 		annotations = map[string]string{}
 	}
 	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", webhooks.Namespace)
 	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(webhooks),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(webhooks),
 		controllerutils.WithController[*networkingv1.Ingress](webhooks, r.Scheme),
 		func(ingress *networkingv1.Ingress) error {
 			pathType := networkingv1.PathTypePrefix
@@ -333,15 +292,6 @@ func (r *WebhooksMutator) reconcileIngress(ctx context.Context, webhooks *compon
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetIngressError(webhooks, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetIngressReady(webhooks)
-	}
-	return ret, nil
 }
 
 // SetupWithBuilder SetupWithManager sets up the controller with the Manager.

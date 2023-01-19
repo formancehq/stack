@@ -54,20 +54,6 @@ type StackSpec struct {
 	Scheme string `json:"scheme"`
 }
 
-const (
-	ConditionTypeStackNamespaceReady      = "NamespaceReady"
-	ConditionTypeStackAuthReady           = "AuthReady"
-	ConditionTypeStackLedgerReady         = "LedgerReady"
-	ConditionTypeStackSearchReady         = "SearchReady"
-	ConditionTypeStackControlReady        = "ControlReady"
-	ConditionTypeStackPaymentsReady       = "PaymentsReady"
-	ConditionTypeStackWebhooksReady       = "WebhooksReady"
-	ConditionTypeStackOrchestrationReady  = "OrchestrationReady"
-	ConditionTypeStackWalletsReady        = "WalletsReady"
-	ConditionTypeStackCounterpartiesReady = "CounterpartiesReady"
-	ConditionTypeStackMiddlewareReady     = "MiddlewareReady"
-)
-
 type ControlAuthentication struct {
 	ClientID string
 }
@@ -137,124 +123,8 @@ func (s *Stack) GetConditions() *pkgapisv1beta2.Conditions {
 	return &s.Status.Conditions
 }
 
-func (s *Stack) SetNamespaceCreated() {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackNamespaceReady, metav1.ConditionTrue)
-}
-
-func (s *Stack) SetNamespaceError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackNamespaceReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetAuthReady() {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackAuthReady, metav1.ConditionTrue)
-}
-
-func (s *Stack) SetWebhooksReady() {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackWebhooksReady, metav1.ConditionTrue)
-}
-
-func (s *Stack) SetAuthError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackAuthReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetLedgerReady() {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackLedgerReady, metav1.ConditionTrue)
-}
-
-func (s *Stack) SetLedgerError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackLedgerReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetSearchReady() {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackSearchReady, metav1.ConditionTrue)
-}
-
-func (s *Stack) SetSearchError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackSearchReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetControlReady() {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackControlReady, metav1.ConditionTrue)
-}
-
-func (s *Stack) SetControlError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackControlReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetPaymentError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackPaymentsReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetWebhooksError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackWebhooksReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetOrchestrationError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackWebhooksReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetMiddlewareError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackMiddlewareReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetPaymentReady() {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackPaymentsReady, metav1.ConditionTrue)
-}
-
-func (s *Stack) RemoveAuthStatus() {
-	s.Status.RemoveCondition(ConditionTypeStackAuthReady)
-}
-
-func (s *Stack) RemoveSearchStatus() {
-	s.Status.RemoveCondition(ConditionTypeStackSearchReady)
-}
-
-func (s *Stack) RemoveControlStatus() {
-	s.Status.RemoveCondition(ConditionTypeStackControlReady)
-}
-
-func (in *Stack) RemovePaymentsStatus() {
-	in.Status.RemoveCondition(ConditionTypeStackPaymentsReady)
-}
-
-func (in *Stack) RemoveWebhooksStatus() {
-	in.Status.RemoveCondition(ConditionTypeStackWebhooksReady)
-}
-
-func (in *Stack) SetMiddlewareReady() {
-	in.Status.RemoveCondition(ConditionTypeStackMiddlewareReady)
-}
-
 func (s *Stack) ServiceName(v string) string {
 	return fmt.Sprintf("%s-%s", s.Name, strings.ToLower(v))
-}
-
-func (in *Stack) RemoveWalletsStatus() {
-	in.Status.RemoveCondition(ConditionTypeStackWalletsReady)
-}
-
-func (s *Stack) SetWalletsError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackWalletsReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetWalletsReady() {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackWalletsReady, metav1.ConditionTrue)
-}
-
-func (s *Stack) SetOrchestrationReady() {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackOrchestrationReady, metav1.ConditionTrue)
-}
-
-func (in *Stack) RemoveCounterpartiesStatus() {
-	in.Status.RemoveCondition(ConditionTypeStackCounterpartiesReady)
-}
-
-func (s *Stack) SetCounterpartiesError(msg string) {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackCounterpartiesReady, metav1.ConditionFalse, msg)
-}
-
-func (s *Stack) SetCounterpartiesReady() {
-	pkgapisv1beta2.SetCondition(s, ConditionTypeStackCounterpartiesReady, metav1.ConditionTrue)
 }
 
 //+kubebuilder:object:root=true

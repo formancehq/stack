@@ -25,7 +25,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
@@ -176,37 +175,37 @@ func (r *Mutator) Mutate(ctx context.Context, stack *stackv1beta2.Stack) (*ctrl.
 		}
 	}
 
-	if err := r.reconcileNamespace(ctx, stack); err != nil {
+	if _, _, err := r.reconcileNamespace(ctx, stack); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling namespace")
 	}
-	if err := r.reconcileMiddleware(ctx, stack); err != nil {
+	if _, _, err := r.reconcileMiddleware(ctx, stack); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling middleware")
 	}
-	if err := r.reconcileAuth(ctx, stack, &configurationSpec, version.Spec.Auth); err != nil {
+	if _, _, err := r.reconcileAuth(ctx, stack, &configurationSpec, version.Spec.Auth); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Auth")
 	}
-	if err := r.reconcileLedger(ctx, stack, &configurationSpec, version.Spec.Ledger); err != nil {
+	if _, _, err := r.reconcileLedger(ctx, stack, &configurationSpec, version.Spec.Ledger); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Ledger")
 	}
-	if err := r.reconcilePayment(ctx, stack, &configurationSpec, version.Spec.Payments); err != nil {
+	if _, _, err := r.reconcilePayment(ctx, stack, &configurationSpec, version.Spec.Payments); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Payment")
 	}
-	if err := r.reconcileSearch(ctx, stack, &configurationSpec, version.Spec.Search); err != nil {
+	if _, _, err := r.reconcileSearch(ctx, stack, &configurationSpec, version.Spec.Search); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Search")
 	}
-	if err := r.reconcileControl(ctx, stack, &configurationSpec, version.Spec.Control); err != nil {
+	if _, _, err := r.reconcileControl(ctx, stack, &configurationSpec, version.Spec.Control); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Control")
 	}
-	if err := r.reconcileWebhooks(ctx, stack, &configurationSpec, version.Spec.Webhooks); err != nil {
+	if _, _, err := r.reconcileWebhooks(ctx, stack, &configurationSpec, version.Spec.Webhooks); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Webhooks")
 	}
-	if err := r.reconcileWallets(ctx, stack, &configurationSpec, version.Spec.Wallets); err != nil {
+	if _, _, err := r.reconcileWallets(ctx, stack, &configurationSpec, version.Spec.Wallets); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Wallets")
 	}
-	if err := r.reconcileOrchestration(ctx, stack, &configurationSpec, version.Spec.Orchestration); err != nil {
+	if _, _, err := r.reconcileOrchestration(ctx, stack, &configurationSpec, version.Spec.Orchestration); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Wallets")
 	}
-	if err := r.reconcileCounterparties(ctx, stack, &configurationSpec, version.Spec.Counterparties); err != nil {
+	if _, _, err := r.reconcileCounterparties(ctx, stack, &configurationSpec, version.Spec.Counterparties); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling Counterparties")
 	}
 
@@ -214,64 +213,35 @@ func (r *Mutator) Mutate(ctx context.Context, stack *stackv1beta2.Stack) (*ctrl.
 	return nil, nil
 }
 
-func (r *Mutator) reconcileNamespace(ctx context.Context, stack *stackv1beta2.Stack) error {
-	log.FromContext(ctx).Info("Reconciling Namespace")
-
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+func (r *Mutator) reconcileNamespace(ctx context.Context, stack *stackv1beta2.Stack) (*corev1.Namespace, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Name: stack.Name,
 	}, controllerutils.WithController[*corev1.Namespace](stack, r.scheme), func(ns *corev1.Namespace) error {
 		// No additional mutate needed
 		return nil
 	})
-	switch {
-	case err != nil:
-		stack.SetNamespaceError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetNamespaceCreated()
-	}
-
-	log.FromContext(ctx).Info("Namespace ready")
-	return nil
 }
 
-func (r *Mutator) reconcileMiddleware(ctx context.Context, stack *stackv1beta2.Stack) error {
-	log.FromContext(ctx).Info("Reconciling Middleware")
-
-	m := make(map[string]apiextensionv1.JSON)
-	m["auth"] = apiextensionv1.JSON{
-		Raw: []byte(fmt.Sprintf(`{"Issuer": "%s", "RefreshTime": "%s", "ExcludePaths": ["/_health", "/_healthcheck", "/.well-known/openid-configuration"]}`, stack.Spec.Scheme+"://"+stack.Spec.Host+"/api/auth", "10s")),
-	}
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+func (r *Mutator) reconcileMiddleware(ctx context.Context, stack *stackv1beta2.Stack) (*traefik.Middleware, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      "auth-middleware",
 	}, controllerutils.WithController[*traefik.Middleware](stack, r.scheme), func(middleware *traefik.Middleware) error {
 		middleware.Spec = traefik.MiddlewareSpec{
-			Plugin: m,
+			Plugin: map[string]apiextensionv1.JSON{
+				"auth": {
+					Raw: []byte(fmt.Sprintf(`{"Issuer": "%s", "RefreshTime": "%s", "ExcludePaths": ["/_health", "/_healthcheck", "/.well-known/openid-configuration"]}`, stack.Spec.Scheme+"://"+stack.Spec.Host+"/api/auth", "10s")),
+				},
+			},
 		}
 		return nil
 	})
-
-	switch {
-	case err != nil:
-		stack.SetMiddlewareError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetMiddlewareReady()
-	}
-
-	log.FromContext(ctx).Info("Middleware ready")
-	return nil
 }
 
-func (r *Mutator) reconcileAuth(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) error {
-	log.FromContext(ctx).Info("Reconciling Auth")
-
+func (r *Mutator) reconcileAuth(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Auth, controllerutil.OperationResult, error) {
 	staticClients := append(configuration.Services.Auth.StaticClients, typeutils.SliceFromMap(stack.Status.StaticAuthClients)...)
 	staticClients = append(staticClients, stack.Spec.Auth.StaticClients...)
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      stack.ServiceName("auth"),
 	},
@@ -300,23 +270,10 @@ func (r *Mutator) reconcileAuth(ctx context.Context, stack *stackv1beta2.Stack, 
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		stack.SetAuthError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetAuthReady()
-	}
-
-	log.FromContext(ctx).Info("Auth ready")
-	return nil
 }
 
-func (r *Mutator) reconcileLedger(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) error {
-	log.FromContext(ctx).Info("Reconciling Ledger")
-
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+func (r *Mutator) reconcileLedger(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Ledger, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      stack.ServiceName("ledger"),
 	}, controllerutils.WithController[*componentsv1beta2.Ledger](stack, r.scheme), func(ledger *componentsv1beta2.Ledger) error {
@@ -343,23 +300,10 @@ func (r *Mutator) reconcileLedger(ctx context.Context, stack *stackv1beta2.Stack
 		}
 		return nil
 	})
-	switch {
-	case err != nil:
-		stack.SetLedgerError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetLedgerReady()
-	}
-
-	log.FromContext(ctx).Info("Ledger ready")
-	return nil
 }
 
-func (r *Mutator) reconcilePayment(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) error {
-	log.FromContext(ctx).Info("Reconciling Payment")
-
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+func (r *Mutator) reconcilePayment(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Payments, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      stack.ServiceName("payments"),
 	}, controllerutils.WithController[*componentsv1beta2.Payments](stack, r.scheme), func(payment *componentsv1beta2.Payments) error {
@@ -384,23 +328,10 @@ func (r *Mutator) reconcilePayment(ctx context.Context, stack *stackv1beta2.Stac
 		}
 		return nil
 	})
-	switch {
-	case err != nil:
-		stack.SetPaymentError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetPaymentReady()
-	}
-
-	log.FromContext(ctx).Info("Payment ready")
-	return nil
 }
 
-func (r *Mutator) reconcileWebhooks(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) error {
-	log.FromContext(ctx).Info("Reconciling Webhooks")
-
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+func (r *Mutator) reconcileWebhooks(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Webhooks, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      stack.ServiceName("webhooks"),
 	}, controllerutils.WithController[*componentsv1beta2.Webhooks](stack, r.scheme), func(webhooks *componentsv1beta2.Webhooks) error {
@@ -425,23 +356,10 @@ func (r *Mutator) reconcileWebhooks(ctx context.Context, stack *stackv1beta2.Sta
 		}
 		return nil
 	})
-	switch {
-	case err != nil:
-		stack.SetWebhooksError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetWebhooksReady()
-	}
-
-	log.FromContext(ctx).Info("Webhooks ready")
-	return nil
 }
 
-func (r *Mutator) reconcileWallets(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) error {
-	log.FromContext(ctx).Info("Reconciling Wallets")
-
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+func (r *Mutator) reconcileWallets(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Wallets, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      stack.ServiceName("wallets"),
 	}, controllerutils.WithController[*componentsv1beta2.Wallets](stack, r.scheme), func(wallets *componentsv1beta2.Wallets) error {
@@ -460,23 +378,10 @@ func (r *Mutator) reconcileWallets(ctx context.Context, stack *stackv1beta2.Stac
 		}
 		return nil
 	})
-	switch {
-	case err != nil:
-		stack.SetWalletsError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetWalletsReady()
-	}
-
-	log.FromContext(ctx).Info("Wallets ready")
-	return nil
 }
 
-func (r *Mutator) reconcileOrchestration(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) error {
-	log.FromContext(ctx).Info("Reconciling Orchestration")
-
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+func (r *Mutator) reconcileOrchestration(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Orchestration, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      stack.ServiceName("orchestration"),
 	}, controllerutils.WithController[*componentsv1beta2.Orchestration](stack, r.scheme), func(orchestration *componentsv1beta2.Orchestration) error {
@@ -503,23 +408,10 @@ func (r *Mutator) reconcileOrchestration(ctx context.Context, stack *stackv1beta
 		}
 		return nil
 	})
-	switch {
-	case err != nil:
-		stack.SetOrchestrationError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetOrchestrationReady()
-	}
-
-	log.FromContext(ctx).Info("Orchestration ready")
-	return nil
 }
 
-func (r *Mutator) reconcileCounterparties(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) error {
-	log.FromContext(ctx).Info("Reconciling Counterparties")
-
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+func (r *Mutator) reconcileCounterparties(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Counterparties, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      stack.ServiceName("counterparties"),
 	},
@@ -543,23 +435,10 @@ func (r *Mutator) reconcileCounterparties(ctx context.Context, stack *stackv1bet
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		stack.SetCounterpartiesError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetCounterpartiesReady()
-	}
-
-	log.FromContext(ctx).Info("Counterparties ready")
-	return nil
 }
 
-func (r *Mutator) reconcileControl(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) error {
-	log.FromContext(ctx).Info("Reconciling Control")
-
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+func (r *Mutator) reconcileControl(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Control, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      stack.ServiceName("control"),
 	},
@@ -584,23 +463,10 @@ func (r *Mutator) reconcileControl(ctx context.Context, stack *stackv1beta2.Stac
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		stack.SetControlError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetControlReady()
-	}
-
-	log.FromContext(ctx).Info("Control ready")
-	return nil
 }
 
-func (r *Mutator) reconcileSearch(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) error {
-	log.FromContext(ctx).Info("Reconciling Search")
-
-	_, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
+func (r *Mutator) reconcileSearch(ctx context.Context, stack *stackv1beta2.Stack, configuration *stackv1beta2.ConfigurationSpec, version string) (*componentsv1beta2.Search, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Namespace: stack.Name,
 		Name:      stack.ServiceName("search"),
 	}, controllerutils.WithController[*componentsv1beta2.Search](stack, r.scheme), func(search *componentsv1beta2.Search) error {
@@ -627,17 +493,6 @@ func (r *Mutator) reconcileSearch(ctx context.Context, stack *stackv1beta2.Stack
 		}
 		return nil
 	})
-	switch {
-	case err != nil:
-		stack.SetSearchError(err.Error())
-		return err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		stack.SetSearchReady()
-	}
-
-	log.FromContext(ctx).Info("Search ready")
-	return nil
 }
 
 var _ controllerutils.Mutator[*stackv1beta2.Stack] = &Mutator{}

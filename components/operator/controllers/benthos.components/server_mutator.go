@@ -53,12 +53,12 @@ func (m *ServerMutator) Mutate(ctx context.Context, server *benthosv1beta2.Serve
 
 	apisv1beta2.SetProgressing(server)
 
-	deployment, err := m.reconcileDeployment(ctx, server)
+	deployment, _, err := m.reconcileDeployment(ctx, server)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
 	}
 
-	_, err = m.reconcileService(ctx, server, deployment)
+	_, _, err = m.reconcileService(ctx, server, deployment)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
@@ -68,10 +68,10 @@ func (m *ServerMutator) Mutate(ctx context.Context, server *benthosv1beta2.Serve
 	return nil, nil
 }
 
-func (r *ServerMutator) reconcileDeployment(ctx context.Context, server *benthosv1beta2.Server) (*appsv1.Deployment, error) {
+func (r *ServerMutator) reconcileDeployment(ctx context.Context, server *benthosv1beta2.Server) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "benthos")
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, client.ObjectKeyFromObject(server),
+	return controllerutils.CreateOrUpdate(ctx, r.client, client.ObjectKeyFromObject(server),
 		controllerutils.WithController[*appsv1.Deployment](server, r.scheme),
 		controllerutils.WithReloaderAnnotations[*appsv1.Deployment](),
 		func(deployment *appsv1.Deployment) error {
@@ -158,19 +158,10 @@ func (r *ServerMutator) reconcileDeployment(ctx context.Context, server *benthos
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(server, err.Error())
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(server)
-	}
-
-	return ret, err
 }
 
-func (r *ServerMutator) reconcileService(ctx context.Context, srv *benthosv1beta2.Server, pod *appsv1.Deployment) (*corev1.Service, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.client, client.ObjectKeyFromObject(srv),
+func (r *ServerMutator) reconcileService(ctx context.Context, srv *benthosv1beta2.Server, pod *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.client, client.ObjectKeyFromObject(srv),
 		controllerutils.WithController[*corev1.Service](srv, r.scheme),
 		func(service *corev1.Service) error {
 			service.Spec = corev1.ServiceSpec{
@@ -185,14 +176,6 @@ func (r *ServerMutator) reconcileService(ctx context.Context, srv *benthosv1beta
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetServiceError(srv, err.Error())
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetServiceReady(srv)
-	}
-	return ret, err
 }
 
 var _ controllerutils.Mutator[*benthosv1beta2.Server] = &ServerMutator{}

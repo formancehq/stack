@@ -1154,6 +1154,8 @@ spec:
               version:
                 default: latest
                 type: string
+            required:
+            - ingress
             type: object
           status:
             properties:

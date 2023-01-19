@@ -25,8 +25,7 @@ import (
 type PaymentsSpec struct {
 	pkgapisv1beta2.CommonServiceProperties `json:",inline"`
 
-	// +optional
-	Ingress *pkgapisv1beta2.IngressSpec `json:"ingress"`
+	Ingress pkgapisv1beta2.IngressSpec `json:"ingress"`
 	// +optional
 	Monitoring *pkgapisv1beta2.MonitoringSpec `json:"monitoring"`
 	// +optional

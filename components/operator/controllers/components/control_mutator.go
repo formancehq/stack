@@ -13,7 +13,6 @@ import (
 	autoscallingv2 "k8s.io/api/autoscaling/v2"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -49,30 +48,17 @@ func (m *ControlMutator) Mutate(ctx context.Context, control *componentsv1beta2.
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
 	}
 
-	service, err := m.reconcileService(ctx, control, deployment)
+	service, _, err := m.reconcileService(ctx, control, deployment)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
-	if control.Spec.Ingress != nil {
-		_, err = m.reconcileIngress(ctx, control, service)
-		if err != nil {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-		}
-	} else {
-		err = m.Client.Delete(ctx, &networkingv1.Ingress{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      control.Name,
-				Namespace: control.Namespace,
-			},
-		})
-		if err != nil && !errors.IsNotFound(err) {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Deleting ingress")
-		}
-		apisv1beta2.RemoveIngressCondition(control)
+	_, _, err = m.reconcileIngress(ctx, control, service)
+	if err != nil {
+		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
-	if _, err := m.reconcileHPA(ctx, control); err != nil {
+	if _, _, err := m.reconcileHPA(ctx, control); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling HPA")
 	}
 
@@ -110,7 +96,7 @@ func (m *ControlMutator) reconcileDeployment(ctx context.Context, control *compo
 		)
 	}
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
+	ret, _, err := controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
 		controllerutils.WithController[*appsv1.Deployment](control, m.Scheme),
 		func(deployment *appsv1.Deployment) error {
 			deployment.Spec = appsv1.DeploymentSpec{
@@ -144,13 +130,8 @@ func (m *ControlMutator) reconcileDeployment(ctx context.Context, control *compo
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(control, err.Error())
+	if err != nil {
 		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(control)
 	}
 
 	selector, err := metav1.LabelSelectorAsSelector(ret.Spec.Selector)
@@ -164,8 +145,8 @@ func (m *ControlMutator) reconcileDeployment(ctx context.Context, control *compo
 	return ret, err
 }
 
-func (m *ControlMutator) reconcileService(ctx context.Context, control *componentsv1beta2.Control, deployment *appsv1.Deployment) (*corev1.Service, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
+func (m *ControlMutator) reconcileService(ctx context.Context, control *componentsv1beta2.Control, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
 		controllerutils.WithController[*corev1.Service](control, m.Scheme),
 		func(service *corev1.Service) error {
 			service.Spec = corev1.ServiceSpec{
@@ -180,37 +161,19 @@ func (m *ControlMutator) reconcileService(ctx context.Context, control *componen
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetServiceError(control, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetServiceReady(control)
-	}
-	return ret, err
 }
 
-func (m *ControlMutator) reconcileHPA(ctx context.Context, control *componentsv1beta2.Control) (*autoscallingv2.HorizontalPodAutoscaler, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
+func (m *ControlMutator) reconcileHPA(ctx context.Context, control *componentsv1beta2.Control) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
 		controllerutils.WithController[*autoscallingv2.HorizontalPodAutoscaler](control, m.Scheme),
 		func(hpa *autoscallingv2.HorizontalPodAutoscaler) error {
 			hpa.Spec = control.Spec.GetHPASpec(control)
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetHPAError(control, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetHPAReady(control)
-	}
-	return ret, err
 }
 
-func (m *ControlMutator) reconcileIngress(ctx context.Context, control *componentsv1beta2.Control, service *corev1.Service) (*networkingv1.Ingress, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
+func (m *ControlMutator) reconcileIngress(ctx context.Context, control *componentsv1beta2.Control, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
 		controllerutils.WithController[*networkingv1.Ingress](control, m.Scheme),
 		func(ingress *networkingv1.Ingress) error {
 			pathType := networkingv1.PathTypePrefix
@@ -243,15 +206,6 @@ func (m *ControlMutator) reconcileIngress(ctx context.Context, control *componen
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetIngressError(control, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetIngressReady(control)
-	}
-	return ret, nil
 }
 
 var _ controllerutils.Mutator[*componentsv1beta2.Control] = &ControlMutator{}

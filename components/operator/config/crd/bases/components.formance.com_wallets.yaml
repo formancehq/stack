@@ -288,6 +288,7 @@ spec:
                 type: string
             required:
             - auth
+            - ingress
             - stackUrl
             type: object
           status:

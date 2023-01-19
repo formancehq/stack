@@ -2377,6 +2377,7 @@ spec:
             required:
             - baseURL
             - delegatedOIDCServer
+            - ingress
             - postgres
             type: object
           status:

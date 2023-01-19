@@ -1,6 +1,8 @@
 package stack
 
 import (
+	"fmt"
+
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
 	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
 	stackv1beta2 "github.com/formancehq/operator/apis/stack/v1beta2"
@@ -84,21 +86,24 @@ var _ = Describe("Stack controller (Auth)", func() {
 						Name: stack.Name,
 					}, &v1.Namespace{})).To(BeNil())
 				})
-				It("Should create all required services", func() {
+				Context("Should create all required services", func() {
 					for _, s := range stackv1beta2.GetServiceList() {
-						u := unstructured.Unstructured{
-							Object: map[string]interface{}{
-								"kind":       s,
-								"apiVersion": componentsv1beta2.GroupVersion.String(),
-							},
-						}
-						Expect(Get(types.NamespacedName{
-							Namespace: stack.Name,
-							Name:      stack.ServiceName(s),
-						}, &u)).To(BeNil())
-						Expect(u.Object["spec"].(map[string]any)["version"]).To(Equal(
-							versions.GetFromServiceName(s),
-						))
+						s := s
+						It(fmt.Sprintf("Should create service '%s'", s), func() {
+							u := unstructured.Unstructured{
+								Object: map[string]interface{}{
+									"kind":       s,
+									"apiVersion": componentsv1beta2.GroupVersion.String(),
+								},
+							}
+							Expect(Get(types.NamespacedName{
+								Namespace: stack.Name,
+								Name:      stack.ServiceName(s),
+							}, &u)).To(BeNil())
+							Expect(u.Object["spec"].(map[string]any)["version"]).To(Equal(
+								versions.GetFromServiceName(s),
+							))
+						})
 					}
 				})
 				It("Should register a static auth client into stack status and use it on control", func() {

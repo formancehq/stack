@@ -28,7 +28,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -55,32 +54,19 @@ func (r *PaymentsMutator) Mutate(ctx context.Context, payments *componentsv1beta
 
 	apisv1beta2.SetProgressing(payments)
 
-	deployment, err := r.reconcileDeployment(ctx, payments)
+	deployment, _, err := r.reconcileDeployment(ctx, payments)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
 	}
 
-	service, err := r.reconcileService(ctx, payments, deployment)
+	service, _, err := r.reconcileService(ctx, payments, deployment)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
-	if payments.Spec.Ingress != nil {
-		_, err = r.reconcileIngress(ctx, payments, service)
-		if err != nil {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-		}
-	} else {
-		err = r.Client.Delete(ctx, &networkingv1.Ingress{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      payments.Name,
-				Namespace: payments.Namespace,
-			},
-		})
-		if err != nil && !errors.IsNotFound(err) {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Deleting ingress")
-		}
-		apisv1beta2.RemoveIngressCondition(payments)
+	_, _, err = r.reconcileIngress(ctx, payments, service)
+	if err != nil {
+		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	apisv1beta2.SetReady(payments)
@@ -88,7 +74,7 @@ func (r *PaymentsMutator) Mutate(ctx context.Context, payments *componentsv1beta
 	return nil, nil
 }
 
-func (r *PaymentsMutator) reconcileDeployment(ctx context.Context, payments *componentsv1beta2.Payments) (*appsv1.Deployment, error) {
+func (r *PaymentsMutator) reconcileDeployment(ctx context.Context, payments *componentsv1beta2.Payments) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "payments")
 
 	env := payments.Spec.Postgres.Env("")
@@ -105,7 +91,7 @@ func (r *PaymentsMutator) reconcileDeployment(ctx context.Context, payments *com
 		env = append(env, payments.Spec.Collector.Env("")...)
 	}
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(payments),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(payments),
 		controllerutils.WithController[*appsv1.Deployment](payments, r.Scheme),
 		func(deployment *appsv1.Deployment) error {
 			deployment.Spec = appsv1.DeploymentSpec{
@@ -160,19 +146,10 @@ func (r *PaymentsMutator) reconcileDeployment(ctx context.Context, payments *com
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(payments, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(payments)
-	}
-	return ret, err
 }
 
-func (r *PaymentsMutator) reconcileService(ctx context.Context, payments *componentsv1beta2.Payments, deployment *appsv1.Deployment) (*corev1.Service, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(payments),
+func (r *PaymentsMutator) reconcileService(ctx context.Context, payments *componentsv1beta2.Payments, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(payments),
 		controllerutils.WithController[*corev1.Service](payments, r.Scheme),
 		func(service *corev1.Service) error {
 			service.Spec = corev1.ServiceSpec{
@@ -187,25 +164,16 @@ func (r *PaymentsMutator) reconcileService(ctx context.Context, payments *compon
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetServiceError(payments, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetServiceReady(payments)
-	}
-	return ret, err
 }
 
-func (r *PaymentsMutator) reconcileIngress(ctx context.Context, payments *componentsv1beta2.Payments, service *corev1.Service) (*networkingv1.Ingress, error) {
+func (r *PaymentsMutator) reconcileIngress(ctx context.Context, payments *componentsv1beta2.Payments, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
 	annotations := payments.Spec.Ingress.Annotations
 	if annotations == nil {
 		annotations = map[string]string{}
 	}
 	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", payments.Namespace)
 	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(payments),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(payments),
 		controllerutils.WithController[*networkingv1.Ingress](payments, r.Scheme),
 		func(ingress *networkingv1.Ingress) error {
 			pathType := networkingv1.PathTypePrefix
@@ -238,15 +206,6 @@ func (r *PaymentsMutator) reconcileIngress(ctx context.Context, payments *compon
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetIngressError(payments, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetIngressReady(payments)
-	}
-	return ret, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.

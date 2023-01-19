@@ -2,13 +2,8 @@ package v1beta2
 
 import (
 	autoscallingv2 "k8s.io/api/autoscaling/v2"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/pointer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-)
-
-const (
-	ConditionTypeHPAReady = "HPAReady"
 )
 
 type Scalable struct {
@@ -63,12 +58,4 @@ func (s Scalable) GetHPASpec(object client.Object) autoscallingv2.HorizontalPodA
 func (s Scalable) WithReplicas(replicas *int32) Scalable {
 	s.Replicas = replicas
 	return s
-}
-
-func SetHPAReady(object Object, msg ...string) {
-	SetCondition(object, ConditionTypeHPAReady, metav1.ConditionTrue, msg...)
-}
-
-func SetHPAError(object Object, msg ...string) {
-	SetCondition(object, ConditionTypeHPAReady, metav1.ConditionFalse, msg...)
 }

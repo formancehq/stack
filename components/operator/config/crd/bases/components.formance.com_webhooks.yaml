@@ -1154,6 +1154,7 @@ spec:
                 type: string
             required:
             - collector
+            - ingress
             type: object
           status:
             properties:

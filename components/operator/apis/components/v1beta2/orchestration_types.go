@@ -47,8 +47,7 @@ type OrchestrationSpec struct {
 	apisv1beta2.CommonServiceProperties `json:",inline"`
 	apisv1beta2.Scalable                `json:",inline"`
 
-	// +optional
-	Ingress *apisv1beta2.IngressSpec `json:"ingress"`
+	Ingress apisv1beta2.IngressSpec `json:"ingress"`
 	// +optional
 	Postgres PostgresConfigCreateDatabase `json:"postgres"`
 	// +optional

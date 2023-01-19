@@ -29,7 +29,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -56,32 +55,19 @@ func (r *WalletsMutator) Mutate(ctx context.Context, wallets *componentsv1beta2.
 
 	apisv1beta2.SetProgressing(wallets)
 
-	deployment, err := r.reconcileDeployment(ctx, wallets)
+	deployment, _, err := r.reconcileDeployment(ctx, wallets)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
 	}
 
-	service, err := r.reconcileService(ctx, wallets, deployment)
+	service, _, err := r.reconcileService(ctx, wallets, deployment)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
-	if wallets.Spec.Ingress != nil {
-		_, err = r.reconcileIngress(ctx, wallets, service)
-		if err != nil {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-		}
-	} else {
-		err = r.Client.Delete(ctx, &networkingv1.Ingress{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      wallets.Name,
-				Namespace: wallets.Namespace,
-			},
-		})
-		if err != nil && !errors.IsNotFound(err) {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Deleting ingress")
-		}
-		apisv1beta2.RemoveIngressCondition(wallets)
+	_, _, err = r.reconcileIngress(ctx, wallets, service)
+	if err != nil {
+		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	apisv1beta2.SetReady(wallets)
@@ -107,10 +93,10 @@ func walletsEnvVars(wallets *componentsv1beta2.Wallets) []corev1.EnvVar {
 	return env
 }
 
-func (r *WalletsMutator) reconcileDeployment(ctx context.Context, wallets *componentsv1beta2.Wallets) (*appsv1.Deployment, error) {
+func (r *WalletsMutator) reconcileDeployment(ctx context.Context, wallets *componentsv1beta2.Wallets) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "wallets")
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(wallets),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(wallets),
 		controllerutils.WithController[*appsv1.Deployment](wallets, r.Scheme),
 		func(deployment *appsv1.Deployment) error {
 			deployment.Spec = appsv1.DeploymentSpec{
@@ -138,19 +124,10 @@ func (r *WalletsMutator) reconcileDeployment(ctx context.Context, wallets *compo
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(wallets, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(wallets)
-	}
-	return ret, err
 }
 
-func (r *WalletsMutator) reconcileService(ctx context.Context, wallets *componentsv1beta2.Wallets, deployment *appsv1.Deployment) (*corev1.Service, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(wallets),
+func (r *WalletsMutator) reconcileService(ctx context.Context, wallets *componentsv1beta2.Wallets, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(wallets),
 		controllerutils.WithController[*corev1.Service](wallets, r.Scheme),
 		func(service *corev1.Service) error {
 			service.Spec = corev1.ServiceSpec{
@@ -165,25 +142,16 @@ func (r *WalletsMutator) reconcileService(ctx context.Context, wallets *componen
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetServiceError(wallets, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetServiceReady(wallets)
-	}
-	return ret, err
 }
 
-func (r *WalletsMutator) reconcileIngress(ctx context.Context, wallets *componentsv1beta2.Wallets, service *corev1.Service) (*networkingv1.Ingress, error) {
+func (r *WalletsMutator) reconcileIngress(ctx context.Context, wallets *componentsv1beta2.Wallets, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
 	annotations := wallets.Spec.Ingress.Annotations
 	if annotations == nil {
 		annotations = map[string]string{}
 	}
 	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", wallets.Namespace)
 	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(wallets),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(wallets),
 		controllerutils.WithController[*networkingv1.Ingress](wallets, r.Scheme),
 		func(ingress *networkingv1.Ingress) error {
 			pathType := networkingv1.PathTypePrefix
@@ -216,15 +184,6 @@ func (r *WalletsMutator) reconcileIngress(ctx context.Context, wallets *componen
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetIngressError(wallets, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetIngressReady(wallets)
-	}
-	return ret, nil
 }
 
 // SetupWithBuilder SetupWithManager sets up the controller with the Manager.

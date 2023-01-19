@@ -2513,6 +2513,7 @@ spec:
                 default: latest
                 type: string
             required:
+            - ingress
             - locking
             type: object
           status:

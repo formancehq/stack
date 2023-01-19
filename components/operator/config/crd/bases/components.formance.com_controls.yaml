@@ -1633,6 +1633,7 @@ spec:
             required:
             - apiURLBack
             - apiURLFront
+            - ingress
             type: object
           status:
             properties:

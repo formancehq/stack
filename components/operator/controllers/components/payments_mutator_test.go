@@ -37,73 +37,48 @@ var _ = Describe("Payments controller", func() {
 									PostgresConfig: NewDumpPostgresConfig(),
 								},
 								CreateDatabase: false,
-							}},
+							},
+							Ingress: apisv1beta2.IngressSpec{
+								Path: "/payments",
+								Host: "localhost",
+							},
+						},
 					}
 					Expect(Create(payments)).To(BeNil())
 					Eventually(ConditionStatus(payments, apisv1beta2.ConditionTypeReady)).Should(Equal(metav1.ConditionTrue))
 				})
 				It("Should create a deployment", func() {
-					Eventually(ConditionStatus(payments, apisv1beta2.ConditionTypeDeploymentReady)).Should(Equal(metav1.ConditionTrue))
 					deployment := &appsv1.Deployment{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      payments.Name,
 							Namespace: payments.Namespace,
 						},
 					}
-					Expect(Exists(deployment)()).To(BeTrue())
+					Eventually(Exists(deployment)).Should(BeTrue())
 					Expect(deployment.OwnerReferences).To(HaveLen(1))
 					Expect(deployment.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(payments)))
 				})
 				It("Should create a service", func() {
-					Eventually(ConditionStatus(payments, apisv1beta2.ConditionTypeServiceReady)).Should(Equal(metav1.ConditionTrue))
 					service := &corev1.Service{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      payments.Name,
 							Namespace: payments.Namespace,
 						},
 					}
-					Expect(Exists(service)()).To(BeTrue())
+					Eventually(Exists(service)).Should(BeTrue())
 					Expect(service.OwnerReferences).To(HaveLen(1))
 					Expect(service.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(payments)))
 				})
-				Context("Then enable ingress", func() {
-					BeforeEach(func() {
-						payments.Spec.Ingress = &apisv1beta2.IngressSpec{
-							Path: "/payments",
-							Host: "localhost",
-						}
-						Expect(Update(payments)).To(BeNil())
-					})
-					It("Should create a ingress", func() {
-						Eventually(ConditionStatus(payments, apisv1beta2.ConditionTypeIngressReady)).Should(Equal(metav1.ConditionTrue))
-						ingress := &networkingv1.Ingress{
-							ObjectMeta: metav1.ObjectMeta{
-								Name:      payments.Name,
-								Namespace: payments.Namespace,
-							},
-						}
-						Expect(Exists(ingress)()).To(BeTrue())
-						Expect(ingress.OwnerReferences).To(HaveLen(1))
-						Expect(ingress.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(payments)))
-					})
-					Context("Then disabling ingress support", func() {
-						BeforeEach(func() {
-							Eventually(ConditionStatus(payments, apisv1beta2.ConditionTypeIngressReady)).
-								Should(Equal(metav1.ConditionTrue))
-							payments.Spec.Ingress = nil
-							Expect(Update(payments)).To(BeNil())
-							Eventually(ConditionStatus(payments, apisv1beta2.ConditionTypeIngressReady)).
-								Should(Equal(metav1.ConditionUnknown))
-						})
-						It("Should remove the ingress", func() {
-							Eventually(NotFound(&networkingv1.Ingress{
-								ObjectMeta: metav1.ObjectMeta{
-									Name:      payments.Name,
-									Namespace: payments.Namespace,
-								},
-							})).Should(BeTrue())
-						})
-					})
+				It("Should create a ingress", func() {
+					ingress := &networkingv1.Ingress{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      payments.Name,
+							Namespace: payments.Namespace,
+						},
+					}
+					Eventually(Exists(ingress)).Should(BeTrue())
+					Expect(ingress.OwnerReferences).To(HaveLen(1))
+					Expect(ingress.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(payments)))
 				})
 			})
 		})

@@ -22,6 +22,7 @@ func NewDumbVersions() *v1beta2.Versions {
 			Webhooks:       uuid.NewString(),
 			Wallets:        uuid.NewString(),
 			Counterparties: uuid.NewString(),
+			Orchestration:  uuid.NewString(),
 		},
 	}
 }

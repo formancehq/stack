@@ -29,8 +29,7 @@ type WalletsSpec struct {
 	Auth                                   ClientCredentialsAuthentication `json:"auth"`
 	StackURL                               string                          `json:"stackUrl"`
 
-	// +optional
-	Ingress *pkgapisv1beta2.IngressSpec `json:"ingress"`
+	Ingress pkgapisv1beta2.IngressSpec `json:"ingress"`
 	// +optional
 	Monitoring *pkgapisv1beta2.MonitoringSpec `json:"monitoring"`
 }

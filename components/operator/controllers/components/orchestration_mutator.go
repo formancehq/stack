@@ -29,7 +29,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -56,37 +55,24 @@ func (r *OrchestrationMutator) Mutate(ctx context.Context, orchestration *compon
 
 	apisv1beta2.SetProgressing(orchestration)
 
-	deployment, err := r.reconcileMainDeployment(ctx, orchestration)
+	deployment, _, err := r.reconcileMainDeployment(ctx, orchestration)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling deployment")
 	}
 
-	_, err = r.reconcileWorkerDeployment(ctx, orchestration)
+	_, _, err = r.reconcileWorkerDeployment(ctx, orchestration)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling worker deployment")
 	}
 
-	service, err := r.reconcileService(ctx, orchestration, deployment)
+	service, _, err := r.reconcileService(ctx, orchestration, deployment)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
-	if orchestration.Spec.Ingress != nil {
-		_, err = r.reconcileIngress(ctx, orchestration, service)
-		if err != nil {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-		}
-	} else {
-		err = r.Client.Delete(ctx, &networkingv1.Ingress{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      orchestration.Name,
-				Namespace: orchestration.Namespace,
-			},
-		})
-		if err != nil && !errors.IsNotFound(err) {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Deleting ingress")
-		}
-		apisv1beta2.RemoveIngressCondition(orchestration)
+	_, _, err = r.reconcileIngress(ctx, orchestration, service)
+	if err != nil {
+		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
 	apisv1beta2.SetReady(orchestration)
@@ -114,10 +100,10 @@ func orchestrationEnvVars(orchestration *componentsv1beta2.Orchestration) []core
 	return env
 }
 
-func (r *OrchestrationMutator) reconcileMainDeployment(ctx context.Context, orchestration *componentsv1beta2.Orchestration) (*appsv1.Deployment, error) {
+func (r *OrchestrationMutator) reconcileMainDeployment(ctx context.Context, orchestration *componentsv1beta2.Orchestration) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "orchestration")
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(orchestration),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(orchestration),
 		controllerutils.WithController[*appsv1.Deployment](orchestration, r.Scheme),
 		func(deployment *appsv1.Deployment) error {
 			deployment.Spec = appsv1.DeploymentSpec{
@@ -148,21 +134,12 @@ func (r *OrchestrationMutator) reconcileMainDeployment(ctx context.Context, orch
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(orchestration, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(orchestration)
-	}
-	return ret, err
 }
 
-func (r *OrchestrationMutator) reconcileWorkerDeployment(ctx context.Context, orchestration *componentsv1beta2.Orchestration) (*appsv1.Deployment, error) {
+func (r *OrchestrationMutator) reconcileWorkerDeployment(ctx context.Context, orchestration *componentsv1beta2.Orchestration) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "orchestration-worker")
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKey{
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKey{
 		Namespace: orchestration.Namespace,
 		Name:      orchestration.Name + "-worker",
 	},
@@ -189,19 +166,10 @@ func (r *OrchestrationMutator) reconcileWorkerDeployment(ctx context.Context, or
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(orchestration, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(orchestration)
-	}
-	return ret, err
 }
 
-func (r *OrchestrationMutator) reconcileService(ctx context.Context, orchestration *componentsv1beta2.Orchestration, deployment *appsv1.Deployment) (*corev1.Service, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(orchestration),
+func (r *OrchestrationMutator) reconcileService(ctx context.Context, orchestration *componentsv1beta2.Orchestration, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(orchestration),
 		controllerutils.WithController[*corev1.Service](orchestration, r.Scheme),
 		func(service *corev1.Service) error {
 			service.Spec = corev1.ServiceSpec{
@@ -216,25 +184,16 @@ func (r *OrchestrationMutator) reconcileService(ctx context.Context, orchestrati
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetServiceError(orchestration, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetServiceReady(orchestration)
-	}
-	return ret, err
 }
 
-func (r *OrchestrationMutator) reconcileIngress(ctx context.Context, orchestration *componentsv1beta2.Orchestration, service *corev1.Service) (*networkingv1.Ingress, error) {
+func (r *OrchestrationMutator) reconcileIngress(ctx context.Context, orchestration *componentsv1beta2.Orchestration, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
 	annotations := orchestration.Spec.Ingress.Annotations
 	if annotations == nil {
 		annotations = map[string]string{}
 	}
 	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", orchestration.Namespace)
 	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(orchestration),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(orchestration),
 		controllerutils.WithController[*networkingv1.Ingress](orchestration, r.Scheme),
 		func(ingress *networkingv1.Ingress) error {
 			pathType := networkingv1.PathTypePrefix
@@ -267,15 +226,6 @@ func (r *OrchestrationMutator) reconcileIngress(ctx context.Context, orchestrati
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetIngressError(orchestration, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetIngressReady(orchestration)
-	}
-	return ret, nil
 }
 
 // SetupWithBuilder SetupWithManager sets up the controller with the Manager.

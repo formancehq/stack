@@ -33,7 +33,6 @@ import (
 	autoscallingv2 "k8s.io/api/autoscaling/v2"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -79,30 +78,17 @@ func (r *SearchMutator) Mutate(ctx context.Context, search *componentsv1beta2.Se
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling benthos stream server")
 	}
 
-	service, err := r.reconcileService(ctx, search, deployment)
+	service, _, err := r.reconcileService(ctx, search, deployment)
 	if err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
-	if search.Spec.Ingress != nil {
-		_, err = r.reconcileIngress(ctx, search, service)
-		if err != nil {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
-		}
-	} else {
-		err = r.Client.Delete(ctx, &networkingv1.Ingress{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      search.Name,
-				Namespace: search.Namespace,
-			},
-		})
-		if err != nil && !errors.IsNotFound(err) {
-			return controllerutils.Requeue(), pkgError.Wrap(err, "Deleting ingress")
-		}
-		apisv1beta2.RemoveIngressCondition(search)
+	_, _, err = r.reconcileIngress(ctx, search, service)
+	if err != nil {
+		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling service")
 	}
 
-	if _, err := r.reconcileHPA(ctx, search); err != nil {
+	if _, _, err := r.reconcileHPA(ctx, search); err != nil {
 		return controllerutils.Requeue(), pkgError.Wrap(err, "Reconciling HPA")
 	}
 
@@ -125,7 +111,7 @@ func (r *SearchMutator) reconcileDeployment(ctx context.Context, search *compone
 	env = append(env, apisv1beta2.Env("ES_INDICES", search.Spec.Index))
 	env = append(env, apisv1beta2.Env("MAPPING_INIT_DISABLED", "true"))
 
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
+	ret, _, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
 		controllerutils.WithController[*appsv1.Deployment](search, r.Scheme),
 		func(deployment *appsv1.Deployment) error {
 			deployment.Spec = appsv1.DeploymentSpec{
@@ -160,12 +146,8 @@ func (r *SearchMutator) reconcileDeployment(ctx context.Context, search *compone
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetDeploymentError(search, err.Error())
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetDeploymentReady(search)
+	if err != nil {
+		return nil, err
 	}
 
 	selector, err := metav1.LabelSelectorAsSelector(ret.Spec.Selector)
@@ -179,8 +161,8 @@ func (r *SearchMutator) reconcileDeployment(ctx context.Context, search *compone
 	return ret, err
 }
 
-func (r *SearchMutator) reconcileService(ctx context.Context, search *componentsv1beta2.Search, deployment *appsv1.Deployment) (*corev1.Service, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
+func (r *SearchMutator) reconcileService(ctx context.Context, search *componentsv1beta2.Search, deployment *appsv1.Deployment) (*corev1.Service, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
 		controllerutils.WithController[*corev1.Service](search, r.Scheme),
 		func(service *corev1.Service) error {
 			service.Spec = corev1.ServiceSpec{
@@ -195,24 +177,16 @@ func (r *SearchMutator) reconcileService(ctx context.Context, search *components
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetServiceError(search, err.Error())
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetServiceReady(search)
-	}
-	return ret, err
 }
 
-func (r *SearchMutator) reconcileIngress(ctx context.Context, search *componentsv1beta2.Search, service *corev1.Service) (*networkingv1.Ingress, error) {
+func (r *SearchMutator) reconcileIngress(ctx context.Context, search *componentsv1beta2.Search, service *corev1.Service) (*networkingv1.Ingress, controllerutil.OperationResult, error) {
 	annotations := search.Spec.Ingress.Annotations
 	if annotations == nil {
 		annotations = map[string]string{}
 	}
 	middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", search.Namespace)
 	annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
 		controllerutils.WithController[*networkingv1.Ingress](search, r.Scheme),
 		func(ingress *networkingv1.Ingress) error {
 			pathType := networkingv1.PathTypePrefix
@@ -245,32 +219,15 @@ func (r *SearchMutator) reconcileIngress(ctx context.Context, search *components
 			}
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetIngressError(search, err.Error())
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetIngressReady(search)
-	}
-	return ret, nil
 }
 
-func (r *SearchMutator) reconcileHPA(ctx context.Context, search *componentsv1beta2.Search) (*autoscallingv2.HorizontalPodAutoscaler, error) {
-	ret, operationResult, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
+func (r *SearchMutator) reconcileHPA(ctx context.Context, search *componentsv1beta2.Search) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
+	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
 		controllerutils.WithController[*autoscallingv2.HorizontalPodAutoscaler](search, r.Scheme),
 		func(hpa *autoscallingv2.HorizontalPodAutoscaler) error {
 			hpa.Spec = search.Spec.GetHPASpec(search)
 			return nil
 		})
-	switch {
-	case err != nil:
-		apisv1beta2.SetHPAError(search, err.Error())
-		return nil, err
-	case operationResult == controllerutil.OperationResultNone:
-	default:
-		apisv1beta2.SetHPAReady(search)
-	}
-	return ret, err
 }
 
 func (r *SearchMutator) reconcileBenthosStreamServer(ctx context.Context, search *componentsv1beta2.Search) (controllerutil.OperationResult, error) {
