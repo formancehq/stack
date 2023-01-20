@@ -15,10 +15,8 @@ tasks:
       .gitpod/prepare-rootfs.sh
     command: |
       .gitpod/qemu.sh
-
-#tasks:
-#  - name: Dependencies
-#    command: k3d cluster create formance --config ./.gitpod/k3d.yaml --k3s-arg "--disable=traefik@server:0"
+  - name: pre-commit init
+    command: pre-commit install
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
 ports:
