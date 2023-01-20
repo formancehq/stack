@@ -65,6 +65,9 @@ type Versions struct {
 
 func (in *Versions) GetFromServiceName(s string) string {
 	fieldByName := reflect.ValueOf(in.Spec).FieldByName(strcase.ToCamel(s))
+	if fieldByName.String() == "" {
+		return "latest"
+	}
 	return fieldByName.String()
 }
 

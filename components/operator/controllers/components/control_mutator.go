@@ -13,7 +13,6 @@ import (
 	autoscallingv2 "k8s.io/api/autoscaling/v2"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -103,12 +102,6 @@ func (m *ControlMutator) reconcileDeployment(ctx context.Context, control *compo
 								Name:          "http",
 								ContainerPort: 3000,
 							}},
-							Resources: corev1.ResourceRequirements{
-								Requests: corev1.ResourceList{
-									corev1.ResourceCPU:    *resource.NewMilliQuantity(500, resource.DecimalSI),
-									corev1.ResourceMemory: *resource.NewMilliQuantity(512, resource.DecimalSI),
-								},
-							},
 						}},
 					},
 				},
