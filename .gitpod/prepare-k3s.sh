@@ -33,11 +33,6 @@ echo "Waiting for the rootfs to become available, it can take a while, open the 
 waitrootfs
 echo "✅ rootfs available"
 
-echo "Wait for apt lock to end"
-./wait-apt.sh
-sudo apt install netcat sshpass -y
-echo "✅ no more apt lock"
-
 echo "Waiting for the ssh server to become available, it can take a while, after this k3s is getting installed"
 waitssh
 echo "✅ ssh server available"
