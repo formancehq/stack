@@ -3,11 +3,18 @@ image:
   file: .gitpod.Dockerfile
 
 tasks:
-  - name: install k3s
+  - name: prepare k3s
     command: |
-      .gitpod/prepare-rootfs.sh
-      .gitpod/qemu.sh
       .gitpod/prepare-k3s.sh
+  - name: kernel dev environment
+    init: |
+      sudo apt update -y
+      sudo apt upgrade -y
+      sudo apt update -y
+      sudo apt install qemu qemu-system-x86 linux-image-generic libguestfs-tools sshpass netcat -y
+      .gitpod/prepare-rootfs.sh
+    command: |
+      .gitpod/qemu.sh
   - name: pre-commit init
     command: pre-commit install
 

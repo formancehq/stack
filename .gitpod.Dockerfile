@@ -8,6 +8,7 @@ RUN sudo apt install qemu qemu-system-x86 linux-image-generic libguestfs-tools s
 
 # Package for Team
 RUN brew install kubectl kustomize helm pre-commit
+RUN brew install go-task/tap/go-task
 RUN curl -sL https://get.garden.io/install.sh | bash
 ENV PATH=$PATH:$HOME/.garden/bin
 RUN sudo apt install rsync -y
