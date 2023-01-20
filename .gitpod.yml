@@ -20,8 +20,12 @@ tasks:
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
 ports:
-  - port: 8091
-    onOpen: open-preview
+  - name: HTTP
+    port: 80
+    onOpen: notify
+  - name: HTTPS
+    port: 443
+    onOpen: notify
 
 jetbrains:
   plugins:
