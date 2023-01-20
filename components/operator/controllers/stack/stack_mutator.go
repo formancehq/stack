@@ -101,7 +101,7 @@ func watch(mgr ctrl.Manager, field string) handler.EventHandler {
 func (r *Mutator) SetupWithBuilder(mgr ctrl.Manager, bldr *ctrl.Builder) error {
 
 	if err := mgr.GetFieldIndexer().
-		IndexField(context.Background(), &stackv1beta2.Stack{}, ".spec.configuration", func(rawObj client.Object) []string {
+		IndexField(context.Background(), &stackv1beta2.Stack{}, ".spec.seed", func(rawObj client.Object) []string {
 			return []string{rawObj.(*stackv1beta2.Stack).Spec.Seed}
 		}); err != nil {
 		return err
@@ -127,7 +127,7 @@ func (r *Mutator) SetupWithBuilder(mgr ctrl.Manager, bldr *ctrl.Builder) error {
 		Owns(&networkingv1.Ingress{}).
 		Watches(
 			&source.Kind{Type: &stackv1beta2.Configuration{}},
-			watch(mgr, ".spec.configuration"),
+			watch(mgr, ".spec.seed"),
 			builder.WithPredicates(predicate.ResourceVersionChangedPredicate{}),
 		).
 		Watches(
@@ -195,10 +195,12 @@ func (r *Mutator) createComponent(ctx context.Context, stack *stackv1beta2.Stack
 		if stack.Status.StaticAuthClients == nil {
 			stack.Status.StaticAuthClients = map[string]authcomponentsv1beta2.StaticClient{}
 		}
-		stack.Status.StaticAuthClients[name] = authcomponentsv1beta2.StaticClient{
-			ID:                  name,
-			Secrets:             []string{uuid.NewString()},
-			ClientConfiguration: *clientConfiguration,
+		if _, ok := stack.Status.StaticAuthClients[name]; !ok {
+			stack.Status.StaticAuthClients[name] = authcomponentsv1beta2.StaticClient{
+				ID:                  name,
+				Secrets:             []string{uuid.NewString()},
+				ClientConfiguration: *clientConfiguration,
+			}
 		}
 	}
 
@@ -232,37 +234,29 @@ func (r *Mutator) createComponentObject(ctx context.Context, stack *stackv1beta2
 	return controllerutil.CreateOrUpdate(ctx, r.client, ret, func() error {
 		updatedPartialSpec := serviceConfiguration.Spec(stack, configuration.Spec)
 
-		data, err := json.Marshal(updatedPartialSpec)
-		if err != nil {
-			panic(err)
-		}
+		updatedPartialSpecAsMap := anyToMap(updatedPartialSpec)
 
-		asMap := make(map[string]any)
-		if err := json.Unmarshal(data, &asMap); err != nil {
-			panic(err)
-		}
-
-		asMap["version"] = version.GetFromServiceName(serviceName)
-		asMap["debug"] = stack.Spec.Debug
-		asMap["dev"] = stack.Spec.Dev
-		asMap["monitoring"] = configuration.Spec.Monitoring
+		updatedPartialSpecAsMap["version"] = version.GetFromServiceName(serviceName)
+		updatedPartialSpecAsMap["debug"] = stack.Spec.Debug
+		updatedPartialSpecAsMap["dev"] = stack.Spec.Dev
+		updatedPartialSpecAsMap["monitoring"] = anyToMap(configuration.Spec.Monitoring)
 
 		if clientConfiguration := serviceConfiguration.AuthClientConfiguration(stack); clientConfiguration != nil {
-			asMap["auth"] = map[string]any{
+			updatedPartialSpecAsMap["auth"] = map[string]any{
 				"clientId":     stack.Status.StaticAuthClients[serviceName].ID,
 				"clientSecret": stack.Status.StaticAuthClients[serviceName].Secrets[0],
 			}
 		}
 
-		spec, ok := ret.Object["spec"].(map[string]any)
-		if !ok {
-			spec = map[string]any{}
+		actualSpec, ok := ret.Object["spec"].(map[string]any)
+		if !ok || actualSpec == nil {
+			actualSpec = map[string]any{}
 		}
-		if err := mergo.Merge(&spec, asMap, mergo.WithOverride); err != nil {
+		if err := mergo.Merge(&actualSpec, updatedPartialSpecAsMap, mergo.WithOverride); err != nil {
 			return pkgError.Wrap(err, "merging spec")
 		}
 
-		ret.Object["spec"] = spec
+		ret.Object["spec"] = actualSpec
 		return controllerutil.SetControllerReference(stack, ret, r.scheme)
 	})
 }
@@ -374,4 +368,16 @@ func NewMutator(
 		scheme:   scheme,
 		dnsNames: dnsNames,
 	}
+}
+
+func anyToMap(value any) map[string]any {
+	data, err := json.Marshal(value)
+	if err != nil {
+		panic(err)
+	}
+	ret := make(map[string]any)
+	if err := json.Unmarshal(data, &ret); err != nil {
+		panic(err)
+	}
+	return ret
 }

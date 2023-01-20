@@ -2,6 +2,8 @@ package v1beta2
 
 import (
 	"fmt"
+	"sort"
+	"strings"
 
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
 	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
@@ -23,7 +25,14 @@ func (in AuthSpec) NeedAuthMiddleware() bool {
 }
 
 func (in AuthSpec) Spec(stack *Stack, configuration ConfigurationSpec) any {
-	staticClients := append(configuration.Services.Auth.StaticClients, typeutils.SliceFromMap(stack.Status.StaticAuthClients)...)
+	stackStaticClients := typeutils.SliceFromMap(stack.Status.StaticAuthClients)
+	sort.SliceStable(
+		stackStaticClients,
+		func(i, j int) bool {
+			return strings.Compare(stackStaticClients[i].ID, stackStaticClients[j].ID) < 0
+		},
+	)
+	staticClients := append(configuration.Services.Auth.StaticClients, stackStaticClients...)
 	staticClients = append(staticClients, stack.Spec.Auth.StaticClients...)
 	return componentsv1beta2.AuthSpec{
 		Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
