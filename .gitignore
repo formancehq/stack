@@ -4,3 +4,4 @@ openapi/build/generate.json.bak
 coverage.out
 dist
 vendor
+.gitpod/_output
