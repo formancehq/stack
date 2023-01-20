@@ -62,13 +62,7 @@ jobs:
           go-version-file: 'components/${{ needs.Extract.outputs.service }}/go.mod'
           cache-dependency-path: 'components/${{ needs.Extract.outputs.service }}/go.sum'
           cache: true
-      - name: Launch Tests
-        uses: nick-fields/retry@v2
-        with:
-          timeout_seconds: 600
-          max_attempts: 3
-          retry_on: error
-          command: task ${{ needs.Extract.outputs.service }}:tests
+      - run: task ${{ matrix.folder }}:tests
 
   GoReleaser:
     name: GoReleaser
