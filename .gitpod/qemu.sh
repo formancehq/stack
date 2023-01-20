@@ -15,5 +15,5 @@ sudo qemu-system-x86_64 -kernel "/boot/vmlinuz" \
 -net user \
 -smp 8 \
 -append "root=/dev/sda rw console=ttyS0,115200 acpi=off nokaslr" \
--nic user,hostfwd=tcp::2222-:22,hostfwd=tcp::6443-:6443 \
+-nic user,hostfwd=tcp::2222-:22,hostfwd=tcp::6443-:6443,hostfwd=tcp::80-:80,hostfwd=tcp::443-:443 \
 -serial mon:stdio -display none
