@@ -326,7 +326,7 @@ func (r *Mutator) createIngress(ctx context.Context, stack *stackv1beta2.Stack, 
 										PathType: &pathType,
 										Backend: networkingv1.IngressBackend{
 											Service: &networkingv1.IngressServiceBackend{
-												Name: "http",
+												Name: fmt.Sprintf("%s-%s", stack.Name, name),
 												Port: networkingv1.ServiceBackendPort{
 													Name: "http",
 												},
