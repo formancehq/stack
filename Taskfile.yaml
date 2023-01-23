@@ -76,3 +76,6 @@ includes:
   webhooks:
     taskfile: ./components/webhooks
     dir: ./components/webhooks
+  operator:
+    taskfile: ./components/operator
+    dir: ./components/operator
