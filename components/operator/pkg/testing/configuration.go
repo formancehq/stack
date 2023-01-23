@@ -1,6 +1,8 @@
 package testing
 
 import (
+	"math/rand"
+
 	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
 	"github.com/formancehq/operator/apis/stack/v1beta2"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
@@ -81,4 +83,14 @@ func NewDumpPostgresConfig() apisv1beta2.PostgresConfig {
 		Username: "username",
 		Password: "password",
 	}
+}
+
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyz")
+
+func NewStackName() string {
+	b := make([]rune, 10)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
 }

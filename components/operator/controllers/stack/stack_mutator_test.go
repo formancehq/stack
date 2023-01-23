@@ -6,7 +6,6 @@ import (
 	stackv1beta2 "github.com/formancehq/operator/apis/stack/v1beta2"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	. "github.com/formancehq/operator/pkg/testing"
-	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/api/core/v1"
@@ -31,7 +30,7 @@ var _ = Describe("Stack controller (Auth)", func() {
 				stack stackv1beta2.Stack
 			)
 			BeforeEach(func() {
-				name := uuid.NewString()
+				name := NewStackName()
 
 				stack = stackv1beta2.NewStack(name, stackv1beta2.StackSpec{
 					Seed:     configuration.Name,
@@ -62,7 +61,7 @@ var _ = Describe("Stack controller (Auth)", func() {
 					stack stackv1beta2.Stack
 				)
 				BeforeEach(func() {
-					name := uuid.NewString()
+					name := NewStackName()
 					stack = stackv1beta2.NewStack(name, stackv1beta2.StackSpec{
 						Seed:     configuration.Name,
 						Versions: versions.Name,

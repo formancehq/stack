@@ -277,7 +277,7 @@ func (r *Mutator) createService(ctx context.Context, stack *stackv1beta2.Stack, 
 	port := serviceConfiguration.HTTPPort()
 	return controllerutils.CreateOrUpdate(ctx, r.client, client.ObjectKey{
 		Namespace: stack.Name,
-		Name:      name,
+		Name:      fmt.Sprintf("%s-%s", stack.Name, name),
 	},
 		controllerutils.WithController[*corev1.Service](stack, r.scheme),
 		func(service *corev1.Service) error {
