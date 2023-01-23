@@ -99,6 +99,9 @@ var _ = Describe("Stack controller (Auth)", func() {
 						Expect(u.Object["spec"].(map[string]any)["version"]).To(Equal(
 							versions.GetFromServiceName(s),
 						))
+						Expect(u.Object["metadata"].(map[string]any)["labels"]).To(Equal(map[string]any{
+							"stack": "true",
+						}))
 					}
 				})
 				It("Should register a static auth client into stack status and use it on control", func() {

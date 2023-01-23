@@ -51,6 +51,12 @@ func CreateOrUpdate[T client.Object](ctx context.Context, client client.Client,
 	ret.SetNamespace(key.Namespace)
 	ret.SetName(key.Name)
 	operationResult, err := controllerutil.CreateOrUpdate(ctx, client, ret, func() error {
+		labels := ret.GetLabels()
+		if labels == nil {
+			labels = map[string]string{}
+		}
+		labels["stack"] = "true"
+		ret.SetLabels(labels)
 		for _, mutate := range mutators {
 			if err := mutate(ret); err != nil {
 				return err

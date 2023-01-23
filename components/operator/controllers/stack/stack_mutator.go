@@ -256,6 +256,18 @@ func (r *Mutator) createComponentObject(ctx context.Context, stack *stackv1beta2
 			return pkgError.Wrap(err, "merging spec")
 		}
 
+		actualMetadata, ok := ret.Object["metadata"].(map[string]any)
+		if !ok || actualMetadata == nil {
+			actualMetadata = map[string]any{}
+			ret.Object["metadata"] = actualMetadata
+		}
+		actualLabels, ok := actualMetadata["labels"].(map[string]string)
+		if !ok || actualMetadata == nil {
+			actualLabels = map[string]string{}
+			actualMetadata["labels"] = actualLabels
+		}
+		actualLabels["stack"] = "true"
+
 		ret.Object["spec"] = actualSpec
 		return controllerutil.SetControllerReference(stack, ret, r.scheme)
 	})
