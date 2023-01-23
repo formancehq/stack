@@ -6,3 +6,6 @@ tasks:
   tests:
     cmds:
       - make test
+  lint:
+    cmds:
+    - golangci-lint run -v --fix
