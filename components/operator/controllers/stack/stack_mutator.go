@@ -301,7 +301,7 @@ func (r *Mutator) createIngress(ctx context.Context, stack *stackv1beta2.Stack, 
 		annotations = map[string]string{}
 	}
 	if serviceConfiguration.NeedAuthMiddleware() {
-		middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", stack.Namespace)
+		middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", stack.Name)
 		annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
 	}
 
