@@ -36,6 +36,12 @@ type ServiceConfiguration interface {
 	AuthClientConfiguration(stack *Stack) *authcomponentsv1beta2.ClientConfiguration
 }
 
+// +kubebuilder:object:generate=false
+type CustomPathServiceConfiguration interface {
+	ServiceConfiguration
+	Path() string
+}
+
 type ConfigurationServicesSpec struct {
 	Auth           AuthSpec           `json:"auth,omitempty"`
 	Control        ControlSpec        `json:"control,omitempty"`

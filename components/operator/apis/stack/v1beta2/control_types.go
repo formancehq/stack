@@ -30,6 +30,10 @@ func (in ControlSpec) HTTPPort() int {
 	return 3000
 }
 
+func (in ControlSpec) Path() string {
+	return "/"
+}
+
 func (in ControlSpec) AuthClientConfiguration(stack *Stack) *authcomponentsv1beta2.ClientConfiguration {
 	ret := authcomponentsv1beta2.NewClientConfiguration().
 		WithAdditionalScopes("profile", "email", "offline").

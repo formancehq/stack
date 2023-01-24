@@ -324,7 +324,12 @@ func (r *Mutator) createIngress(ctx context.Context, stack *stackv1beta2.Stack, 
 							HTTP: &networkingv1.HTTPIngressRuleValue{
 								Paths: []networkingv1.HTTPIngressPath{
 									{
-										Path:     fmt.Sprintf("/api/%s", name),
+										Path: func() string {
+											if v, ok := serviceConfiguration.(stackv1beta2.CustomPathServiceConfiguration); ok {
+												return v.Path()
+											}
+											return fmt.Sprintf("/api/%s", name)
+										}(),
 										PathType: &pathType,
 										Backend: networkingv1.IngressBackend{
 											Service: &networkingv1.IngressServiceBackend{
