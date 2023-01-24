@@ -117,3 +117,11 @@ func MapObject(src, dst any) {
 		panic(err)
 	}
 }
+
+func CopyMap[K comparable, V any](m map[K]V) map[K]V {
+	ret := make(map[K]V)
+	for key, value := range m {
+		ret[key] = value
+	}
+	return ret
+}

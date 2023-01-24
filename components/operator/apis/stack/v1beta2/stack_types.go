@@ -123,7 +123,7 @@ func (s *Stack) GetConditions() *pkgapisv1beta2.Conditions {
 	return &s.Status.Conditions
 }
 
-func (s *Stack) ServiceName(v string) string {
+func (s *Stack) SubObjectName(v string) string {
 	return fmt.Sprintf("%s-%s", s.Name, strings.ToLower(v))
 }
 

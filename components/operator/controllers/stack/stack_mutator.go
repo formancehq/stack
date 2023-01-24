@@ -226,7 +226,7 @@ func (r *Mutator) createComponentObject(ctx context.Context, stack *stackv1beta2
 			"kind":       strcase.ToCamel(serviceName),
 			"apiVersion": componentsv1beta2.GroupVersion.String(),
 			"metadata": map[string]any{
-				"name":      stack.ServiceName(serviceName),
+				"name":      stack.SubObjectName(serviceName),
 				"namespace": stack.Name,
 			},
 		},
@@ -299,6 +299,8 @@ func (r *Mutator) createIngress(ctx context.Context, stack *stackv1beta2.Stack, 
 	annotations := configuration.Spec.Ingress.Annotations
 	if annotations == nil {
 		annotations = map[string]string{}
+	} else {
+		annotations = typeutils.CopyMap(annotations)
 	}
 	if serviceConfiguration.NeedAuthMiddleware() {
 		middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", stack.Name)
@@ -307,7 +309,7 @@ func (r *Mutator) createIngress(ctx context.Context, stack *stackv1beta2.Stack, 
 
 	return controllerutils.CreateOrUpdate(ctx, r.client, client.ObjectKey{
 		Namespace: stack.Name,
-		Name:      fmt.Sprintf("%s-%s", stack.Name, name),
+		Name:      stack.SubObjectName(name),
 	},
 		controllerutils.WithController[*networkingv1.Ingress](stack, r.scheme),
 		func(ingress *networkingv1.Ingress) error {

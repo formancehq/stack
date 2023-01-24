@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
@@ -93,7 +94,7 @@ var _ = Describe("Stack controller (Auth)", func() {
 						}
 						Expect(Get(types.NamespacedName{
 							Namespace: stack.Name,
-							Name:      stack.ServiceName(s),
+							Name:      stack.SubObjectName(s),
 						}, &u)).To(BeNil())
 						Expect(u.Object["spec"].(map[string]any)["version"]).To(Equal(
 							versions.GetFromServiceName(s),
@@ -101,6 +102,15 @@ var _ = Describe("Stack controller (Auth)", func() {
 						Expect(u.Object["metadata"].(map[string]any)["labels"]).To(Equal(map[string]any{
 							"stack": "true",
 						}))
+					}
+				})
+				It("Should create an ingress for each services", func() {
+					for _, s := range stackv1beta2.GetServiceList() {
+						ingress := &networkingv1.Ingress{}
+						Expect(Get(types.NamespacedName{
+							Namespace: stack.Name,
+							Name:      stack.SubObjectName(s),
+						}, ingress)).To(BeNil())
 					}
 				})
 				It("Should register a static auth client into stack status and use it on control", func() {
@@ -113,7 +123,7 @@ var _ = Describe("Stack controller (Auth)", func() {
 					}).ShouldNot(BeZero())
 					control := &componentsv1beta2.Control{
 						ObjectMeta: metav1.ObjectMeta{
-							Name:      stack.ServiceName("control"),
+							Name:      stack.SubObjectName("control"),
 							Namespace: stack.Name,
 						},
 					}
