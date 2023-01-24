@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	MembershipUriFlag = "membership-uri"
+	MembershipURIFlag = "membership-uri"
 	FileFlag          = "config"
 	ProfileFlag       = "profile"
 	DebugFlag         = "debug"

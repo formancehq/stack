@@ -1,10 +1,5 @@
 package v1beta2
 
-import (
-	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
-	"github.com/formancehq/operator/pkg/typeutils"
-)
-
 type ScalingSpec struct {
 	// +optional
 	Enabled bool `json:"enabled,omitempty"`
@@ -26,20 +21,4 @@ type DatabaseSpec struct {
 type IngressConfig struct {
 	// +optional
 	Annotations map[string]string `json:"annotations"`
-}
-
-func (cfg *IngressConfig) Compute(stack *Stack, config ConfigurationSpec, path string) apisv1beta2.IngressSpec {
-	annotations := make(map[string]string)
-	if config.Ingress.Annotations != nil {
-		annotations = typeutils.MergeMaps(annotations, config.Ingress.Annotations)
-	}
-	if cfg != nil && cfg.Annotations != nil {
-		annotations = typeutils.MergeMaps(annotations, cfg.Annotations)
-	}
-	return apisv1beta2.IngressSpec{
-		Path:        path,
-		Host:        stack.Spec.Host,
-		Annotations: annotations,
-		TLS:         config.Ingress.TLS,
-	}
 }

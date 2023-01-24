@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	DefaultMemberShipUri = "https://app.formance.cloud/api"
+	DefaultMembershipURI = "https://app.formance.cloud/api"
 )
 
 type ConfigManager struct {

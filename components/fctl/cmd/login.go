@@ -66,8 +66,8 @@ func LogIn(ctx context.Context, dialog Dialog, relyingParty rp.RelyingParty) (*o
 
 func NewLoginCommand() *cobra.Command {
 	return fctl.NewCommand("login",
-		fctl.WithStringFlag(fctl.MembershipUriFlag, fctl.DefaultMemberShipUri, "service url"),
-		fctl.WithHiddenFlag(fctl.MembershipUriFlag),
+		fctl.WithStringFlag(fctl.MembershipURIFlag, "", "service url"),
+		fctl.WithHiddenFlag(fctl.MembershipURIFlag),
 		fctl.WithShortDescription("Login"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
@@ -78,7 +78,7 @@ func NewLoginCommand() *cobra.Command {
 			}
 
 			profile := fctl.GetCurrentProfile(cmd, cfg)
-			membershipUri, err := cmd.Flags().GetString(fctl.MembershipUriFlag)
+			membershipUri, err := cmd.Flags().GetString(fctl.MembershipURIFlag)
 			if err != nil {
 				return err
 			}
