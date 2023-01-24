@@ -22,7 +22,7 @@
       }
     },
     {
-      "inputFile": "./../components/payments/swagger.yml",
+      "inputFile": "./../components/payments/openapi.yaml",
       "pathModification":{
         "prepend": "/api/payments"
       },
