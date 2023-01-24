@@ -38,7 +38,7 @@ func NewListWorkflowsCommand() *cobra.Command {
 
 			res, _, err := client.OrchestrationApi.ListFlows(cmd.Context()).Execute()
 			if err != nil {
-				return errors.Wrap(err, "listing wallets")
+				return errors.Wrap(err, "listing workflows")
 			}
 
 			if len(res.Cursor.Data) == 0 {

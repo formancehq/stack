@@ -26,5 +26,6 @@ func TestRunWorkflow(t *testing.T) {
 		router.ServeHTTP(rec, req)
 
 		require.Equal(t, http.StatusCreated, rec.Result().StatusCode)
+		require.Equal(t, "application/json", rec.Header().Get("Content-Type"))
 	})
 }
