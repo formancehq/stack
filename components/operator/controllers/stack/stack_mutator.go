@@ -316,7 +316,14 @@ func (r *Mutator) createIngress(ctx context.Context, stack *stackv1beta2.Stack, 
 			pathType := networkingv1.PathTypePrefix
 			ingress.ObjectMeta.Annotations = annotations
 			ingress.Spec = networkingv1.IngressSpec{
-				TLS: []networkingv1.IngressTLS{{}},
+				TLS: func() []networkingv1.IngressTLS {
+					if configuration.Spec.Ingress.TLS == nil {
+						return nil
+					}
+					return []networkingv1.IngressTLS{{
+						SecretName: configuration.Spec.Ingress.TLS.SecretName,
+					}}
+				}(),
 				Rules: []networkingv1.IngressRule{
 					{
 						Host: stack.Spec.Host,

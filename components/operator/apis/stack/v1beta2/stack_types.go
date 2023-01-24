@@ -30,7 +30,7 @@ import (
 type IngressGlobalConfig struct {
 	IngressConfig `json:",inline"`
 	// +optional
-	TLS pkgapisv1beta2.IngressTLS `json:"tls"`
+	TLS *pkgapisv1beta2.IngressTLS `json:"tls"`
 }
 
 type StackAuthSpec struct {
