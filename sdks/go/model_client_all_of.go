@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ClientAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ClientAllOf{}
+
 // ClientAllOf struct for ClientAllOf
 type ClientAllOf struct {
 	Id string `json:"id"`
@@ -54,7 +57,7 @@ func (o *ClientAllOf) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *ClientAllOf) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -77,7 +80,7 @@ func (o *ClientAllOf) GetScopes() []string {
 // and a boolean to check if the value has been set.
 func (o *ClientAllOf) GetScopesOk() ([]string, bool) {
 	if o == nil || isNil(o.Scopes) {
-    return nil, false
+		return nil, false
 	}
 	return o.Scopes, true
 }
@@ -109,7 +112,7 @@ func (o *ClientAllOf) GetSecrets() []ClientSecret {
 // and a boolean to check if the value has been set.
 func (o *ClientAllOf) GetSecretsOk() ([]ClientSecret, bool) {
 	if o == nil || isNil(o.Secrets) {
-    return nil, false
+		return nil, false
 	}
 	return o.Secrets, true
 }
@@ -129,17 +132,23 @@ func (o *ClientAllOf) SetSecrets(v []ClientSecret) {
 }
 
 func (o ClientAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ClientAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["id"] = o.Id
 	if !isNil(o.Scopes) {
 		toSerialize["scopes"] = o.Scopes
 	}
 	if !isNil(o.Secrets) {
 		toSerialize["secrets"] = o.Secrets
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableClientAllOf struct {

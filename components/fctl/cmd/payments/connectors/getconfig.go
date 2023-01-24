@@ -59,7 +59,7 @@ func NewGetConfigCommand() *cobra.Command {
 	)
 }
 
-func displayStripeConfig(cmd *cobra.Command, connectorConfig *formance.ConnectorConfig) error {
+func displayStripeConfig(cmd *cobra.Command, connectorConfig formance.ConnectorConfig) error {
 	config := connectorConfig.StripeConfig
 
 	tableData := pterm.TableData{}
@@ -74,7 +74,7 @@ func displayStripeConfig(cmd *cobra.Command, connectorConfig *formance.Connector
 	return nil
 }
 
-func displayModulrConfig(cmd *cobra.Command, connectorConfig *formance.ConnectorConfig) error {
+func displayModulrConfig(cmd *cobra.Command, connectorConfig formance.ConnectorConfig) error {
 	config := connectorConfig.ModulrConfig
 
 	tableData := pterm.TableData{}
@@ -96,7 +96,7 @@ func displayModulrConfig(cmd *cobra.Command, connectorConfig *formance.Connector
 	return nil
 }
 
-func displayWiseConfig(cmd *cobra.Command, connectorConfig *formance.ConnectorConfig) error {
+func displayWiseConfig(cmd *cobra.Command, connectorConfig formance.ConnectorConfig) error {
 	config := connectorConfig.WiseConfig
 
 	tableData := pterm.TableData{}
@@ -111,7 +111,7 @@ func displayWiseConfig(cmd *cobra.Command, connectorConfig *formance.ConnectorCo
 	return nil
 }
 
-func displayBankingCircleConfig(cmd *cobra.Command, connectorConfig *formance.ConnectorConfig) error {
+func displayBankingCircleConfig(cmd *cobra.Command, connectorConfig formance.ConnectorConfig) error {
 	config := connectorConfig.BankingCircleConfig
 
 	tableData := pterm.TableData{}
@@ -129,7 +129,7 @@ func displayBankingCircleConfig(cmd *cobra.Command, connectorConfig *formance.Co
 	return nil
 }
 
-func displayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig *formance.ConnectorConfig) error {
+func displayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig formance.ConnectorConfig) error {
 	config := connectorConfig.CurrencyCloudConfig
 
 	tableData := pterm.TableData{}

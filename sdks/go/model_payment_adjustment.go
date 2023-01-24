@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the PaymentAdjustment type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PaymentAdjustment{}
+
 // PaymentAdjustment struct for PaymentAdjustment
 type PaymentAdjustment struct {
 	Status PaymentStatus `json:"status"`
@@ -61,7 +64,7 @@ func (o *PaymentAdjustment) GetStatus() PaymentStatus {
 // and a boolean to check if the value has been set.
 func (o *PaymentAdjustment) GetStatusOk() (*PaymentStatus, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Status, true
 }
@@ -85,7 +88,7 @@ func (o *PaymentAdjustment) GetAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *PaymentAdjustment) GetAmountOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Amount, true
 }
@@ -109,7 +112,7 @@ func (o *PaymentAdjustment) GetDate() time.Time {
 // and a boolean to check if the value has been set.
 func (o *PaymentAdjustment) GetDateOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Date, true
 }
@@ -133,7 +136,7 @@ func (o *PaymentAdjustment) GetRaw() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *PaymentAdjustment) GetRawOk() (map[string]interface{}, bool) {
 	if o == nil {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Raw, true
 }
@@ -157,7 +160,7 @@ func (o *PaymentAdjustment) GetAbsolute() bool {
 // and a boolean to check if the value has been set.
 func (o *PaymentAdjustment) GetAbsoluteOk() (*bool, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Absolute, true
 }
@@ -168,23 +171,21 @@ func (o *PaymentAdjustment) SetAbsolute(v bool) {
 }
 
 func (o PaymentAdjustment) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["status"] = o.Status
-	}
-	if true {
-		toSerialize["amount"] = o.Amount
-	}
-	if true {
-		toSerialize["date"] = o.Date
-	}
-	if true {
-		toSerialize["raw"] = o.Raw
-	}
-	if true {
-		toSerialize["absolute"] = o.Absolute
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o PaymentAdjustment) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["status"] = o.Status
+	toSerialize["amount"] = o.Amount
+	toSerialize["date"] = o.Date
+	toSerialize["raw"] = o.Raw
+	toSerialize["absolute"] = o.Absolute
+	return toSerialize, nil
 }
 
 type NullablePaymentAdjustment struct {

@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ExpandedDebitHold type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ExpandedDebitHold{}
+
 // ExpandedDebitHold struct for ExpandedDebitHold
 type ExpandedDebitHold struct {
 	// The unique ID of the hold.
@@ -68,7 +71,7 @@ func (o *ExpandedDebitHold) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -92,7 +95,7 @@ func (o *ExpandedDebitHold) GetWalletID() string {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetWalletIDOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.WalletID, true
 }
@@ -116,7 +119,7 @@ func (o *ExpandedDebitHold) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -140,7 +143,7 @@ func (o *ExpandedDebitHold) GetDescription() string {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetDescriptionOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Description, true
 }
@@ -163,7 +166,7 @@ func (o *ExpandedDebitHold) GetDestination() Subject {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetDestinationOk() (*Subject, bool) {
 	if o == nil || isNil(o.Destination) {
-    return nil, false
+		return nil, false
 	}
 	return o.Destination, true
 }
@@ -196,7 +199,7 @@ func (o *ExpandedDebitHold) GetRemaining() int64 {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetRemainingOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Remaining, true
 }
@@ -220,7 +223,7 @@ func (o *ExpandedDebitHold) GetOriginalAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetOriginalAmountOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.OriginalAmount, true
 }
@@ -231,29 +234,25 @@ func (o *ExpandedDebitHold) SetOriginalAmount(v int64) {
 }
 
 func (o ExpandedDebitHold) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ExpandedDebitHold) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["walletID"] = o.WalletID
-	}
-	if true {
-		toSerialize["metadata"] = o.Metadata
-	}
-	if true {
-		toSerialize["description"] = o.Description
-	}
+	toSerialize["id"] = o.Id
+	toSerialize["walletID"] = o.WalletID
+	toSerialize["metadata"] = o.Metadata
+	toSerialize["description"] = o.Description
 	if !isNil(o.Destination) {
 		toSerialize["destination"] = o.Destination
 	}
-	if true {
-		toSerialize["remaining"] = o.Remaining
-	}
-	if true {
-		toSerialize["originalAmount"] = o.OriginalAmount
-	}
-	return json.Marshal(toSerialize)
+	toSerialize["remaining"] = o.Remaining
+	toSerialize["originalAmount"] = o.OriginalAmount
+	return toSerialize, nil
 }
 
 type NullableExpandedDebitHold struct {

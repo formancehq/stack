@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Client type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Client{}
+
 // Client struct for Client
 type Client struct {
 	Public *bool `json:"public,omitempty"`
@@ -61,7 +64,7 @@ func (o *Client) GetPublic() bool {
 // and a boolean to check if the value has been set.
 func (o *Client) GetPublicOk() (*bool, bool) {
 	if o == nil || isNil(o.Public) {
-    return nil, false
+		return nil, false
 	}
 	return o.Public, true
 }
@@ -93,7 +96,7 @@ func (o *Client) GetRedirectUris() []string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetRedirectUrisOk() ([]string, bool) {
 	if o == nil || isNil(o.RedirectUris) {
-    return nil, false
+		return nil, false
 	}
 	return o.RedirectUris, true
 }
@@ -125,7 +128,7 @@ func (o *Client) GetDescription() string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetDescriptionOk() (*string, bool) {
 	if o == nil || isNil(o.Description) {
-    return nil, false
+		return nil, false
 	}
 	return o.Description, true
 }
@@ -158,7 +161,7 @@ func (o *Client) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetNameOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Name, true
 }
@@ -181,7 +184,7 @@ func (o *Client) GetTrusted() bool {
 // and a boolean to check if the value has been set.
 func (o *Client) GetTrustedOk() (*bool, bool) {
 	if o == nil || isNil(o.Trusted) {
-    return nil, false
+		return nil, false
 	}
 	return o.Trusted, true
 }
@@ -213,7 +216,7 @@ func (o *Client) GetPostLogoutRedirectUris() []string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetPostLogoutRedirectUrisOk() ([]string, bool) {
 	if o == nil || isNil(o.PostLogoutRedirectUris) {
-    return nil, false
+		return nil, false
 	}
 	return o.PostLogoutRedirectUris, true
 }
@@ -245,7 +248,7 @@ func (o *Client) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Client) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -278,7 +281,7 @@ func (o *Client) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -301,7 +304,7 @@ func (o *Client) GetScopes() []string {
 // and a boolean to check if the value has been set.
 func (o *Client) GetScopesOk() ([]string, bool) {
 	if o == nil || isNil(o.Scopes) {
-    return nil, false
+		return nil, false
 	}
 	return o.Scopes, true
 }
@@ -333,7 +336,7 @@ func (o *Client) GetSecrets() []ClientSecret {
 // and a boolean to check if the value has been set.
 func (o *Client) GetSecretsOk() ([]ClientSecret, bool) {
 	if o == nil || isNil(o.Secrets) {
-    return nil, false
+		return nil, false
 	}
 	return o.Secrets, true
 }
@@ -353,6 +356,14 @@ func (o *Client) SetSecrets(v []ClientSecret) {
 }
 
 func (o Client) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o Client) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Public) {
 		toSerialize["public"] = o.Public
@@ -363,9 +374,7 @@ func (o Client) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}
-	if true {
-		toSerialize["name"] = o.Name
-	}
+	toSerialize["name"] = o.Name
 	if !isNil(o.Trusted) {
 		toSerialize["trusted"] = o.Trusted
 	}
@@ -375,16 +384,14 @@ func (o Client) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	if true {
-		toSerialize["id"] = o.Id
-	}
+	toSerialize["id"] = o.Id
 	if !isNil(o.Scopes) {
 		toSerialize["scopes"] = o.Scopes
 	}
 	if !isNil(o.Secrets) {
 		toSerialize["secrets"] = o.Secrets
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableClient struct {

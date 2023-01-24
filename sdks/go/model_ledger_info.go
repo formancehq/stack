@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the LedgerInfo type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &LedgerInfo{}
+
 // LedgerInfo struct for LedgerInfo
 type LedgerInfo struct {
 	Name *string `json:"name,omitempty"`
@@ -51,7 +54,7 @@ func (o *LedgerInfo) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *LedgerInfo) GetNameOk() (*string, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return o.Name, true
 }
@@ -83,7 +86,7 @@ func (o *LedgerInfo) GetStorage() LedgerInfoStorage {
 // and a boolean to check if the value has been set.
 func (o *LedgerInfo) GetStorageOk() (*LedgerInfoStorage, bool) {
 	if o == nil || isNil(o.Storage) {
-    return nil, false
+		return nil, false
 	}
 	return o.Storage, true
 }
@@ -103,6 +106,14 @@ func (o *LedgerInfo) SetStorage(v LedgerInfoStorage) {
 }
 
 func (o LedgerInfo) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o LedgerInfo) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Name) {
 		toSerialize["name"] = o.Name
@@ -110,7 +121,7 @@ func (o LedgerInfo) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Storage) {
 		toSerialize["storage"] = o.Storage
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableLedgerInfo struct {

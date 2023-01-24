@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the StripeConfig type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &StripeConfig{}
+
 // StripeConfig struct for StripeConfig
 type StripeConfig struct {
 	// The frequency at which the connector will try to fetch new BalanceTransaction objects from Stripe API. 
@@ -63,7 +66,7 @@ func (o *StripeConfig) GetPollingPeriod() string {
 // and a boolean to check if the value has been set.
 func (o *StripeConfig) GetPollingPeriodOk() (*string, bool) {
 	if o == nil || isNil(o.PollingPeriod) {
-    return nil, false
+		return nil, false
 	}
 	return o.PollingPeriod, true
 }
@@ -96,7 +99,7 @@ func (o *StripeConfig) GetApiKey() string {
 // and a boolean to check if the value has been set.
 func (o *StripeConfig) GetApiKeyOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.ApiKey, true
 }
@@ -119,7 +122,7 @@ func (o *StripeConfig) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *StripeConfig) GetPageSizeOk() (*int64, bool) {
 	if o == nil || isNil(o.PageSize) {
-    return nil, false
+		return nil, false
 	}
 	return o.PageSize, true
 }
@@ -139,17 +142,23 @@ func (o *StripeConfig) SetPageSize(v int64) {
 }
 
 func (o StripeConfig) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o StripeConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.PollingPeriod) {
 		toSerialize["pollingPeriod"] = o.PollingPeriod
 	}
-	if true {
-		toSerialize["apiKey"] = o.ApiKey
-	}
+	toSerialize["apiKey"] = o.ApiKey
 	if !isNil(o.PageSize) {
 		toSerialize["pageSize"] = o.PageSize
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableStripeConfig struct {

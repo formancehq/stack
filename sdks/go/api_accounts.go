@@ -130,8 +130,8 @@ func (a *AccountsApiService) AddMetadataToAccountExecute(r ApiAddMetadataToAccou
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/accounts/{address}/metadata"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"address"+"}", url.PathEscape(parameterToString(r.address, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"address"+"}", url.PathEscape(parameterValueToString(r.address, "address")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -187,8 +187,8 @@ func (a *AccountsApiService) AddMetadataToAccountExecute(r ApiAddMetadataToAccou
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -248,17 +248,17 @@ func (a *AccountsApiService) CountAccountsExecute(r ApiCountAccountsRequest) (*h
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/accounts"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
 	if r.address != nil {
-		localVarQueryParams.Add("address", parameterToString(*r.address, ""))
+		parameterAddToQuery(localVarQueryParams, "address", r.address, "")
 	}
 	if r.metadata != nil {
-		localVarQueryParams.Add("metadata", parameterToString(*r.metadata, ""))
+		parameterAddToQuery(localVarQueryParams, "metadata", r.metadata, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -305,8 +305,8 @@ func (a *AccountsApiService) CountAccountsExecute(r ApiCountAccountsRequest) (*h
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -357,8 +357,8 @@ func (a *AccountsApiService) GetAccountExecute(r ApiGetAccountRequest) (*Account
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/accounts/{address}"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"address"+"}", url.PathEscape(parameterToString(r.address, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"address"+"}", url.PathEscape(parameterValueToString(r.address, "address")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -409,8 +409,8 @@ func (a *AccountsApiService) GetAccountExecute(r ApiGetAccountRequest) (*Account
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -542,41 +542,41 @@ func (a *AccountsApiService) ListAccountsExecute(r ApiListAccountsRequest) (*Acc
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/accounts"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
 	if r.pageSize != nil {
-		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
+		parameterAddToQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.pageSize2 != nil {
-		localVarQueryParams.Add("page_size", parameterToString(*r.pageSize2, ""))
+		parameterAddToQuery(localVarQueryParams, "page_size", r.pageSize2, "")
 	}
 	if r.after != nil {
-		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
+		parameterAddToQuery(localVarQueryParams, "after", r.after, "")
 	}
 	if r.address != nil {
-		localVarQueryParams.Add("address", parameterToString(*r.address, ""))
+		parameterAddToQuery(localVarQueryParams, "address", r.address, "")
 	}
 	if r.metadata != nil {
-		localVarQueryParams.Add("metadata", parameterToString(*r.metadata, ""))
+		parameterAddToQuery(localVarQueryParams, "metadata", r.metadata, "")
 	}
 	if r.balance != nil {
-		localVarQueryParams.Add("balance", parameterToString(*r.balance, ""))
+		parameterAddToQuery(localVarQueryParams, "balance", r.balance, "")
 	}
 	if r.balanceOperator != nil {
-		localVarQueryParams.Add("balanceOperator", parameterToString(*r.balanceOperator, ""))
+		parameterAddToQuery(localVarQueryParams, "balanceOperator", r.balanceOperator, "")
 	}
 	if r.balanceOperator2 != nil {
-		localVarQueryParams.Add("balance_operator", parameterToString(*r.balanceOperator2, ""))
+		parameterAddToQuery(localVarQueryParams, "balance_operator", r.balanceOperator2, "")
 	}
 	if r.cursor != nil {
-		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
+		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	if r.paginationToken != nil {
-		localVarQueryParams.Add("pagination_token", parameterToString(*r.paginationToken, ""))
+		parameterAddToQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -623,8 +623,8 @@ func (a *AccountsApiService) ListAccountsExecute(r ApiListAccountsRequest) (*Acc
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

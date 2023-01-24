@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the DebitWalletRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &DebitWalletRequest{}
+
 // DebitWalletRequest struct for DebitWalletRequest
 type DebitWalletRequest struct {
 	Amount Monetary `json:"amount"`
@@ -59,7 +62,7 @@ func (o *DebitWalletRequest) GetAmount() Monetary {
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetAmountOk() (*Monetary, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Amount, true
 }
@@ -82,7 +85,7 @@ func (o *DebitWalletRequest) GetPending() bool {
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetPendingOk() (*bool, bool) {
 	if o == nil || isNil(o.Pending) {
-    return nil, false
+		return nil, false
 	}
 	return o.Pending, true
 }
@@ -114,7 +117,7 @@ func (o *DebitWalletRequest) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -146,7 +149,7 @@ func (o *DebitWalletRequest) GetDescription() string {
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetDescriptionOk() (*string, bool) {
 	if o == nil || isNil(o.Description) {
-    return nil, false
+		return nil, false
 	}
 	return o.Description, true
 }
@@ -178,7 +181,7 @@ func (o *DebitWalletRequest) GetDestination() Subject {
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetDestinationOk() (*Subject, bool) {
 	if o == nil || isNil(o.Destination) {
-    return nil, false
+		return nil, false
 	}
 	return o.Destination, true
 }
@@ -210,7 +213,7 @@ func (o *DebitWalletRequest) GetBalances() []string {
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetBalancesOk() ([]string, bool) {
 	if o == nil || isNil(o.Balances) {
-    return nil, false
+		return nil, false
 	}
 	return o.Balances, true
 }
@@ -230,10 +233,16 @@ func (o *DebitWalletRequest) SetBalances(v []string) {
 }
 
 func (o DebitWalletRequest) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["amount"] = o.Amount
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o DebitWalletRequest) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["amount"] = o.Amount
 	if !isNil(o.Pending) {
 		toSerialize["pending"] = o.Pending
 	}
@@ -249,7 +258,7 @@ func (o DebitWalletRequest) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Balances) {
 		toSerialize["balances"] = o.Balances
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableDebitWalletRequest struct {

@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ListBalancesResponseCursorAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ListBalancesResponseCursorAllOf{}
+
 // ListBalancesResponseCursorAllOf struct for ListBalancesResponseCursorAllOf
 type ListBalancesResponseCursorAllOf struct {
 	Data []Balance `json:"data"`
@@ -52,7 +55,7 @@ func (o *ListBalancesResponseCursorAllOf) GetData() []Balance {
 // and a boolean to check if the value has been set.
 func (o *ListBalancesResponseCursorAllOf) GetDataOk() ([]Balance, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *ListBalancesResponseCursorAllOf) SetData(v []Balance) {
 }
 
 func (o ListBalancesResponseCursorAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ListBalancesResponseCursorAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableListBalancesResponseCursorAllOf struct {

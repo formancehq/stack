@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Response type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Response{}
+
 // Response struct for Response
 type Response struct {
 	// The payload
@@ -52,7 +55,7 @@ func (o *Response) GetData() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Response) GetDataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Data) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Data, true
 }
@@ -84,7 +87,7 @@ func (o *Response) GetCursor() Cursor {
 // and a boolean to check if the value has been set.
 func (o *Response) GetCursorOk() (*Cursor, bool) {
 	if o == nil || isNil(o.Cursor) {
-    return nil, false
+		return nil, false
 	}
 	return o.Cursor, true
 }
@@ -104,6 +107,14 @@ func (o *Response) SetCursor(v Cursor) {
 }
 
 func (o Response) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Data) {
 		toSerialize["data"] = o.Data
@@ -111,7 +122,7 @@ func (o Response) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Cursor) {
 		toSerialize["cursor"] = o.Cursor
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableResponse struct {

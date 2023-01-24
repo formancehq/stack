@@ -21,7 +21,7 @@ tasks:
         msg: Please specify generator as first cli arg (ie "task generate -- go")
     cmds:
       - >
-        docker run --rm -w /local -v ${PWD}/..:/local openapitools/openapi-generator-cli:v6.2.1 generate
+        docker run --rm -w /local -v ${PWD}/..:/local openapitools/openapi-generator-cli:latest generate
         -i ./openapi/build/generate.json
         -g {{ (split "-" .CLI_ARGS)._0 }}
         -c ./openapi/configs/{{.CLI_ARGS}}.yaml

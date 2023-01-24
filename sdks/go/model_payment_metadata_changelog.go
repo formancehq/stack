@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the PaymentMetadataChangelog type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PaymentMetadataChangelog{}
+
 // PaymentMetadataChangelog struct for PaymentMetadataChangelog
 type PaymentMetadataChangelog struct {
 	Timestamp time.Time `json:"timestamp"`
@@ -55,7 +58,7 @@ func (o *PaymentMetadataChangelog) GetTimestamp() time.Time {
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadataChangelog) GetTimestampOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Timestamp, true
 }
@@ -79,7 +82,7 @@ func (o *PaymentMetadataChangelog) GetValue() string {
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadataChangelog) GetValueOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Value, true
 }
@@ -90,14 +93,18 @@ func (o *PaymentMetadataChangelog) SetValue(v string) {
 }
 
 func (o PaymentMetadataChangelog) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["timestamp"] = o.Timestamp
-	}
-	if true {
-		toSerialize["value"] = o.Value
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o PaymentMetadataChangelog) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["timestamp"] = o.Timestamp
+	toSerialize["value"] = o.Value
+	return toSerialize, nil
 }
 
 type NullablePaymentMetadataChangelog struct {

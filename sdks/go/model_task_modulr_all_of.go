@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TaskModulrAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskModulrAllOf{}
+
 // TaskModulrAllOf struct for TaskModulrAllOf
 type TaskModulrAllOf struct {
 	Descriptor TaskModulrAllOfDescriptor `json:"descriptor"`
@@ -52,7 +55,7 @@ func (o *TaskModulrAllOf) GetDescriptor() TaskModulrAllOfDescriptor {
 // and a boolean to check if the value has been set.
 func (o *TaskModulrAllOf) GetDescriptorOk() (*TaskModulrAllOfDescriptor, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Descriptor, true
 }
@@ -63,11 +66,17 @@ func (o *TaskModulrAllOf) SetDescriptor(v TaskModulrAllOfDescriptor) {
 }
 
 func (o TaskModulrAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["descriptor"] = o.Descriptor
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o TaskModulrAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["descriptor"] = o.Descriptor
+	return toSerialize, nil
 }
 
 type NullableTaskModulrAllOf struct {

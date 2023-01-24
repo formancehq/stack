@@ -123,23 +123,23 @@ func (a *BalancesApiService) GetBalancesExecute(r ApiGetBalancesRequest) (*Balan
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/balances"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
 	if r.address != nil {
-		localVarQueryParams.Add("address", parameterToString(*r.address, ""))
+		parameterAddToQuery(localVarQueryParams, "address", r.address, "")
 	}
 	if r.after != nil {
-		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
+		parameterAddToQuery(localVarQueryParams, "after", r.after, "")
 	}
 	if r.cursor != nil {
-		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
+		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	if r.paginationToken != nil {
-		localVarQueryParams.Add("pagination_token", parameterToString(*r.paginationToken, ""))
+		parameterAddToQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -186,8 +186,8 @@ func (a *BalancesApiService) GetBalancesExecute(r ApiGetBalancesRequest) (*Balan
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -251,14 +251,14 @@ func (a *BalancesApiService) GetBalancesAggregatedExecute(r ApiGetBalancesAggreg
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/aggregate/balances"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
 	if r.address != nil {
-		localVarQueryParams.Add("address", parameterToString(*r.address, ""))
+		parameterAddToQuery(localVarQueryParams, "address", r.address, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -305,8 +305,8 @@ func (a *BalancesApiService) GetBalancesAggregatedExecute(r ApiGetBalancesAggreg
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

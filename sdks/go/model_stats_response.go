@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the StatsResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &StatsResponse{}
+
 // StatsResponse struct for StatsResponse
 type StatsResponse struct {
 	Data Stats `json:"data"`
@@ -52,7 +55,7 @@ func (o *StatsResponse) GetData() Stats {
 // and a boolean to check if the value has been set.
 func (o *StatsResponse) GetDataOk() (*Stats, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *StatsResponse) SetData(v Stats) {
 }
 
 func (o StatsResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o StatsResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableStatsResponse struct {

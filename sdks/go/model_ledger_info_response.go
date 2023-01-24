@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the LedgerInfoResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &LedgerInfoResponse{}
+
 // LedgerInfoResponse struct for LedgerInfoResponse
 type LedgerInfoResponse struct {
 	Data *LedgerInfo `json:"data,omitempty"`
@@ -50,7 +53,7 @@ func (o *LedgerInfoResponse) GetData() LedgerInfo {
 // and a boolean to check if the value has been set.
 func (o *LedgerInfoResponse) GetDataOk() (*LedgerInfo, bool) {
 	if o == nil || isNil(o.Data) {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -70,11 +73,19 @@ func (o *LedgerInfoResponse) SetData(v LedgerInfo) {
 }
 
 func (o LedgerInfoResponse) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o LedgerInfoResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableLedgerInfoResponse struct {

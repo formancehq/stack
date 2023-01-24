@@ -9,7 +9,7 @@ import (
 
 func abortWorkflowRun(m *workflow.Manager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := m.AbortRun(r.Context(), workflowId(r), occurrenceId(r)); err != nil {
+		if err := m.AbortRun(r.Context(), occurrenceId(r)); err != nil {
 			api.InternalServerError(w, r, err)
 			return
 		}

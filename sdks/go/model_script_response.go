@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ScriptResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ScriptResponse{}
+
 // ScriptResponse struct for ScriptResponse
 type ScriptResponse struct {
 	ErrorCode *ErrorsEnum `json:"errorCode,omitempty"`
@@ -53,7 +56,7 @@ func (o *ScriptResponse) GetErrorCode() ErrorsEnum {
 // and a boolean to check if the value has been set.
 func (o *ScriptResponse) GetErrorCodeOk() (*ErrorsEnum, bool) {
 	if o == nil || isNil(o.ErrorCode) {
-    return nil, false
+		return nil, false
 	}
 	return o.ErrorCode, true
 }
@@ -85,7 +88,7 @@ func (o *ScriptResponse) GetErrorMessage() string {
 // and a boolean to check if the value has been set.
 func (o *ScriptResponse) GetErrorMessageOk() (*string, bool) {
 	if o == nil || isNil(o.ErrorMessage) {
-    return nil, false
+		return nil, false
 	}
 	return o.ErrorMessage, true
 }
@@ -117,7 +120,7 @@ func (o *ScriptResponse) GetDetails() string {
 // and a boolean to check if the value has been set.
 func (o *ScriptResponse) GetDetailsOk() (*string, bool) {
 	if o == nil || isNil(o.Details) {
-    return nil, false
+		return nil, false
 	}
 	return o.Details, true
 }
@@ -149,7 +152,7 @@ func (o *ScriptResponse) GetTransaction() Transaction {
 // and a boolean to check if the value has been set.
 func (o *ScriptResponse) GetTransactionOk() (*Transaction, bool) {
 	if o == nil || isNil(o.Transaction) {
-    return nil, false
+		return nil, false
 	}
 	return o.Transaction, true
 }
@@ -169,6 +172,14 @@ func (o *ScriptResponse) SetTransaction(v Transaction) {
 }
 
 func (o ScriptResponse) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ScriptResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.ErrorCode) {
 		toSerialize["errorCode"] = o.ErrorCode
@@ -182,7 +193,7 @@ func (o ScriptResponse) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Transaction) {
 		toSerialize["transaction"] = o.Transaction
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableScriptResponse struct {

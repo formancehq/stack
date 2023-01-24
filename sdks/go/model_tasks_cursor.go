@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TasksCursor type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TasksCursor{}
+
 // TasksCursor struct for TasksCursor
 type TasksCursor struct {
 	Cursor TasksCursorCursor `json:"cursor"`
@@ -52,7 +55,7 @@ func (o *TasksCursor) GetCursor() TasksCursorCursor {
 // and a boolean to check if the value has been set.
 func (o *TasksCursor) GetCursorOk() (*TasksCursorCursor, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Cursor, true
 }
@@ -63,11 +66,17 @@ func (o *TasksCursor) SetCursor(v TasksCursorCursor) {
 }
 
 func (o TasksCursor) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["cursor"] = o.Cursor
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o TasksCursor) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["cursor"] = o.Cursor
+	return toSerialize, nil
 }
 
 type NullableTasksCursor struct {

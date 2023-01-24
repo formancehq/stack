@@ -106,7 +106,7 @@ func (a *ScriptApiService) RunScriptExecute(r ApiRunScriptRequest) (*ScriptRespo
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/script"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -116,7 +116,7 @@ func (a *ScriptApiService) RunScriptExecute(r ApiRunScriptRequest) (*ScriptRespo
 	}
 
 	if r.preview != nil {
-		localVarQueryParams.Add("preview", parameterToString(*r.preview, ""))
+		parameterAddToQuery(localVarQueryParams, "preview", r.preview, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}

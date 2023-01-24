@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TaskWiseAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskWiseAllOf{}
+
 // TaskWiseAllOf struct for TaskWiseAllOf
 type TaskWiseAllOf struct {
 	Descriptor TaskWiseAllOfDescriptor `json:"descriptor"`
@@ -52,7 +55,7 @@ func (o *TaskWiseAllOf) GetDescriptor() TaskWiseAllOfDescriptor {
 // and a boolean to check if the value has been set.
 func (o *TaskWiseAllOf) GetDescriptorOk() (*TaskWiseAllOfDescriptor, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Descriptor, true
 }
@@ -63,11 +66,17 @@ func (o *TaskWiseAllOf) SetDescriptor(v TaskWiseAllOfDescriptor) {
 }
 
 func (o TaskWiseAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["descriptor"] = o.Descriptor
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o TaskWiseAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["descriptor"] = o.Descriptor
+	return toSerialize, nil
 }
 
 type NullableTaskWiseAllOf struct {

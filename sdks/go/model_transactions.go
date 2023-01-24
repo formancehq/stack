@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Transactions type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Transactions{}
+
 // Transactions struct for Transactions
 type Transactions struct {
 	Transactions []TransactionData `json:"transactions"`
@@ -52,7 +55,7 @@ func (o *Transactions) GetTransactions() []TransactionData {
 // and a boolean to check if the value has been set.
 func (o *Transactions) GetTransactionsOk() ([]TransactionData, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Transactions, true
 }
@@ -63,11 +66,17 @@ func (o *Transactions) SetTransactions(v []TransactionData) {
 }
 
 func (o Transactions) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["transactions"] = o.Transactions
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o Transactions) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["transactions"] = o.Transactions
+	return toSerialize, nil
 }
 
 type NullableTransactions struct {

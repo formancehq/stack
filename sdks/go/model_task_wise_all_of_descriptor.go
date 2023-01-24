@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TaskWiseAllOfDescriptor type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskWiseAllOfDescriptor{}
+
 // TaskWiseAllOfDescriptor struct for TaskWiseAllOfDescriptor
 type TaskWiseAllOfDescriptor struct {
 	Name *string `json:"name,omitempty"`
@@ -52,7 +55,7 @@ func (o *TaskWiseAllOfDescriptor) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskWiseAllOfDescriptor) GetNameOk() (*string, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return o.Name, true
 }
@@ -84,7 +87,7 @@ func (o *TaskWiseAllOfDescriptor) GetKey() string {
 // and a boolean to check if the value has been set.
 func (o *TaskWiseAllOfDescriptor) GetKeyOk() (*string, bool) {
 	if o == nil || isNil(o.Key) {
-    return nil, false
+		return nil, false
 	}
 	return o.Key, true
 }
@@ -116,7 +119,7 @@ func (o *TaskWiseAllOfDescriptor) GetProfileID() int64 {
 // and a boolean to check if the value has been set.
 func (o *TaskWiseAllOfDescriptor) GetProfileIDOk() (*int64, bool) {
 	if o == nil || isNil(o.ProfileID) {
-    return nil, false
+		return nil, false
 	}
 	return o.ProfileID, true
 }
@@ -136,6 +139,14 @@ func (o *TaskWiseAllOfDescriptor) SetProfileID(v int64) {
 }
 
 func (o TaskWiseAllOfDescriptor) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o TaskWiseAllOfDescriptor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Name) {
 		toSerialize["name"] = o.Name
@@ -146,7 +157,7 @@ func (o TaskWiseAllOfDescriptor) MarshalJSON() ([]byte, error) {
 	if !isNil(o.ProfileID) {
 		toSerialize["profileID"] = o.ProfileID
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableTaskWiseAllOfDescriptor struct {

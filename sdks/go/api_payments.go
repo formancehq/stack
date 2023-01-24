@@ -353,8 +353,8 @@ func (a *PaymentsApiService) GetConnectorTaskExecute(r ApiGetConnectorTaskReques
 	}
 
 	localVarPath := localBasePath + "/api/payments/connectors/{connector}/tasks/{taskId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterToString(r.connector, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"taskId"+"}", url.PathEscape(parameterToString(r.taskId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterValueToString(r.connector, "connector")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"taskId"+"}", url.PathEscape(parameterValueToString(r.taskId, "taskId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -455,7 +455,7 @@ func (a *PaymentsApiService) GetPaymentExecute(r ApiGetPaymentRequest) (*Payment
 	}
 
 	localVarPath := localBasePath + "/api/payments/payments/{paymentId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"paymentId"+"}", url.PathEscape(parameterToString(r.paymentId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"paymentId"+"}", url.PathEscape(parameterValueToString(r.paymentId, "paymentId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -562,7 +562,7 @@ func (a *PaymentsApiService) InstallConnectorExecute(r ApiInstallConnectorReques
 	}
 
 	localVarPath := localBasePath + "/api/payments/connectors/{connector}"
-	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterToString(r.connector, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterValueToString(r.connector, "connector")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -873,17 +873,17 @@ func (a *PaymentsApiService) ListConnectorTasksExecute(r ApiListConnectorTasksRe
 	}
 
 	localVarPath := localBasePath + "/api/payments/connectors/{connector}/tasks"
-	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterToString(r.connector, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterValueToString(r.connector, "connector")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
 	if r.pageSize != nil {
-		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
+		parameterAddToQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.cursor != nil {
-		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
+		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -1004,20 +1004,20 @@ func (a *PaymentsApiService) ListPaymentsExecute(r ApiListPaymentsRequest) (*Pay
 	localVarFormParams := url.Values{}
 
 	if r.pageSize != nil {
-		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
+		parameterAddToQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.cursor != nil {
-		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
+		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	if r.sort != nil {
 		t := *r.sort
 		if reflect.TypeOf(t).Kind() == reflect.Slice {
 			s := reflect.ValueOf(t)
 			for i := 0; i < s.Len(); i++ {
-				localVarQueryParams.Add("sort", parameterToString(s.Index(i), "multi"))
+				parameterAddToQuery(localVarQueryParams, "sort", s.Index(i), "multi")
 			}
 		} else {
-			localVarQueryParams.Add("sort", parameterToString(t, "multi"))
+			parameterAddToQuery(localVarQueryParams, "sort", t, "multi")
 		}
 	}
 	// to determine the Content-Type header
@@ -1139,20 +1139,20 @@ func (a *PaymentsApiService) PaymentslistAccountsExecute(r ApiPaymentslistAccoun
 	localVarFormParams := url.Values{}
 
 	if r.pageSize != nil {
-		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
+		parameterAddToQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.cursor != nil {
-		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
+		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	if r.sort != nil {
 		t := *r.sort
 		if reflect.TypeOf(t).Kind() == reflect.Slice {
 			s := reflect.ValueOf(t)
 			for i := 0; i < s.Len(); i++ {
-				localVarQueryParams.Add("sort", parameterToString(s.Index(i), "multi"))
+				parameterAddToQuery(localVarQueryParams, "sort", s.Index(i), "multi")
 			}
 		} else {
-			localVarQueryParams.Add("sort", parameterToString(t, "multi"))
+			parameterAddToQuery(localVarQueryParams, "sort", t, "multi")
 		}
 	}
 	// to determine the Content-Type header
@@ -1252,7 +1252,7 @@ func (a *PaymentsApiService) ReadConnectorConfigExecute(r ApiReadConnectorConfig
 	}
 
 	localVarPath := localBasePath + "/api/payments/connectors/{connector}/config"
-	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterToString(r.connector, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterValueToString(r.connector, "connector")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1355,7 +1355,7 @@ func (a *PaymentsApiService) ResetConnectorExecute(r ApiResetConnectorRequest) (
 	}
 
 	localVarPath := localBasePath + "/api/payments/connectors/{connector}/reset"
-	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterToString(r.connector, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterValueToString(r.connector, "connector")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1447,7 +1447,7 @@ func (a *PaymentsApiService) UninstallConnectorExecute(r ApiUninstallConnectorRe
 	}
 
 	localVarPath := localBasePath + "/api/payments/connectors/{connector}"
-	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterToString(r.connector, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"connector"+"}", url.PathEscape(parameterValueToString(r.connector, "connector")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

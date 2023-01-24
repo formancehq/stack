@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the WalletsVolume type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &WalletsVolume{}
+
 // WalletsVolume struct for WalletsVolume
 type WalletsVolume struct {
 	Input int32 `json:"input"`
@@ -56,7 +59,7 @@ func (o *WalletsVolume) GetInput() int32 {
 // and a boolean to check if the value has been set.
 func (o *WalletsVolume) GetInputOk() (*int32, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Input, true
 }
@@ -80,7 +83,7 @@ func (o *WalletsVolume) GetOutput() int32 {
 // and a boolean to check if the value has been set.
 func (o *WalletsVolume) GetOutputOk() (*int32, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Output, true
 }
@@ -104,7 +107,7 @@ func (o *WalletsVolume) GetBalance() int32 {
 // and a boolean to check if the value has been set.
 func (o *WalletsVolume) GetBalanceOk() (*int32, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Balance, true
 }
@@ -115,17 +118,19 @@ func (o *WalletsVolume) SetBalance(v int32) {
 }
 
 func (o WalletsVolume) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["input"] = o.Input
-	}
-	if true {
-		toSerialize["output"] = o.Output
-	}
-	if true {
-		toSerialize["balance"] = o.Balance
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o WalletsVolume) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["input"] = o.Input
+	toSerialize["output"] = o.Output
+	toSerialize["balance"] = o.Balance
+	return toSerialize, nil
 }
 
 type NullableWalletsVolume struct {

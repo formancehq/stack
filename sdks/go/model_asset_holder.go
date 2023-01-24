@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the AssetHolder type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &AssetHolder{}
+
 // AssetHolder struct for AssetHolder
 type AssetHolder struct {
 	Assets map[string]float32 `json:"assets"`
@@ -52,7 +55,7 @@ func (o *AssetHolder) GetAssets() map[string]float32 {
 // and a boolean to check if the value has been set.
 func (o *AssetHolder) GetAssetsOk() (*map[string]float32, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Assets, true
 }
@@ -63,11 +66,17 @@ func (o *AssetHolder) SetAssets(v map[string]float32) {
 }
 
 func (o AssetHolder) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["assets"] = o.Assets
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o AssetHolder) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["assets"] = o.Assets
+	return toSerialize, nil
 }
 
 type NullableAssetHolder struct {

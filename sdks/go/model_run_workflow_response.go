@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the RunWorkflowResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &RunWorkflowResponse{}
+
 // RunWorkflowResponse struct for RunWorkflowResponse
 type RunWorkflowResponse struct {
 	Data WorkflowOccurrence `json:"data"`
@@ -52,7 +55,7 @@ func (o *RunWorkflowResponse) GetData() WorkflowOccurrence {
 // and a boolean to check if the value has been set.
 func (o *RunWorkflowResponse) GetDataOk() (*WorkflowOccurrence, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *RunWorkflowResponse) SetData(v WorkflowOccurrence) {
 }
 
 func (o RunWorkflowResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o RunWorkflowResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableRunWorkflowResponse struct {

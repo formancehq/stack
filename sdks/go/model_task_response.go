@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TaskResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskResponse{}
+
 // TaskResponse struct for TaskResponse
 type TaskResponse struct {
 	Data TasksCursorCursorAllOfDataInner `json:"data"`
@@ -52,7 +55,7 @@ func (o *TaskResponse) GetData() TasksCursorCursorAllOfDataInner {
 // and a boolean to check if the value has been set.
 func (o *TaskResponse) GetDataOk() (*TasksCursorCursorAllOfDataInner, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *TaskResponse) SetData(v TasksCursorCursorAllOfDataInner) {
 }
 
 func (o TaskResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o TaskResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableTaskResponse struct {

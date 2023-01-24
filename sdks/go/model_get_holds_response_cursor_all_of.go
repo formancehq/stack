@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the GetHoldsResponseCursorAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &GetHoldsResponseCursorAllOf{}
+
 // GetHoldsResponseCursorAllOf struct for GetHoldsResponseCursorAllOf
 type GetHoldsResponseCursorAllOf struct {
 	Data []Hold `json:"data"`
@@ -52,7 +55,7 @@ func (o *GetHoldsResponseCursorAllOf) GetData() []Hold {
 // and a boolean to check if the value has been set.
 func (o *GetHoldsResponseCursorAllOf) GetDataOk() ([]Hold, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *GetHoldsResponseCursorAllOf) SetData(v []Hold) {
 }
 
 func (o GetHoldsResponseCursorAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o GetHoldsResponseCursorAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableGetHoldsResponseCursorAllOf struct {

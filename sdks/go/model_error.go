@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Error type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Error{}
+
 // Error struct for Error
 type Error struct {
 	ErrorCode string `json:"errorCode"`
@@ -54,7 +57,7 @@ func (o *Error) GetErrorCode() string {
 // and a boolean to check if the value has been set.
 func (o *Error) GetErrorCodeOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.ErrorCode, true
 }
@@ -78,7 +81,7 @@ func (o *Error) GetErrorMessage() string {
 // and a boolean to check if the value has been set.
 func (o *Error) GetErrorMessageOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.ErrorMessage, true
 }
@@ -89,14 +92,18 @@ func (o *Error) SetErrorMessage(v string) {
 }
 
 func (o Error) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["errorCode"] = o.ErrorCode
-	}
-	if true {
-		toSerialize["errorMessage"] = o.ErrorMessage
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o Error) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["errorCode"] = o.ErrorCode
+	toSerialize["errorMessage"] = o.ErrorMessage
+	return toSerialize, nil
 }
 
 type NullableError struct {

@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the CursorBase type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CursorBase{}
+
 // CursorBase struct for CursorBase
 type CursorBase struct {
 	PageSize int64 `json:"pageSize"`
@@ -56,7 +59,7 @@ func (o *CursorBase) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *CursorBase) GetPageSizeOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.PageSize, true
 }
@@ -80,7 +83,7 @@ func (o *CursorBase) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *CursorBase) GetHasMoreOk() (*bool, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.HasMore, true
 }
@@ -103,7 +106,7 @@ func (o *CursorBase) GetPrevious() string {
 // and a boolean to check if the value has been set.
 func (o *CursorBase) GetPreviousOk() (*string, bool) {
 	if o == nil || isNil(o.Previous) {
-    return nil, false
+		return nil, false
 	}
 	return o.Previous, true
 }
@@ -135,7 +138,7 @@ func (o *CursorBase) GetNext() string {
 // and a boolean to check if the value has been set.
 func (o *CursorBase) GetNextOk() (*string, bool) {
 	if o == nil || isNil(o.Next) {
-    return nil, false
+		return nil, false
 	}
 	return o.Next, true
 }
@@ -155,20 +158,24 @@ func (o *CursorBase) SetNext(v string) {
 }
 
 func (o CursorBase) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o CursorBase) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["pageSize"] = o.PageSize
-	}
-	if true {
-		toSerialize["hasMore"] = o.HasMore
-	}
+	toSerialize["pageSize"] = o.PageSize
+	toSerialize["hasMore"] = o.HasMore
 	if !isNil(o.Previous) {
 		toSerialize["previous"] = o.Previous
 	}
 	if !isNil(o.Next) {
 		toSerialize["next"] = o.Next
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableCursorBase struct {

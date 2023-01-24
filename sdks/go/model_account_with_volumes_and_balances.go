@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the AccountWithVolumesAndBalances type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &AccountWithVolumesAndBalances{}
+
 // AccountWithVolumesAndBalances struct for AccountWithVolumesAndBalances
 type AccountWithVolumesAndBalances struct {
 	Address string `json:"address"`
@@ -56,7 +59,7 @@ func (o *AccountWithVolumesAndBalances) GetAddress() string {
 // and a boolean to check if the value has been set.
 func (o *AccountWithVolumesAndBalances) GetAddressOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Address, true
 }
@@ -79,7 +82,7 @@ func (o *AccountWithVolumesAndBalances) GetType() string {
 // and a boolean to check if the value has been set.
 func (o *AccountWithVolumesAndBalances) GetTypeOk() (*string, bool) {
 	if o == nil || isNil(o.Type) {
-    return nil, false
+		return nil, false
 	}
 	return o.Type, true
 }
@@ -111,7 +114,7 @@ func (o *AccountWithVolumesAndBalances) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *AccountWithVolumesAndBalances) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -143,7 +146,7 @@ func (o *AccountWithVolumesAndBalances) GetVolumes() map[string]map[string]int64
 // and a boolean to check if the value has been set.
 func (o *AccountWithVolumesAndBalances) GetVolumesOk() (*map[string]map[string]int64, bool) {
 	if o == nil || isNil(o.Volumes) {
-    return nil, false
+		return nil, false
 	}
 	return o.Volumes, true
 }
@@ -175,7 +178,7 @@ func (o *AccountWithVolumesAndBalances) GetBalances() map[string]int64 {
 // and a boolean to check if the value has been set.
 func (o *AccountWithVolumesAndBalances) GetBalancesOk() (*map[string]int64, bool) {
 	if o == nil || isNil(o.Balances) {
-    return nil, false
+		return nil, false
 	}
 	return o.Balances, true
 }
@@ -195,10 +198,16 @@ func (o *AccountWithVolumesAndBalances) SetBalances(v map[string]int64) {
 }
 
 func (o AccountWithVolumesAndBalances) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["address"] = o.Address
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o AccountWithVolumesAndBalances) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["address"] = o.Address
 	if !isNil(o.Type) {
 		toSerialize["type"] = o.Type
 	}
@@ -211,7 +220,7 @@ func (o AccountWithVolumesAndBalances) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Balances) {
 		toSerialize["balances"] = o.Balances
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableAccountWithVolumesAndBalances struct {

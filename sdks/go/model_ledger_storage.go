@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the LedgerStorage type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &LedgerStorage{}
+
 // LedgerStorage struct for LedgerStorage
 type LedgerStorage struct {
 	Driver string `json:"driver"`
@@ -54,7 +57,7 @@ func (o *LedgerStorage) GetDriver() string {
 // and a boolean to check if the value has been set.
 func (o *LedgerStorage) GetDriverOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Driver, true
 }
@@ -78,7 +81,7 @@ func (o *LedgerStorage) GetLedgers() []string {
 // and a boolean to check if the value has been set.
 func (o *LedgerStorage) GetLedgersOk() ([]string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Ledgers, true
 }
@@ -89,14 +92,18 @@ func (o *LedgerStorage) SetLedgers(v []string) {
 }
 
 func (o LedgerStorage) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["driver"] = o.Driver
-	}
-	if true {
-		toSerialize["ledgers"] = o.Ledgers
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o LedgerStorage) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["driver"] = o.Driver
+	toSerialize["ledgers"] = o.Ledgers
+	return toSerialize, nil
 }
 
 type NullableLedgerStorage struct {

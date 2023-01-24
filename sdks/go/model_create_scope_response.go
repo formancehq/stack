@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the CreateScopeResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CreateScopeResponse{}
+
 // CreateScopeResponse struct for CreateScopeResponse
 type CreateScopeResponse struct {
 	Data *Scope `json:"data,omitempty"`
@@ -50,7 +53,7 @@ func (o *CreateScopeResponse) GetData() Scope {
 // and a boolean to check if the value has been set.
 func (o *CreateScopeResponse) GetDataOk() (*Scope, bool) {
 	if o == nil || isNil(o.Data) {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -70,11 +73,19 @@ func (o *CreateScopeResponse) SetData(v Scope) {
 }
 
 func (o CreateScopeResponse) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o CreateScopeResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableCreateScopeResponse struct {

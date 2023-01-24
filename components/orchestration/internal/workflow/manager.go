@@ -51,23 +51,23 @@ func (m *Manager) RunWorkflow(ctx context.Context, id string, variables map[stri
 		return Occurrence{}, err
 	}
 
-	wr, err := m.temporalClient.ExecuteWorkflow(ctx, client.StartWorkflowOptions{
-		ID:        workflow.ID,
+	workflowRun := newOccurrence(id)
+
+	if _, err := m.db.
+		NewInsert().
+		Model(&workflowRun).
+		Exec(ctx); err != nil {
+		return Occurrence{}, err
+	}
+
+	_, err := m.temporalClient.ExecuteWorkflow(ctx, client.StartWorkflowOptions{
+		ID:        workflowRun.ID,
 		TaskQueue: TaskQueueName,
 	}, Run, Input{
 		Config:    workflow.Config,
 		Variables: variables,
 	})
 	if err != nil {
-		return Occurrence{}, err
-	}
-
-	workflowRun := newOccurrence(id, wr.GetRunID())
-
-	if _, err := m.db.
-		NewInsert().
-		Model(&workflowRun).
-		Exec(ctx); err != nil {
 		return Occurrence{}, err
 	}
 
@@ -107,16 +107,16 @@ func (m *Manager) ReadWorkflow(ctx context.Context, id string) (Workflow, error)
 	return workflow, nil
 }
 
-func (m *Manager) PostEvent(ctx context.Context, workflowID, runID string, event event) error {
+func (m *Manager) PostEvent(ctx context.Context, workflowRunID string, event event) error {
 	workflowRun := Occurrence{}
 	if err := m.db.NewSelect().
 		Model(&workflowRun).
-		Where("workflow_id = ? AND run_id = ?", workflowID, runID).
+		Where("id = ?", workflowRunID).
 		Scan(ctx); err != nil {
 		return errors.Wrap(err, "retrieving workflow")
 	}
 
-	err := m.temporalClient.SignalWorkflow(ctx, workflowID, workflowRun.ID, waitEventSignalName, event)
+	err := m.temporalClient.SignalWorkflow(ctx, workflowRun.ID, "", waitEventSignalName, event)
 	if err != nil {
 		return errors.Wrap(err, "sending signal to server")
 	}
@@ -124,16 +124,16 @@ func (m *Manager) PostEvent(ctx context.Context, workflowID, runID string, event
 	return nil
 }
 
-func (m *Manager) AbortRun(ctx context.Context, workflowID, runID string) error {
+func (m *Manager) AbortRun(ctx context.Context, workflowRunID string) error {
 	workflowRun := Occurrence{}
 	if err := m.db.NewSelect().
 		Model(&workflowRun).
-		Where("workflow_id = ? AND run_id", workflowID, runID).
+		Where("id", workflowRunID).
 		Scan(ctx); err != nil {
 		return errors.Wrap(err, "retrieving workflow execution")
 	}
 
-	return m.temporalClient.CancelWorkflow(ctx, workflowID, workflowRun.ID)
+	return m.temporalClient.CancelWorkflow(ctx, workflowRunID, "")
 }
 
 func (m *Manager) ListExecutions(ctx context.Context, workflowID string) ([]Occurrence, error) {
@@ -147,8 +147,8 @@ func (m *Manager) ListExecutions(ctx context.Context, workflowID string) ([]Occu
 	return workflowRuns, nil
 }
 
-func (m *Manager) ReadWorkflowRunHistory(ctx context.Context, workflowID, runID string) ([]*history.HistoryEvent, error) {
-	historyIterator := m.temporalClient.GetWorkflowHistory(ctx, workflowID, runID,
+func (m *Manager) ReadWorkflowRunHistory(ctx context.Context, workflowRunID string) ([]*history.HistoryEvent, error) {
+	historyIterator := m.temporalClient.GetWorkflowHistory(ctx, workflowRunID, "",
 		false, enums.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT)
 	events := make([]*history.HistoryEvent, 0)
 	for historyIterator.HasNext() {

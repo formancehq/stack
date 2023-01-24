@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConfirmHoldRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConfirmHoldRequest{}
+
 // ConfirmHoldRequest struct for ConfirmHoldRequest
 type ConfirmHoldRequest struct {
 	// Define the amount to transfer.
@@ -53,7 +56,7 @@ func (o *ConfirmHoldRequest) GetAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *ConfirmHoldRequest) GetAmountOk() (*int64, bool) {
 	if o == nil || isNil(o.Amount) {
-    return nil, false
+		return nil, false
 	}
 	return o.Amount, true
 }
@@ -85,7 +88,7 @@ func (o *ConfirmHoldRequest) GetFinal() bool {
 // and a boolean to check if the value has been set.
 func (o *ConfirmHoldRequest) GetFinalOk() (*bool, bool) {
 	if o == nil || isNil(o.Final) {
-    return nil, false
+		return nil, false
 	}
 	return o.Final, true
 }
@@ -105,6 +108,14 @@ func (o *ConfirmHoldRequest) SetFinal(v bool) {
 }
 
 func (o ConfirmHoldRequest) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ConfirmHoldRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Amount) {
 		toSerialize["amount"] = o.Amount
@@ -112,7 +123,7 @@ func (o ConfirmHoldRequest) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Final) {
 		toSerialize["final"] = o.Final
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableConfirmHoldRequest struct {

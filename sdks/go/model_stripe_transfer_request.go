@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the StripeTransferRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &StripeTransferRequest{}
+
 // StripeTransferRequest struct for StripeTransferRequest
 type StripeTransferRequest struct {
 	Amount *int64 `json:"amount,omitempty"`
@@ -54,7 +57,7 @@ func (o *StripeTransferRequest) GetAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetAmountOk() (*int64, bool) {
 	if o == nil || isNil(o.Amount) {
-    return nil, false
+		return nil, false
 	}
 	return o.Amount, true
 }
@@ -86,7 +89,7 @@ func (o *StripeTransferRequest) GetAsset() string {
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetAssetOk() (*string, bool) {
 	if o == nil || isNil(o.Asset) {
-    return nil, false
+		return nil, false
 	}
 	return o.Asset, true
 }
@@ -118,7 +121,7 @@ func (o *StripeTransferRequest) GetDestination() string {
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetDestinationOk() (*string, bool) {
 	if o == nil || isNil(o.Destination) {
-    return nil, false
+		return nil, false
 	}
 	return o.Destination, true
 }
@@ -150,7 +153,7 @@ func (o *StripeTransferRequest) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -170,6 +173,14 @@ func (o *StripeTransferRequest) SetMetadata(v map[string]interface{}) {
 }
 
 func (o StripeTransferRequest) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o StripeTransferRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Amount) {
 		toSerialize["amount"] = o.Amount
@@ -183,7 +194,7 @@ func (o StripeTransferRequest) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableStripeTransferRequest struct {

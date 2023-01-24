@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TaskCurrencyCloudAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskCurrencyCloudAllOf{}
+
 // TaskCurrencyCloudAllOf struct for TaskCurrencyCloudAllOf
 type TaskCurrencyCloudAllOf struct {
 	Descriptor TaskCurrencyCloudAllOfDescriptor `json:"descriptor"`
@@ -52,7 +55,7 @@ func (o *TaskCurrencyCloudAllOf) GetDescriptor() TaskCurrencyCloudAllOfDescripto
 // and a boolean to check if the value has been set.
 func (o *TaskCurrencyCloudAllOf) GetDescriptorOk() (*TaskCurrencyCloudAllOfDescriptor, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Descriptor, true
 }
@@ -63,11 +66,17 @@ func (o *TaskCurrencyCloudAllOf) SetDescriptor(v TaskCurrencyCloudAllOfDescripto
 }
 
 func (o TaskCurrencyCloudAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["descriptor"] = o.Descriptor
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o TaskCurrencyCloudAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["descriptor"] = o.Descriptor
+	return toSerialize, nil
 }
 
 type NullableTaskCurrencyCloudAllOf struct {

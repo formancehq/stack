@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TaskBankingCircleAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskBankingCircleAllOf{}
+
 // TaskBankingCircleAllOf struct for TaskBankingCircleAllOf
 type TaskBankingCircleAllOf struct {
 	Descriptor TaskBankingCircleAllOfDescriptor `json:"descriptor"`
@@ -52,7 +55,7 @@ func (o *TaskBankingCircleAllOf) GetDescriptor() TaskBankingCircleAllOfDescripto
 // and a boolean to check if the value has been set.
 func (o *TaskBankingCircleAllOf) GetDescriptorOk() (*TaskBankingCircleAllOfDescriptor, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Descriptor, true
 }
@@ -63,11 +66,17 @@ func (o *TaskBankingCircleAllOf) SetDescriptor(v TaskBankingCircleAllOfDescripto
 }
 
 func (o TaskBankingCircleAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["descriptor"] = o.Descriptor
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o TaskBankingCircleAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["descriptor"] = o.Descriptor
+	return toSerialize, nil
 }
 
 type NullableTaskBankingCircleAllOf struct {

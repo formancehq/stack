@@ -23,7 +23,7 @@ func TestProcessorPayinFromWallet(t *testing.T) {
 	env.
 		OnActivity(activities.GetPaymentActivity, mock.Anything, paymentID).
 		Return(&formance.PaymentResponse{
-			Data: &formance.Payment{
+			Data: formance.Payment{
 				InitialAmount: 100,
 				Asset:         "USD",
 				Provider:      formance.STRIPE,

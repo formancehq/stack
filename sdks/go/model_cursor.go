@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Cursor type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Cursor{}
+
 // Cursor struct for Cursor
 type Cursor struct {
 	PageSize *int64 `json:"pageSize,omitempty"`
@@ -55,7 +58,7 @@ func (o *Cursor) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetPageSizeOk() (*int64, bool) {
 	if o == nil || isNil(o.PageSize) {
-    return nil, false
+		return nil, false
 	}
 	return o.PageSize, true
 }
@@ -87,7 +90,7 @@ func (o *Cursor) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetHasMoreOk() (*bool, bool) {
 	if o == nil || isNil(o.HasMore) {
-    return nil, false
+		return nil, false
 	}
 	return o.HasMore, true
 }
@@ -119,7 +122,7 @@ func (o *Cursor) GetTotal() Total {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetTotalOk() (*Total, bool) {
 	if o == nil || isNil(o.Total) {
-    return nil, false
+		return nil, false
 	}
 	return o.Total, true
 }
@@ -151,7 +154,7 @@ func (o *Cursor) GetNext() string {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetNextOk() (*string, bool) {
 	if o == nil || isNil(o.Next) {
-    return nil, false
+		return nil, false
 	}
 	return o.Next, true
 }
@@ -183,7 +186,7 @@ func (o *Cursor) GetPrevious() string {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetPreviousOk() (*string, bool) {
 	if o == nil || isNil(o.Previous) {
-    return nil, false
+		return nil, false
 	}
 	return o.Previous, true
 }
@@ -215,7 +218,7 @@ func (o *Cursor) GetData() []interface{} {
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetDataOk() ([]interface{}, bool) {
 	if o == nil || isNil(o.Data) {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -235,6 +238,14 @@ func (o *Cursor) SetData(v []interface{}) {
 }
 
 func (o Cursor) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o Cursor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.PageSize) {
 		toSerialize["pageSize"] = o.PageSize
@@ -254,7 +265,7 @@ func (o Cursor) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableCursor struct {

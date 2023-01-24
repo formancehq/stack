@@ -153,38 +153,38 @@ func (a *LogsApiService) ListLogsExecute(r ApiListLogsRequest) (*LogsCursorRespo
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/log"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
 	if r.pageSize != nil {
-		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
+		parameterAddToQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.pageSize2 != nil {
-		localVarQueryParams.Add("page_size", parameterToString(*r.pageSize2, ""))
+		parameterAddToQuery(localVarQueryParams, "page_size", r.pageSize2, "")
 	}
 	if r.after != nil {
-		localVarQueryParams.Add("after", parameterToString(*r.after, ""))
+		parameterAddToQuery(localVarQueryParams, "after", r.after, "")
 	}
 	if r.startTime != nil {
-		localVarQueryParams.Add("startTime", parameterToString(*r.startTime, ""))
+		parameterAddToQuery(localVarQueryParams, "startTime", r.startTime, "")
 	}
 	if r.startTime2 != nil {
-		localVarQueryParams.Add("start_time", parameterToString(*r.startTime2, ""))
+		parameterAddToQuery(localVarQueryParams, "start_time", r.startTime2, "")
 	}
 	if r.endTime != nil {
-		localVarQueryParams.Add("endTime", parameterToString(*r.endTime, ""))
+		parameterAddToQuery(localVarQueryParams, "endTime", r.endTime, "")
 	}
 	if r.endTime2 != nil {
-		localVarQueryParams.Add("end_time", parameterToString(*r.endTime2, ""))
+		parameterAddToQuery(localVarQueryParams, "end_time", r.endTime2, "")
 	}
 	if r.cursor != nil {
-		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
+		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	if r.paginationToken != nil {
-		localVarQueryParams.Add("pagination_token", parameterToString(*r.paginationToken, ""))
+		parameterAddToQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -231,8 +231,8 @@ func (a *LogsApiService) ListLogsExecute(r ApiListLogsRequest) (*LogsCursorRespo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

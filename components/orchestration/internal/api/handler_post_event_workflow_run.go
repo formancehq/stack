@@ -16,7 +16,7 @@ func postEventToWorkflowRun(m *workflow.Manager) http.HandlerFunc {
 			return
 		}
 
-		if err := m.PostEvent(r.Context(), workflowId(r), occurrenceId(r), event); err != nil {
+		if err := m.PostEvent(r.Context(), occurrenceId(r), event); err != nil {
 			api.InternalServerError(w, r, err)
 			return
 		}

@@ -259,7 +259,7 @@ func (a *WalletsApiService) ConfirmHoldExecute(r ApiConfirmHoldRequest) (*http.R
 	}
 
 	localVarPath := localBasePath + "/api/wallets/holds/{hold_id}/confirm"
-	localVarPath = strings.Replace(localVarPath, "{"+"hold_id"+"}", url.PathEscape(parameterToString(r.holdId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"hold_id"+"}", url.PathEscape(parameterValueToString(r.holdId, "holdId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -312,8 +312,8 @@ func (a *WalletsApiService) ConfirmHoldExecute(r ApiConfirmHoldRequest) (*http.R
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -367,7 +367,7 @@ func (a *WalletsApiService) CreateBalanceExecute(r ApiCreateBalanceRequest) (*Cr
 	}
 
 	localVarPath := localBasePath + "/api/wallets/wallets/{id}/balances"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -420,8 +420,8 @@ func (a *WalletsApiService) CreateBalanceExecute(r ApiCreateBalanceRequest) (*Cr
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -533,8 +533,8 @@ func (a *WalletsApiService) CreateWalletExecute(r ApiCreateWalletRequest) (*Crea
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -595,7 +595,7 @@ func (a *WalletsApiService) CreditWalletExecute(r ApiCreditWalletRequest) (*http
 	}
 
 	localVarPath := localBasePath + "/api/wallets/wallets/{id}/credit"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -648,8 +648,8 @@ func (a *WalletsApiService) CreditWalletExecute(r ApiCreditWalletRequest) (*http
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -703,7 +703,7 @@ func (a *WalletsApiService) DebitWalletExecute(r ApiDebitWalletRequest) (*DebitW
 	}
 
 	localVarPath := localBasePath + "/api/wallets/wallets/{id}/debit"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -756,8 +756,8 @@ func (a *WalletsApiService) DebitWalletExecute(r ApiDebitWalletRequest) (*DebitW
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -817,8 +817,8 @@ func (a *WalletsApiService) GetBalanceExecute(r ApiGetBalanceRequest) (*GetBalan
 	}
 
 	localVarPath := localBasePath + "/api/wallets/wallets/{id}/balances/{balanceName}"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"balanceName"+"}", url.PathEscape(parameterToString(r.balanceName, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"balanceName"+"}", url.PathEscape(parameterValueToString(r.balanceName, "balanceName")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -869,8 +869,8 @@ func (a *WalletsApiService) GetBalanceExecute(r ApiGetBalanceRequest) (*GetBalan
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -927,7 +927,7 @@ func (a *WalletsApiService) GetHoldExecute(r ApiGetHoldRequest) (*GetHoldRespons
 	}
 
 	localVarPath := localBasePath + "/api/wallets/holds/{holdID}"
-	localVarPath = strings.Replace(localVarPath, "{"+"holdID"+"}", url.PathEscape(parameterToString(r.holdID, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"holdID"+"}", url.PathEscape(parameterValueToString(r.holdID, "holdID")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -978,8 +978,8 @@ func (a *WalletsApiService) GetHoldExecute(r ApiGetHoldRequest) (*GetHoldRespons
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1067,16 +1067,16 @@ func (a *WalletsApiService) GetHoldsExecute(r ApiGetHoldsRequest) (*GetHoldsResp
 	localVarFormParams := url.Values{}
 
 	if r.pageSize != nil {
-		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
+		parameterAddToQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.walletID != nil {
-		localVarQueryParams.Add("walletID", parameterToString(*r.walletID, ""))
+		parameterAddToQuery(localVarQueryParams, "walletID", r.walletID, "")
 	}
 	if r.metadata != nil {
-		localVarQueryParams.Add("metadata", parameterToString(*r.metadata, ""))
+		parameterAddToQuery(localVarQueryParams, "metadata", r.metadata, "")
 	}
 	if r.cursor != nil {
-		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
+		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -1123,8 +1123,8 @@ func (a *WalletsApiService) GetHoldsExecute(r ApiGetHoldsRequest) (*GetHoldsResp
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1205,13 +1205,13 @@ func (a *WalletsApiService) GetTransactionsExecute(r ApiGetTransactionsRequest) 
 	localVarFormParams := url.Values{}
 
 	if r.pageSize != nil {
-		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
+		parameterAddToQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.walletId != nil {
-		localVarQueryParams.Add("wallet_id", parameterToString(*r.walletId, ""))
+		parameterAddToQuery(localVarQueryParams, "wallet_id", r.walletId, "")
 	}
 	if r.cursor != nil {
-		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
+		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -1258,8 +1258,8 @@ func (a *WalletsApiService) GetTransactionsExecute(r ApiGetTransactionsRequest) 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1316,7 +1316,7 @@ func (a *WalletsApiService) GetWalletExecute(r ApiGetWalletRequest) (*GetWalletR
 	}
 
 	localVarPath := localBasePath + "/api/wallets/wallets/{id}"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1367,8 +1367,8 @@ func (a *WalletsApiService) GetWalletExecute(r ApiGetWalletRequest) (*GetWalletR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1425,7 +1425,7 @@ func (a *WalletsApiService) ListBalancesExecute(r ApiListBalancesRequest) (*List
 	}
 
 	localVarPath := localBasePath + "/api/wallets/wallets/{id}/balances"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1557,16 +1557,16 @@ func (a *WalletsApiService) ListWalletsExecute(r ApiListWalletsRequest) (*ListWa
 	localVarFormParams := url.Values{}
 
 	if r.name != nil {
-		localVarQueryParams.Add("name", parameterToString(*r.name, ""))
+		parameterAddToQuery(localVarQueryParams, "name", r.name, "")
 	}
 	if r.metadata != nil {
-		localVarQueryParams.Add("metadata", parameterToString(*r.metadata, ""))
+		parameterAddToQuery(localVarQueryParams, "metadata", r.metadata, "")
 	}
 	if r.pageSize != nil {
-		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
+		parameterAddToQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.cursor != nil {
-		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
+		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -1667,7 +1667,7 @@ func (a *WalletsApiService) UpdateWalletExecute(r ApiUpdateWalletRequest) (*http
 	}
 
 	localVarPath := localBasePath + "/api/wallets/wallets/{id}"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1720,8 +1720,8 @@ func (a *WalletsApiService) UpdateWalletExecute(r ApiUpdateWalletRequest) (*http
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -1767,7 +1767,7 @@ func (a *WalletsApiService) VoidHoldExecute(r ApiVoidHoldRequest) (*http.Respons
 	}
 
 	localVarPath := localBasePath + "/api/wallets/holds/{hold_id}/void"
-	localVarPath = strings.Replace(localVarPath, "{"+"hold_id"+"}", url.PathEscape(parameterToString(r.holdId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"hold_id"+"}", url.PathEscape(parameterValueToString(r.holdId, "holdId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1818,8 +1818,8 @@ func (a *WalletsApiService) VoidHoldExecute(r ApiVoidHoldRequest) (*http.Respons
 				newErr.error = err.Error()
 				return localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -1914,8 +1914,8 @@ func (a *WalletsApiService) WalletsgetServerInfoExecute(r ApiWalletsgetServerInf
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

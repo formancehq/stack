@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TransactionResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TransactionResponse{}
+
 // TransactionResponse struct for TransactionResponse
 type TransactionResponse struct {
 	Data Transaction `json:"data"`
@@ -52,7 +55,7 @@ func (o *TransactionResponse) GetData() Transaction {
 // and a boolean to check if the value has been set.
 func (o *TransactionResponse) GetDataOk() (*Transaction, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *TransactionResponse) SetData(v Transaction) {
 }
 
 func (o TransactionResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o TransactionResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableTransactionResponse struct {

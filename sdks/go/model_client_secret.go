@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ClientSecret type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ClientSecret{}
+
 // ClientSecret struct for ClientSecret
 type ClientSecret struct {
 	LastDigits string `json:"lastDigits"`
@@ -57,7 +60,7 @@ func (o *ClientSecret) GetLastDigits() string {
 // and a boolean to check if the value has been set.
 func (o *ClientSecret) GetLastDigitsOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.LastDigits, true
 }
@@ -81,7 +84,7 @@ func (o *ClientSecret) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *ClientSecret) GetNameOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Name, true
 }
@@ -105,7 +108,7 @@ func (o *ClientSecret) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *ClientSecret) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -128,7 +131,7 @@ func (o *ClientSecret) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *ClientSecret) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -148,20 +151,22 @@ func (o *ClientSecret) SetMetadata(v map[string]interface{}) {
 }
 
 func (o ClientSecret) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ClientSecret) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["lastDigits"] = o.LastDigits
-	}
-	if true {
-		toSerialize["name"] = o.Name
-	}
-	if true {
-		toSerialize["id"] = o.Id
-	}
+	toSerialize["lastDigits"] = o.LastDigits
+	toSerialize["name"] = o.Name
+	toSerialize["id"] = o.Id
 	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableClientSecret struct {

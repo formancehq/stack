@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the MigrationInfo type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &MigrationInfo{}
+
 // MigrationInfo struct for MigrationInfo
 type MigrationInfo struct {
 	Version *int64 `json:"version,omitempty"`
@@ -54,7 +57,7 @@ func (o *MigrationInfo) GetVersion() int64 {
 // and a boolean to check if the value has been set.
 func (o *MigrationInfo) GetVersionOk() (*int64, bool) {
 	if o == nil || isNil(o.Version) {
-    return nil, false
+		return nil, false
 	}
 	return o.Version, true
 }
@@ -86,7 +89,7 @@ func (o *MigrationInfo) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *MigrationInfo) GetNameOk() (*string, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return o.Name, true
 }
@@ -118,7 +121,7 @@ func (o *MigrationInfo) GetDate() time.Time {
 // and a boolean to check if the value has been set.
 func (o *MigrationInfo) GetDateOk() (*time.Time, bool) {
 	if o == nil || isNil(o.Date) {
-    return nil, false
+		return nil, false
 	}
 	return o.Date, true
 }
@@ -150,7 +153,7 @@ func (o *MigrationInfo) GetState() string {
 // and a boolean to check if the value has been set.
 func (o *MigrationInfo) GetStateOk() (*string, bool) {
 	if o == nil || isNil(o.State) {
-    return nil, false
+		return nil, false
 	}
 	return o.State, true
 }
@@ -170,6 +173,14 @@ func (o *MigrationInfo) SetState(v string) {
 }
 
 func (o MigrationInfo) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o MigrationInfo) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Version) {
 		toSerialize["version"] = o.Version
@@ -183,7 +194,7 @@ func (o MigrationInfo) MarshalJSON() ([]byte, error) {
 	if !isNil(o.State) {
 		toSerialize["state"] = o.State
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableMigrationInfo struct {

@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConfigUser type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConfigUser{}
+
 // ConfigUser struct for ConfigUser
 type ConfigUser struct {
 	Endpoint string `json:"endpoint"`
@@ -55,7 +58,7 @@ func (o *ConfigUser) GetEndpoint() string {
 // and a boolean to check if the value has been set.
 func (o *ConfigUser) GetEndpointOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Endpoint, true
 }
@@ -78,7 +81,7 @@ func (o *ConfigUser) GetSecret() string {
 // and a boolean to check if the value has been set.
 func (o *ConfigUser) GetSecretOk() (*string, bool) {
 	if o == nil || isNil(o.Secret) {
-    return nil, false
+		return nil, false
 	}
 	return o.Secret, true
 }
@@ -111,7 +114,7 @@ func (o *ConfigUser) GetEventTypes() []string {
 // and a boolean to check if the value has been set.
 func (o *ConfigUser) GetEventTypesOk() ([]string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.EventTypes, true
 }
@@ -122,17 +125,21 @@ func (o *ConfigUser) SetEventTypes(v []string) {
 }
 
 func (o ConfigUser) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["endpoint"] = o.Endpoint
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ConfigUser) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["endpoint"] = o.Endpoint
 	if !isNil(o.Secret) {
 		toSerialize["secret"] = o.Secret
 	}
-	if true {
-		toSerialize["eventTypes"] = o.EventTypes
-	}
-	return json.Marshal(toSerialize)
+	toSerialize["eventTypes"] = o.EventTypes
+	return toSerialize, nil
 }
 
 type NullableConfigUser struct {

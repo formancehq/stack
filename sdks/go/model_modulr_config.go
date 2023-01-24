@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ModulrConfig type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ModulrConfig{}
+
 // ModulrConfig struct for ModulrConfig
 type ModulrConfig struct {
 	ApiKey string `json:"apiKey"`
@@ -55,7 +58,7 @@ func (o *ModulrConfig) GetApiKey() string {
 // and a boolean to check if the value has been set.
 func (o *ModulrConfig) GetApiKeyOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.ApiKey, true
 }
@@ -79,7 +82,7 @@ func (o *ModulrConfig) GetApiSecret() string {
 // and a boolean to check if the value has been set.
 func (o *ModulrConfig) GetApiSecretOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.ApiSecret, true
 }
@@ -102,7 +105,7 @@ func (o *ModulrConfig) GetEndpoint() string {
 // and a boolean to check if the value has been set.
 func (o *ModulrConfig) GetEndpointOk() (*string, bool) {
 	if o == nil || isNil(o.Endpoint) {
-    return nil, false
+		return nil, false
 	}
 	return o.Endpoint, true
 }
@@ -122,17 +125,21 @@ func (o *ModulrConfig) SetEndpoint(v string) {
 }
 
 func (o ModulrConfig) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ModulrConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["apiKey"] = o.ApiKey
-	}
-	if true {
-		toSerialize["apiSecret"] = o.ApiSecret
-	}
+	toSerialize["apiKey"] = o.ApiKey
+	toSerialize["apiSecret"] = o.ApiSecret
 	if !isNil(o.Endpoint) {
 		toSerialize["endpoint"] = o.Endpoint
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableModulrConfig struct {

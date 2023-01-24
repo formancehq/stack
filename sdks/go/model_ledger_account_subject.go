@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the LedgerAccountSubject type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &LedgerAccountSubject{}
+
 // LedgerAccountSubject struct for LedgerAccountSubject
 type LedgerAccountSubject struct {
 	Type string `json:"type"`
@@ -54,7 +57,7 @@ func (o *LedgerAccountSubject) GetType() string {
 // and a boolean to check if the value has been set.
 func (o *LedgerAccountSubject) GetTypeOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Type, true
 }
@@ -78,7 +81,7 @@ func (o *LedgerAccountSubject) GetIdentifier() string {
 // and a boolean to check if the value has been set.
 func (o *LedgerAccountSubject) GetIdentifierOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Identifier, true
 }
@@ -89,14 +92,18 @@ func (o *LedgerAccountSubject) SetIdentifier(v string) {
 }
 
 func (o LedgerAccountSubject) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["type"] = o.Type
-	}
-	if true {
-		toSerialize["identifier"] = o.Identifier
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o LedgerAccountSubject) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["type"] = o.Type
+	toSerialize["identifier"] = o.Identifier
+	return toSerialize, nil
 }
 
 type NullableLedgerAccountSubject struct {

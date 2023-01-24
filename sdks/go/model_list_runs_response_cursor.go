@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ListRunsResponseCursor type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ListRunsResponseCursor{}
+
 // ListRunsResponseCursor struct for ListRunsResponseCursor
 type ListRunsResponseCursor struct {
 	PageSize int64 `json:"pageSize"`
@@ -57,7 +60,7 @@ func (o *ListRunsResponseCursor) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *ListRunsResponseCursor) GetPageSizeOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.PageSize, true
 }
@@ -80,7 +83,7 @@ func (o *ListRunsResponseCursor) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *ListRunsResponseCursor) GetHasMoreOk() (*bool, bool) {
 	if o == nil || isNil(o.HasMore) {
-    return nil, false
+		return nil, false
 	}
 	return o.HasMore, true
 }
@@ -112,7 +115,7 @@ func (o *ListRunsResponseCursor) GetPrevious() string {
 // and a boolean to check if the value has been set.
 func (o *ListRunsResponseCursor) GetPreviousOk() (*string, bool) {
 	if o == nil || isNil(o.Previous) {
-    return nil, false
+		return nil, false
 	}
 	return o.Previous, true
 }
@@ -144,7 +147,7 @@ func (o *ListRunsResponseCursor) GetNext() string {
 // and a boolean to check if the value has been set.
 func (o *ListRunsResponseCursor) GetNextOk() (*string, bool) {
 	if o == nil || isNil(o.Next) {
-    return nil, false
+		return nil, false
 	}
 	return o.Next, true
 }
@@ -177,7 +180,7 @@ func (o *ListRunsResponseCursor) GetData() []WorkflowOccurrence {
 // and a boolean to check if the value has been set.
 func (o *ListRunsResponseCursor) GetDataOk() ([]WorkflowOccurrence, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -188,10 +191,16 @@ func (o *ListRunsResponseCursor) SetData(v []WorkflowOccurrence) {
 }
 
 func (o ListRunsResponseCursor) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["pageSize"] = o.PageSize
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ListRunsResponseCursor) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["pageSize"] = o.PageSize
 	if !isNil(o.HasMore) {
 		toSerialize["hasMore"] = o.HasMore
 	}
@@ -201,10 +210,8 @@ func (o ListRunsResponseCursor) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Next) {
 		toSerialize["next"] = o.Next
 	}
-	if true {
-		toSerialize["data"] = o.Data
-	}
-	return json.Marshal(toSerialize)
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableListRunsResponseCursor struct {

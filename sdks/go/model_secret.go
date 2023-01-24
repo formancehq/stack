@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Secret type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Secret{}
+
 // Secret struct for Secret
 type Secret struct {
 	Name string `json:"name"`
@@ -59,7 +62,7 @@ func (o *Secret) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *Secret) GetNameOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Name, true
 }
@@ -82,7 +85,7 @@ func (o *Secret) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Secret) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -115,7 +118,7 @@ func (o *Secret) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Secret) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -139,7 +142,7 @@ func (o *Secret) GetLastDigits() string {
 // and a boolean to check if the value has been set.
 func (o *Secret) GetLastDigitsOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.LastDigits, true
 }
@@ -163,7 +166,7 @@ func (o *Secret) GetClear() string {
 // and a boolean to check if the value has been set.
 func (o *Secret) GetClearOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Clear, true
 }
@@ -174,23 +177,23 @@ func (o *Secret) SetClear(v string) {
 }
 
 func (o Secret) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["name"] = o.Name
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o Secret) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["name"] = o.Name
 	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["lastDigits"] = o.LastDigits
-	}
-	if true {
-		toSerialize["clear"] = o.Clear
-	}
-	return json.Marshal(toSerialize)
+	toSerialize["id"] = o.Id
+	toSerialize["lastDigits"] = o.LastDigits
+	toSerialize["clear"] = o.Clear
+	return toSerialize, nil
 }
 
 type NullableSecret struct {

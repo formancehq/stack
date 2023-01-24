@@ -12,6 +12,8 @@ func NewCommand() *cobra.Command {
 		fctl.WithChildCommands(
 			NewListWorkflowsCommand(),
 			NewCreateWorkflowCommand(),
+			NewShowWorkflowCommand(),
+			NewRunWorkflowCommand(),
 		),
 	)
 }

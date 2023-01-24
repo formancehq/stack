@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the PaymentsCursor type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PaymentsCursor{}
+
 // PaymentsCursor struct for PaymentsCursor
 type PaymentsCursor struct {
 	Cursor PaymentsCursorCursor `json:"cursor"`
@@ -52,7 +55,7 @@ func (o *PaymentsCursor) GetCursor() PaymentsCursorCursor {
 // and a boolean to check if the value has been set.
 func (o *PaymentsCursor) GetCursorOk() (*PaymentsCursorCursor, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Cursor, true
 }
@@ -63,11 +66,17 @@ func (o *PaymentsCursor) SetCursor(v PaymentsCursorCursor) {
 }
 
 func (o PaymentsCursor) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["cursor"] = o.Cursor
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o PaymentsCursor) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["cursor"] = o.Cursor
+	return toSerialize, nil
 }
 
 type NullablePaymentsCursor struct {

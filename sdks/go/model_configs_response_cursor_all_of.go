@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConfigsResponseCursorAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConfigsResponseCursorAllOf{}
+
 // ConfigsResponseCursorAllOf struct for ConfigsResponseCursorAllOf
 type ConfigsResponseCursorAllOf struct {
 	Data []WebhooksConfig `json:"data"`
@@ -52,7 +55,7 @@ func (o *ConfigsResponseCursorAllOf) GetData() []WebhooksConfig {
 // and a boolean to check if the value has been set.
 func (o *ConfigsResponseCursorAllOf) GetDataOk() ([]WebhooksConfig, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *ConfigsResponseCursorAllOf) SetData(v []WebhooksConfig) {
 }
 
 func (o ConfigsResponseCursorAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ConfigsResponseCursorAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableConfigsResponseCursorAllOf struct {

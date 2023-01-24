@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the StageStatus type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &StageStatus{}
+
 // StageStatus struct for StageStatus
 type StageStatus struct {
 	Stage float32 `json:"stage"`
@@ -59,7 +62,7 @@ func (o *StageStatus) GetStage() float32 {
 // and a boolean to check if the value has been set.
 func (o *StageStatus) GetStageOk() (*float32, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Stage, true
 }
@@ -83,7 +86,7 @@ func (o *StageStatus) GetOccurrenceID() string {
 // and a boolean to check if the value has been set.
 func (o *StageStatus) GetOccurrenceIDOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.OccurrenceID, true
 }
@@ -107,7 +110,7 @@ func (o *StageStatus) GetStartedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *StageStatus) GetStartedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.StartedAt, true
 }
@@ -130,7 +133,7 @@ func (o *StageStatus) GetTerminatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *StageStatus) GetTerminatedAtOk() (*time.Time, bool) {
 	if o == nil || isNil(o.TerminatedAt) {
-    return nil, false
+		return nil, false
 	}
 	return o.TerminatedAt, true
 }
@@ -162,7 +165,7 @@ func (o *StageStatus) GetError() string {
 // and a boolean to check if the value has been set.
 func (o *StageStatus) GetErrorOk() (*string, bool) {
 	if o == nil || isNil(o.Error) {
-    return nil, false
+		return nil, false
 	}
 	return o.Error, true
 }
@@ -182,23 +185,25 @@ func (o *StageStatus) SetError(v string) {
 }
 
 func (o StageStatus) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o StageStatus) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["stage"] = o.Stage
-	}
-	if true {
-		toSerialize["occurrenceID"] = o.OccurrenceID
-	}
-	if true {
-		toSerialize["startedAt"] = o.StartedAt
-	}
+	toSerialize["stage"] = o.Stage
+	toSerialize["occurrenceID"] = o.OccurrenceID
+	toSerialize["startedAt"] = o.StartedAt
 	if !isNil(o.TerminatedAt) {
 		toSerialize["terminatedAt"] = o.TerminatedAt
 	}
 	if !isNil(o.Error) {
 		toSerialize["error"] = o.Error
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableStageStatus struct {

@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the SecretAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &SecretAllOf{}
+
 // SecretAllOf struct for SecretAllOf
 type SecretAllOf struct {
 	Id string `json:"id"`
@@ -56,7 +59,7 @@ func (o *SecretAllOf) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *SecretAllOf) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -80,7 +83,7 @@ func (o *SecretAllOf) GetLastDigits() string {
 // and a boolean to check if the value has been set.
 func (o *SecretAllOf) GetLastDigitsOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.LastDigits, true
 }
@@ -104,7 +107,7 @@ func (o *SecretAllOf) GetClear() string {
 // and a boolean to check if the value has been set.
 func (o *SecretAllOf) GetClearOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Clear, true
 }
@@ -115,17 +118,19 @@ func (o *SecretAllOf) SetClear(v string) {
 }
 
 func (o SecretAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["lastDigits"] = o.LastDigits
-	}
-	if true {
-		toSerialize["clear"] = o.Clear
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o SecretAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["id"] = o.Id
+	toSerialize["lastDigits"] = o.LastDigits
+	toSerialize["clear"] = o.Clear
+	return toSerialize, nil
 }
 
 type NullableSecretAllOf struct {

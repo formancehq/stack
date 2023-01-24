@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Monetary type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Monetary{}
+
 // Monetary struct for Monetary
 type Monetary struct {
 	// The asset of the monetary value.
@@ -56,7 +59,7 @@ func (o *Monetary) GetAsset() string {
 // and a boolean to check if the value has been set.
 func (o *Monetary) GetAssetOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Asset, true
 }
@@ -80,7 +83,7 @@ func (o *Monetary) GetAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *Monetary) GetAmountOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Amount, true
 }
@@ -91,14 +94,18 @@ func (o *Monetary) SetAmount(v int64) {
 }
 
 func (o Monetary) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["asset"] = o.Asset
-	}
-	if true {
-		toSerialize["amount"] = o.Amount
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o Monetary) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["asset"] = o.Asset
+	toSerialize["amount"] = o.Amount
+	return toSerialize, nil
 }
 
 type NullableMonetary struct {

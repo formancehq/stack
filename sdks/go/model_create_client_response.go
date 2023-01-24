@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the CreateClientResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CreateClientResponse{}
+
 // CreateClientResponse struct for CreateClientResponse
 type CreateClientResponse struct {
 	Data *Client `json:"data,omitempty"`
@@ -50,7 +53,7 @@ func (o *CreateClientResponse) GetData() Client {
 // and a boolean to check if the value has been set.
 func (o *CreateClientResponse) GetDataOk() (*Client, bool) {
 	if o == nil || isNil(o.Data) {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -70,11 +73,19 @@ func (o *CreateClientResponse) SetData(v Client) {
 }
 
 func (o CreateClientResponse) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o CreateClientResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableCreateClientResponse struct {

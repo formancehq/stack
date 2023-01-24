@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConfigInfo type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConfigInfo{}
+
 // ConfigInfo struct for ConfigInfo
 type ConfigInfo struct {
 	Config Config `json:"config"`
@@ -56,7 +59,7 @@ func (o *ConfigInfo) GetConfig() Config {
 // and a boolean to check if the value has been set.
 func (o *ConfigInfo) GetConfigOk() (*Config, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Config, true
 }
@@ -80,7 +83,7 @@ func (o *ConfigInfo) GetServer() string {
 // and a boolean to check if the value has been set.
 func (o *ConfigInfo) GetServerOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Server, true
 }
@@ -104,7 +107,7 @@ func (o *ConfigInfo) GetVersion() string {
 // and a boolean to check if the value has been set.
 func (o *ConfigInfo) GetVersionOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Version, true
 }
@@ -115,17 +118,19 @@ func (o *ConfigInfo) SetVersion(v string) {
 }
 
 func (o ConfigInfo) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["config"] = o.Config
-	}
-	if true {
-		toSerialize["server"] = o.Server
-	}
-	if true {
-		toSerialize["version"] = o.Version
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ConfigInfo) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["config"] = o.Config
+	toSerialize["server"] = o.Server
+	toSerialize["version"] = o.Version
+	return toSerialize, nil
 }
 
 type NullableConfigInfo struct {

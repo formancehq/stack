@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the AccountsCursorCursor type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &AccountsCursorCursor{}
+
 // AccountsCursorCursor struct for AccountsCursorCursor
 type AccountsCursorCursor struct {
 	PageSize int64 `json:"pageSize"`
@@ -58,7 +61,7 @@ func (o *AccountsCursorCursor) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *AccountsCursorCursor) GetPageSizeOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.PageSize, true
 }
@@ -82,7 +85,7 @@ func (o *AccountsCursorCursor) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *AccountsCursorCursor) GetHasMoreOk() (*bool, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.HasMore, true
 }
@@ -105,7 +108,7 @@ func (o *AccountsCursorCursor) GetPrevious() string {
 // and a boolean to check if the value has been set.
 func (o *AccountsCursorCursor) GetPreviousOk() (*string, bool) {
 	if o == nil || isNil(o.Previous) {
-    return nil, false
+		return nil, false
 	}
 	return o.Previous, true
 }
@@ -137,7 +140,7 @@ func (o *AccountsCursorCursor) GetNext() string {
 // and a boolean to check if the value has been set.
 func (o *AccountsCursorCursor) GetNextOk() (*string, bool) {
 	if o == nil || isNil(o.Next) {
-    return nil, false
+		return nil, false
 	}
 	return o.Next, true
 }
@@ -170,7 +173,7 @@ func (o *AccountsCursorCursor) GetData() []PaymentsAccount {
 // and a boolean to check if the value has been set.
 func (o *AccountsCursorCursor) GetDataOk() ([]PaymentsAccount, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -181,23 +184,25 @@ func (o *AccountsCursorCursor) SetData(v []PaymentsAccount) {
 }
 
 func (o AccountsCursorCursor) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o AccountsCursorCursor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["pageSize"] = o.PageSize
-	}
-	if true {
-		toSerialize["hasMore"] = o.HasMore
-	}
+	toSerialize["pageSize"] = o.PageSize
+	toSerialize["hasMore"] = o.HasMore
 	if !isNil(o.Previous) {
 		toSerialize["previous"] = o.Previous
 	}
 	if !isNil(o.Next) {
 		toSerialize["next"] = o.Next
 	}
-	if true {
-		toSerialize["data"] = o.Data
-	}
-	return json.Marshal(toSerialize)
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableAccountsCursorCursor struct {

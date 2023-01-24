@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the GetWalletResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &GetWalletResponse{}
+
 // GetWalletResponse struct for GetWalletResponse
 type GetWalletResponse struct {
 	Data WalletWithBalances `json:"data"`
@@ -52,7 +55,7 @@ func (o *GetWalletResponse) GetData() WalletWithBalances {
 // and a boolean to check if the value has been set.
 func (o *GetWalletResponse) GetDataOk() (*WalletWithBalances, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *GetWalletResponse) SetData(v WalletWithBalances) {
 }
 
 func (o GetWalletResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o GetWalletResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableGetWalletResponse struct {

@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the BankingCircleConfig type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &BankingCircleConfig{}
+
 // BankingCircleConfig struct for BankingCircleConfig
 type BankingCircleConfig struct {
 	Username string `json:"username"`
@@ -58,7 +61,7 @@ func (o *BankingCircleConfig) GetUsername() string {
 // and a boolean to check if the value has been set.
 func (o *BankingCircleConfig) GetUsernameOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Username, true
 }
@@ -82,7 +85,7 @@ func (o *BankingCircleConfig) GetPassword() string {
 // and a boolean to check if the value has been set.
 func (o *BankingCircleConfig) GetPasswordOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Password, true
 }
@@ -106,7 +109,7 @@ func (o *BankingCircleConfig) GetEndpoint() string {
 // and a boolean to check if the value has been set.
 func (o *BankingCircleConfig) GetEndpointOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Endpoint, true
 }
@@ -130,7 +133,7 @@ func (o *BankingCircleConfig) GetAuthorizationEndpoint() string {
 // and a boolean to check if the value has been set.
 func (o *BankingCircleConfig) GetAuthorizationEndpointOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.AuthorizationEndpoint, true
 }
@@ -141,20 +144,20 @@ func (o *BankingCircleConfig) SetAuthorizationEndpoint(v string) {
 }
 
 func (o BankingCircleConfig) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["username"] = o.Username
-	}
-	if true {
-		toSerialize["password"] = o.Password
-	}
-	if true {
-		toSerialize["endpoint"] = o.Endpoint
-	}
-	if true {
-		toSerialize["authorizationEndpoint"] = o.AuthorizationEndpoint
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o BankingCircleConfig) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["username"] = o.Username
+	toSerialize["password"] = o.Password
+	toSerialize["endpoint"] = o.Endpoint
+	toSerialize["authorizationEndpoint"] = o.AuthorizationEndpoint
+	return toSerialize, nil
 }
 
 type NullableBankingCircleConfig struct {

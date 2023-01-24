@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConnectorConfigResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConnectorConfigResponse{}
+
 // ConnectorConfigResponse struct for ConnectorConfigResponse
 type ConnectorConfigResponse struct {
 	Data ConnectorConfig `json:"data"`
@@ -52,7 +55,7 @@ func (o *ConnectorConfigResponse) GetData() ConnectorConfig {
 // and a boolean to check if the value has been set.
 func (o *ConnectorConfigResponse) GetDataOk() (*ConnectorConfig, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *ConnectorConfigResponse) SetData(v ConnectorConfig) {
 }
 
 func (o ConnectorConfigResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ConnectorConfigResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableConnectorConfigResponse struct {

@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConnectorsResponseDataInner type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConnectorsResponseDataInner{}
+
 // ConnectorsResponseDataInner struct for ConnectorsResponseDataInner
 type ConnectorsResponseDataInner struct {
 	Provider *Connector `json:"provider,omitempty"`
@@ -51,7 +54,7 @@ func (o *ConnectorsResponseDataInner) GetProvider() Connector {
 // and a boolean to check if the value has been set.
 func (o *ConnectorsResponseDataInner) GetProviderOk() (*Connector, bool) {
 	if o == nil || isNil(o.Provider) {
-    return nil, false
+		return nil, false
 	}
 	return o.Provider, true
 }
@@ -83,7 +86,7 @@ func (o *ConnectorsResponseDataInner) GetEnabled() bool {
 // and a boolean to check if the value has been set.
 func (o *ConnectorsResponseDataInner) GetEnabledOk() (*bool, bool) {
 	if o == nil || isNil(o.Enabled) {
-    return nil, false
+		return nil, false
 	}
 	return o.Enabled, true
 }
@@ -103,6 +106,14 @@ func (o *ConnectorsResponseDataInner) SetEnabled(v bool) {
 }
 
 func (o ConnectorsResponseDataInner) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ConnectorsResponseDataInner) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Provider) {
 		toSerialize["provider"] = o.Provider
@@ -110,7 +121,7 @@ func (o ConnectorsResponseDataInner) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Enabled) {
 		toSerialize["enabled"] = o.Enabled
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableConnectorsResponseDataInner struct {

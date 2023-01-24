@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TasksCursorCursorAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TasksCursorCursorAllOf{}
+
 // TasksCursorCursorAllOf struct for TasksCursorCursorAllOf
 type TasksCursorCursorAllOf struct {
 	Data []TasksCursorCursorAllOfDataInner `json:"data"`
@@ -52,7 +55,7 @@ func (o *TasksCursorCursorAllOf) GetData() []TasksCursorCursorAllOfDataInner {
 // and a boolean to check if the value has been set.
 func (o *TasksCursorCursorAllOf) GetDataOk() ([]TasksCursorCursorAllOfDataInner, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *TasksCursorCursorAllOf) SetData(v []TasksCursorCursorAllOfDataInner) {
 }
 
 func (o TasksCursorCursorAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o TasksCursorCursorAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableTasksCursorCursorAllOf struct {

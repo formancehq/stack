@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Hold type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Hold{}
+
 // Hold struct for Hold
 type Hold struct {
 	// The unique ID of the hold.
@@ -62,7 +65,7 @@ func (o *Hold) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Hold) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -86,7 +89,7 @@ func (o *Hold) GetWalletID() string {
 // and a boolean to check if the value has been set.
 func (o *Hold) GetWalletIDOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.WalletID, true
 }
@@ -110,7 +113,7 @@ func (o *Hold) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Hold) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -134,7 +137,7 @@ func (o *Hold) GetDescription() string {
 // and a boolean to check if the value has been set.
 func (o *Hold) GetDescriptionOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Description, true
 }
@@ -157,7 +160,7 @@ func (o *Hold) GetDestination() Subject {
 // and a boolean to check if the value has been set.
 func (o *Hold) GetDestinationOk() (*Subject, bool) {
 	if o == nil || isNil(o.Destination) {
-    return nil, false
+		return nil, false
 	}
 	return o.Destination, true
 }
@@ -177,23 +180,23 @@ func (o *Hold) SetDestination(v Subject) {
 }
 
 func (o Hold) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o Hold) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["walletID"] = o.WalletID
-	}
-	if true {
-		toSerialize["metadata"] = o.Metadata
-	}
-	if true {
-		toSerialize["description"] = o.Description
-	}
+	toSerialize["id"] = o.Id
+	toSerialize["walletID"] = o.WalletID
+	toSerialize["metadata"] = o.Metadata
+	toSerialize["description"] = o.Description
 	if !isNil(o.Destination) {
 		toSerialize["destination"] = o.Destination
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableHold struct {

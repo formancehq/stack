@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TaskDummyPayAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskDummyPayAllOf{}
+
 // TaskDummyPayAllOf struct for TaskDummyPayAllOf
 type TaskDummyPayAllOf struct {
 	Descriptor TaskDummyPayAllOfDescriptor `json:"descriptor"`
@@ -52,7 +55,7 @@ func (o *TaskDummyPayAllOf) GetDescriptor() TaskDummyPayAllOfDescriptor {
 // and a boolean to check if the value has been set.
 func (o *TaskDummyPayAllOf) GetDescriptorOk() (*TaskDummyPayAllOfDescriptor, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Descriptor, true
 }
@@ -63,11 +66,17 @@ func (o *TaskDummyPayAllOf) SetDescriptor(v TaskDummyPayAllOfDescriptor) {
 }
 
 func (o TaskDummyPayAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["descriptor"] = o.Descriptor
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o TaskDummyPayAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["descriptor"] = o.Descriptor
+	return toSerialize, nil
 }
 
 type NullableTaskDummyPayAllOf struct {

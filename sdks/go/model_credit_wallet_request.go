@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the CreditWalletRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &CreditWalletRequest{}
+
 // CreditWalletRequest struct for CreditWalletRequest
 type CreditWalletRequest struct {
 	Amount Monetary `json:"amount"`
@@ -59,7 +62,7 @@ func (o *CreditWalletRequest) GetAmount() Monetary {
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetAmountOk() (*Monetary, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Amount, true
 }
@@ -82,7 +85,7 @@ func (o *CreditWalletRequest) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -114,7 +117,7 @@ func (o *CreditWalletRequest) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetReferenceOk() (*string, bool) {
 	if o == nil || isNil(o.Reference) {
-    return nil, false
+		return nil, false
 	}
 	return o.Reference, true
 }
@@ -147,7 +150,7 @@ func (o *CreditWalletRequest) GetSources() []Subject {
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetSourcesOk() ([]Subject, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Sources, true
 }
@@ -170,7 +173,7 @@ func (o *CreditWalletRequest) GetBalance() string {
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetBalanceOk() (*string, bool) {
 	if o == nil || isNil(o.Balance) {
-    return nil, false
+		return nil, false
 	}
 	return o.Balance, true
 }
@@ -190,23 +193,27 @@ func (o *CreditWalletRequest) SetBalance(v string) {
 }
 
 func (o CreditWalletRequest) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["amount"] = o.Amount
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o CreditWalletRequest) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["amount"] = o.Amount
 	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	if !isNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
-	if true {
-		toSerialize["sources"] = o.Sources
-	}
+	toSerialize["sources"] = o.Sources
 	if !isNil(o.Balance) {
 		toSerialize["balance"] = o.Balance
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableCreditWalletRequest struct {

@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the Log type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Log{}
+
 // Log struct for Log
 type Log struct {
 	Id int64 `json:"id"`
@@ -61,7 +64,7 @@ func (o *Log) GetId() int64 {
 // and a boolean to check if the value has been set.
 func (o *Log) GetIdOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -85,7 +88,7 @@ func (o *Log) GetType() string {
 // and a boolean to check if the value has been set.
 func (o *Log) GetTypeOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Type, true
 }
@@ -109,7 +112,7 @@ func (o *Log) GetData() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Log) GetDataOk() (map[string]interface{}, bool) {
 	if o == nil {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Data, true
 }
@@ -133,7 +136,7 @@ func (o *Log) GetHash() string {
 // and a boolean to check if the value has been set.
 func (o *Log) GetHashOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Hash, true
 }
@@ -157,7 +160,7 @@ func (o *Log) GetDate() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Log) GetDateOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Date, true
 }
@@ -168,23 +171,21 @@ func (o *Log) SetDate(v time.Time) {
 }
 
 func (o Log) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["type"] = o.Type
-	}
-	if true {
-		toSerialize["data"] = o.Data
-	}
-	if true {
-		toSerialize["hash"] = o.Hash
-	}
-	if true {
-		toSerialize["date"] = o.Date
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o Log) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["id"] = o.Id
+	toSerialize["type"] = o.Type
+	toSerialize["data"] = o.Data
+	toSerialize["hash"] = o.Hash
+	toSerialize["date"] = o.Date
+	return toSerialize, nil
 }
 
 type NullableLog struct {

@@ -41,7 +41,7 @@ func NewListWorkflowsCommand() *cobra.Command {
 				return errors.Wrap(err, "listing workflows")
 			}
 
-			if len(res.Cursor.Data) == 0 {
+			if len(res.Data) == 0 {
 				fctl.Println("No workflows found.")
 				return nil
 			}
@@ -51,12 +51,12 @@ func NewListWorkflowsCommand() *cobra.Command {
 				WithWriter(cmd.OutOrStdout()).
 				WithData(
 					fctl.Prepend(
-						fctl.Map(res.Cursor.Data,
+						fctl.Map(res.Data,
 							func(src formance.Workflow) []string {
 								return []string{
 									src.Id,
-									src.CreatedAt.Format(time.RFC3339Nano),
-									src.UpdatedAt.Format(time.RFC3339Nano),
+									src.CreatedAt.Format(time.RFC3339),
+									src.UpdatedAt.Format(time.RFC3339),
 								}
 							}),
 						[]string{"ID", "Created at", "Updated at"},

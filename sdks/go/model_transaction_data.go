@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the TransactionData type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TransactionData{}
+
 // TransactionData struct for TransactionData
 type TransactionData struct {
 	Postings []Posting `json:"postings"`
@@ -56,7 +59,7 @@ func (o *TransactionData) GetPostings() []Posting {
 // and a boolean to check if the value has been set.
 func (o *TransactionData) GetPostingsOk() ([]Posting, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Postings, true
 }
@@ -79,7 +82,7 @@ func (o *TransactionData) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *TransactionData) GetReferenceOk() (*string, bool) {
 	if o == nil || isNil(o.Reference) {
-    return nil, false
+		return nil, false
 	}
 	return o.Reference, true
 }
@@ -112,7 +115,7 @@ func (o *TransactionData) GetMetadata() map[string]interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *TransactionData) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -144,7 +147,7 @@ func (o *TransactionData) GetTimestamp() time.Time {
 // and a boolean to check if the value has been set.
 func (o *TransactionData) GetTimestampOk() (*time.Time, bool) {
 	if o == nil || isNil(o.Timestamp) {
-    return nil, false
+		return nil, false
 	}
 	return o.Timestamp, true
 }
@@ -164,10 +167,16 @@ func (o *TransactionData) SetTimestamp(v time.Time) {
 }
 
 func (o TransactionData) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["postings"] = o.Postings
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o TransactionData) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["postings"] = o.Postings
 	if !isNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
@@ -177,7 +186,7 @@ func (o TransactionData) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Timestamp) {
 		toSerialize["timestamp"] = o.Timestamp
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableTransactionData struct {

@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the PaymentsAccount type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PaymentsAccount{}
+
 // PaymentsAccount struct for PaymentsAccount
 type PaymentsAccount struct {
 	Id string `json:"id"`
@@ -61,7 +64,7 @@ func (o *PaymentsAccount) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *PaymentsAccount) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -85,7 +88,7 @@ func (o *PaymentsAccount) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *PaymentsAccount) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.CreatedAt, true
 }
@@ -109,7 +112,7 @@ func (o *PaymentsAccount) GetProvider() Connector {
 // and a boolean to check if the value has been set.
 func (o *PaymentsAccount) GetProviderOk() (*Connector, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Provider, true
 }
@@ -133,7 +136,7 @@ func (o *PaymentsAccount) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *PaymentsAccount) GetReferenceOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Reference, true
 }
@@ -157,7 +160,7 @@ func (o *PaymentsAccount) GetType() string {
 // and a boolean to check if the value has been set.
 func (o *PaymentsAccount) GetTypeOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Type, true
 }
@@ -168,23 +171,21 @@ func (o *PaymentsAccount) SetType(v string) {
 }
 
 func (o PaymentsAccount) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
-	if true {
-		toSerialize["provider"] = o.Provider
-	}
-	if true {
-		toSerialize["reference"] = o.Reference
-	}
-	if true {
-		toSerialize["type"] = o.Type
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o PaymentsAccount) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["id"] = o.Id
+	toSerialize["createdAt"] = o.CreatedAt
+	toSerialize["provider"] = o.Provider
+	toSerialize["reference"] = o.Reference
+	toSerialize["type"] = o.Type
+	return toSerialize, nil
 }
 
 type NullablePaymentsAccount struct {

@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the WorkflowOccurrence type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &WorkflowOccurrence{}
+
 // WorkflowOccurrence struct for WorkflowOccurrence
 type WorkflowOccurrence struct {
 	WorkflowID string `json:"workflowID"`
@@ -61,7 +64,7 @@ func (o *WorkflowOccurrence) GetWorkflowID() string {
 // and a boolean to check if the value has been set.
 func (o *WorkflowOccurrence) GetWorkflowIDOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.WorkflowID, true
 }
@@ -85,7 +88,7 @@ func (o *WorkflowOccurrence) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *WorkflowOccurrence) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -109,7 +112,7 @@ func (o *WorkflowOccurrence) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WorkflowOccurrence) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.CreatedAt, true
 }
@@ -133,7 +136,7 @@ func (o *WorkflowOccurrence) GetUpdatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WorkflowOccurrence) GetUpdatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.UpdatedAt, true
 }
@@ -157,7 +160,7 @@ func (o *WorkflowOccurrence) GetStatuses() []StageStatus {
 // and a boolean to check if the value has been set.
 func (o *WorkflowOccurrence) GetStatusesOk() ([]StageStatus, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Statuses, true
 }
@@ -168,23 +171,21 @@ func (o *WorkflowOccurrence) SetStatuses(v []StageStatus) {
 }
 
 func (o WorkflowOccurrence) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["workflowID"] = o.WorkflowID
-	}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
-	if true {
-		toSerialize["updatedAt"] = o.UpdatedAt
-	}
-	if true {
-		toSerialize["statuses"] = o.Statuses
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o WorkflowOccurrence) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["workflowID"] = o.WorkflowID
+	toSerialize["id"] = o.Id
+	toSerialize["createdAt"] = o.CreatedAt
+	toSerialize["updatedAt"] = o.UpdatedAt
+	toSerialize["statuses"] = o.Statuses
+	return toSerialize, nil
 }
 
 type NullableWorkflowOccurrence struct {

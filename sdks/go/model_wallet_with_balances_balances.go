@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the WalletWithBalancesBalances type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &WalletWithBalancesBalances{}
+
 // WalletWithBalancesBalances struct for WalletWithBalancesBalances
 type WalletWithBalancesBalances struct {
 	Main AssetHolder `json:"main"`
@@ -52,7 +55,7 @@ func (o *WalletWithBalancesBalances) GetMain() AssetHolder {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalancesBalances) GetMainOk() (*AssetHolder, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Main, true
 }
@@ -63,11 +66,17 @@ func (o *WalletWithBalancesBalances) SetMain(v AssetHolder) {
 }
 
 func (o WalletWithBalancesBalances) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["main"] = o.Main
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o WalletWithBalancesBalances) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["main"] = o.Main
+	return toSerialize, nil
 }
 
 type NullableWalletWithBalancesBalances struct {

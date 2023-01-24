@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the WalletsTransaction type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &WalletsTransaction{}
+
 // WalletsTransaction struct for WalletsTransaction
 type WalletsTransaction struct {
 	Timestamp time.Time `json:"timestamp"`
@@ -62,7 +65,7 @@ func (o *WalletsTransaction) GetTimestamp() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetTimestampOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Timestamp, true
 }
@@ -86,7 +89,7 @@ func (o *WalletsTransaction) GetPostings() []Posting {
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetPostingsOk() ([]Posting, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Postings, true
 }
@@ -109,7 +112,7 @@ func (o *WalletsTransaction) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetReferenceOk() (*string, bool) {
 	if o == nil || isNil(o.Reference) {
-    return nil, false
+		return nil, false
 	}
 	return o.Reference, true
 }
@@ -141,7 +144,7 @@ func (o *WalletsTransaction) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -174,7 +177,7 @@ func (o *WalletsTransaction) GetTxid() int64 {
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetTxidOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Txid, true
 }
@@ -197,7 +200,7 @@ func (o *WalletsTransaction) GetPreCommitVolumes() map[string]map[string]Wallets
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetPreCommitVolumesOk() (*map[string]map[string]WalletsVolume, bool) {
 	if o == nil || isNil(o.PreCommitVolumes) {
-    return nil, false
+		return nil, false
 	}
 	return o.PreCommitVolumes, true
 }
@@ -229,7 +232,7 @@ func (o *WalletsTransaction) GetPostCommitVolumes() map[string]map[string]Wallet
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetPostCommitVolumesOk() (*map[string]map[string]WalletsVolume, bool) {
 	if o == nil || isNil(o.PostCommitVolumes) {
-    return nil, false
+		return nil, false
 	}
 	return o.PostCommitVolumes, true
 }
@@ -249,29 +252,31 @@ func (o *WalletsTransaction) SetPostCommitVolumes(v map[string]map[string]Wallet
 }
 
 func (o WalletsTransaction) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o WalletsTransaction) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["timestamp"] = o.Timestamp
-	}
-	if true {
-		toSerialize["postings"] = o.Postings
-	}
+	toSerialize["timestamp"] = o.Timestamp
+	toSerialize["postings"] = o.Postings
 	if !isNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
 	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	if true {
-		toSerialize["txid"] = o.Txid
-	}
+	toSerialize["txid"] = o.Txid
 	if !isNil(o.PreCommitVolumes) {
 		toSerialize["preCommitVolumes"] = o.PreCommitVolumes
 	}
 	if !isNil(o.PostCommitVolumes) {
 		toSerialize["postCommitVolumes"] = o.PostCommitVolumes
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableWalletsTransaction struct {

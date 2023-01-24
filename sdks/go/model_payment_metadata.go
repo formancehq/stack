@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the PaymentMetadata type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PaymentMetadata{}
+
 // PaymentMetadata struct for PaymentMetadata
 type PaymentMetadata struct {
 	Key string `json:"key"`
@@ -55,7 +58,7 @@ func (o *PaymentMetadata) GetKey() string {
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadata) GetKeyOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Key, true
 }
@@ -79,7 +82,7 @@ func (o *PaymentMetadata) GetValue() string {
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadata) GetValueOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Value, true
 }
@@ -102,7 +105,7 @@ func (o *PaymentMetadata) GetChangelog() PaymentMetadataChangelog {
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadata) GetChangelogOk() (*PaymentMetadataChangelog, bool) {
 	if o == nil || isNil(o.Changelog) {
-    return nil, false
+		return nil, false
 	}
 	return o.Changelog, true
 }
@@ -122,17 +125,21 @@ func (o *PaymentMetadata) SetChangelog(v PaymentMetadataChangelog) {
 }
 
 func (o PaymentMetadata) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o PaymentMetadata) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["key"] = o.Key
-	}
-	if true {
-		toSerialize["value"] = o.Value
-	}
+	toSerialize["key"] = o.Key
+	toSerialize["value"] = o.Value
 	if !isNil(o.Changelog) {
 		toSerialize["changelog"] = o.Changelog
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullablePaymentMetadata struct {

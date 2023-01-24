@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the Wallet type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Wallet{}
+
 // Wallet struct for Wallet
 type Wallet struct {
 	// The unique ID of the wallet.
@@ -63,7 +66,7 @@ func (o *Wallet) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Wallet) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -87,7 +90,7 @@ func (o *Wallet) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Wallet) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -111,7 +114,7 @@ func (o *Wallet) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *Wallet) GetNameOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Name, true
 }
@@ -135,7 +138,7 @@ func (o *Wallet) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Wallet) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.CreatedAt, true
 }
@@ -159,7 +162,7 @@ func (o *Wallet) GetLedger() string {
 // and a boolean to check if the value has been set.
 func (o *Wallet) GetLedgerOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Ledger, true
 }
@@ -170,23 +173,21 @@ func (o *Wallet) SetLedger(v string) {
 }
 
 func (o Wallet) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["metadata"] = o.Metadata
-	}
-	if true {
-		toSerialize["name"] = o.Name
-	}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
-	if true {
-		toSerialize["ledger"] = o.Ledger
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o Wallet) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["id"] = o.Id
+	toSerialize["metadata"] = o.Metadata
+	toSerialize["name"] = o.Name
+	toSerialize["createdAt"] = o.CreatedAt
+	toSerialize["ledger"] = o.Ledger
+	return toSerialize, nil
 }
 
 type NullableWallet struct {

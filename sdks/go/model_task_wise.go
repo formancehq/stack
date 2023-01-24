@@ -13,7 +13,11 @@ package formance
 
 import (
 	"encoding/json"
+	"time"
 )
+
+// checks if the TaskWise type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskWise{}
 
 // TaskWise struct for TaskWise
 type TaskWise struct {
@@ -65,7 +69,7 @@ func (o *TaskWise) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *TaskWise) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -89,7 +93,7 @@ func (o *TaskWise) GetConnectorId() string {
 // and a boolean to check if the value has been set.
 func (o *TaskWise) GetConnectorIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.ConnectorId, true
 }
@@ -113,7 +117,7 @@ func (o *TaskWise) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *TaskWise) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.CreatedAt, true
 }
@@ -137,7 +141,7 @@ func (o *TaskWise) GetUpdatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *TaskWise) GetUpdatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.UpdatedAt, true
 }
@@ -161,7 +165,7 @@ func (o *TaskWise) GetStatus() PaymentStatus {
 // and a boolean to check if the value has been set.
 func (o *TaskWise) GetStatusOk() (*PaymentStatus, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Status, true
 }
@@ -185,7 +189,7 @@ func (o *TaskWise) GetState() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *TaskWise) GetStateOk() (map[string]interface{}, bool) {
 	if o == nil {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.State, true
 }
@@ -208,7 +212,7 @@ func (o *TaskWise) GetError() string {
 // and a boolean to check if the value has been set.
 func (o *TaskWise) GetErrorOk() (*string, bool) {
 	if o == nil || isNil(o.Error) {
-    return nil, false
+		return nil, false
 	}
 	return o.Error, true
 }
@@ -241,7 +245,7 @@ func (o *TaskWise) GetDescriptor() TaskWiseAllOfDescriptor {
 // and a boolean to check if the value has been set.
 func (o *TaskWise) GetDescriptorOk() (*TaskWiseAllOfDescriptor, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Descriptor, true
 }
@@ -252,32 +256,26 @@ func (o *TaskWise) SetDescriptor(v TaskWiseAllOfDescriptor) {
 }
 
 func (o TaskWise) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o TaskWise) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["connectorId"] = o.ConnectorId
-	}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
-	if true {
-		toSerialize["updatedAt"] = o.UpdatedAt
-	}
-	if true {
-		toSerialize["status"] = o.Status
-	}
-	if true {
-		toSerialize["state"] = o.State
-	}
+	toSerialize["id"] = o.Id
+	toSerialize["connectorId"] = o.ConnectorId
+	toSerialize["createdAt"] = o.CreatedAt
+	toSerialize["updatedAt"] = o.UpdatedAt
+	toSerialize["status"] = o.Status
+	toSerialize["state"] = o.State
 	if !isNil(o.Error) {
 		toSerialize["error"] = o.Error
 	}
-	if true {
-		toSerialize["descriptor"] = o.Descriptor
-	}
-	return json.Marshal(toSerialize)
+	toSerialize["descriptor"] = o.Descriptor
+	return toSerialize, nil
 }
 
 type NullableTaskWise struct {

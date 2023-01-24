@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the PostTransaction type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PostTransaction{}
+
 // PostTransaction struct for PostTransaction
 type PostTransaction struct {
 	Timestamp *time.Time `json:"timestamp,omitempty"`
@@ -55,7 +58,7 @@ func (o *PostTransaction) GetTimestamp() time.Time {
 // and a boolean to check if the value has been set.
 func (o *PostTransaction) GetTimestampOk() (*time.Time, bool) {
 	if o == nil || isNil(o.Timestamp) {
-    return nil, false
+		return nil, false
 	}
 	return o.Timestamp, true
 }
@@ -87,7 +90,7 @@ func (o *PostTransaction) GetPostings() []Posting {
 // and a boolean to check if the value has been set.
 func (o *PostTransaction) GetPostingsOk() ([]Posting, bool) {
 	if o == nil || isNil(o.Postings) {
-    return nil, false
+		return nil, false
 	}
 	return o.Postings, true
 }
@@ -119,7 +122,7 @@ func (o *PostTransaction) GetScript() PostTransactionScript {
 // and a boolean to check if the value has been set.
 func (o *PostTransaction) GetScriptOk() (*PostTransactionScript, bool) {
 	if o == nil || isNil(o.Script) {
-    return nil, false
+		return nil, false
 	}
 	return o.Script, true
 }
@@ -151,7 +154,7 @@ func (o *PostTransaction) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *PostTransaction) GetReferenceOk() (*string, bool) {
 	if o == nil || isNil(o.Reference) {
-    return nil, false
+		return nil, false
 	}
 	return o.Reference, true
 }
@@ -184,7 +187,7 @@ func (o *PostTransaction) GetMetadata() map[string]interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *PostTransaction) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -204,6 +207,14 @@ func (o *PostTransaction) SetMetadata(v map[string]interface{}) {
 }
 
 func (o PostTransaction) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o PostTransaction) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Timestamp) {
 		toSerialize["timestamp"] = o.Timestamp
@@ -220,7 +231,7 @@ func (o PostTransaction) MarshalJSON() ([]byte, error) {
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullablePostTransaction struct {

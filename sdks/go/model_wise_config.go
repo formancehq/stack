@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the WiseConfig type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &WiseConfig{}
+
 // WiseConfig struct for WiseConfig
 type WiseConfig struct {
 	ApiKey string `json:"apiKey"`
@@ -52,7 +55,7 @@ func (o *WiseConfig) GetApiKey() string {
 // and a boolean to check if the value has been set.
 func (o *WiseConfig) GetApiKeyOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.ApiKey, true
 }
@@ -63,11 +66,17 @@ func (o *WiseConfig) SetApiKey(v string) {
 }
 
 func (o WiseConfig) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["apiKey"] = o.ApiKey
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o WiseConfig) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["apiKey"] = o.ApiKey
+	return toSerialize, nil
 }
 
 type NullableWiseConfig struct {

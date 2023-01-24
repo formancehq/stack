@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the WalletWithBalances type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &WalletWithBalances{}
+
 // WalletWithBalances struct for WalletWithBalances
 type WalletWithBalances struct {
 	// The unique ID of the wallet.
@@ -65,7 +68,7 @@ func (o *WalletWithBalances) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -89,7 +92,7 @@ func (o *WalletWithBalances) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -113,7 +116,7 @@ func (o *WalletWithBalances) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetNameOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Name, true
 }
@@ -137,7 +140,7 @@ func (o *WalletWithBalances) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.CreatedAt, true
 }
@@ -161,7 +164,7 @@ func (o *WalletWithBalances) GetBalances() WalletWithBalancesBalances {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetBalancesOk() (*WalletWithBalancesBalances, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Balances, true
 }
@@ -185,7 +188,7 @@ func (o *WalletWithBalances) GetLedger() string {
 // and a boolean to check if the value has been set.
 func (o *WalletWithBalances) GetLedgerOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Ledger, true
 }
@@ -196,26 +199,22 @@ func (o *WalletWithBalances) SetLedger(v string) {
 }
 
 func (o WalletWithBalances) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["metadata"] = o.Metadata
-	}
-	if true {
-		toSerialize["name"] = o.Name
-	}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
-	if true {
-		toSerialize["balances"] = o.Balances
-	}
-	if true {
-		toSerialize["ledger"] = o.Ledger
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o WalletWithBalances) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["id"] = o.Id
+	toSerialize["metadata"] = o.Metadata
+	toSerialize["name"] = o.Name
+	toSerialize["createdAt"] = o.CreatedAt
+	toSerialize["balances"] = o.Balances
+	toSerialize["ledger"] = o.Ledger
+	return toSerialize, nil
 }
 
 type NullableWalletWithBalances struct {

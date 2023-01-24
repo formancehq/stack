@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConfigsResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConfigsResponse{}
+
 // ConfigsResponse struct for ConfigsResponse
 type ConfigsResponse struct {
 	Cursor ConfigsResponseCursor `json:"cursor"`
@@ -52,7 +55,7 @@ func (o *ConfigsResponse) GetCursor() ConfigsResponseCursor {
 // and a boolean to check if the value has been set.
 func (o *ConfigsResponse) GetCursorOk() (*ConfigsResponseCursor, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Cursor, true
 }
@@ -63,11 +66,17 @@ func (o *ConfigsResponse) SetCursor(v ConfigsResponseCursor) {
 }
 
 func (o ConfigsResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["cursor"] = o.Cursor
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ConfigsResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["cursor"] = o.Cursor
+	return toSerialize, nil
 }
 
 type NullableConfigsResponse struct {

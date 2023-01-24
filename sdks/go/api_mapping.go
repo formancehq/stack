@@ -94,7 +94,7 @@ func (a *MappingApiService) GetMappingExecute(r ApiGetMappingRequest) (*MappingR
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/mapping"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -145,8 +145,8 @@ func (a *MappingApiService) GetMappingExecute(r ApiGetMappingRequest) (*MappingR
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -209,7 +209,7 @@ func (a *MappingApiService) UpdateMappingExecute(r ApiUpdateMappingRequest) (*Ma
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/mapping"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -265,8 +265,8 @@ func (a *MappingApiService) UpdateMappingExecute(r ApiUpdateMappingRequest) (*Ma
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

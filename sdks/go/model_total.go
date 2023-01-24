@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Total type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Total{}
+
 // Total struct for Total
 type Total struct {
 	Value *int64 `json:"value,omitempty"`
@@ -51,7 +54,7 @@ func (o *Total) GetValue() int64 {
 // and a boolean to check if the value has been set.
 func (o *Total) GetValueOk() (*int64, bool) {
 	if o == nil || isNil(o.Value) {
-    return nil, false
+		return nil, false
 	}
 	return o.Value, true
 }
@@ -83,7 +86,7 @@ func (o *Total) GetRelation() string {
 // and a boolean to check if the value has been set.
 func (o *Total) GetRelationOk() (*string, bool) {
 	if o == nil || isNil(o.Relation) {
-    return nil, false
+		return nil, false
 	}
 	return o.Relation, true
 }
@@ -103,6 +106,14 @@ func (o *Total) SetRelation(v string) {
 }
 
 func (o Total) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o Total) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Value) {
 		toSerialize["value"] = o.Value
@@ -110,7 +121,7 @@ func (o Total) MarshalJSON() ([]byte, error) {
 	if !isNil(o.Relation) {
 		toSerialize["relation"] = o.Relation
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableTotal struct {

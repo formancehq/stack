@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the TaskBase type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskBase{}
+
 // TaskBase struct for TaskBase
 type TaskBase struct {
 	Id string `json:"id"`
@@ -64,7 +67,7 @@ func (o *TaskBase) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *TaskBase) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -88,7 +91,7 @@ func (o *TaskBase) GetConnectorId() string {
 // and a boolean to check if the value has been set.
 func (o *TaskBase) GetConnectorIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.ConnectorId, true
 }
@@ -112,7 +115,7 @@ func (o *TaskBase) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *TaskBase) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.CreatedAt, true
 }
@@ -136,7 +139,7 @@ func (o *TaskBase) GetUpdatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *TaskBase) GetUpdatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.UpdatedAt, true
 }
@@ -160,7 +163,7 @@ func (o *TaskBase) GetStatus() PaymentStatus {
 // and a boolean to check if the value has been set.
 func (o *TaskBase) GetStatusOk() (*PaymentStatus, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Status, true
 }
@@ -184,7 +187,7 @@ func (o *TaskBase) GetState() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *TaskBase) GetStateOk() (map[string]interface{}, bool) {
 	if o == nil {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.State, true
 }
@@ -207,7 +210,7 @@ func (o *TaskBase) GetError() string {
 // and a boolean to check if the value has been set.
 func (o *TaskBase) GetErrorOk() (*string, bool) {
 	if o == nil || isNil(o.Error) {
-    return nil, false
+		return nil, false
 	}
 	return o.Error, true
 }
@@ -227,29 +230,25 @@ func (o *TaskBase) SetError(v string) {
 }
 
 func (o TaskBase) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o TaskBase) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["connectorId"] = o.ConnectorId
-	}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
-	if true {
-		toSerialize["updatedAt"] = o.UpdatedAt
-	}
-	if true {
-		toSerialize["status"] = o.Status
-	}
-	if true {
-		toSerialize["state"] = o.State
-	}
+	toSerialize["id"] = o.Id
+	toSerialize["connectorId"] = o.ConnectorId
+	toSerialize["createdAt"] = o.CreatedAt
+	toSerialize["updatedAt"] = o.UpdatedAt
+	toSerialize["status"] = o.Status
+	toSerialize["state"] = o.State
 	if !isNil(o.Error) {
 		toSerialize["error"] = o.Error
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableTaskBase struct {

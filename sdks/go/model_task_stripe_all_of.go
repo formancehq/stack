@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TaskStripeAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskStripeAllOf{}
+
 // TaskStripeAllOf struct for TaskStripeAllOf
 type TaskStripeAllOf struct {
 	Descriptor TaskStripeAllOfDescriptor `json:"descriptor"`
@@ -52,7 +55,7 @@ func (o *TaskStripeAllOf) GetDescriptor() TaskStripeAllOfDescriptor {
 // and a boolean to check if the value has been set.
 func (o *TaskStripeAllOf) GetDescriptorOk() (*TaskStripeAllOfDescriptor, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Descriptor, true
 }
@@ -63,11 +66,17 @@ func (o *TaskStripeAllOf) SetDescriptor(v TaskStripeAllOfDescriptor) {
 }
 
 func (o TaskStripeAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["descriptor"] = o.Descriptor
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o TaskStripeAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["descriptor"] = o.Descriptor
+	return toSerialize, nil
 }
 
 type NullableTaskStripeAllOf struct {

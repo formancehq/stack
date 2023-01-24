@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the Workflow type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Workflow{}
+
 // Workflow struct for Workflow
 type Workflow struct {
 	Config WorkflowConfig `json:"config"`
@@ -59,7 +62,7 @@ func (o *Workflow) GetConfig() WorkflowConfig {
 // and a boolean to check if the value has been set.
 func (o *Workflow) GetConfigOk() (*WorkflowConfig, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Config, true
 }
@@ -83,7 +86,7 @@ func (o *Workflow) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Workflow) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.CreatedAt, true
 }
@@ -107,7 +110,7 @@ func (o *Workflow) GetUpdatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Workflow) GetUpdatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.UpdatedAt, true
 }
@@ -131,7 +134,7 @@ func (o *Workflow) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Workflow) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -142,20 +145,20 @@ func (o *Workflow) SetId(v string) {
 }
 
 func (o Workflow) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["config"] = o.Config
-	}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
-	if true {
-		toSerialize["updatedAt"] = o.UpdatedAt
-	}
-	if true {
-		toSerialize["id"] = o.Id
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o Workflow) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["config"] = o.Config
+	toSerialize["createdAt"] = o.CreatedAt
+	toSerialize["updatedAt"] = o.UpdatedAt
+	toSerialize["id"] = o.Id
+	return toSerialize, nil
 }
 
 type NullableWorkflow struct {

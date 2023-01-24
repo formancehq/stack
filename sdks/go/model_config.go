@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Config type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Config{}
+
 // Config struct for Config
 type Config struct {
 	Storage LedgerStorage `json:"storage"`
@@ -52,7 +55,7 @@ func (o *Config) GetStorage() LedgerStorage {
 // and a boolean to check if the value has been set.
 func (o *Config) GetStorageOk() (*LedgerStorage, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Storage, true
 }
@@ -63,11 +66,17 @@ func (o *Config) SetStorage(v LedgerStorage) {
 }
 
 func (o Config) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["storage"] = o.Storage
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o Config) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["storage"] = o.Storage
+	return toSerialize, nil
 }
 
 type NullableConfig struct {

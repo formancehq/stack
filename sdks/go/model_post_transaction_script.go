@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the PostTransactionScript type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PostTransactionScript{}
+
 // PostTransactionScript struct for PostTransactionScript
 type PostTransactionScript struct {
 	Plain string `json:"plain"`
@@ -53,7 +56,7 @@ func (o *PostTransactionScript) GetPlain() string {
 // and a boolean to check if the value has been set.
 func (o *PostTransactionScript) GetPlainOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Plain, true
 }
@@ -76,7 +79,7 @@ func (o *PostTransactionScript) GetVars() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *PostTransactionScript) GetVarsOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Vars) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Vars, true
 }
@@ -96,14 +99,20 @@ func (o *PostTransactionScript) SetVars(v map[string]interface{}) {
 }
 
 func (o PostTransactionScript) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["plain"] = o.Plain
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o PostTransactionScript) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["plain"] = o.Plain
 	if !isNil(o.Vars) {
 		toSerialize["vars"] = o.Vars
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullablePostTransactionScript struct {

@@ -16,6 +16,9 @@ import (
 	"time"
 )
 
+// checks if the Payment type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Payment{}
+
 // Payment struct for Payment
 type Payment struct {
 	Id string `json:"id"`
@@ -77,7 +80,7 @@ func (o *Payment) GetId() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetIdOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Id, true
 }
@@ -101,7 +104,7 @@ func (o *Payment) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetReferenceOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Reference, true
 }
@@ -125,7 +128,7 @@ func (o *Payment) GetAccountID() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetAccountIDOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.AccountID, true
 }
@@ -149,7 +152,7 @@ func (o *Payment) GetType() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetTypeOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Type, true
 }
@@ -173,7 +176,7 @@ func (o *Payment) GetProvider() Connector {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetProviderOk() (*Connector, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Provider, true
 }
@@ -197,7 +200,7 @@ func (o *Payment) GetStatus() PaymentStatus {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetStatusOk() (*PaymentStatus, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Status, true
 }
@@ -221,7 +224,7 @@ func (o *Payment) GetInitialAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetInitialAmountOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.InitialAmount, true
 }
@@ -245,7 +248,7 @@ func (o *Payment) GetScheme() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetSchemeOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Scheme, true
 }
@@ -269,7 +272,7 @@ func (o *Payment) GetAsset() string {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetAssetOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Asset, true
 }
@@ -293,7 +296,7 @@ func (o *Payment) GetCreatedAt() time.Time {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetCreatedAtOk() (*time.Time, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.CreatedAt, true
 }
@@ -317,7 +320,7 @@ func (o *Payment) GetRaw() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetRawOk() (map[string]interface{}, bool) {
 	if o == nil {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Raw, true
 }
@@ -341,7 +344,7 @@ func (o *Payment) GetAdjustments() []PaymentAdjustment {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetAdjustmentsOk() ([]PaymentAdjustment, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Adjustments, true
 }
@@ -365,7 +368,7 @@ func (o *Payment) GetMetadata() []PaymentMetadata {
 // and a boolean to check if the value has been set.
 func (o *Payment) GetMetadataOk() ([]PaymentMetadata, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Metadata, true
 }
@@ -376,47 +379,29 @@ func (o *Payment) SetMetadata(v []PaymentMetadata) {
 }
 
 func (o Payment) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["id"] = o.Id
-	}
-	if true {
-		toSerialize["reference"] = o.Reference
-	}
-	if true {
-		toSerialize["accountID"] = o.AccountID
-	}
-	if true {
-		toSerialize["type"] = o.Type
-	}
-	if true {
-		toSerialize["provider"] = o.Provider
-	}
-	if true {
-		toSerialize["status"] = o.Status
-	}
-	if true {
-		toSerialize["initialAmount"] = o.InitialAmount
-	}
-	if true {
-		toSerialize["scheme"] = o.Scheme
-	}
-	if true {
-		toSerialize["asset"] = o.Asset
-	}
-	if true {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
-	if true {
-		toSerialize["raw"] = o.Raw
-	}
-	if true {
-		toSerialize["adjustments"] = o.Adjustments
-	}
-	if true {
-		toSerialize["metadata"] = o.Metadata
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o Payment) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["id"] = o.Id
+	toSerialize["reference"] = o.Reference
+	toSerialize["accountID"] = o.AccountID
+	toSerialize["type"] = o.Type
+	toSerialize["provider"] = o.Provider
+	toSerialize["status"] = o.Status
+	toSerialize["initialAmount"] = o.InitialAmount
+	toSerialize["scheme"] = o.Scheme
+	toSerialize["asset"] = o.Asset
+	toSerialize["createdAt"] = o.CreatedAt
+	toSerialize["raw"] = o.Raw
+	toSerialize["adjustments"] = o.Adjustments
+	toSerialize["metadata"] = o.Metadata
+	return toSerialize, nil
 }
 
 type NullablePayment struct {

@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TaskStripeAllOfDescriptor type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskStripeAllOfDescriptor{}
+
 // TaskStripeAllOfDescriptor struct for TaskStripeAllOfDescriptor
 type TaskStripeAllOfDescriptor struct {
 	Name string `json:"name"`
@@ -55,7 +58,7 @@ func (o *TaskStripeAllOfDescriptor) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskStripeAllOfDescriptor) GetNameOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Name, true
 }
@@ -78,7 +81,7 @@ func (o *TaskStripeAllOfDescriptor) GetMain() bool {
 // and a boolean to check if the value has been set.
 func (o *TaskStripeAllOfDescriptor) GetMainOk() (*bool, bool) {
 	if o == nil || isNil(o.Main) {
-    return nil, false
+		return nil, false
 	}
 	return o.Main, true
 }
@@ -111,7 +114,7 @@ func (o *TaskStripeAllOfDescriptor) GetAccount() string {
 // and a boolean to check if the value has been set.
 func (o *TaskStripeAllOfDescriptor) GetAccountOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Account, true
 }
@@ -122,17 +125,21 @@ func (o *TaskStripeAllOfDescriptor) SetAccount(v string) {
 }
 
 func (o TaskStripeAllOfDescriptor) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["name"] = o.Name
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o TaskStripeAllOfDescriptor) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["name"] = o.Name
 	if !isNil(o.Main) {
 		toSerialize["main"] = o.Main
 	}
-	if true {
-		toSerialize["account"] = o.Account
-	}
-	return json.Marshal(toSerialize)
+	toSerialize["account"] = o.Account
+	return toSerialize, nil
 }
 
 type NullableTaskStripeAllOfDescriptor struct {

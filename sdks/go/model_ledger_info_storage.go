@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the LedgerInfoStorage type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &LedgerInfoStorage{}
+
 // LedgerInfoStorage struct for LedgerInfoStorage
 type LedgerInfoStorage struct {
 	Migrations []MigrationInfo `json:"migrations,omitempty"`
@@ -50,7 +53,7 @@ func (o *LedgerInfoStorage) GetMigrations() []MigrationInfo {
 // and a boolean to check if the value has been set.
 func (o *LedgerInfoStorage) GetMigrationsOk() ([]MigrationInfo, bool) {
 	if o == nil || isNil(o.Migrations) {
-    return nil, false
+		return nil, false
 	}
 	return o.Migrations, true
 }
@@ -70,11 +73,19 @@ func (o *LedgerInfoStorage) SetMigrations(v []MigrationInfo) {
 }
 
 func (o LedgerInfoStorage) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o LedgerInfoStorage) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Migrations) {
 		toSerialize["migrations"] = o.Migrations
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableLedgerInfoStorage struct {

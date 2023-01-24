@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the WalletsErrorResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &WalletsErrorResponse{}
+
 // WalletsErrorResponse struct for WalletsErrorResponse
 type WalletsErrorResponse struct {
 	ErrorCode string `json:"errorCode"`
@@ -54,7 +57,7 @@ func (o *WalletsErrorResponse) GetErrorCode() string {
 // and a boolean to check if the value has been set.
 func (o *WalletsErrorResponse) GetErrorCodeOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.ErrorCode, true
 }
@@ -78,7 +81,7 @@ func (o *WalletsErrorResponse) GetErrorMessage() string {
 // and a boolean to check if the value has been set.
 func (o *WalletsErrorResponse) GetErrorMessageOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.ErrorMessage, true
 }
@@ -89,14 +92,18 @@ func (o *WalletsErrorResponse) SetErrorMessage(v string) {
 }
 
 func (o WalletsErrorResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["errorCode"] = o.ErrorCode
-	}
-	if true {
-		toSerialize["errorMessage"] = o.ErrorMessage
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o WalletsErrorResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["errorCode"] = o.ErrorCode
+	toSerialize["errorMessage"] = o.ErrorMessage
+	return toSerialize, nil
 }
 
 type NullableWalletsErrorResponse struct {

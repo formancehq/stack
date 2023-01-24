@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the BalanceWithAssets type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &BalanceWithAssets{}
+
 // BalanceWithAssets struct for BalanceWithAssets
 type BalanceWithAssets struct {
 	Name string `json:"name"`
@@ -54,7 +57,7 @@ func (o *BalanceWithAssets) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *BalanceWithAssets) GetNameOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Name, true
 }
@@ -78,7 +81,7 @@ func (o *BalanceWithAssets) GetAssets() map[string]float32 {
 // and a boolean to check if the value has been set.
 func (o *BalanceWithAssets) GetAssetsOk() (*map[string]float32, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Assets, true
 }
@@ -89,14 +92,18 @@ func (o *BalanceWithAssets) SetAssets(v map[string]float32) {
 }
 
 func (o BalanceWithAssets) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["name"] = o.Name
-	}
-	if true {
-		toSerialize["assets"] = o.Assets
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o BalanceWithAssets) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["name"] = o.Name
+	toSerialize["assets"] = o.Assets
+	return toSerialize, nil
 }
 
 type NullableBalanceWithAssets struct {

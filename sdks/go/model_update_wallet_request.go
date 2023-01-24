@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the UpdateWalletRequest type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &UpdateWalletRequest{}
+
 // UpdateWalletRequest struct for UpdateWalletRequest
 type UpdateWalletRequest struct {
 	// Custom metadata to attach to this wallet.
@@ -51,7 +54,7 @@ func (o *UpdateWalletRequest) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *UpdateWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -71,11 +74,19 @@ func (o *UpdateWalletRequest) SetMetadata(v map[string]interface{}) {
 }
 
 func (o UpdateWalletRequest) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o UpdateWalletRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableUpdateWalletRequest struct {

@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConfigChangeSecret type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConfigChangeSecret{}
+
 // ConfigChangeSecret struct for ConfigChangeSecret
 type ConfigChangeSecret struct {
 	Secret *string `json:"secret,omitempty"`
@@ -50,7 +53,7 @@ func (o *ConfigChangeSecret) GetSecret() string {
 // and a boolean to check if the value has been set.
 func (o *ConfigChangeSecret) GetSecretOk() (*string, bool) {
 	if o == nil || isNil(o.Secret) {
-    return nil, false
+		return nil, false
 	}
 	return o.Secret, true
 }
@@ -70,11 +73,19 @@ func (o *ConfigChangeSecret) SetSecret(v string) {
 }
 
 func (o ConfigChangeSecret) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o ConfigChangeSecret) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Secret) {
 		toSerialize["secret"] = o.Secret
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableConfigChangeSecret struct {

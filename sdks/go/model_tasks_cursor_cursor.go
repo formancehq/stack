@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TasksCursorCursor type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TasksCursorCursor{}
+
 // TasksCursorCursor struct for TasksCursorCursor
 type TasksCursorCursor struct {
 	PageSize int64 `json:"pageSize"`
@@ -58,7 +61,7 @@ func (o *TasksCursorCursor) GetPageSize() int64 {
 // and a boolean to check if the value has been set.
 func (o *TasksCursorCursor) GetPageSizeOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.PageSize, true
 }
@@ -82,7 +85,7 @@ func (o *TasksCursorCursor) GetHasMore() bool {
 // and a boolean to check if the value has been set.
 func (o *TasksCursorCursor) GetHasMoreOk() (*bool, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.HasMore, true
 }
@@ -105,7 +108,7 @@ func (o *TasksCursorCursor) GetPrevious() string {
 // and a boolean to check if the value has been set.
 func (o *TasksCursorCursor) GetPreviousOk() (*string, bool) {
 	if o == nil || isNil(o.Previous) {
-    return nil, false
+		return nil, false
 	}
 	return o.Previous, true
 }
@@ -137,7 +140,7 @@ func (o *TasksCursorCursor) GetNext() string {
 // and a boolean to check if the value has been set.
 func (o *TasksCursorCursor) GetNextOk() (*string, bool) {
 	if o == nil || isNil(o.Next) {
-    return nil, false
+		return nil, false
 	}
 	return o.Next, true
 }
@@ -170,7 +173,7 @@ func (o *TasksCursorCursor) GetData() []TasksCursorCursorAllOfDataInner {
 // and a boolean to check if the value has been set.
 func (o *TasksCursorCursor) GetDataOk() ([]TasksCursorCursorAllOfDataInner, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Data, true
 }
@@ -181,23 +184,25 @@ func (o *TasksCursorCursor) SetData(v []TasksCursorCursorAllOfDataInner) {
 }
 
 func (o TasksCursorCursor) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o TasksCursorCursor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["pageSize"] = o.PageSize
-	}
-	if true {
-		toSerialize["hasMore"] = o.HasMore
-	}
+	toSerialize["pageSize"] = o.PageSize
+	toSerialize["hasMore"] = o.HasMore
 	if !isNil(o.Previous) {
 		toSerialize["previous"] = o.Previous
 	}
 	if !isNil(o.Next) {
 		toSerialize["next"] = o.Next
 	}
-	if true {
-		toSerialize["data"] = o.Data
-	}
-	return json.Marshal(toSerialize)
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableTasksCursorCursor struct {

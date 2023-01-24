@@ -81,7 +81,7 @@ func (a *LedgerApiService) GetLedgerInfoExecute(r ApiGetLedgerInfoRequest) (*Led
 	}
 
 	localVarPath := localBasePath + "/api/ledger/{ledger}/_info"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterToString(r.ledger, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -132,8 +132,8 @@ func (a *LedgerApiService) GetLedgerInfoExecute(r ApiGetLedgerInfoRequest) (*Led
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

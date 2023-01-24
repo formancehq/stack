@@ -226,8 +226,8 @@ func (a *OrchestrationApiService) CreateWorkflowExecute(r ApiCreateWorkflowReque
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -286,7 +286,7 @@ func (a *OrchestrationApiService) GetFlowExecute(r ApiGetFlowRequest) (*GetWorkf
 	}
 
 	localVarPath := localBasePath + "/api/orchestration/flows/{flowId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterToString(r.flowId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterValueToString(r.flowId, "flowId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -337,8 +337,8 @@ func (a *OrchestrationApiService) GetFlowExecute(r ApiGetFlowRequest) (*GetWorkf
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -400,8 +400,8 @@ func (a *OrchestrationApiService) GetWorkflowOccurrenceExecute(r ApiGetWorkflowO
 	}
 
 	localVarPath := localBasePath + "/api/orchestration/flows/{flowId}/runs/{runId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterToString(r.flowId, "")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"runId"+"}", url.PathEscape(parameterToString(r.runId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterValueToString(r.flowId, "flowId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"runId"+"}", url.PathEscape(parameterValueToString(r.runId, "runId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -452,8 +452,8 @@ func (a *OrchestrationApiService) GetWorkflowOccurrenceExecute(r ApiGetWorkflowO
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -559,8 +559,8 @@ func (a *OrchestrationApiService) ListFlowsExecute(r ApiListFlowsRequest) (*List
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -619,7 +619,7 @@ func (a *OrchestrationApiService) ListRunsExecute(r ApiListRunsRequest) (*ListRu
 	}
 
 	localVarPath := localBasePath + "/api/orchestration/flows/{flowId}/runs"
-	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterToString(r.flowId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterValueToString(r.flowId, "flowId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -670,8 +670,8 @@ func (a *OrchestrationApiService) ListRunsExecute(r ApiListRunsRequest) (*ListRu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -775,8 +775,8 @@ func (a *OrchestrationApiService) OrchestrationgetServerInfoExecute(r ApiOrchest
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -848,14 +848,14 @@ func (a *OrchestrationApiService) RunWorkflowExecute(r ApiRunWorkflowRequest) (*
 	}
 
 	localVarPath := localBasePath + "/api/orchestration/flows/{flowId}/runs"
-	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterToString(r.flowId, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterValueToString(r.flowId, "flowId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
 	if r.wait != nil {
-		localVarQueryParams.Add("wait", parameterToString(*r.wait, ""))
+		parameterAddToQuery(localVarQueryParams, "wait", r.wait, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
@@ -904,8 +904,8 @@ func (a *OrchestrationApiService) RunWorkflowExecute(r ApiRunWorkflowRequest) (*
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ExpandedDebitHoldAllOf type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ExpandedDebitHoldAllOf{}
+
 // ExpandedDebitHoldAllOf struct for ExpandedDebitHoldAllOf
 type ExpandedDebitHoldAllOf struct {
 	// Remaining amount on hold
@@ -56,7 +59,7 @@ func (o *ExpandedDebitHoldAllOf) GetRemaining() int64 {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHoldAllOf) GetRemainingOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Remaining, true
 }
@@ -80,7 +83,7 @@ func (o *ExpandedDebitHoldAllOf) GetOriginalAmount() int64 {
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHoldAllOf) GetOriginalAmountOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.OriginalAmount, true
 }
@@ -91,14 +94,18 @@ func (o *ExpandedDebitHoldAllOf) SetOriginalAmount(v int64) {
 }
 
 func (o ExpandedDebitHoldAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["remaining"] = o.Remaining
-	}
-	if true {
-		toSerialize["originalAmount"] = o.OriginalAmount
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ExpandedDebitHoldAllOf) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["remaining"] = o.Remaining
+	toSerialize["originalAmount"] = o.OriginalAmount
+	return toSerialize, nil
 }
 
 type NullableExpandedDebitHoldAllOf struct {

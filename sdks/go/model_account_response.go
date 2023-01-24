@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the AccountResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &AccountResponse{}
+
 // AccountResponse struct for AccountResponse
 type AccountResponse struct {
 	Data AccountWithVolumesAndBalances `json:"data"`
@@ -52,7 +55,7 @@ func (o *AccountResponse) GetData() AccountWithVolumesAndBalances {
 // and a boolean to check if the value has been set.
 func (o *AccountResponse) GetDataOk() (*AccountWithVolumesAndBalances, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Data, true
 }
@@ -63,11 +66,17 @@ func (o *AccountResponse) SetData(v AccountWithVolumesAndBalances) {
 }
 
 func (o AccountResponse) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["data"] = o.Data
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o AccountResponse) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["data"] = o.Data
+	return toSerialize, nil
 }
 
 type NullableAccountResponse struct {

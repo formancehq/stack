@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the TaskDummyPayAllOfDescriptor type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &TaskDummyPayAllOfDescriptor{}
+
 // TaskDummyPayAllOfDescriptor struct for TaskDummyPayAllOfDescriptor
 type TaskDummyPayAllOfDescriptor struct {
 	Name *string `json:"name,omitempty"`
@@ -52,7 +55,7 @@ func (o *TaskDummyPayAllOfDescriptor) GetName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDummyPayAllOfDescriptor) GetNameOk() (*string, bool) {
 	if o == nil || isNil(o.Name) {
-    return nil, false
+		return nil, false
 	}
 	return o.Name, true
 }
@@ -84,7 +87,7 @@ func (o *TaskDummyPayAllOfDescriptor) GetKey() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDummyPayAllOfDescriptor) GetKeyOk() (*string, bool) {
 	if o == nil || isNil(o.Key) {
-    return nil, false
+		return nil, false
 	}
 	return o.Key, true
 }
@@ -116,7 +119,7 @@ func (o *TaskDummyPayAllOfDescriptor) GetFileName() string {
 // and a boolean to check if the value has been set.
 func (o *TaskDummyPayAllOfDescriptor) GetFileNameOk() (*string, bool) {
 	if o == nil || isNil(o.FileName) {
-    return nil, false
+		return nil, false
 	}
 	return o.FileName, true
 }
@@ -136,6 +139,14 @@ func (o *TaskDummyPayAllOfDescriptor) SetFileName(v string) {
 }
 
 func (o TaskDummyPayAllOfDescriptor) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o TaskDummyPayAllOfDescriptor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Name) {
 		toSerialize["name"] = o.Name
@@ -146,7 +157,7 @@ func (o TaskDummyPayAllOfDescriptor) MarshalJSON() ([]byte, error) {
 	if !isNil(o.FileName) {
 		toSerialize["fileName"] = o.FileName
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableTaskDummyPayAllOfDescriptor struct {

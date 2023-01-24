@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Volume type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Volume{}
+
 // Volume struct for Volume
 type Volume struct {
 	Input int64 `json:"input"`
@@ -55,7 +58,7 @@ func (o *Volume) GetInput() int64 {
 // and a boolean to check if the value has been set.
 func (o *Volume) GetInputOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Input, true
 }
@@ -79,7 +82,7 @@ func (o *Volume) GetOutput() int64 {
 // and a boolean to check if the value has been set.
 func (o *Volume) GetOutputOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Output, true
 }
@@ -102,7 +105,7 @@ func (o *Volume) GetBalance() int64 {
 // and a boolean to check if the value has been set.
 func (o *Volume) GetBalanceOk() (*int64, bool) {
 	if o == nil || isNil(o.Balance) {
-    return nil, false
+		return nil, false
 	}
 	return o.Balance, true
 }
@@ -122,17 +125,21 @@ func (o *Volume) SetBalance(v int64) {
 }
 
 func (o Volume) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o Volume) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["input"] = o.Input
-	}
-	if true {
-		toSerialize["output"] = o.Output
-	}
+	toSerialize["input"] = o.Input
+	toSerialize["output"] = o.Output
 	if !isNil(o.Balance) {
 		toSerialize["balance"] = o.Balance
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableVolume struct {

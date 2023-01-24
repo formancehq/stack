@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the ConnectorsConfigsResponseDataConnectorKey type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ConnectorsConfigsResponseDataConnectorKey{}
+
 // ConnectorsConfigsResponseDataConnectorKey struct for ConnectorsConfigsResponseDataConnectorKey
 type ConnectorsConfigsResponseDataConnectorKey struct {
 	DataType string `json:"dataType"`
@@ -54,7 +57,7 @@ func (o *ConnectorsConfigsResponseDataConnectorKey) GetDataType() string {
 // and a boolean to check if the value has been set.
 func (o *ConnectorsConfigsResponseDataConnectorKey) GetDataTypeOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.DataType, true
 }
@@ -78,7 +81,7 @@ func (o *ConnectorsConfigsResponseDataConnectorKey) GetRequired() bool {
 // and a boolean to check if the value has been set.
 func (o *ConnectorsConfigsResponseDataConnectorKey) GetRequiredOk() (*bool, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Required, true
 }
@@ -89,14 +92,18 @@ func (o *ConnectorsConfigsResponseDataConnectorKey) SetRequired(v bool) {
 }
 
 func (o ConnectorsConfigsResponseDataConnectorKey) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["dataType"] = o.DataType
-	}
-	if true {
-		toSerialize["required"] = o.Required
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o ConnectorsConfigsResponseDataConnectorKey) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["dataType"] = o.DataType
+	toSerialize["required"] = o.Required
+	return toSerialize, nil
 }
 
 type NullableConnectorsConfigsResponseDataConnectorKey struct {

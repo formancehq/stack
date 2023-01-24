@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the WorkflowConfig type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &WorkflowConfig{}
+
 // WorkflowConfig struct for WorkflowConfig
 type WorkflowConfig struct {
 	Stages []map[string]interface{} `json:"stages"`
@@ -52,7 +55,7 @@ func (o *WorkflowConfig) GetStages() []map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *WorkflowConfig) GetStagesOk() ([]map[string]interface{}, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return o.Stages, true
 }
@@ -63,11 +66,17 @@ func (o *WorkflowConfig) SetStages(v []map[string]interface{}) {
 }
 
 func (o WorkflowConfig) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["stages"] = o.Stages
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o WorkflowConfig) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["stages"] = o.Stages
+	return toSerialize, nil
 }
 
 type NullableWorkflowConfig struct {

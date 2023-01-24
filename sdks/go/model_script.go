@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Script type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Script{}
+
 // Script struct for Script
 type Script struct {
 	Plain string `json:"plain"`
@@ -56,7 +59,7 @@ func (o *Script) GetPlain() string {
 // and a boolean to check if the value has been set.
 func (o *Script) GetPlainOk() (*string, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Plain, true
 }
@@ -79,7 +82,7 @@ func (o *Script) GetVars() map[string]interface{} {
 // and a boolean to check if the value has been set.
 func (o *Script) GetVarsOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Vars) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Vars, true
 }
@@ -111,7 +114,7 @@ func (o *Script) GetReference() string {
 // and a boolean to check if the value has been set.
 func (o *Script) GetReferenceOk() (*string, bool) {
 	if o == nil || isNil(o.Reference) {
-    return nil, false
+		return nil, false
 	}
 	return o.Reference, true
 }
@@ -144,7 +147,7 @@ func (o *Script) GetMetadata() map[string]interface{} {
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *Script) GetMetadataOk() (map[string]interface{}, bool) {
 	if o == nil || isNil(o.Metadata) {
-    return map[string]interface{}{}, false
+		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
 }
@@ -164,10 +167,16 @@ func (o *Script) SetMetadata(v map[string]interface{}) {
 }
 
 func (o Script) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["plain"] = o.Plain
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
+	return json.Marshal(toSerialize)
+}
+
+func (o Script) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["plain"] = o.Plain
 	if !isNil(o.Vars) {
 		toSerialize["vars"] = o.Vars
 	}
@@ -177,7 +186,7 @@ func (o Script) MarshalJSON() ([]byte, error) {
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
 	}
-	return json.Marshal(toSerialize)
+	return toSerialize, nil
 }
 
 type NullableScript struct {

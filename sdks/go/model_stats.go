@@ -15,6 +15,9 @@ import (
 	"encoding/json"
 )
 
+// checks if the Stats type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Stats{}
+
 // Stats struct for Stats
 type Stats struct {
 	Accounts int64 `json:"accounts"`
@@ -54,7 +57,7 @@ func (o *Stats) GetAccounts() int64 {
 // and a boolean to check if the value has been set.
 func (o *Stats) GetAccountsOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Accounts, true
 }
@@ -78,7 +81,7 @@ func (o *Stats) GetTransactions() int64 {
 // and a boolean to check if the value has been set.
 func (o *Stats) GetTransactionsOk() (*int64, bool) {
 	if o == nil {
-    return nil, false
+		return nil, false
 	}
 	return &o.Transactions, true
 }
@@ -89,14 +92,18 @@ func (o *Stats) SetTransactions(v int64) {
 }
 
 func (o Stats) MarshalJSON() ([]byte, error) {
-	toSerialize := map[string]interface{}{}
-	if true {
-		toSerialize["accounts"] = o.Accounts
-	}
-	if true {
-		toSerialize["transactions"] = o.Transactions
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
 	}
 	return json.Marshal(toSerialize)
+}
+
+func (o Stats) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	toSerialize["accounts"] = o.Accounts
+	toSerialize["transactions"] = o.Transactions
+	return toSerialize, nil
 }
 
 type NullableStats struct {

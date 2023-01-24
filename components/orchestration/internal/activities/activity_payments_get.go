@@ -31,5 +31,5 @@ func GetPayment(ctx workflow.Context, id string) (*sdk.Payment, error) {
 	if err := workflow.ExecuteActivity(ctx, GetPaymentActivity, id).Get(ctx, ret); err != nil {
 		return nil, errors.Unwrap(err)
 	}
-	return ret.Data, nil
+	return &ret.Data, nil
 }

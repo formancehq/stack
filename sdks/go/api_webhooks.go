@@ -185,7 +185,7 @@ func (a *WebhooksApiService) ActivateConfigExecute(r ApiActivateConfigRequest) (
 	}
 
 	localVarPath := localBasePath + "/api/webhooks/configs/{id}/activate"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -298,7 +298,7 @@ func (a *WebhooksApiService) ChangeConfigSecretExecute(r ApiChangeConfigSecretRe
 	}
 
 	localVarPath := localBasePath + "/api/webhooks/configs/{id}/secret/change"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -403,7 +403,7 @@ func (a *WebhooksApiService) DeactivateConfigExecute(r ApiDeactivateConfigReques
 	}
 
 	localVarPath := localBasePath + "/api/webhooks/configs/{id}/deactivate"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -504,7 +504,7 @@ func (a *WebhooksApiService) DeleteConfigExecute(r ApiDeleteConfigRequest) (*htt
 	}
 
 	localVarPath := localBasePath + "/api/webhooks/configs/{id}"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -615,10 +615,10 @@ func (a *WebhooksApiService) GetManyConfigsExecute(r ApiGetManyConfigsRequest) (
 	localVarFormParams := url.Values{}
 
 	if r.id != nil {
-		localVarQueryParams.Add("id", parameterToString(*r.id, ""))
+		parameterAddToQuery(localVarQueryParams, "id", r.id, "")
 	}
 	if r.endpoint != nil {
-		localVarQueryParams.Add("endpoint", parameterToString(*r.endpoint, ""))
+		parameterAddToQuery(localVarQueryParams, "endpoint", r.endpoint, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -785,8 +785,8 @@ func (a *WebhooksApiService) InsertConfigExecute(r ApiInsertConfigRequest) (*Con
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-            		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-            		newErr.model = v
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -846,7 +846,7 @@ func (a *WebhooksApiService) TestConfigExecute(r ApiTestConfigRequest) (*Attempt
 	}
 
 	localVarPath := localBasePath + "/api/webhooks/configs/{id}/test"
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterToString(r.id, "")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

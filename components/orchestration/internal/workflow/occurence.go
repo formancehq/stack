@@ -3,6 +3,7 @@ package workflow
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 )
 
@@ -15,12 +16,12 @@ type Occurrence struct {
 	Statuses      []Status  `json:"status,omitempty" bun:"rel:has-many,join:id=occurrence_id"`
 }
 
-func newOccurrence(workflowID string, runID string) Occurrence {
+func newOccurrence(workflowID string) Occurrence {
 	now := time.Now().Round(time.Nanosecond)
 	return Occurrence{
 		BaseModel:  bun.BaseModel{},
 		WorkflowID: workflowID,
-		ID:         runID,
+		ID:         uuid.NewString(),
 		CreatedAt:  now,
 		UpdatedAt:  now,
 	}
