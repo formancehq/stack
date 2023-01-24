@@ -27,7 +27,7 @@ func runWorkflow(m *workflow.Manager) http.HandlerFunc {
 		if wait := strings.ToLower(r.URL.Query().Get("wait")); wait == "true" || wait == "1" {
 			ret := struct {
 				*workflow.Occurrence
-				Error string `json:"error"`
+				Error string `json:"error,omitempty"`
 			}{
 				Occurrence: &occurrence,
 			}

@@ -19,7 +19,12 @@ type Config struct {
 	Stages []Stage `json:"stages"`
 }
 
-func (c *Config) runStage(ctx workflow.Context, stage Stage, variables map[string]string) error {
+func (c *Config) runStage(ctx workflow.Context, stage Stage, variables map[string]string) (err error) {
+	defer func() {
+		if e := recover(); e != nil {
+			err = fmt.Errorf("%s", e)
+		}
+	}()
 	var (
 		name  string
 		value map[string]any
