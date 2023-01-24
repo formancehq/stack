@@ -10,7 +10,6 @@ use (
 	./components/operator
 	./components/orchestration
 	./components/payments
-	./components/payments/client
 	./components/search
 	./components/wallets
 	./components/webhooks

@@ -303,10 +303,25 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     {
         $invalidProperties = [];
 
-        if (!is_null($this->container['amount']) && ($this->container['amount'] < 0)) {
+        if ($this->container['status'] === null) {
+            $invalidProperties[] = "'status' can't be null";
+        }
+        if ($this->container['amount'] === null) {
+            $invalidProperties[] = "'amount' can't be null";
+        }
+        if (($this->container['amount'] < 0)) {
             $invalidProperties[] = "invalid value for 'amount', must be bigger than or equal to 0.";
         }
 
+        if ($this->container['date'] === null) {
+            $invalidProperties[] = "'date' can't be null";
+        }
+        if ($this->container['raw'] === null) {
+            $invalidProperties[] = "'raw' can't be null";
+        }
+        if ($this->container['absolute'] === null) {
+            $invalidProperties[] = "'absolute' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -325,7 +340,7 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets status
      *
-     * @return \Formance\Model\PaymentStatus|null
+     * @return \Formance\Model\PaymentStatus
      */
     public function getStatus()
     {
@@ -335,7 +350,7 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets status
      *
-     * @param \Formance\Model\PaymentStatus|null $status status
+     * @param \Formance\Model\PaymentStatus $status status
      *
      * @return self
      */
@@ -354,7 +369,7 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets amount
      *
-     * @return int|null
+     * @return int
      */
     public function getAmount()
     {
@@ -364,14 +379,14 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets amount
      *
-     * @param int|null $amount amount
+     * @param int $amount amount
      *
      * @return self
      */
     public function setAmount($amount)
     {
 
-        if (!is_null($amount) && ($amount < 0)) {
+        if (($amount < 0)) {
             throw new \InvalidArgumentException('invalid value for $amount when calling PaymentAdjustment., must be bigger than or equal to 0.');
         }
 
@@ -388,7 +403,7 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets date
      *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getDate()
     {
@@ -398,7 +413,7 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets date
      *
-     * @param \DateTime|null $date date
+     * @param \DateTime $date date
      *
      * @return self
      */
@@ -417,7 +432,7 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets raw
      *
-     * @return object|null
+     * @return object
      */
     public function getRaw()
     {
@@ -427,7 +442,7 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets raw
      *
-     * @param object|null $raw raw
+     * @param object $raw raw
      *
      * @return self
      */
@@ -446,7 +461,7 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets absolute
      *
-     * @return bool|null
+     * @return bool
      */
     public function getAbsolute()
     {
@@ -456,7 +471,7 @@ class PaymentAdjustment implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets absolute
      *
-     * @param bool|null $absolute absolute
+     * @param bool $absolute absolute
      *
      * @return self
      */

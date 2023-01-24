@@ -17,15 +17,16 @@ import (
 
 // ConnectorsConfigsResponseData struct for ConnectorsConfigsResponseData
 type ConnectorsConfigsResponseData struct {
-	Connector *ConnectorsConfigsResponseDataConnector `json:"connector,omitempty"`
+	Connector ConnectorsConfigsResponseDataConnector `json:"connector"`
 }
 
 // NewConnectorsConfigsResponseData instantiates a new ConnectorsConfigsResponseData object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConnectorsConfigsResponseData() *ConnectorsConfigsResponseData {
+func NewConnectorsConfigsResponseData(connector ConnectorsConfigsResponseDataConnector) *ConnectorsConfigsResponseData {
 	this := ConnectorsConfigsResponseData{}
+	this.Connector = connector
 	return &this
 }
 
@@ -37,41 +38,33 @@ func NewConnectorsConfigsResponseDataWithDefaults() *ConnectorsConfigsResponseDa
 	return &this
 }
 
-// GetConnector returns the Connector field value if set, zero value otherwise.
+// GetConnector returns the Connector field value
 func (o *ConnectorsConfigsResponseData) GetConnector() ConnectorsConfigsResponseDataConnector {
-	if o == nil || isNil(o.Connector) {
+	if o == nil {
 		var ret ConnectorsConfigsResponseDataConnector
 		return ret
 	}
-	return *o.Connector
+
+	return o.Connector
 }
 
-// GetConnectorOk returns a tuple with the Connector field value if set, nil otherwise
+// GetConnectorOk returns a tuple with the Connector field value
 // and a boolean to check if the value has been set.
 func (o *ConnectorsConfigsResponseData) GetConnectorOk() (*ConnectorsConfigsResponseDataConnector, bool) {
-	if o == nil || isNil(o.Connector) {
+	if o == nil {
     return nil, false
 	}
-	return o.Connector, true
+	return &o.Connector, true
 }
 
-// HasConnector returns a boolean if a field has been set.
-func (o *ConnectorsConfigsResponseData) HasConnector() bool {
-	if o != nil && !isNil(o.Connector) {
-		return true
-	}
-
-	return false
-}
-
-// SetConnector gets a reference to the given ConnectorsConfigsResponseDataConnector and assigns it to the Connector field.
+// SetConnector sets field value
 func (o *ConnectorsConfigsResponseData) SetConnector(v ConnectorsConfigsResponseDataConnector) {
-	o.Connector = &v
+	o.Connector = v
 }
 
 func (o ConnectorsConfigsResponseData) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Connector) {
+	if true {
 		toSerialize["connector"] = o.Connector
 	}
 	return json.Marshal(toSerialize)

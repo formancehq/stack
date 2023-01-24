@@ -50,8 +50,8 @@ public class ConnectorsConfigsResponseDataConnectorKey {
    * Get dataType
    * @return dataType
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public String getDataType() {
     return dataType;
@@ -73,8 +73,8 @@ public class ConnectorsConfigsResponseDataConnectorKey {
    * Get required
    * @return required
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public Boolean getRequired() {
     return required;

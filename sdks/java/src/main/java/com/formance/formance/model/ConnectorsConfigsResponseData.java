@@ -47,8 +47,8 @@ public class ConnectorsConfigsResponseData {
    * Get connector
    * @return connector
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public ConnectorsConfigsResponseDataConnector getConnector() {
     return connector;

@@ -11,18 +11,18 @@
  */
 
 import { PaymentStatus } from '../models/PaymentStatus';
-import { TaskBankingCircleDescriptor } from '../models/TaskBankingCircleDescriptor';
+import { TaskBankingCircleAllOfDescriptor } from '../models/TaskBankingCircleAllOfDescriptor';
 import { HttpFile } from '../http/http';
 
 export class TaskBankingCircle {
-    'id'?: string;
-    'connectorID'?: string;
-    'createdAt'?: Date;
-    'updatedAt'?: Date;
-    'descriptor'?: TaskBankingCircleDescriptor;
-    'status'?: PaymentStatus;
-    'state'?: any;
+    'id': string;
+    'connectorId': string;
+    'createdAt': Date;
+    'updatedAt': Date;
+    'status': PaymentStatus;
+    'state': any;
     'error'?: string;
+    'descriptor': TaskBankingCircleAllOfDescriptor;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -34,8 +34,8 @@ export class TaskBankingCircle {
             "format": "uuid"
         },
         {
-            "name": "connectorID",
-            "baseName": "connectorID",
+            "name": "connectorId",
+            "baseName": "connectorId",
             "type": "string",
             "format": "uuid"
         },
@@ -50,12 +50,6 @@ export class TaskBankingCircle {
             "baseName": "updatedAt",
             "type": "Date",
             "format": "date-time"
-        },
-        {
-            "name": "descriptor",
-            "baseName": "descriptor",
-            "type": "TaskBankingCircleDescriptor",
-            "format": ""
         },
         {
             "name": "status",
@@ -73,6 +67,12 @@ export class TaskBankingCircle {
             "name": "error",
             "baseName": "error",
             "type": "string",
+            "format": ""
+        },
+        {
+            "name": "descriptor",
+            "baseName": "descriptor",
+            "type": "TaskBankingCircleAllOfDescriptor",
             "format": ""
         }    ];
 

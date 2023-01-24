@@ -17,16 +17,18 @@ import (
 
 // ConnectorsConfigsResponseDataConnectorKey struct for ConnectorsConfigsResponseDataConnectorKey
 type ConnectorsConfigsResponseDataConnectorKey struct {
-	DataType *string `json:"dataType,omitempty"`
-	Required *bool `json:"required,omitempty"`
+	DataType string `json:"dataType"`
+	Required bool `json:"required"`
 }
 
 // NewConnectorsConfigsResponseDataConnectorKey instantiates a new ConnectorsConfigsResponseDataConnectorKey object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConnectorsConfigsResponseDataConnectorKey() *ConnectorsConfigsResponseDataConnectorKey {
+func NewConnectorsConfigsResponseDataConnectorKey(dataType string, required bool) *ConnectorsConfigsResponseDataConnectorKey {
 	this := ConnectorsConfigsResponseDataConnectorKey{}
+	this.DataType = dataType
+	this.Required = required
 	return &this
 }
 
@@ -38,76 +40,60 @@ func NewConnectorsConfigsResponseDataConnectorKeyWithDefaults() *ConnectorsConfi
 	return &this
 }
 
-// GetDataType returns the DataType field value if set, zero value otherwise.
+// GetDataType returns the DataType field value
 func (o *ConnectorsConfigsResponseDataConnectorKey) GetDataType() string {
-	if o == nil || isNil(o.DataType) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.DataType
+
+	return o.DataType
 }
 
-// GetDataTypeOk returns a tuple with the DataType field value if set, nil otherwise
+// GetDataTypeOk returns a tuple with the DataType field value
 // and a boolean to check if the value has been set.
 func (o *ConnectorsConfigsResponseDataConnectorKey) GetDataTypeOk() (*string, bool) {
-	if o == nil || isNil(o.DataType) {
+	if o == nil {
     return nil, false
 	}
-	return o.DataType, true
+	return &o.DataType, true
 }
 
-// HasDataType returns a boolean if a field has been set.
-func (o *ConnectorsConfigsResponseDataConnectorKey) HasDataType() bool {
-	if o != nil && !isNil(o.DataType) {
-		return true
-	}
-
-	return false
-}
-
-// SetDataType gets a reference to the given string and assigns it to the DataType field.
+// SetDataType sets field value
 func (o *ConnectorsConfigsResponseDataConnectorKey) SetDataType(v string) {
-	o.DataType = &v
+	o.DataType = v
 }
 
-// GetRequired returns the Required field value if set, zero value otherwise.
+// GetRequired returns the Required field value
 func (o *ConnectorsConfigsResponseDataConnectorKey) GetRequired() bool {
-	if o == nil || isNil(o.Required) {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.Required
+
+	return o.Required
 }
 
-// GetRequiredOk returns a tuple with the Required field value if set, nil otherwise
+// GetRequiredOk returns a tuple with the Required field value
 // and a boolean to check if the value has been set.
 func (o *ConnectorsConfigsResponseDataConnectorKey) GetRequiredOk() (*bool, bool) {
-	if o == nil || isNil(o.Required) {
+	if o == nil {
     return nil, false
 	}
-	return o.Required, true
+	return &o.Required, true
 }
 
-// HasRequired returns a boolean if a field has been set.
-func (o *ConnectorsConfigsResponseDataConnectorKey) HasRequired() bool {
-	if o != nil && !isNil(o.Required) {
-		return true
-	}
-
-	return false
-}
-
-// SetRequired gets a reference to the given bool and assigns it to the Required field.
+// SetRequired sets field value
 func (o *ConnectorsConfigsResponseDataConnectorKey) SetRequired(v bool) {
-	o.Required = &v
+	o.Required = v
 }
 
 func (o ConnectorsConfigsResponseDataConnectorKey) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.DataType) {
+	if true {
 		toSerialize["dataType"] = o.DataType
 	}
-	if !isNil(o.Required) {
+	if true {
 		toSerialize["required"] = o.Required
 	}
 	return json.Marshal(toSerialize)

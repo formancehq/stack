@@ -7,14 +7,14 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**id** | **UUID** |  |  [optional] |
-|**connectorID** | **UUID** |  |  [optional] |
-|**createdAt** | **OffsetDateTime** |  |  [optional] |
-|**updatedAt** | **OffsetDateTime** |  |  [optional] |
-|**descriptor** | [**TaskCurrencyCloudDescriptor**](TaskCurrencyCloudDescriptor.md) |  |  [optional] |
-|**status** | **PaymentStatus** |  |  [optional] |
-|**state** | **Object** |  |  [optional] |
+|**id** | **UUID** |  |  |
+|**connectorId** | **UUID** |  |  |
+|**createdAt** | **OffsetDateTime** |  |  |
+|**updatedAt** | **OffsetDateTime** |  |  |
+|**status** | **PaymentStatus** |  |  |
+|**state** | **Object** |  |  |
 |**error** | **String** |  |  [optional] |
+|**descriptor** | [**TaskCurrencyCloudAllOfDescriptor**](TaskCurrencyCloudAllOfDescriptor.md) |  |  |
 
 
 

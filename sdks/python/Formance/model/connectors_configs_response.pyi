@@ -48,6 +48,9 @@ class ConnectorsConfigsResponse(
             
             
                 class MetaOapg:
+                    required = {
+                        "connector",
+                    }
                     
                     class properties:
                         
@@ -58,6 +61,9 @@ class ConnectorsConfigsResponse(
                         
                         
                             class MetaOapg:
+                                required = {
+                                    "key",
+                                }
                                 
                                 class properties:
                                     
@@ -68,6 +74,10 @@ class ConnectorsConfigsResponse(
                                     
                                     
                                         class MetaOapg:
+                                            required = {
+                                                "dataType",
+                                                "required",
+                                            }
                                             
                                             class properties:
                                                 dataType = schemas.StrSchema
@@ -76,6 +86,9 @@ class ConnectorsConfigsResponse(
                                                     "dataType": dataType,
                                                     "required": required,
                                                 }
+                                        
+                                        dataType: MetaOapg.properties.dataType
+                                        required: MetaOapg.properties.required
                                         
                                         @typing.overload
                                         def __getitem__(self, name: typing_extensions.Literal["dataType"]) -> MetaOapg.properties.dataType: ...
@@ -92,10 +105,10 @@ class ConnectorsConfigsResponse(
                                         
                                         
                                         @typing.overload
-                                        def get_item_oapg(self, name: typing_extensions.Literal["dataType"]) -> typing.Union[MetaOapg.properties.dataType, schemas.Unset]: ...
+                                        def get_item_oapg(self, name: typing_extensions.Literal["dataType"]) -> MetaOapg.properties.dataType: ...
                                         
                                         @typing.overload
-                                        def get_item_oapg(self, name: typing_extensions.Literal["required"]) -> typing.Union[MetaOapg.properties.required, schemas.Unset]: ...
+                                        def get_item_oapg(self, name: typing_extensions.Literal["required"]) -> MetaOapg.properties.required: ...
                                         
                                         @typing.overload
                                         def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -107,8 +120,8 @@ class ConnectorsConfigsResponse(
                                         def __new__(
                                             cls,
                                             *args: typing.Union[dict, frozendict.frozendict, ],
-                                            dataType: typing.Union[MetaOapg.properties.dataType, str, schemas.Unset] = schemas.unset,
-                                            required: typing.Union[MetaOapg.properties.required, bool, schemas.Unset] = schemas.unset,
+                                            dataType: typing.Union[MetaOapg.properties.dataType, str, ],
+                                            required: typing.Union[MetaOapg.properties.required, bool, ],
                                             _configuration: typing.Optional[schemas.Configuration] = None,
                                             **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                                         ) -> 'key':
@@ -124,6 +137,8 @@ class ConnectorsConfigsResponse(
                                         "key": key,
                                     }
                             
+                            key: MetaOapg.properties.key
+                            
                             @typing.overload
                             def __getitem__(self, name: typing_extensions.Literal["key"]) -> MetaOapg.properties.key: ...
                             
@@ -136,7 +151,7 @@ class ConnectorsConfigsResponse(
                             
                             
                             @typing.overload
-                            def get_item_oapg(self, name: typing_extensions.Literal["key"]) -> typing.Union[MetaOapg.properties.key, schemas.Unset]: ...
+                            def get_item_oapg(self, name: typing_extensions.Literal["key"]) -> MetaOapg.properties.key: ...
                             
                             @typing.overload
                             def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -148,7 +163,7 @@ class ConnectorsConfigsResponse(
                             def __new__(
                                 cls,
                                 *args: typing.Union[dict, frozendict.frozendict, ],
-                                key: typing.Union[MetaOapg.properties.key, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
+                                key: typing.Union[MetaOapg.properties.key, dict, frozendict.frozendict, ],
                                 _configuration: typing.Optional[schemas.Configuration] = None,
                                 **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                             ) -> 'connector':
@@ -163,6 +178,8 @@ class ConnectorsConfigsResponse(
                             "connector": connector,
                         }
                 
+                connector: MetaOapg.properties.connector
+                
                 @typing.overload
                 def __getitem__(self, name: typing_extensions.Literal["connector"]) -> MetaOapg.properties.connector: ...
                 
@@ -175,7 +192,7 @@ class ConnectorsConfigsResponse(
                 
                 
                 @typing.overload
-                def get_item_oapg(self, name: typing_extensions.Literal["connector"]) -> typing.Union[MetaOapg.properties.connector, schemas.Unset]: ...
+                def get_item_oapg(self, name: typing_extensions.Literal["connector"]) -> MetaOapg.properties.connector: ...
                 
                 @typing.overload
                 def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -187,7 +204,7 @@ class ConnectorsConfigsResponse(
                 def __new__(
                     cls,
                     *args: typing.Union[dict, frozendict.frozendict, ],
-                    connector: typing.Union[MetaOapg.properties.connector, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
+                    connector: typing.Union[MetaOapg.properties.connector, dict, frozendict.frozendict, ],
                     _configuration: typing.Optional[schemas.Configuration] = None,
                     **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                 ) -> 'data':

@@ -14,8 +14,8 @@ import { PaymentMetadataChangelog } from '../models/PaymentMetadataChangelog';
 import { HttpFile } from '../http/http';
 
 export class PaymentMetadata {
-    'key'?: string;
-    'value'?: string;
+    'key': string;
+    'value': string;
     'changelog'?: PaymentMetadataChangelog;
 
     static readonly discriminator: string | undefined = undefined;

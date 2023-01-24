@@ -15,7 +15,7 @@ package com.formance.formance.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import com.formance.formance.model.TaskResponseData;
+import com.formance.formance.model.TasksCursorCursorAllOfDataInner;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -32,12 +32,12 @@ import java.io.IOException;
 public class TaskResponse {
   public static final String SERIALIZED_NAME_DATA = "data";
   @SerializedName(SERIALIZED_NAME_DATA)
-  private TaskResponseData data;
+  private TasksCursorCursorAllOfDataInner data;
 
   public TaskResponse() {
   }
 
-  public TaskResponse data(TaskResponseData data) {
+  public TaskResponse data(TasksCursorCursorAllOfDataInner data) {
     
     this.data = data;
     return this;
@@ -47,15 +47,15 @@ public class TaskResponse {
    * Get data
    * @return data
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
-  public TaskResponseData getData() {
+  public TasksCursorCursorAllOfDataInner getData() {
     return data;
   }
 
 
-  public void setData(TaskResponseData data) {
+  public void setData(TasksCursorCursorAllOfDataInner data) {
     this.data = data;
   }
 

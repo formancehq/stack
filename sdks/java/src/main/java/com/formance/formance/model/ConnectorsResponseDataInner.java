@@ -38,10 +38,6 @@ public class ConnectorsResponseDataInner {
   @SerializedName(SERIALIZED_NAME_ENABLED)
   private Boolean enabled;
 
-  public static final String SERIALIZED_NAME_DISABLED = "disabled";
-  @SerializedName(SERIALIZED_NAME_DISABLED)
-  private Boolean disabled;
-
   public ConnectorsResponseDataInner() {
   }
 
@@ -91,29 +87,6 @@ public class ConnectorsResponseDataInner {
   }
 
 
-  public ConnectorsResponseDataInner disabled(Boolean disabled) {
-    
-    this.disabled = disabled;
-    return this;
-  }
-
-   /**
-   * Get disabled
-   * @return disabled
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(example = "false", value = "")
-
-  public Boolean getDisabled() {
-    return disabled;
-  }
-
-
-  public void setDisabled(Boolean disabled) {
-    this.disabled = disabled;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -124,13 +97,12 @@ public class ConnectorsResponseDataInner {
     }
     ConnectorsResponseDataInner connectorsResponseDataInner = (ConnectorsResponseDataInner) o;
     return Objects.equals(this.provider, connectorsResponseDataInner.provider) &&
-        Objects.equals(this.enabled, connectorsResponseDataInner.enabled) &&
-        Objects.equals(this.disabled, connectorsResponseDataInner.disabled);
+        Objects.equals(this.enabled, connectorsResponseDataInner.enabled);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(provider, enabled, disabled);
+    return Objects.hash(provider, enabled);
   }
 
   @Override
@@ -139,7 +111,6 @@ public class ConnectorsResponseDataInner {
     sb.append("class ConnectorsResponseDataInner {\n");
     sb.append("    provider: ").append(toIndentedString(provider)).append("\n");
     sb.append("    enabled: ").append(toIndentedString(enabled)).append("\n");
-    sb.append("    disabled: ").append(toIndentedString(disabled)).append("\n");
     sb.append("}");
     return sb.toString();
   }

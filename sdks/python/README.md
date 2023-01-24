@@ -216,6 +216,13 @@ Class | Method | HTTP request | Description
 *LogsApi* | [**list_logs**](docs/apis/tags/LogsApi.md#list_logs) | **get** /api/ledger/{ledger}/log | List the logs from a ledger
 *MappingApi* | [**get_mapping**](docs/apis/tags/MappingApi.md#get_mapping) | **get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
 *MappingApi* | [**update_mapping**](docs/apis/tags/MappingApi.md#update_mapping) | **put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
+*OrchestrationApi* | [**create_workflow**](docs/apis/tags/OrchestrationApi.md#create_workflow) | **post** /api/orchestration/flows | Create workflow
+*OrchestrationApi* | [**get_flow**](docs/apis/tags/OrchestrationApi.md#get_flow) | **get** /api/orchestration/flows/{flowId} | Get a flow by id
+*OrchestrationApi* | [**get_workflow_occurrence**](docs/apis/tags/OrchestrationApi.md#get_workflow_occurrence) | **get** /api/orchestration/flows/{flowId}/runs/{runId} | Get a workflow occurrence by id
+*OrchestrationApi* | [**list_flows**](docs/apis/tags/OrchestrationApi.md#list_flows) | **get** /api/orchestration/flows | List registered flows
+*OrchestrationApi* | [**list_runs**](docs/apis/tags/OrchestrationApi.md#list_runs) | **get** /api/orchestration/flows/{flowId}/runs | List occurrences of a workflow
+*OrchestrationApi* | [**orchestrationget_server_info**](docs/apis/tags/OrchestrationApi.md#orchestrationget_server_info) | **get** /api/orchestration/_info | Get server info
+*OrchestrationApi* | [**run_workflow**](docs/apis/tags/OrchestrationApi.md#run_workflow) | **post** /api/orchestration/flows/{flowId}/runs | Run workflow
 *PaymentsApi* | [**connectors_stripe_transfer**](docs/apis/tags/PaymentsApi.md#connectors_stripe_transfer) | **post** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
 *PaymentsApi* | [**get_connector_task**](docs/apis/tags/PaymentsApi.md#get_connector_task) | **get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 *PaymentsApi* | [**get_payment**](docs/apis/tags/PaymentsApi.md#get_payment) | **get** /api/payments/payments/{paymentId} | Get a payment
@@ -280,8 +287,8 @@ Class | Method | HTTP request | Description
  - [AccountResponse](docs/models/AccountResponse.md)
  - [AccountWithVolumesAndBalances](docs/models/AccountWithVolumesAndBalances.md)
  - [AccountsBalances](docs/models/AccountsBalances.md)
+ - [AccountsCursor](docs/models/AccountsCursor.md)
  - [AccountsCursorResponse](docs/models/AccountsCursorResponse.md)
- - [AccountsResponse](docs/models/AccountsResponse.md)
  - [AggregateBalancesResponse](docs/models/AggregateBalancesResponse.md)
  - [AggregatedVolumes](docs/models/AggregatedVolumes.md)
  - [AssetHolder](docs/models/AssetHolder.md)
@@ -319,12 +326,16 @@ Class | Method | HTTP request | Description
  - [CreateSecretResponse](docs/models/CreateSecretResponse.md)
  - [CreateWalletRequest](docs/models/CreateWalletRequest.md)
  - [CreateWalletResponse](docs/models/CreateWalletResponse.md)
+ - [CreateWorkflowRequest](docs/models/CreateWorkflowRequest.md)
+ - [CreateWorkflowResponse](docs/models/CreateWorkflowResponse.md)
  - [CreditWalletRequest](docs/models/CreditWalletRequest.md)
  - [CurrencyCloudConfig](docs/models/CurrencyCloudConfig.md)
  - [Cursor](docs/models/Cursor.md)
+ - [CursorBase](docs/models/CursorBase.md)
  - [DebitWalletRequest](docs/models/DebitWalletRequest.md)
  - [DebitWalletResponse](docs/models/DebitWalletResponse.md)
  - [DummyPayConfig](docs/models/DummyPayConfig.md)
+ - [Error](docs/models/Error.md)
  - [ErrorResponse](docs/models/ErrorResponse.md)
  - [ErrorsEnum](docs/models/ErrorsEnum.md)
  - [ExpandedDebitHold](docs/models/ExpandedDebitHold.md)
@@ -333,6 +344,8 @@ Class | Method | HTTP request | Description
  - [GetHoldsResponse](docs/models/GetHoldsResponse.md)
  - [GetTransactionsResponse](docs/models/GetTransactionsResponse.md)
  - [GetWalletResponse](docs/models/GetWalletResponse.md)
+ - [GetWorkflowOccurrenceResponse](docs/models/GetWorkflowOccurrenceResponse.md)
+ - [GetWorkflowResponse](docs/models/GetWorkflowResponse.md)
  - [Hold](docs/models/Hold.md)
  - [LedgerAccountSubject](docs/models/LedgerAccountSubject.md)
  - [LedgerInfo](docs/models/LedgerInfo.md)
@@ -341,9 +354,11 @@ Class | Method | HTTP request | Description
  - [LedgerStorage](docs/models/LedgerStorage.md)
  - [ListBalancesResponse](docs/models/ListBalancesResponse.md)
  - [ListClientsResponse](docs/models/ListClientsResponse.md)
+ - [ListRunsResponse](docs/models/ListRunsResponse.md)
  - [ListScopesResponse](docs/models/ListScopesResponse.md)
  - [ListUsersResponse](docs/models/ListUsersResponse.md)
  - [ListWalletsResponse](docs/models/ListWalletsResponse.md)
+ - [ListWorkflowsResponse](docs/models/ListWorkflowsResponse.md)
  - [Log](docs/models/Log.md)
  - [LogsCursorResponse](docs/models/LogsCursorResponse.md)
  - [Mapping](docs/models/Mapping.md)
@@ -359,14 +374,17 @@ Class | Method | HTTP request | Description
  - [PaymentResponse](docs/models/PaymentResponse.md)
  - [PaymentStatus](docs/models/PaymentStatus.md)
  - [PaymentsAccount](docs/models/PaymentsAccount.md)
- - [PaymentsResponse](docs/models/PaymentsResponse.md)
+ - [PaymentsCursor](docs/models/PaymentsCursor.md)
  - [PostTransaction](docs/models/PostTransaction.md)
  - [Posting](docs/models/Posting.md)
  - [Query](docs/models/Query.md)
  - [ReadClientResponse](docs/models/ReadClientResponse.md)
  - [ReadScopeResponse](docs/models/ReadScopeResponse.md)
  - [ReadUserResponse](docs/models/ReadUserResponse.md)
+ - [ReadWorkflowResponse](docs/models/ReadWorkflowResponse.md)
  - [Response](docs/models/Response.md)
+ - [RunWorkflowRequest](docs/models/RunWorkflowRequest.md)
+ - [RunWorkflowResponse](docs/models/RunWorkflowResponse.md)
  - [Scope](docs/models/Scope.md)
  - [ScopeOptions](docs/models/ScopeOptions.md)
  - [Script](docs/models/Script.md)
@@ -374,20 +392,21 @@ Class | Method | HTTP request | Description
  - [Secret](docs/models/Secret.md)
  - [SecretOptions](docs/models/SecretOptions.md)
  - [ServerInfo](docs/models/ServerInfo.md)
+ - [StageStatus](docs/models/StageStatus.md)
  - [Stats](docs/models/Stats.md)
  - [StatsResponse](docs/models/StatsResponse.md)
  - [StripeConfig](docs/models/StripeConfig.md)
- - [StripeTimelineState](docs/models/StripeTimelineState.md)
  - [StripeTransferRequest](docs/models/StripeTransferRequest.md)
  - [Subject](docs/models/Subject.md)
  - [TaskBankingCircle](docs/models/TaskBankingCircle.md)
+ - [TaskBase](docs/models/TaskBase.md)
  - [TaskCurrencyCloud](docs/models/TaskCurrencyCloud.md)
  - [TaskDummyPay](docs/models/TaskDummyPay.md)
  - [TaskModulr](docs/models/TaskModulr.md)
  - [TaskResponse](docs/models/TaskResponse.md)
  - [TaskStripe](docs/models/TaskStripe.md)
  - [TaskWise](docs/models/TaskWise.md)
- - [TasksResponse](docs/models/TasksResponse.md)
+ - [TasksCursor](docs/models/TasksCursor.md)
  - [Transaction](docs/models/Transaction.md)
  - [TransactionData](docs/models/TransactionData.md)
  - [TransactionResponse](docs/models/TransactionResponse.md)
@@ -411,6 +430,9 @@ Class | Method | HTTP request | Description
  - [WalletsVolumes](docs/models/WalletsVolumes.md)
  - [WebhooksConfig](docs/models/WebhooksConfig.md)
  - [WiseConfig](docs/models/WiseConfig.md)
+ - [Workflow](docs/models/Workflow.md)
+ - [WorkflowConfig](docs/models/WorkflowConfig.md)
+ - [WorkflowOccurrence](docs/models/WorkflowOccurrence.md)
 
 ## Documentation For Authorization
 
@@ -425,6 +447,7 @@ Class | Method | HTTP request | Description
 
 ## Author
 
+support@formance.com
 support@formance.com
 support@formance.com
 support@formance.com

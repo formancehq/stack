@@ -18,16 +18,18 @@ import (
 
 // PaymentMetadataChangelog struct for PaymentMetadataChangelog
 type PaymentMetadataChangelog struct {
-	Timestamp *time.Time `json:"timestamp,omitempty"`
-	Value *string `json:"value,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
+	Value string `json:"value"`
 }
 
 // NewPaymentMetadataChangelog instantiates a new PaymentMetadataChangelog object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPaymentMetadataChangelog() *PaymentMetadataChangelog {
+func NewPaymentMetadataChangelog(timestamp time.Time, value string) *PaymentMetadataChangelog {
 	this := PaymentMetadataChangelog{}
+	this.Timestamp = timestamp
+	this.Value = value
 	return &this
 }
 
@@ -39,76 +41,60 @@ func NewPaymentMetadataChangelogWithDefaults() *PaymentMetadataChangelog {
 	return &this
 }
 
-// GetTimestamp returns the Timestamp field value if set, zero value otherwise.
+// GetTimestamp returns the Timestamp field value
 func (o *PaymentMetadataChangelog) GetTimestamp() time.Time {
-	if o == nil || isNil(o.Timestamp) {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}
-	return *o.Timestamp
+
+	return o.Timestamp
 }
 
-// GetTimestampOk returns a tuple with the Timestamp field value if set, nil otherwise
+// GetTimestampOk returns a tuple with the Timestamp field value
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadataChangelog) GetTimestampOk() (*time.Time, bool) {
-	if o == nil || isNil(o.Timestamp) {
+	if o == nil {
     return nil, false
 	}
-	return o.Timestamp, true
+	return &o.Timestamp, true
 }
 
-// HasTimestamp returns a boolean if a field has been set.
-func (o *PaymentMetadataChangelog) HasTimestamp() bool {
-	if o != nil && !isNil(o.Timestamp) {
-		return true
-	}
-
-	return false
-}
-
-// SetTimestamp gets a reference to the given time.Time and assigns it to the Timestamp field.
+// SetTimestamp sets field value
 func (o *PaymentMetadataChangelog) SetTimestamp(v time.Time) {
-	o.Timestamp = &v
+	o.Timestamp = v
 }
 
-// GetValue returns the Value field value if set, zero value otherwise.
+// GetValue returns the Value field value
 func (o *PaymentMetadataChangelog) GetValue() string {
-	if o == nil || isNil(o.Value) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Value
+
+	return o.Value
 }
 
-// GetValueOk returns a tuple with the Value field value if set, nil otherwise
+// GetValueOk returns a tuple with the Value field value
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadataChangelog) GetValueOk() (*string, bool) {
-	if o == nil || isNil(o.Value) {
+	if o == nil {
     return nil, false
 	}
-	return o.Value, true
+	return &o.Value, true
 }
 
-// HasValue returns a boolean if a field has been set.
-func (o *PaymentMetadataChangelog) HasValue() bool {
-	if o != nil && !isNil(o.Value) {
-		return true
-	}
-
-	return false
-}
-
-// SetValue gets a reference to the given string and assigns it to the Value field.
+// SetValue sets field value
 func (o *PaymentMetadataChangelog) SetValue(v string) {
-	o.Value = &v
+	o.Value = v
 }
 
 func (o PaymentMetadataChangelog) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Timestamp) {
+	if true {
 		toSerialize["timestamp"] = o.Timestamp
 	}
-	if !isNil(o.Value) {
+	if true {
 		toSerialize["value"] = o.Value
 	}
 	return json.Marshal(toSerialize)

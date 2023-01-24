@@ -275,6 +275,9 @@ class ConnectorsConfigsResponseData implements ModelInterface, ArrayAccess, \Jso
     {
         $invalidProperties = [];
 
+        if ($this->container['connector'] === null) {
+            $invalidProperties[] = "'connector' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -293,7 +296,7 @@ class ConnectorsConfigsResponseData implements ModelInterface, ArrayAccess, \Jso
     /**
      * Gets connector
      *
-     * @return \Formance\Model\ConnectorsConfigsResponseDataConnector|null
+     * @return \Formance\Model\ConnectorsConfigsResponseDataConnector
      */
     public function getConnector()
     {
@@ -303,7 +306,7 @@ class ConnectorsConfigsResponseData implements ModelInterface, ArrayAccess, \Jso
     /**
      * Sets connector
      *
-     * @param \Formance\Model\ConnectorsConfigsResponseDataConnector|null $connector connector
+     * @param \Formance\Model\ConnectorsConfigsResponseDataConnector $connector connector
      *
      * @return self
      */

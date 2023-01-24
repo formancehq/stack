@@ -13,8 +13,8 @@
 import { HttpFile } from '../http/http';
 
 export class PaymentMetadataChangelog {
-    'timestamp'?: Date;
-    'value'?: string;
+    'timestamp': Date;
+    'value': string;
 
     static readonly discriminator: string | undefined = undefined;
 

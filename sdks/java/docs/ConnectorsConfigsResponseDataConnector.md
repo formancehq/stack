@@ -7,7 +7,7 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**key** | [**ConnectorsConfigsResponseDataConnectorKey**](ConnectorsConfigsResponseDataConnectorKey.md) |  |  [optional] |
+|**key** | [**ConnectorsConfigsResponseDataConnectorKey**](ConnectorsConfigsResponseDataConnectorKey.md) |  |  |
 
 
 

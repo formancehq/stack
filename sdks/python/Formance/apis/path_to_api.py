@@ -60,6 +60,11 @@ from Formance.apis.paths.api_wallets_holds import ApiWalletsHolds
 from Formance.apis.paths.api_wallets_holds_hold_id import ApiWalletsHoldsHoldID
 from Formance.apis.paths.api_wallets_holds_hold_id_confirm import ApiWalletsHoldsHoldIdConfirm
 from Formance.apis.paths.api_wallets_holds_hold_id_void import ApiWalletsHoldsHoldIdVoid
+from Formance.apis.paths.api_orchestration__info import ApiOrchestrationInfo
+from Formance.apis.paths.api_orchestration_flows import ApiOrchestrationFlows
+from Formance.apis.paths.api_orchestration_flows_flow_id import ApiOrchestrationFlowsFlowId
+from Formance.apis.paths.api_orchestration_flows_flow_id_runs import ApiOrchestrationFlowsFlowIdRuns
+from Formance.apis.paths.api_orchestration_flows_flow_id_runs_run_id import ApiOrchestrationFlowsFlowIdRunsRunId
 
 PathToApi = typing_extensions.TypedDict(
     'PathToApi',
@@ -123,6 +128,11 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.API_WALLETS_HOLDS_HOLD_ID: ApiWalletsHoldsHoldID,
         PathValues.API_WALLETS_HOLDS_HOLD_ID_CONFIRM: ApiWalletsHoldsHoldIdConfirm,
         PathValues.API_WALLETS_HOLDS_HOLD_ID_VOID: ApiWalletsHoldsHoldIdVoid,
+        PathValues.API_ORCHESTRATION__INFO: ApiOrchestrationInfo,
+        PathValues.API_ORCHESTRATION_FLOWS: ApiOrchestrationFlows,
+        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID: ApiOrchestrationFlowsFlowId,
+        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID_RUNS: ApiOrchestrationFlowsFlowIdRuns,
+        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID_RUNS_RUN_ID: ApiOrchestrationFlowsFlowIdRunsRunId,
     }
 )
 
@@ -187,5 +197,10 @@ path_to_api = PathToApi(
         PathValues.API_WALLETS_HOLDS_HOLD_ID: ApiWalletsHoldsHoldID,
         PathValues.API_WALLETS_HOLDS_HOLD_ID_CONFIRM: ApiWalletsHoldsHoldIdConfirm,
         PathValues.API_WALLETS_HOLDS_HOLD_ID_VOID: ApiWalletsHoldsHoldIdVoid,
+        PathValues.API_ORCHESTRATION__INFO: ApiOrchestrationInfo,
+        PathValues.API_ORCHESTRATION_FLOWS: ApiOrchestrationFlows,
+        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID: ApiOrchestrationFlowsFlowId,
+        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID_RUNS: ApiOrchestrationFlowsFlowIdRuns,
+        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID_RUNS_RUN_ID: ApiOrchestrationFlowsFlowIdRunsRunId,
     }
 )

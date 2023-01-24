@@ -65,3 +65,8 @@ class PathValues(str, enum.Enum):
     API_WALLETS_HOLDS_HOLD_ID = "/api/wallets/holds/{holdID}"
     API_WALLETS_HOLDS_HOLD_ID_CONFIRM = "/api/wallets/holds/{hold_id}/confirm"
     API_WALLETS_HOLDS_HOLD_ID_VOID = "/api/wallets/holds/{hold_id}/void"
+    API_ORCHESTRATION__INFO = "/api/orchestration/_info"
+    API_ORCHESTRATION_FLOWS = "/api/orchestration/flows"
+    API_ORCHESTRATION_FLOWS_FLOW_ID = "/api/orchestration/flows/{flowId}"
+    API_ORCHESTRATION_FLOWS_FLOW_ID_RUNS = "/api/orchestration/flows/{flowId}/runs"
+    API_ORCHESTRATION_FLOWS_FLOW_ID_RUNS_RUN_ID = "/api/orchestration/flows/{flowId}/runs/{runId}"

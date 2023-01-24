@@ -282,6 +282,12 @@ class ConnectorsConfigsResponseDataConnectorKey implements ModelInterface, Array
     {
         $invalidProperties = [];
 
+        if ($this->container['data_type'] === null) {
+            $invalidProperties[] = "'data_type' can't be null";
+        }
+        if ($this->container['required'] === null) {
+            $invalidProperties[] = "'required' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -300,7 +306,7 @@ class ConnectorsConfigsResponseDataConnectorKey implements ModelInterface, Array
     /**
      * Gets data_type
      *
-     * @return string|null
+     * @return string
      */
     public function getDataType()
     {
@@ -310,7 +316,7 @@ class ConnectorsConfigsResponseDataConnectorKey implements ModelInterface, Array
     /**
      * Sets data_type
      *
-     * @param string|null $data_type data_type
+     * @param string $data_type data_type
      *
      * @return self
      */
@@ -329,7 +335,7 @@ class ConnectorsConfigsResponseDataConnectorKey implements ModelInterface, Array
     /**
      * Gets required
      *
-     * @return bool|null
+     * @return bool
      */
     public function getRequired()
     {
@@ -339,7 +345,7 @@ class ConnectorsConfigsResponseDataConnectorKey implements ModelInterface, Array
     /**
      * Sets required
      *
-     * @param bool|null $required required
+     * @param bool $required required
      *
      * @return self
      */

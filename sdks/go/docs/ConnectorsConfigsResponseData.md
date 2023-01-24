@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Connector** | Pointer to [**ConnectorsConfigsResponseDataConnector**](ConnectorsConfigsResponseDataConnector.md) |  | [optional] 
+**Connector** | [**ConnectorsConfigsResponseDataConnector**](ConnectorsConfigsResponseDataConnector.md) |  | 
 
 ## Methods
 
 ### NewConnectorsConfigsResponseData
 
-`func NewConnectorsConfigsResponseData() *ConnectorsConfigsResponseData`
+`func NewConnectorsConfigsResponseData(connector ConnectorsConfigsResponseDataConnector, ) *ConnectorsConfigsResponseData`
 
 NewConnectorsConfigsResponseData instantiates a new ConnectorsConfigsResponseData object
 This constructor will assign default values to properties that have it defined,
@@ -44,11 +44,6 @@ and a boolean to check if the value has been set.
 
 SetConnector sets Connector field to given value.
 
-### HasConnector
-
-`func (o *ConnectorsConfigsResponseData) HasConnector() bool`
-
-HasConnector returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

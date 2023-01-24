@@ -7,7 +7,7 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**data** | [**Payment**](Payment.md) |  |  [optional] |
+|**data** | [**Payment**](Payment.md) |  |  |
 
 
 

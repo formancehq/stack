@@ -420,7 +420,7 @@ Other parameters are passed through a pointer to a apiListConfigsAvailableConnec
 
 ## ListConnectorTasks
 
-> TasksResponse ListConnectorTasks(ctx, connector).PageSize(pageSize).Cursor(cursor).Execute()
+> TasksCursor ListConnectorTasks(ctx, connector).PageSize(pageSize).Cursor(cursor).Execute()
 
 List tasks from a connector
 
@@ -450,7 +450,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ListConnectorTasks``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ListConnectorTasks`: TasksResponse
+    // response from `ListConnectorTasks`: TasksCursor
     fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.ListConnectorTasks`: %v\n", resp)
 }
 ```
@@ -476,7 +476,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**TasksResponse**](TasksResponse.md)
+[**TasksCursor**](TasksCursor.md)
 
 ### Authorization
 
@@ -494,7 +494,7 @@ Name | Type | Description  | Notes
 
 ## ListPayments
 
-> PaymentsResponse ListPayments(ctx).PageSize(pageSize).Cursor(cursor).Sort(sort).Execute()
+> PaymentsCursor ListPayments(ctx).PageSize(pageSize).Cursor(cursor).Sort(sort).Execute()
 
 List payments
 
@@ -522,7 +522,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ListPayments``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ListPayments`: PaymentsResponse
+    // response from `ListPayments`: PaymentsCursor
     fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.ListPayments`: %v\n", resp)
 }
 ```
@@ -544,7 +544,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**PaymentsResponse**](PaymentsResponse.md)
+[**PaymentsCursor**](PaymentsCursor.md)
 
 ### Authorization
 
@@ -562,7 +562,7 @@ Name | Type | Description  | Notes
 
 ## PaymentslistAccounts
 
-> AccountsResponse PaymentslistAccounts(ctx).Limit(limit).Skip(skip).Sort(sort).Execute()
+> AccountsCursor PaymentslistAccounts(ctx).PageSize(pageSize).Cursor(cursor).Sort(sort).Execute()
 
 List accounts
 
@@ -579,18 +579,18 @@ import (
 )
 
 func main() {
-    limit := int64(10) // int64 | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter.  (optional)
-    skip := int64(100) // int64 | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter.  (optional)
-    sort := []string{"Inner_example"} // []string | Field used to sort payments (Default is by date). (optional)
+    pageSize := int64(100) // int64 | The maximum number of results to return per page.  (optional) (default to 15)
+    cursor := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
+    sort := []string{"Inner_example"} // []string | Fields used to sort payments (default is date:desc). (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.PaymentsApi.PaymentslistAccounts(context.Background()).Limit(limit).Skip(skip).Sort(sort).Execute()
+    resp, r, err := apiClient.PaymentsApi.PaymentslistAccounts(context.Background()).PageSize(pageSize).Cursor(cursor).Sort(sort).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.PaymentslistAccounts``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `PaymentslistAccounts`: AccountsResponse
+    // response from `PaymentslistAccounts`: AccountsCursor
     fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.PaymentslistAccounts`: %v\n", resp)
 }
 ```
@@ -606,13 +606,13 @@ Other parameters are passed through a pointer to a apiPaymentslistAccountsReques
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **limit** | **int64** | Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.  | 
- **skip** | **int64** | How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.  | 
- **sort** | **[]string** | Field used to sort payments (Default is by date). | 
+ **pageSize** | **int64** | The maximum number of results to return per page.  | [default to 15]
+ **cursor** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | 
+ **sort** | **[]string** | Fields used to sort payments (default is date:desc). | 
 
 ### Return type
 
-[**AccountsResponse**](AccountsResponse.md)
+[**AccountsCursor**](AccountsCursor.md)
 
 ### Authorization
 

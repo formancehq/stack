@@ -278,20 +278,14 @@ components:
             $ref: '#/components/schemas/StageStatus'
 
     ListWorkflowsResponse:
-      required:
-      - cursor
+      type: object
       properties:
-        cursor:
-          allOf:
-          - $ref: '#/components/schemas/Cursor'
-          - properties:
-              data:
-                items:
-                  $ref: '#/components/schemas/Workflow'
-                type: array
-            type: object
-            required:
-            - data
+        data:
+          items:
+            $ref: '#/components/schemas/Workflow'
+          type: array
+      required:
+      - data
     ReadWorkflowResponse:
       type: object
       required:

@@ -17,8 +17,8 @@ import (
 
 // PaymentMetadata struct for PaymentMetadata
 type PaymentMetadata struct {
-	Key *string `json:"key,omitempty"`
-	Value *string `json:"value,omitempty"`
+	Key string `json:"key"`
+	Value string `json:"value"`
 	Changelog *PaymentMetadataChangelog `json:"changelog,omitempty"`
 }
 
@@ -26,8 +26,10 @@ type PaymentMetadata struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPaymentMetadata() *PaymentMetadata {
+func NewPaymentMetadata(key string, value string) *PaymentMetadata {
 	this := PaymentMetadata{}
+	this.Key = key
+	this.Value = value
 	return &this
 }
 
@@ -39,68 +41,52 @@ func NewPaymentMetadataWithDefaults() *PaymentMetadata {
 	return &this
 }
 
-// GetKey returns the Key field value if set, zero value otherwise.
+// GetKey returns the Key field value
 func (o *PaymentMetadata) GetKey() string {
-	if o == nil || isNil(o.Key) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Key
+
+	return o.Key
 }
 
-// GetKeyOk returns a tuple with the Key field value if set, nil otherwise
+// GetKeyOk returns a tuple with the Key field value
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadata) GetKeyOk() (*string, bool) {
-	if o == nil || isNil(o.Key) {
+	if o == nil {
     return nil, false
 	}
-	return o.Key, true
+	return &o.Key, true
 }
 
-// HasKey returns a boolean if a field has been set.
-func (o *PaymentMetadata) HasKey() bool {
-	if o != nil && !isNil(o.Key) {
-		return true
-	}
-
-	return false
-}
-
-// SetKey gets a reference to the given string and assigns it to the Key field.
+// SetKey sets field value
 func (o *PaymentMetadata) SetKey(v string) {
-	o.Key = &v
+	o.Key = v
 }
 
-// GetValue returns the Value field value if set, zero value otherwise.
+// GetValue returns the Value field value
 func (o *PaymentMetadata) GetValue() string {
-	if o == nil || isNil(o.Value) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Value
+
+	return o.Value
 }
 
-// GetValueOk returns a tuple with the Value field value if set, nil otherwise
+// GetValueOk returns a tuple with the Value field value
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadata) GetValueOk() (*string, bool) {
-	if o == nil || isNil(o.Value) {
+	if o == nil {
     return nil, false
 	}
-	return o.Value, true
+	return &o.Value, true
 }
 
-// HasValue returns a boolean if a field has been set.
-func (o *PaymentMetadata) HasValue() bool {
-	if o != nil && !isNil(o.Value) {
-		return true
-	}
-
-	return false
-}
-
-// SetValue gets a reference to the given string and assigns it to the Value field.
+// SetValue sets field value
 func (o *PaymentMetadata) SetValue(v string) {
-	o.Value = &v
+	o.Value = v
 }
 
 // GetChangelog returns the Changelog field value if set, zero value otherwise.
@@ -137,10 +123,10 @@ func (o *PaymentMetadata) SetChangelog(v PaymentMetadataChangelog) {
 
 func (o PaymentMetadata) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Key) {
+	if true {
 		toSerialize["key"] = o.Key
 	}
-	if !isNil(o.Value) {
+	if true {
 		toSerialize["value"] = o.Value
 	}
 	if !isNil(o.Changelog) {

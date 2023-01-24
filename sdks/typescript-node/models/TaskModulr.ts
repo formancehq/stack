@@ -11,18 +11,18 @@
  */
 
 import { PaymentStatus } from '../models/PaymentStatus';
-import { TaskModulrDescriptor } from '../models/TaskModulrDescriptor';
+import { TaskModulrAllOfDescriptor } from '../models/TaskModulrAllOfDescriptor';
 import { HttpFile } from '../http/http';
 
 export class TaskModulr {
-    'id'?: string;
-    'connectorID'?: string;
-    'createdAt'?: Date;
-    'updatedAt'?: Date;
-    'descriptor'?: TaskModulrDescriptor;
-    'status'?: PaymentStatus;
-    'state'?: any;
+    'id': string;
+    'connectorId': string;
+    'createdAt': Date;
+    'updatedAt': Date;
+    'status': PaymentStatus;
+    'state': any;
     'error'?: string;
+    'descriptor': TaskModulrAllOfDescriptor;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -34,8 +34,8 @@ export class TaskModulr {
             "format": "uuid"
         },
         {
-            "name": "connectorID",
-            "baseName": "connectorID",
+            "name": "connectorId",
+            "baseName": "connectorId",
             "type": "string",
             "format": "uuid"
         },
@@ -50,12 +50,6 @@ export class TaskModulr {
             "baseName": "updatedAt",
             "type": "Date",
             "format": "date-time"
-        },
-        {
-            "name": "descriptor",
-            "baseName": "descriptor",
-            "type": "TaskModulrDescriptor",
-            "format": ""
         },
         {
             "name": "status",
@@ -73,6 +67,12 @@ export class TaskModulr {
             "name": "error",
             "baseName": "error",
             "type": "string",
+            "format": ""
+        },
+        {
+            "name": "descriptor",
+            "baseName": "descriptor",
+            "type": "TaskModulrAllOfDescriptor",
             "format": ""
         }    ];
 

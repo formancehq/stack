@@ -35,6 +35,13 @@ class PaymentAdjustment(
 
 
     class MetaOapg:
+        required = {
+            "date",
+            "amount",
+            "absolute",
+            "raw",
+            "status",
+        }
         
         class properties:
         
@@ -62,6 +69,12 @@ class PaymentAdjustment(
                 "absolute": absolute,
             }
     
+    date: MetaOapg.properties.date
+    amount: MetaOapg.properties.amount
+    absolute: MetaOapg.properties.absolute
+    raw: MetaOapg.properties.raw
+    status: 'PaymentStatus'
+    
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["status"]) -> 'PaymentStatus': ...
     
@@ -86,19 +99,19 @@ class PaymentAdjustment(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["status"]) -> typing.Union['PaymentStatus', schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["status"]) -> 'PaymentStatus': ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["amount"]) -> typing.Union[MetaOapg.properties.amount, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["amount"]) -> MetaOapg.properties.amount: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["date"]) -> typing.Union[MetaOapg.properties.date, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["date"]) -> MetaOapg.properties.date: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["raw"]) -> typing.Union[MetaOapg.properties.raw, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["raw"]) -> MetaOapg.properties.raw: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["absolute"]) -> typing.Union[MetaOapg.properties.absolute, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["absolute"]) -> MetaOapg.properties.absolute: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -110,22 +123,22 @@ class PaymentAdjustment(
     def __new__(
         cls,
         *args: typing.Union[dict, frozendict.frozendict, ],
-        status: typing.Union['PaymentStatus', schemas.Unset] = schemas.unset,
-        amount: typing.Union[MetaOapg.properties.amount, decimal.Decimal, int, schemas.Unset] = schemas.unset,
-        date: typing.Union[MetaOapg.properties.date, str, datetime, schemas.Unset] = schemas.unset,
-        raw: typing.Union[MetaOapg.properties.raw, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
-        absolute: typing.Union[MetaOapg.properties.absolute, bool, schemas.Unset] = schemas.unset,
+        date: typing.Union[MetaOapg.properties.date, str, datetime, ],
+        amount: typing.Union[MetaOapg.properties.amount, decimal.Decimal, int, ],
+        absolute: typing.Union[MetaOapg.properties.absolute, bool, ],
+        raw: typing.Union[MetaOapg.properties.raw, dict, frozendict.frozendict, ],
+        status: 'PaymentStatus',
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'PaymentAdjustment':
         return super().__new__(
             cls,
             *args,
-            status=status,
-            amount=amount,
             date=date,
-            raw=raw,
+            amount=amount,
             absolute=absolute,
+            raw=raw,
+            status=status,
             _configuration=_configuration,
             **kwargs,
         )

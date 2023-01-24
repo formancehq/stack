@@ -25,7 +25,7 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.payments_response import PaymentsResponse
+from Formance.model.payments_cursor import PaymentsCursor
 
 from . import path
 
@@ -106,7 +106,7 @@ request_query_sort = api_client.QueryParameter(
 _auth = [
     'Authorization',
 ]
-SchemaFor200ResponseBodyApplicationJson = PaymentsResponse
+SchemaFor200ResponseBodyApplicationJson = PaymentsCursor
 
 
 @dataclass

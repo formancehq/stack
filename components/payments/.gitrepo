@@ -6,7 +6,7 @@
 [subrepo]
 	remote = payments
 	branch = main
-	commit = 484bfa60350c90e578eab17b89531d08e7a4af17
-	parent = 4fce8a80604ea25616dc5231b5af8586d7d9ff91
+	commit = ae1fa5ec4508bc3a7603bd15953228b6a6152761
+	parent = e11fe64274a7326f57cf409cd542ce7a08b05233
 	method = merge
 	cmdver = 0.4.5

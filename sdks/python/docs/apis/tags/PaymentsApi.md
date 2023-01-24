@@ -413,7 +413,7 @@ Type | Description  | Notes
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-204 | [ApiResponseFor204](#install_connector.ApiResponseFor204) | OK
+204 | [ApiResponseFor204](#install_connector.ApiResponseFor204) | No content
 
 #### install_connector.ApiResponseFor204
 Name | Type | Description  | Notes
@@ -578,7 +578,7 @@ Type | Description  | Notes
 
 # **list_connector_tasks**
 <a name="list_connector_tasks"></a>
-> TasksResponse list_connector_tasks(connector)
+> TasksCursor list_connector_tasks(connector)
 
 List tasks from a connector
 
@@ -590,8 +590,8 @@ List all tasks associated with this connector.
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.tasks_response import TasksResponse
 from Formance.model.connector import Connector
+from Formance.model.tasks_cursor import TasksCursor
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -712,7 +712,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**TasksResponse**](../../models/TasksResponse.md) |  | 
+[**TasksCursor**](../../models/TasksCursor.md) |  | 
 
 
 ### Authorization
@@ -723,7 +723,7 @@ Type | Description  | Notes
 
 # **list_payments**
 <a name="list_payments"></a>
-> PaymentsResponse list_payments()
+> PaymentsCursor list_payments()
 
 List payments
 
@@ -733,7 +733,7 @@ List payments
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.payments_response import PaymentsResponse
+from Formance.model.payments_cursor import PaymentsCursor
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -836,7 +836,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**PaymentsResponse**](../../models/PaymentsResponse.md) |  | 
+[**PaymentsCursor**](../../models/PaymentsCursor.md) |  | 
 
 
 ### Authorization
@@ -847,7 +847,7 @@ Type | Description  | Notes
 
 # **paymentslist_accounts**
 <a name="paymentslist_accounts"></a>
-> AccountsResponse paymentslist_accounts()
+> AccountsCursor paymentslist_accounts()
 
 List accounts
 
@@ -857,7 +857,7 @@ List accounts
 ```python
 import Formance
 from Formance.apis.tags import payments_api
-from Formance.model.accounts_response import AccountsResponse
+from Formance.model.accounts_cursor import AccountsCursor
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -882,10 +882,10 @@ with Formance.ApiClient(configuration) as api_client:
 
     # example passing only optional values
     query_params = {
-        'limit': 10,
-        'skip': 100,
+        'pageSize': 100,
+        'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
         'sort': [
-        "status"
+        "date:asc,status:desc"
     ],
     }
     try:
@@ -912,24 +912,24 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-limit | LimitSchema | | optional
-skip | SkipSchema | | optional
+pageSize | PageSizeSchema | | optional
+cursor | CursorSchema | | optional
 sort | SortSchema | | optional
 
 
-# LimitSchema
+# PageSizeSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
+decimal.Decimal, int,  | decimal.Decimal,  |  | if omitted the server will use the default value of 15value must be a 64 bit integer
 
-# SkipSchema
+# CursorSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
+str,  | str,  |  | 
 
 # SortSchema
 
@@ -960,7 +960,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**AccountsResponse**](../../models/AccountsResponse.md) |  | 
+[**AccountsCursor**](../../models/AccountsCursor.md) |  | 
 
 
 ### Authorization
@@ -1145,7 +1145,7 @@ Type | Description  | Notes
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-204 | [ApiResponseFor204](#reset_connector.ApiResponseFor204) | OK
+204 | [ApiResponseFor204](#reset_connector.ApiResponseFor204) | No content
 
 #### reset_connector.ApiResponseFor204
 Name | Type | Description  | Notes
@@ -1236,7 +1236,7 @@ Type | Description  | Notes
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-204 | [ApiResponseFor204](#uninstall_connector.ApiResponseFor204) | OK
+204 | [ApiResponseFor204](#uninstall_connector.ApiResponseFor204) | No content
 
 #### uninstall_connector.ApiResponseFor204
 Name | Type | Description  | Notes

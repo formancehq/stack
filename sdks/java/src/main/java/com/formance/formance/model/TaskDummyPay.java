@@ -16,7 +16,7 @@ package com.formance.formance.model;
 import java.util.Objects;
 import java.util.Arrays;
 import com.formance.formance.model.PaymentStatus;
-import com.formance.formance.model.TaskDummyPayDescriptor;
+import com.formance.formance.model.TaskDummyPayAllOfDescriptor;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -37,9 +37,9 @@ public class TaskDummyPay {
   @SerializedName(SERIALIZED_NAME_ID)
   private UUID id;
 
-  public static final String SERIALIZED_NAME_CONNECTOR_I_D = "connectorID";
-  @SerializedName(SERIALIZED_NAME_CONNECTOR_I_D)
-  private UUID connectorID;
+  public static final String SERIALIZED_NAME_CONNECTOR_ID = "connectorId";
+  @SerializedName(SERIALIZED_NAME_CONNECTOR_ID)
+  private UUID connectorId;
 
   public static final String SERIALIZED_NAME_CREATED_AT = "createdAt";
   @SerializedName(SERIALIZED_NAME_CREATED_AT)
@@ -48,10 +48,6 @@ public class TaskDummyPay {
   public static final String SERIALIZED_NAME_UPDATED_AT = "updatedAt";
   @SerializedName(SERIALIZED_NAME_UPDATED_AT)
   private OffsetDateTime updatedAt;
-
-  public static final String SERIALIZED_NAME_DESCRIPTOR = "descriptor";
-  @SerializedName(SERIALIZED_NAME_DESCRIPTOR)
-  private TaskDummyPayDescriptor descriptor;
 
   public static final String SERIALIZED_NAME_STATUS = "status";
   @SerializedName(SERIALIZED_NAME_STATUS)
@@ -64,6 +60,10 @@ public class TaskDummyPay {
   public static final String SERIALIZED_NAME_ERROR = "error";
   @SerializedName(SERIALIZED_NAME_ERROR)
   private String error;
+
+  public static final String SERIALIZED_NAME_DESCRIPTOR = "descriptor";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTOR)
+  private TaskDummyPayAllOfDescriptor descriptor;
 
   public TaskDummyPay() {
   }
@@ -78,8 +78,8 @@ public class TaskDummyPay {
    * Get id
    * @return id
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public UUID getId() {
     return id;
@@ -91,26 +91,26 @@ public class TaskDummyPay {
   }
 
 
-  public TaskDummyPay connectorID(UUID connectorID) {
+  public TaskDummyPay connectorId(UUID connectorId) {
     
-    this.connectorID = connectorID;
+    this.connectorId = connectorId;
     return this;
   }
 
    /**
-   * Get connectorID
-   * @return connectorID
+   * Get connectorId
+   * @return connectorId
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
-  public UUID getConnectorID() {
-    return connectorID;
+  public UUID getConnectorId() {
+    return connectorId;
   }
 
 
-  public void setConnectorID(UUID connectorID) {
-    this.connectorID = connectorID;
+  public void setConnectorId(UUID connectorId) {
+    this.connectorId = connectorId;
   }
 
 
@@ -124,8 +124,8 @@ public class TaskDummyPay {
    * Get createdAt
    * @return createdAt
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public OffsetDateTime getCreatedAt() {
     return createdAt;
@@ -147,8 +147,8 @@ public class TaskDummyPay {
    * Get updatedAt
    * @return updatedAt
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public OffsetDateTime getUpdatedAt() {
     return updatedAt;
@@ -157,29 +157,6 @@ public class TaskDummyPay {
 
   public void setUpdatedAt(OffsetDateTime updatedAt) {
     this.updatedAt = updatedAt;
-  }
-
-
-  public TaskDummyPay descriptor(TaskDummyPayDescriptor descriptor) {
-    
-    this.descriptor = descriptor;
-    return this;
-  }
-
-   /**
-   * Get descriptor
-   * @return descriptor
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-
-  public TaskDummyPayDescriptor getDescriptor() {
-    return descriptor;
-  }
-
-
-  public void setDescriptor(TaskDummyPayDescriptor descriptor) {
-    this.descriptor = descriptor;
   }
 
 
@@ -193,8 +170,8 @@ public class TaskDummyPay {
    * Get status
    * @return status
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public PaymentStatus getStatus() {
     return status;
@@ -216,8 +193,8 @@ public class TaskDummyPay {
    * Get state
    * @return state
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public Object getState() {
     return state;
@@ -252,6 +229,29 @@ public class TaskDummyPay {
   }
 
 
+  public TaskDummyPay descriptor(TaskDummyPayAllOfDescriptor descriptor) {
+    
+    this.descriptor = descriptor;
+    return this;
+  }
+
+   /**
+   * Get descriptor
+   * @return descriptor
+  **/
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
+
+  public TaskDummyPayAllOfDescriptor getDescriptor() {
+    return descriptor;
+  }
+
+
+  public void setDescriptor(TaskDummyPayAllOfDescriptor descriptor) {
+    this.descriptor = descriptor;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -262,18 +262,18 @@ public class TaskDummyPay {
     }
     TaskDummyPay taskDummyPay = (TaskDummyPay) o;
     return Objects.equals(this.id, taskDummyPay.id) &&
-        Objects.equals(this.connectorID, taskDummyPay.connectorID) &&
+        Objects.equals(this.connectorId, taskDummyPay.connectorId) &&
         Objects.equals(this.createdAt, taskDummyPay.createdAt) &&
         Objects.equals(this.updatedAt, taskDummyPay.updatedAt) &&
-        Objects.equals(this.descriptor, taskDummyPay.descriptor) &&
         Objects.equals(this.status, taskDummyPay.status) &&
         Objects.equals(this.state, taskDummyPay.state) &&
-        Objects.equals(this.error, taskDummyPay.error);
+        Objects.equals(this.error, taskDummyPay.error) &&
+        Objects.equals(this.descriptor, taskDummyPay.descriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, connectorID, createdAt, updatedAt, descriptor, status, state, error);
+    return Objects.hash(id, connectorId, createdAt, updatedAt, status, state, error, descriptor);
   }
 
   @Override
@@ -281,13 +281,13 @@ public class TaskDummyPay {
     StringBuilder sb = new StringBuilder();
     sb.append("class TaskDummyPay {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    connectorID: ").append(toIndentedString(connectorID)).append("\n");
+    sb.append("    connectorId: ").append(toIndentedString(connectorId)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
-    sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    error: ").append(toIndentedString(error)).append("\n");
+    sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("}");
     return sb.toString();
   }

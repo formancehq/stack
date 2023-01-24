@@ -4,20 +4,20 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | Pointer to **string** |  | [optional] 
-**ConnectorID** | Pointer to **string** |  | [optional] 
-**CreatedAt** | Pointer to **time.Time** |  | [optional] 
-**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
-**Descriptor** | Pointer to [**TaskDummyPayDescriptor**](TaskDummyPayDescriptor.md) |  | [optional] 
-**Status** | Pointer to [**PaymentStatus**](PaymentStatus.md) |  | [optional] 
-**State** | Pointer to **map[string]interface{}** |  | [optional] 
+**Id** | **string** |  | 
+**ConnectorId** | **string** |  | 
+**CreatedAt** | **time.Time** |  | 
+**UpdatedAt** | **time.Time** |  | 
+**Status** | [**PaymentStatus**](PaymentStatus.md) |  | 
+**State** | **map[string]interface{}** |  | 
 **Error** | Pointer to **string** |  | [optional] 
+**Descriptor** | [**TaskDummyPayAllOfDescriptor**](TaskDummyPayAllOfDescriptor.md) |  | 
 
 ## Methods
 
 ### NewTaskDummyPay
 
-`func NewTaskDummyPay() *TaskDummyPay`
+`func NewTaskDummyPay(id string, connectorId string, createdAt time.Time, updatedAt time.Time, status PaymentStatus, state map[string]interface{}, descriptor TaskDummyPayAllOfDescriptor, ) *TaskDummyPay`
 
 NewTaskDummyPay instantiates a new TaskDummyPay object
 This constructor will assign default values to properties that have it defined,
@@ -51,36 +51,26 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
 
-`func (o *TaskDummyPay) HasId() bool`
+### GetConnectorId
 
-HasId returns a boolean if a field has been set.
+`func (o *TaskDummyPay) GetConnectorId() string`
 
-### GetConnectorID
+GetConnectorId returns the ConnectorId field if non-nil, zero value otherwise.
 
-`func (o *TaskDummyPay) GetConnectorID() string`
+### GetConnectorIdOk
 
-GetConnectorID returns the ConnectorID field if non-nil, zero value otherwise.
+`func (o *TaskDummyPay) GetConnectorIdOk() (*string, bool)`
 
-### GetConnectorIDOk
-
-`func (o *TaskDummyPay) GetConnectorIDOk() (*string, bool)`
-
-GetConnectorIDOk returns a tuple with the ConnectorID field if it's non-nil, zero value otherwise
+GetConnectorIdOk returns a tuple with the ConnectorId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetConnectorID
+### SetConnectorId
 
-`func (o *TaskDummyPay) SetConnectorID(v string)`
+`func (o *TaskDummyPay) SetConnectorId(v string)`
 
-SetConnectorID sets ConnectorID field to given value.
+SetConnectorId sets ConnectorId field to given value.
 
-### HasConnectorID
-
-`func (o *TaskDummyPay) HasConnectorID() bool`
-
-HasConnectorID returns a boolean if a field has been set.
 
 ### GetCreatedAt
 
@@ -101,11 +91,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-### HasCreatedAt
-
-`func (o *TaskDummyPay) HasCreatedAt() bool`
-
-HasCreatedAt returns a boolean if a field has been set.
 
 ### GetUpdatedAt
 
@@ -126,36 +111,6 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-### HasUpdatedAt
-
-`func (o *TaskDummyPay) HasUpdatedAt() bool`
-
-HasUpdatedAt returns a boolean if a field has been set.
-
-### GetDescriptor
-
-`func (o *TaskDummyPay) GetDescriptor() TaskDummyPayDescriptor`
-
-GetDescriptor returns the Descriptor field if non-nil, zero value otherwise.
-
-### GetDescriptorOk
-
-`func (o *TaskDummyPay) GetDescriptorOk() (*TaskDummyPayDescriptor, bool)`
-
-GetDescriptorOk returns a tuple with the Descriptor field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetDescriptor
-
-`func (o *TaskDummyPay) SetDescriptor(v TaskDummyPayDescriptor)`
-
-SetDescriptor sets Descriptor field to given value.
-
-### HasDescriptor
-
-`func (o *TaskDummyPay) HasDescriptor() bool`
-
-HasDescriptor returns a boolean if a field has been set.
 
 ### GetStatus
 
@@ -176,11 +131,6 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-### HasStatus
-
-`func (o *TaskDummyPay) HasStatus() bool`
-
-HasStatus returns a boolean if a field has been set.
 
 ### GetState
 
@@ -201,11 +151,6 @@ and a boolean to check if the value has been set.
 
 SetState sets State field to given value.
 
-### HasState
-
-`func (o *TaskDummyPay) HasState() bool`
-
-HasState returns a boolean if a field has been set.
 
 ### GetError
 
@@ -231,6 +176,26 @@ SetError sets Error field to given value.
 `func (o *TaskDummyPay) HasError() bool`
 
 HasError returns a boolean if a field has been set.
+
+### GetDescriptor
+
+`func (o *TaskDummyPay) GetDescriptor() TaskDummyPayAllOfDescriptor`
+
+GetDescriptor returns the Descriptor field if non-nil, zero value otherwise.
+
+### GetDescriptorOk
+
+`func (o *TaskDummyPay) GetDescriptorOk() (*TaskDummyPayAllOfDescriptor, bool)`
+
+GetDescriptorOk returns a tuple with the Descriptor field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDescriptor
+
+`func (o *TaskDummyPay) SetDescriptor(v TaskDummyPayAllOfDescriptor)`
+
+SetDescriptor sets Descriptor field to given value.
+
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

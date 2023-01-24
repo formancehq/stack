@@ -4,17 +4,17 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Status** | Pointer to [**PaymentStatus**](PaymentStatus.md) |  | [optional] 
-**Amount** | Pointer to **int64** |  | [optional] 
-**Date** | Pointer to **time.Time** |  | [optional] 
-**Raw** | Pointer to **map[string]interface{}** |  | [optional] 
-**Absolute** | Pointer to **bool** |  | [optional] 
+**Status** | [**PaymentStatus**](PaymentStatus.md) |  | 
+**Amount** | **int64** |  | 
+**Date** | **time.Time** |  | 
+**Raw** | **map[string]interface{}** |  | 
+**Absolute** | **bool** |  | 
 
 ## Methods
 
 ### NewPaymentAdjustment
 
-`func NewPaymentAdjustment() *PaymentAdjustment`
+`func NewPaymentAdjustment(status PaymentStatus, amount int64, date time.Time, raw map[string]interface{}, absolute bool, ) *PaymentAdjustment`
 
 NewPaymentAdjustment instantiates a new PaymentAdjustment object
 This constructor will assign default values to properties that have it defined,
@@ -48,11 +48,6 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-### HasStatus
-
-`func (o *PaymentAdjustment) HasStatus() bool`
-
-HasStatus returns a boolean if a field has been set.
 
 ### GetAmount
 
@@ -73,11 +68,6 @@ and a boolean to check if the value has been set.
 
 SetAmount sets Amount field to given value.
 
-### HasAmount
-
-`func (o *PaymentAdjustment) HasAmount() bool`
-
-HasAmount returns a boolean if a field has been set.
 
 ### GetDate
 
@@ -98,11 +88,6 @@ and a boolean to check if the value has been set.
 
 SetDate sets Date field to given value.
 
-### HasDate
-
-`func (o *PaymentAdjustment) HasDate() bool`
-
-HasDate returns a boolean if a field has been set.
 
 ### GetRaw
 
@@ -123,11 +108,6 @@ and a boolean to check if the value has been set.
 
 SetRaw sets Raw field to given value.
 
-### HasRaw
-
-`func (o *PaymentAdjustment) HasRaw() bool`
-
-HasRaw returns a boolean if a field has been set.
 
 ### GetAbsolute
 
@@ -148,11 +128,6 @@ and a boolean to check if the value has been set.
 
 SetAbsolute sets Absolute field to given value.
 
-### HasAbsolute
-
-`func (o *PaymentAdjustment) HasAbsolute() bool`
-
-HasAbsolute returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

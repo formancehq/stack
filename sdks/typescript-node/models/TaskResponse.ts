@@ -10,11 +10,11 @@
  * Do not edit the class manually.
  */
 
-import { TaskResponseData } from '../models/TaskResponseData';
+import { TasksCursorCursorAllOfDataInner } from '../models/TasksCursorCursorAllOfDataInner';
 import { HttpFile } from '../http/http';
 
 export class TaskResponse {
-    'data'?: TaskResponseData;
+    'data': TasksCursorCursorAllOfDataInner;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -22,7 +22,7 @@ export class TaskResponse {
         {
             "name": "data",
             "baseName": "data",
-            "type": "TaskResponseData",
+            "type": "TasksCursorCursorAllOfDataInner",
             "format": ""
         }    ];
 

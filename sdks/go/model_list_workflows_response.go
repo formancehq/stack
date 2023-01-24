@@ -17,16 +17,16 @@ import (
 
 // ListWorkflowsResponse struct for ListWorkflowsResponse
 type ListWorkflowsResponse struct {
-	Cursor ListWorkflowsResponseCursor `json:"cursor"`
+	Data []Workflow `json:"data"`
 }
 
 // NewListWorkflowsResponse instantiates a new ListWorkflowsResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListWorkflowsResponse(cursor ListWorkflowsResponseCursor) *ListWorkflowsResponse {
+func NewListWorkflowsResponse(data []Workflow) *ListWorkflowsResponse {
 	this := ListWorkflowsResponse{}
-	this.Cursor = cursor
+	this.Data = data
 	return &this
 }
 
@@ -38,34 +38,34 @@ func NewListWorkflowsResponseWithDefaults() *ListWorkflowsResponse {
 	return &this
 }
 
-// GetCursor returns the Cursor field value
-func (o *ListWorkflowsResponse) GetCursor() ListWorkflowsResponseCursor {
+// GetData returns the Data field value
+func (o *ListWorkflowsResponse) GetData() []Workflow {
 	if o == nil {
-		var ret ListWorkflowsResponseCursor
+		var ret []Workflow
 		return ret
 	}
 
-	return o.Cursor
+	return o.Data
 }
 
-// GetCursorOk returns a tuple with the Cursor field value
+// GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *ListWorkflowsResponse) GetCursorOk() (*ListWorkflowsResponseCursor, bool) {
+func (o *ListWorkflowsResponse) GetDataOk() ([]Workflow, bool) {
 	if o == nil {
     return nil, false
 	}
-	return &o.Cursor, true
+	return o.Data, true
 }
 
-// SetCursor sets field value
-func (o *ListWorkflowsResponse) SetCursor(v ListWorkflowsResponseCursor) {
-	o.Cursor = v
+// SetData sets field value
+func (o *ListWorkflowsResponse) SetData(v []Workflow) {
+	o.Data = v
 }
 
 func (o ListWorkflowsResponse) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if true {
-		toSerialize["cursor"] = o.Cursor
+		toSerialize["data"] = o.Data
 	}
 	return json.Marshal(toSerialize)
 }

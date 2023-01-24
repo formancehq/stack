@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**DataType** | Pointer to **string** |  | [optional] 
-**Required** | Pointer to **bool** |  | [optional] 
+**DataType** | **string** |  | 
+**Required** | **bool** |  | 
 
 ## Methods
 
 ### NewConnectorsConfigsResponseDataConnectorKey
 
-`func NewConnectorsConfigsResponseDataConnectorKey() *ConnectorsConfigsResponseDataConnectorKey`
+`func NewConnectorsConfigsResponseDataConnectorKey(dataType string, required bool, ) *ConnectorsConfigsResponseDataConnectorKey`
 
 NewConnectorsConfigsResponseDataConnectorKey instantiates a new ConnectorsConfigsResponseDataConnectorKey object
 This constructor will assign default values to properties that have it defined,
@@ -45,11 +45,6 @@ and a boolean to check if the value has been set.
 
 SetDataType sets DataType field to given value.
 
-### HasDataType
-
-`func (o *ConnectorsConfigsResponseDataConnectorKey) HasDataType() bool`
-
-HasDataType returns a boolean if a field has been set.
 
 ### GetRequired
 
@@ -70,11 +65,6 @@ and a boolean to check if the value has been set.
 
 SetRequired sets Required field to given value.
 
-### HasRequired
-
-`func (o *ConnectorsConfigsResponseDataConnectorKey) HasRequired() bool`
-
-HasRequired returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

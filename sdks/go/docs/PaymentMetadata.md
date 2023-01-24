@@ -4,15 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Key** | Pointer to **string** |  | [optional] 
-**Value** | Pointer to **string** |  | [optional] 
+**Key** | **string** |  | 
+**Value** | **string** |  | 
 **Changelog** | Pointer to [**PaymentMetadataChangelog**](PaymentMetadataChangelog.md) |  | [optional] 
 
 ## Methods
 
 ### NewPaymentMetadata
 
-`func NewPaymentMetadata() *PaymentMetadata`
+`func NewPaymentMetadata(key string, value string, ) *PaymentMetadata`
 
 NewPaymentMetadata instantiates a new PaymentMetadata object
 This constructor will assign default values to properties that have it defined,
@@ -46,11 +46,6 @@ and a boolean to check if the value has been set.
 
 SetKey sets Key field to given value.
 
-### HasKey
-
-`func (o *PaymentMetadata) HasKey() bool`
-
-HasKey returns a boolean if a field has been set.
 
 ### GetValue
 
@@ -71,11 +66,6 @@ and a boolean to check if the value has been set.
 
 SetValue sets Value field to given value.
 
-### HasValue
-
-`func (o *PaymentMetadata) HasValue() bool`
-
-HasValue returns a boolean if a field has been set.
 
 ### GetChangelog
 

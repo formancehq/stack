@@ -14,7 +14,7 @@ import { Payment } from '../models/Payment';
 import { HttpFile } from '../http/http';
 
 export class PaymentResponse {
-    'data'?: Payment;
+    'data': Payment;
 
     static readonly discriminator: string | undefined = undefined;
 

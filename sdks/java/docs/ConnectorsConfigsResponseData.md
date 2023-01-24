@@ -7,7 +7,7 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**connector** | [**ConnectorsConfigsResponseDataConnector**](ConnectorsConfigsResponseDataConnector.md) |  |  [optional] |
+|**connector** | [**ConnectorsConfigsResponseDataConnector**](ConnectorsConfigsResponseDataConnector.md) |  |  |
 
 
 

@@ -121,8 +121,8 @@ type PaymentsApi interface {
 	ListConnectorTasks(ctx context.Context, connector Connector) ApiListConnectorTasksRequest
 
 	// ListConnectorTasksExecute executes the request
-	//  @return TasksResponse
-	ListConnectorTasksExecute(r ApiListConnectorTasksRequest) (*TasksResponse, *http.Response, error)
+	//  @return TasksCursor
+	ListConnectorTasksExecute(r ApiListConnectorTasksRequest) (*TasksCursor, *http.Response, error)
 
 	/*
 	ListPayments List payments
@@ -133,8 +133,8 @@ type PaymentsApi interface {
 	ListPayments(ctx context.Context) ApiListPaymentsRequest
 
 	// ListPaymentsExecute executes the request
-	//  @return PaymentsResponse
-	ListPaymentsExecute(r ApiListPaymentsRequest) (*PaymentsResponse, *http.Response, error)
+	//  @return PaymentsCursor
+	ListPaymentsExecute(r ApiListPaymentsRequest) (*PaymentsCursor, *http.Response, error)
 
 	/*
 	PaymentslistAccounts List accounts
@@ -145,8 +145,8 @@ type PaymentsApi interface {
 	PaymentslistAccounts(ctx context.Context) ApiPaymentslistAccountsRequest
 
 	// PaymentslistAccountsExecute executes the request
-	//  @return AccountsResponse
-	PaymentslistAccountsExecute(r ApiPaymentslistAccountsRequest) (*AccountsResponse, *http.Response, error)
+	//  @return AccountsCursor
+	PaymentslistAccountsExecute(r ApiPaymentslistAccountsRequest) (*AccountsCursor, *http.Response, error)
 
 	/*
 	ReadConnectorConfig Read the config of a connector
@@ -166,7 +166,8 @@ type PaymentsApi interface {
 	/*
 	ResetConnector Reset a connector
 
-	Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it.
+	Reset a connector by its name.
+It will remove the connector and ALL PAYMENTS generated with it.
 
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -835,7 +836,7 @@ func (r ApiListConnectorTasksRequest) Cursor(cursor string) ApiListConnectorTask
 	return r
 }
 
-func (r ApiListConnectorTasksRequest) Execute() (*TasksResponse, *http.Response, error) {
+func (r ApiListConnectorTasksRequest) Execute() (*TasksCursor, *http.Response, error) {
 	return r.ApiService.ListConnectorTasksExecute(r)
 }
 
@@ -857,13 +858,13 @@ func (a *PaymentsApiService) ListConnectorTasks(ctx context.Context, connector C
 }
 
 // Execute executes the request
-//  @return TasksResponse
-func (a *PaymentsApiService) ListConnectorTasksExecute(r ApiListConnectorTasksRequest) (*TasksResponse, *http.Response, error) {
+//  @return TasksCursor
+func (a *PaymentsApiService) ListConnectorTasksExecute(r ApiListConnectorTasksRequest) (*TasksCursor, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *TasksResponse
+		localVarReturnValue  *TasksCursor
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.ListConnectorTasks")
@@ -964,7 +965,7 @@ func (r ApiListPaymentsRequest) Sort(sort []string) ApiListPaymentsRequest {
 	return r
 }
 
-func (r ApiListPaymentsRequest) Execute() (*PaymentsResponse, *http.Response, error) {
+func (r ApiListPaymentsRequest) Execute() (*PaymentsCursor, *http.Response, error) {
 	return r.ApiService.ListPaymentsExecute(r)
 }
 
@@ -982,13 +983,13 @@ func (a *PaymentsApiService) ListPayments(ctx context.Context) ApiListPaymentsRe
 }
 
 // Execute executes the request
-//  @return PaymentsResponse
-func (a *PaymentsApiService) ListPaymentsExecute(r ApiListPaymentsRequest) (*PaymentsResponse, *http.Response, error) {
+//  @return PaymentsCursor
+func (a *PaymentsApiService) ListPaymentsExecute(r ApiListPaymentsRequest) (*PaymentsCursor, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *PaymentsResponse
+		localVarReturnValue  *PaymentsCursor
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.ListPayments")
@@ -1076,30 +1077,30 @@ func (a *PaymentsApiService) ListPaymentsExecute(r ApiListPaymentsRequest) (*Pay
 type ApiPaymentslistAccountsRequest struct {
 	ctx context.Context
 	ApiService PaymentsApi
-	limit *int64
-	skip *int64
+	pageSize *int64
+	cursor *string
 	sort *[]string
 }
 
-// Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. 
-func (r ApiPaymentslistAccountsRequest) Limit(limit int64) ApiPaymentslistAccountsRequest {
-	r.limit = &limit
+// The maximum number of results to return per page. 
+func (r ApiPaymentslistAccountsRequest) PageSize(pageSize int64) ApiPaymentslistAccountsRequest {
+	r.pageSize = &pageSize
 	return r
 }
 
-// How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. 
-func (r ApiPaymentslistAccountsRequest) Skip(skip int64) ApiPaymentslistAccountsRequest {
-	r.skip = &skip
+// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
+func (r ApiPaymentslistAccountsRequest) Cursor(cursor string) ApiPaymentslistAccountsRequest {
+	r.cursor = &cursor
 	return r
 }
 
-// Field used to sort payments (Default is by date).
+// Fields used to sort payments (default is date:desc).
 func (r ApiPaymentslistAccountsRequest) Sort(sort []string) ApiPaymentslistAccountsRequest {
 	r.sort = &sort
 	return r
 }
 
-func (r ApiPaymentslistAccountsRequest) Execute() (*AccountsResponse, *http.Response, error) {
+func (r ApiPaymentslistAccountsRequest) Execute() (*AccountsCursor, *http.Response, error) {
 	return r.ApiService.PaymentslistAccountsExecute(r)
 }
 
@@ -1117,13 +1118,13 @@ func (a *PaymentsApiService) PaymentslistAccounts(ctx context.Context) ApiPaymen
 }
 
 // Execute executes the request
-//  @return AccountsResponse
-func (a *PaymentsApiService) PaymentslistAccountsExecute(r ApiPaymentslistAccountsRequest) (*AccountsResponse, *http.Response, error) {
+//  @return AccountsCursor
+func (a *PaymentsApiService) PaymentslistAccountsExecute(r ApiPaymentslistAccountsRequest) (*AccountsCursor, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *AccountsResponse
+		localVarReturnValue  *AccountsCursor
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.PaymentslistAccounts")
@@ -1137,11 +1138,11 @@ func (a *PaymentsApiService) PaymentslistAccountsExecute(r ApiPaymentslistAccoun
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
-	if r.limit != nil {
-		localVarQueryParams.Add("limit", parameterToString(*r.limit, ""))
+	if r.pageSize != nil {
+		localVarQueryParams.Add("pageSize", parameterToString(*r.pageSize, ""))
 	}
-	if r.skip != nil {
-		localVarQueryParams.Add("skip", parameterToString(*r.skip, ""))
+	if r.cursor != nil {
+		localVarQueryParams.Add("cursor", parameterToString(*r.cursor, ""))
 	}
 	if r.sort != nil {
 		t := *r.sort
@@ -1324,7 +1325,8 @@ func (r ApiResetConnectorRequest) Execute() (*http.Response, error) {
 /*
 ResetConnector Reset a connector
 
-Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it.
+Reset a connector by its name.
+It will remove the connector and ALL PAYMENTS generated with it.
 
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().

@@ -9,17 +9,17 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okhttp3.MultipartBody;
 
-import com.formance.formance.model.AccountsResponse;
+import com.formance.formance.model.AccountsCursor;
 import com.formance.formance.model.Connector;
 import com.formance.formance.model.ConnectorConfig;
 import com.formance.formance.model.ConnectorConfigResponse;
 import com.formance.formance.model.ConnectorsConfigsResponse;
 import com.formance.formance.model.ConnectorsResponse;
 import com.formance.formance.model.PaymentResponse;
-import com.formance.formance.model.PaymentsResponse;
+import com.formance.formance.model.PaymentsCursor;
 import com.formance.formance.model.StripeTransferRequest;
 import com.formance.formance.model.TaskResponse;
-import com.formance.formance.model.TasksResponse;
+import com.formance.formance.model.TasksCursor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,10 +103,10 @@ public interface PaymentsApi {
    * @param connector The name of the connector. (required)
    * @param pageSize The maximum number of results to return per page.  (optional, default to 15)
    * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
-   * @return Call&lt;TasksResponse&gt;
+   * @return Call&lt;TasksCursor&gt;
    */
   @GET("api/payments/connectors/{connector}/tasks")
-  Call<TasksResponse> listConnectorTasks(
+  Call<TasksCursor> listConnectorTasks(
     @retrofit2.http.Path("connector") Connector connector, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("cursor") String cursor
   );
 
@@ -116,24 +116,24 @@ public interface PaymentsApi {
    * @param pageSize The maximum number of results to return per page.  (optional, default to 15)
    * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
    * @param sort Fields used to sort payments (default is date:desc). (optional)
-   * @return Call&lt;PaymentsResponse&gt;
+   * @return Call&lt;PaymentsCursor&gt;
    */
   @GET("api/payments/payments")
-  Call<PaymentsResponse> listPayments(
+  Call<PaymentsCursor> listPayments(
     @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("cursor") String cursor, @retrofit2.http.Query("sort") List<String> sort
   );
 
   /**
    * List accounts
    * 
-   * @param limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.  (optional)
-   * @param skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.  (optional)
-   * @param sort Field used to sort payments (Default is by date). (optional)
-   * @return Call&lt;AccountsResponse&gt;
+   * @param pageSize The maximum number of results to return per page.  (optional, default to 15)
+   * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
+   * @param sort Fields used to sort payments (default is date:desc). (optional)
+   * @return Call&lt;AccountsCursor&gt;
    */
   @GET("api/payments/accounts")
-  Call<AccountsResponse> paymentslistAccounts(
-    @retrofit2.http.Query("limit") Long limit, @retrofit2.http.Query("skip") Long skip, @retrofit2.http.Query("sort") List<String> sort
+  Call<AccountsCursor> paymentslistAccounts(
+    @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("cursor") String cursor, @retrofit2.http.Query("sort") List<String> sort
   );
 
   /**

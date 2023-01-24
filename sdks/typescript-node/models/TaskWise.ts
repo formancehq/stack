@@ -11,18 +11,18 @@
  */
 
 import { PaymentStatus } from '../models/PaymentStatus';
-import { TaskWiseDescriptor } from '../models/TaskWiseDescriptor';
+import { TaskWiseAllOfDescriptor } from '../models/TaskWiseAllOfDescriptor';
 import { HttpFile } from '../http/http';
 
 export class TaskWise {
-    'id'?: string;
-    'connectorID'?: string;
-    'createdAt'?: Date;
-    'updatedAt'?: Date;
-    'descriptor'?: TaskWiseDescriptor;
-    'status'?: PaymentStatus;
-    'state'?: any;
+    'id': string;
+    'connectorId': string;
+    'createdAt': Date;
+    'updatedAt': Date;
+    'status': PaymentStatus;
+    'state': any;
     'error'?: string;
+    'descriptor': TaskWiseAllOfDescriptor;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -34,8 +34,8 @@ export class TaskWise {
             "format": "uuid"
         },
         {
-            "name": "connectorID",
-            "baseName": "connectorID",
+            "name": "connectorId",
+            "baseName": "connectorId",
             "type": "string",
             "format": "uuid"
         },
@@ -50,12 +50,6 @@ export class TaskWise {
             "baseName": "updatedAt",
             "type": "Date",
             "format": "date-time"
-        },
-        {
-            "name": "descriptor",
-            "baseName": "descriptor",
-            "type": "TaskWiseDescriptor",
-            "format": ""
         },
         {
             "name": "status",
@@ -73,6 +67,12 @@ export class TaskWise {
             "name": "error",
             "baseName": "error",
             "type": "string",
+            "format": ""
+        },
+        {
+            "name": "descriptor",
+            "baseName": "descriptor",
+            "type": "TaskWiseAllOfDescriptor",
             "format": ""
         }    ];
 

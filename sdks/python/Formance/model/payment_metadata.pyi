@@ -35,6 +35,10 @@ class PaymentMetadata(
 
 
     class MetaOapg:
+        required = {
+            "value",
+            "key",
+        }
         
         class properties:
             key = schemas.StrSchema
@@ -48,6 +52,9 @@ class PaymentMetadata(
                 "value": value,
                 "changelog": changelog,
             }
+    
+    value: MetaOapg.properties.value
+    key: MetaOapg.properties.key
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["key"]) -> MetaOapg.properties.key: ...
@@ -67,10 +74,10 @@ class PaymentMetadata(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["key"]) -> typing.Union[MetaOapg.properties.key, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["key"]) -> MetaOapg.properties.key: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["value"]) -> typing.Union[MetaOapg.properties.value, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["value"]) -> MetaOapg.properties.value: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["changelog"]) -> typing.Union['PaymentMetadataChangelog', schemas.Unset]: ...
@@ -85,8 +92,8 @@ class PaymentMetadata(
     def __new__(
         cls,
         *args: typing.Union[dict, frozendict.frozendict, ],
-        key: typing.Union[MetaOapg.properties.key, str, schemas.Unset] = schemas.unset,
-        value: typing.Union[MetaOapg.properties.value, str, schemas.Unset] = schemas.unset,
+        value: typing.Union[MetaOapg.properties.value, str, ],
+        key: typing.Union[MetaOapg.properties.key, str, ],
         changelog: typing.Union['PaymentMetadataChangelog', schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
@@ -94,8 +101,8 @@ class PaymentMetadata(
         return super().__new__(
             cls,
             *args,
-            key=key,
             value=value,
+            key=key,
             changelog=changelog,
             _configuration=_configuration,
             **kwargs,

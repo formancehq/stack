@@ -2,8 +2,6 @@ package transactions
 
 import (
 	"fmt"
-	"io"
-	"os"
 	"strconv"
 	"strings"
 
@@ -48,23 +46,9 @@ func NewCommand() *cobra.Command {
 				return err
 			}
 
-			var script string
-			if args[0] == "-" {
-				if fctl.NeedConfirm(cmd, stack) {
-					return errors.New("You need to use --confirm flag to use stdin")
-				}
-				data, err := io.ReadAll(cmd.InOrStdin())
-				if err != nil && err != io.EOF {
-					return errors.Wrapf(err, "reading stdin")
-				}
-
-				script = string(data)
-			} else {
-				data, err := os.ReadFile(args[0])
-				if err != nil {
-					return errors.Wrapf(err, "reading file %s", args[0])
-				}
-				script = string(data)
+			script, err := fctl.ReadFile(cmd, stack, args[0])
+			if err != nil {
+				return err
 			}
 
 			if !fctl.CheckStackApprobation(cmd, stack, "You are about to apply a numscript") {

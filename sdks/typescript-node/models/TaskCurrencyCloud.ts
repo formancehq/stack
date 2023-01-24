@@ -11,18 +11,18 @@
  */
 
 import { PaymentStatus } from '../models/PaymentStatus';
-import { TaskCurrencyCloudDescriptor } from '../models/TaskCurrencyCloudDescriptor';
+import { TaskCurrencyCloudAllOfDescriptor } from '../models/TaskCurrencyCloudAllOfDescriptor';
 import { HttpFile } from '../http/http';
 
 export class TaskCurrencyCloud {
-    'id'?: string;
-    'connectorID'?: string;
-    'createdAt'?: Date;
-    'updatedAt'?: Date;
-    'descriptor'?: TaskCurrencyCloudDescriptor;
-    'status'?: PaymentStatus;
-    'state'?: any;
+    'id': string;
+    'connectorId': string;
+    'createdAt': Date;
+    'updatedAt': Date;
+    'status': PaymentStatus;
+    'state': any;
     'error'?: string;
+    'descriptor': TaskCurrencyCloudAllOfDescriptor;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -34,8 +34,8 @@ export class TaskCurrencyCloud {
             "format": "uuid"
         },
         {
-            "name": "connectorID",
-            "baseName": "connectorID",
+            "name": "connectorId",
+            "baseName": "connectorId",
             "type": "string",
             "format": "uuid"
         },
@@ -50,12 +50,6 @@ export class TaskCurrencyCloud {
             "baseName": "updatedAt",
             "type": "Date",
             "format": "date-time"
-        },
-        {
-            "name": "descriptor",
-            "baseName": "descriptor",
-            "type": "TaskCurrencyCloudDescriptor",
-            "format": ""
         },
         {
             "name": "status",
@@ -73,6 +67,12 @@ export class TaskCurrencyCloud {
             "name": "error",
             "baseName": "error",
             "type": "string",
+            "format": ""
+        },
+        {
+            "name": "descriptor",
+            "baseName": "descriptor",
+            "type": "TaskCurrencyCloudAllOfDescriptor",
             "format": ""
         }    ];
 

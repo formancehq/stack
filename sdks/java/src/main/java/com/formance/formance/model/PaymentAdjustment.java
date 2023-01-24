@@ -64,8 +64,8 @@ public class PaymentAdjustment {
    * Get status
    * @return status
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public PaymentStatus getStatus() {
     return status;
@@ -88,8 +88,8 @@ public class PaymentAdjustment {
    * minimum: 0
    * @return amount
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(example = "100", value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(example = "100", required = true, value = "")
 
   public Long getAmount() {
     return amount;
@@ -111,8 +111,8 @@ public class PaymentAdjustment {
    * Get date
    * @return date
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public OffsetDateTime getDate() {
     return date;
@@ -134,8 +134,8 @@ public class PaymentAdjustment {
    * Get raw
    * @return raw
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public Object getRaw() {
     return raw;
@@ -157,8 +157,8 @@ public class PaymentAdjustment {
    * Get absolute
    * @return absolute
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public Boolean getAbsolute() {
     return absolute;

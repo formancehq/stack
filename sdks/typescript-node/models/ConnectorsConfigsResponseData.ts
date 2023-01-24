@@ -14,7 +14,7 @@ import { ConnectorsConfigsResponseDataConnector } from '../models/ConnectorsConf
 import { HttpFile } from '../http/http';
 
 export class ConnectorsConfigsResponseData {
-    'connector'?: ConnectorsConfigsResponseDataConnector;
+    'connector': ConnectorsConfigsResponseDataConnector;
 
     static readonly discriminator: string | undefined = undefined;
 

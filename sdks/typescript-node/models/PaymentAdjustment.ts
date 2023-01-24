@@ -14,11 +14,11 @@ import { PaymentStatus } from '../models/PaymentStatus';
 import { HttpFile } from '../http/http';
 
 export class PaymentAdjustment {
-    'status'?: PaymentStatus;
-    'amount'?: number;
-    'date'?: Date;
-    'raw'?: any;
-    'absolute'?: boolean;
+    'status': PaymentStatus;
+    'amount': number;
+    'date': Date;
+    'raw': any;
+    'absolute': boolean;
 
     static readonly discriminator: string | undefined = undefined;
 

@@ -289,6 +289,12 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
+        if ($this->container['key'] === null) {
+            $invalidProperties[] = "'key' can't be null";
+        }
+        if ($this->container['value'] === null) {
+            $invalidProperties[] = "'value' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -307,7 +313,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets key
      *
-     * @return string|null
+     * @return string
      */
     public function getKey()
     {
@@ -317,7 +323,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets key
      *
-     * @param string|null $key key
+     * @param string $key key
      *
      * @return self
      */
@@ -336,7 +342,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets value
      *
-     * @return string|null
+     * @return string
      */
     public function getValue()
     {
@@ -346,7 +352,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets value
      *
-     * @param string|null $value value
+     * @param string $value value
      *
      * @return self
      */

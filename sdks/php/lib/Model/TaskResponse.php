@@ -58,7 +58,7 @@ class TaskResponse implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var string[]
       */
     protected static $openAPITypes = [
-        'data' => '\Formance\Model\TaskResponseData'
+        'data' => '\Formance\Model\TasksCursorCursorAllOfDataInner'
     ];
 
     /**
@@ -275,6 +275,9 @@ class TaskResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
+        if ($this->container['data'] === null) {
+            $invalidProperties[] = "'data' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -293,7 +296,7 @@ class TaskResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets data
      *
-     * @return \Formance\Model\TaskResponseData|null
+     * @return \Formance\Model\TasksCursorCursorAllOfDataInner
      */
     public function getData()
     {
@@ -303,7 +306,7 @@ class TaskResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets data
      *
-     * @param \Formance\Model\TaskResponseData|null $data data
+     * @param \Formance\Model\TasksCursorCursorAllOfDataInner $data data
      *
      * @return self
      */

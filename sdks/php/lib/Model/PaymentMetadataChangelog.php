@@ -282,6 +282,12 @@ class PaymentMetadataChangelog implements ModelInterface, ArrayAccess, \JsonSeri
     {
         $invalidProperties = [];
 
+        if ($this->container['timestamp'] === null) {
+            $invalidProperties[] = "'timestamp' can't be null";
+        }
+        if ($this->container['value'] === null) {
+            $invalidProperties[] = "'value' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -300,7 +306,7 @@ class PaymentMetadataChangelog implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Gets timestamp
      *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getTimestamp()
     {
@@ -310,7 +316,7 @@ class PaymentMetadataChangelog implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Sets timestamp
      *
-     * @param \DateTime|null $timestamp timestamp
+     * @param \DateTime $timestamp timestamp
      *
      * @return self
      */
@@ -329,7 +335,7 @@ class PaymentMetadataChangelog implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Gets value
      *
-     * @return string|null
+     * @return string
      */
     public function getValue()
     {
@@ -339,7 +345,7 @@ class PaymentMetadataChangelog implements ModelInterface, ArrayAccess, \JsonSeri
     /**
      * Sets value
      *
-     * @param string|null $value value
+     * @param string $value value
      *
      * @return self
      */

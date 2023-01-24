@@ -376,7 +376,7 @@ This endpoint does not need any parameter.
 ## `listConnectorTasks()`
 
 ```php
-listConnectorTasks($connector, $page_size, $cursor): \Formance\Model\TasksResponse
+listConnectorTasks($connector, $page_size, $cursor): \Formance\Model\TasksCursor
 ```
 
 List tasks from a connector
@@ -422,7 +422,7 @@ try {
 
 ### Return type
 
-[**\Formance\Model\TasksResponse**](../Model/TasksResponse.md)
+[**\Formance\Model\TasksCursor**](../Model/TasksCursor.md)
 
 ### Authorization
 
@@ -440,7 +440,7 @@ try {
 ## `listPayments()`
 
 ```php
-listPayments($page_size, $cursor, $sort): \Formance\Model\PaymentsResponse
+listPayments($page_size, $cursor, $sort): \Formance\Model\PaymentsCursor
 ```
 
 List payments
@@ -484,7 +484,7 @@ try {
 
 ### Return type
 
-[**\Formance\Model\PaymentsResponse**](../Model/PaymentsResponse.md)
+[**\Formance\Model\PaymentsCursor**](../Model/PaymentsCursor.md)
 
 ### Authorization
 
@@ -502,7 +502,7 @@ try {
 ## `paymentslistAccounts()`
 
 ```php
-paymentslistAccounts($limit, $skip, $sort): \Formance\Model\AccountsResponse
+paymentslistAccounts($page_size, $cursor, $sort): \Formance\Model\AccountsCursor
 ```
 
 List accounts
@@ -524,12 +524,12 @@ $apiInstance = new Formance\Api\PaymentsApi(
     new GuzzleHttp\Client(),
     $config
 );
-$limit = 10; // int | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter.
-$skip = 100; // int | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter.
-$sort = status; // string[] | Field used to sort payments (Default is by date).
+$page_size = 100; // int | The maximum number of results to return per page.
+$cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
+$sort = date:asc,status:desc; // string[] | Fields used to sort payments (default is date:desc).
 
 try {
-    $result = $apiInstance->paymentslistAccounts($limit, $skip, $sort);
+    $result = $apiInstance->paymentslistAccounts($page_size, $cursor, $sort);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling PaymentsApi->paymentslistAccounts: ', $e->getMessage(), PHP_EOL;
@@ -540,13 +540,13 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **limit** | **int**| Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. | [optional] |
-| **skip** | **int**| How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. | [optional] |
-| **sort** | [**string[]**](../Model/string.md)| Field used to sort payments (Default is by date). | [optional] |
+| **page_size** | **int**| The maximum number of results to return per page. | [optional] [default to 15] |
+| **cursor** | **string**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. | [optional] |
+| **sort** | [**string[]**](../Model/string.md)| Fields used to sort payments (default is date:desc). | [optional] |
 
 ### Return type
 
-[**\Formance\Model\AccountsResponse**](../Model/AccountsResponse.md)
+[**\Formance\Model\AccountsCursor**](../Model/AccountsCursor.md)
 
 ### Authorization
 

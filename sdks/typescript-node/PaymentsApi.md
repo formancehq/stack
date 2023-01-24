@@ -240,7 +240,7 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**204** | OK |  -  |
+**204** | No content |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
@@ -341,7 +341,7 @@ This endpoint does not need any parameter.
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **listConnectorTasks**
-> TasksResponse listConnectorTasks()
+> TasksCursor listConnectorTasks()
 
 List all tasks associated with this connector.
 
@@ -381,7 +381,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**TasksResponse**
+**TasksCursor**
 
 ### Authorization
 
@@ -401,7 +401,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **listPayments**
-> PaymentsResponse listPayments()
+> PaymentsCursor listPayments()
 
 
 ### Example
@@ -442,7 +442,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**PaymentsResponse**
+**PaymentsCursor**
 
 ### Authorization
 
@@ -462,7 +462,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **paymentslistAccounts**
-> AccountsResponse paymentslistAccounts()
+> AccountsCursor paymentslistAccounts()
 
 
 ### Example
@@ -476,13 +476,13 @@ const configuration = createConfiguration();
 const apiInstance = new PaymentsApi(configuration);
 
 let body:PaymentsApiPaymentslistAccountsRequest = {
-  // number | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter.  (optional)
-  limit: 10,
-  // number | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter.  (optional)
-  skip: 100,
-  // Array<string> | Field used to sort payments (Default is by date). (optional)
+  // number | The maximum number of results to return per page.  (optional)
+  pageSize: 100,
+  // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
+  cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
+  // Array<string> | Fields used to sort payments (default is date:desc). (optional)
   sort: [
-    "status",
+    "date:asc,status:desc",
   ],
 };
 
@@ -496,14 +496,14 @@ apiInstance.paymentslistAccounts(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **limit** | [**number**] | Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.  | (optional) defaults to undefined
- **skip** | [**number**] | How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.  | (optional) defaults to undefined
- **sort** | **Array&lt;string&gt;** | Field used to sort payments (Default is by date). | (optional) defaults to undefined
+ **pageSize** | [**number**] | The maximum number of results to return per page.  | (optional) defaults to 15
+ **cursor** | [**string**] | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | (optional) defaults to undefined
+ **sort** | **Array&lt;string&gt;** | Fields used to sort payments (default is date:desc). | (optional) defaults to undefined
 
 
 ### Return type
 
-**AccountsResponse**
+**AccountsCursor**
 
 ### Authorization
 
@@ -626,7 +626,7 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**204** | OK |  -  |
+**204** | No content |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
@@ -680,7 +680,7 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**204** | OK |  -  |
+**204** | No content |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 

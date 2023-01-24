@@ -13,8 +13,8 @@
 import { HttpFile } from '../http/http';
 
 export class ConnectorsConfigsResponseDataConnectorKey {
-    'dataType'?: string;
-    'required'?: boolean;
+    'dataType': string;
+    'required': boolean;
 
     static readonly discriminator: string | undefined = undefined;
 

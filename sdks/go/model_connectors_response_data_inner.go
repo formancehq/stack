@@ -19,7 +19,6 @@ import (
 type ConnectorsResponseDataInner struct {
 	Provider *Connector `json:"provider,omitempty"`
 	Enabled *bool `json:"enabled,omitempty"`
-	Disabled *bool `json:"disabled,omitempty"`
 }
 
 // NewConnectorsResponseDataInner instantiates a new ConnectorsResponseDataInner object
@@ -103,38 +102,6 @@ func (o *ConnectorsResponseDataInner) SetEnabled(v bool) {
 	o.Enabled = &v
 }
 
-// GetDisabled returns the Disabled field value if set, zero value otherwise.
-func (o *ConnectorsResponseDataInner) GetDisabled() bool {
-	if o == nil || isNil(o.Disabled) {
-		var ret bool
-		return ret
-	}
-	return *o.Disabled
-}
-
-// GetDisabledOk returns a tuple with the Disabled field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ConnectorsResponseDataInner) GetDisabledOk() (*bool, bool) {
-	if o == nil || isNil(o.Disabled) {
-    return nil, false
-	}
-	return o.Disabled, true
-}
-
-// HasDisabled returns a boolean if a field has been set.
-func (o *ConnectorsResponseDataInner) HasDisabled() bool {
-	if o != nil && !isNil(o.Disabled) {
-		return true
-	}
-
-	return false
-}
-
-// SetDisabled gets a reference to the given bool and assigns it to the Disabled field.
-func (o *ConnectorsResponseDataInner) SetDisabled(v bool) {
-	o.Disabled = &v
-}
-
 func (o ConnectorsResponseDataInner) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if !isNil(o.Provider) {
@@ -142,9 +109,6 @@ func (o ConnectorsResponseDataInner) MarshalJSON() ([]byte, error) {
 	}
 	if !isNil(o.Enabled) {
 		toSerialize["enabled"] = o.Enabled
-	}
-	if !isNil(o.Disabled) {
-		toSerialize["disabled"] = o.Disabled
 	}
 	return json.Marshal(toSerialize)
 }

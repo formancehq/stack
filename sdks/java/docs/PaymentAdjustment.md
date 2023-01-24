@@ -7,11 +7,11 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**status** | **PaymentStatus** |  |  [optional] |
-|**amount** | **Long** |  |  [optional] |
-|**date** | **OffsetDateTime** |  |  [optional] |
-|**raw** | **Object** |  |  [optional] |
-|**absolute** | **Boolean** |  |  [optional] |
+|**status** | **PaymentStatus** |  |  |
+|**amount** | **Long** |  |  |
+|**date** | **OffsetDateTime** |  |  |
+|**raw** | **Object** |  |  |
+|**absolute** | **Boolean** |  |  |
 
 
 

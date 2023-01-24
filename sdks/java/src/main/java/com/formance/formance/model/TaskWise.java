@@ -16,7 +16,7 @@ package com.formance.formance.model;
 import java.util.Objects;
 import java.util.Arrays;
 import com.formance.formance.model.PaymentStatus;
-import com.formance.formance.model.TaskWiseDescriptor;
+import com.formance.formance.model.TaskWiseAllOfDescriptor;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -37,9 +37,9 @@ public class TaskWise {
   @SerializedName(SERIALIZED_NAME_ID)
   private UUID id;
 
-  public static final String SERIALIZED_NAME_CONNECTOR_I_D = "connectorID";
-  @SerializedName(SERIALIZED_NAME_CONNECTOR_I_D)
-  private UUID connectorID;
+  public static final String SERIALIZED_NAME_CONNECTOR_ID = "connectorId";
+  @SerializedName(SERIALIZED_NAME_CONNECTOR_ID)
+  private UUID connectorId;
 
   public static final String SERIALIZED_NAME_CREATED_AT = "createdAt";
   @SerializedName(SERIALIZED_NAME_CREATED_AT)
@@ -48,10 +48,6 @@ public class TaskWise {
   public static final String SERIALIZED_NAME_UPDATED_AT = "updatedAt";
   @SerializedName(SERIALIZED_NAME_UPDATED_AT)
   private OffsetDateTime updatedAt;
-
-  public static final String SERIALIZED_NAME_DESCRIPTOR = "descriptor";
-  @SerializedName(SERIALIZED_NAME_DESCRIPTOR)
-  private TaskWiseDescriptor descriptor;
 
   public static final String SERIALIZED_NAME_STATUS = "status";
   @SerializedName(SERIALIZED_NAME_STATUS)
@@ -64,6 +60,10 @@ public class TaskWise {
   public static final String SERIALIZED_NAME_ERROR = "error";
   @SerializedName(SERIALIZED_NAME_ERROR)
   private String error;
+
+  public static final String SERIALIZED_NAME_DESCRIPTOR = "descriptor";
+  @SerializedName(SERIALIZED_NAME_DESCRIPTOR)
+  private TaskWiseAllOfDescriptor descriptor;
 
   public TaskWise() {
   }
@@ -78,8 +78,8 @@ public class TaskWise {
    * Get id
    * @return id
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public UUID getId() {
     return id;
@@ -91,26 +91,26 @@ public class TaskWise {
   }
 
 
-  public TaskWise connectorID(UUID connectorID) {
+  public TaskWise connectorId(UUID connectorId) {
     
-    this.connectorID = connectorID;
+    this.connectorId = connectorId;
     return this;
   }
 
    /**
-   * Get connectorID
-   * @return connectorID
+   * Get connectorId
+   * @return connectorId
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
-  public UUID getConnectorID() {
-    return connectorID;
+  public UUID getConnectorId() {
+    return connectorId;
   }
 
 
-  public void setConnectorID(UUID connectorID) {
-    this.connectorID = connectorID;
+  public void setConnectorId(UUID connectorId) {
+    this.connectorId = connectorId;
   }
 
 
@@ -124,8 +124,8 @@ public class TaskWise {
    * Get createdAt
    * @return createdAt
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public OffsetDateTime getCreatedAt() {
     return createdAt;
@@ -147,8 +147,8 @@ public class TaskWise {
    * Get updatedAt
    * @return updatedAt
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public OffsetDateTime getUpdatedAt() {
     return updatedAt;
@@ -157,29 +157,6 @@ public class TaskWise {
 
   public void setUpdatedAt(OffsetDateTime updatedAt) {
     this.updatedAt = updatedAt;
-  }
-
-
-  public TaskWise descriptor(TaskWiseDescriptor descriptor) {
-    
-    this.descriptor = descriptor;
-    return this;
-  }
-
-   /**
-   * Get descriptor
-   * @return descriptor
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-
-  public TaskWiseDescriptor getDescriptor() {
-    return descriptor;
-  }
-
-
-  public void setDescriptor(TaskWiseDescriptor descriptor) {
-    this.descriptor = descriptor;
   }
 
 
@@ -193,8 +170,8 @@ public class TaskWise {
    * Get status
    * @return status
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public PaymentStatus getStatus() {
     return status;
@@ -216,8 +193,8 @@ public class TaskWise {
    * Get state
    * @return state
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public Object getState() {
     return state;
@@ -252,6 +229,29 @@ public class TaskWise {
   }
 
 
+  public TaskWise descriptor(TaskWiseAllOfDescriptor descriptor) {
+    
+    this.descriptor = descriptor;
+    return this;
+  }
+
+   /**
+   * Get descriptor
+   * @return descriptor
+  **/
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
+
+  public TaskWiseAllOfDescriptor getDescriptor() {
+    return descriptor;
+  }
+
+
+  public void setDescriptor(TaskWiseAllOfDescriptor descriptor) {
+    this.descriptor = descriptor;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -262,18 +262,18 @@ public class TaskWise {
     }
     TaskWise taskWise = (TaskWise) o;
     return Objects.equals(this.id, taskWise.id) &&
-        Objects.equals(this.connectorID, taskWise.connectorID) &&
+        Objects.equals(this.connectorId, taskWise.connectorId) &&
         Objects.equals(this.createdAt, taskWise.createdAt) &&
         Objects.equals(this.updatedAt, taskWise.updatedAt) &&
-        Objects.equals(this.descriptor, taskWise.descriptor) &&
         Objects.equals(this.status, taskWise.status) &&
         Objects.equals(this.state, taskWise.state) &&
-        Objects.equals(this.error, taskWise.error);
+        Objects.equals(this.error, taskWise.error) &&
+        Objects.equals(this.descriptor, taskWise.descriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, connectorID, createdAt, updatedAt, descriptor, status, state, error);
+    return Objects.hash(id, connectorId, createdAt, updatedAt, status, state, error, descriptor);
   }
 
   @Override
@@ -281,13 +281,13 @@ public class TaskWise {
     StringBuilder sb = new StringBuilder();
     sb.append("class TaskWise {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    connectorID: ").append(toIndentedString(connectorID)).append("\n");
+    sb.append("    connectorId: ").append(toIndentedString(connectorId)).append("\n");
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
-    sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("    error: ").append(toIndentedString(error)).append("\n");
+    sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("}");
     return sb.toString();
   }

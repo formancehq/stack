@@ -275,6 +275,9 @@ class ConnectorConfigResponse implements ModelInterface, ArrayAccess, \JsonSeria
     {
         $invalidProperties = [];
 
+        if ($this->container['data'] === null) {
+            $invalidProperties[] = "'data' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -293,7 +296,7 @@ class ConnectorConfigResponse implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Gets data
      *
-     * @return \Formance\Model\ConnectorConfig|null
+     * @return \Formance\Model\ConnectorConfig
      */
     public function getData()
     {
@@ -303,7 +306,7 @@ class ConnectorConfigResponse implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Sets data
      *
-     * @param \Formance\Model\ConnectorConfig|null $data data
+     * @param \Formance\Model\ConnectorConfig $data data
      *
      * @return self
      */

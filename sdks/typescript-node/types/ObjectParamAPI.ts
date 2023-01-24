@@ -4,10 +4,11 @@ import { Configuration} from '../configuration'
 import { Account } from '../models/Account';
 import { AccountResponse } from '../models/AccountResponse';
 import { AccountWithVolumesAndBalances } from '../models/AccountWithVolumesAndBalances';
+import { AccountsCursor } from '../models/AccountsCursor';
+import { AccountsCursorCursor } from '../models/AccountsCursorCursor';
+import { AccountsCursorCursorAllOf } from '../models/AccountsCursorCursorAllOf';
 import { AccountsCursorResponse } from '../models/AccountsCursorResponse';
 import { AccountsCursorResponseCursor } from '../models/AccountsCursorResponseCursor';
-import { AccountsResponse } from '../models/AccountsResponse';
-import { AccountsResponseCursor } from '../models/AccountsResponseCursor';
 import { AggregateBalancesResponse } from '../models/AggregateBalancesResponse';
 import { AssetHolder } from '../models/AssetHolder';
 import { Attempt } from '../models/Attempt';
@@ -47,9 +48,11 @@ import { CreateScopeResponse } from '../models/CreateScopeResponse';
 import { CreateSecretResponse } from '../models/CreateSecretResponse';
 import { CreateWalletRequest } from '../models/CreateWalletRequest';
 import { CreateWalletResponse } from '../models/CreateWalletResponse';
+import { CreateWorkflowResponse } from '../models/CreateWorkflowResponse';
 import { CreditWalletRequest } from '../models/CreditWalletRequest';
 import { CurrencyCloudConfig } from '../models/CurrencyCloudConfig';
 import { Cursor } from '../models/Cursor';
+import { CursorBase } from '../models/CursorBase';
 import { DebitWalletRequest } from '../models/DebitWalletRequest';
 import { DebitWalletResponse } from '../models/DebitWalletResponse';
 import { DummyPayConfig } from '../models/DummyPayConfig';
@@ -66,6 +69,8 @@ import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
 import { GetWalletResponse } from '../models/GetWalletResponse';
+import { GetWorkflowOccurrenceResponse } from '../models/GetWorkflowOccurrenceResponse';
+import { GetWorkflowResponse } from '../models/GetWorkflowResponse';
 import { Hold } from '../models/Hold';
 import { LedgerAccountSubject } from '../models/LedgerAccountSubject';
 import { LedgerInfo } from '../models/LedgerInfo';
@@ -76,17 +81,22 @@ import { ListBalancesResponse } from '../models/ListBalancesResponse';
 import { ListBalancesResponseCursor } from '../models/ListBalancesResponseCursor';
 import { ListBalancesResponseCursorAllOf } from '../models/ListBalancesResponseCursorAllOf';
 import { ListClientsResponse } from '../models/ListClientsResponse';
+import { ListRunsResponse } from '../models/ListRunsResponse';
+import { ListRunsResponseCursor } from '../models/ListRunsResponseCursor';
+import { ListRunsResponseCursorAllOf } from '../models/ListRunsResponseCursorAllOf';
 import { ListScopesResponse } from '../models/ListScopesResponse';
 import { ListUsersResponse } from '../models/ListUsersResponse';
 import { ListWalletsResponse } from '../models/ListWalletsResponse';
 import { ListWalletsResponseCursor } from '../models/ListWalletsResponseCursor';
 import { ListWalletsResponseCursorAllOf } from '../models/ListWalletsResponseCursorAllOf';
+import { ListWorkflowsResponse } from '../models/ListWorkflowsResponse';
 import { Log } from '../models/Log';
 import { LogsCursorResponse } from '../models/LogsCursorResponse';
 import { LogsCursorResponseCursor } from '../models/LogsCursorResponseCursor';
 import { Mapping } from '../models/Mapping';
 import { MappingResponse } from '../models/MappingResponse';
 import { MigrationInfo } from '../models/MigrationInfo';
+import { ModelError } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
 import { Monetary } from '../models/Monetary';
 import { Payment } from '../models/Payment';
@@ -96,15 +106,18 @@ import { PaymentMetadataChangelog } from '../models/PaymentMetadataChangelog';
 import { PaymentResponse } from '../models/PaymentResponse';
 import { PaymentStatus } from '../models/PaymentStatus';
 import { PaymentsAccount } from '../models/PaymentsAccount';
-import { PaymentsResponse } from '../models/PaymentsResponse';
-import { PaymentsResponseCursor } from '../models/PaymentsResponseCursor';
+import { PaymentsCursor } from '../models/PaymentsCursor';
+import { PaymentsCursorCursor } from '../models/PaymentsCursorCursor';
+import { PaymentsCursorCursorAllOf } from '../models/PaymentsCursorCursorAllOf';
 import { PostTransaction } from '../models/PostTransaction';
 import { PostTransactionScript } from '../models/PostTransactionScript';
 import { Posting } from '../models/Posting';
 import { Query } from '../models/Query';
 import { ReadClientResponse } from '../models/ReadClientResponse';
 import { ReadUserResponse } from '../models/ReadUserResponse';
+import { ReadWorkflowResponse } from '../models/ReadWorkflowResponse';
 import { Response } from '../models/Response';
+import { RunWorkflowResponse } from '../models/RunWorkflowResponse';
 import { Scope } from '../models/Scope';
 import { ScopeAllOf } from '../models/ScopeAllOf';
 import { ScopeOptions } from '../models/ScopeOptions';
@@ -114,28 +127,36 @@ import { Secret } from '../models/Secret';
 import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
 import { ServerInfo } from '../models/ServerInfo';
+import { StageStatus } from '../models/StageStatus';
 import { Stats } from '../models/Stats';
 import { StatsResponse } from '../models/StatsResponse';
 import { StripeConfig } from '../models/StripeConfig';
-import { StripeTimelineState } from '../models/StripeTimelineState';
 import { StripeTransferRequest } from '../models/StripeTransferRequest';
 import { Subject } from '../models/Subject';
 import { TaskBankingCircle } from '../models/TaskBankingCircle';
-import { TaskBankingCircleDescriptor } from '../models/TaskBankingCircleDescriptor';
+import { TaskBankingCircleAllOf } from '../models/TaskBankingCircleAllOf';
+import { TaskBankingCircleAllOfDescriptor } from '../models/TaskBankingCircleAllOfDescriptor';
+import { TaskBase } from '../models/TaskBase';
 import { TaskCurrencyCloud } from '../models/TaskCurrencyCloud';
-import { TaskCurrencyCloudDescriptor } from '../models/TaskCurrencyCloudDescriptor';
+import { TaskCurrencyCloudAllOf } from '../models/TaskCurrencyCloudAllOf';
+import { TaskCurrencyCloudAllOfDescriptor } from '../models/TaskCurrencyCloudAllOfDescriptor';
 import { TaskDummyPay } from '../models/TaskDummyPay';
-import { TaskDummyPayDescriptor } from '../models/TaskDummyPayDescriptor';
+import { TaskDummyPayAllOf } from '../models/TaskDummyPayAllOf';
+import { TaskDummyPayAllOfDescriptor } from '../models/TaskDummyPayAllOfDescriptor';
 import { TaskModulr } from '../models/TaskModulr';
-import { TaskModulrDescriptor } from '../models/TaskModulrDescriptor';
+import { TaskModulrAllOf } from '../models/TaskModulrAllOf';
+import { TaskModulrAllOfDescriptor } from '../models/TaskModulrAllOfDescriptor';
 import { TaskResponse } from '../models/TaskResponse';
-import { TaskResponseData } from '../models/TaskResponseData';
 import { TaskStripe } from '../models/TaskStripe';
-import { TaskStripeDescriptor } from '../models/TaskStripeDescriptor';
+import { TaskStripeAllOf } from '../models/TaskStripeAllOf';
+import { TaskStripeAllOfDescriptor } from '../models/TaskStripeAllOfDescriptor';
 import { TaskWise } from '../models/TaskWise';
-import { TaskWiseDescriptor } from '../models/TaskWiseDescriptor';
-import { TasksResponse } from '../models/TasksResponse';
-import { TasksResponseCursor } from '../models/TasksResponseCursor';
+import { TaskWiseAllOf } from '../models/TaskWiseAllOf';
+import { TaskWiseAllOfDescriptor } from '../models/TaskWiseAllOfDescriptor';
+import { TasksCursor } from '../models/TasksCursor';
+import { TasksCursorCursor } from '../models/TasksCursorCursor';
+import { TasksCursorCursorAllOf } from '../models/TasksCursorCursorAllOf';
+import { TasksCursorCursorAllOfDataInner } from '../models/TasksCursorCursorAllOfDataInner';
 import { Total } from '../models/Total';
 import { Transaction } from '../models/Transaction';
 import { TransactionData } from '../models/TransactionData';
@@ -156,6 +177,9 @@ import { WalletsTransaction } from '../models/WalletsTransaction';
 import { WalletsVolume } from '../models/WalletsVolume';
 import { WebhooksConfig } from '../models/WebhooksConfig';
 import { WiseConfig } from '../models/WiseConfig';
+import { Workflow } from '../models/Workflow';
+import { WorkflowConfig } from '../models/WorkflowConfig';
+import { WorkflowOccurrence } from '../models/WorkflowOccurrence';
 
 import { ObservableAccountsApi } from "./ObservableAPI";
 import { AccountsApiRequestFactory, AccountsApiResponseProcessor} from "../apis/AccountsApi";
@@ -803,6 +827,149 @@ export class ObjectMappingApi {
 
 }
 
+import { ObservableOrchestrationApi } from "./ObservableAPI";
+import { OrchestrationApiRequestFactory, OrchestrationApiResponseProcessor} from "../apis/OrchestrationApi";
+
+export interface OrchestrationApiCreateWorkflowRequest {
+    /**
+     * 
+     * @type WorkflowConfig
+     * @memberof OrchestrationApicreateWorkflow
+     */
+    body?: WorkflowConfig
+}
+
+export interface OrchestrationApiGetFlowRequest {
+    /**
+     * The flow id
+     * @type string
+     * @memberof OrchestrationApigetFlow
+     */
+    flowId: string
+}
+
+export interface OrchestrationApiGetWorkflowOccurrenceRequest {
+    /**
+     * The flow id
+     * @type string
+     * @memberof OrchestrationApigetWorkflowOccurrence
+     */
+    flowId: string
+    /**
+     * The occurrence id
+     * @type string
+     * @memberof OrchestrationApigetWorkflowOccurrence
+     */
+    runId: string
+}
+
+export interface OrchestrationApiListFlowsRequest {
+}
+
+export interface OrchestrationApiListRunsRequest {
+    /**
+     * The flow id
+     * @type string
+     * @memberof OrchestrationApilistRuns
+     */
+    flowId: string
+}
+
+export interface OrchestrationApiOrchestrationgetServerInfoRequest {
+}
+
+export interface OrchestrationApiRunWorkflowRequest {
+    /**
+     * The flow id
+     * @type string
+     * @memberof OrchestrationApirunWorkflow
+     */
+    flowId: string
+    /**
+     * Wait end of the workflow before return
+     * @type boolean
+     * @memberof OrchestrationApirunWorkflow
+     */
+    wait?: boolean
+    /**
+     * 
+     * @type { [key: string]: string; }
+     * @memberof OrchestrationApirunWorkflow
+     */
+    requestBody?: { [key: string]: string; }
+}
+
+export class ObjectOrchestrationApi {
+    private api: ObservableOrchestrationApi
+
+    public constructor(configuration: Configuration, requestFactory?: OrchestrationApiRequestFactory, responseProcessor?: OrchestrationApiResponseProcessor) {
+        this.api = new ObservableOrchestrationApi(configuration, requestFactory, responseProcessor);
+    }
+
+    /**
+     * Create a workflow
+     * Create workflow
+     * @param param the request object
+     */
+    public createWorkflow(param: OrchestrationApiCreateWorkflowRequest = {}, options?: Configuration): Promise<CreateWorkflowResponse> {
+        return this.api.createWorkflow(param.body,  options).toPromise();
+    }
+
+    /**
+     * Get a flow by id
+     * Get a flow by id
+     * @param param the request object
+     */
+    public getFlow(param: OrchestrationApiGetFlowRequest, options?: Configuration): Promise<GetWorkflowResponse> {
+        return this.api.getFlow(param.flowId,  options).toPromise();
+    }
+
+    /**
+     * Get a workflow occurrence by id
+     * Get a workflow occurrence by id
+     * @param param the request object
+     */
+    public getWorkflowOccurrence(param: OrchestrationApiGetWorkflowOccurrenceRequest, options?: Configuration): Promise<GetWorkflowOccurrenceResponse> {
+        return this.api.getWorkflowOccurrence(param.flowId, param.runId,  options).toPromise();
+    }
+
+    /**
+     * List registered flows
+     * List registered flows
+     * @param param the request object
+     */
+    public listFlows(param: OrchestrationApiListFlowsRequest = {}, options?: Configuration): Promise<ListWorkflowsResponse> {
+        return this.api.listFlows( options).toPromise();
+    }
+
+    /**
+     * List occurrences of a workflow
+     * List occurrences of a workflow
+     * @param param the request object
+     */
+    public listRuns(param: OrchestrationApiListRunsRequest, options?: Configuration): Promise<ListRunsResponse> {
+        return this.api.listRuns(param.flowId,  options).toPromise();
+    }
+
+    /**
+     * Get server info
+     * @param param the request object
+     */
+    public orchestrationgetServerInfo(param: OrchestrationApiOrchestrationgetServerInfoRequest = {}, options?: Configuration): Promise<ServerInfo> {
+        return this.api.orchestrationgetServerInfo( options).toPromise();
+    }
+
+    /**
+     * Run workflow
+     * Run workflow
+     * @param param the request object
+     */
+    public runWorkflow(param: OrchestrationApiRunWorkflowRequest, options?: Configuration): Promise<RunWorkflowResponse> {
+        return this.api.runWorkflow(param.flowId, param.wait, param.requestBody,  options).toPromise();
+    }
+
+}
+
 import { ObservablePaymentsApi } from "./ObservableAPI";
 import { PaymentsApiRequestFactory, PaymentsApiResponseProcessor} from "../apis/PaymentsApi";
 
@@ -904,19 +1071,19 @@ export interface PaymentsApiListPaymentsRequest {
 
 export interface PaymentsApiPaymentslistAccountsRequest {
     /**
-     * Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. 
+     * The maximum number of results to return per page. 
      * @type number
      * @memberof PaymentsApipaymentslistAccounts
      */
-    limit?: number
+    pageSize?: number
     /**
-     * How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. 
-     * @type number
+     * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
+     * @type string
      * @memberof PaymentsApipaymentslistAccounts
      */
-    skip?: number
+    cursor?: string
     /**
-     * Field used to sort payments (Default is by date).
+     * Fields used to sort payments (default is date:desc).
      * @type Array&lt;string&gt;
      * @memberof PaymentsApipaymentslistAccounts
      */
@@ -1015,7 +1182,7 @@ export class ObjectPaymentsApi {
      * List tasks from a connector
      * @param param the request object
      */
-    public listConnectorTasks(param: PaymentsApiListConnectorTasksRequest, options?: Configuration): Promise<TasksResponse> {
+    public listConnectorTasks(param: PaymentsApiListConnectorTasksRequest, options?: Configuration): Promise<TasksCursor> {
         return this.api.listConnectorTasks(param.connector, param.pageSize, param.cursor,  options).toPromise();
     }
 
@@ -1023,7 +1190,7 @@ export class ObjectPaymentsApi {
      * List payments
      * @param param the request object
      */
-    public listPayments(param: PaymentsApiListPaymentsRequest = {}, options?: Configuration): Promise<PaymentsResponse> {
+    public listPayments(param: PaymentsApiListPaymentsRequest = {}, options?: Configuration): Promise<PaymentsCursor> {
         return this.api.listPayments(param.pageSize, param.cursor, param.sort,  options).toPromise();
     }
 
@@ -1031,8 +1198,8 @@ export class ObjectPaymentsApi {
      * List accounts
      * @param param the request object
      */
-    public paymentslistAccounts(param: PaymentsApiPaymentslistAccountsRequest = {}, options?: Configuration): Promise<AccountsResponse> {
-        return this.api.paymentslistAccounts(param.limit, param.skip, param.sort,  options).toPromise();
+    public paymentslistAccounts(param: PaymentsApiPaymentslistAccountsRequest = {}, options?: Configuration): Promise<AccountsCursor> {
+        return this.api.paymentslistAccounts(param.pageSize, param.cursor, param.sort,  options).toPromise();
     }
 
     /**

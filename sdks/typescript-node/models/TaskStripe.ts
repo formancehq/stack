@@ -11,18 +11,18 @@
  */
 
 import { PaymentStatus } from '../models/PaymentStatus';
-import { TaskStripeDescriptor } from '../models/TaskStripeDescriptor';
+import { TaskStripeAllOfDescriptor } from '../models/TaskStripeAllOfDescriptor';
 import { HttpFile } from '../http/http';
 
 export class TaskStripe {
-    'id'?: string;
-    'connectorID'?: string;
-    'createdAt'?: Date;
-    'updatedAt'?: Date;
-    'descriptor'?: TaskStripeDescriptor;
-    'status'?: PaymentStatus;
-    'state'?: any;
+    'id': string;
+    'connectorId': string;
+    'createdAt': Date;
+    'updatedAt': Date;
+    'status': PaymentStatus;
+    'state': any;
     'error'?: string;
+    'descriptor': TaskStripeAllOfDescriptor;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -34,8 +34,8 @@ export class TaskStripe {
             "format": "uuid"
         },
         {
-            "name": "connectorID",
-            "baseName": "connectorID",
+            "name": "connectorId",
+            "baseName": "connectorId",
             "type": "string",
             "format": "uuid"
         },
@@ -50,12 +50,6 @@ export class TaskStripe {
             "baseName": "updatedAt",
             "type": "Date",
             "format": "date-time"
-        },
-        {
-            "name": "descriptor",
-            "baseName": "descriptor",
-            "type": "TaskStripeDescriptor",
-            "format": ""
         },
         {
             "name": "status",
@@ -73,6 +67,12 @@ export class TaskStripe {
             "name": "error",
             "baseName": "error",
             "type": "string",
+            "format": ""
+        },
+        {
+            "name": "descriptor",
+            "baseName": "descriptor",
+            "type": "TaskStripeAllOfDescriptor",
             "format": ""
         }    ];
 

@@ -47,8 +47,8 @@ public class PaymentResponse {
    * Get data
    * @return data
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public Payment getData() {
     return data;

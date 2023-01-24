@@ -62,10 +62,10 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
         'connector_id' => 'string',
         'created_at' => '\DateTime',
         'updated_at' => '\DateTime',
-        'descriptor' => '\Formance\Model\TaskDummyPayDescriptor',
         'status' => '\Formance\Model\PaymentStatus',
         'state' => 'object',
-        'error' => 'string'
+        'error' => 'string',
+        'descriptor' => '\Formance\Model\TaskDummyPayAllOfDescriptor'
     ];
 
     /**
@@ -80,10 +80,10 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
         'connector_id' => 'uuid',
         'created_at' => 'date-time',
         'updated_at' => 'date-time',
-        'descriptor' => null,
         'status' => null,
         'state' => null,
-        'error' => null
+        'error' => null,
+        'descriptor' => null
     ];
 
     /**
@@ -96,10 +96,10 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
 		'connector_id' => false,
 		'created_at' => false,
 		'updated_at' => false,
-		'descriptor' => false,
 		'status' => false,
 		'state' => false,
-		'error' => false
+		'error' => false,
+		'descriptor' => false
     ];
 
     /**
@@ -189,13 +189,13 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     protected static $attributeMap = [
         'id' => 'id',
-        'connector_id' => 'connectorID',
+        'connector_id' => 'connectorId',
         'created_at' => 'createdAt',
         'updated_at' => 'updatedAt',
-        'descriptor' => 'descriptor',
         'status' => 'status',
         'state' => 'state',
-        'error' => 'error'
+        'error' => 'error',
+        'descriptor' => 'descriptor'
     ];
 
     /**
@@ -208,10 +208,10 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
         'connector_id' => 'setConnectorId',
         'created_at' => 'setCreatedAt',
         'updated_at' => 'setUpdatedAt',
-        'descriptor' => 'setDescriptor',
         'status' => 'setStatus',
         'state' => 'setState',
-        'error' => 'setError'
+        'error' => 'setError',
+        'descriptor' => 'setDescriptor'
     ];
 
     /**
@@ -224,10 +224,10 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
         'connector_id' => 'getConnectorId',
         'created_at' => 'getCreatedAt',
         'updated_at' => 'getUpdatedAt',
-        'descriptor' => 'getDescriptor',
         'status' => 'getStatus',
         'state' => 'getState',
-        'error' => 'getError'
+        'error' => 'getError',
+        'descriptor' => 'getDescriptor'
     ];
 
     /**
@@ -291,10 +291,10 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('connector_id', $data ?? [], null);
         $this->setIfExists('created_at', $data ?? [], null);
         $this->setIfExists('updated_at', $data ?? [], null);
-        $this->setIfExists('descriptor', $data ?? [], null);
         $this->setIfExists('status', $data ?? [], null);
         $this->setIfExists('state', $data ?? [], null);
         $this->setIfExists('error', $data ?? [], null);
+        $this->setIfExists('descriptor', $data ?? [], null);
     }
 
     /**
@@ -324,6 +324,27 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
+        }
+        if ($this->container['connector_id'] === null) {
+            $invalidProperties[] = "'connector_id' can't be null";
+        }
+        if ($this->container['created_at'] === null) {
+            $invalidProperties[] = "'created_at' can't be null";
+        }
+        if ($this->container['updated_at'] === null) {
+            $invalidProperties[] = "'updated_at' can't be null";
+        }
+        if ($this->container['status'] === null) {
+            $invalidProperties[] = "'status' can't be null";
+        }
+        if ($this->container['state'] === null) {
+            $invalidProperties[] = "'state' can't be null";
+        }
+        if ($this->container['descriptor'] === null) {
+            $invalidProperties[] = "'descriptor' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -342,7 +363,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets id
      *
-     * @return string|null
+     * @return string
      */
     public function getId()
     {
@@ -352,7 +373,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets id
      *
-     * @param string|null $id id
+     * @param string $id id
      *
      * @return self
      */
@@ -371,7 +392,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets connector_id
      *
-     * @return string|null
+     * @return string
      */
     public function getConnectorId()
     {
@@ -381,7 +402,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets connector_id
      *
-     * @param string|null $connector_id connector_id
+     * @param string $connector_id connector_id
      *
      * @return self
      */
@@ -400,7 +421,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets created_at
      *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -410,7 +431,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets created_at
      *
-     * @param \DateTime|null $created_at created_at
+     * @param \DateTime $created_at created_at
      *
      * @return self
      */
@@ -429,7 +450,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets updated_at
      *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getUpdatedAt()
     {
@@ -439,7 +460,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets updated_at
      *
-     * @param \DateTime|null $updated_at updated_at
+     * @param \DateTime $updated_at updated_at
      *
      * @return self
      */
@@ -456,38 +477,9 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     }
 
     /**
-     * Gets descriptor
-     *
-     * @return \Formance\Model\TaskDummyPayDescriptor|null
-     */
-    public function getDescriptor()
-    {
-        return $this->container['descriptor'];
-    }
-
-    /**
-     * Sets descriptor
-     *
-     * @param \Formance\Model\TaskDummyPayDescriptor|null $descriptor descriptor
-     *
-     * @return self
-     */
-    public function setDescriptor($descriptor)
-    {
-
-        if (is_null($descriptor)) {
-            throw new \InvalidArgumentException('non-nullable descriptor cannot be null');
-        }
-
-        $this->container['descriptor'] = $descriptor;
-
-        return $this;
-    }
-
-    /**
      * Gets status
      *
-     * @return \Formance\Model\PaymentStatus|null
+     * @return \Formance\Model\PaymentStatus
      */
     public function getStatus()
     {
@@ -497,7 +489,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets status
      *
-     * @param \Formance\Model\PaymentStatus|null $status status
+     * @param \Formance\Model\PaymentStatus $status status
      *
      * @return self
      */
@@ -516,7 +508,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets state
      *
-     * @return object|null
+     * @return object
      */
     public function getState()
     {
@@ -526,7 +518,7 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets state
      *
-     * @param object|null $state state
+     * @param object $state state
      *
      * @return self
      */
@@ -567,6 +559,35 @@ class TaskDummyPay implements ModelInterface, ArrayAccess, \JsonSerializable
         }
 
         $this->container['error'] = $error;
+
+        return $this;
+    }
+
+    /**
+     * Gets descriptor
+     *
+     * @return \Formance\Model\TaskDummyPayAllOfDescriptor
+     */
+    public function getDescriptor()
+    {
+        return $this->container['descriptor'];
+    }
+
+    /**
+     * Sets descriptor
+     *
+     * @param \Formance\Model\TaskDummyPayAllOfDescriptor $descriptor descriptor
+     *
+     * @return self
+     */
+    public function setDescriptor($descriptor)
+    {
+
+        if (is_null($descriptor)) {
+            throw new \InvalidArgumentException('non-nullable descriptor cannot be null');
+        }
+
+        $this->container['descriptor'] = $descriptor;
 
         return $this;
     }

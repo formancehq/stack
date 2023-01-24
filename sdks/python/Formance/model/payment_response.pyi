@@ -35,48 +35,53 @@ class PaymentResponse(
 
 
     class MetaOapg:
+        required = {
+            "data",
+        }
         
         class properties:
         
             @staticmethod
-            def items() -> typing.Type['Payment']:
+            def data() -> typing.Type['Payment']:
                 return Payment
             __annotations__ = {
-                "items": items,
+                "data": data,
             }
     
+    data: 'Payment'
+    
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["items"]) -> 'Payment': ...
+    def __getitem__(self, name: typing_extensions.Literal["data"]) -> 'Payment': ...
     
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["items", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["data", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["items"]) -> typing.Union['Payment', schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["data"]) -> 'Payment': ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["items", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["data", ], str]):
         return super().get_item_oapg(name)
     
 
     def __new__(
         cls,
         *args: typing.Union[dict, frozendict.frozendict, ],
-        items: typing.Union['Payment', schemas.Unset] = schemas.unset,
+        data: 'Payment',
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'PaymentResponse':
         return super().__new__(
             cls,
             *args,
-            items=items,
+            data=data,
             _configuration=_configuration,
             **kwargs,
         )

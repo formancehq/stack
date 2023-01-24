@@ -35,6 +35,10 @@ class PaymentMetadataChangelog(
 
 
     class MetaOapg:
+        required = {
+            "value",
+            "timestamp",
+        }
         
         class properties:
             timestamp = schemas.DateTimeSchema
@@ -43,6 +47,9 @@ class PaymentMetadataChangelog(
                 "timestamp": timestamp,
                 "value": value,
             }
+    
+    value: MetaOapg.properties.value
+    timestamp: MetaOapg.properties.timestamp
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["timestamp"]) -> MetaOapg.properties.timestamp: ...
@@ -59,10 +66,10 @@ class PaymentMetadataChangelog(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["timestamp"]) -> typing.Union[MetaOapg.properties.timestamp, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["timestamp"]) -> MetaOapg.properties.timestamp: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["value"]) -> typing.Union[MetaOapg.properties.value, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["value"]) -> MetaOapg.properties.value: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -74,16 +81,16 @@ class PaymentMetadataChangelog(
     def __new__(
         cls,
         *args: typing.Union[dict, frozendict.frozendict, ],
-        timestamp: typing.Union[MetaOapg.properties.timestamp, str, datetime, schemas.Unset] = schemas.unset,
-        value: typing.Union[MetaOapg.properties.value, str, schemas.Unset] = schemas.unset,
+        value: typing.Union[MetaOapg.properties.value, str, ],
+        timestamp: typing.Union[MetaOapg.properties.timestamp, str, datetime, ],
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'PaymentMetadataChangelog':
         return super().__new__(
             cls,
             *args,
-            timestamp=timestamp,
             value=value,
+            timestamp=timestamp,
             _configuration=_configuration,
             **kwargs,
         )

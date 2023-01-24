@@ -63,11 +63,9 @@ class ConnectorsResponse(
                                 def provider() -> typing.Type['Connector']:
                                     return Connector
                                 enabled = schemas.BoolSchema
-                                disabled = schemas.BoolSchema
                                 __annotations__ = {
                                     "provider": provider,
                                     "enabled": enabled,
-                                    "disabled": disabled,
                                 }
                         
                         @typing.overload
@@ -77,12 +75,9 @@ class ConnectorsResponse(
                         def __getitem__(self, name: typing_extensions.Literal["enabled"]) -> MetaOapg.properties.enabled: ...
                         
                         @typing.overload
-                        def __getitem__(self, name: typing_extensions.Literal["disabled"]) -> MetaOapg.properties.disabled: ...
-                        
-                        @typing.overload
                         def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
                         
-                        def __getitem__(self, name: typing.Union[typing_extensions.Literal["provider", "enabled", "disabled", ], str]):
+                        def __getitem__(self, name: typing.Union[typing_extensions.Literal["provider", "enabled", ], str]):
                             # dict_instance[name] accessor
                             return super().__getitem__(name)
                         
@@ -94,12 +89,9 @@ class ConnectorsResponse(
                         def get_item_oapg(self, name: typing_extensions.Literal["enabled"]) -> typing.Union[MetaOapg.properties.enabled, schemas.Unset]: ...
                         
                         @typing.overload
-                        def get_item_oapg(self, name: typing_extensions.Literal["disabled"]) -> typing.Union[MetaOapg.properties.disabled, schemas.Unset]: ...
-                        
-                        @typing.overload
                         def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
                         
-                        def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["provider", "enabled", "disabled", ], str]):
+                        def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["provider", "enabled", ], str]):
                             return super().get_item_oapg(name)
                         
                     
@@ -108,7 +100,6 @@ class ConnectorsResponse(
                             *args: typing.Union[dict, frozendict.frozendict, ],
                             provider: typing.Union['Connector', schemas.Unset] = schemas.unset,
                             enabled: typing.Union[MetaOapg.properties.enabled, bool, schemas.Unset] = schemas.unset,
-                            disabled: typing.Union[MetaOapg.properties.disabled, bool, schemas.Unset] = schemas.unset,
                             _configuration: typing.Optional[schemas.Configuration] = None,
                             **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                         ) -> 'items':
@@ -117,7 +108,6 @@ class ConnectorsResponse(
                                 *args,
                                 provider=provider,
                                 enabled=enabled,
-                                disabled=disabled,
                                 _configuration=_configuration,
                                 **kwargs,
                             )

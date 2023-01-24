@@ -25,8 +25,8 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.tasks_response import TasksResponse
 from Formance.model.connector import Connector
+from Formance.model.tasks_cursor import TasksCursor
 
 from . import path
 
@@ -103,7 +103,7 @@ request_path_connector = api_client.PathParameter(
 _auth = [
     'Authorization',
 ]
-SchemaFor200ResponseBodyApplicationJson = TasksResponse
+SchemaFor200ResponseBodyApplicationJson = TasksCursor
 
 
 @dataclass

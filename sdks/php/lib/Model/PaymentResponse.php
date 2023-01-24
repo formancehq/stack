@@ -275,6 +275,9 @@ class PaymentResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
+        if ($this->container['data'] === null) {
+            $invalidProperties[] = "'data' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -293,7 +296,7 @@ class PaymentResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets data
      *
-     * @return \Formance\Model\Payment|null
+     * @return \Formance\Model\Payment
      */
     public function getData()
     {
@@ -303,7 +306,7 @@ class PaymentResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets data
      *
-     * @param \Formance\Model\Payment|null $data data
+     * @param \Formance\Model\Payment $data data
      *
      * @return self
      */

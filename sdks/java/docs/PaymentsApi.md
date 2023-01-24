@@ -301,7 +301,7 @@ null (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **204** | OK |  -  |
+| **204** | No content |  -  |
 
 
 ## listAllConnectors
@@ -440,7 +440,7 @@ This endpoint does not need any parameter.
 
 ## listConnectorTasks
 
-> TasksResponse listConnectorTasks(connector, pageSize, cursor)
+> TasksCursor listConnectorTasks(connector, pageSize, cursor)
 
 List tasks from a connector
 
@@ -471,7 +471,7 @@ public class Example {
         Long pageSize = 15L; // Long | The maximum number of results to return per page. 
         String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
         try {
-            TasksResponse result = apiInstance.listConnectorTasks(connector, pageSize, cursor);
+            TasksCursor result = apiInstance.listConnectorTasks(connector, pageSize, cursor);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PaymentsApi#listConnectorTasks");
@@ -495,7 +495,7 @@ public class Example {
 
 ### Return type
 
-[**TasksResponse**](TasksResponse.md)
+[**TasksCursor**](TasksCursor.md)
 
 ### Authorization
 
@@ -515,7 +515,7 @@ public class Example {
 
 ## listPayments
 
-> PaymentsResponse listPayments(pageSize, cursor, sort)
+> PaymentsCursor listPayments(pageSize, cursor, sort)
 
 List payments
 
@@ -544,7 +544,7 @@ public class Example {
         String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
         List<String> sort = Arrays.asList(); // List<String> | Fields used to sort payments (default is date:desc).
         try {
-            PaymentsResponse result = apiInstance.listPayments(pageSize, cursor, sort);
+            PaymentsCursor result = apiInstance.listPayments(pageSize, cursor, sort);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PaymentsApi#listPayments");
@@ -568,7 +568,7 @@ public class Example {
 
 ### Return type
 
-[**PaymentsResponse**](PaymentsResponse.md)
+[**PaymentsCursor**](PaymentsCursor.md)
 
 ### Authorization
 
@@ -588,7 +588,7 @@ public class Example {
 
 ## paymentslistAccounts
 
-> AccountsResponse paymentslistAccounts(limit, skip, sort)
+> AccountsCursor paymentslistAccounts(pageSize, cursor, sort)
 
 List accounts
 
@@ -613,11 +613,11 @@ public class Example {
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
-        Long limit = 10L; // Long | Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter. 
-        Long skip = 100L; // Long | How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter. 
-        List<String> sort = Arrays.asList(); // List<String> | Field used to sort payments (Default is by date).
+        Long pageSize = 15L; // Long | The maximum number of results to return per page. 
+        String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
+        List<String> sort = Arrays.asList(); // List<String> | Fields used to sort payments (default is date:desc).
         try {
-            AccountsResponse result = apiInstance.paymentslistAccounts(limit, skip, sort);
+            AccountsCursor result = apiInstance.paymentslistAccounts(pageSize, cursor, sort);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling PaymentsApi#paymentslistAccounts");
@@ -635,13 +635,13 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **limit** | **Long**| Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter.  | [optional] |
-| **skip** | **Long**| How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter.  | [optional] |
-| **sort** | [**List&lt;String&gt;**](String.md)| Field used to sort payments (Default is by date). | [optional] |
+| **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] [default to 15] |
+| **cursor** | **String**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | [optional] |
+| **sort** | [**List&lt;String&gt;**](String.md)| Fields used to sort payments (default is date:desc). | [optional] |
 
 ### Return type
 
-[**AccountsResponse**](AccountsResponse.md)
+[**AccountsCursor**](AccountsCursor.md)
 
 ### Authorization
 
@@ -797,7 +797,7 @@ null (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **204** | OK |  -  |
+| **204** | No content |  -  |
 
 
 ## uninstallConnector
@@ -867,5 +867,5 @@ null (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **204** | OK |  -  |
+| **204** | No content |  -  |
 

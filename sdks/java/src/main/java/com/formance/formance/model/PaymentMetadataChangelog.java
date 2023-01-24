@@ -51,8 +51,8 @@ public class PaymentMetadataChangelog {
    * Get timestamp
    * @return timestamp
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public OffsetDateTime getTimestamp() {
     return timestamp;
@@ -74,8 +74,8 @@ public class PaymentMetadataChangelog {
    * Get value
    * @return value
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public String getValue() {
     return value;

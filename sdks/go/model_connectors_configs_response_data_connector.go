@@ -17,15 +17,16 @@ import (
 
 // ConnectorsConfigsResponseDataConnector struct for ConnectorsConfigsResponseDataConnector
 type ConnectorsConfigsResponseDataConnector struct {
-	Key *ConnectorsConfigsResponseDataConnectorKey `json:"key,omitempty"`
+	Key ConnectorsConfigsResponseDataConnectorKey `json:"key"`
 }
 
 // NewConnectorsConfigsResponseDataConnector instantiates a new ConnectorsConfigsResponseDataConnector object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConnectorsConfigsResponseDataConnector() *ConnectorsConfigsResponseDataConnector {
+func NewConnectorsConfigsResponseDataConnector(key ConnectorsConfigsResponseDataConnectorKey) *ConnectorsConfigsResponseDataConnector {
 	this := ConnectorsConfigsResponseDataConnector{}
+	this.Key = key
 	return &this
 }
 
@@ -37,41 +38,33 @@ func NewConnectorsConfigsResponseDataConnectorWithDefaults() *ConnectorsConfigsR
 	return &this
 }
 
-// GetKey returns the Key field value if set, zero value otherwise.
+// GetKey returns the Key field value
 func (o *ConnectorsConfigsResponseDataConnector) GetKey() ConnectorsConfigsResponseDataConnectorKey {
-	if o == nil || isNil(o.Key) {
+	if o == nil {
 		var ret ConnectorsConfigsResponseDataConnectorKey
 		return ret
 	}
-	return *o.Key
+
+	return o.Key
 }
 
-// GetKeyOk returns a tuple with the Key field value if set, nil otherwise
+// GetKeyOk returns a tuple with the Key field value
 // and a boolean to check if the value has been set.
 func (o *ConnectorsConfigsResponseDataConnector) GetKeyOk() (*ConnectorsConfigsResponseDataConnectorKey, bool) {
-	if o == nil || isNil(o.Key) {
+	if o == nil {
     return nil, false
 	}
-	return o.Key, true
+	return &o.Key, true
 }
 
-// HasKey returns a boolean if a field has been set.
-func (o *ConnectorsConfigsResponseDataConnector) HasKey() bool {
-	if o != nil && !isNil(o.Key) {
-		return true
-	}
-
-	return false
-}
-
-// SetKey gets a reference to the given ConnectorsConfigsResponseDataConnectorKey and assigns it to the Key field.
+// SetKey sets field value
 func (o *ConnectorsConfigsResponseDataConnector) SetKey(v ConnectorsConfigsResponseDataConnectorKey) {
-	o.Key = &v
+	o.Key = v
 }
 
 func (o ConnectorsConfigsResponseDataConnector) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Key) {
+	if true {
 		toSerialize["key"] = o.Key
 	}
 	return json.Marshal(toSerialize)

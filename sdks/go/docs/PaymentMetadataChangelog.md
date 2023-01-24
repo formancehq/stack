@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Timestamp** | Pointer to **time.Time** |  | [optional] 
-**Value** | Pointer to **string** |  | [optional] 
+**Timestamp** | **time.Time** |  | 
+**Value** | **string** |  | 
 
 ## Methods
 
 ### NewPaymentMetadataChangelog
 
-`func NewPaymentMetadataChangelog() *PaymentMetadataChangelog`
+`func NewPaymentMetadataChangelog(timestamp time.Time, value string, ) *PaymentMetadataChangelog`
 
 NewPaymentMetadataChangelog instantiates a new PaymentMetadataChangelog object
 This constructor will assign default values to properties that have it defined,
@@ -45,11 +45,6 @@ and a boolean to check if the value has been set.
 
 SetTimestamp sets Timestamp field to given value.
 
-### HasTimestamp
-
-`func (o *PaymentMetadataChangelog) HasTimestamp() bool`
-
-HasTimestamp returns a boolean if a field has been set.
 
 ### GetValue
 
@@ -70,11 +65,6 @@ and a boolean to check if the value has been set.
 
 SetValue sets Value field to given value.
 
-### HasValue
-
-`func (o *PaymentMetadataChangelog) HasValue() bool`
-
-HasValue returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

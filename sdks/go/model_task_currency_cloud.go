@@ -13,27 +13,33 @@ package formance
 
 import (
 	"encoding/json"
-	"time"
 )
 
 // TaskCurrencyCloud struct for TaskCurrencyCloud
 type TaskCurrencyCloud struct {
-	Id *string `json:"id,omitempty"`
-	ConnectorID *string `json:"connectorID,omitempty"`
-	CreatedAt *time.Time `json:"createdAt,omitempty"`
-	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
-	Descriptor *TaskCurrencyCloudDescriptor `json:"descriptor,omitempty"`
-	Status *PaymentStatus `json:"status,omitempty"`
-	State map[string]interface{} `json:"state,omitempty"`
+	Id string `json:"id"`
+	ConnectorId string `json:"connectorId"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Status PaymentStatus `json:"status"`
+	State map[string]interface{} `json:"state"`
 	Error *string `json:"error,omitempty"`
+	Descriptor TaskCurrencyCloudAllOfDescriptor `json:"descriptor"`
 }
 
 // NewTaskCurrencyCloud instantiates a new TaskCurrencyCloud object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTaskCurrencyCloud() *TaskCurrencyCloud {
+func NewTaskCurrencyCloud(id string, connectorId string, createdAt time.Time, updatedAt time.Time, status PaymentStatus, state map[string]interface{}, descriptor TaskCurrencyCloudAllOfDescriptor) *TaskCurrencyCloud {
 	this := TaskCurrencyCloud{}
+	this.Id = id
+	this.ConnectorId = connectorId
+	this.CreatedAt = createdAt
+	this.UpdatedAt = updatedAt
+	this.Status = status
+	this.State = state
+	this.Descriptor = descriptor
 	return &this
 }
 
@@ -45,226 +51,146 @@ func NewTaskCurrencyCloudWithDefaults() *TaskCurrencyCloud {
 	return &this
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
+// GetId returns the Id field value
 func (o *TaskCurrencyCloud) GetId() string {
-	if o == nil || isNil(o.Id) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Id
+
+	return o.Id
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
 func (o *TaskCurrencyCloud) GetIdOk() (*string, bool) {
-	if o == nil || isNil(o.Id) {
+	if o == nil {
     return nil, false
 	}
-	return o.Id, true
+	return &o.Id, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *TaskCurrencyCloud) HasId() bool {
-	if o != nil && !isNil(o.Id) {
-		return true
-	}
-
-	return false
-}
-
-// SetId gets a reference to the given string and assigns it to the Id field.
+// SetId sets field value
 func (o *TaskCurrencyCloud) SetId(v string) {
-	o.Id = &v
+	o.Id = v
 }
 
-// GetConnectorID returns the ConnectorID field value if set, zero value otherwise.
-func (o *TaskCurrencyCloud) GetConnectorID() string {
-	if o == nil || isNil(o.ConnectorID) {
+// GetConnectorId returns the ConnectorId field value
+func (o *TaskCurrencyCloud) GetConnectorId() string {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.ConnectorID
+
+	return o.ConnectorId
 }
 
-// GetConnectorIDOk returns a tuple with the ConnectorID field value if set, nil otherwise
+// GetConnectorIdOk returns a tuple with the ConnectorId field value
 // and a boolean to check if the value has been set.
-func (o *TaskCurrencyCloud) GetConnectorIDOk() (*string, bool) {
-	if o == nil || isNil(o.ConnectorID) {
+func (o *TaskCurrencyCloud) GetConnectorIdOk() (*string, bool) {
+	if o == nil {
     return nil, false
 	}
-	return o.ConnectorID, true
+	return &o.ConnectorId, true
 }
 
-// HasConnectorID returns a boolean if a field has been set.
-func (o *TaskCurrencyCloud) HasConnectorID() bool {
-	if o != nil && !isNil(o.ConnectorID) {
-		return true
-	}
-
-	return false
+// SetConnectorId sets field value
+func (o *TaskCurrencyCloud) SetConnectorId(v string) {
+	o.ConnectorId = v
 }
 
-// SetConnectorID gets a reference to the given string and assigns it to the ConnectorID field.
-func (o *TaskCurrencyCloud) SetConnectorID(v string) {
-	o.ConnectorID = &v
-}
-
-// GetCreatedAt returns the CreatedAt field value if set, zero value otherwise.
+// GetCreatedAt returns the CreatedAt field value
 func (o *TaskCurrencyCloud) GetCreatedAt() time.Time {
-	if o == nil || isNil(o.CreatedAt) {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}
-	return *o.CreatedAt
+
+	return o.CreatedAt
 }
 
-// GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
 func (o *TaskCurrencyCloud) GetCreatedAtOk() (*time.Time, bool) {
-	if o == nil || isNil(o.CreatedAt) {
+	if o == nil {
     return nil, false
 	}
-	return o.CreatedAt, true
+	return &o.CreatedAt, true
 }
 
-// HasCreatedAt returns a boolean if a field has been set.
-func (o *TaskCurrencyCloud) HasCreatedAt() bool {
-	if o != nil && !isNil(o.CreatedAt) {
-		return true
-	}
-
-	return false
-}
-
-// SetCreatedAt gets a reference to the given time.Time and assigns it to the CreatedAt field.
+// SetCreatedAt sets field value
 func (o *TaskCurrencyCloud) SetCreatedAt(v time.Time) {
-	o.CreatedAt = &v
+	o.CreatedAt = v
 }
 
-// GetUpdatedAt returns the UpdatedAt field value if set, zero value otherwise.
+// GetUpdatedAt returns the UpdatedAt field value
 func (o *TaskCurrencyCloud) GetUpdatedAt() time.Time {
-	if o == nil || isNil(o.UpdatedAt) {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}
-	return *o.UpdatedAt
+
+	return o.UpdatedAt
 }
 
-// GetUpdatedAtOk returns a tuple with the UpdatedAt field value if set, nil otherwise
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
 // and a boolean to check if the value has been set.
 func (o *TaskCurrencyCloud) GetUpdatedAtOk() (*time.Time, bool) {
-	if o == nil || isNil(o.UpdatedAt) {
+	if o == nil {
     return nil, false
 	}
-	return o.UpdatedAt, true
+	return &o.UpdatedAt, true
 }
 
-// HasUpdatedAt returns a boolean if a field has been set.
-func (o *TaskCurrencyCloud) HasUpdatedAt() bool {
-	if o != nil && !isNil(o.UpdatedAt) {
-		return true
-	}
-
-	return false
-}
-
-// SetUpdatedAt gets a reference to the given time.Time and assigns it to the UpdatedAt field.
+// SetUpdatedAt sets field value
 func (o *TaskCurrencyCloud) SetUpdatedAt(v time.Time) {
-	o.UpdatedAt = &v
+	o.UpdatedAt = v
 }
 
-// GetDescriptor returns the Descriptor field value if set, zero value otherwise.
-func (o *TaskCurrencyCloud) GetDescriptor() TaskCurrencyCloudDescriptor {
-	if o == nil || isNil(o.Descriptor) {
-		var ret TaskCurrencyCloudDescriptor
-		return ret
-	}
-	return *o.Descriptor
-}
-
-// GetDescriptorOk returns a tuple with the Descriptor field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *TaskCurrencyCloud) GetDescriptorOk() (*TaskCurrencyCloudDescriptor, bool) {
-	if o == nil || isNil(o.Descriptor) {
-    return nil, false
-	}
-	return o.Descriptor, true
-}
-
-// HasDescriptor returns a boolean if a field has been set.
-func (o *TaskCurrencyCloud) HasDescriptor() bool {
-	if o != nil && !isNil(o.Descriptor) {
-		return true
-	}
-
-	return false
-}
-
-// SetDescriptor gets a reference to the given TaskCurrencyCloudDescriptor and assigns it to the Descriptor field.
-func (o *TaskCurrencyCloud) SetDescriptor(v TaskCurrencyCloudDescriptor) {
-	o.Descriptor = &v
-}
-
-// GetStatus returns the Status field value if set, zero value otherwise.
+// GetStatus returns the Status field value
 func (o *TaskCurrencyCloud) GetStatus() PaymentStatus {
-	if o == nil || isNil(o.Status) {
+	if o == nil {
 		var ret PaymentStatus
 		return ret
 	}
-	return *o.Status
+
+	return o.Status
 }
 
-// GetStatusOk returns a tuple with the Status field value if set, nil otherwise
+// GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
 func (o *TaskCurrencyCloud) GetStatusOk() (*PaymentStatus, bool) {
-	if o == nil || isNil(o.Status) {
+	if o == nil {
     return nil, false
 	}
-	return o.Status, true
+	return &o.Status, true
 }
 
-// HasStatus returns a boolean if a field has been set.
-func (o *TaskCurrencyCloud) HasStatus() bool {
-	if o != nil && !isNil(o.Status) {
-		return true
-	}
-
-	return false
-}
-
-// SetStatus gets a reference to the given PaymentStatus and assigns it to the Status field.
+// SetStatus sets field value
 func (o *TaskCurrencyCloud) SetStatus(v PaymentStatus) {
-	o.Status = &v
+	o.Status = v
 }
 
-// GetState returns the State field value if set, zero value otherwise.
+// GetState returns the State field value
 func (o *TaskCurrencyCloud) GetState() map[string]interface{} {
-	if o == nil || isNil(o.State) {
+	if o == nil {
 		var ret map[string]interface{}
 		return ret
 	}
+
 	return o.State
 }
 
-// GetStateOk returns a tuple with the State field value if set, nil otherwise
+// GetStateOk returns a tuple with the State field value
 // and a boolean to check if the value has been set.
 func (o *TaskCurrencyCloud) GetStateOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.State) {
+	if o == nil {
     return map[string]interface{}{}, false
 	}
 	return o.State, true
 }
 
-// HasState returns a boolean if a field has been set.
-func (o *TaskCurrencyCloud) HasState() bool {
-	if o != nil && !isNil(o.State) {
-		return true
-	}
-
-	return false
-}
-
-// SetState gets a reference to the given map[string]interface{} and assigns it to the State field.
+// SetState sets field value
 func (o *TaskCurrencyCloud) SetState(v map[string]interface{}) {
 	o.State = v
 }
@@ -301,31 +227,55 @@ func (o *TaskCurrencyCloud) SetError(v string) {
 	o.Error = &v
 }
 
+// GetDescriptor returns the Descriptor field value
+func (o *TaskCurrencyCloud) GetDescriptor() TaskCurrencyCloudAllOfDescriptor {
+	if o == nil {
+		var ret TaskCurrencyCloudAllOfDescriptor
+		return ret
+	}
+
+	return o.Descriptor
+}
+
+// GetDescriptorOk returns a tuple with the Descriptor field value
+// and a boolean to check if the value has been set.
+func (o *TaskCurrencyCloud) GetDescriptorOk() (*TaskCurrencyCloudAllOfDescriptor, bool) {
+	if o == nil {
+    return nil, false
+	}
+	return &o.Descriptor, true
+}
+
+// SetDescriptor sets field value
+func (o *TaskCurrencyCloud) SetDescriptor(v TaskCurrencyCloudAllOfDescriptor) {
+	o.Descriptor = v
+}
+
 func (o TaskCurrencyCloud) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Id) {
+	if true {
 		toSerialize["id"] = o.Id
 	}
-	if !isNil(o.ConnectorID) {
-		toSerialize["connectorID"] = o.ConnectorID
+	if true {
+		toSerialize["connectorId"] = o.ConnectorId
 	}
-	if !isNil(o.CreatedAt) {
+	if true {
 		toSerialize["createdAt"] = o.CreatedAt
 	}
-	if !isNil(o.UpdatedAt) {
+	if true {
 		toSerialize["updatedAt"] = o.UpdatedAt
 	}
-	if !isNil(o.Descriptor) {
-		toSerialize["descriptor"] = o.Descriptor
-	}
-	if !isNil(o.Status) {
+	if true {
 		toSerialize["status"] = o.Status
 	}
-	if !isNil(o.State) {
+	if true {
 		toSerialize["state"] = o.State
 	}
 	if !isNil(o.Error) {
 		toSerialize["error"] = o.Error
+	}
+	if true {
+		toSerialize["descriptor"] = o.Descriptor
 	}
 	return json.Marshal(toSerialize)
 }

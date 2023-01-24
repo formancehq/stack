@@ -16,7 +16,6 @@ import { HttpFile } from '../http/http';
 export class ConnectorsResponseDataInner {
     'provider'?: Connector;
     'enabled'?: boolean;
-    'disabled'?: boolean;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -30,12 +29,6 @@ export class ConnectorsResponseDataInner {
         {
             "name": "enabled",
             "baseName": "enabled",
-            "type": "boolean",
-            "format": ""
-        },
-        {
-            "name": "disabled",
-            "baseName": "disabled",
             "type": "boolean",
             "format": ""
         }    ];

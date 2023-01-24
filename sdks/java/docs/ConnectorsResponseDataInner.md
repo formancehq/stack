@@ -9,7 +9,6 @@
 |------------ | ------------- | ------------- | -------------|
 |**provider** | **Connector** |  |  [optional] |
 |**enabled** | **Boolean** |  |  [optional] |
-|**disabled** | **Boolean** |  |  [optional] |
 
 
 

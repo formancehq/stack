@@ -10,17 +10,17 @@ import {canConsumeForm, isCodeInRange} from '../util';
 import {SecurityAuthentication} from '../auth/auth';
 
 
-import { AccountsResponse } from '../models/AccountsResponse';
+import { AccountsCursor } from '../models/AccountsCursor';
 import { Connector } from '../models/Connector';
 import { ConnectorConfig } from '../models/ConnectorConfig';
 import { ConnectorConfigResponse } from '../models/ConnectorConfigResponse';
 import { ConnectorsConfigsResponse } from '../models/ConnectorsConfigsResponse';
 import { ConnectorsResponse } from '../models/ConnectorsResponse';
 import { PaymentResponse } from '../models/PaymentResponse';
-import { PaymentsResponse } from '../models/PaymentsResponse';
+import { PaymentsCursor } from '../models/PaymentsCursor';
 import { StripeTransferRequest } from '../models/StripeTransferRequest';
 import { TaskResponse } from '../models/TaskResponse';
-import { TasksResponse } from '../models/TasksResponse';
+import { TasksCursor } from '../models/TasksCursor';
 
 /**
  * no description
@@ -378,11 +378,11 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * List accounts
-     * @param limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. 
-     * @param skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. 
-     * @param sort Field used to sort payments (Default is by date).
+     * @param pageSize The maximum number of results to return per page. 
+     * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
+     * @param sort Fields used to sort payments (default is date:desc).
      */
-    public async paymentslistAccounts(limit?: number, skip?: number, sort?: Array<string>, _options?: Configuration): Promise<RequestContext> {
+    public async paymentslistAccounts(pageSize?: number, cursor?: string, sort?: Array<string>, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
 
@@ -396,13 +396,13 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
         requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
 
         // Query Params
-        if (limit !== undefined) {
-            requestContext.setQueryParam("limit", ObjectSerializer.serialize(limit, "number", "int64"));
+        if (pageSize !== undefined) {
+            requestContext.setQueryParam("pageSize", ObjectSerializer.serialize(pageSize, "number", "int64"));
         }
 
         // Query Params
-        if (skip !== undefined) {
-            requestContext.setQueryParam("skip", ObjectSerializer.serialize(skip, "number", "int64"));
+        if (cursor !== undefined) {
+            requestContext.setQueryParam("cursor", ObjectSerializer.serialize(cursor, "string", ""));
         }
 
         // Query Params
@@ -721,22 +721,22 @@ export class PaymentsApiResponseProcessor {
      * @params response Response returned by the server for a request to listConnectorTasks
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async listConnectorTasks(response: ResponseContext): Promise<TasksResponse > {
+     public async listConnectorTasks(response: ResponseContext): Promise<TasksCursor > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: TasksResponse = ObjectSerializer.deserialize(
+            const body: TasksCursor = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "TasksResponse", ""
-            ) as TasksResponse;
+                "TasksCursor", ""
+            ) as TasksCursor;
             return body;
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: TasksResponse = ObjectSerializer.deserialize(
+            const body: TasksCursor = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "TasksResponse", ""
-            ) as TasksResponse;
+                "TasksCursor", ""
+            ) as TasksCursor;
             return body;
         }
 
@@ -750,22 +750,22 @@ export class PaymentsApiResponseProcessor {
      * @params response Response returned by the server for a request to listPayments
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async listPayments(response: ResponseContext): Promise<PaymentsResponse > {
+     public async listPayments(response: ResponseContext): Promise<PaymentsCursor > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: PaymentsResponse = ObjectSerializer.deserialize(
+            const body: PaymentsCursor = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "PaymentsResponse", ""
-            ) as PaymentsResponse;
+                "PaymentsCursor", ""
+            ) as PaymentsCursor;
             return body;
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: PaymentsResponse = ObjectSerializer.deserialize(
+            const body: PaymentsCursor = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "PaymentsResponse", ""
-            ) as PaymentsResponse;
+                "PaymentsCursor", ""
+            ) as PaymentsCursor;
             return body;
         }
 
@@ -779,22 +779,22 @@ export class PaymentsApiResponseProcessor {
      * @params response Response returned by the server for a request to paymentslistAccounts
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async paymentslistAccounts(response: ResponseContext): Promise<AccountsResponse > {
+     public async paymentslistAccounts(response: ResponseContext): Promise<AccountsCursor > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: AccountsResponse = ObjectSerializer.deserialize(
+            const body: AccountsCursor = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "AccountsResponse", ""
-            ) as AccountsResponse;
+                "AccountsCursor", ""
+            ) as AccountsCursor;
             return body;
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: AccountsResponse = ObjectSerializer.deserialize(
+            const body: AccountsCursor = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "AccountsResponse", ""
-            ) as AccountsResponse;
+                "AccountsCursor", ""
+            ) as AccountsCursor;
             return body;
         }
 

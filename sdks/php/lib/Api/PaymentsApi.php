@@ -1834,7 +1834,7 @@ class PaymentsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\TasksResponse
+     * @return \Formance\Model\TasksCursor
      */
     public function listConnectorTasks($connector, $page_size = 15, $cursor = null, string $contentType = self::contentTypes['listConnectorTasks'][0])
     {
@@ -1854,7 +1854,7 @@ class PaymentsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\TasksResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\TasksCursor, HTTP status code, HTTP response headers (array of strings)
      */
     public function listConnectorTasksWithHttpInfo($connector, $page_size = 15, $cursor = null, string $contentType = self::contentTypes['listConnectorTasks'][0])
     {
@@ -1897,23 +1897,23 @@ class PaymentsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\TasksResponse' === '\SplFileObject') {
+                    if ('\Formance\Model\TasksCursor' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\TasksResponse' !== 'string') {
+                        if ('\Formance\Model\TasksCursor' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\TasksResponse', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\TasksCursor', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\Formance\Model\TasksResponse';
+            $returnType = '\Formance\Model\TasksCursor';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -1934,7 +1934,7 @@ class PaymentsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\TasksResponse',
+                        '\Formance\Model\TasksCursor',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -1982,7 +1982,7 @@ class PaymentsApi
      */
     public function listConnectorTasksAsyncWithHttpInfo($connector, $page_size = 15, $cursor = null, string $contentType = self::contentTypes['listConnectorTasks'][0])
     {
-        $returnType = '\Formance\Model\TasksResponse';
+        $returnType = '\Formance\Model\TasksCursor';
         $request = $this->listConnectorTasksRequest($connector, $page_size, $cursor, $contentType);
 
         return $this->client
@@ -2157,7 +2157,7 @@ class PaymentsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\PaymentsResponse
+     * @return \Formance\Model\PaymentsCursor
      */
     public function listPayments($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
     {
@@ -2177,7 +2177,7 @@ class PaymentsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\PaymentsResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\PaymentsCursor, HTTP status code, HTTP response headers (array of strings)
      */
     public function listPaymentsWithHttpInfo($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
     {
@@ -2220,23 +2220,23 @@ class PaymentsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\PaymentsResponse' === '\SplFileObject') {
+                    if ('\Formance\Model\PaymentsCursor' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\PaymentsResponse' !== 'string') {
+                        if ('\Formance\Model\PaymentsCursor' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\PaymentsResponse', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\PaymentsCursor', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\Formance\Model\PaymentsResponse';
+            $returnType = '\Formance\Model\PaymentsCursor';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -2257,7 +2257,7 @@ class PaymentsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\PaymentsResponse',
+                        '\Formance\Model\PaymentsCursor',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -2305,7 +2305,7 @@ class PaymentsApi
      */
     public function listPaymentsAsyncWithHttpInfo($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['listPayments'][0])
     {
-        $returnType = '\Formance\Model\PaymentsResponse';
+        $returnType = '\Formance\Model\PaymentsCursor';
         $request = $this->listPaymentsRequest($page_size, $cursor, $sort, $contentType);
 
         return $this->client
@@ -2468,18 +2468,18 @@ class PaymentsApi
      *
      * List accounts
      *
-     * @param  int $limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
-     * @param  int $skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
-     * @param  string[] $sort Field used to sort payments (Default is by date). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string[] $sort Fields used to sort payments (default is date:desc). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['paymentslistAccounts'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\AccountsResponse
+     * @return \Formance\Model\AccountsCursor
      */
-    public function paymentslistAccounts($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
+    public function paymentslistAccounts($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
     {
-        list($response) = $this->paymentslistAccountsWithHttpInfo($limit, $skip, $sort, $contentType);
+        list($response) = $this->paymentslistAccountsWithHttpInfo($page_size, $cursor, $sort, $contentType);
         return $response;
     }
 
@@ -2488,18 +2488,18 @@ class PaymentsApi
      *
      * List accounts
      *
-     * @param  int $limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
-     * @param  int $skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
-     * @param  string[] $sort Field used to sort payments (Default is by date). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string[] $sort Fields used to sort payments (default is date:desc). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['paymentslistAccounts'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\AccountsResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\AccountsCursor, HTTP status code, HTTP response headers (array of strings)
      */
-    public function paymentslistAccountsWithHttpInfo($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
+    public function paymentslistAccountsWithHttpInfo($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
     {
-        $request = $this->paymentslistAccountsRequest($limit, $skip, $sort, $contentType);
+        $request = $this->paymentslistAccountsRequest($page_size, $cursor, $sort, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -2538,23 +2538,23 @@ class PaymentsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\AccountsResponse' === '\SplFileObject') {
+                    if ('\Formance\Model\AccountsCursor' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\AccountsResponse' !== 'string') {
+                        if ('\Formance\Model\AccountsCursor' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\AccountsResponse', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\AccountsCursor', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = '\Formance\Model\AccountsResponse';
+            $returnType = '\Formance\Model\AccountsCursor';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -2575,7 +2575,7 @@ class PaymentsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\AccountsResponse',
+                        '\Formance\Model\AccountsCursor',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -2590,17 +2590,17 @@ class PaymentsApi
      *
      * List accounts
      *
-     * @param  int $limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
-     * @param  int $skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
-     * @param  string[] $sort Field used to sort payments (Default is by date). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string[] $sort Fields used to sort payments (default is date:desc). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['paymentslistAccounts'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function paymentslistAccountsAsync($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
+    public function paymentslistAccountsAsync($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
     {
-        return $this->paymentslistAccountsAsyncWithHttpInfo($limit, $skip, $sort, $contentType)
+        return $this->paymentslistAccountsAsyncWithHttpInfo($page_size, $cursor, $sort, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2613,18 +2613,18 @@ class PaymentsApi
      *
      * List accounts
      *
-     * @param  int $limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
-     * @param  int $skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
-     * @param  string[] $sort Field used to sort payments (Default is by date). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string[] $sort Fields used to sort payments (default is date:desc). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['paymentslistAccounts'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function paymentslistAccountsAsyncWithHttpInfo($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
+    public function paymentslistAccountsAsyncWithHttpInfo($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
     {
-        $returnType = '\Formance\Model\AccountsResponse';
-        $request = $this->paymentslistAccountsRequest($limit, $skip, $sort, $contentType);
+        $returnType = '\Formance\Model\AccountsCursor';
+        $request = $this->paymentslistAccountsRequest($page_size, $cursor, $sort, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2665,25 +2665,25 @@ class PaymentsApi
     /**
      * Create request for operation 'paymentslistAccounts'
      *
-     * @param  int $limit Limit the number of accounts to return, pagination can be achieved in conjunction with &#39;skip&#39; parameter. (optional)
-     * @param  int $skip How many accounts to skip, pagination can be achieved in conjunction with &#39;limit&#39; parameter. (optional)
-     * @param  string[] $sort Field used to sort payments (Default is by date). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
+     * @param  string[] $sort Fields used to sort payments (default is date:desc). (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['paymentslistAccounts'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function paymentslistAccountsRequest($limit = null, $skip = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
+    public function paymentslistAccountsRequest($page_size = 15, $cursor = null, $sort = null, string $contentType = self::contentTypes['paymentslistAccounts'][0])
     {
 
-        if ($limit !== null && $limit < 0) {
-            throw new \InvalidArgumentException('invalid value for "$limit" when calling PaymentsApi.paymentslistAccounts, must be bigger than or equal to 0.');
+        if ($page_size !== null && $page_size > 1000) {
+            throw new \InvalidArgumentException('invalid value for "$page_size" when calling PaymentsApi.paymentslistAccounts, must be smaller than or equal to 1000.');
+        }
+        if ($page_size !== null && $page_size < 1) {
+            throw new \InvalidArgumentException('invalid value for "$page_size" when calling PaymentsApi.paymentslistAccounts, must be bigger than or equal to 1.');
         }
         
-        if ($skip !== null && $skip < 0) {
-            throw new \InvalidArgumentException('invalid value for "$skip" when calling PaymentsApi.paymentslistAccounts, must be bigger than or equal to 0.');
-        }
-        
+
 
 
         $resourcePath = '/api/payments/accounts';
@@ -2695,8 +2695,8 @@ class PaymentsApi
 
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $limit,
-            'limit', // param base name
+            $page_size,
+            'pageSize', // param base name
             'integer', // openApiType
             'form', // style
             true, // explode
@@ -2704,9 +2704,9 @@ class PaymentsApi
         ) ?? []);
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $skip,
-            'skip', // param base name
-            'integer', // openApiType
+            $cursor,
+            'cursor', // param base name
+            'string', // openApiType
             'form', // style
             true, // explode
             false // required

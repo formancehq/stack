@@ -7,7 +7,7 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**data** | [**TaskResponseData**](TaskResponseData.md) |  |  [optional] |
+|**data** | [**TasksCursorCursorAllOfDataInner**](TasksCursorCursorAllOfDataInner.md) |  |  |
 
 
 

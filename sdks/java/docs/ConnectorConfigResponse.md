@@ -7,7 +7,7 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**data** | [**ConnectorConfig**](ConnectorConfig.md) |  |  [optional] |
+|**data** | [**ConnectorConfig**](ConnectorConfig.md) |  |  |
 
 
 

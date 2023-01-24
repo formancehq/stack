@@ -11,6 +11,7 @@ func NewCommand() *cobra.Command {
 		fctl.WithShortDescription("Orchestration"),
 		fctl.WithChildCommands(
 			NewListWorkflowsCommand(),
+			NewCreateWorkflowCommand(),
 		),
 	)
 }

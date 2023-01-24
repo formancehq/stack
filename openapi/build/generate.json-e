@@ -2088,14 +2088,7 @@
         "operationId": "paymentsgetServerInfo",
         "responses": {
           "200": {
-            "description": "Server information",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ServerInfo"
-                }
-              }
-            }
+            "$ref": "#/components/responses/ServerInfo"
           }
         }
       }
@@ -2109,50 +2102,18 @@
         ],
         "parameters": [
           {
-            "name": "pageSize",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            }
+            "$ref": "#/components/parameters/PageSize"
           },
           {
-            "name": "cursor",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            }
+            "$ref": "#/components/parameters/Cursor"
           },
           {
-            "name": "sort",
-            "in": "query",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "description": "Fields used to sort payments (default is date:desc).",
-            "example": "date:asc,status:desc"
+            "$ref": "#/components/parameters/Sort"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaymentsResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Payments"
           }
         }
       }
@@ -2166,26 +2127,12 @@
         "operationId": "getPayment",
         "parameters": [
           {
-            "name": "paymentId",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "description": "The payment ID.",
-            "example": "XXX",
-            "required": true
+            "$ref": "#/components/parameters/PaymentId"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaymentResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Payment"
           }
         }
       }
@@ -2199,50 +2146,18 @@
         ],
         "parameters": [
           {
-            "name": "limit",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 0,
-              "example": 10
-            },
-            "description": "Limit the number of accounts to return, pagination can be achieved in conjunction with 'skip' parameter.\n"
+            "$ref": "#/components/parameters/PageSize"
           },
           {
-            "name": "skip",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 0
-            },
-            "description": "How many accounts to skip, pagination can be achieved in conjunction with 'limit' parameter.\n",
-            "example": 100
+            "$ref": "#/components/parameters/Cursor"
           },
           {
-            "name": "sort",
-            "in": "query",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "description": "Field used to sort payments (Default is by date).",
-            "example": "status"
+            "$ref": "#/components/parameters/Sort"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AccountsResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Accounts"
           }
         }
       }
@@ -2257,14 +2172,7 @@
         "description": "List all installed connectors.",
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConnectorsResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Connectors"
           }
         }
       }
@@ -2279,14 +2187,7 @@
         "description": "List the configs of each available connector.",
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConnectorsConfigsResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/ConnectorsConfigs"
           }
         }
       }
@@ -2301,28 +2202,15 @@
         "description": "Install a connector by its name and config.",
         "parameters": [
           {
-            "name": "connector",
-            "description": "The name of the connector.",
-            "in": "path",
-            "schema": {
-              "$ref": "#/components/schemas/Connector"
-            },
-            "required": true
+            "$ref": "#/components/parameters/Connector"
           }
         ],
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ConnectorConfig"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/ConnectorConfig"
         },
         "responses": {
           "204": {
-            "description": "OK"
+            "$ref": "#/components/responses/NoContent"
           }
         }
       },
@@ -2335,18 +2223,12 @@
         "description": "Uninstall a connector by its name.",
         "parameters": [
           {
-            "name": "connector",
-            "description": "The name of the connector.",
-            "in": "path",
-            "schema": {
-              "$ref": "#/components/schemas/Connector"
-            },
-            "required": true
+            "$ref": "#/components/parameters/Connector"
           }
         ],
         "responses": {
           "204": {
-            "description": "OK"
+            "$ref": "#/components/responses/NoContent"
           }
         }
       }
@@ -2361,25 +2243,12 @@
         "description": "Read connector config",
         "parameters": [
           {
-            "name": "connector",
-            "description": "The name of the connector.",
-            "in": "path",
-            "schema": {
-              "$ref": "#/components/schemas/Connector"
-            },
-            "required": true
+            "$ref": "#/components/parameters/Connector"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ConnectorConfigResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/ConnectorConfig"
           }
         }
       }
@@ -2391,21 +2260,15 @@
         "tags": [
           "Payments"
         ],
-        "description": "Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it.\n",
+        "description": "Reset a connector by its name.\nIt will remove the connector and ALL PAYMENTS generated with it.\n",
         "parameters": [
           {
-            "name": "connector",
-            "description": "The name of the connector.",
-            "in": "path",
-            "schema": {
-              "$ref": "#/components/schemas/Connector"
-            },
-            "required": true
+            "$ref": "#/components/parameters/Connector"
           }
         ],
         "responses": {
           "204": {
-            "description": "OK"
+            "$ref": "#/components/responses/NoContent"
           }
         }
       }
@@ -2420,47 +2283,18 @@
         "description": "List all tasks associated with this connector.",
         "parameters": [
           {
-            "name": "connector",
-            "description": "The name of the connector.",
-            "in": "path",
-            "schema": {
-              "$ref": "#/components/schemas/Connector"
-            },
-            "required": true
+            "$ref": "#/components/parameters/Connector"
           },
           {
-            "name": "pageSize",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            }
+            "$ref": "#/components/parameters/PageSize"
           },
           {
-            "name": "cursor",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            }
+            "$ref": "#/components/parameters/Cursor"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TasksResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Tasks"
           }
         }
       }
@@ -2475,35 +2309,15 @@
         "description": "Get a specific task associated to the connector.",
         "parameters": [
           {
-            "name": "connector",
-            "description": "The name of the connector.",
-            "in": "path",
-            "schema": {
-              "$ref": "#/components/schemas/Connector"
-            },
-            "required": true
+            "$ref": "#/components/parameters/Connector"
           },
           {
-            "name": "taskId",
-            "description": "The task ID.",
-            "example": "task1",
-            "in": "path",
-            "schema": {
-              "type": "string"
-            },
-            "required": true
+            "$ref": "#/components/parameters/TaskId"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaskResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Task"
           }
         }
       }
@@ -2517,25 +2331,11 @@
         "operationId": "connectorsStripeTransfer",
         "description": "Execute a transfer between two Stripe accounts.",
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StripeTransferRequest"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/StripeTransfer"
         },
         "responses": {
           "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StripeTransferResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/StripeTransfer"
           }
         }
       }
@@ -4963,105 +4763,160 @@
           }
         }
       },
+      "CursorBase": {
+        "type": "object",
+        "required": [
+          "pageSize",
+          "hasMore",
+          "data"
+        ],
+        "properties": {
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 1000,
+            "example": 15
+          },
+          "hasMore": {
+            "type": "boolean",
+            "example": false
+          },
+          "previous": {
+            "type": "string",
+            "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+          },
+          "next": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
+      "PaymentsCursor": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Payment"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "AccountsCursor": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/paymentsAccount"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "TasksCursor": {
+        "type": "object",
+        "required": [
+          "cursor"
+        ],
+        "properties": {
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CursorBase"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/TaskStripe"
+                        },
+                        {
+                          "$ref": "#/components/schemas/TaskWise"
+                        },
+                        {
+                          "$ref": "#/components/schemas/TaskCurrencyCloud"
+                        },
+                        {
+                          "$ref": "#/components/schemas/TaskDummyPay"
+                        },
+                        {
+                          "$ref": "#/components/schemas/TaskModulr"
+                        },
+                        {
+                          "$ref": "#/components/schemas/TaskBankingCircle"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
       "ConnectorConfigResponse": {
         "type": "object",
+        "required": [
+          "data"
+        ],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/ConnectorConfig"
           }
         }
       },
-      "PaymentsResponse": {
-        "type": "object",
-        "required": [
-          "cursor"
-        ],
-        "properties": {
-          "cursor": {
-            "type": "object",
-            "required": [
-              "pageSize",
-              "hasMore",
-              "data"
-            ],
-            "properties": {
-              "pageSize": {
-                "type": "integer",
-                "format": "int64",
-                "minimum": 1,
-                "maximum": 1000,
-                "example": 15
-              },
-              "hasMore": {
-                "type": "boolean",
-                "example": false
-              },
-              "previous": {
-                "type": "string",
-                "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
-              },
-              "next": {
-                "type": "string",
-                "example": ""
-              },
-              "data": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Payment"
-                }
-              }
-            }
-          }
-        }
-      },
       "PaymentResponse": {
         "type": "object",
+        "required": [
+          "data"
+        ],
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Payment"
-          }
-        }
-      },
-      "AccountsResponse": {
-        "type": "object",
-        "required": [
-          "cursor"
-        ],
-        "properties": {
-          "cursor": {
-            "type": "object",
-            "required": [
-              "pageSize",
-              "hasMore",
-              "data"
-            ],
-            "properties": {
-              "pageSize": {
-                "type": "integer",
-                "format": "int64",
-                "minimum": 1,
-                "maximum": 1000,
-                "example": 15
-              },
-              "hasMore": {
-                "type": "boolean",
-                "example": false
-              },
-              "previous": {
-                "type": "string",
-                "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
-              },
-              "next": {
-                "type": "string",
-                "example": ""
-              },
-              "data": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/paymentsAccount"
-                }
-              }
-            }
           }
         }
       },
@@ -5082,10 +4937,6 @@
                 "enabled": {
                   "type": "boolean",
                   "example": true
-                },
-                "disabled": {
-                  "type": "boolean",
-                  "example": false
                 }
               }
             }
@@ -5100,12 +4951,22 @@
         "properties": {
           "data": {
             "type": "object",
+            "required": [
+              "connector"
+            ],
             "properties": {
               "connector": {
                 "type": "object",
+                "required": [
+                  "key"
+                ],
                 "properties": {
                   "key": {
                     "type": "object",
+                    "required": [
+                      "dataType",
+                      "required"
+                    ],
                     "properties": {
                       "dataType": {
                         "type": "string"
@@ -5123,6 +4984,9 @@
       },
       "TaskResponse": {
         "type": "object",
+        "required": [
+          "data"
+        ],
         "properties": {
           "data": {
             "oneOf": [
@@ -5145,68 +5009,6 @@
                 "$ref": "#/components/schemas/TaskBankingCircle"
               }
             ]
-          }
-        }
-      },
-      "TasksResponse": {
-        "type": "object",
-        "required": [
-          "cursor"
-        ],
-        "properties": {
-          "cursor": {
-            "type": "object",
-            "required": [
-              "pageSize",
-              "hasMore",
-              "data"
-            ],
-            "properties": {
-              "pageSize": {
-                "type": "integer",
-                "format": "int64",
-                "minimum": 1,
-                "maximum": 1000,
-                "example": 15
-              },
-              "hasMore": {
-                "type": "boolean",
-                "example": false
-              },
-              "previous": {
-                "type": "string",
-                "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
-              },
-              "next": {
-                "type": "string",
-                "example": ""
-              },
-              "data": {
-                "type": "array",
-                "items": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/TaskStripe"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TaskWise"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TaskCurrencyCloud"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TaskDummyPay"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TaskModulr"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TaskBankingCircle"
-                    }
-                  ]
-                }
-              }
-            }
           }
         }
       },
@@ -5480,6 +5282,13 @@
       },
       "PaymentAdjustment": {
         "type": "object",
+        "required": [
+          "status",
+          "amount",
+          "date",
+          "raw",
+          "absolute"
+        ],
         "properties": {
           "status": {
             "$ref": "#/components/schemas/PaymentStatus"
@@ -5504,6 +5313,10 @@
       },
       "PaymentMetadata": {
         "type": "object",
+        "required": [
+          "key",
+          "value"
+        ],
         "properties": {
           "key": {
             "type": "string"
@@ -5518,6 +5331,10 @@
       },
       "PaymentMetadataChangelog": {
         "type": "object",
+        "required": [
+          "timestamp",
+          "value"
+        ],
         "properties": {
           "timestamp": {
             "type": "string",
@@ -5560,14 +5377,23 @@
           }
         }
       },
-      "TaskStripe": {
+      "TaskBase": {
         "type": "object",
+        "required": [
+          "id",
+          "connectorId",
+          "createdAt",
+          "updatedAt",
+          "descriptor",
+          "status",
+          "state"
+        ],
         "properties": {
           "id": {
             "type": "string",
             "format": "uuid"
           },
-          "connectorID": {
+          "connectorId": {
             "type": "string",
             "format": "uuid"
           },
@@ -5579,246 +5405,187 @@
             "type": "string",
             "format": "date-time"
           },
-          "descriptor": {
+          "status": {
+            "$ref": "#/components/schemas/PaymentStatus"
+          },
+          "state": {
+            "type": "object"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "TaskStripe": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TaskBase"
+          },
+          {
             "type": "object",
             "required": [
-              "name"
+              "descriptor"
             ],
             "properties": {
-              "name": {
-                "type": "string"
-              },
-              "main": {
-                "type": "boolean"
-              },
-              "account": {
-                "type": "string"
+              "descriptor": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "account"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "main": {
+                    "type": "boolean"
+                  },
+                  "account": {
+                    "type": "string"
+                  }
+                }
               }
             }
-          },
-          "status": {
-            "$ref": "#/components/schemas/PaymentStatus"
-          },
-          "state": {
-            "type": "object"
-          },
-          "error": {
-            "type": "string"
           }
-        }
+        ]
       },
       "TaskWise": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TaskBase"
           },
-          "connectorID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "descriptor": {
+          {
             "type": "object",
+            "required": [
+              "descriptor"
+            ],
             "properties": {
-              "name": {
-                "type": "string"
-              },
-              "key": {
-                "type": "string"
-              },
-              "profileID": {
-                "type": "integer",
-                "format": "int64",
-                "minimum": 0
+              "descriptor": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "key": {
+                    "type": "string"
+                  },
+                  "profileID": {
+                    "type": "integer",
+                    "format": "int64",
+                    "minimum": 0
+                  }
+                }
               }
             }
-          },
-          "status": {
-            "$ref": "#/components/schemas/PaymentStatus"
-          },
-          "state": {
-            "type": "object"
-          },
-          "error": {
-            "type": "string"
           }
-        }
+        ]
       },
       "TaskModulr": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TaskBase"
           },
-          "connectorID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "descriptor": {
+          {
             "type": "object",
+            "required": [
+              "descriptor"
+            ],
             "properties": {
-              "name": {
-                "type": "string"
-              },
-              "key": {
-                "type": "string"
-              },
-              "accountID": {
-                "type": "string"
+              "descriptor": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "key": {
+                    "type": "string"
+                  },
+                  "accountID": {
+                    "type": "string"
+                  }
+                }
               }
             }
-          },
-          "status": {
-            "$ref": "#/components/schemas/PaymentStatus"
-          },
-          "state": {
-            "type": "object"
-          },
-          "error": {
-            "type": "string"
           }
-        }
+        ]
       },
       "TaskDummyPay": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TaskBase"
           },
-          "connectorID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "descriptor": {
+          {
             "type": "object",
+            "required": [
+              "descriptor"
+            ],
             "properties": {
-              "name": {
-                "type": "string"
-              },
-              "key": {
-                "type": "string"
-              },
-              "fileName": {
-                "type": "string"
+              "descriptor": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "key": {
+                    "type": "string"
+                  },
+                  "fileName": {
+                    "type": "string"
+                  }
+                }
               }
             }
-          },
-          "status": {
-            "$ref": "#/components/schemas/PaymentStatus"
-          },
-          "state": {
-            "type": "object"
-          },
-          "error": {
-            "type": "string"
           }
-        }
+        ]
       },
       "TaskCurrencyCloud": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TaskBase"
           },
-          "connectorID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "descriptor": {
+          {
             "type": "object",
+            "required": [
+              "descriptor"
+            ],
             "properties": {
-              "name": {
-                "type": "string"
+              "descriptor": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
               }
             }
-          },
-          "status": {
-            "$ref": "#/components/schemas/PaymentStatus"
-          },
-          "state": {
-            "type": "object"
-          },
-          "error": {
-            "type": "string"
           }
-        }
+        ]
       },
       "TaskBankingCircle": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TaskBase"
           },
-          "connectorID": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updatedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "descriptor": {
+          {
             "type": "object",
+            "required": [
+              "descriptor"
+            ],
             "properties": {
-              "name": {
-                "type": "string"
-              },
-              "key": {
-                "type": "string"
+              "descriptor": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "key": {
+                    "type": "string"
+                  }
+                }
               }
             }
-          },
-          "status": {
-            "$ref": "#/components/schemas/PaymentStatus"
-          },
-          "state": {
-            "type": "object"
-          },
-          "error": {
-            "type": "string"
           }
-        }
+        ]
       },
       "StripeTransferRequest": {
         "type": "object",
@@ -5857,32 +5624,6 @@
           "TERMINATED",
           "FAILED"
         ]
-      },
-      "StripeTimelineState": {
-        "type": "object",
-        "properties": {
-          "oldestId": {
-            "type": "string",
-            "description": "The id of the oldest BalanceTransaction fetched from stripe for this account"
-          },
-          "oldestDate": {
-            "type": "string",
-            "format": "date-time",
-            "description": "The creation date of the oldest BalanceTransaction fetched from stripe for this account"
-          },
-          "moreRecentId": {
-            "type": "string",
-            "description": "The id of the more recent BalanceTransaction fetched from stripe for this account"
-          },
-          "moreRecentDate": {
-            "type": "string",
-            "format": "date-time",
-            "description": "The creation date of the more recent BalanceTransaction fetched from stripe for this account"
-          },
-          "noMoreHistory": {
-            "type": "boolean"
-          }
-        }
       },
       "Query": {
         "type": "object",
@@ -6934,32 +6675,18 @@
         }
       },
       "ListWorkflowsResponse": {
-        "required": [
-          "cursor"
-        ],
+        "type": "object",
         "properties": {
-          "cursor": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Cursor"
-              },
-              {
-                "properties": {
-                  "data": {
-                    "items": {
-                      "$ref": "#/components/schemas/Workflow"
-                    },
-                    "type": "array"
-                  }
-                },
-                "type": "object",
-                "required": [
-                  "data"
-                ]
-              }
-            ]
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Workflow"
+            },
+            "type": "array"
           }
-        }
+        },
+        "required": [
+          "data"
+        ]
       },
       "ReadWorkflowResponse": {
         "type": "object",
@@ -7055,12 +6782,202 @@
       }
     },
     "responses": {
+      "NoContent": {
+        "description": "No content"
+      },
+      "ServerInfo": {
+        "description": "Server information",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ServerInfo"
+            }
+          }
+        }
+      },
+      "Payments": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PaymentsCursor"
+            }
+          }
+        }
+      },
+      "Payment": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PaymentResponse"
+            }
+          }
+        }
+      },
+      "Accounts": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AccountsCursor"
+            }
+          }
+        }
+      },
+      "Connectors": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConnectorsResponse"
+            }
+          }
+        }
+      },
+      "ConnectorsConfigs": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConnectorsConfigsResponse"
+            }
+          }
+        }
+      },
+      "ConnectorConfig": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConnectorConfigResponse"
+            }
+          }
+        }
+      },
+      "Tasks": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TasksCursor"
+            }
+          }
+        }
+      },
+      "Task": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TaskResponse"
+            }
+          }
+        }
+      },
+      "StripeTransfer": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/StripeTransferResponse"
+            }
+          }
+        }
+      },
       "ErrorResponse": {
         "description": "General error",
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "PageSize": {
+        "name": "pageSize",
+        "in": "query",
+        "description": "The maximum number of results to return per page.\n",
+        "example": 100,
+        "schema": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1,
+          "maximum": 1000,
+          "default": 15
+        }
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
+        "schema": {
+          "type": "string",
+          "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
+        }
+      },
+      "Sort": {
+        "name": "sort",
+        "in": "query",
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": "Fields used to sort payments (default is date:desc).",
+        "example": "date:asc,status:desc"
+      },
+      "PaymentId": {
+        "name": "paymentId",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        },
+        "description": "The payment ID.",
+        "example": "XXX",
+        "required": true
+      },
+      "Connector": {
+        "name": "connector",
+        "description": "The name of the connector.",
+        "in": "path",
+        "schema": {
+          "$ref": "#/components/schemas/Connector"
+        },
+        "required": true
+      },
+      "TaskId": {
+        "name": "taskId",
+        "description": "The task ID.",
+        "example": "task1",
+        "in": "path",
+        "schema": {
+          "type": "string"
+        },
+        "required": true
+      }
+    },
+    "requestBodies": {
+      "ConnectorConfig": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ConnectorConfig"
+            }
+          }
+        }
+      },
+      "StripeTransfer": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/StripeTransferRequest"
             }
           }
         }

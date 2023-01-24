@@ -275,6 +275,9 @@ class ConnectorsConfigsResponseDataConnector implements ModelInterface, ArrayAcc
     {
         $invalidProperties = [];
 
+        if ($this->container['key'] === null) {
+            $invalidProperties[] = "'key' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -293,7 +296,7 @@ class ConnectorsConfigsResponseDataConnector implements ModelInterface, ArrayAcc
     /**
      * Gets key
      *
-     * @return \Formance\Model\ConnectorsConfigsResponseDataConnectorKey|null
+     * @return \Formance\Model\ConnectorsConfigsResponseDataConnectorKey
      */
     public function getKey()
     {
@@ -303,7 +306,7 @@ class ConnectorsConfigsResponseDataConnector implements ModelInterface, ArrayAcc
     /**
      * Sets key
      *
-     * @param \Formance\Model\ConnectorsConfigsResponseDataConnectorKey|null $key key
+     * @param \Formance\Model\ConnectorsConfigsResponseDataConnectorKey $key key
      *
      * @return self
      */

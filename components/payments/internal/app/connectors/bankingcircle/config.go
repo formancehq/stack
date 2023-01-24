@@ -3,7 +3,7 @@ package bankingcircle
 import (
 	"encoding/json"
 
-	"github.com/formancehq/payments/internal/pkg/configtemplate"
+	"github.com/formancehq/payments/internal/app/connectors/configtemplate"
 )
 
 type Config struct {

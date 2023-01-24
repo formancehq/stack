@@ -17,15 +17,16 @@ import (
 
 // ConnectorConfigResponse struct for ConnectorConfigResponse
 type ConnectorConfigResponse struct {
-	Data *ConnectorConfig `json:"data,omitempty"`
+	Data ConnectorConfig `json:"data"`
 }
 
 // NewConnectorConfigResponse instantiates a new ConnectorConfigResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConnectorConfigResponse() *ConnectorConfigResponse {
+func NewConnectorConfigResponse(data ConnectorConfig) *ConnectorConfigResponse {
 	this := ConnectorConfigResponse{}
+	this.Data = data
 	return &this
 }
 
@@ -37,41 +38,33 @@ func NewConnectorConfigResponseWithDefaults() *ConnectorConfigResponse {
 	return &this
 }
 
-// GetData returns the Data field value if set, zero value otherwise.
+// GetData returns the Data field value
 func (o *ConnectorConfigResponse) GetData() ConnectorConfig {
-	if o == nil || isNil(o.Data) {
+	if o == nil {
 		var ret ConnectorConfig
 		return ret
 	}
-	return *o.Data
+
+	return o.Data
 }
 
-// GetDataOk returns a tuple with the Data field value if set, nil otherwise
+// GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
 func (o *ConnectorConfigResponse) GetDataOk() (*ConnectorConfig, bool) {
-	if o == nil || isNil(o.Data) {
+	if o == nil {
     return nil, false
 	}
-	return o.Data, true
+	return &o.Data, true
 }
 
-// HasData returns a boolean if a field has been set.
-func (o *ConnectorConfigResponse) HasData() bool {
-	if o != nil && !isNil(o.Data) {
-		return true
-	}
-
-	return false
-}
-
-// SetData gets a reference to the given ConnectorConfig and assigns it to the Data field.
+// SetData sets field value
 func (o *ConnectorConfigResponse) SetData(v ConnectorConfig) {
-	o.Data = &v
+	o.Data = v
 }
 
 func (o ConnectorConfigResponse) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Data) {
+	if true {
 		toSerialize["data"] = o.Data
 	}
 	return json.Marshal(toSerialize)

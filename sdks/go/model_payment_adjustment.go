@@ -18,19 +18,24 @@ import (
 
 // PaymentAdjustment struct for PaymentAdjustment
 type PaymentAdjustment struct {
-	Status *PaymentStatus `json:"status,omitempty"`
-	Amount *int64 `json:"amount,omitempty"`
-	Date *time.Time `json:"date,omitempty"`
-	Raw map[string]interface{} `json:"raw,omitempty"`
-	Absolute *bool `json:"absolute,omitempty"`
+	Status PaymentStatus `json:"status"`
+	Amount int64 `json:"amount"`
+	Date time.Time `json:"date"`
+	Raw map[string]interface{} `json:"raw"`
+	Absolute bool `json:"absolute"`
 }
 
 // NewPaymentAdjustment instantiates a new PaymentAdjustment object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPaymentAdjustment() *PaymentAdjustment {
+func NewPaymentAdjustment(status PaymentStatus, amount int64, date time.Time, raw map[string]interface{}, absolute bool) *PaymentAdjustment {
 	this := PaymentAdjustment{}
+	this.Status = status
+	this.Amount = amount
+	this.Date = date
+	this.Raw = raw
+	this.Absolute = absolute
 	return &this
 }
 
@@ -42,181 +47,141 @@ func NewPaymentAdjustmentWithDefaults() *PaymentAdjustment {
 	return &this
 }
 
-// GetStatus returns the Status field value if set, zero value otherwise.
+// GetStatus returns the Status field value
 func (o *PaymentAdjustment) GetStatus() PaymentStatus {
-	if o == nil || isNil(o.Status) {
+	if o == nil {
 		var ret PaymentStatus
 		return ret
 	}
-	return *o.Status
+
+	return o.Status
 }
 
-// GetStatusOk returns a tuple with the Status field value if set, nil otherwise
+// GetStatusOk returns a tuple with the Status field value
 // and a boolean to check if the value has been set.
 func (o *PaymentAdjustment) GetStatusOk() (*PaymentStatus, bool) {
-	if o == nil || isNil(o.Status) {
+	if o == nil {
     return nil, false
 	}
-	return o.Status, true
+	return &o.Status, true
 }
 
-// HasStatus returns a boolean if a field has been set.
-func (o *PaymentAdjustment) HasStatus() bool {
-	if o != nil && !isNil(o.Status) {
-		return true
-	}
-
-	return false
-}
-
-// SetStatus gets a reference to the given PaymentStatus and assigns it to the Status field.
+// SetStatus sets field value
 func (o *PaymentAdjustment) SetStatus(v PaymentStatus) {
-	o.Status = &v
+	o.Status = v
 }
 
-// GetAmount returns the Amount field value if set, zero value otherwise.
+// GetAmount returns the Amount field value
 func (o *PaymentAdjustment) GetAmount() int64 {
-	if o == nil || isNil(o.Amount) {
+	if o == nil {
 		var ret int64
 		return ret
 	}
-	return *o.Amount
+
+	return o.Amount
 }
 
-// GetAmountOk returns a tuple with the Amount field value if set, nil otherwise
+// GetAmountOk returns a tuple with the Amount field value
 // and a boolean to check if the value has been set.
 func (o *PaymentAdjustment) GetAmountOk() (*int64, bool) {
-	if o == nil || isNil(o.Amount) {
+	if o == nil {
     return nil, false
 	}
-	return o.Amount, true
+	return &o.Amount, true
 }
 
-// HasAmount returns a boolean if a field has been set.
-func (o *PaymentAdjustment) HasAmount() bool {
-	if o != nil && !isNil(o.Amount) {
-		return true
-	}
-
-	return false
-}
-
-// SetAmount gets a reference to the given int64 and assigns it to the Amount field.
+// SetAmount sets field value
 func (o *PaymentAdjustment) SetAmount(v int64) {
-	o.Amount = &v
+	o.Amount = v
 }
 
-// GetDate returns the Date field value if set, zero value otherwise.
+// GetDate returns the Date field value
 func (o *PaymentAdjustment) GetDate() time.Time {
-	if o == nil || isNil(o.Date) {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}
-	return *o.Date
+
+	return o.Date
 }
 
-// GetDateOk returns a tuple with the Date field value if set, nil otherwise
+// GetDateOk returns a tuple with the Date field value
 // and a boolean to check if the value has been set.
 func (o *PaymentAdjustment) GetDateOk() (*time.Time, bool) {
-	if o == nil || isNil(o.Date) {
+	if o == nil {
     return nil, false
 	}
-	return o.Date, true
+	return &o.Date, true
 }
 
-// HasDate returns a boolean if a field has been set.
-func (o *PaymentAdjustment) HasDate() bool {
-	if o != nil && !isNil(o.Date) {
-		return true
-	}
-
-	return false
-}
-
-// SetDate gets a reference to the given time.Time and assigns it to the Date field.
+// SetDate sets field value
 func (o *PaymentAdjustment) SetDate(v time.Time) {
-	o.Date = &v
+	o.Date = v
 }
 
-// GetRaw returns the Raw field value if set, zero value otherwise.
+// GetRaw returns the Raw field value
 func (o *PaymentAdjustment) GetRaw() map[string]interface{} {
-	if o == nil || isNil(o.Raw) {
+	if o == nil {
 		var ret map[string]interface{}
 		return ret
 	}
+
 	return o.Raw
 }
 
-// GetRawOk returns a tuple with the Raw field value if set, nil otherwise
+// GetRawOk returns a tuple with the Raw field value
 // and a boolean to check if the value has been set.
 func (o *PaymentAdjustment) GetRawOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Raw) {
+	if o == nil {
     return map[string]interface{}{}, false
 	}
 	return o.Raw, true
 }
 
-// HasRaw returns a boolean if a field has been set.
-func (o *PaymentAdjustment) HasRaw() bool {
-	if o != nil && !isNil(o.Raw) {
-		return true
-	}
-
-	return false
-}
-
-// SetRaw gets a reference to the given map[string]interface{} and assigns it to the Raw field.
+// SetRaw sets field value
 func (o *PaymentAdjustment) SetRaw(v map[string]interface{}) {
 	o.Raw = v
 }
 
-// GetAbsolute returns the Absolute field value if set, zero value otherwise.
+// GetAbsolute returns the Absolute field value
 func (o *PaymentAdjustment) GetAbsolute() bool {
-	if o == nil || isNil(o.Absolute) {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.Absolute
+
+	return o.Absolute
 }
 
-// GetAbsoluteOk returns a tuple with the Absolute field value if set, nil otherwise
+// GetAbsoluteOk returns a tuple with the Absolute field value
 // and a boolean to check if the value has been set.
 func (o *PaymentAdjustment) GetAbsoluteOk() (*bool, bool) {
-	if o == nil || isNil(o.Absolute) {
+	if o == nil {
     return nil, false
 	}
-	return o.Absolute, true
+	return &o.Absolute, true
 }
 
-// HasAbsolute returns a boolean if a field has been set.
-func (o *PaymentAdjustment) HasAbsolute() bool {
-	if o != nil && !isNil(o.Absolute) {
-		return true
-	}
-
-	return false
-}
-
-// SetAbsolute gets a reference to the given bool and assigns it to the Absolute field.
+// SetAbsolute sets field value
 func (o *PaymentAdjustment) SetAbsolute(v bool) {
-	o.Absolute = &v
+	o.Absolute = v
 }
 
 func (o PaymentAdjustment) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Status) {
+	if true {
 		toSerialize["status"] = o.Status
 	}
-	if !isNil(o.Amount) {
+	if true {
 		toSerialize["amount"] = o.Amount
 	}
-	if !isNil(o.Date) {
+	if true {
 		toSerialize["date"] = o.Date
 	}
-	if !isNil(o.Raw) {
+	if true {
 		toSerialize["raw"] = o.Raw
 	}
-	if !isNil(o.Absolute) {
+	if true {
 		toSerialize["absolute"] = o.Absolute
 	}
 	return json.Marshal(toSerialize)

@@ -17,15 +17,16 @@ import (
 
 // TaskResponse struct for TaskResponse
 type TaskResponse struct {
-	Data *TaskResponseData `json:"data,omitempty"`
+	Data TasksCursorCursorAllOfDataInner `json:"data"`
 }
 
 // NewTaskResponse instantiates a new TaskResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTaskResponse() *TaskResponse {
+func NewTaskResponse(data TasksCursorCursorAllOfDataInner) *TaskResponse {
 	this := TaskResponse{}
+	this.Data = data
 	return &this
 }
 
@@ -37,41 +38,33 @@ func NewTaskResponseWithDefaults() *TaskResponse {
 	return &this
 }
 
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *TaskResponse) GetData() TaskResponseData {
-	if o == nil || isNil(o.Data) {
-		var ret TaskResponseData
+// GetData returns the Data field value
+func (o *TaskResponse) GetData() TasksCursorCursorAllOfDataInner {
+	if o == nil {
+		var ret TasksCursorCursorAllOfDataInner
 		return ret
 	}
-	return *o.Data
+
+	return o.Data
 }
 
-// GetDataOk returns a tuple with the Data field value if set, nil otherwise
+// GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *TaskResponse) GetDataOk() (*TaskResponseData, bool) {
-	if o == nil || isNil(o.Data) {
+func (o *TaskResponse) GetDataOk() (*TasksCursorCursorAllOfDataInner, bool) {
+	if o == nil {
     return nil, false
 	}
-	return o.Data, true
+	return &o.Data, true
 }
 
-// HasData returns a boolean if a field has been set.
-func (o *TaskResponse) HasData() bool {
-	if o != nil && !isNil(o.Data) {
-		return true
-	}
-
-	return false
-}
-
-// SetData gets a reference to the given TaskResponseData and assigns it to the Data field.
-func (o *TaskResponse) SetData(v TaskResponseData) {
-	o.Data = &v
+// SetData sets field value
+func (o *TaskResponse) SetData(v TasksCursorCursorAllOfDataInner) {
+	o.Data = v
 }
 
 func (o TaskResponse) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Data) {
+	if true {
 		toSerialize["data"] = o.Data
 	}
 	return json.Marshal(toSerialize)

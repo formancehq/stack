@@ -55,8 +55,8 @@ public class PaymentMetadata {
    * Get key
    * @return key
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public String getKey() {
     return key;
@@ -78,8 +78,8 @@ public class PaymentMetadata {
    * Get value
    * @return value
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+  @javax.annotation.Nonnull
+  @ApiModelProperty(required = true, value = "")
 
   public String getValue() {
     return value;

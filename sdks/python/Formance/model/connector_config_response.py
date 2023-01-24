@@ -35,6 +35,9 @@ class ConnectorConfigResponse(
 
 
     class MetaOapg:
+        required = {
+            "data",
+        }
         
         class properties:
         
@@ -44,6 +47,8 @@ class ConnectorConfigResponse(
             __annotations__ = {
                 "data": data,
             }
+    
+    data: 'ConnectorConfig'
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["data"]) -> 'ConnectorConfig': ...
@@ -57,7 +62,7 @@ class ConnectorConfigResponse(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["data"]) -> typing.Union['ConnectorConfig', schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["data"]) -> 'ConnectorConfig': ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -69,7 +74,7 @@ class ConnectorConfigResponse(
     def __new__(
         cls,
         *args: typing.Union[dict, frozendict.frozendict, ],
-        data: typing.Union['ConnectorConfig', schemas.Unset] = schemas.unset,
+        data: 'ConnectorConfig',
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'ConnectorConfigResponse':

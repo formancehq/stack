@@ -25,21 +25,16 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.accounts_response import AccountsResponse
+from Formance.model.accounts_cursor import AccountsCursor
 
 # Query params
 
 
-class LimitSchema(
+class PageSizeSchema(
     schemas.Int64Schema
 ):
     pass
-
-
-class SkipSchema(
-    schemas.Int64Schema
-):
-    pass
+CursorSchema = schemas.StrSchema
 
 
 class SortSchema(
@@ -71,8 +66,8 @@ RequestRequiredQueryParams = typing_extensions.TypedDict(
 RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
-        'limit': typing.Union[LimitSchema, decimal.Decimal, int, ],
-        'skip': typing.Union[SkipSchema, decimal.Decimal, int, ],
+        'pageSize': typing.Union[PageSizeSchema, decimal.Decimal, int, ],
+        'cursor': typing.Union[CursorSchema, str, ],
         'sort': typing.Union[SortSchema, list, tuple, ],
     },
     total=False
@@ -83,16 +78,16 @@ class RequestQueryParams(RequestRequiredQueryParams, RequestOptionalQueryParams)
     pass
 
 
-request_query_limit = api_client.QueryParameter(
-    name="limit",
+request_query_page_size = api_client.QueryParameter(
+    name="pageSize",
     style=api_client.ParameterStyle.FORM,
-    schema=LimitSchema,
+    schema=PageSizeSchema,
     explode=True,
 )
-request_query_skip = api_client.QueryParameter(
-    name="skip",
+request_query_cursor = api_client.QueryParameter(
+    name="cursor",
     style=api_client.ParameterStyle.FORM,
-    schema=SkipSchema,
+    schema=CursorSchema,
     explode=True,
 )
 request_query_sort = api_client.QueryParameter(
@@ -101,7 +96,7 @@ request_query_sort = api_client.QueryParameter(
     schema=SortSchema,
     explode=True,
 )
-SchemaFor200ResponseBodyApplicationJson = AccountsResponse
+SchemaFor200ResponseBodyApplicationJson = AccountsCursor
 
 
 @dataclass
@@ -180,8 +175,8 @@ class BaseApi(api_client.Api):
 
         prefix_separator_iterator = None
         for parameter in (
-            request_query_limit,
-            request_query_skip,
+            request_query_page_size,
+            request_query_cursor,
             request_query_sort,
         ):
             parameter_data = query_params.get(parameter.name, schemas.unset)

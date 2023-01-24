@@ -59,8 +59,7 @@ class ConnectorsResponseDataInner implements ModelInterface, ArrayAccess, \JsonS
       */
     protected static $openAPITypes = [
         'provider' => '\Formance\Model\Connector',
-        'enabled' => 'bool',
-        'disabled' => 'bool'
+        'enabled' => 'bool'
     ];
 
     /**
@@ -72,8 +71,7 @@ class ConnectorsResponseDataInner implements ModelInterface, ArrayAccess, \JsonS
       */
     protected static $openAPIFormats = [
         'provider' => null,
-        'enabled' => null,
-        'disabled' => null
+        'enabled' => null
     ];
 
     /**
@@ -83,8 +81,7 @@ class ConnectorsResponseDataInner implements ModelInterface, ArrayAccess, \JsonS
       */
     protected static array $openAPINullables = [
         'provider' => false,
-		'enabled' => false,
-		'disabled' => false
+		'enabled' => false
     ];
 
     /**
@@ -174,8 +171,7 @@ class ConnectorsResponseDataInner implements ModelInterface, ArrayAccess, \JsonS
      */
     protected static $attributeMap = [
         'provider' => 'provider',
-        'enabled' => 'enabled',
-        'disabled' => 'disabled'
+        'enabled' => 'enabled'
     ];
 
     /**
@@ -185,8 +181,7 @@ class ConnectorsResponseDataInner implements ModelInterface, ArrayAccess, \JsonS
      */
     protected static $setters = [
         'provider' => 'setProvider',
-        'enabled' => 'setEnabled',
-        'disabled' => 'setDisabled'
+        'enabled' => 'setEnabled'
     ];
 
     /**
@@ -196,8 +191,7 @@ class ConnectorsResponseDataInner implements ModelInterface, ArrayAccess, \JsonS
      */
     protected static $getters = [
         'provider' => 'getProvider',
-        'enabled' => 'getEnabled',
-        'disabled' => 'getDisabled'
+        'enabled' => 'getEnabled'
     ];
 
     /**
@@ -259,7 +253,6 @@ class ConnectorsResponseDataInner implements ModelInterface, ArrayAccess, \JsonS
     {
         $this->setIfExists('provider', $data ?? [], null);
         $this->setIfExists('enabled', $data ?? [], null);
-        $this->setIfExists('disabled', $data ?? [], null);
     }
 
     /**
@@ -358,35 +351,6 @@ class ConnectorsResponseDataInner implements ModelInterface, ArrayAccess, \JsonS
         }
 
         $this->container['enabled'] = $enabled;
-
-        return $this;
-    }
-
-    /**
-     * Gets disabled
-     *
-     * @return bool|null
-     */
-    public function getDisabled()
-    {
-        return $this->container['disabled'];
-    }
-
-    /**
-     * Sets disabled
-     *
-     * @param bool|null $disabled disabled
-     *
-     * @return self
-     */
-    public function setDisabled($disabled)
-    {
-
-        if (is_null($disabled)) {
-            throw new \InvalidArgumentException('non-nullable disabled cannot be null');
-        }
-
-        $this->container['disabled'] = $disabled;
 
         return $this;
     }
