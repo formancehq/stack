@@ -15,6 +15,7 @@ import com.formance.formance.model.ConnectorConfig;
 import com.formance.formance.model.ConnectorConfigResponse;
 import com.formance.formance.model.ConnectorsConfigsResponse;
 import com.formance.formance.model.ConnectorsResponse;
+import com.formance.formance.model.PaymentMetadata;
 import com.formance.formance.model.PaymentResponse;
 import com.formance.formance.model.PaymentsCursor;
 import com.formance.formance.model.StripeTransferRequest;
@@ -37,7 +38,7 @@ public interface PaymentsApi {
   @Headers({
     "Content-Type:application/json"
   })
-  @POST("api/payments/connectors/stripe/transfer")
+  @POST("api/payments/connectors/stripe/transfers")
   Call<Object> connectorsStripeTransfer(
     @retrofit2.http.Body StripeTransferRequest stripeTransferRequest
   );
@@ -168,6 +169,21 @@ public interface PaymentsApi {
   @DELETE("api/payments/connectors/{connector}")
   Call<Void> uninstallConnector(
     @retrofit2.http.Path("connector") Connector connector
+  );
+
+  /**
+   * Update metadata
+   * 
+   * @param paymentId The payment ID. (required)
+   * @param paymentMetadata  (required)
+   * @return Call&lt;Void&gt;
+   */
+  @Headers({
+    "Content-Type:application/json"
+  })
+  @PATCH("api/payments/payments/{paymentId}/metadata")
+  Call<Void> updateMetadata(
+    @retrofit2.http.Path("paymentId") String paymentId, @retrofit2.http.Body PaymentMetadata paymentMetadata
   );
 
 }

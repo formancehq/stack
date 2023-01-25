@@ -22,7 +22,7 @@ var _ MappedNullable = &StageStatus{}
 // StageStatus struct for StageStatus
 type StageStatus struct {
 	Stage float32 `json:"stage"`
-	OccurrenceID string `json:"occurrenceID"`
+	InstanceID string `json:"instanceID"`
 	StartedAt time.Time `json:"startedAt"`
 	TerminatedAt *time.Time `json:"terminatedAt,omitempty"`
 	Error *string `json:"error,omitempty"`
@@ -32,10 +32,10 @@ type StageStatus struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStageStatus(stage float32, occurrenceID string, startedAt time.Time) *StageStatus {
+func NewStageStatus(stage float32, instanceID string, startedAt time.Time) *StageStatus {
 	this := StageStatus{}
 	this.Stage = stage
-	this.OccurrenceID = occurrenceID
+	this.InstanceID = instanceID
 	this.StartedAt = startedAt
 	return &this
 }
@@ -72,28 +72,28 @@ func (o *StageStatus) SetStage(v float32) {
 	o.Stage = v
 }
 
-// GetOccurrenceID returns the OccurrenceID field value
-func (o *StageStatus) GetOccurrenceID() string {
+// GetInstanceID returns the InstanceID field value
+func (o *StageStatus) GetInstanceID() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.OccurrenceID
+	return o.InstanceID
 }
 
-// GetOccurrenceIDOk returns a tuple with the OccurrenceID field value
+// GetInstanceIDOk returns a tuple with the InstanceID field value
 // and a boolean to check if the value has been set.
-func (o *StageStatus) GetOccurrenceIDOk() (*string, bool) {
+func (o *StageStatus) GetInstanceIDOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.OccurrenceID, true
+	return &o.InstanceID, true
 }
 
-// SetOccurrenceID sets field value
-func (o *StageStatus) SetOccurrenceID(v string) {
-	o.OccurrenceID = v
+// SetInstanceID sets field value
+func (o *StageStatus) SetInstanceID(v string) {
+	o.InstanceID = v
 }
 
 // GetStartedAt returns the StartedAt field value
@@ -195,7 +195,7 @@ func (o StageStatus) MarshalJSON() ([]byte, error) {
 func (o StageStatus) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["stage"] = o.Stage
-	toSerialize["occurrenceID"] = o.OccurrenceID
+	toSerialize["instanceID"] = o.InstanceID
 	toSerialize["startedAt"] = o.StartedAt
 	if !isNil(o.TerminatedAt) {
 		toSerialize["terminatedAt"] = o.TerminatedAt

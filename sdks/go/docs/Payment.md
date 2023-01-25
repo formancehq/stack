@@ -16,13 +16,13 @@ Name | Type | Description | Notes
 **CreatedAt** | **time.Time** |  | 
 **Raw** | **map[string]interface{}** |  | 
 **Adjustments** | [**[]PaymentAdjustment**](PaymentAdjustment.md) |  | 
-**Metadata** | [**[]PaymentMetadata**](PaymentMetadata.md) |  | 
+**Metadata** | [**PaymentMetadata**](PaymentMetadata.md) |  | 
 
 ## Methods
 
 ### NewPayment
 
-`func NewPayment(id string, reference string, accountID string, type_ string, provider Connector, status PaymentStatus, initialAmount int64, scheme string, asset string, createdAt time.Time, raw map[string]interface{}, adjustments []PaymentAdjustment, metadata []PaymentMetadata, ) *Payment`
+`func NewPayment(id string, reference string, accountID string, type_ string, provider Connector, status PaymentStatus, initialAmount int64, scheme string, asset string, createdAt time.Time, raw map[string]interface{}, adjustments []PaymentAdjustment, metadata PaymentMetadata, ) *Payment`
 
 NewPayment instantiates a new Payment object
 This constructor will assign default values to properties that have it defined,
@@ -279,20 +279,20 @@ SetAdjustments sets Adjustments field to given value.
 
 ### GetMetadata
 
-`func (o *Payment) GetMetadata() []PaymentMetadata`
+`func (o *Payment) GetMetadata() PaymentMetadata`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *Payment) GetMetadataOk() (*[]PaymentMetadata, bool)`
+`func (o *Payment) GetMetadataOk() (*PaymentMetadata, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *Payment) SetMetadata(v []PaymentMetadata)`
+`func (o *Payment) SetMetadata(v PaymentMetadata)`
 
 SetMetadata sets Metadata field to given value.
 

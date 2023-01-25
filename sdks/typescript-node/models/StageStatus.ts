@@ -14,7 +14,7 @@ import { HttpFile } from '../http/http';
 
 export class StageStatus {
     'stage': number;
-    'occurrenceID': string;
+    'instanceID': string;
     'startedAt': Date;
     'terminatedAt'?: Date;
     'error'?: string;
@@ -29,8 +29,8 @@ export class StageStatus {
             "format": ""
         },
         {
-            "name": "occurrenceID",
-            "baseName": "occurrenceID",
+            "name": "instanceID",
+            "baseName": "instanceID",
             "type": "string",
             "format": ""
         },

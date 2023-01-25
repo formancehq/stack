@@ -88,6 +88,12 @@ func orchestrationEnvVars(orchestration *componentsv1beta2.Orchestration) []core
 	return env
 }
 
+func orchestrationWorkerEnvVars(orchestration *componentsv1beta2.Orchestration) []corev1.EnvVar {
+	env := orchestrationEnvVars(orchestration)
+	env = append(env, apisv1beta2.Env("OTEL_SERVICE_NAME", "orchestration-worker"))
+	return env
+}
+
 func (r *OrchestrationMutator) reconcileMainDeployment(ctx context.Context, orchestration *componentsv1beta2.Orchestration) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "orchestration")
 
@@ -146,7 +152,7 @@ func (r *OrchestrationMutator) reconcileWorkerDeployment(ctx context.Context, or
 							Name:            "orchestration",
 							Image:           controllerutils.GetImage("orchestration", orchestration.Spec.Version),
 							ImagePullPolicy: controllerutils.ImagePullPolicy(orchestration.Spec),
-							Env:             orchestrationEnvVars(orchestration),
+							Env:             orchestrationWorkerEnvVars(orchestration),
 							Command:         []string{"/orchestration", "worker"},
 						}},
 					},

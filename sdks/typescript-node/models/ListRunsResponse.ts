@@ -10,19 +10,19 @@
  * Do not edit the class manually.
  */
 
-import { ListRunsResponseCursor } from '../models/ListRunsResponseCursor';
+import { WorkflowInstance } from '../models/WorkflowInstance';
 import { HttpFile } from '../http/http';
 
 export class ListRunsResponse {
-    'cursor': ListRunsResponseCursor;
+    'data': Array<WorkflowInstance>;
 
     static readonly discriminator: string | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "cursor",
-            "baseName": "cursor",
-            "type": "ListRunsResponseCursor",
+            "name": "data",
+            "baseName": "data",
+            "type": "Array<WorkflowInstance>",
             "format": ""
         }    ];
 

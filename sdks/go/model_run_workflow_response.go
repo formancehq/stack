@@ -20,14 +20,14 @@ var _ MappedNullable = &RunWorkflowResponse{}
 
 // RunWorkflowResponse struct for RunWorkflowResponse
 type RunWorkflowResponse struct {
-	Data WorkflowOccurrence `json:"data"`
+	Data WorkflowInstance `json:"data"`
 }
 
 // NewRunWorkflowResponse instantiates a new RunWorkflowResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewRunWorkflowResponse(data WorkflowOccurrence) *RunWorkflowResponse {
+func NewRunWorkflowResponse(data WorkflowInstance) *RunWorkflowResponse {
 	this := RunWorkflowResponse{}
 	this.Data = data
 	return &this
@@ -42,9 +42,9 @@ func NewRunWorkflowResponseWithDefaults() *RunWorkflowResponse {
 }
 
 // GetData returns the Data field value
-func (o *RunWorkflowResponse) GetData() WorkflowOccurrence {
+func (o *RunWorkflowResponse) GetData() WorkflowInstance {
 	if o == nil {
-		var ret WorkflowOccurrence
+		var ret WorkflowInstance
 		return ret
 	}
 
@@ -53,7 +53,7 @@ func (o *RunWorkflowResponse) GetData() WorkflowOccurrence {
 
 // GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *RunWorkflowResponse) GetDataOk() (*WorkflowOccurrence, bool) {
+func (o *RunWorkflowResponse) GetDataOk() (*WorkflowInstance, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -61,7 +61,7 @@ func (o *RunWorkflowResponse) GetDataOk() (*WorkflowOccurrence, bool) {
 }
 
 // SetData sets field value
-func (o *RunWorkflowResponse) SetData(v WorkflowOccurrence) {
+func (o *RunWorkflowResponse) SetData(v WorkflowInstance) {
 	o.Data = v
 }
 

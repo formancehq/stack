@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Cursor** | [**ListRunsResponseCursor**](ListRunsResponseCursor.md) |  | 
+**Data** | [**[]WorkflowInstance**](WorkflowInstance.md) |  | 
 
 ## Methods
 
 ### NewListRunsResponse
 
-`func NewListRunsResponse(cursor ListRunsResponseCursor, ) *ListRunsResponse`
+`func NewListRunsResponse(data []WorkflowInstance, ) *ListRunsResponse`
 
 NewListRunsResponse instantiates a new ListRunsResponse object
 This constructor will assign default values to properties that have it defined,
@@ -25,24 +25,24 @@ NewListRunsResponseWithDefaults instantiates a new ListRunsResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetCursor
+### GetData
 
-`func (o *ListRunsResponse) GetCursor() ListRunsResponseCursor`
+`func (o *ListRunsResponse) GetData() []WorkflowInstance`
 
-GetCursor returns the Cursor field if non-nil, zero value otherwise.
+GetData returns the Data field if non-nil, zero value otherwise.
 
-### GetCursorOk
+### GetDataOk
 
-`func (o *ListRunsResponse) GetCursorOk() (*ListRunsResponseCursor, bool)`
+`func (o *ListRunsResponse) GetDataOk() (*[]WorkflowInstance, bool)`
 
-GetCursorOk returns a tuple with the Cursor field if it's non-nil, zero value otherwise
+GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetCursor
+### SetData
 
-`func (o *ListRunsResponse) SetCursor(v ListRunsResponseCursor)`
+`func (o *ListRunsResponse) SetData(v []WorkflowInstance)`
 
-SetCursor sets Cursor field to given value.
+SetData sets Data field to given value.
 
 
 

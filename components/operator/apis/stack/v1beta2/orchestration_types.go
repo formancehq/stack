@@ -27,7 +27,12 @@ func (in OrchestrationSpec) NeedAuthMiddleware() bool {
 func (in OrchestrationSpec) Spec(stack *Stack, configuration ConfigurationSpec) any {
 	return componentsv1beta2.OrchestrationSpec{
 		StackURL: stack.URL(),
-		Temporal: configuration.Temporal,
+		Temporal: componentsv1beta2.TemporalConfig{
+			Address:   configuration.Temporal.Address,
+			Namespace: configuration.Temporal.Namespace,
+			TaskQueue: stack.Name,
+			TLS:       configuration.Temporal.TLS,
+		},
 		Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
 			CreateDatabase: true,
 			PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{

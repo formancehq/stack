@@ -860,7 +860,7 @@ export class WalletsApiResponseProcessor {
      */
      public async debitWallet(response: ResponseContext): Promise<DebitWalletResponse | void > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
-        if (isCodeInRange("200", response.httpStatusCode)) {
+        if (isCodeInRange("201", response.httpStatusCode)) {
             const body: DebitWalletResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
                 "DebitWalletResponse", ""

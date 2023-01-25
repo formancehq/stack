@@ -5,8 +5,8 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewModule(clientID string, clientSecret string, tokenURL string) fx.Option {
+func NewModule(clientID string, clientSecret string, tokenURL string, debug bool) fx.Option {
 	return fx.Provide(func() (*sdk.APIClient, error) {
-		return NewStackClient(clientID, clientSecret, tokenURL)
+		return NewStackClient(clientID, clientSecret, tokenURL, debug)
 	})
 }

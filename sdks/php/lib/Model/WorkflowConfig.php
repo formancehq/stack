@@ -58,6 +58,7 @@ class WorkflowConfig implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var string[]
       */
     protected static $openAPITypes = [
+        'name' => 'string',
         'stages' => 'array<string,mixed>[]'
     ];
 
@@ -69,6 +70,7 @@ class WorkflowConfig implements ModelInterface, ArrayAccess, \JsonSerializable
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
+        'name' => null,
         'stages' => null
     ];
 
@@ -78,7 +80,8 @@ class WorkflowConfig implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'stages' => false
+        'name' => false,
+		'stages' => false
     ];
 
     /**
@@ -167,6 +170,7 @@ class WorkflowConfig implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
+        'name' => 'name',
         'stages' => 'stages'
     ];
 
@@ -176,6 +180,7 @@ class WorkflowConfig implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
+        'name' => 'setName',
         'stages' => 'setStages'
     ];
 
@@ -185,6 +190,7 @@ class WorkflowConfig implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
+        'name' => 'getName',
         'stages' => 'getStages'
     ];
 
@@ -245,6 +251,7 @@ class WorkflowConfig implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(array $data = null)
     {
+        $this->setIfExists('name', $data ?? [], null);
         $this->setIfExists('stages', $data ?? [], null);
     }
 
@@ -292,6 +299,33 @@ class WorkflowConfig implements ModelInterface, ArrayAccess, \JsonSerializable
         return count($this->listInvalidProperties()) === 0;
     }
 
+
+    /**
+     * Gets name
+     *
+     * @return string|null
+     */
+    public function getName()
+    {
+        return $this->container['name'];
+    }
+
+    /**
+     * Sets name
+     *
+     * @param string|null $name name
+     *
+     * @return self
+     */
+    public function setName($name)
+    {
+        if (is_null($name)) {
+            throw new \InvalidArgumentException('non-nullable name cannot be null');
+        }
+        $this->container['name'] = $name;
+
+        return $this;
+    }
 
     /**
      * Gets stages

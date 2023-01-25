@@ -72,6 +72,8 @@ github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7
 github.com/felixge/httpsnoop v1.0.1/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/formancehq/cobra v0.0.0-20221112160629-60a6d6d55ef9 h1:vix/rzvBgwdc0/4HRnEGFUXmqMJdU1LwIZbdXsm4qT4=
 github.com/formancehq/cobra v0.0.0-20221112160629-60a6d6d55ef9/go.mod h1:IOw/AERYS7UzyrGinqmz6HLUo219MORXGxhbaJUqzrY=
+github.com/formancehq/go-libs v1.4.1 h1:rUKfUyZFq9aid+JUIqKN8Mk80Lx06Bx7AreHj+9vyTo=
+github.com/formancehq/go-libs v1.4.1/go.mod h1:IK1zDIGRPi/o8sSApIc1W0VC1Y0DGdADzxvpbqlD8fk=
 github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c h1:artlSyY/egK+XF+cdSsf/USNwIxUCLasRHbQoLNs9wY=
 github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c/go.mod h1:vcDdyFgHzwPIPgoXO1u1UCJQjv2gJBq832VZx13sWBE=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
@@ -223,8 +225,8 @@ github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81P
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-github.com/stretchr/testify v1.8.0 h1:pSgiaMZlXftHpm5L7V1+rVB+AZJydKsMxsQBIJw4PKk=
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
+github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=
 github.com/talal/go-bits v0.0.0-20200204154716-071e9f3e66e1 h1:sDCJkxkdgPIDUKcOemdIsP2AnUjtLTVSlUDkAnf3fB4=
 github.com/talal/go-bits v0.0.0-20200204154716-071e9f3e66e1/go.mod h1:IaWL8TVo0gKkfVx+4RbcRkzp6FoeMqEtD88+5aCRwyY=
 github.com/urfave/cli v1.22.5/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=

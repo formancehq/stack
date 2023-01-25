@@ -30,12 +30,38 @@ import java.util.Map;
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class WorkflowConfig {
+  public static final String SERIALIZED_NAME_NAME = "name";
+  @SerializedName(SERIALIZED_NAME_NAME)
+  private String name;
+
   public static final String SERIALIZED_NAME_STAGES = "stages";
   @SerializedName(SERIALIZED_NAME_STAGES)
   private List<Map<String, Object>> stages = new ArrayList<>();
 
   public WorkflowConfig() {
   }
+
+  public WorkflowConfig name(String name) {
+    
+    this.name = name;
+    return this;
+  }
+
+   /**
+   * Get name
+   * @return name
+  **/
+  @javax.annotation.Nullable
+
+  public String getName() {
+    return name;
+  }
+
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
 
   public WorkflowConfig stages(List<Map<String, Object>> stages) {
     
@@ -73,18 +99,20 @@ public class WorkflowConfig {
       return false;
     }
     WorkflowConfig workflowConfig = (WorkflowConfig) o;
-    return Objects.equals(this.stages, workflowConfig.stages);
+    return Objects.equals(this.name, workflowConfig.name) &&
+        Objects.equals(this.stages, workflowConfig.stages);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(stages);
+    return Objects.hash(name, stages);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class WorkflowConfig {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    stages: ").append(toIndentedString(stages)).append("\n");
     sb.append("}");
     return sb.toString();

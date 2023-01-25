@@ -75,20 +75,20 @@ func PrintWallet(out io.Writer, wallet formance.WalletWithBalances) error {
 	fctl.Section.Println("Balances")
 	if len(wallet.Balances.Main.Assets) == 0 {
 		fctl.Println("No balances found.")
-		return nil
-	}
-	tableData = pterm.TableData{}
-	tableData = append(tableData, []string{"Asset", "Amount"})
-	for asset, amount := range wallet.Balances.Main.Assets {
-		tableData = append(tableData, []string{asset, fmt.Sprint(amount)})
-	}
-	if err := pterm.DefaultTable.
-		WithHasHeader(true).
-		WithWriter(out).
-		WithData(tableData).
-		Render(); err != nil {
-		return err
+	} else {
+		tableData = pterm.TableData{}
+		tableData = append(tableData, []string{"Asset", "Amount"})
+		for asset, amount := range wallet.Balances.Main.Assets {
+			tableData = append(tableData, []string{asset, fmt.Sprint(amount)})
+		}
+		if err := pterm.DefaultTable.
+			WithHasHeader(true).
+			WithWriter(out).
+			WithData(tableData).
+			Render(); err != nil {
+			return err
+		}
 	}
 
-	return nil
+	return fctl.PrintMetadata(out, wallet.GetMetadata())
 }

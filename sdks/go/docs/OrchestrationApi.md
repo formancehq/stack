@@ -4,13 +4,15 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateWorkflow**](OrchestrationApi.md#CreateWorkflow) | **Post** /api/orchestration/flows | Create workflow
-[**GetFlow**](OrchestrationApi.md#GetFlow) | **Get** /api/orchestration/flows/{flowId} | Get a flow by id
-[**GetWorkflowOccurrence**](OrchestrationApi.md#GetWorkflowOccurrence) | **Get** /api/orchestration/flows/{flowId}/runs/{runId} | Get a workflow occurrence by id
-[**ListFlows**](OrchestrationApi.md#ListFlows) | **Get** /api/orchestration/flows | List registered flows
-[**ListRuns**](OrchestrationApi.md#ListRuns) | **Get** /api/orchestration/flows/{flowId}/runs | List occurrences of a workflow
+[**CreateWorkflow**](OrchestrationApi.md#CreateWorkflow) | **Post** /api/orchestration/workflows | Create workflow
+[**GetInstance**](OrchestrationApi.md#GetInstance) | **Get** /api/orchestration/instances/{instanceID} | Get a workflow instance by id
+[**GetInstanceHistory**](OrchestrationApi.md#GetInstanceHistory) | **Get** /api/orchestration/instances/{instanceID}/history | Get a workflow instance history by id
+[**GetInstanceStageHistory**](OrchestrationApi.md#GetInstanceStageHistory) | **Get** /api/orchestration/instances/{instanceID}/stages/{number}/history | Get a workflow instance stage history
+[**GetWorkflow**](OrchestrationApi.md#GetWorkflow) | **Get** /api/orchestration/workflows/{flowId} | Get a flow by id
+[**ListInstances**](OrchestrationApi.md#ListInstances) | **Get** /api/orchestration/instances | List instances of a workflow
+[**ListWorkflows**](OrchestrationApi.md#ListWorkflows) | **Get** /api/orchestration/workflows | List registered workflows
 [**OrchestrationgetServerInfo**](OrchestrationApi.md#OrchestrationgetServerInfo) | **Get** /api/orchestration/_info | Get server info
-[**RunWorkflow**](OrchestrationApi.md#RunWorkflow) | **Post** /api/orchestration/flows/{flowId}/runs | Run workflow
+[**RunWorkflow**](OrchestrationApi.md#RunWorkflow) | **Post** /api/orchestration/workflows/{workflowID}/instances | Run workflow
 
 
 
@@ -80,9 +82,222 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## GetFlow
+## GetInstance
 
-> GetWorkflowResponse GetFlow(ctx, flowId).Execute()
+> GetWorkflowInstanceResponse GetInstance(ctx, instanceID).Execute()
+
+Get a workflow instance by id
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    instanceID := "xxx" // string | The instance id
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.OrchestrationApi.GetInstance(context.Background(), instanceID).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.GetInstance``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `GetInstance`: GetWorkflowInstanceResponse
+    fmt.Fprintf(os.Stdout, "Response from `OrchestrationApi.GetInstance`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**instanceID** | **string** | The instance id | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetInstanceRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+[**GetWorkflowInstanceResponse**](GetWorkflowInstanceResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetInstanceHistory
+
+> GetWorkflowInstanceHistoryResponse GetInstanceHistory(ctx, instanceID).Execute()
+
+Get a workflow instance history by id
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    instanceID := "xxx" // string | The instance id
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.OrchestrationApi.GetInstanceHistory(context.Background(), instanceID).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.GetInstanceHistory``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `GetInstanceHistory`: GetWorkflowInstanceHistoryResponse
+    fmt.Fprintf(os.Stdout, "Response from `OrchestrationApi.GetInstanceHistory`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**instanceID** | **string** | The instance id | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetInstanceHistoryRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+[**GetWorkflowInstanceHistoryResponse**](GetWorkflowInstanceHistoryResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetInstanceStageHistory
+
+> GetWorkflowInstanceHistoryStageResponse GetInstanceStageHistory(ctx, instanceID, number).Execute()
+
+Get a workflow instance stage history
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    instanceID := "xxx" // string | The instance id
+    number := int32(0) // int32 | The stage number
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.OrchestrationApi.GetInstanceStageHistory(context.Background(), instanceID, number).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.GetInstanceStageHistory``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `GetInstanceStageHistory`: GetWorkflowInstanceHistoryStageResponse
+    fmt.Fprintf(os.Stdout, "Response from `OrchestrationApi.GetInstanceStageHistory`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**instanceID** | **string** | The instance id | 
+**number** | **int32** | The stage number | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetInstanceStageHistoryRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+### Return type
+
+[**GetWorkflowInstanceHistoryStageResponse**](GetWorkflowInstanceHistoryStageResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetWorkflow
+
+> GetWorkflowResponse GetWorkflow(ctx, flowId).Execute()
 
 Get a flow by id
 
@@ -105,13 +320,13 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.OrchestrationApi.GetFlow(context.Background(), flowId).Execute()
+    resp, r, err := apiClient.OrchestrationApi.GetWorkflow(context.Background(), flowId).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.GetFlow``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.GetWorkflow``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `GetFlow`: GetWorkflowResponse
-    fmt.Fprintf(os.Stdout, "Response from `OrchestrationApi.GetFlow`: %v\n", resp)
+    // response from `GetWorkflow`: GetWorkflowResponse
+    fmt.Fprintf(os.Stdout, "Response from `OrchestrationApi.GetWorkflow`: %v\n", resp)
 }
 ```
 
@@ -125,7 +340,7 @@ Name | Type | Description  | Notes
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiGetFlowRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiGetWorkflowRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
@@ -150,11 +365,11 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## GetWorkflowOccurrence
+## ListInstances
 
-> GetWorkflowOccurrenceResponse GetWorkflowOccurrence(ctx, flowId, runId).Execute()
+> ListRunsResponse ListInstances(ctx).WorkflowID(workflowID).Execute()
 
-Get a workflow occurrence by id
+List instances of a workflow
 
 
 
@@ -171,43 +386,36 @@ import (
 )
 
 func main() {
-    flowId := "xxx" // string | The flow id
-    runId := "xxx" // string | The occurrence id
+    workflowID := "xxx" // string | A workflow id
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.OrchestrationApi.GetWorkflowOccurrence(context.Background(), flowId, runId).Execute()
+    resp, r, err := apiClient.OrchestrationApi.ListInstances(context.Background()).WorkflowID(workflowID).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.GetWorkflowOccurrence``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.ListInstances``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `GetWorkflowOccurrence`: GetWorkflowOccurrenceResponse
-    fmt.Fprintf(os.Stdout, "Response from `OrchestrationApi.GetWorkflowOccurrence`: %v\n", resp)
+    // response from `ListInstances`: ListRunsResponse
+    fmt.Fprintf(os.Stdout, "Response from `OrchestrationApi.ListInstances`: %v\n", resp)
 }
 ```
 
 ### Path Parameters
 
 
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**flowId** | **string** | The flow id | 
-**runId** | **string** | The occurrence id | 
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiGetWorkflowOccurrenceRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiListInstancesRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-
-
+ **workflowID** | **string** | A workflow id | 
 
 ### Return type
 
-[**GetWorkflowOccurrenceResponse**](GetWorkflowOccurrenceResponse.md)
+[**ListRunsResponse**](ListRunsResponse.md)
 
 ### Authorization
 
@@ -223,11 +431,11 @@ Name | Type | Description  | Notes
 [[Back to README]](../README.md)
 
 
-## ListFlows
+## ListWorkflows
 
-> ListWorkflowsResponse ListFlows(ctx).Execute()
+> ListWorkflowsResponse ListWorkflows(ctx).Execute()
 
-List registered flows
+List registered workflows
 
 
 
@@ -247,13 +455,13 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.OrchestrationApi.ListFlows(context.Background()).Execute()
+    resp, r, err := apiClient.OrchestrationApi.ListWorkflows(context.Background()).Execute()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.ListFlows``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.ListWorkflows``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `ListFlows`: ListWorkflowsResponse
-    fmt.Fprintf(os.Stdout, "Response from `OrchestrationApi.ListFlows`: %v\n", resp)
+    // response from `ListWorkflows`: ListWorkflowsResponse
+    fmt.Fprintf(os.Stdout, "Response from `OrchestrationApi.ListWorkflows`: %v\n", resp)
 }
 ```
 
@@ -263,82 +471,12 @@ This endpoint does not need any parameter.
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiListFlowsRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiListWorkflowsRequest struct via the builder pattern
 
 
 ### Return type
 
 [**ListWorkflowsResponse**](ListWorkflowsResponse.md)
-
-### Authorization
-
-[Authorization](../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## ListRuns
-
-> ListRunsResponse ListRuns(ctx, flowId).Execute()
-
-List occurrences of a workflow
-
-
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    client "./openapi"
-)
-
-func main() {
-    flowId := "xxx" // string | The flow id
-
-    configuration := client.NewConfiguration()
-    apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.OrchestrationApi.ListRuns(context.Background(), flowId).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.ListRuns``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `ListRuns`: ListRunsResponse
-    fmt.Fprintf(os.Stdout, "Response from `OrchestrationApi.ListRuns`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**flowId** | **string** | The flow id | 
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiListRunsRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
-
-### Return type
-
-[**ListRunsResponse**](ListRunsResponse.md)
 
 ### Authorization
 
@@ -415,7 +553,7 @@ Other parameters are passed through a pointer to a apiOrchestrationgetServerInfo
 
 ## RunWorkflow
 
-> RunWorkflowResponse RunWorkflow(ctx, flowId).Wait(wait).RequestBody(requestBody).Execute()
+> RunWorkflowResponse RunWorkflow(ctx, workflowID).Wait(wait).RequestBody(requestBody).Execute()
 
 Run workflow
 
@@ -434,13 +572,13 @@ import (
 )
 
 func main() {
-    flowId := "xxx" // string | The flow id
+    workflowID := "xxx" // string | The flow id
     wait := true // bool | Wait end of the workflow before return (optional)
     requestBody := map[string]string{"key": "Inner_example"} // map[string]string |  (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.OrchestrationApi.RunWorkflow(context.Background(), flowId).Wait(wait).RequestBody(requestBody).Execute()
+    resp, r, err := apiClient.OrchestrationApi.RunWorkflow(context.Background(), workflowID).Wait(wait).RequestBody(requestBody).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.RunWorkflow``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -456,7 +594,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**flowId** | **string** | The flow id | 
+**workflowID** | **string** | The flow id | 
 
 ### Other Parameters
 

@@ -38,64 +38,93 @@ type OrchestrationApi interface {
 	CreateWorkflowExecute(r ApiCreateWorkflowRequest) (*CreateWorkflowResponse, *http.Response, error)
 
 	/*
-	GetFlow Get a flow by id
+	GetInstance Get a workflow instance by id
+
+	Get a workflow instance by id
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param instanceID The instance id
+	@return ApiGetInstanceRequest
+	*/
+	GetInstance(ctx context.Context, instanceID string) ApiGetInstanceRequest
+
+	// GetInstanceExecute executes the request
+	//  @return GetWorkflowInstanceResponse
+	GetInstanceExecute(r ApiGetInstanceRequest) (*GetWorkflowInstanceResponse, *http.Response, error)
+
+	/*
+	GetInstanceHistory Get a workflow instance history by id
+
+	Get a workflow instance history by id
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param instanceID The instance id
+	@return ApiGetInstanceHistoryRequest
+	*/
+	GetInstanceHistory(ctx context.Context, instanceID string) ApiGetInstanceHistoryRequest
+
+	// GetInstanceHistoryExecute executes the request
+	//  @return GetWorkflowInstanceHistoryResponse
+	GetInstanceHistoryExecute(r ApiGetInstanceHistoryRequest) (*GetWorkflowInstanceHistoryResponse, *http.Response, error)
+
+	/*
+	GetInstanceStageHistory Get a workflow instance stage history
+
+	Get a workflow instance stage history
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param instanceID The instance id
+	@param number The stage number
+	@return ApiGetInstanceStageHistoryRequest
+	*/
+	GetInstanceStageHistory(ctx context.Context, instanceID string, number int32) ApiGetInstanceStageHistoryRequest
+
+	// GetInstanceStageHistoryExecute executes the request
+	//  @return GetWorkflowInstanceHistoryStageResponse
+	GetInstanceStageHistoryExecute(r ApiGetInstanceStageHistoryRequest) (*GetWorkflowInstanceHistoryStageResponse, *http.Response, error)
+
+	/*
+	GetWorkflow Get a flow by id
 
 	Get a flow by id
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param flowId The flow id
-	@return ApiGetFlowRequest
+	@return ApiGetWorkflowRequest
 	*/
-	GetFlow(ctx context.Context, flowId string) ApiGetFlowRequest
+	GetWorkflow(ctx context.Context, flowId string) ApiGetWorkflowRequest
 
-	// GetFlowExecute executes the request
+	// GetWorkflowExecute executes the request
 	//  @return GetWorkflowResponse
-	GetFlowExecute(r ApiGetFlowRequest) (*GetWorkflowResponse, *http.Response, error)
+	GetWorkflowExecute(r ApiGetWorkflowRequest) (*GetWorkflowResponse, *http.Response, error)
 
 	/*
-	GetWorkflowOccurrence Get a workflow occurrence by id
+	ListInstances List instances of a workflow
 
-	Get a workflow occurrence by id
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param flowId The flow id
-	@param runId The occurrence id
-	@return ApiGetWorkflowOccurrenceRequest
-	*/
-	GetWorkflowOccurrence(ctx context.Context, flowId string, runId string) ApiGetWorkflowOccurrenceRequest
-
-	// GetWorkflowOccurrenceExecute executes the request
-	//  @return GetWorkflowOccurrenceResponse
-	GetWorkflowOccurrenceExecute(r ApiGetWorkflowOccurrenceRequest) (*GetWorkflowOccurrenceResponse, *http.Response, error)
-
-	/*
-	ListFlows List registered flows
-
-	List registered flows
+	List instances of a workflow
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiListFlowsRequest
+	@return ApiListInstancesRequest
 	*/
-	ListFlows(ctx context.Context) ApiListFlowsRequest
+	ListInstances(ctx context.Context) ApiListInstancesRequest
 
-	// ListFlowsExecute executes the request
-	//  @return ListWorkflowsResponse
-	ListFlowsExecute(r ApiListFlowsRequest) (*ListWorkflowsResponse, *http.Response, error)
-
-	/*
-	ListRuns List occurrences of a workflow
-
-	List occurrences of a workflow
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param flowId The flow id
-	@return ApiListRunsRequest
-	*/
-	ListRuns(ctx context.Context, flowId string) ApiListRunsRequest
-
-	// ListRunsExecute executes the request
+	// ListInstancesExecute executes the request
 	//  @return ListRunsResponse
-	ListRunsExecute(r ApiListRunsRequest) (*ListRunsResponse, *http.Response, error)
+	ListInstancesExecute(r ApiListInstancesRequest) (*ListRunsResponse, *http.Response, error)
+
+	/*
+	ListWorkflows List registered workflows
+
+	List registered workflows
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiListWorkflowsRequest
+	*/
+	ListWorkflows(ctx context.Context) ApiListWorkflowsRequest
+
+	// ListWorkflowsExecute executes the request
+	//  @return ListWorkflowsResponse
+	ListWorkflowsExecute(r ApiListWorkflowsRequest) (*ListWorkflowsResponse, *http.Response, error)
 
 	/*
 	OrchestrationgetServerInfo Get server info
@@ -115,10 +144,10 @@ type OrchestrationApi interface {
 	Run workflow
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param flowId The flow id
+	@param workflowID The flow id
 	@return ApiRunWorkflowRequest
 	*/
-	RunWorkflow(ctx context.Context, flowId string) ApiRunWorkflowRequest
+	RunWorkflow(ctx context.Context, workflowID string) ApiRunWorkflowRequest
 
 	// RunWorkflowExecute executes the request
 	//  @return RunWorkflowResponse
@@ -173,7 +202,7 @@ func (a *OrchestrationApiService) CreateWorkflowExecute(r ApiCreateWorkflowReque
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/orchestration/flows"
+	localVarPath := localBasePath + "/api/orchestration/workflows"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -243,27 +272,364 @@ func (a *OrchestrationApiService) CreateWorkflowExecute(r ApiCreateWorkflowReque
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiGetFlowRequest struct {
+type ApiGetInstanceRequest struct {
+	ctx context.Context
+	ApiService OrchestrationApi
+	instanceID string
+}
+
+func (r ApiGetInstanceRequest) Execute() (*GetWorkflowInstanceResponse, *http.Response, error) {
+	return r.ApiService.GetInstanceExecute(r)
+}
+
+/*
+GetInstance Get a workflow instance by id
+
+Get a workflow instance by id
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param instanceID The instance id
+ @return ApiGetInstanceRequest
+*/
+func (a *OrchestrationApiService) GetInstance(ctx context.Context, instanceID string) ApiGetInstanceRequest {
+	return ApiGetInstanceRequest{
+		ApiService: a,
+		ctx: ctx,
+		instanceID: instanceID,
+	}
+}
+
+// Execute executes the request
+//  @return GetWorkflowInstanceResponse
+func (a *OrchestrationApiService) GetInstanceExecute(r ApiGetInstanceRequest) (*GetWorkflowInstanceResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *GetWorkflowInstanceResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.GetInstance")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/orchestration/instances/{instanceID}"
+	localVarPath = strings.Replace(localVarPath, "{"+"instanceID"+"}", url.PathEscape(parameterValueToString(r.instanceID, "instanceID")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiGetInstanceHistoryRequest struct {
+	ctx context.Context
+	ApiService OrchestrationApi
+	instanceID string
+}
+
+func (r ApiGetInstanceHistoryRequest) Execute() (*GetWorkflowInstanceHistoryResponse, *http.Response, error) {
+	return r.ApiService.GetInstanceHistoryExecute(r)
+}
+
+/*
+GetInstanceHistory Get a workflow instance history by id
+
+Get a workflow instance history by id
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param instanceID The instance id
+ @return ApiGetInstanceHistoryRequest
+*/
+func (a *OrchestrationApiService) GetInstanceHistory(ctx context.Context, instanceID string) ApiGetInstanceHistoryRequest {
+	return ApiGetInstanceHistoryRequest{
+		ApiService: a,
+		ctx: ctx,
+		instanceID: instanceID,
+	}
+}
+
+// Execute executes the request
+//  @return GetWorkflowInstanceHistoryResponse
+func (a *OrchestrationApiService) GetInstanceHistoryExecute(r ApiGetInstanceHistoryRequest) (*GetWorkflowInstanceHistoryResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *GetWorkflowInstanceHistoryResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.GetInstanceHistory")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/orchestration/instances/{instanceID}/history"
+	localVarPath = strings.Replace(localVarPath, "{"+"instanceID"+"}", url.PathEscape(parameterValueToString(r.instanceID, "instanceID")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiGetInstanceStageHistoryRequest struct {
+	ctx context.Context
+	ApiService OrchestrationApi
+	instanceID string
+	number int32
+}
+
+func (r ApiGetInstanceStageHistoryRequest) Execute() (*GetWorkflowInstanceHistoryStageResponse, *http.Response, error) {
+	return r.ApiService.GetInstanceStageHistoryExecute(r)
+}
+
+/*
+GetInstanceStageHistory Get a workflow instance stage history
+
+Get a workflow instance stage history
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param instanceID The instance id
+ @param number The stage number
+ @return ApiGetInstanceStageHistoryRequest
+*/
+func (a *OrchestrationApiService) GetInstanceStageHistory(ctx context.Context, instanceID string, number int32) ApiGetInstanceStageHistoryRequest {
+	return ApiGetInstanceStageHistoryRequest{
+		ApiService: a,
+		ctx: ctx,
+		instanceID: instanceID,
+		number: number,
+	}
+}
+
+// Execute executes the request
+//  @return GetWorkflowInstanceHistoryStageResponse
+func (a *OrchestrationApiService) GetInstanceStageHistoryExecute(r ApiGetInstanceStageHistoryRequest) (*GetWorkflowInstanceHistoryStageResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *GetWorkflowInstanceHistoryStageResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.GetInstanceStageHistory")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/orchestration/instances/{instanceID}/stages/{number}/history"
+	localVarPath = strings.Replace(localVarPath, "{"+"instanceID"+"}", url.PathEscape(parameterValueToString(r.instanceID, "instanceID")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"number"+"}", url.PathEscape(parameterValueToString(r.number, "number")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiGetWorkflowRequest struct {
 	ctx context.Context
 	ApiService OrchestrationApi
 	flowId string
 }
 
-func (r ApiGetFlowRequest) Execute() (*GetWorkflowResponse, *http.Response, error) {
-	return r.ApiService.GetFlowExecute(r)
+func (r ApiGetWorkflowRequest) Execute() (*GetWorkflowResponse, *http.Response, error) {
+	return r.ApiService.GetWorkflowExecute(r)
 }
 
 /*
-GetFlow Get a flow by id
+GetWorkflow Get a flow by id
 
 Get a flow by id
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param flowId The flow id
- @return ApiGetFlowRequest
+ @return ApiGetWorkflowRequest
 */
-func (a *OrchestrationApiService) GetFlow(ctx context.Context, flowId string) ApiGetFlowRequest {
-	return ApiGetFlowRequest{
+func (a *OrchestrationApiService) GetWorkflow(ctx context.Context, flowId string) ApiGetWorkflowRequest {
+	return ApiGetWorkflowRequest{
 		ApiService: a,
 		ctx: ctx,
 		flowId: flowId,
@@ -272,7 +638,7 @@ func (a *OrchestrationApiService) GetFlow(ctx context.Context, flowId string) Ap
 
 // Execute executes the request
 //  @return GetWorkflowResponse
-func (a *OrchestrationApiService) GetFlowExecute(r ApiGetFlowRequest) (*GetWorkflowResponse, *http.Response, error) {
+func (a *OrchestrationApiService) GetWorkflowExecute(r ApiGetWorkflowRequest) (*GetWorkflowResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -280,12 +646,12 @@ func (a *OrchestrationApiService) GetFlowExecute(r ApiGetFlowRequest) (*GetWorkf
 		localVarReturnValue  *GetWorkflowResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.GetFlow")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.GetWorkflow")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/orchestration/flows/{flowId}"
+	localVarPath := localBasePath + "/api/orchestration/workflows/{flowId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterValueToString(r.flowId, "flowId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -354,258 +720,40 @@ func (a *OrchestrationApiService) GetFlowExecute(r ApiGetFlowRequest) (*GetWorkf
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiGetWorkflowOccurrenceRequest struct {
+type ApiListInstancesRequest struct {
 	ctx context.Context
 	ApiService OrchestrationApi
-	flowId string
-	runId string
+	workflowID *string
 }
 
-func (r ApiGetWorkflowOccurrenceRequest) Execute() (*GetWorkflowOccurrenceResponse, *http.Response, error) {
-	return r.ApiService.GetWorkflowOccurrenceExecute(r)
+// A workflow id
+func (r ApiListInstancesRequest) WorkflowID(workflowID string) ApiListInstancesRequest {
+	r.workflowID = &workflowID
+	return r
+}
+
+func (r ApiListInstancesRequest) Execute() (*ListRunsResponse, *http.Response, error) {
+	return r.ApiService.ListInstancesExecute(r)
 }
 
 /*
-GetWorkflowOccurrence Get a workflow occurrence by id
+ListInstances List instances of a workflow
 
-Get a workflow occurrence by id
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param flowId The flow id
- @param runId The occurrence id
- @return ApiGetWorkflowOccurrenceRequest
-*/
-func (a *OrchestrationApiService) GetWorkflowOccurrence(ctx context.Context, flowId string, runId string) ApiGetWorkflowOccurrenceRequest {
-	return ApiGetWorkflowOccurrenceRequest{
-		ApiService: a,
-		ctx: ctx,
-		flowId: flowId,
-		runId: runId,
-	}
-}
-
-// Execute executes the request
-//  @return GetWorkflowOccurrenceResponse
-func (a *OrchestrationApiService) GetWorkflowOccurrenceExecute(r ApiGetWorkflowOccurrenceRequest) (*GetWorkflowOccurrenceResponse, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *GetWorkflowOccurrenceResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.GetWorkflowOccurrence")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/orchestration/flows/{flowId}/runs/{runId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterValueToString(r.flowId, "flowId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"runId"+"}", url.PathEscape(parameterValueToString(r.runId, "runId")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiListFlowsRequest struct {
-	ctx context.Context
-	ApiService OrchestrationApi
-}
-
-func (r ApiListFlowsRequest) Execute() (*ListWorkflowsResponse, *http.Response, error) {
-	return r.ApiService.ListFlowsExecute(r)
-}
-
-/*
-ListFlows List registered flows
-
-List registered flows
+List instances of a workflow
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiListFlowsRequest
+ @return ApiListInstancesRequest
 */
-func (a *OrchestrationApiService) ListFlows(ctx context.Context) ApiListFlowsRequest {
-	return ApiListFlowsRequest{
+func (a *OrchestrationApiService) ListInstances(ctx context.Context) ApiListInstancesRequest {
+	return ApiListInstancesRequest{
 		ApiService: a,
 		ctx: ctx,
-	}
-}
-
-// Execute executes the request
-//  @return ListWorkflowsResponse
-func (a *OrchestrationApiService) ListFlowsExecute(r ApiListFlowsRequest) (*ListWorkflowsResponse, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListWorkflowsResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.ListFlows")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/orchestration/flows"
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-			var v Error
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiListRunsRequest struct {
-	ctx context.Context
-	ApiService OrchestrationApi
-	flowId string
-}
-
-func (r ApiListRunsRequest) Execute() (*ListRunsResponse, *http.Response, error) {
-	return r.ApiService.ListRunsExecute(r)
-}
-
-/*
-ListRuns List occurrences of a workflow
-
-List occurrences of a workflow
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param flowId The flow id
- @return ApiListRunsRequest
-*/
-func (a *OrchestrationApiService) ListRuns(ctx context.Context, flowId string) ApiListRunsRequest {
-	return ApiListRunsRequest{
-		ApiService: a,
-		ctx: ctx,
-		flowId: flowId,
 	}
 }
 
 // Execute executes the request
 //  @return ListRunsResponse
-func (a *OrchestrationApiService) ListRunsExecute(r ApiListRunsRequest) (*ListRunsResponse, *http.Response, error) {
+func (a *OrchestrationApiService) ListInstancesExecute(r ApiListInstancesRequest) (*ListRunsResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -613,13 +761,123 @@ func (a *OrchestrationApiService) ListRunsExecute(r ApiListRunsRequest) (*ListRu
 		localVarReturnValue  *ListRunsResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.ListRuns")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.ListInstances")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/orchestration/flows/{flowId}/runs"
-	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterValueToString(r.flowId, "flowId")), -1)
+	localVarPath := localBasePath + "/api/orchestration/instances"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.workflowID == nil {
+		return localVarReturnValue, nil, reportError("workflowID is required and must be specified")
+	}
+
+	parameterAddToQuery(localVarQueryParams, "workflowID", r.workflowID, "")
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiListWorkflowsRequest struct {
+	ctx context.Context
+	ApiService OrchestrationApi
+}
+
+func (r ApiListWorkflowsRequest) Execute() (*ListWorkflowsResponse, *http.Response, error) {
+	return r.ApiService.ListWorkflowsExecute(r)
+}
+
+/*
+ListWorkflows List registered workflows
+
+List registered workflows
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return ApiListWorkflowsRequest
+*/
+func (a *OrchestrationApiService) ListWorkflows(ctx context.Context) ApiListWorkflowsRequest {
+	return ApiListWorkflowsRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+//  @return ListWorkflowsResponse
+func (a *OrchestrationApiService) ListWorkflowsExecute(r ApiListWorkflowsRequest) (*ListWorkflowsResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodGet
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ListWorkflowsResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.ListWorkflows")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/orchestration/workflows"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -795,7 +1053,7 @@ func (a *OrchestrationApiService) OrchestrationgetServerInfoExecute(r ApiOrchest
 type ApiRunWorkflowRequest struct {
 	ctx context.Context
 	ApiService OrchestrationApi
-	flowId string
+	workflowID string
 	wait *bool
 	requestBody *map[string]string
 }
@@ -821,14 +1079,14 @@ RunWorkflow Run workflow
 Run workflow
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param flowId The flow id
+ @param workflowID The flow id
  @return ApiRunWorkflowRequest
 */
-func (a *OrchestrationApiService) RunWorkflow(ctx context.Context, flowId string) ApiRunWorkflowRequest {
+func (a *OrchestrationApiService) RunWorkflow(ctx context.Context, workflowID string) ApiRunWorkflowRequest {
 	return ApiRunWorkflowRequest{
 		ApiService: a,
 		ctx: ctx,
-		flowId: flowId,
+		workflowID: workflowID,
 	}
 }
 
@@ -847,8 +1105,8 @@ func (a *OrchestrationApiService) RunWorkflowExecute(r ApiRunWorkflowRequest) (*
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/orchestration/flows/{flowId}/runs"
-	localVarPath = strings.Replace(localVarPath, "{"+"flowId"+"}", url.PathEscape(parameterValueToString(r.flowId, "flowId")), -1)
+	localVarPath := localBasePath + "/api/orchestration/workflows/{workflowID}/instances"
+	localVarPath = strings.Replace(localVarPath, "{"+"workflowID"+"}", url.PathEscape(parameterValueToString(r.workflowID, "workflowID")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

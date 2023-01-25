@@ -33,7 +33,8 @@ var serveCmd = &cobra.Command{
 			api.Module(sharedapi.ServiceInfo{
 				Version: Version,
 			}),
-			client.NewModule(viper.GetString(stackClientIDFlag), viper.GetString(stackClientSecretFlag), viper.GetString(stackURLFlag)),
+			client.NewModule(viper.GetString(stackClientIDFlag), viper.GetString(stackClientSecretFlag),
+				viper.GetString(stackURLFlag), viper.GetBool(debugFlag)),
 			otlptraces.CLITracesModule(viper.GetViper()),
 		}
 

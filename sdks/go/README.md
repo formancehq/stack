@@ -112,14 +112,16 @@ Class | Method | HTTP request | Description
 *LogsApi* | [**ListLogs**](docs/LogsApi.md#listlogs) | **Get** /api/ledger/{ledger}/logs | List the logs from a ledger
 *MappingApi* | [**GetMapping**](docs/MappingApi.md#getmapping) | **Get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
 *MappingApi* | [**UpdateMapping**](docs/MappingApi.md#updatemapping) | **Put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
-*OrchestrationApi* | [**CreateWorkflow**](docs/OrchestrationApi.md#createworkflow) | **Post** /api/orchestration/flows | Create workflow
-*OrchestrationApi* | [**GetFlow**](docs/OrchestrationApi.md#getflow) | **Get** /api/orchestration/flows/{flowId} | Get a flow by id
-*OrchestrationApi* | [**GetWorkflowOccurrence**](docs/OrchestrationApi.md#getworkflowoccurrence) | **Get** /api/orchestration/flows/{flowId}/runs/{runId} | Get a workflow occurrence by id
-*OrchestrationApi* | [**ListFlows**](docs/OrchestrationApi.md#listflows) | **Get** /api/orchestration/flows | List registered flows
-*OrchestrationApi* | [**ListRuns**](docs/OrchestrationApi.md#listruns) | **Get** /api/orchestration/flows/{flowId}/runs | List occurrences of a workflow
+*OrchestrationApi* | [**CreateWorkflow**](docs/OrchestrationApi.md#createworkflow) | **Post** /api/orchestration/workflows | Create workflow
+*OrchestrationApi* | [**GetInstance**](docs/OrchestrationApi.md#getinstance) | **Get** /api/orchestration/instances/{instanceID} | Get a workflow instance by id
+*OrchestrationApi* | [**GetInstanceHistory**](docs/OrchestrationApi.md#getinstancehistory) | **Get** /api/orchestration/instances/{instanceID}/history | Get a workflow instance history by id
+*OrchestrationApi* | [**GetInstanceStageHistory**](docs/OrchestrationApi.md#getinstancestagehistory) | **Get** /api/orchestration/instances/{instanceID}/stages/{number}/history | Get a workflow instance stage history
+*OrchestrationApi* | [**GetWorkflow**](docs/OrchestrationApi.md#getworkflow) | **Get** /api/orchestration/workflows/{flowId} | Get a flow by id
+*OrchestrationApi* | [**ListInstances**](docs/OrchestrationApi.md#listinstances) | **Get** /api/orchestration/instances | List instances of a workflow
+*OrchestrationApi* | [**ListWorkflows**](docs/OrchestrationApi.md#listworkflows) | **Get** /api/orchestration/workflows | List registered workflows
 *OrchestrationApi* | [**OrchestrationgetServerInfo**](docs/OrchestrationApi.md#orchestrationgetserverinfo) | **Get** /api/orchestration/_info | Get server info
-*OrchestrationApi* | [**RunWorkflow**](docs/OrchestrationApi.md#runworkflow) | **Post** /api/orchestration/flows/{flowId}/runs | Run workflow
-*PaymentsApi* | [**ConnectorsStripeTransfer**](docs/PaymentsApi.md#connectorsstripetransfer) | **Post** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
+*OrchestrationApi* | [**RunWorkflow**](docs/OrchestrationApi.md#runworkflow) | **Post** /api/orchestration/workflows/{workflowID}/instances | Run workflow
+*PaymentsApi* | [**ConnectorsStripeTransfer**](docs/PaymentsApi.md#connectorsstripetransfer) | **Post** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts
 *PaymentsApi* | [**GetConnectorTask**](docs/PaymentsApi.md#getconnectortask) | **Get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 *PaymentsApi* | [**GetPayment**](docs/PaymentsApi.md#getpayment) | **Get** /api/payments/payments/{paymentId} | Get a payment
 *PaymentsApi* | [**InstallConnector**](docs/PaymentsApi.md#installconnector) | **Post** /api/payments/connectors/{connector} | Install a connector
@@ -131,6 +133,7 @@ Class | Method | HTTP request | Description
 *PaymentsApi* | [**ReadConnectorConfig**](docs/PaymentsApi.md#readconnectorconfig) | **Get** /api/payments/connectors/{connector}/config | Read the config of a connector
 *PaymentsApi* | [**ResetConnector**](docs/PaymentsApi.md#resetconnector) | **Post** /api/payments/connectors/{connector}/reset | Reset a connector
 *PaymentsApi* | [**UninstallConnector**](docs/PaymentsApi.md#uninstallconnector) | **Delete** /api/payments/connectors/{connector} | Uninstall a connector
+*PaymentsApi* | [**UpdateMetadata**](docs/PaymentsApi.md#updatemetadata) | **Patch** /api/payments/payments/{paymentId}/metadata | Update metadata
 *ScopesApi* | [**AddTransientScope**](docs/ScopesApi.md#addtransientscope) | **Put** /api/auth/scopes/{scopeId}/transient/{transientScopeId} | Add a transient scope to a scope
 *ScopesApi* | [**CreateScope**](docs/ScopesApi.md#createscope) | **Post** /api/auth/scopes | Create scope
 *ScopesApi* | [**DeleteScope**](docs/ScopesApi.md#deletescope) | **Delete** /api/auth/scopes/{scopeId} | Delete scope
@@ -185,6 +188,15 @@ Class | Method | HTTP request | Description
  - [AccountsCursorCursorAllOf](docs/AccountsCursorCursorAllOf.md)
  - [AccountsCursorResponse](docs/AccountsCursorResponse.md)
  - [AccountsCursorResponseCursor](docs/AccountsCursorResponseCursor.md)
+ - [ActivityConfirmHold](docs/ActivityConfirmHold.md)
+ - [ActivityCreateTransaction](docs/ActivityCreateTransaction.md)
+ - [ActivityCreditWallet](docs/ActivityCreditWallet.md)
+ - [ActivityDebitWallet](docs/ActivityDebitWallet.md)
+ - [ActivityGetAccount](docs/ActivityGetAccount.md)
+ - [ActivityGetPayment](docs/ActivityGetPayment.md)
+ - [ActivityGetWallet](docs/ActivityGetWallet.md)
+ - [ActivityRevertTransaction](docs/ActivityRevertTransaction.md)
+ - [ActivityVoidHold](docs/ActivityVoidHold.md)
  - [AggregateBalancesResponse](docs/AggregateBalancesResponse.md)
  - [AssetHolder](docs/AssetHolder.md)
  - [Attempt](docs/Attempt.md)
@@ -246,7 +258,9 @@ Class | Method | HTTP request | Description
  - [GetTransactionsResponseCursor](docs/GetTransactionsResponseCursor.md)
  - [GetTransactionsResponseCursorAllOf](docs/GetTransactionsResponseCursorAllOf.md)
  - [GetWalletResponse](docs/GetWalletResponse.md)
- - [GetWorkflowOccurrenceResponse](docs/GetWorkflowOccurrenceResponse.md)
+ - [GetWorkflowInstanceHistoryResponse](docs/GetWorkflowInstanceHistoryResponse.md)
+ - [GetWorkflowInstanceHistoryStageResponse](docs/GetWorkflowInstanceHistoryStageResponse.md)
+ - [GetWorkflowInstanceResponse](docs/GetWorkflowInstanceResponse.md)
  - [GetWorkflowResponse](docs/GetWorkflowResponse.md)
  - [Hold](docs/Hold.md)
  - [LedgerAccountSubject](docs/LedgerAccountSubject.md)
@@ -259,8 +273,6 @@ Class | Method | HTTP request | Description
  - [ListBalancesResponseCursorAllOf](docs/ListBalancesResponseCursorAllOf.md)
  - [ListClientsResponse](docs/ListClientsResponse.md)
  - [ListRunsResponse](docs/ListRunsResponse.md)
- - [ListRunsResponseCursor](docs/ListRunsResponseCursor.md)
- - [ListRunsResponseCursorAllOf](docs/ListRunsResponseCursorAllOf.md)
  - [ListScopesResponse](docs/ListScopesResponse.md)
  - [ListUsersResponse](docs/ListUsersResponse.md)
  - [ListWalletsResponse](docs/ListWalletsResponse.md)
@@ -275,11 +287,9 @@ Class | Method | HTTP request | Description
  - [MigrationInfo](docs/MigrationInfo.md)
  - [ModulrConfig](docs/ModulrConfig.md)
  - [Monetary](docs/Monetary.md)
- - [OrchestrationCursor](docs/OrchestrationCursor.md)
  - [Payment](docs/Payment.md)
  - [PaymentAdjustment](docs/PaymentAdjustment.md)
  - [PaymentMetadata](docs/PaymentMetadata.md)
- - [PaymentMetadataChangelog](docs/PaymentMetadataChangelog.md)
  - [PaymentResponse](docs/PaymentResponse.md)
  - [PaymentStatus](docs/PaymentStatus.md)
  - [PaymentsAccount](docs/PaymentsAccount.md)
@@ -304,6 +314,14 @@ Class | Method | HTTP request | Description
  - [SecretAllOf](docs/SecretAllOf.md)
  - [SecretOptions](docs/SecretOptions.md)
  - [ServerInfo](docs/ServerInfo.md)
+ - [Stage](docs/Stage.md)
+ - [StageSend](docs/StageSend.md)
+ - [StageSendDestination](docs/StageSendDestination.md)
+ - [StageSendDestinationPayment](docs/StageSendDestinationPayment.md)
+ - [StageSendSource](docs/StageSendSource.md)
+ - [StageSendSourceAccount](docs/StageSendSourceAccount.md)
+ - [StageSendSourcePayment](docs/StageSendSourcePayment.md)
+ - [StageSendSourceWallet](docs/StageSendSourceWallet.md)
  - [StageStatus](docs/StageStatus.md)
  - [Stats](docs/Stats.md)
  - [StatsResponse](docs/StatsResponse.md)
@@ -357,7 +375,11 @@ Class | Method | HTTP request | Description
  - [WiseConfig](docs/WiseConfig.md)
  - [Workflow](docs/Workflow.md)
  - [WorkflowConfig](docs/WorkflowConfig.md)
- - [WorkflowOccurrence](docs/WorkflowOccurrence.md)
+ - [WorkflowInstance](docs/WorkflowInstance.md)
+ - [WorkflowInstanceHistory](docs/WorkflowInstanceHistory.md)
+ - [WorkflowInstanceHistoryStage](docs/WorkflowInstanceHistoryStage.md)
+ - [WorkflowInstanceHistoryStageInput](docs/WorkflowInstanceHistoryStageInput.md)
+ - [WorkflowInstanceHistoryStageOutput](docs/WorkflowInstanceHistoryStageOutput.md)
 
 
 ## Documentation For Authorization

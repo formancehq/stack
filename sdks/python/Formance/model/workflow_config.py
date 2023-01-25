@@ -91,8 +91,10 @@ class WorkflowConfig(
             
                 def __getitem__(self, i: int) -> MetaOapg.items:
                     return super().__getitem__(i)
+            name = schemas.StrSchema
             __annotations__ = {
                 "stages": stages,
+                "name": name,
             }
     
     stages: MetaOapg.properties.stages
@@ -101,9 +103,12 @@ class WorkflowConfig(
     def __getitem__(self, name: typing_extensions.Literal["stages"]) -> MetaOapg.properties.stages: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["name"]) -> MetaOapg.properties.name: ...
+    
+    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["stages", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["stages", "name", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -112,9 +117,12 @@ class WorkflowConfig(
     def get_item_oapg(self, name: typing_extensions.Literal["stages"]) -> MetaOapg.properties.stages: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["name"]) -> typing.Union[MetaOapg.properties.name, schemas.Unset]: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["stages", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["stages", "name", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -122,6 +130,7 @@ class WorkflowConfig(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
         stages: typing.Union[MetaOapg.properties.stages, list, tuple, ],
+        name: typing.Union[MetaOapg.properties.name, str, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'WorkflowConfig':
@@ -129,6 +138,7 @@ class WorkflowConfig(
             cls,
             *_args,
             stages=stages,
+            name=name,
             _configuration=_configuration,
             **kwargs,
         )

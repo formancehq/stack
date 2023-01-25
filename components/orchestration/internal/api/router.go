@@ -16,18 +16,26 @@ func newRouter(m *workflow.Manager) *chi.Mux {
 
 	// Plug middleware to handle traces
 	r.Use(otelchi.Middleware("orchestration"))
-	r.Route("/flows", func(r chi.Router) {
+	r.Route("/workflows", func(r chi.Router) {
 		r.Get("/", listWorkflows(m))
 		r.Post("/", createWorkflow(m))
 		r.Route("/{workflowId}", func(r chi.Router) {
 			r.Get("/", readWorkflow(m))
-			r.Route("/runs", func(r chi.Router) {
+			r.Route("/instances", func(r chi.Router) {
 				r.Post("/", runWorkflow(m))
-				r.Get("/", listOccurrences(m))
-				r.Route("/{occurrenceId}", func(r chi.Router) {
-					r.Get("/", readOccurrence(m))
-					r.Post("/events", postEventToWorkflowRun(m))
-					r.Put("/abort", abortWorkflowRun(m))
+			})
+		})
+	})
+	r.Route("/instances", func(r chi.Router) {
+		r.Get("/", listInstances(m))
+		r.Route("/{instanceId}", func(r chi.Router) {
+			r.Get("/", readInstance(m))
+			r.Post("/events", postEventToWorkflowInstance(m))
+			r.Put("/abort", abortWorkflowInstance(m))
+			r.Get("/history", readInstanceHistory(m))
+			r.Route("/stages", func(r chi.Router) {
+				r.Route("/{number}", func(r chi.Router) {
+					r.Get("/history", readStageHistory(m))
 				})
 			})
 		})
@@ -35,10 +43,10 @@ func newRouter(m *workflow.Manager) *chi.Mux {
 	return r
 }
 
-func workflowId(r *http.Request) string {
+func workflowID(r *http.Request) string {
 	return chi.URLParam(r, "workflowId")
 }
 
-func occurrenceId(r *http.Request) string {
-	return chi.URLParam(r, "occurrenceId")
+func instanceID(r *http.Request) string {
+	return chi.URLParam(r, "instanceId")
 }

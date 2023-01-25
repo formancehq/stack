@@ -74,14 +74,14 @@ var serveCmd = &cobra.Command{
 			// You have to add a middleware on your router to traces http requests
 			otlptraces.CLITracesModule(viper.GetViper()),
 			api.NewModule(),
-			temporal.NewModule(
+			temporal.NewClientModule(
 				viper.GetString(temporalAddressFlag),
 				viper.GetString(temporalNamespaceFlag),
 				viper.GetString(temporalSSLClientCertFlag),
 				viper.GetString(temporalSSLClientKeyFlag),
 			),
 			storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(debugFlag)),
-			workflow.NewModule(),
+			workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 			fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
 				lifecycle.Append(fx.Hook{
 					OnStart: func(ctx context.Context) error {

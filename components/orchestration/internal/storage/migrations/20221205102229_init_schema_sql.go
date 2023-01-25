@@ -19,20 +19,20 @@ func upInitSchemaSql(tx *sql.Tx) error {
 		    updated_at timestamp default now(),
 		    primary key (id)
 	    );
-		create table "workflow_occurrences" (
+		create table "workflow_instances" (
 		    workflow_id varchar references workflows (id),
 		    id varchar,
 		    created_at timestamp default now(),
 		    updated_at timestamp default now(),
 		    primary key (id)
 		);
-		create table "workflow_stage_statuses" (
-		    occurrence_id varchar references workflow_occurrences (id),
+		create table "workflow_instance_stage_statuses" (
+		    instance_id varchar references workflow_instances (id),
 		    stage int,
 		    started_at timestamp default now(),
-		    terminated_at timestamp default now(),
+		    terminated_at timestamp default null,
 		    error varchar,
-		    primary key (occurrence_id, stage)
+		    primary key (instance_id, stage)
 		);
 	`); err != nil {
 		return err
@@ -42,7 +42,8 @@ func upInitSchemaSql(tx *sql.Tx) error {
 
 func downInitSchemaSql(tx *sql.Tx) error {
 	if _, err := tx.Exec(`
-		drop table "workflows_executions";
+		drop table "workflow_instance_stage_statuses";
+		drop table "workflow_instances";
 		drop table "workflows";
 	`); err != nil {
 		return err

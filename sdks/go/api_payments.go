@@ -192,6 +192,18 @@ It will remove the connector and ALL PAYMENTS generated with it.
 
 	// UninstallConnectorExecute executes the request
 	UninstallConnectorExecute(r ApiUninstallConnectorRequest) (*http.Response, error)
+
+	/*
+	UpdateMetadata Update metadata
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param paymentId The payment ID.
+	@return ApiUpdateMetadataRequest
+	*/
+	UpdateMetadata(ctx context.Context, paymentId string) ApiUpdateMetadataRequest
+
+	// UpdateMetadataExecute executes the request
+	UpdateMetadataExecute(r ApiUpdateMetadataRequest) (*http.Response, error)
 }
 
 // PaymentsApiService PaymentsApi service
@@ -242,7 +254,7 @@ func (a *PaymentsApiService) ConnectorsStripeTransferExecute(r ApiConnectorsStri
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/api/payments/connectors/stripe/transfer"
+	localVarPath := localBasePath + "/api/payments/connectors/stripe/transfers"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1470,6 +1482,107 @@ func (a *PaymentsApiService) UninstallConnectorExecute(r ApiUninstallConnectorRe
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
+}
+
+type ApiUpdateMetadataRequest struct {
+	ctx context.Context
+	ApiService PaymentsApi
+	paymentId string
+	paymentMetadata *PaymentMetadata
+}
+
+func (r ApiUpdateMetadataRequest) PaymentMetadata(paymentMetadata PaymentMetadata) ApiUpdateMetadataRequest {
+	r.paymentMetadata = &paymentMetadata
+	return r
+}
+
+func (r ApiUpdateMetadataRequest) Execute() (*http.Response, error) {
+	return r.ApiService.UpdateMetadataExecute(r)
+}
+
+/*
+UpdateMetadata Update metadata
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param paymentId The payment ID.
+ @return ApiUpdateMetadataRequest
+*/
+func (a *PaymentsApiService) UpdateMetadata(ctx context.Context, paymentId string) ApiUpdateMetadataRequest {
+	return ApiUpdateMetadataRequest{
+		ApiService: a,
+		ctx: ctx,
+		paymentId: paymentId,
+	}
+}
+
+// Execute executes the request
+func (a *PaymentsApiService) UpdateMetadataExecute(r ApiUpdateMetadataRequest) (*http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPatch
+		localVarPostBody     interface{}
+		formFiles            []formFile
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PaymentsApiService.UpdateMetadata")
+	if err != nil {
+		return nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/payments/payments/{paymentId}/metadata"
+	localVarPath = strings.Replace(localVarPath, "{"+"paymentId"+"}", url.PathEscape(parameterValueToString(r.paymentId, "paymentId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.paymentMetadata == nil {
+		return nil, reportError("paymentMetadata is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.paymentMetadata
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err

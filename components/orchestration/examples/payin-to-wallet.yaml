@@ -1,7 +1,13 @@
 ---
+name: "Credit wallet from payment"
 stages:
-- payin:
-    source: "${paymentID}"
+- send:
+    source:
+      payment:
+        id: "${paymentID}"
     destination:
-      kind: wallet
-      wallet: foo
+      wallet:
+        id: "${walletID}"
+    amount:
+      amount: "${amount}"
+      asset: "USD/2"

@@ -108,6 +108,9 @@ class PaymentsApi
         'uninstallConnector' => [
             'application/json',
         ],
+        'updateMetadata' => [
+            'application/json',
+        ],
     ];
 
 /**
@@ -367,7 +370,7 @@ class PaymentsApi
         }
 
 
-        $resourcePath = '/api/payments/connectors/stripe/transfer';
+        $resourcePath = '/api/payments/connectors/stripe/transfers';
         $formParams = [];
         $queryParams = [];
         $headerParams = [];
@@ -3528,6 +3531,258 @@ class PaymentsApi
         $query = ObjectSerializer::buildQuery($queryParams);
         return new Request(
             'DELETE',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation updateMetadata
+     *
+     * Update metadata
+     *
+     * @param  string $payment_id The payment ID. (required)
+     * @param  \Formance\Model\PaymentMetadata $payment_metadata payment_metadata (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateMetadata'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return void
+     */
+    public function updateMetadata($payment_id, $payment_metadata, string $contentType = self::contentTypes['updateMetadata'][0])
+    {
+        $this->updateMetadataWithHttpInfo($payment_id, $payment_metadata, $contentType);
+    }
+
+    /**
+     * Operation updateMetadataWithHttpInfo
+     *
+     * Update metadata
+     *
+     * @param  string $payment_id The payment ID. (required)
+     * @param  \Formance\Model\PaymentMetadata $payment_metadata (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateMetadata'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function updateMetadataWithHttpInfo($payment_id, $payment_metadata, string $contentType = self::contentTypes['updateMetadata'][0])
+    {
+        $request = $this->updateMetadataRequest($payment_id, $payment_metadata, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return [null, $statusCode, $response->getHeaders()];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation updateMetadataAsync
+     *
+     * Update metadata
+     *
+     * @param  string $payment_id The payment ID. (required)
+     * @param  \Formance\Model\PaymentMetadata $payment_metadata (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateMetadata'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function updateMetadataAsync($payment_id, $payment_metadata, string $contentType = self::contentTypes['updateMetadata'][0])
+    {
+        return $this->updateMetadataAsyncWithHttpInfo($payment_id, $payment_metadata, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation updateMetadataAsyncWithHttpInfo
+     *
+     * Update metadata
+     *
+     * @param  string $payment_id The payment ID. (required)
+     * @param  \Formance\Model\PaymentMetadata $payment_metadata (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateMetadata'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function updateMetadataAsyncWithHttpInfo($payment_id, $payment_metadata, string $contentType = self::contentTypes['updateMetadata'][0])
+    {
+        $returnType = '';
+        $request = $this->updateMetadataRequest($payment_id, $payment_metadata, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'updateMetadata'
+     *
+     * @param  string $payment_id The payment ID. (required)
+     * @param  \Formance\Model\PaymentMetadata $payment_metadata (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['updateMetadata'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function updateMetadataRequest($payment_id, $payment_metadata, string $contentType = self::contentTypes['updateMetadata'][0])
+    {
+
+        // verify the required parameter 'payment_id' is set
+        if ($payment_id === null || (is_array($payment_id) && count($payment_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $payment_id when calling updateMetadata'
+            );
+        }
+
+        // verify the required parameter 'payment_metadata' is set
+        if ($payment_metadata === null || (is_array($payment_metadata) && count($payment_metadata) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $payment_metadata when calling updateMetadata'
+            );
+        }
+
+
+        $resourcePath = '/api/payments/payments/{paymentId}/metadata';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($payment_id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'paymentId' . '}',
+                ObjectSerializer::toPathValue($payment_id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            [],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($payment_metadata)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($payment_metadata));
+            } else {
+                $httpBody = $payment_metadata;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'PATCH',
             $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
             $headers,
             $httpBody

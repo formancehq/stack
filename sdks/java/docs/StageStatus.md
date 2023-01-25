@@ -8,7 +8,7 @@
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
 |**stage** | **BigDecimal** |  |  |
-|**occurrenceID** | **String** |  |  |
+|**instanceID** | **String** |  |  |
 |**startedAt** | **OffsetDateTime** |  |  |
 |**terminatedAt** | **OffsetDateTime** |  |  [optional] |
 |**error** | **String** |  |  [optional] |

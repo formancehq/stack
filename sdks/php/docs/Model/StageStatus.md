@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **stage** | **float** |  |
-**occurrence_id** | **string** |  |
+**instance_id** | **string** |  |
 **started_at** | **\DateTime** |  |
 **terminated_at** | **\DateTime** |  | [optional]
 **error** | **string** |  | [optional]

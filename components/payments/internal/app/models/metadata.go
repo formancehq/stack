@@ -16,11 +16,11 @@ type Metadata struct {
 	Key       string    `bun:",pk,nullzero"`
 	Value     string
 
-	Changelog []MetadataChangelog `bun:",pk,nullzero"`
+	Changelog []MetadataChangelog `bun:",nullzero"`
 	Payment   *Payment            `bun:"rel:has-one,join:payment_id=id"`
 }
 
 type MetadataChangelog struct {
-	CreatedAt time.Time
-	Value     string
+	CreatedAt time.Time `json:"createdAt"`
+	Value     string    `json:"value"`
 }

@@ -41,6 +41,7 @@ class PaymentStatus(
             "ACTIVE": "ACTIVE",
             "TERMINATED": "TERMINATED",
             "FAILED": "FAILED",
+            "SUCCEEDED": "SUCCEEDED",
         }
     
     @schemas.classproperty
@@ -58,3 +59,7 @@ class PaymentStatus(
     @schemas.classproperty
     def FAILED(cls):
         return cls("FAILED")
+    
+    @schemas.classproperty
+    def SUCCEEDED(cls):
+        return cls("SUCCEEDED")

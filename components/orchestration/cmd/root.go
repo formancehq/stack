@@ -6,6 +6,7 @@ import (
 
 	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/go-libs/logging/logginglogrus"
+	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -27,6 +28,7 @@ const (
 	temporalNamespaceFlag     = "temporal-namespace"
 	temporalSSLClientKeyFlag  = "temporal-ssl-client-key"
 	temporalSSLClientCertFlag = "temporal-ssl-client-cert"
+	temporalTaskQueueFlag     = "temporal-task-queue"
 	postgresDSNFlag           = "postgres-dsn"
 )
 
@@ -70,5 +72,6 @@ func init() {
 	rootCmd.PersistentFlags().String(temporalNamespaceFlag, "default", "Temporal namespace")
 	rootCmd.PersistentFlags().String(temporalSSLClientKeyFlag, "", "Temporal client key")
 	rootCmd.PersistentFlags().String(temporalSSLClientCertFlag, "", "Temporal client cert")
+	rootCmd.PersistentFlags().String(temporalTaskQueueFlag, "default", "Temporal task queue name")
 	rootCmd.PersistentFlags().String(postgresDSNFlag, "", "Postgres address")
 }

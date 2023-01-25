@@ -121,7 +121,7 @@ services:
     - -s
     - go
     - run
-    - services/orchestration/main.go
+    - components/orchestration/main.go
     - serve
     volumes:
     - ../..:/src
@@ -136,6 +136,7 @@ services:
       OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
       TEMPORAL_ADDRESS: "temporalite:7233"
       POSTGRES_DSN: "postgres://formance:formance@postgres:5432/orchestration?sslmode=disable"
+      OTEL_SERVICE_NAME: orchestration
     depends_on:
     - jaeger
     - postgres
@@ -152,7 +153,7 @@ services:
     - -s
     - go
     - run
-    - services/orchestration/main.go
+    - components/orchestration/main.go
     - worker
     volumes:
     - ../..:/src
@@ -168,5 +169,6 @@ services:
       STACK_CLIENT_SECRET: orchestration
       STACK_URL: http://proxy:8080
       POSTGRES_DSN: "postgres://formance:formance@postgres:5432/orchestration?sslmode=disable"
+      OTEL_SERVICE_NAME: orchestration-worker
     depends_on:
     - jaeger

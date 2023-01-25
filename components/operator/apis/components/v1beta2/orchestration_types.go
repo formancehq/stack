@@ -30,6 +30,7 @@ type TemporalTLSConfig struct {
 type TemporalConfig struct {
 	Address   string            `json:"address"`
 	Namespace string            `json:"namespace"`
+	TaskQueue string            `json:"taskQueue"`
 	TLS       TemporalTLSConfig `json:"tls"`
 }
 
@@ -39,6 +40,7 @@ func (in *TemporalConfig) Env() []corev1.EnvVar {
 		apisv1beta2.Env("TEMPORAL_NAMESPACE", in.Namespace),
 		apisv1beta2.Env("TEMPORAL_SSL_CLIENT_KEY", in.TLS.Key),
 		apisv1beta2.Env("TEMPORAL_SSL_CLIENT_CERT", in.TLS.CRT),
+		apisv1beta2.Env("TEMPORAL_TASK_QUEUE", in.TaskQueue),
 	}
 }
 

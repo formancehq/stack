@@ -51,6 +51,8 @@ class PaymentStatus
 
     public const FAILED = 'FAILED';
 
+    public const SUCCEEDED = 'SUCCEEDED';
+
     /**
      * Gets allowable values of the enum
      * @return string[]
@@ -61,7 +63,8 @@ class PaymentStatus
             self::PENDING,
             self::ACTIVE,
             self::TERMINATED,
-            self::FAILED
+            self::FAILED,
+            self::SUCCEEDED
         ];
     }
 }

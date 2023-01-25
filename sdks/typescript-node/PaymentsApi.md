@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**connectorsStripeTransfer**](PaymentsApi.md#connectorsStripeTransfer) | **POST** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
+[**connectorsStripeTransfer**](PaymentsApi.md#connectorsStripeTransfer) | **POST** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts
 [**getConnectorTask**](PaymentsApi.md#getConnectorTask) | **GET** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 [**getPayment**](PaymentsApi.md#getPayment) | **GET** /api/payments/payments/{paymentId} | Get a payment
 [**installConnector**](PaymentsApi.md#installConnector) | **POST** /api/payments/connectors/{connector} | Install a connector
@@ -16,6 +16,7 @@ Method | HTTP request | Description
 [**readConnectorConfig**](PaymentsApi.md#readConnectorConfig) | **GET** /api/payments/connectors/{connector}/config | Read the config of a connector
 [**resetConnector**](PaymentsApi.md#resetConnector) | **POST** /api/payments/connectors/{connector}/reset | Reset a connector
 [**uninstallConnector**](PaymentsApi.md#uninstallConnector) | **DELETE** /api/payments/connectors/{connector} | Uninstall a connector
+[**updateMetadata**](PaymentsApi.md#updateMetadata) | **PATCH** /api/payments/payments/{paymentId}/metadata | Update metadata
 
 
 # **connectorsStripeTransfer**
@@ -674,6 +675,64 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
  - **Content-Type**: Not defined
+ - **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**204** | No content |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **updateMetadata**
+> void updateMetadata(paymentMetadata)
+
+
+### Example
+
+
+```typescript
+import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new PaymentsApi(configuration);
+
+let body:PaymentsApiUpdateMetadataRequest = {
+  // string | The payment ID.
+  paymentId: "XXX",
+  // PaymentMetadata
+  paymentMetadata: {
+    key: "key_example",
+  },
+};
+
+apiInstance.updateMetadata(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **paymentMetadata** | **PaymentMetadata**|  |
+ **paymentId** | [**string**] | The payment ID. | defaults to undefined
+
+
+### Return type
+
+**void**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
  - **Accept**: Not defined
 
 

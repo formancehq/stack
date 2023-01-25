@@ -5,7 +5,9 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
+	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/go-libs/pgtesting"
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/workflow"
@@ -18,18 +20,52 @@ import (
 
 type mockedRun struct {
 	client.WorkflowRun
+	runID string
 }
 
 func (m mockedRun) GetRunID() string {
-	return "foo"
+	return m.runID
+}
+
+func (m mockedRun) Get(ctx context.Context, valuePtr interface{}) error {
+	return nil
 }
 
 type mockedClient struct {
 	client.Client
+	db        *bun.DB
+	t         *testing.T
+	workflows map[string]mockedRun
 }
 
-func (c mockedClient) ExecuteWorkflow(ctx context.Context, options client.StartWorkflowOptions, workflow interface{}, args ...interface{}) (client.WorkflowRun, error) {
-	return mockedRun{}, nil
+func (c *mockedClient) ExecuteWorkflow(ctx context.Context, options client.StartWorkflowOptions, w interface{}, args ...interface{}) (client.WorkflowRun, error) {
+	input := args[0].(workflow.Input)
+	for ind := range input.Workflow.Config.Stages {
+		_, err := c.db.NewInsert().Model(&workflow.Stage{
+			Number:       ind,
+			InstanceID:   options.ID,
+			StartedAt:    time.Now(),
+			TerminatedAt: sdk.PtrTime(time.Now()),
+		}).Exec(context.Background())
+		require.NoError(c.t, err)
+	}
+	r := mockedRun{
+		runID: options.ID,
+	}
+	c.workflows[options.ID] = r
+	return r, nil
+}
+
+func (c *mockedClient) GetWorkflow(ctx context.Context, workflowID string, runID string) client.WorkflowRun {
+	return c.workflows[workflowID]
+}
+
+func newMockedClient(t *testing.T, db *bun.DB) *mockedClient {
+	return &mockedClient{
+		db:        db,
+		t:         t,
+		workflows: map[string]mockedRun{},
+	}
 }
 
 func test(t *testing.T, fn func(router *chi.Mux, m *workflow.Manager, db *bun.DB)) {
@@ -38,7 +74,7 @@ func test(t *testing.T, fn func(router *chi.Mux, m *workflow.Manager, db *bun.DB
 	database := pgtesting.NewPostgresDatabase(t)
 	db := storage.LoadDB(database.ConnString(), testing.Verbose())
 	require.NoError(t, storage.Migrate(db, testing.Verbose()))
-	manager := workflow.NewManager(db, mockedClient{})
+	manager := workflow.NewManager(db, newMockedClient(t, db), "default")
 	router := newRouter(manager)
 	fn(router, manager, db)
 }

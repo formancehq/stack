@@ -10,6 +10,10 @@ func Println(args ...any) {
 	pterm.Println(args...)
 }
 
+func Printf(fmt string, args ...any) {
+	pterm.Printfln(fmt, args...)
+}
+
 func TextWriter(out io.Writer) *pterm.BasicTextPrinter {
 	return pterm.DefaultBasicText.WithWriter(out)
 }

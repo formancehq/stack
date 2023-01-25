@@ -11,7 +11,9 @@ import okhttp3.MultipartBody;
 
 import com.formance.formance.model.CreateWorkflowResponse;
 import com.formance.formance.model.Error;
-import com.formance.formance.model.GetWorkflowOccurrenceResponse;
+import com.formance.formance.model.GetWorkflowInstanceHistoryResponse;
+import com.formance.formance.model.GetWorkflowInstanceHistoryStageResponse;
+import com.formance.formance.model.GetWorkflowInstanceResponse;
 import com.formance.formance.model.GetWorkflowResponse;
 import com.formance.formance.model.ListRunsResponse;
 import com.formance.formance.model.ListWorkflowsResponse;
@@ -35,9 +37,43 @@ public interface OrchestrationApi {
   @Headers({
     "Content-Type:application/json"
   })
-  @POST("api/orchestration/flows")
+  @POST("api/orchestration/workflows")
   Call<CreateWorkflowResponse> createWorkflow(
     @retrofit2.http.Body WorkflowConfig body
+  );
+
+  /**
+   * Get a workflow instance by id
+   * Get a workflow instance by id
+   * @param instanceID The instance id (required)
+   * @return Call&lt;GetWorkflowInstanceResponse&gt;
+   */
+  @GET("api/orchestration/instances/{instanceID}")
+  Call<GetWorkflowInstanceResponse> getInstance(
+    @retrofit2.http.Path("instanceID") String instanceID
+  );
+
+  /**
+   * Get a workflow instance history by id
+   * Get a workflow instance history by id
+   * @param instanceID The instance id (required)
+   * @return Call&lt;GetWorkflowInstanceHistoryResponse&gt;
+   */
+  @GET("api/orchestration/instances/{instanceID}/history")
+  Call<GetWorkflowInstanceHistoryResponse> getInstanceHistory(
+    @retrofit2.http.Path("instanceID") String instanceID
+  );
+
+  /**
+   * Get a workflow instance stage history
+   * Get a workflow instance stage history
+   * @param instanceID The instance id (required)
+   * @param number The stage number (required)
+   * @return Call&lt;GetWorkflowInstanceHistoryStageResponse&gt;
+   */
+  @GET("api/orchestration/instances/{instanceID}/stages/{number}/history")
+  Call<GetWorkflowInstanceHistoryStageResponse> getInstanceStageHistory(
+    @retrofit2.http.Path("instanceID") String instanceID, @retrofit2.http.Path("number") Integer number
   );
 
   /**
@@ -46,42 +82,30 @@ public interface OrchestrationApi {
    * @param flowId The flow id (required)
    * @return Call&lt;GetWorkflowResponse&gt;
    */
-  @GET("api/orchestration/flows/{flowId}")
-  Call<GetWorkflowResponse> getFlow(
+  @GET("api/orchestration/workflows/{flowId}")
+  Call<GetWorkflowResponse> getWorkflow(
     @retrofit2.http.Path("flowId") String flowId
   );
 
   /**
-   * Get a workflow occurrence by id
-   * Get a workflow occurrence by id
-   * @param flowId The flow id (required)
-   * @param runId The occurrence id (required)
-   * @return Call&lt;GetWorkflowOccurrenceResponse&gt;
-   */
-  @GET("api/orchestration/flows/{flowId}/runs/{runId}")
-  Call<GetWorkflowOccurrenceResponse> getWorkflowOccurrence(
-    @retrofit2.http.Path("flowId") String flowId, @retrofit2.http.Path("runId") String runId
-  );
-
-  /**
-   * List registered flows
-   * List registered flows
-   * @return Call&lt;ListWorkflowsResponse&gt;
-   */
-  @GET("api/orchestration/flows")
-  Call<ListWorkflowsResponse> listFlows();
-    
-
-  /**
-   * List occurrences of a workflow
-   * List occurrences of a workflow
-   * @param flowId The flow id (required)
+   * List instances of a workflow
+   * List instances of a workflow
+   * @param workflowID A workflow id (required)
    * @return Call&lt;ListRunsResponse&gt;
    */
-  @GET("api/orchestration/flows/{flowId}/runs")
-  Call<ListRunsResponse> listRuns(
-    @retrofit2.http.Path("flowId") String flowId
+  @GET("api/orchestration/instances")
+  Call<ListRunsResponse> listInstances(
+    @retrofit2.http.Query("workflowID") String workflowID
   );
+
+  /**
+   * List registered workflows
+   * List registered workflows
+   * @return Call&lt;ListWorkflowsResponse&gt;
+   */
+  @GET("api/orchestration/workflows")
+  Call<ListWorkflowsResponse> listWorkflows();
+    
 
   /**
    * Get server info
@@ -95,7 +119,7 @@ public interface OrchestrationApi {
   /**
    * Run workflow
    * Run workflow
-   * @param flowId The flow id (required)
+   * @param workflowID The flow id (required)
    * @param wait Wait end of the workflow before return (optional)
    * @param requestBody  (optional)
    * @return Call&lt;RunWorkflowResponse&gt;
@@ -103,9 +127,9 @@ public interface OrchestrationApi {
   @Headers({
     "Content-Type:application/json"
   })
-  @POST("api/orchestration/flows/{flowId}/runs")
+  @POST("api/orchestration/workflows/{workflowID}/instances")
   Call<RunWorkflowResponse> runWorkflow(
-    @retrofit2.http.Path("flowId") String flowId, @retrofit2.http.Query("wait") Boolean wait, @retrofit2.http.Body Map<String, String> requestBody
+    @retrofit2.http.Path("workflowID") String workflowID, @retrofit2.http.Query("wait") Boolean wait, @retrofit2.http.Body Map<String, String> requestBody
   );
 
 }

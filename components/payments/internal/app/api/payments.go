@@ -34,18 +34,7 @@ type paymentResponse struct {
 	CreatedAt     time.Time                `json:"createdAt"`
 	Raw           interface{}              `json:"raw"`
 	Adjustments   []paymentAdjustment      `json:"adjustments"`
-	Metadata      []paymentMetadata        `json:"metadata"`
-}
-
-type paymentMetadata struct {
-	Key       string                     `json:"key"`
-	Value     string                     `json:"value"`
-	Changelog []paymentMetadataChangelog `json:"changelog"`
-}
-
-type paymentMetadataChangelog struct {
-	Timestamp string `json:"timestamp"`
-	Value     string `json:"value"`
+	Metadata      map[string]string        `json:"metadata"`
 }
 
 type paymentAdjustment struct {
@@ -139,19 +128,11 @@ func listPaymentsHandler(repo listPaymentsRepository) http.HandlerFunc {
 				}
 			}
 
-			for metadataIDx := range ret[i].Metadata {
-				data[i].Metadata = append(data[i].Metadata,
-					paymentMetadata{
-						Key:   ret[i].Metadata[metadataIDx].Key,
-						Value: ret[i].Metadata[metadataIDx].Value,
-					})
+			if ret[i].Metadata != nil {
+				data[i].Metadata = make(map[string]string)
 
-				for changelogIdx := range ret[i].Metadata[metadataIDx].Changelog {
-					data[i].Metadata[metadataIDx].Changelog = append(data[i].Metadata[metadataIDx].Changelog,
-						paymentMetadataChangelog{
-							Timestamp: ret[i].Metadata[metadataIDx].Changelog[changelogIdx].CreatedAt.Format(time.RFC3339),
-							Value:     ret[i].Metadata[metadataIDx].Changelog[changelogIdx].Value,
-						})
+				for metadataIDx := range ret[i].Metadata {
+					data[i].Metadata[ret[i].Metadata[metadataIDx].Key] = ret[i].Metadata[metadataIDx].Value
 				}
 			}
 		}
@@ -202,7 +183,6 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 			CreatedAt:     payment.CreatedAt,
 			Raw:           payment.RawData,
 			Adjustments:   make([]paymentAdjustment, len(payment.Adjustments)),
-			Metadata:      make([]paymentMetadata, len(payment.Metadata)),
 		}
 
 		if payment.AccountID != uuid.Nil {
@@ -219,19 +199,11 @@ func readPaymentHandler(repo readPaymentRepository) http.HandlerFunc {
 			}
 		}
 
-		for metadataIDx := range payment.Metadata {
-			data.Metadata = append(data.Metadata,
-				paymentMetadata{
-					Key:   payment.Metadata[metadataIDx].Key,
-					Value: payment.Metadata[metadataIDx].Value,
-				})
+		if payment.Metadata != nil {
+			data.Metadata = make(map[string]string)
 
-			for changelogIdx := range payment.Metadata[metadataIDx].Changelog {
-				data.Metadata[metadataIDx].Changelog = append(data.Metadata[metadataIDx].Changelog,
-					paymentMetadataChangelog{
-						Timestamp: payment.Metadata[metadataIDx].Changelog[changelogIdx].CreatedAt.Format(time.RFC3339),
-						Value:     payment.Metadata[metadataIDx].Changelog[changelogIdx].Value,
-					})
+			for metadataIDx := range payment.Metadata {
+				data.Metadata[payment.Metadata[metadataIDx].Key] = payment.Metadata[metadataIDx].Value
 			}
 		}
 

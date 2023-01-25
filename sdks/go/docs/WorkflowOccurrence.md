@@ -8,13 +8,13 @@ Name | Type | Description | Notes
 **Id** | **string** |  | 
 **CreatedAt** | **time.Time** |  | 
 **UpdatedAt** | **time.Time** |  | 
-**Statuses** | [**[]StageStatus**](StageStatus.md) |  | 
+**Status** | Pointer to [**[]StageStatus**](StageStatus.md) |  | [optional] 
 
 ## Methods
 
 ### NewWorkflowOccurrence
 
-`func NewWorkflowOccurrence(workflowID string, id string, createdAt time.Time, updatedAt time.Time, statuses []StageStatus, ) *WorkflowOccurrence`
+`func NewWorkflowOccurrence(workflowID string, id string, createdAt time.Time, updatedAt time.Time, ) *WorkflowOccurrence`
 
 NewWorkflowOccurrence instantiates a new WorkflowOccurrence object
 This constructor will assign default values to properties that have it defined,
@@ -109,25 +109,30 @@ and a boolean to check if the value has been set.
 SetUpdatedAt sets UpdatedAt field to given value.
 
 
-### GetStatuses
+### GetStatus
 
-`func (o *WorkflowOccurrence) GetStatuses() []StageStatus`
+`func (o *WorkflowOccurrence) GetStatus() []StageStatus`
 
-GetStatuses returns the Statuses field if non-nil, zero value otherwise.
+GetStatus returns the Status field if non-nil, zero value otherwise.
 
-### GetStatusesOk
+### GetStatusOk
 
-`func (o *WorkflowOccurrence) GetStatusesOk() (*[]StageStatus, bool)`
+`func (o *WorkflowOccurrence) GetStatusOk() (*[]StageStatus, bool)`
 
-GetStatusesOk returns a tuple with the Statuses field if it's non-nil, zero value otherwise
+GetStatusOk returns a tuple with the Status field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetStatuses
+### SetStatus
 
-`func (o *WorkflowOccurrence) SetStatuses(v []StageStatus)`
+`func (o *WorkflowOccurrence) SetStatus(v []StageStatus)`
 
-SetStatuses sets Statuses field to given value.
+SetStatus sets Status field to given value.
 
+### HasStatus
+
+`func (o *WorkflowOccurrence) HasStatus() bool`
+
+HasStatus returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

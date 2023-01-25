@@ -4,13 +4,15 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**createWorkflow**](OrchestrationApi.md#createWorkflow) | **POST** /api/orchestration/flows | Create workflow
-[**getFlow**](OrchestrationApi.md#getFlow) | **GET** /api/orchestration/flows/{flowId} | Get a flow by id
-[**getWorkflowOccurrence**](OrchestrationApi.md#getWorkflowOccurrence) | **GET** /api/orchestration/flows/{flowId}/runs/{runId} | Get a workflow occurrence by id
-[**listFlows**](OrchestrationApi.md#listFlows) | **GET** /api/orchestration/flows | List registered flows
-[**listRuns**](OrchestrationApi.md#listRuns) | **GET** /api/orchestration/flows/{flowId}/runs | List occurrences of a workflow
+[**createWorkflow**](OrchestrationApi.md#createWorkflow) | **POST** /api/orchestration/workflows | Create workflow
+[**getInstance**](OrchestrationApi.md#getInstance) | **GET** /api/orchestration/instances/{instanceID} | Get a workflow instance by id
+[**getInstanceHistory**](OrchestrationApi.md#getInstanceHistory) | **GET** /api/orchestration/instances/{instanceID}/history | Get a workflow instance history by id
+[**getInstanceStageHistory**](OrchestrationApi.md#getInstanceStageHistory) | **GET** /api/orchestration/instances/{instanceID}/stages/{number}/history | Get a workflow instance stage history
+[**getWorkflow**](OrchestrationApi.md#getWorkflow) | **GET** /api/orchestration/workflows/{flowId} | Get a flow by id
+[**listInstances**](OrchestrationApi.md#listInstances) | **GET** /api/orchestration/instances | List instances of a workflow
+[**listWorkflows**](OrchestrationApi.md#listWorkflows) | **GET** /api/orchestration/workflows | List registered workflows
 [**orchestrationgetServerInfo**](OrchestrationApi.md#orchestrationgetServerInfo) | **GET** /api/orchestration/_info | Get server info
-[**runWorkflow**](OrchestrationApi.md#runWorkflow) | **POST** /api/orchestration/flows/{flowId}/runs | Run workflow
+[**runWorkflow**](OrchestrationApi.md#runWorkflow) | **POST** /api/orchestration/workflows/{workflowID}/instances | Run workflow
 
 
 # **createWorkflow**
@@ -31,6 +33,7 @@ const apiInstance = new OrchestrationApi(configuration);
 let body:OrchestrationApiCreateWorkflowRequest = {
   // WorkflowConfig (optional)
   body: {
+    name: "name_example",
     stages: [
       {
         "key": null,
@@ -74,8 +77,176 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
-# **getFlow**
-> GetWorkflowResponse getFlow()
+# **getInstance**
+> GetWorkflowInstanceResponse getInstance()
+
+Get a workflow instance by id
+
+### Example
+
+
+```typescript
+import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new OrchestrationApi(configuration);
+
+let body:OrchestrationApiGetInstanceRequest = {
+  // string | The instance id
+  instanceID: "xxx",
+};
+
+apiInstance.getInstance(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **instanceID** | [**string**] | The instance id | defaults to undefined
+
+
+### Return type
+
+**GetWorkflowInstanceResponse**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | The workflow instance |  -  |
+**0** | General error |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **getInstanceHistory**
+> GetWorkflowInstanceHistoryResponse getInstanceHistory()
+
+Get a workflow instance history by id
+
+### Example
+
+
+```typescript
+import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new OrchestrationApi(configuration);
+
+let body:OrchestrationApiGetInstanceHistoryRequest = {
+  // string | The instance id
+  instanceID: "xxx",
+};
+
+apiInstance.getInstanceHistory(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **instanceID** | [**string**] | The instance id | defaults to undefined
+
+
+### Return type
+
+**GetWorkflowInstanceHistoryResponse**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | The workflow instance history |  -  |
+**0** | General error |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **getInstanceStageHistory**
+> GetWorkflowInstanceHistoryStageResponse getInstanceStageHistory()
+
+Get a workflow instance stage history
+
+### Example
+
+
+```typescript
+import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new OrchestrationApi(configuration);
+
+let body:OrchestrationApiGetInstanceStageHistoryRequest = {
+  // string | The instance id
+  instanceID: "xxx",
+  // number | The stage number
+  number: 0,
+};
+
+apiInstance.getInstanceStageHistory(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **instanceID** | [**string**] | The instance id | defaults to undefined
+ **number** | [**number**] | The stage number | defaults to undefined
+
+
+### Return type
+
+**GetWorkflowInstanceHistoryStageResponse**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | The workflow instance stage history |  -  |
+**0** | General error |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **getWorkflow**
+> GetWorkflowResponse getWorkflow()
 
 Get a flow by id
 
@@ -89,12 +260,12 @@ import * as fs from 'fs';
 const configuration = createConfiguration();
 const apiInstance = new OrchestrationApi(configuration);
 
-let body:OrchestrationApiGetFlowRequest = {
+let body:OrchestrationApiGetWorkflowRequest = {
   // string | The flow id
   flowId: "xxx",
 };
 
-apiInstance.getFlow(body).then((data:any) => {
+apiInstance.getWorkflow(body).then((data:any) => {
   console.log('API called successfully. Returned data: ' + data);
 }).catch((error:any) => console.error(error));
 ```
@@ -129,10 +300,10 @@ Name | Type | Description  | Notes
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
-# **getWorkflowOccurrence**
-> GetWorkflowOccurrenceResponse getWorkflowOccurrence()
+# **listInstances**
+> ListRunsResponse listInstances()
 
-Get a workflow occurrence by id
+List instances of a workflow
 
 ### Example
 
@@ -144,14 +315,12 @@ import * as fs from 'fs';
 const configuration = createConfiguration();
 const apiInstance = new OrchestrationApi(configuration);
 
-let body:OrchestrationApiGetWorkflowOccurrenceRequest = {
-  // string | The flow id
-  flowId: "xxx",
-  // string | The occurrence id
-  runId: "xxx",
+let body:OrchestrationApiListInstancesRequest = {
+  // string | A workflow id
+  workflowID: "xxx",
 };
 
-apiInstance.getWorkflowOccurrence(body).then((data:any) => {
+apiInstance.listInstances(body).then((data:any) => {
   console.log('API called successfully. Returned data: ' + data);
 }).catch((error:any) => console.error(error));
 ```
@@ -161,13 +330,12 @@ apiInstance.getWorkflowOccurrence(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **flowId** | [**string**] | The flow id | defaults to undefined
- **runId** | [**string**] | The occurrence id | defaults to undefined
+ **workflowID** | [**string**] | A workflow id | defaults to undefined
 
 
 ### Return type
 
-**GetWorkflowOccurrenceResponse**
+**ListRunsResponse**
 
 ### Authorization
 
@@ -182,15 +350,15 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | The workflow occurrence |  -  |
+**200** | List of workflow instances |  -  |
 **0** | General error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
-# **listFlows**
-> ListWorkflowsResponse listFlows()
+# **listWorkflows**
+> ListWorkflowsResponse listWorkflows()
 
-List registered flows
+List registered workflows
 
 ### Example
 
@@ -204,7 +372,7 @@ const apiInstance = new OrchestrationApi(configuration);
 
 let body:any = {};
 
-apiInstance.listFlows(body).then((data:any) => {
+apiInstance.listWorkflows(body).then((data:any) => {
   console.log('API called successfully. Returned data: ' + data);
 }).catch((error:any) => console.error(error));
 ```
@@ -232,61 +400,6 @@ This endpoint does not need any parameter.
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | List of workflows |  -  |
-**0** | General error |  -  |
-
-[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
-
-# **listRuns**
-> ListRunsResponse listRuns()
-
-List occurrences of a workflow
-
-### Example
-
-
-```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
-import * as fs from 'fs';
-
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
-
-let body:OrchestrationApiListRunsRequest = {
-  // string | The flow id
-  flowId: "xxx",
-};
-
-apiInstance.listRuns(body).then((data:any) => {
-  console.log('API called successfully. Returned data: ' + data);
-}).catch((error:any) => console.error(error));
-```
-
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **flowId** | [**string**] | The flow id | defaults to undefined
-
-
-### Return type
-
-**ListRunsResponse**
-
-### Authorization
-
-[Authorization](README.md#Authorization)
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | List of workflow occurrences |  -  |
 **0** | General error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
@@ -356,7 +469,7 @@ const apiInstance = new OrchestrationApi(configuration);
 
 let body:OrchestrationApiRunWorkflowRequest = {
   // string | The flow id
-  flowId: "xxx",
+  workflowID: "xxx",
   // boolean | Wait end of the workflow before return (optional)
   wait: true,
   // { [key: string]: string; } (optional)
@@ -376,7 +489,7 @@ apiInstance.runWorkflow(body).then((data:any) => {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **requestBody** | **{ [key: string]: string; }**|  |
- **flowId** | [**string**] | The flow id | defaults to undefined
+ **workflowID** | [**string**] | The flow id | defaults to undefined
  **wait** | [**boolean**] | Wait end of the workflow before return | (optional) defaults to undefined
 
 
@@ -397,7 +510,7 @@ Name | Type | Description  | Notes
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**201** | The workflow occurrence |  -  |
+**201** | The workflow instance |  -  |
 **0** | General error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)

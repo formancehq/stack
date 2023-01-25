@@ -14,7 +14,7 @@ import (
 
 func TestCreateWorkflow(t *testing.T) {
 	test(t, func(router *chi.Mux, m *workflow.Manager, db *bun.DB) {
-		req := httptest.NewRequest(http.MethodPost, "/flows", bytes.NewBufferString(`{"stages": []}`))
+		req := httptest.NewRequest(http.MethodPost, "/workflows", bytes.NewBufferString(`{"stages": []}`))
 		rec := httptest.NewRecorder()
 
 		router.ServeHTTP(rec, req)

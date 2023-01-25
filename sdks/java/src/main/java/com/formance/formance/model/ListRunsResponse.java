@@ -15,45 +15,52 @@ package com.formance.formance.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import com.formance.formance.model.ListRunsResponseCursor;
+import com.formance.formance.model.WorkflowInstance;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ListRunsResponse
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ListRunsResponse {
-  public static final String SERIALIZED_NAME_CURSOR = "cursor";
-  @SerializedName(SERIALIZED_NAME_CURSOR)
-  private ListRunsResponseCursor cursor;
+  public static final String SERIALIZED_NAME_DATA = "data";
+  @SerializedName(SERIALIZED_NAME_DATA)
+  private List<WorkflowInstance> data = new ArrayList<>();
 
   public ListRunsResponse() {
   }
 
-  public ListRunsResponse cursor(ListRunsResponseCursor cursor) {
+  public ListRunsResponse data(List<WorkflowInstance> data) {
     
-    this.cursor = cursor;
+    this.data = data;
+    return this;
+  }
+
+  public ListRunsResponse addDataItem(WorkflowInstance dataItem) {
+    this.data.add(dataItem);
     return this;
   }
 
    /**
-   * Get cursor
-   * @return cursor
+   * Get data
+   * @return data
   **/
   @javax.annotation.Nonnull
 
-  public ListRunsResponseCursor getCursor() {
-    return cursor;
+  public List<WorkflowInstance> getData() {
+    return data;
   }
 
 
-  public void setCursor(ListRunsResponseCursor cursor) {
-    this.cursor = cursor;
+  public void setData(List<WorkflowInstance> data) {
+    this.data = data;
   }
 
 
@@ -66,19 +73,19 @@ public class ListRunsResponse {
       return false;
     }
     ListRunsResponse listRunsResponse = (ListRunsResponse) o;
-    return Objects.equals(this.cursor, listRunsResponse.cursor);
+    return Objects.equals(this.data, listRunsResponse.data);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(cursor);
+    return Objects.hash(data);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ListRunsResponse {\n");
-    sb.append("    cursor: ").append(toIndentedString(cursor)).append("\n");
+    sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("}");
     return sb.toString();
   }

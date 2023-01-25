@@ -156,7 +156,7 @@ func (s *Storage) UpsertPayments(ctx context.Context, provider models.ConnectorP
 			Model(&metadata).
 			On("CONFLICT (payment_id, key) DO UPDATE").
 			Set("value = EXCLUDED.value").
-			Set("changelog = changelog || EXCLUDED.changelog").
+			Set("changelog = metadata.changelog || EXCLUDED.changelog").
 			Exec(ctx)
 		if err != nil {
 			return e("failed to create metadata", err)

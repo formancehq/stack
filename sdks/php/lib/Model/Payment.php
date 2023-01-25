@@ -70,7 +70,7 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
         'created_at' => '\DateTime',
         'raw' => 'object',
         'adjustments' => '\Formance\Model\PaymentAdjustment[]',
-        'metadata' => '\Formance\Model\PaymentMetadata[]'
+        'metadata' => '\Formance\Model\PaymentMetadata'
     ];
 
     /**
@@ -853,7 +853,7 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets metadata
      *
-     * @return \Formance\Model\PaymentMetadata[]
+     * @return \Formance\Model\PaymentMetadata
      */
     public function getMetadata()
     {
@@ -863,7 +863,7 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets metadata
      *
-     * @param \Formance\Model\PaymentMetadata[] $metadata metadata
+     * @param \Formance\Model\PaymentMetadata $metadata metadata
      *
      * @return self
      */
