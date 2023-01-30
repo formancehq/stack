@@ -30,7 +30,8 @@ func NewSetupCommand() *cobra.Command {
 
 			billing, _, err := apiClient.DefaultApi.BillingSetup(cmd.Context(), organizationID).Execute()
 			if err != nil {
-				return err
+				fctl.Error(cmd.OutOrStdout(), "You already have an active subscription")
+				return nil
 			}
 			_ = fmt.Sprintf("Billing Portal: %s", billing.Data.Url)
 
