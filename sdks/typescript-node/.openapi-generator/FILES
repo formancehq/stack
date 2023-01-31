@@ -144,6 +144,7 @@ models/ModelError.ts
 models/ModulrConfig.ts
 models/Monetary.ts
 models/ObjectSerializer.ts
+models/OrchestrationCursor.ts
 models/Payment.ts
 models/PaymentAdjustment.ts
 models/PaymentMetadata.ts
@@ -217,6 +218,7 @@ models/Wallet.ts
 models/WalletSubject.ts
 models/WalletWithBalances.ts
 models/WalletWithBalancesBalances.ts
+models/WalletsCursor.ts
 models/WalletsErrorResponse.ts
 models/WalletsTransaction.ts
 models/WalletsVolume.ts

@@ -24,14 +24,16 @@ type BaseQuery interface {
 func resolveQuery(r *http.Request) (*cursorTokenInfo, BaseQuery, error) {
 	var (
 		target      string
+		raw         json.RawMessage
 		cursorToken string
 		info        *cursorTokenInfo
 	)
 
 	if r.ContentLength > 0 {
 		type resolveQuery struct {
-			Target      string `json:"target"`
-			CursorToken string `json:"cursor"`
+			Target      string          `json:"target"`
+			CursorToken string          `json:"cursor"`
+			Raw         json.RawMessage `json:"raw"`
 		}
 		rq := &resolveQuery{}
 		buf := bytes.NewBufferString("")
@@ -42,9 +44,16 @@ func resolveQuery(r *http.Request) (*cursorTokenInfo, BaseQuery, error) {
 		r.Body = io.NopCloser(buf)
 		target = rq.Target
 		cursorToken = rq.CursorToken
+		raw = rq.Raw
 	} else {
 		target = r.Form.Get("target")
 		cursorToken = r.Form.Get("cursor")
+	}
+
+	if raw != nil {
+		return nil, &searchengine.RawQuery{
+			Body: raw,
+		}, nil
 	}
 
 	var searchQuery BaseQuery
@@ -146,6 +155,19 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 		}
 
 		switch qq := searchQuery.(type) {
+		case *searchengine.RawQuery:
+			res, err := qq.Do(r.Context(), engine)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusServiceUnavailable)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			if err := json.NewEncoder(w).Encode(res); err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			return
 		case *searchengine.SingleDocTypeSearch:
 			qq.PageSize++
 			searchResponse, err := qq.Do(r.Context(), engine)

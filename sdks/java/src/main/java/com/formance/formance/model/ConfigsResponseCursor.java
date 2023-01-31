@@ -21,8 +21,6 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,21 +30,9 @@ import java.util.List;
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class ConfigsResponseCursor {
-  public static final String SERIALIZED_NAME_PAGE_SIZE = "pageSize";
-  @SerializedName(SERIALIZED_NAME_PAGE_SIZE)
-  private Long pageSize;
-
   public static final String SERIALIZED_NAME_HAS_MORE = "hasMore";
   @SerializedName(SERIALIZED_NAME_HAS_MORE)
   private Boolean hasMore;
-
-  public static final String SERIALIZED_NAME_PREVIOUS = "previous";
-  @SerializedName(SERIALIZED_NAME_PREVIOUS)
-  private String previous;
-
-  public static final String SERIALIZED_NAME_NEXT = "next";
-  @SerializedName(SERIALIZED_NAME_NEXT)
-  private String next;
 
   public static final String SERIALIZED_NAME_DATA = "data";
   @SerializedName(SERIALIZED_NAME_DATA)
@@ -54,31 +40,6 @@ public class ConfigsResponseCursor {
 
   public ConfigsResponseCursor() {
   }
-
-  public ConfigsResponseCursor pageSize(Long pageSize) {
-    
-    this.pageSize = pageSize;
-    return this;
-  }
-
-   /**
-   * Get pageSize
-   * minimum: 1
-   * maximum: 1000
-   * @return pageSize
-  **/
-  @javax.annotation.Nonnull
-  @ApiModelProperty(example = "15", required = true, value = "")
-
-  public Long getPageSize() {
-    return pageSize;
-  }
-
-
-  public void setPageSize(Long pageSize) {
-    this.pageSize = pageSize;
-  }
-
 
   public ConfigsResponseCursor hasMore(Boolean hasMore) {
     
@@ -90,8 +51,7 @@ public class ConfigsResponseCursor {
    * Get hasMore
    * @return hasMore
   **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(example = "false", value = "")
+  @javax.annotation.Nonnull
 
   public Boolean getHasMore() {
     return hasMore;
@@ -100,52 +60,6 @@ public class ConfigsResponseCursor {
 
   public void setHasMore(Boolean hasMore) {
     this.hasMore = hasMore;
-  }
-
-
-  public ConfigsResponseCursor previous(String previous) {
-    
-    this.previous = previous;
-    return this;
-  }
-
-   /**
-   * Get previous
-   * @return previous
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(example = "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=", value = "")
-
-  public String getPrevious() {
-    return previous;
-  }
-
-
-  public void setPrevious(String previous) {
-    this.previous = previous;
-  }
-
-
-  public ConfigsResponseCursor next(String next) {
-    
-    this.next = next;
-    return this;
-  }
-
-   /**
-   * Get next
-   * @return next
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(example = "", value = "")
-
-  public String getNext() {
-    return next;
-  }
-
-
-  public void setNext(String next) {
-    this.next = next;
   }
 
 
@@ -165,7 +79,6 @@ public class ConfigsResponseCursor {
    * @return data
   **/
   @javax.annotation.Nonnull
-  @ApiModelProperty(required = true, value = "")
 
   public List<WebhooksConfig> getData() {
     return data;
@@ -186,26 +99,20 @@ public class ConfigsResponseCursor {
       return false;
     }
     ConfigsResponseCursor configsResponseCursor = (ConfigsResponseCursor) o;
-    return Objects.equals(this.pageSize, configsResponseCursor.pageSize) &&
-        Objects.equals(this.hasMore, configsResponseCursor.hasMore) &&
-        Objects.equals(this.previous, configsResponseCursor.previous) &&
-        Objects.equals(this.next, configsResponseCursor.next) &&
+    return Objects.equals(this.hasMore, configsResponseCursor.hasMore) &&
         Objects.equals(this.data, configsResponseCursor.data);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(pageSize, hasMore, previous, next, data);
+    return Objects.hash(hasMore, data);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ConfigsResponseCursor {\n");
-    sb.append("    pageSize: ").append(toIndentedString(pageSize)).append("\n");
     sb.append("    hasMore: ").append(toIndentedString(hasMore)).append("\n");
-    sb.append("    previous: ").append(toIndentedString(previous)).append("\n");
-    sb.append("    next: ").append(toIndentedString(next)).append("\n");
     sb.append("    data: ").append(toIndentedString(data)).append("\n");
     sb.append("}");
     return sb.toString();

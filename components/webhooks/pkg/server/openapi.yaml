@@ -226,15 +226,29 @@ components:
       properties:
         cursor:
           allOf:
-          - $ref: '#/components/schemas/Cursor'
-          - properties:
-              data:
-                items:
-                  $ref: '#/components/schemas/Config'
-                type: array
-            type: object
-            required:
-            - data
+            - $ref: '#/components/schemas/Cursor'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/components/schemas/Config'
+                  type: array
+              type: object
+              required:
+                - data
+
+    Cursor:
+      type: object
+      required:
+        - hasMore
+        - data
+      properties:
+        hasMore:
+          type: boolean
+          example: false
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Config'
 
     ConfigResponse:
       type: object

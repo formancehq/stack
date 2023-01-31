@@ -170,9 +170,9 @@ configuration = Formance.Configuration(
 
 # Configure OAuth2 access token for authorization: Authorization
 configuration = Formance.Configuration(
-    host = "http://localhost"
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
 )
-configuration.access_token = 'YOUR_ACCESS_TOKEN'
 
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
@@ -213,7 +213,7 @@ Class | Method | HTTP request | Description
 *ClientsApi* | [**read_client**](docs/apis/tags/ClientsApi.md#read_client) | **get** /api/auth/clients/{clientId} | Read client
 *ClientsApi* | [**update_client**](docs/apis/tags/ClientsApi.md#update_client) | **put** /api/auth/clients/{clientId} | Update client
 *LedgerApi* | [**get_ledger_info**](docs/apis/tags/LedgerApi.md#get_ledger_info) | **get** /api/ledger/{ledger}/_info | Get information about a ledger
-*LogsApi* | [**list_logs**](docs/apis/tags/LogsApi.md#list_logs) | **get** /api/ledger/{ledger}/log | List the logs from a ledger
+*LogsApi* | [**list_logs**](docs/apis/tags/LogsApi.md#list_logs) | **get** /api/ledger/{ledger}/logs | List the logs from a ledger
 *MappingApi* | [**get_mapping**](docs/apis/tags/MappingApi.md#get_mapping) | **get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
 *MappingApi* | [**update_mapping**](docs/apis/tags/MappingApi.md#update_mapping) | **put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
 *OrchestrationApi* | [**create_workflow**](docs/apis/tags/OrchestrationApi.md#create_workflow) | **post** /api/orchestration/flows | Create workflow
@@ -367,6 +367,7 @@ Class | Method | HTTP request | Description
  - [MigrationInfo](docs/models/MigrationInfo.md)
  - [ModulrConfig](docs/models/ModulrConfig.md)
  - [Monetary](docs/models/Monetary.md)
+ - [OrchestrationCursor](docs/models/OrchestrationCursor.md)
  - [Payment](docs/models/Payment.md)
  - [PaymentAdjustment](docs/models/PaymentAdjustment.md)
  - [PaymentMetadata](docs/models/PaymentMetadata.md)
@@ -424,6 +425,7 @@ Class | Method | HTTP request | Description
  - [WalletSubject](docs/models/WalletSubject.md)
  - [WalletWithBalances](docs/models/WalletWithBalances.md)
  - [WalletsAggregatedVolumes](docs/models/WalletsAggregatedVolumes.md)
+ - [WalletsCursor](docs/models/WalletsCursor.md)
  - [WalletsErrorResponse](docs/models/WalletsErrorResponse.md)
  - [WalletsTransaction](docs/models/WalletsTransaction.md)
  - [WalletsVolume](docs/models/WalletsVolume.md)

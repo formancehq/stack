@@ -119,6 +119,7 @@ docs/Model/MappingResponse.md
 docs/Model/MigrationInfo.md
 docs/Model/ModulrConfig.md
 docs/Model/Monetary.md
+docs/Model/OrchestrationCursor.md
 docs/Model/Payment.md
 docs/Model/PaymentAdjustment.md
 docs/Model/PaymentMetadata.md
@@ -192,6 +193,7 @@ docs/Model/Wallet.md
 docs/Model/WalletSubject.md
 docs/Model/WalletWithBalances.md
 docs/Model/WalletWithBalancesBalances.md
+docs/Model/WalletsCursor.md
 docs/Model/WalletsErrorResponse.md
 docs/Model/WalletsTransaction.md
 docs/Model/WalletsVolume.md
@@ -321,6 +323,7 @@ lib/Model/MigrationInfo.php
 lib/Model/ModelInterface.php
 lib/Model/ModulrConfig.php
 lib/Model/Monetary.php
+lib/Model/OrchestrationCursor.php
 lib/Model/Payment.php
 lib/Model/PaymentAdjustment.php
 lib/Model/PaymentMetadata.php
@@ -394,6 +397,7 @@ lib/Model/Wallet.php
 lib/Model/WalletSubject.php
 lib/Model/WalletWithBalances.php
 lib/Model/WalletWithBalancesBalances.php
+lib/Model/WalletsCursor.php
 lib/Model/WalletsErrorResponse.php
 lib/Model/WalletsTransaction.php
 lib/Model/WalletsVolume.php

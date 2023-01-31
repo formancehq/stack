@@ -216,3 +216,25 @@ func NewMultiDocTypeSearch() *MultiDocTypeSearch {
 		baseQuery{PageSize: 5},
 	}
 }
+
+type RawQuery struct {
+	Body json.RawMessage `json:"body"`
+}
+
+type RawQueryResponse *es.Response
+
+func (q RawQuery) WithPageSize(pageSize uint64) {
+}
+
+func (q RawQuery) Do(ctx context.Context, e Engine) (RawQueryResponse, error) {
+	var query map[string]interface{}
+	err := json.Unmarshal(q.Body, &query)
+	if err != nil {
+		return nil, errors.Wrap(err, "query.invalid_body")
+	}
+	res, err := e.doRequest(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	return RawQueryResponse(res), nil
+}

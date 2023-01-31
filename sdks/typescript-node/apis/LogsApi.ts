@@ -51,7 +51,7 @@ export class LogsApiRequestFactory extends BaseAPIRequestFactory {
 
 
         // Path Params
-        const localVarPath = '/api/ledger/{ledger}/log'
+        const localVarPath = '/api/ledger/{ledger}/logs'
             .replace('{' + 'ledger' + '}', encodeURIComponent(String(ledger)));
 
         // Make Request Context

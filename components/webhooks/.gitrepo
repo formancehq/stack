@@ -6,7 +6,7 @@
 [subrepo]
 	remote = webhooks
 	branch = main
-	commit = ca5d19c57d8016011b9fe90339fee2292ea8286a
-	parent = 4719b46070fb4d84dfcc6004c4eb8b8a151a8af1
+	commit = 89efc332d14ea3728dfca791ce908aec0e77414c
+	parent = a2d3ceffaf568c74915128de375ebb0360488868
 	method = merge
 	cmdver = 0.4.5

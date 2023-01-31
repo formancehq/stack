@@ -109,7 +109,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**PaymentsgetServerInfo**](docs/DefaultApi.md#paymentsgetserverinfo) | **Get** /api/payments/_info | Get server info
 *DefaultApi* | [**SearchgetServerInfo**](docs/DefaultApi.md#searchgetserverinfo) | **Get** /api/search/_info | Get server info
 *LedgerApi* | [**GetLedgerInfo**](docs/LedgerApi.md#getledgerinfo) | **Get** /api/ledger/{ledger}/_info | Get information about a ledger
-*LogsApi* | [**ListLogs**](docs/LogsApi.md#listlogs) | **Get** /api/ledger/{ledger}/log | List the logs from a ledger
+*LogsApi* | [**ListLogs**](docs/LogsApi.md#listlogs) | **Get** /api/ledger/{ledger}/logs | List the logs from a ledger
 *MappingApi* | [**GetMapping**](docs/MappingApi.md#getmapping) | **Get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
 *MappingApi* | [**UpdateMapping**](docs/MappingApi.md#updatemapping) | **Put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
 *OrchestrationApi* | [**CreateWorkflow**](docs/OrchestrationApi.md#createworkflow) | **Post** /api/orchestration/flows | Create workflow
@@ -275,6 +275,7 @@ Class | Method | HTTP request | Description
  - [MigrationInfo](docs/MigrationInfo.md)
  - [ModulrConfig](docs/ModulrConfig.md)
  - [Monetary](docs/Monetary.md)
+ - [OrchestrationCursor](docs/OrchestrationCursor.md)
  - [Payment](docs/Payment.md)
  - [PaymentAdjustment](docs/PaymentAdjustment.md)
  - [PaymentMetadata](docs/PaymentMetadata.md)
@@ -348,6 +349,7 @@ Class | Method | HTTP request | Description
  - [WalletSubject](docs/WalletSubject.md)
  - [WalletWithBalances](docs/WalletWithBalances.md)
  - [WalletWithBalancesBalances](docs/WalletWithBalancesBalances.md)
+ - [WalletsCursor](docs/WalletsCursor.md)
  - [WalletsErrorResponse](docs/WalletsErrorResponse.md)
  - [WalletsTransaction](docs/WalletsTransaction.md)
  - [WalletsVolume](docs/WalletsVolume.md)

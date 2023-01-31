@@ -33,8 +33,9 @@ type ResponseHits struct {
 }
 
 type Response struct {
-	Took     int            `json:"took"`
-	TimedOut bool           `json:"timed_out"`
-	Shards   ResponseShards `json:"_shards"`
-	Hits     ResponseHits   `json:"hits"`
+	Took         int                        `json:"took"`
+	TimedOut     bool                       `json:"timed_out"`
+	Shards       ResponseShards             `json:"_shards"`
+	Hits         ResponseHits               `json:"hits"`
+	Aggregations map[string]json.RawMessage `json:"aggregations,omitempty"`
 }

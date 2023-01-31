@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**ListLogs**](LogsApi.md#ListLogs) | **Get** /api/ledger/{ledger}/log | List the logs from a ledger
+[**ListLogs**](LogsApi.md#ListLogs) | **Get** /api/ledger/{ledger}/logs | List the logs from a ledger
 
 
 

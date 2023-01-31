@@ -11,11 +11,11 @@ function findDockerFile(dir) {
             /* if it is a directory, recurse */
             results = results.concat(findDockerFile(file));
         } else {
-            if (path.basename(file) === "build.Dockerfile") {
+            if (path.basename(file) === "Dockerfile") {
                 results.push(path.basename(path.dirname(file)));
             }
         }
     });
     return results;
 }
-console.log(JSON.stringify(findDockerFile("./"),null,0));
+console.log(JSON.stringify(findDockerFile("./components"),null,0));

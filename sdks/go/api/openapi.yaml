@@ -1578,7 +1578,7 @@ paths:
       summary: Get the aggregated balances from selected accounts
       tags:
       - Balances
-  /api/ledger/{ledger}/log:
+  /api/ledger/{ledger}/logs:
     get:
       description: "List the logs from a ledger, sorted by ID in descending order."
       operationId: listLogs
@@ -5054,6 +5054,9 @@ components:
         - quickstart
         - quickstart
         pageSize: 0
+        raw:
+          query:
+            match_all: {}
         after:
         - users:002
         - users:002
@@ -5091,6 +5094,11 @@ components:
         cursor:
           example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
           type: string
+        raw:
+          example:
+            query:
+              match_all: {}
+          type: object
       type: object
     Response:
       example:
@@ -5147,6 +5155,19 @@ components:
           $ref: '#/components/schemas/ConfigsResponse_cursor'
       required:
       - cursor
+      type: object
+    Cursor:
+      properties:
+        hasMore:
+          example: false
+          type: boolean
+        data:
+          items:
+            $ref: '#/components/schemas/webhooksConfig'
+          type: array
+      required:
+      - data
+      - hasMore
       type: object
     ConfigResponse:
       example:
@@ -5511,7 +5532,7 @@ components:
       - timestamp
       - txid
       type: object
-    Cursor:
+    walletsCursor:
       properties:
         pageSize:
           example: 15
@@ -5775,6 +5796,26 @@ components:
       required:
       - errorCode
       - errorMessage
+      type: object
+    orchestrationCursor:
+      properties:
+        pageSize:
+          example: 15
+          format: int64
+          maximum: 1000
+          minimum: 1
+          type: integer
+        hasMore:
+          example: false
+          type: boolean
+        previous:
+          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
+          type: string
+        next:
+          example: ""
+          type: string
+      required:
+      - pageSize
       type: object
     Error:
       properties:
@@ -6649,7 +6690,7 @@ components:
       type: object
     ListWalletsResponse_cursor:
       allOf:
-      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/walletsCursor'
       - $ref: '#/components/schemas/ListWalletsResponse_cursor_allOf'
     GetTransactionsResponse_cursor_allOf:
       properties:
@@ -6662,7 +6703,7 @@ components:
       type: object
     GetTransactionsResponse_cursor:
       allOf:
-      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/walletsCursor'
       - $ref: '#/components/schemas/GetTransactionsResponse_cursor_allOf'
     GetHoldsResponse_cursor_allOf:
       properties:
@@ -6675,7 +6716,7 @@ components:
       type: object
     GetHoldsResponse_cursor:
       allOf:
-      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/walletsCursor'
       - $ref: '#/components/schemas/GetHoldsResponse_cursor_allOf'
     ListBalancesResponse_cursor_allOf:
       properties:
@@ -6688,7 +6729,7 @@ components:
       type: object
     ListBalancesResponse_cursor:
       allOf:
-      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/walletsCursor'
       - $ref: '#/components/schemas/ListBalancesResponse_cursor_allOf'
     ListRunsResponse_cursor_allOf:
       properties:
@@ -6701,7 +6742,7 @@ components:
       type: object
     ListRunsResponse_cursor:
       allOf:
-      - $ref: '#/components/schemas/Cursor'
+      - $ref: '#/components/schemas/orchestrationCursor'
       - $ref: '#/components/schemas/ListRunsResponse_cursor_allOf'
   securitySchemes:
     Authorization:
@@ -6739,6 +6780,9 @@ x-tagGroups:
 - name: Search
   tags:
   - Search
+- name: Wallets
+  tags:
+  - Wallets
 - name: Webhooks
   tags:
   - Webhooks

@@ -76,12 +76,12 @@ class ListRunsResponse(
                                 
                                     def __new__(
                                         cls,
-                                        arg: typing.Union[typing.Tuple['WorkflowOccurrence'], typing.List['WorkflowOccurrence']],
+                                        _arg: typing.Union[typing.Tuple['WorkflowOccurrence'], typing.List['WorkflowOccurrence']],
                                         _configuration: typing.Optional[schemas.Configuration] = None,
                                     ) -> 'data':
                                         return super().__new__(
                                             cls,
-                                            arg,
+                                            _arg,
                                             _configuration=_configuration,
                                         )
                                 
@@ -116,14 +116,14 @@ class ListRunsResponse(
                     
                         def __new__(
                             cls,
-                            *args: typing.Union[dict, frozendict.frozendict, ],
+                            *_args: typing.Union[dict, frozendict.frozendict, ],
                             data: typing.Union[MetaOapg.properties.data, list, tuple, ],
                             _configuration: typing.Optional[schemas.Configuration] = None,
                             **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                         ) -> 'all_of_1':
                             return super().__new__(
                                 cls,
-                                *args,
+                                *_args,
                                 data=data,
                                 _configuration=_configuration,
                                 **kwargs,
@@ -140,20 +140,20 @@ class ListRunsResponse(
                         # classes don't exist yet because their module has not finished
                         # loading
                         return [
-                            Cursor,
+                            OrchestrationCursor,
                             cls.all_of_1,
                         ]
             
             
                 def __new__(
                     cls,
-                    *args: typing.Union[dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
+                    *_args: typing.Union[dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
                     _configuration: typing.Optional[schemas.Configuration] = None,
                     **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                 ) -> 'cursor':
                     return super().__new__(
                         cls,
-                        *args,
+                        *_args,
                         _configuration=_configuration,
                         **kwargs,
                     )
@@ -187,18 +187,18 @@ class ListRunsResponse(
 
     def __new__(
         cls,
-        *args: typing.Union[dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
+        *_args: typing.Union[dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
         cursor: typing.Union[MetaOapg.properties.cursor, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'ListRunsResponse':
         return super().__new__(
             cls,
-            *args,
+            *_args,
             cursor=cursor,
             _configuration=_configuration,
             **kwargs,
         )
 
-from Formance.model.cursor import Cursor
+from Formance.model.orchestration_cursor import OrchestrationCursor
 from Formance.model.workflow_occurrence import WorkflowOccurrence
