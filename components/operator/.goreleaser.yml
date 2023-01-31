@@ -1,22 +1,21 @@
-project_name: payments
+project_name: operator
 
 monorepo:
-  tag_prefix: components/payments/
-  dir: ./components/payments/
+  tag_prefix: components/operator/
+  dir: ./components/operator/
 
 builds:
-  - binary: payments
-    id: payments
+  - binary: operator
+    id: operator
     ldflags:
-      - -X github.com/numary/payments/cmd.BuildDate={{ .Date }}
-      - -X github.com/numary/payments/cmd.Version={{ .Version }}
-      - -X github.com/numary/payments/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/numary/operator/cmd.BuildDate={{ .Date }}
+      - -X github.com/numary/operator/cmd.Version={{ .Version }}
+      - -X github.com/numary/operator/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
     goos:
       - linux
-      - darwin
     goarch:
       - amd64
       - arm64
@@ -24,7 +23,7 @@ builds:
 archives:
   - id: "{{.ProjectName}}"
     builds:
-      - payments
+      - operator
     format: tar.gz
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
 
@@ -64,7 +63,6 @@ release:
     ## What to do next?
     - Read the [documentation](https://docs.formance.com/)
     - Join our [Slack server](https://formance.com/slack)
-
 
 dockers:
   - image_templates: ["ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-amd64"]

@@ -8,14 +8,13 @@ builds:
   - binary: webhooks
     id: webhooks
     ldflags:
-      - -X github.com/formancehq/webhooks/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/webhooks/cmd.Version={{ .Version }}
-      - -X github.com/formancehq/webhooks/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/numary/webhooks/cmd.BuildDate={{ .Date }}
+      - -X github.com/numary/webhooks/cmd.Version={{ .Version }}
+      - -X github.com/numary/webhooks/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
     goos:
-      - windows
       - linux
       - darwin
     goarch:
@@ -23,13 +22,10 @@ builds:
       - arm64
 
 archives:
-  - id: "webhooks"
+  - id: "{{.ProjectName}}"
     builds:
       - webhooks
     format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
 
 
@@ -63,7 +59,47 @@ changelog:
 
 release:
   prerelease: auto
+  draft: true
   footer: |
     ## What to do next?
     - Read the [documentation](https://docs.formance.com/)
     - Join our [Slack server](https://formance.com/slack)
+
+
+dockers:
+  - image_templates: ["ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-amd64"]
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/amd64
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.source=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
+  - image_templates: [ "ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-arm64" ]
+    goarch: arm64
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/arm64/v8
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.source=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
+docker_manifests:
+  - name_template: ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}
+    image_templates:
+      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-arm64
+  - name_template: ghcr.io/formancehq/{{ .ProjectName }}:latest
+    image_templates:
+      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-arm64
