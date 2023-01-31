@@ -131,7 +131,8 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/formancehq/${{ needs.Extract.outputs.service }}:${{ github.event.pull_request.head.sha }}
+          tags: ghcr.io/formancehq/${{ needs.Extract.outputs.service }}:${{ github.event.release.tag_name }}
           build-args: |
             APP_SHA=${{ github.event.pull_request.head.sha }}
-            VERSION=develop
+            VERSION=${{ github.event.release.tag_name }}
+            SEGMENT_WRITE_KEY=${{ secrets.SEGMENT_WRITE_KEY_OSS }}
