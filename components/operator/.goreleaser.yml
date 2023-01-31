@@ -64,9 +64,10 @@ release:
     - Read the [documentation](https://docs.formance.com/)
     - Join our [Slack server](https://formance.com/slack)
 
+
 dockers:
-  - image_templates: ["ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-amd64"]
-    dockerfile: Dockerfile
+  - image_templates: ["ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64"]
+    dockerfile: build.Dockerfile
     use: buildx
     build_flag_templates:
       - --platform=linux/amd64
@@ -78,9 +79,9 @@ dockers:
       - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.licenses=MIT
-  - image_templates: [ "ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-arm64" ]
+  - image_templates: [ "ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64" ]
     goarch: arm64
-    dockerfile: Dockerfile
+    dockerfile: build.Dockerfile
     use: buildx
     build_flag_templates:
       - --platform=linux/arm64/v8
@@ -93,11 +94,11 @@ dockers:
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
       - --label=org.opencontainers.image.licenses=MIT
 docker_manifests:
-  - name_template: ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}
+  - name_template: ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}
     image_templates:
-      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-amd64
-      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-arm64
+      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64
+      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64
   - name_template: ghcr.io/formancehq/{{ .ProjectName }}:latest
     image_templates:
-      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-amd64
-      - ghcr.io/formancehq/{{ .ProjectName }}:{{ .Version }}-arm64
+      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64
+      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64
