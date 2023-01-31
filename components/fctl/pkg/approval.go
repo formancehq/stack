@@ -66,5 +66,5 @@ func CheckOrganizationApprobation(cmd *cobra.Command, disclaimer string, args ..
 	if err != nil {
 		panic(err)
 	}
-	return strings.ToLower(result) == "yes"
+	return strings.ToLower(result) == "y"
 }
