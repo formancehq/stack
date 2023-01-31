@@ -423,7 +423,7 @@ class LogsApi
 
 
 
-        $resourcePath = '/api/ledger/{ledger}/log';
+        $resourcePath = '/api/ledger/{ledger}/logs';
         $formParams = [];
         $queryParams = [];
         $headerParams = [];

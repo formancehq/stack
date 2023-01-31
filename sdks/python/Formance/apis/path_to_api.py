@@ -27,7 +27,7 @@ from Formance.apis.paths.api_ledger_ledger_transactions_txid_revert import ApiLe
 from Formance.apis.paths.api_ledger_ledger_transactions_batch import ApiLedgerLedgerTransactionsBatch
 from Formance.apis.paths.api_ledger_ledger_balances import ApiLedgerLedgerBalances
 from Formance.apis.paths.api_ledger_ledger_aggregate_balances import ApiLedgerLedgerAggregateBalances
-from Formance.apis.paths.api_ledger_ledger_log import ApiLedgerLedgerLog
+from Formance.apis.paths.api_ledger_ledger_logs import ApiLedgerLedgerLogs
 from Formance.apis.paths.api_payments__info import ApiPaymentsInfo
 from Formance.apis.paths.api_payments_payments import ApiPaymentsPayments
 from Formance.apis.paths.api_payments_payments_payment_id import ApiPaymentsPaymentsPaymentId
@@ -95,7 +95,7 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS_BATCH: ApiLedgerLedgerTransactionsBatch,
         PathValues.API_LEDGER_LEDGER_BALANCES: ApiLedgerLedgerBalances,
         PathValues.API_LEDGER_LEDGER_AGGREGATE_BALANCES: ApiLedgerLedgerAggregateBalances,
-        PathValues.API_LEDGER_LEDGER_LOG: ApiLedgerLedgerLog,
+        PathValues.API_LEDGER_LEDGER_LOGS: ApiLedgerLedgerLogs,
         PathValues.API_PAYMENTS__INFO: ApiPaymentsInfo,
         PathValues.API_PAYMENTS_PAYMENTS: ApiPaymentsPayments,
         PathValues.API_PAYMENTS_PAYMENTS_PAYMENT_ID: ApiPaymentsPaymentsPaymentId,
@@ -164,7 +164,7 @@ path_to_api = PathToApi(
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS_BATCH: ApiLedgerLedgerTransactionsBatch,
         PathValues.API_LEDGER_LEDGER_BALANCES: ApiLedgerLedgerBalances,
         PathValues.API_LEDGER_LEDGER_AGGREGATE_BALANCES: ApiLedgerLedgerAggregateBalances,
-        PathValues.API_LEDGER_LEDGER_LOG: ApiLedgerLedgerLog,
+        PathValues.API_LEDGER_LEDGER_LOGS: ApiLedgerLedgerLogs,
         PathValues.API_PAYMENTS__INFO: ApiPaymentsInfo,
         PathValues.API_PAYMENTS_PAYMENTS: ApiPaymentsPayments,
         PathValues.API_PAYMENTS_PAYMENTS_PAYMENT_ID: ApiPaymentsPaymentsPaymentId,

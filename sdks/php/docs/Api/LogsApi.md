@@ -4,7 +4,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 
 | Method | HTTP request | Description |
 | ------------- | ------------- | ------------- |
-| [**listLogs()**](LogsApi.md#listLogs) | **GET** /api/ledger/{ledger}/log | List the logs from a ledger |
+| [**listLogs()**](LogsApi.md#listLogs) | **GET** /api/ledger/{ledger}/logs | List the logs from a ledger |
 
 
 ## `listLogs()`

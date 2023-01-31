@@ -5,7 +5,7 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**list_logs**](#list_logs) | **get** /api/ledger/{ledger}/log | List the logs from a ledger
+[**list_logs**](#list_logs) | **get** /api/ledger/{ledger}/logs | List the logs from a ledger
 
 # **list_logs**
 <a name="list_logs"></a>

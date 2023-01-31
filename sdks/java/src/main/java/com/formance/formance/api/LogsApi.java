@@ -35,7 +35,7 @@ public interface LogsApi {
    * @param paginationToken Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead.  (optional)
    * @return Call&lt;LogsCursorResponse&gt;
    */
-  @GET("api/ledger/{ledger}/log")
+  @GET("api/ledger/{ledger}/logs")
   Call<LogsCursorResponse> listLogs(
     @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("page_size") Long pageSize2, @retrofit2.http.Query("after") String after, @retrofit2.http.Query("startTime") OffsetDateTime startTime, @retrofit2.http.Query("start_time") OffsetDateTime startTime2, @retrofit2.http.Query("endTime") OffsetDateTime endTime, @retrofit2.http.Query("end_time") OffsetDateTime endTime2, @retrofit2.http.Query("cursor") String cursor, @retrofit2.http.Query("pagination_token") String paginationToken
   );

@@ -1945,7 +1945,7 @@
         }
       }
     },
-    "/api/ledger/{ledger}/log": {
+    "/api/ledger/{ledger}/logs": {
       "get": {
         "tags": [
           "Logs"

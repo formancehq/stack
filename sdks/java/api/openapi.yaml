@@ -1627,7 +1627,7 @@ paths:
       tags:
       - Balances
       x-accepts: application/json
-  /api/ledger/{ledger}/log:
+  /api/ledger/{ledger}/logs:
     get:
       description: "List the logs from a ledger, sorted by ID in descending order."
       operationId: listLogs

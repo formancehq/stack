@@ -213,7 +213,7 @@ Class | Method | HTTP request | Description
 *ClientsApi* | [**read_client**](docs/apis/tags/ClientsApi.md#read_client) | **get** /api/auth/clients/{clientId} | Read client
 *ClientsApi* | [**update_client**](docs/apis/tags/ClientsApi.md#update_client) | **put** /api/auth/clients/{clientId} | Update client
 *LedgerApi* | [**get_ledger_info**](docs/apis/tags/LedgerApi.md#get_ledger_info) | **get** /api/ledger/{ledger}/_info | Get information about a ledger
-*LogsApi* | [**list_logs**](docs/apis/tags/LogsApi.md#list_logs) | **get** /api/ledger/{ledger}/log | List the logs from a ledger
+*LogsApi* | [**list_logs**](docs/apis/tags/LogsApi.md#list_logs) | **get** /api/ledger/{ledger}/logs | List the logs from a ledger
 *MappingApi* | [**get_mapping**](docs/apis/tags/MappingApi.md#get_mapping) | **get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
 *MappingApi* | [**update_mapping**](docs/apis/tags/MappingApi.md#update_mapping) | **put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
 *OrchestrationApi* | [**create_workflow**](docs/apis/tags/OrchestrationApi.md#create_workflow) | **post** /api/orchestration/flows | Create workflow
