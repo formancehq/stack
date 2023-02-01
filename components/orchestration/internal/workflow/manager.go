@@ -243,11 +243,15 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 					activityHistory.Error = "cancelled"
 				case enums.EVENT_TYPE_ACTIVITY_TASK_COMPLETED:
 					result := event.Attributes.(*history.HistoryEvent_ActivityTaskCompletedEventAttributes).ActivityTaskCompletedEventAttributes.Result
-					output := make(map[string]any)
-					if err := json.Unmarshal(result.Payloads[0].Data, &output); err != nil {
-						panic(err)
+					if len(result.Payloads) > 0 {
+						output := make(map[string]any)
+						if err := json.Unmarshal(result.Payloads[0].Data, &output); err != nil {
+							panic(err)
+						}
+						activityHistory.Output = map[string]any{
+							attributes.ActivityType.Name: output,
+						}
 					}
-					activityHistory.Output = output
 				case enums.EVENT_TYPE_ACTIVITY_TASK_TIMED_OUT:
 					activityHistory.Error = "timeout"
 				case enums.EVENT_TYPE_ACTIVITY_TASK_FAILED:

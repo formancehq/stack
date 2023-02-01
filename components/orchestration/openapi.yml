@@ -597,13 +597,20 @@ components:
         VoidHold:
           $ref: '#/components/schemas/ActivityVoidHold'
     WorkflowInstanceHistoryStageOutput:
-      anyOf:
-      - $ref: '#/components/schemas/ActivityGetAccountOutput'
-      - $ref: '#/components/schemas/ActivityCreateTransactionOutput'
-      - $ref: '#/components/schemas/ActivityRevertTransactionOutput'
-      - $ref: '#/components/schemas/ActivityGetPaymentOutput'
-      - $ref: '#/components/schemas/ActivityDebitWalletOutput'
-      - $ref: '#/components/schemas/ActivityGetWalletOutput'
+      type: object
+      properties:
+        GetAccount:
+          $ref: '#/components/schemas/ActivityGetAccountOutput'
+        CreateTransaction:
+          $ref: '#/components/schemas/ActivityCreateTransactionOutput'
+        RevertTransaction:
+          $ref: '#/components/schemas/ActivityRevertTransactionOutput'
+        GetPayment:
+          $ref: '#/components/schemas/ActivityGetPaymentOutput'
+        DebitWallet:
+          $ref: '#/components/schemas/ActivityDebitWalletOutput'
+        GetWallet:
+          $ref: '#/components/schemas/ActivityGetWalletOutput'
   responses:
     ErrorResponse:
       description: General error
