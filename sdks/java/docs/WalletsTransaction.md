@@ -7,6 +7,7 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
+|**ledger** | **String** |  |  [optional] |
 |**timestamp** | **OffsetDateTime** |  |  |
 |**postings** | [**List&lt;Posting&gt;**](Posting.md) |  |  |
 |**reference** | **String** |  |  [optional] |

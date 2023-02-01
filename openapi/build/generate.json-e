@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "develop"
+    "version": "SDK_VERSION"
   },
   "servers": [
     {
@@ -2137,28 +2137,6 @@
         }
       }
     },
-    "/api/payments/payments/{paymentId}/metadata": {
-      "patch": {
-        "summary": "Update metadata",
-        "tags": [
-          "Payments"
-        ],
-        "operationId": "updateMetadata",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/PaymentId"
-          }
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/UpdateMetadata"
-        },
-        "responses": {
-          "204": {
-            "$ref": "#/components/responses/NoContent"
-          }
-        }
-      }
-    },
     "/api/payments/accounts": {
       "get": {
         "summary": "List accounts",
@@ -2344,7 +2322,7 @@
         }
       }
     },
-    "/api/payments/connectors/stripe/transfers": {
+    "/api/payments/connectors/stripe/transfer": {
       "post": {
         "summary": "Transfer funds between Stripe accounts",
         "tags": [
@@ -3105,7 +3083,7 @@
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": "Wallet successfully debited as a pending hold",
             "content": {
               "application/json": {
@@ -3398,11 +3376,11 @@
         }
       }
     },
-    "/api/orchestration/workflows": {
+    "/api/orchestration/flows": {
       "get": {
-        "summary": "List registered workflows",
-        "operationId": "listWorkflows",
-        "description": "List registered workflows",
+        "summary": "List registered flows",
+        "operationId": "listFlows",
+        "description": "List registered flows",
         "tags": [
           "Orchestration"
         ],
@@ -3455,7 +3433,7 @@
         }
       }
     },
-    "/api/orchestration/workflows/{flowId}": {
+    "/api/orchestration/flows/{flowId}": {
       "parameters": [
         {
           "in": "path",
@@ -3474,7 +3452,7 @@
           "Orchestration"
         ],
         "description": "Get a flow by id",
-        "operationId": "getWorkflow",
+        "operationId": "getFlow",
         "responses": {
           "200": {
             "description": "The workflow",
@@ -3492,12 +3470,12 @@
         }
       }
     },
-    "/api/orchestration/workflows/{workflowID}/instances": {
+    "/api/orchestration/flows/{flowId}/runs": {
       "parameters": [
         {
           "in": "path",
           "description": "The flow id",
-          "name": "workflowID",
+          "name": "flowId",
           "schema": {
             "type": "string"
           },
@@ -3505,6 +3483,29 @@
           "required": true
         }
       ],
+      "get": {
+        "description": "List occurrences of a workflow",
+        "summary": "List occurrences of a workflow",
+        "operationId": "listRuns",
+        "tags": [
+          "Orchestration"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of workflow occurrences",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListRunsResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      },
       "post": {
         "description": "Run workflow",
         "summary": "Run workflow",
@@ -3534,7 +3535,7 @@
         },
         "responses": {
           "201": {
-            "description": "The workflow instance",
+            "description": "The workflow occurrence",
             "content": {
               "application/json": {
                 "schema": {
@@ -3549,170 +3550,12 @@
         }
       }
     },
-    "/api/orchestration/instances": {
-      "get": {
-        "description": "List instances of a workflow",
-        "summary": "List instances of a workflow",
-        "operationId": "listInstances",
-        "parameters": [
-          {
-            "in": "query",
-            "description": "A workflow id",
-            "name": "workflowID",
-            "schema": {
-              "type": "string"
-            },
-            "example": "xxx",
-            "required": true
-          }
-        ],
-        "tags": [
-          "Orchestration"
-        ],
-        "responses": {
-          "200": {
-            "description": "List of workflow instances",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListRunsResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/ErrorResponse"
-          }
-        }
-      }
-    },
-    "/api/orchestration/instances/{instanceID}": {
+    "/api/orchestration/flows/{flowId}/runs/{runId}": {
       "parameters": [
         {
           "in": "path",
-          "description": "The instance id",
-          "name": "instanceID",
-          "schema": {
-            "type": "string"
-          },
-          "example": "xxx",
-          "required": true
-        }
-      ],
-      "get": {
-        "summary": "Get a workflow instance by id",
-        "description": "Get a workflow instance by id",
-        "operationId": "getInstance",
-        "tags": [
-          "Orchestration"
-        ],
-        "responses": {
-          "200": {
-            "description": "The workflow instance",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetWorkflowInstanceResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/ErrorResponse"
-          }
-        }
-      }
-    },
-    "/api/orchestration/instances/{instanceID}/events": {
-      "parameters": [
-        {
-          "in": "path",
-          "description": "The instance id",
-          "name": "instanceID",
-          "schema": {
-            "type": "string"
-          },
-          "example": "xxx",
-          "required": true
-        }
-      ],
-      "post": {
-        "summary": "Send an event to a running workflow",
-        "description": "Send an event to a running workflow",
-        "operationId": "sendEvent",
-        "tags": [
-          "Orchestration"
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "name"
-                ],
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "No content"
-          },
-          "default": {
-            "$ref": "#/components/responses/ErrorResponse"
-          }
-        }
-      }
-    },
-    "/api/orchestration/instances/{instanceID}/history": {
-      "parameters": [
-        {
-          "in": "path",
-          "description": "The instance id",
-          "name": "instanceID",
-          "schema": {
-            "type": "string"
-          },
-          "example": "xxx",
-          "required": true
-        }
-      ],
-      "get": {
-        "summary": "Get a workflow instance history by id",
-        "description": "Get a workflow instance history by id",
-        "operationId": "getInstanceHistory",
-        "tags": [
-          "Orchestration"
-        ],
-        "responses": {
-          "200": {
-            "description": "The workflow instance history",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GetWorkflowInstanceHistoryResponse"
-                }
-              }
-            }
-          },
-          "default": {
-            "$ref": "#/components/responses/ErrorResponse"
-          }
-        }
-      }
-    },
-    "/api/orchestration/instances/{instanceID}/stages/{number}/history": {
-      "parameters": [
-        {
-          "in": "path",
-          "description": "The instance id",
-          "name": "instanceID",
+          "description": "The flow id",
+          "name": "flowId",
           "schema": {
             "type": "string"
           },
@@ -3721,29 +3564,29 @@
         },
         {
           "in": "path",
-          "description": "The stage number",
-          "name": "number",
+          "description": "The occurrence id",
+          "name": "runId",
           "schema": {
-            "type": "integer"
+            "type": "string"
           },
-          "example": 0,
+          "example": "xxx",
           "required": true
         }
       ],
       "get": {
-        "summary": "Get a workflow instance stage history",
-        "description": "Get a workflow instance stage history",
-        "operationId": "getInstanceStageHistory",
+        "summary": "Get a workflow occurrence by id",
+        "description": "Get a workflow occurrence by id",
+        "operationId": "getWorkflowOccurrence",
         "tags": [
           "Orchestration"
         ],
         "responses": {
           "200": {
-            "description": "The workflow instance stage history",
+            "description": "The workflow occurrence",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GetWorkflowInstanceHistoryStageResponse"
+                  "$ref": "#/components/schemas/GetWorkflowOccurrenceResponse"
                 }
               }
             }
@@ -5430,7 +5273,10 @@
             }
           },
           "metadata": {
-            "$ref": "#/components/schemas/PaymentMetadata"
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentMetadata"
+            }
           }
         }
       },
@@ -5467,8 +5313,34 @@
       },
       "PaymentMetadata": {
         "type": "object",
+        "required": [
+          "key",
+          "value"
+        ],
         "properties": {
           "key": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          },
+          "changelog": {
+            "$ref": "#/components/schemas/PaymentMetadataChangelog"
+          }
+        }
+      },
+      "PaymentMetadataChangelog": {
+        "type": "object",
+        "required": [
+          "timestamp",
+          "value"
+        ],
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "value": {
             "type": "string"
           }
         }
@@ -5750,8 +5622,7 @@
           "PENDING",
           "ACTIVE",
           "TERMINATED",
-          "FAILED",
-          "SUCCEEDED"
+          "FAILED"
         ]
       },
       "Query": {
@@ -6716,6 +6587,33 @@
           }
         }
       },
+      "orchestrationCursor": {
+        "type": "object",
+        "required": [
+          "pageSize"
+        ],
+        "properties": {
+          "pageSize": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 1000,
+            "example": 15
+          },
+          "hasMore": {
+            "type": "boolean",
+            "example": false
+          },
+          "previous": {
+            "type": "string",
+            "example": "YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol="
+          },
+          "next": {
+            "type": "string",
+            "example": ""
+          }
+        }
+      },
       "Error": {
         "type": "object",
         "required": [
@@ -6740,9 +6638,6 @@
           "stages"
         ],
         "properties": {
-          "name": {
-            "type": "string"
-          },
           "stages": {
             "type": "array",
             "items": {
@@ -6781,14 +6676,14 @@
         "type": "object",
         "required": [
           "stage",
-          "instanceID",
+          "occurrenceID",
           "startedAt"
         ],
         "properties": {
           "stage": {
             "type": "number"
           },
-          "instanceID": {
+          "occurrenceID": {
             "type": "string"
           },
           "startedAt": {
@@ -6804,7 +6699,7 @@
           }
         }
       },
-      "WorkflowInstance": {
+      "WorkflowOccurrence": {
         "type": "object",
         "required": [
           "workflowID",
@@ -6828,89 +6723,12 @@
             "type": "string",
             "format": "date-time"
           },
-          "status": {
+          "statuses": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/StageStatus"
             }
           }
-        }
-      },
-      "WorkflowInstanceHistoryStage": {
-        "type": "object",
-        "required": [
-          "name",
-          "input",
-          "startedAt",
-          "terminated"
-        ],
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "input": {
-            "$ref": "#/components/schemas/WorkflowInstanceHistoryStageInput"
-          },
-          "output": {
-            "$ref": "#/components/schemas/WorkflowInstanceHistoryStageOutput"
-          },
-          "error": {
-            "type": "string"
-          },
-          "terminated": {
-            "type": "bool"
-          },
-          "startedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "terminatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "WorkflowInstanceHistory": {
-        "type": "object",
-        "required": [
-          "name",
-          "input",
-          "terminated",
-          "startedAt"
-        ],
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "input": {
-            "$ref": "#/components/schemas/Stage"
-          },
-          "error": {
-            "type": "string"
-          },
-          "terminated": {
-            "type": "bool"
-          },
-          "startedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "terminatedAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "WorkflowInstanceHistoryList": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/WorkflowInstanceHistory"
-        }
-      },
-      "WorkflowInstanceHistoryStageList": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/WorkflowInstanceHistoryStage"
         }
       },
       "ListWorkflowsResponse": {
@@ -6965,20 +6783,35 @@
         ],
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/WorkflowInstance"
+            "$ref": "#/components/schemas/WorkflowOccurrence"
           }
         }
       },
       "ListRunsResponse": {
         "required": [
-          "data"
+          "cursor"
         ],
         "properties": {
-          "data": {
-            "items": {
-              "$ref": "#/components/schemas/WorkflowInstance"
-            },
-            "type": "array"
+          "cursor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/orchestrationCursor"
+              },
+              {
+                "properties": {
+                  "data": {
+                    "items": {
+                      "$ref": "#/components/schemas/WorkflowOccurrence"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object",
+                "required": [
+                  "data"
+                ]
+              }
+            ]
           }
         }
       },
@@ -6993,356 +6826,14 @@
           }
         }
       },
-      "GetWorkflowInstanceResponse": {
+      "GetWorkflowOccurrenceResponse": {
         "type": "object",
         "required": [
           "data"
         ],
         "properties": {
           "data": {
-            "$ref": "#/components/schemas/WorkflowInstance"
-          }
-        }
-      },
-      "GetWorkflowInstanceHistoryResponse": {
-        "type": "object",
-        "required": [
-          "data"
-        ],
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/WorkflowInstanceHistoryList"
-          }
-        }
-      },
-      "GetWorkflowInstanceHistoryStageResponse": {
-        "type": "object",
-        "required": [
-          "data"
-        ],
-        "properties": {
-          "data": {
-            "$ref": "#/components/schemas/WorkflowInstanceHistoryStageList"
-          }
-        }
-      },
-      "StageSendSourceWallet": {
-        "type": "object",
-        "required": [
-          "id"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "balance": {
-            "type": "string"
-          }
-        }
-      },
-      "StageSendDestinationWallet": {
-        "$ref": "#/components/schemas/StageSendSourceWallet"
-      },
-      "StageSendSourceAccount": {
-        "type": "object",
-        "required": [
-          "id"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "ledger": {
-            "type": "string"
-          }
-        }
-      },
-      "StageSendDestinationAccount": {
-        "$ref": "#/components/schemas/StageSendSourceAccount"
-      },
-      "StageSendSourcePayment": {
-        "type": "object",
-        "required": [
-          "id"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          }
-        }
-      },
-      "StageSendDestinationPayment": {
-        "type": "object",
-        "required": [
-          "psp"
-        ],
-        "properties": {
-          "psp": {
-            "type": "string"
-          }
-        }
-      },
-      "StageSendSource": {
-        "type": "object",
-        "properties": {
-          "wallet": {
-            "$ref": "#/components/schemas/StageSendSourceWallet"
-          },
-          "account": {
-            "$ref": "#/components/schemas/StageSendSourceAccount"
-          },
-          "payment": {
-            "$ref": "#/components/schemas/StageSendSourcePayment"
-          }
-        }
-      },
-      "StageSendDestination": {
-        "type": "object",
-        "properties": {
-          "wallet": {
-            "$ref": "#/components/schemas/StageSendDestinationWallet"
-          },
-          "account": {
-            "$ref": "#/components/schemas/StageSendDestinationAccount"
-          },
-          "payment": {
-            "$ref": "#/components/schemas/StageSendDestinationPayment"
-          }
-        }
-      },
-      "StageSend": {
-        "type": "object",
-        "properties": {
-          "amount": {
-            "$ref": "#/components/schemas/Monetary"
-          },
-          "destination": {
-            "$ref": "#/components/schemas/StageSendDestination"
-          },
-          "source": {
-            "$ref": "#/components/schemas/StageSendSource"
-          }
-        }
-      },
-      "StageDelay": {
-        "type": "object",
-        "properties": {
-          "until": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "duration": {
-            "type": "string"
-          }
-        }
-      },
-      "StageWaitEvent": {
-        "type": "object",
-        "required": [
-          "event"
-        ],
-        "properties": {
-          "event": {
-            "type": "string"
-          }
-        }
-      },
-      "Stage": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/StageSend"
-          },
-          {
-            "$ref": "#/components/schemas/StageDelay"
-          },
-          {
-            "$ref": "#/components/schemas/StageWaitEvent"
-          }
-        ]
-      },
-      "ActivityStripeTransfer": {
-        "$ref": "#/components/schemas/StripeTransferRequest"
-      },
-      "ActivityGetAccount": {
-        "type": "object",
-        "required": [
-          "id",
-          "ledger"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "ledger": {
-            "type": "string"
-          }
-        }
-      },
-      "ActivityCreateTransaction": {
-        "type": "object",
-        "properties": {
-          "ledger": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/PostTransaction"
-          }
-        }
-      },
-      "ActivityRevertTransaction": {
-        "type": "object",
-        "required": [
-          "id",
-          "ledger"
-        ],
-        "properties": {
-          "ledger": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          }
-        }
-      },
-      "ActivityGetPayment": {
-        "type": "object",
-        "required": [
-          "id"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          }
-        }
-      },
-      "ActivityConfirmHold": {
-        "type": "object",
-        "required": [
-          "id"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          }
-        }
-      },
-      "ActivityCreditWallet": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/CreditWalletRequest"
-          }
-        }
-      },
-      "ActivityDebitWallet": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "data": {
-            "$ref": "#/components/schemas/DebitWalletRequest"
-          }
-        }
-      },
-      "ActivityGetWallet": {
-        "type": "object",
-        "required": [
-          "id"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          }
-        }
-      },
-      "ActivityVoidHold": {
-        "type": "object",
-        "required": [
-          "id"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          }
-        }
-      },
-      "ActivityGetAccountOutput": {
-        "$ref": "#/components/schemas/AccountResponse"
-      },
-      "ActivityCreateTransactionOutput": {
-        "$ref": "#/components/schemas/TransactionsResponse"
-      },
-      "ActivityRevertTransactionOutput": {
-        "$ref": "#/components/schemas/TransactionResponse"
-      },
-      "ActivityGetPaymentOutput": {
-        "$ref": "#/components/schemas/PaymentResponse"
-      },
-      "ActivityDebitWalletOutput": {
-        "$ref": "#/components/schemas/DebitWalletResponse"
-      },
-      "ActivityGetWalletOutput": {
-        "$ref": "#/components/schemas/GetWalletResponse"
-      },
-      "WorkflowInstanceHistoryStageInput": {
-        "type": "object",
-        "properties": {
-          "GetAccount": {
-            "$ref": "#/components/schemas/ActivityGetAccount"
-          },
-          "CreateTransaction": {
-            "$ref": "#/components/schemas/ActivityCreateTransaction"
-          },
-          "RevertTransaction": {
-            "$ref": "#/components/schemas/ActivityRevertTransaction"
-          },
-          "StripeTransfer": {
-            "$ref": "#/components/schemas/ActivityStripeTransfer"
-          },
-          "GetPayment": {
-            "$ref": "#/components/schemas/ActivityGetPayment"
-          },
-          "ConfirmHold": {
-            "$ref": "#/components/schemas/ActivityConfirmHold"
-          },
-          "CreditWallet": {
-            "$ref": "#/components/schemas/ActivityCreditWallet"
-          },
-          "DebitWallet": {
-            "$ref": "#/components/schemas/ActivityDebitWallet"
-          },
-          "GetWallet": {
-            "$ref": "#/components/schemas/ActivityGetWallet"
-          },
-          "VoidHold": {
-            "$ref": "#/components/schemas/ActivityVoidHold"
-          }
-        }
-      },
-      "WorkflowInstanceHistoryStageOutput": {
-        "type": "object",
-        "properties": {
-          "GetAccount": {
-            "$ref": "#/components/schemas/ActivityGetAccountOutput"
-          },
-          "CreateTransaction": {
-            "$ref": "#/components/schemas/ActivityCreateTransactionOutput"
-          },
-          "RevertTransaction": {
-            "$ref": "#/components/schemas/ActivityRevertTransactionOutput"
-          },
-          "GetPayment": {
-            "$ref": "#/components/schemas/ActivityGetPaymentOutput"
-          },
-          "DebitWallet": {
-            "$ref": "#/components/schemas/ActivityDebitWalletOutput"
-          },
-          "GetWallet": {
-            "$ref": "#/components/schemas/ActivityGetWalletOutput"
+            "$ref": "#/components/schemas/WorkflowOccurrence"
           }
         }
       }
@@ -7544,16 +7035,6 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/StripeTransferRequest"
-            }
-          }
-        }
-      },
-      "UpdateMetadata": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/PaymentMetadata"
             }
           }
         }

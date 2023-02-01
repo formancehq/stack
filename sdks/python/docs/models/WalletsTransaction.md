@@ -11,6 +11,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **[postings](#postings)** | list, tuple,  | tuple,  |  | 
 **txid** | decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 **timestamp** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
+**ledger** | str,  | str,  |  | [optional] 
 **reference** | str,  | str,  |  | [optional] 
 **[metadata](#metadata)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | Metadata associated with the wallet. | [optional] 
 **preCommitVolumes** | [**WalletsAggregatedVolumes**](WalletsAggregatedVolumes.md) | [**WalletsAggregatedVolumes**](WalletsAggregatedVolumes.md) |  | [optional] 

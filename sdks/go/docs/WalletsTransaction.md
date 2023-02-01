@@ -4,6 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**Ledger** | Pointer to **string** |  | [optional] 
 **Timestamp** | **time.Time** |  | 
 **Postings** | [**[]Posting**](Posting.md) |  | 
 **Reference** | Pointer to **string** |  | [optional] 
@@ -30,6 +31,31 @@ will change when the set of required properties is changed
 NewWalletsTransactionWithDefaults instantiates a new WalletsTransaction object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetLedger
+
+`func (o *WalletsTransaction) GetLedger() string`
+
+GetLedger returns the Ledger field if non-nil, zero value otherwise.
+
+### GetLedgerOk
+
+`func (o *WalletsTransaction) GetLedgerOk() (*string, bool)`
+
+GetLedgerOk returns a tuple with the Ledger field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetLedger
+
+`func (o *WalletsTransaction) SetLedger(v string)`
+
+SetLedger sets Ledger field to given value.
+
+### HasLedger
+
+`func (o *WalletsTransaction) HasLedger() bool`
+
+HasLedger returns a boolean if a field has been set.
 
 ### GetTimestamp
 

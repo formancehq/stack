@@ -58,6 +58,7 @@ class WalletsTransaction implements ModelInterface, ArrayAccess, \JsonSerializab
       * @var string[]
       */
     protected static $openAPITypes = [
+        'ledger' => 'string',
         'timestamp' => '\DateTime',
         'postings' => '\Formance\Model\Posting[]',
         'reference' => 'string',
@@ -75,6 +76,7 @@ class WalletsTransaction implements ModelInterface, ArrayAccess, \JsonSerializab
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
+        'ledger' => null,
         'timestamp' => 'date-time',
         'postings' => null,
         'reference' => null,
@@ -90,7 +92,8 @@ class WalletsTransaction implements ModelInterface, ArrayAccess, \JsonSerializab
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'timestamp' => false,
+        'ledger' => false,
+		'timestamp' => false,
 		'postings' => false,
 		'reference' => false,
 		'metadata' => false,
@@ -185,6 +188,7 @@ class WalletsTransaction implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $attributeMap = [
+        'ledger' => 'ledger',
         'timestamp' => 'timestamp',
         'postings' => 'postings',
         'reference' => 'reference',
@@ -200,6 +204,7 @@ class WalletsTransaction implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $setters = [
+        'ledger' => 'setLedger',
         'timestamp' => 'setTimestamp',
         'postings' => 'setPostings',
         'reference' => 'setReference',
@@ -215,6 +220,7 @@ class WalletsTransaction implements ModelInterface, ArrayAccess, \JsonSerializab
      * @var string[]
      */
     protected static $getters = [
+        'ledger' => 'getLedger',
         'timestamp' => 'getTimestamp',
         'postings' => 'getPostings',
         'reference' => 'getReference',
@@ -281,6 +287,7 @@ class WalletsTransaction implements ModelInterface, ArrayAccess, \JsonSerializab
      */
     public function __construct(array $data = null)
     {
+        $this->setIfExists('ledger', $data ?? [], null);
         $this->setIfExists('timestamp', $data ?? [], null);
         $this->setIfExists('postings', $data ?? [], null);
         $this->setIfExists('reference', $data ?? [], null);
@@ -344,6 +351,33 @@ class WalletsTransaction implements ModelInterface, ArrayAccess, \JsonSerializab
         return count($this->listInvalidProperties()) === 0;
     }
 
+
+    /**
+     * Gets ledger
+     *
+     * @return string|null
+     */
+    public function getLedger()
+    {
+        return $this->container['ledger'];
+    }
+
+    /**
+     * Sets ledger
+     *
+     * @param string|null $ledger ledger
+     *
+     * @return self
+     */
+    public function setLedger($ledger)
+    {
+        if (is_null($ledger)) {
+            throw new \InvalidArgumentException('non-nullable ledger cannot be null');
+        }
+        $this->container['ledger'] = $ledger;
+
+        return $this;
+    }
 
     /**
      * Gets timestamp

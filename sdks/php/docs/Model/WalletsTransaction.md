@@ -4,6 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**ledger** | **string** |  | [optional]
 **timestamp** | **\DateTime** |  |
 **postings** | [**\Formance\Model\Posting[]**](Posting.md) |  |
 **reference** | **string** |  | [optional]

@@ -303,7 +303,7 @@ func (m *Manager) ListBalances(ctx context.Context, query ListQuery[ListBalances
 	}, BalanceFromAccount)
 }
 
-func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTransactions]) (*ListResponse[sdk.Transaction], error) {
+func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTransactions]) (*ListResponse[Transaction], error) {
 	var (
 		response *sdk.TransactionsCursorResponseCursor
 		err      error
@@ -328,8 +328,11 @@ func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTran
 		return nil, errors.Wrap(err, "listing transactions")
 	}
 
-	return newListResponse[sdk.Transaction, sdk.Transaction](response, func(tx sdk.Transaction) sdk.Transaction {
-		return tx
+	return newListResponse[sdk.Transaction, Transaction](response, func(tx sdk.Transaction) Transaction {
+		return Transaction{
+			Transaction: tx,
+			Ledger:      m.ledgerName,
+		}
 	}), nil
 }
 
