@@ -57,50 +57,50 @@ func NewDescribeCommand() *cobra.Command {
 
 					for _, historyStage := range stageResponse.Data {
 						switch {
-						case historyStage.Input.StripeTransferRequest != nil:
+						case historyStage.Input.StripeTransfer != nil:
 							fctl.Printf("Send %d %s (from @world) to Stripe connected account: %s",
-								*historyStage.Input.StripeTransferRequest.Amount,
-								*historyStage.Input.StripeTransferRequest.Asset,
-								*historyStage.Input.StripeTransferRequest.Destination,
+								*historyStage.Input.StripeTransfer.Amount,
+								*historyStage.Input.StripeTransfer.Asset,
+								*historyStage.Input.StripeTransfer.Destination,
 							)
-						case historyStage.Input.ActivityCreateTransaction != nil:
+						case historyStage.Input.CreateTransaction != nil:
 							fctl.Printf("Send %d %s from account %s to account %s",
-								historyStage.Input.ActivityCreateTransaction.Data.Postings[0].Amount,
-								historyStage.Input.ActivityCreateTransaction.Data.Postings[0].Asset,
-								historyStage.Input.ActivityCreateTransaction.Data.Postings[0].Source,
-								historyStage.Input.ActivityCreateTransaction.Data.Postings[0].Destination,
+								historyStage.Input.CreateTransaction.Data.Postings[0].Amount,
+								historyStage.Input.CreateTransaction.Data.Postings[0].Asset,
+								historyStage.Input.CreateTransaction.Data.Postings[0].Source,
+								historyStage.Input.CreateTransaction.Data.Postings[0].Destination,
 							)
-						case historyStage.Input.ActivityConfirmHold != nil:
-							fctl.Printf("Confirm debit hold %s", historyStage.Input.ActivityConfirmHold.Id)
-						case historyStage.Input.ActivityCreditWallet != nil:
+						case historyStage.Input.ConfirmHold != nil:
+							fctl.Printf("Confirm debit hold %s", historyStage.Input.ConfirmHold.Id)
+						case historyStage.Input.CreditWallet != nil:
 							fctl.Printf("Credit wallet %s (balance: %s) of %d %s from %s",
-								*historyStage.Input.ActivityCreditWallet.Id,
-								*historyStage.Input.ActivityCreditWallet.Data.Balance,
-								historyStage.Input.ActivityCreditWallet.Data.Amount.Amount,
-								historyStage.Input.ActivityCreditWallet.Data.Amount.Asset,
-								subjectName(historyStage.Input.ActivityCreditWallet.Data.Sources[0]),
+								*historyStage.Input.CreditWallet.Id,
+								*historyStage.Input.CreditWallet.Data.Balance,
+								historyStage.Input.CreditWallet.Data.Amount.Amount,
+								historyStage.Input.CreditWallet.Data.Amount.Asset,
+								subjectName(historyStage.Input.CreditWallet.Data.Sources[0]),
 							)
-						case historyStage.Input.ActivityDebitWallet != nil:
+						case historyStage.Input.DebitWallet != nil:
 							fctl.Printf("Debit wallet %s (balance: %s) of %d %s to %s",
-								*historyStage.Input.ActivityDebitWallet.Id,
-								historyStage.Input.ActivityDebitWallet.Data.Balances[0],
-								historyStage.Input.ActivityDebitWallet.Data.Amount.Amount,
-								historyStage.Input.ActivityDebitWallet.Data.Amount.Asset,
-								subjectName(*historyStage.Input.ActivityDebitWallet.Data.Destination),
+								*historyStage.Input.DebitWallet.Id,
+								historyStage.Input.DebitWallet.Data.Balances[0],
+								historyStage.Input.DebitWallet.Data.Amount.Amount,
+								historyStage.Input.DebitWallet.Data.Amount.Asset,
+								subjectName(*historyStage.Input.DebitWallet.Data.Destination),
 							)
-						case historyStage.Input.ActivityGetAccount != nil:
+						case historyStage.Input.GetAccount != nil:
 							fctl.Printf("Read account %s of ledger %s",
-								historyStage.Input.ActivityGetAccount.Id,
-								historyStage.Input.ActivityGetAccount.Ledger,
+								historyStage.Input.GetAccount.Id,
+								historyStage.Input.GetAccount.Ledger,
 							)
-						case historyStage.Input.ActivityGetPayment != nil:
-							fctl.Printf("Read payment %s", historyStage.Input.ActivityGetPayment.Id)
-						case historyStage.Input.ActivityGetWallet != nil:
-							fctl.Printf("Read wallet %s", historyStage.Input.ActivityGetWallet.Id)
-						case historyStage.Input.ActivityRevertTransaction != nil:
-							fctl.Printf("Revert transaction %s", historyStage.Input.ActivityRevertTransaction.Id)
-						case historyStage.Input.ActivityVoidHold != nil:
-							fctl.Printf("Cancel debit hold %s", historyStage.Input.ActivityVoidHold.Id)
+						case historyStage.Input.GetPayment != nil:
+							fctl.Printf("Read payment %s", historyStage.Input.GetPayment.Id)
+						case historyStage.Input.GetWallet != nil:
+							fctl.Printf("Read wallet %s", historyStage.Input.GetWallet.Id)
+						case historyStage.Input.RevertTransaction != nil:
+							fctl.Printf("Revert transaction %s", historyStage.Input.RevertTransaction.Id)
+						case historyStage.Input.VoidHold != nil:
+							fctl.Printf("Cancel debit hold %s", historyStage.Input.VoidHold.Id)
 						}
 					}
 
