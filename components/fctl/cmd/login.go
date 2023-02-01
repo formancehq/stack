@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/oidc"
@@ -85,7 +86,7 @@ func NewLoginCommand() *cobra.Command {
 
 			cfg.SetCurrentProfile(currentProfileName, profile)
 
-			fctl.Success(cmd.OutOrStdout(), "Logged!")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Logged!")
 			return cfg.Persist()
 		}),
 	)

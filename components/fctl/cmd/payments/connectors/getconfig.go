@@ -52,7 +52,7 @@ func NewGetConfigCommand() *cobra.Command {
 			case internal.WiseConnector:
 				err = displayWiseConfig(cmd, connectorConfig.Data)
 			default:
-				fctl.Error(cmd.ErrOrStderr(), "Connection unknown.")
+				pterm.Error.WithWriter(cmd.OutOrStderr()).Printfln("Connection unknown.")
 			}
 			return err
 		}),

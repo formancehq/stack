@@ -3,6 +3,7 @@ package profiles
 import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +25,7 @@ func NewDeleteCommand() *cobra.Command {
 			if err := config.Persist(); err != nil {
 				return errors.Wrap(err, "updating config")
 			}
-			fctl.Success(cmd.OutOrStdout(), "Profile deleted!")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Profile deleted!")
 			return nil
 		}),
 	)

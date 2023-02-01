@@ -3,6 +3,7 @@ package holds
 import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -37,7 +38,7 @@ func NewVoidCommand() *cobra.Command {
 				return errors.Wrap(err, "listing wallets")
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Hold '%s' voided!", args[0])
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Hold '%s' voided!", args[0])
 
 			return nil
 		}),

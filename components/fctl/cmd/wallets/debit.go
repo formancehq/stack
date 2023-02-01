@@ -7,6 +7,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -101,9 +102,9 @@ func NewDebitWalletCommand() *cobra.Command {
 			}
 
 			if hold != nil && hold.Data.Id != "" {
-				fctl.Success(cmd.OutOrStdout(), "Wallet debited successfully with hold id '%s'!", hold.Data.Id)
+				pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Wallet debited successfully with hold id '%s'!", hold.Data.Id)
 			} else {
-				fctl.Success(cmd.OutOrStdout(), "Wallet debited successfully!")
+				pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Wallet debited successfully!")
 			}
 
 			return nil

@@ -3,6 +3,7 @@ package profiles
 import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +24,7 @@ func NewSetDefaultOrganizationCommand() *cobra.Command {
 			if err := cfg.Persist(); err != nil {
 				return errors.Wrap(err, "Updating config")
 			}
-			fctl.Success(cmd.OutOrStdout(), "Default organization updated!")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Default organization updated!")
 			return nil
 		}),
 	)

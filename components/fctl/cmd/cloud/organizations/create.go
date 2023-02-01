@@ -3,6 +3,7 @@ package organizations
 import (
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -36,7 +37,7 @@ func NewCreateCommand() *cobra.Command {
 				return err
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Organization '%s' created with ID: %s", args[0], response.Data.Id)
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Organization '%s' created with ID: %s", args[0], response.Data.Id)
 
 			return nil
 		}),

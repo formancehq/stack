@@ -6,6 +6,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -60,7 +61,7 @@ func NewCreateCommand() *cobra.Command {
 				return errors.Wrap(err, "inserting config")
 			}
 
-			fctl.Success(cmd.OutOrStdout(),
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln(
 				"Config created successfully with ID: %s", *res.Data.Id)
 			return nil
 		}),

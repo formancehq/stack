@@ -4,6 +4,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -54,7 +55,7 @@ func NewChangeSecretCommand() *cobra.Command {
 				return errors.Wrap(err, "changing secret")
 			}
 
-			fctl.Success(cmd.OutOrStdout(),
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln(
 				"Config updated successfully with new secret: %s", *res.Data.Secret)
 			return nil
 		}),

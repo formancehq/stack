@@ -56,7 +56,7 @@ func NewShowCommand() *cobra.Command {
 			fmt.Fprintln(cmd.OutOrStdout(), "")
 
 			if len(response.Data.RedirectUris) > 0 {
-				fctl.Highlightln(cmd.OutOrStdout(), "Redirect URIs :")
+				fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Redirect URIs :")
 				if err := pterm.DefaultBulletList.WithWriter(cmd.OutOrStdout()).WithItems(fctl.Map(response.Data.RedirectUris, func(redirectURI string) pterm.BulletListItem {
 					return pterm.BulletListItem{
 						Text:        redirectURI,
@@ -69,7 +69,7 @@ func NewShowCommand() *cobra.Command {
 			}
 
 			if len(response.Data.PostLogoutRedirectUris) > 0 {
-				fctl.Highlightln(cmd.OutOrStdout(), "Post logout redirect URIs :")
+				fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Post logout redirect URIs :")
 				if err := pterm.DefaultBulletList.WithWriter(cmd.OutOrStdout()).WithItems(fctl.Map(response.Data.PostLogoutRedirectUris, func(redirectURI string) pterm.BulletListItem {
 					return pterm.BulletListItem{
 						Text:        redirectURI,

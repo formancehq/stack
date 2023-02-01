@@ -3,6 +3,7 @@ package transactions
 import (
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -58,7 +59,7 @@ func NewSetMetadataCommand() *cobra.Command {
 				return err
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Metadata added!")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Metadata added!")
 			return nil
 		}),
 	)

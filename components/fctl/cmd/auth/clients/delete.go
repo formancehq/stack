@@ -2,6 +2,7 @@ package clients
 
 import (
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -41,7 +42,7 @@ func NewDeleteCommand() *cobra.Command {
 				return err
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Client deleted!")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Client deleted!")
 			return nil
 		}),
 	)

@@ -4,6 +4,7 @@ import (
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -70,7 +71,7 @@ func NewDeleteCommand() *cobra.Command {
 				return errors.Wrap(err, "deleting stack")
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Stack deleted.")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Stack deleted.")
 
 			return nil
 		}),

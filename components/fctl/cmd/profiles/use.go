@@ -3,6 +3,7 @@ package profiles
 import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +32,7 @@ func NewUseCommand() *cobra.Command {
 			if err := config.Persist(); err != nil {
 				return errors.Wrap(err, "Updating config")
 			}
-			fctl.Success(cmd.OutOrStdout(), "Selected profile updated!")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Selected profile updated!")
 			return nil
 		}),
 	)

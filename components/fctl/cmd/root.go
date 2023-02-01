@@ -20,6 +20,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -101,7 +102,7 @@ func NewRootCommand() *cobra.Command {
 func Execute() {
 	defer func() {
 		if e := recover(); e != nil {
-			fctl.Error(os.Stderr, "%s", e)
+			pterm.Error.WithWriter(os.Stderr).Printfln("%s", e)
 			debug.PrintStack()
 		}
 	}()
@@ -111,13 +112,13 @@ func Execute() {
 	if err != nil {
 		switch {
 		case errors.Is(err, fctl.ErrMissingApproval):
-			fctl.Error(os.Stderr, "Command aborted as you didn't approve.")
+			pterm.Error.WithWriter(os.Stderr).Printfln("Command aborted as you didn't approve.")
 			os.Exit(1)
 		case formance.ExtractOpenAPIErrorMessage(err) != nil:
-			fctl.Error(os.Stderr, formance.ExtractOpenAPIErrorMessage(err).Error())
+			pterm.Error.WithWriter(os.Stderr).Printfln(formance.ExtractOpenAPIErrorMessage(err).Error())
 			os.Exit(2)
 		default:
-			fctl.Error(os.Stderr, err.Error())
+			pterm.Error.WithWriter(os.Stderr).Printfln(err.Error())
 			os.Exit(255)
 		}
 	}

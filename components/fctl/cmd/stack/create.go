@@ -86,7 +86,7 @@ func NewCreateCommand() *cobra.Command {
 				}
 			}
 
-			fctl.Highlightln(cmd.OutOrStdout(), "Your dashboard will be reachable on: %s",
+			fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Your dashboard will be reachable on: %s",
 				profile.ServicesBaseUrl(stack.Data).String())
 
 			return internal.PrintStackInformation(cmd.OutOrStdout(), profile, stack.Data)

@@ -2,6 +2,7 @@ package organizations
 
 import (
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +34,7 @@ func NewDeleteCommand() *cobra.Command {
 				return err
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Organization '%s' deleted", args[0])
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Organization '%s' deleted", args[0])
 
 			return nil
 		}),
