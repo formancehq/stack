@@ -203,7 +203,7 @@ func (m *Manager) ReadInstanceHistory(ctx context.Context, instanceID string) ([
 
 type ActivityHistory struct {
 	Name   string         `json:"name"`
-	Input  map[string]any `json:"inputs"`
+	Input  map[string]any `json:"input"`
 	Output map[string]any `json:"output,omitempty"`
 	Error  string         `json:"error,omitempty"`
 }
