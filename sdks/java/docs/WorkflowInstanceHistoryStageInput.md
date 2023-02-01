@@ -7,13 +7,16 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**id** | **String** |  |  |
-|**ledger** | **String** |  |  |
-|**data** | [**DebitWalletRequest**](DebitWalletRequest.md) |  |  [optional] |
-|**amount** | **Long** |  |  [optional] |
-|**asset** | **String** |  |  [optional] |
-|**destination** | **String** |  |  [optional] |
-|**metadata** | **Object** | A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.  |  [optional] |
+|**getAccount** | [**ActivityGetAccount**](ActivityGetAccount.md) |  |  [optional] |
+|**createTransaction** | [**ActivityCreateTransaction**](ActivityCreateTransaction.md) |  |  [optional] |
+|**revertTransaction** | [**ActivityRevertTransaction**](ActivityRevertTransaction.md) |  |  [optional] |
+|**stripeTransfer** | [**StripeTransferRequest**](StripeTransferRequest.md) |  |  [optional] |
+|**getPayment** | [**ActivityGetPayment**](ActivityGetPayment.md) |  |  [optional] |
+|**confirmHold** | [**ActivityConfirmHold**](ActivityConfirmHold.md) |  |  [optional] |
+|**creditWallet** | [**ActivityCreditWallet**](ActivityCreditWallet.md) |  |  [optional] |
+|**debitWallet** | [**ActivityDebitWallet**](ActivityDebitWallet.md) |  |  [optional] |
+|**getWallet** | [**ActivityGetWallet**](ActivityGetWallet.md) |  |  [optional] |
+|**voidHold** | [**ActivityVoidHold**](ActivityVoidHold.md) |  |  [optional] |
 
 
 

@@ -36,11 +36,11 @@ public class ClientAllOf {
 
   public static final String SERIALIZED_NAME_SCOPES = "scopes";
   @SerializedName(SERIALIZED_NAME_SCOPES)
-  private List<String> scopes = new ArrayList<>();
+  private List<String> scopes = null;
 
   public static final String SERIALIZED_NAME_SECRETS = "secrets";
   @SerializedName(SERIALIZED_NAME_SECRETS)
-  private List<ClientSecret> secrets = new ArrayList<>();
+  private List<ClientSecret> secrets = null;
 
   public ClientAllOf() {
   }

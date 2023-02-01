@@ -17,8 +17,6 @@ from Formance.apis.tags.stats_api import StatsApi
 from Formance.apis.tags.transactions_api import TransactionsApi
 from Formance.apis.tags.users_api import UsersApi
 from Formance.apis.tags.wallets_api import WalletsApi
-from Formance.apis.tags.webhooks_api import WebhooksApi
-from Formance.apis.tags.default_api import DefaultApi
 
 TagToApi = typing_extensions.TypedDict(
     'TagToApi',
@@ -39,8 +37,6 @@ TagToApi = typing_extensions.TypedDict(
         TagValues.TRANSACTIONS: TransactionsApi,
         TagValues.USERS: UsersApi,
         TagValues.WALLETS: WalletsApi,
-        TagValues.WEBHOOKS: WebhooksApi,
-        TagValues.DEFAULT: DefaultApi,
     }
 )
 
@@ -62,7 +58,5 @@ tag_to_api = TagToApi(
         TagValues.TRANSACTIONS: TransactionsApi,
         TagValues.USERS: UsersApi,
         TagValues.WALLETS: WalletsApi,
-        TagValues.WEBHOOKS: WebhooksApi,
-        TagValues.DEFAULT: DefaultApi,
     }
 )

@@ -5964,7 +5964,72 @@ components:
     WorkflowInstanceHistoryStage:
       example:
         output: null
-        input: null
+        input:
+          CreateTransaction:
+            ledger: ledger
+            data:
+              reference: ref:001
+              metadata:
+                admin: true
+                a:
+                  nested:
+                    key: value
+              postings:
+              - amount: 100
+                destination: users:002
+                source: users:001
+                asset: COIN
+              - amount: 100
+                destination: users:002
+                source: users:001
+                asset: COIN
+              script:
+                plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+                  \tdestination = $user\n)\n"
+                vars:
+                  vars:
+                    user: users:042
+              timestamp: 2000-01-23T04:56:07.000+00:00
+          RevertTransaction:
+            ledger: ledger
+            id: id
+          ConfirmHold:
+            id: id
+          GetAccount:
+            ledger: ledger
+            id: id
+          CreditWallet:
+            data:
+              reference: reference
+              amount:
+                amount: 0
+                asset: asset
+              metadata:
+                key: ""
+              sources:
+              - null
+              - null
+              balance: balance
+            id: id
+          VoidHold:
+            id: id
+          GetPayment:
+            id: id
+          StripeTransfer:
+            amount: 100
+            metadata:
+              order_id: "6735"
+            destination: acct_1Gqj58KZcSIg2N2q
+            asset: USD
+          DebitWallet:
+            data:
+              amount:
+                asset: USD/2
+                amount: 100
+              pending: true
+            id: id
+          GetWallet:
+            id: id
         name: name
         error: error
       properties:
@@ -6187,11 +6252,141 @@ components:
       example:
         data:
         - output: null
-          input: null
+          input:
+            CreateTransaction:
+              ledger: ledger
+              data:
+                reference: ref:001
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                postings:
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                script:
+                  plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+                    \tdestination = $user\n)\n"
+                  vars:
+                    vars:
+                      user: users:042
+                timestamp: 2000-01-23T04:56:07.000+00:00
+            RevertTransaction:
+              ledger: ledger
+              id: id
+            ConfirmHold:
+              id: id
+            GetAccount:
+              ledger: ledger
+              id: id
+            CreditWallet:
+              data:
+                reference: reference
+                amount:
+                  amount: 0
+                  asset: asset
+                metadata:
+                  key: ""
+                sources:
+                - null
+                - null
+                balance: balance
+              id: id
+            VoidHold:
+              id: id
+            GetPayment:
+              id: id
+            StripeTransfer:
+              amount: 100
+              metadata:
+                order_id: "6735"
+              destination: acct_1Gqj58KZcSIg2N2q
+              asset: USD
+            DebitWallet:
+              data:
+                amount:
+                  asset: USD/2
+                  amount: 100
+                pending: true
+              id: id
+            GetWallet:
+              id: id
           name: name
           error: error
         - output: null
-          input: null
+          input:
+            CreateTransaction:
+              ledger: ledger
+              data:
+                reference: ref:001
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                postings:
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                script:
+                  plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+                    \tdestination = $user\n)\n"
+                  vars:
+                    vars:
+                      user: users:042
+                timestamp: 2000-01-23T04:56:07.000+00:00
+            RevertTransaction:
+              ledger: ledger
+              id: id
+            ConfirmHold:
+              id: id
+            GetAccount:
+              ledger: ledger
+              id: id
+            CreditWallet:
+              data:
+                reference: reference
+                amount:
+                  amount: 0
+                  asset: asset
+                metadata:
+                  key: ""
+                sources:
+                - null
+                - null
+                balance: balance
+              id: id
+            VoidHold:
+              id: id
+            GetPayment:
+              id: id
+            StripeTransfer:
+              amount: 100
+              metadata:
+                order_id: "6735"
+              destination: acct_1Gqj58KZcSIg2N2q
+              asset: USD
+            DebitWallet:
+              data:
+                amount:
+                  asset: USD/2
+                  amount: 100
+                pending: true
+              id: id
+            GetWallet:
+              id: id
           name: name
           error: error
       properties:
@@ -6271,6 +6466,9 @@ components:
     ActivityStripeTransfer:
       $ref: '#/components/schemas/StripeTransferRequest'
     ActivityGetAccount:
+      example:
+        ledger: ledger
+        id: id
       properties:
         id:
           type: string
@@ -6281,6 +6479,31 @@ components:
       - ledger
       type: object
     ActivityCreateTransaction:
+      example:
+        ledger: ledger
+        data:
+          reference: ref:001
+          metadata:
+            admin: true
+            a:
+              nested:
+                key: value
+          postings:
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          script:
+            plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+              \tdestination = $user\n)\n"
+            vars:
+              vars:
+                user: users:042
+          timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         ledger:
           type: string
@@ -6288,6 +6511,9 @@ components:
           $ref: '#/components/schemas/PostTransaction'
       type: object
     ActivityRevertTransaction:
+      example:
+        ledger: ledger
+        id: id
       properties:
         ledger:
           type: string
@@ -6298,6 +6524,8 @@ components:
       - ledger
       type: object
     ActivityGetPayment:
+      example:
+        id: id
       properties:
         id:
           type: string
@@ -6305,6 +6533,8 @@ components:
       - id
       type: object
     ActivityConfirmHold:
+      example:
+        id: id
       properties:
         id:
           type: string
@@ -6312,6 +6542,19 @@ components:
       - id
       type: object
     ActivityCreditWallet:
+      example:
+        data:
+          reference: reference
+          amount:
+            amount: 0
+            asset: asset
+          metadata:
+            key: ""
+          sources:
+          - null
+          - null
+          balance: balance
+        id: id
       properties:
         id:
           type: string
@@ -6319,6 +6562,13 @@ components:
           $ref: '#/components/schemas/CreditWalletRequest'
       type: object
     ActivityDebitWallet:
+      example:
+        data:
+          amount:
+            asset: USD/2
+            amount: 100
+          pending: true
+        id: id
       properties:
         id:
           type: string
@@ -6326,6 +6576,8 @@ components:
           $ref: '#/components/schemas/DebitWalletRequest'
       type: object
     ActivityGetWallet:
+      example:
+        id: id
       properties:
         id:
           type: string
@@ -6333,6 +6585,8 @@ components:
       - id
       type: object
     ActivityVoidHold:
+      example:
+        id: id
       properties:
         id:
           type: string
@@ -6352,17 +6606,94 @@ components:
     ActivityGetWalletOutput:
       $ref: '#/components/schemas/GetWalletResponse'
     WorkflowInstanceHistoryStageInput:
-      anyOf:
-      - $ref: '#/components/schemas/ActivityGetAccount'
-      - $ref: '#/components/schemas/ActivityCreateTransaction'
-      - $ref: '#/components/schemas/ActivityRevertTransaction'
-      - $ref: '#/components/schemas/ActivityStripeTransfer'
-      - $ref: '#/components/schemas/ActivityGetPayment'
-      - $ref: '#/components/schemas/ActivityConfirmHold'
-      - $ref: '#/components/schemas/ActivityCreditWallet'
-      - $ref: '#/components/schemas/ActivityDebitWallet'
-      - $ref: '#/components/schemas/ActivityGetWallet'
-      - $ref: '#/components/schemas/ActivityVoidHold'
+      example:
+        CreateTransaction:
+          ledger: ledger
+          data:
+            reference: ref:001
+            metadata:
+              admin: true
+              a:
+                nested:
+                  key: value
+            postings:
+            - amount: 100
+              destination: users:002
+              source: users:001
+              asset: COIN
+            - amount: 100
+              destination: users:002
+              source: users:001
+              asset: COIN
+            script:
+              plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+                \tdestination = $user\n)\n"
+              vars:
+                vars:
+                  user: users:042
+            timestamp: 2000-01-23T04:56:07.000+00:00
+        RevertTransaction:
+          ledger: ledger
+          id: id
+        ConfirmHold:
+          id: id
+        GetAccount:
+          ledger: ledger
+          id: id
+        CreditWallet:
+          data:
+            reference: reference
+            amount:
+              amount: 0
+              asset: asset
+            metadata:
+              key: ""
+            sources:
+            - null
+            - null
+            balance: balance
+          id: id
+        VoidHold:
+          id: id
+        GetPayment:
+          id: id
+        StripeTransfer:
+          amount: 100
+          metadata:
+            order_id: "6735"
+          destination: acct_1Gqj58KZcSIg2N2q
+          asset: USD
+        DebitWallet:
+          data:
+            amount:
+              asset: USD/2
+              amount: 100
+            pending: true
+          id: id
+        GetWallet:
+          id: id
+      properties:
+        GetAccount:
+          $ref: '#/components/schemas/ActivityGetAccount'
+        CreateTransaction:
+          $ref: '#/components/schemas/ActivityCreateTransaction'
+        RevertTransaction:
+          $ref: '#/components/schemas/ActivityRevertTransaction'
+        StripeTransfer:
+          $ref: '#/components/schemas/StripeTransferRequest'
+        GetPayment:
+          $ref: '#/components/schemas/ActivityGetPayment'
+        ConfirmHold:
+          $ref: '#/components/schemas/ActivityConfirmHold'
+        CreditWallet:
+          $ref: '#/components/schemas/ActivityCreditWallet'
+        DebitWallet:
+          $ref: '#/components/schemas/ActivityDebitWallet'
+        GetWallet:
+          $ref: '#/components/schemas/ActivityGetWallet'
+        VoidHold:
+          $ref: '#/components/schemas/ActivityVoidHold'
+      type: object
     WorkflowInstanceHistoryStageOutput:
       anyOf:
       - $ref: '#/components/schemas/ActivityGetAccountOutput'

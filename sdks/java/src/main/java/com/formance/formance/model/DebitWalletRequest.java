@@ -43,7 +43,7 @@ public class DebitWalletRequest {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = new HashMap<>();
+  private Map<String, Object> metadata = null;
 
   public static final String SERIALIZED_NAME_DESCRIPTION = "description";
   @SerializedName(SERIALIZED_NAME_DESCRIPTION)
@@ -55,7 +55,7 @@ public class DebitWalletRequest {
 
   public static final String SERIALIZED_NAME_BALANCES = "balances";
   @SerializedName(SERIALIZED_NAME_BALANCES)
-  private List<String> balances = new ArrayList<>();
+  private List<String> balances = null;
 
   public DebitWalletRequest() {
   }

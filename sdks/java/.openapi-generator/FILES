@@ -120,7 +120,6 @@ docs/MigrationInfo.md
 docs/ModulrConfig.md
 docs/Monetary.md
 docs/OrchestrationApi.md
-docs/OrchestrationCursor.md
 docs/Payment.md
 docs/PaymentAdjustment.md
 docs/PaymentMetadata.md
@@ -370,7 +369,6 @@ src/main/java/com/formance/formance/model/MappingResponse.java
 src/main/java/com/formance/formance/model/MigrationInfo.java
 src/main/java/com/formance/formance/model/ModulrConfig.java
 src/main/java/com/formance/formance/model/Monetary.java
-src/main/java/com/formance/formance/model/OrchestrationCursor.java
 src/main/java/com/formance/formance/model/Payment.java
 src/main/java/com/formance/formance/model/PaymentAdjustment.java
 src/main/java/com/formance/formance/model/PaymentMetadata.java

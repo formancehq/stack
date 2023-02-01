@@ -13,202 +13,403 @@ package formance
 
 import (
 	"encoding/json"
-	"fmt"
 )
+
+// checks if the WorkflowInstanceHistoryStageInput type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &WorkflowInstanceHistoryStageInput{}
 
 // WorkflowInstanceHistoryStageInput struct for WorkflowInstanceHistoryStageInput
 type WorkflowInstanceHistoryStageInput struct {
-	ActivityConfirmHold *ActivityConfirmHold
-	ActivityCreateTransaction *ActivityCreateTransaction
-	ActivityCreditWallet *ActivityCreditWallet
-	ActivityDebitWallet *ActivityDebitWallet
-	ActivityGetAccount *ActivityGetAccount
-	ActivityGetPayment *ActivityGetPayment
-	ActivityGetWallet *ActivityGetWallet
-	ActivityRevertTransaction *ActivityRevertTransaction
-	ActivityVoidHold *ActivityVoidHold
-	StripeTransferRequest *StripeTransferRequest
+	GetAccount *ActivityGetAccount `json:"GetAccount,omitempty"`
+	CreateTransaction *ActivityCreateTransaction `json:"CreateTransaction,omitempty"`
+	RevertTransaction *ActivityRevertTransaction `json:"RevertTransaction,omitempty"`
+	StripeTransfer *StripeTransferRequest `json:"StripeTransfer,omitempty"`
+	GetPayment *ActivityGetPayment `json:"GetPayment,omitempty"`
+	ConfirmHold *ActivityConfirmHold `json:"ConfirmHold,omitempty"`
+	CreditWallet *ActivityCreditWallet `json:"CreditWallet,omitempty"`
+	DebitWallet *ActivityDebitWallet `json:"DebitWallet,omitempty"`
+	GetWallet *ActivityGetWallet `json:"GetWallet,omitempty"`
+	VoidHold *ActivityVoidHold `json:"VoidHold,omitempty"`
 }
 
-// Unmarshal JSON data into any of the pointers in the struct
-func (dst *WorkflowInstanceHistoryStageInput) UnmarshalJSON(data []byte) error {
-	var err error
-	// try to unmarshal JSON data into ActivityConfirmHold
-	err = json.Unmarshal(data, &dst.ActivityConfirmHold);
-	if err == nil {
-		jsonActivityConfirmHold, _ := json.Marshal(dst.ActivityConfirmHold)
-		if string(jsonActivityConfirmHold) == "{}" { // empty struct
-			dst.ActivityConfirmHold = nil
-		} else {
-			return nil // data stored in dst.ActivityConfirmHold, return on the first match
-		}
-	} else {
-		dst.ActivityConfirmHold = nil
-	}
-
-	// try to unmarshal JSON data into ActivityCreateTransaction
-	err = json.Unmarshal(data, &dst.ActivityCreateTransaction);
-	if err == nil {
-		jsonActivityCreateTransaction, _ := json.Marshal(dst.ActivityCreateTransaction)
-		if string(jsonActivityCreateTransaction) == "{}" { // empty struct
-			dst.ActivityCreateTransaction = nil
-		} else {
-			return nil // data stored in dst.ActivityCreateTransaction, return on the first match
-		}
-	} else {
-		dst.ActivityCreateTransaction = nil
-	}
-
-	// try to unmarshal JSON data into ActivityCreditWallet
-	err = json.Unmarshal(data, &dst.ActivityCreditWallet);
-	if err == nil {
-		jsonActivityCreditWallet, _ := json.Marshal(dst.ActivityCreditWallet)
-		if string(jsonActivityCreditWallet) == "{}" { // empty struct
-			dst.ActivityCreditWallet = nil
-		} else {
-			return nil // data stored in dst.ActivityCreditWallet, return on the first match
-		}
-	} else {
-		dst.ActivityCreditWallet = nil
-	}
-
-	// try to unmarshal JSON data into ActivityDebitWallet
-	err = json.Unmarshal(data, &dst.ActivityDebitWallet);
-	if err == nil {
-		jsonActivityDebitWallet, _ := json.Marshal(dst.ActivityDebitWallet)
-		if string(jsonActivityDebitWallet) == "{}" { // empty struct
-			dst.ActivityDebitWallet = nil
-		} else {
-			return nil // data stored in dst.ActivityDebitWallet, return on the first match
-		}
-	} else {
-		dst.ActivityDebitWallet = nil
-	}
-
-	// try to unmarshal JSON data into ActivityGetAccount
-	err = json.Unmarshal(data, &dst.ActivityGetAccount);
-	if err == nil {
-		jsonActivityGetAccount, _ := json.Marshal(dst.ActivityGetAccount)
-		if string(jsonActivityGetAccount) == "{}" { // empty struct
-			dst.ActivityGetAccount = nil
-		} else {
-			return nil // data stored in dst.ActivityGetAccount, return on the first match
-		}
-	} else {
-		dst.ActivityGetAccount = nil
-	}
-
-	// try to unmarshal JSON data into ActivityGetPayment
-	err = json.Unmarshal(data, &dst.ActivityGetPayment);
-	if err == nil {
-		jsonActivityGetPayment, _ := json.Marshal(dst.ActivityGetPayment)
-		if string(jsonActivityGetPayment) == "{}" { // empty struct
-			dst.ActivityGetPayment = nil
-		} else {
-			return nil // data stored in dst.ActivityGetPayment, return on the first match
-		}
-	} else {
-		dst.ActivityGetPayment = nil
-	}
-
-	// try to unmarshal JSON data into ActivityGetWallet
-	err = json.Unmarshal(data, &dst.ActivityGetWallet);
-	if err == nil {
-		jsonActivityGetWallet, _ := json.Marshal(dst.ActivityGetWallet)
-		if string(jsonActivityGetWallet) == "{}" { // empty struct
-			dst.ActivityGetWallet = nil
-		} else {
-			return nil // data stored in dst.ActivityGetWallet, return on the first match
-		}
-	} else {
-		dst.ActivityGetWallet = nil
-	}
-
-	// try to unmarshal JSON data into ActivityRevertTransaction
-	err = json.Unmarshal(data, &dst.ActivityRevertTransaction);
-	if err == nil {
-		jsonActivityRevertTransaction, _ := json.Marshal(dst.ActivityRevertTransaction)
-		if string(jsonActivityRevertTransaction) == "{}" { // empty struct
-			dst.ActivityRevertTransaction = nil
-		} else {
-			return nil // data stored in dst.ActivityRevertTransaction, return on the first match
-		}
-	} else {
-		dst.ActivityRevertTransaction = nil
-	}
-
-	// try to unmarshal JSON data into ActivityVoidHold
-	err = json.Unmarshal(data, &dst.ActivityVoidHold);
-	if err == nil {
-		jsonActivityVoidHold, _ := json.Marshal(dst.ActivityVoidHold)
-		if string(jsonActivityVoidHold) == "{}" { // empty struct
-			dst.ActivityVoidHold = nil
-		} else {
-			return nil // data stored in dst.ActivityVoidHold, return on the first match
-		}
-	} else {
-		dst.ActivityVoidHold = nil
-	}
-
-	// try to unmarshal JSON data into StripeTransferRequest
-	err = json.Unmarshal(data, &dst.StripeTransferRequest);
-	if err == nil {
-		jsonStripeTransferRequest, _ := json.Marshal(dst.StripeTransferRequest)
-		if string(jsonStripeTransferRequest) == "{}" { // empty struct
-			dst.StripeTransferRequest = nil
-		} else {
-			return nil // data stored in dst.StripeTransferRequest, return on the first match
-		}
-	} else {
-		dst.StripeTransferRequest = nil
-	}
-
-	return fmt.Errorf("data failed to match schemas in anyOf(WorkflowInstanceHistoryStageInput)")
+// NewWorkflowInstanceHistoryStageInput instantiates a new WorkflowInstanceHistoryStageInput object
+// This constructor will assign default values to properties that have it defined,
+// and makes sure properties required by API are set, but the set of arguments
+// will change when the set of required properties is changed
+func NewWorkflowInstanceHistoryStageInput() *WorkflowInstanceHistoryStageInput {
+	this := WorkflowInstanceHistoryStageInput{}
+	return &this
 }
 
-// Marshal data from the first non-nil pointers in the struct to JSON
-func (src *WorkflowInstanceHistoryStageInput) MarshalJSON() ([]byte, error) {
-	if src.ActivityConfirmHold != nil {
-		return json.Marshal(&src.ActivityConfirmHold)
+// NewWorkflowInstanceHistoryStageInputWithDefaults instantiates a new WorkflowInstanceHistoryStageInput object
+// This constructor will only assign default values to properties that have it defined,
+// but it doesn't guarantee that properties required by API are set
+func NewWorkflowInstanceHistoryStageInputWithDefaults() *WorkflowInstanceHistoryStageInput {
+	this := WorkflowInstanceHistoryStageInput{}
+	return &this
+}
+
+// GetGetAccount returns the GetAccount field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStageInput) GetGetAccount() ActivityGetAccount {
+	if o == nil || isNil(o.GetAccount) {
+		var ret ActivityGetAccount
+		return ret
+	}
+	return *o.GetAccount
+}
+
+// GetGetAccountOk returns a tuple with the GetAccount field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStageInput) GetGetAccountOk() (*ActivityGetAccount, bool) {
+	if o == nil || isNil(o.GetAccount) {
+		return nil, false
+	}
+	return o.GetAccount, true
+}
+
+// HasGetAccount returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStageInput) HasGetAccount() bool {
+	if o != nil && !isNil(o.GetAccount) {
+		return true
 	}
 
-	if src.ActivityCreateTransaction != nil {
-		return json.Marshal(&src.ActivityCreateTransaction)
+	return false
+}
+
+// SetGetAccount gets a reference to the given ActivityGetAccount and assigns it to the GetAccount field.
+func (o *WorkflowInstanceHistoryStageInput) SetGetAccount(v ActivityGetAccount) {
+	o.GetAccount = &v
+}
+
+// GetCreateTransaction returns the CreateTransaction field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStageInput) GetCreateTransaction() ActivityCreateTransaction {
+	if o == nil || isNil(o.CreateTransaction) {
+		var ret ActivityCreateTransaction
+		return ret
+	}
+	return *o.CreateTransaction
+}
+
+// GetCreateTransactionOk returns a tuple with the CreateTransaction field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStageInput) GetCreateTransactionOk() (*ActivityCreateTransaction, bool) {
+	if o == nil || isNil(o.CreateTransaction) {
+		return nil, false
+	}
+	return o.CreateTransaction, true
+}
+
+// HasCreateTransaction returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStageInput) HasCreateTransaction() bool {
+	if o != nil && !isNil(o.CreateTransaction) {
+		return true
 	}
 
-	if src.ActivityCreditWallet != nil {
-		return json.Marshal(&src.ActivityCreditWallet)
+	return false
+}
+
+// SetCreateTransaction gets a reference to the given ActivityCreateTransaction and assigns it to the CreateTransaction field.
+func (o *WorkflowInstanceHistoryStageInput) SetCreateTransaction(v ActivityCreateTransaction) {
+	o.CreateTransaction = &v
+}
+
+// GetRevertTransaction returns the RevertTransaction field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStageInput) GetRevertTransaction() ActivityRevertTransaction {
+	if o == nil || isNil(o.RevertTransaction) {
+		var ret ActivityRevertTransaction
+		return ret
+	}
+	return *o.RevertTransaction
+}
+
+// GetRevertTransactionOk returns a tuple with the RevertTransaction field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStageInput) GetRevertTransactionOk() (*ActivityRevertTransaction, bool) {
+	if o == nil || isNil(o.RevertTransaction) {
+		return nil, false
+	}
+	return o.RevertTransaction, true
+}
+
+// HasRevertTransaction returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStageInput) HasRevertTransaction() bool {
+	if o != nil && !isNil(o.RevertTransaction) {
+		return true
 	}
 
-	if src.ActivityDebitWallet != nil {
-		return json.Marshal(&src.ActivityDebitWallet)
+	return false
+}
+
+// SetRevertTransaction gets a reference to the given ActivityRevertTransaction and assigns it to the RevertTransaction field.
+func (o *WorkflowInstanceHistoryStageInput) SetRevertTransaction(v ActivityRevertTransaction) {
+	o.RevertTransaction = &v
+}
+
+// GetStripeTransfer returns the StripeTransfer field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStageInput) GetStripeTransfer() StripeTransferRequest {
+	if o == nil || isNil(o.StripeTransfer) {
+		var ret StripeTransferRequest
+		return ret
+	}
+	return *o.StripeTransfer
+}
+
+// GetStripeTransferOk returns a tuple with the StripeTransfer field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStageInput) GetStripeTransferOk() (*StripeTransferRequest, bool) {
+	if o == nil || isNil(o.StripeTransfer) {
+		return nil, false
+	}
+	return o.StripeTransfer, true
+}
+
+// HasStripeTransfer returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStageInput) HasStripeTransfer() bool {
+	if o != nil && !isNil(o.StripeTransfer) {
+		return true
 	}
 
-	if src.ActivityGetAccount != nil {
-		return json.Marshal(&src.ActivityGetAccount)
+	return false
+}
+
+// SetStripeTransfer gets a reference to the given StripeTransferRequest and assigns it to the StripeTransfer field.
+func (o *WorkflowInstanceHistoryStageInput) SetStripeTransfer(v StripeTransferRequest) {
+	o.StripeTransfer = &v
+}
+
+// GetGetPayment returns the GetPayment field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStageInput) GetGetPayment() ActivityGetPayment {
+	if o == nil || isNil(o.GetPayment) {
+		var ret ActivityGetPayment
+		return ret
+	}
+	return *o.GetPayment
+}
+
+// GetGetPaymentOk returns a tuple with the GetPayment field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStageInput) GetGetPaymentOk() (*ActivityGetPayment, bool) {
+	if o == nil || isNil(o.GetPayment) {
+		return nil, false
+	}
+	return o.GetPayment, true
+}
+
+// HasGetPayment returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStageInput) HasGetPayment() bool {
+	if o != nil && !isNil(o.GetPayment) {
+		return true
 	}
 
-	if src.ActivityGetPayment != nil {
-		return json.Marshal(&src.ActivityGetPayment)
+	return false
+}
+
+// SetGetPayment gets a reference to the given ActivityGetPayment and assigns it to the GetPayment field.
+func (o *WorkflowInstanceHistoryStageInput) SetGetPayment(v ActivityGetPayment) {
+	o.GetPayment = &v
+}
+
+// GetConfirmHold returns the ConfirmHold field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStageInput) GetConfirmHold() ActivityConfirmHold {
+	if o == nil || isNil(o.ConfirmHold) {
+		var ret ActivityConfirmHold
+		return ret
+	}
+	return *o.ConfirmHold
+}
+
+// GetConfirmHoldOk returns a tuple with the ConfirmHold field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStageInput) GetConfirmHoldOk() (*ActivityConfirmHold, bool) {
+	if o == nil || isNil(o.ConfirmHold) {
+		return nil, false
+	}
+	return o.ConfirmHold, true
+}
+
+// HasConfirmHold returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStageInput) HasConfirmHold() bool {
+	if o != nil && !isNil(o.ConfirmHold) {
+		return true
 	}
 
-	if src.ActivityGetWallet != nil {
-		return json.Marshal(&src.ActivityGetWallet)
+	return false
+}
+
+// SetConfirmHold gets a reference to the given ActivityConfirmHold and assigns it to the ConfirmHold field.
+func (o *WorkflowInstanceHistoryStageInput) SetConfirmHold(v ActivityConfirmHold) {
+	o.ConfirmHold = &v
+}
+
+// GetCreditWallet returns the CreditWallet field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStageInput) GetCreditWallet() ActivityCreditWallet {
+	if o == nil || isNil(o.CreditWallet) {
+		var ret ActivityCreditWallet
+		return ret
+	}
+	return *o.CreditWallet
+}
+
+// GetCreditWalletOk returns a tuple with the CreditWallet field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStageInput) GetCreditWalletOk() (*ActivityCreditWallet, bool) {
+	if o == nil || isNil(o.CreditWallet) {
+		return nil, false
+	}
+	return o.CreditWallet, true
+}
+
+// HasCreditWallet returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStageInput) HasCreditWallet() bool {
+	if o != nil && !isNil(o.CreditWallet) {
+		return true
 	}
 
-	if src.ActivityRevertTransaction != nil {
-		return json.Marshal(&src.ActivityRevertTransaction)
+	return false
+}
+
+// SetCreditWallet gets a reference to the given ActivityCreditWallet and assigns it to the CreditWallet field.
+func (o *WorkflowInstanceHistoryStageInput) SetCreditWallet(v ActivityCreditWallet) {
+	o.CreditWallet = &v
+}
+
+// GetDebitWallet returns the DebitWallet field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStageInput) GetDebitWallet() ActivityDebitWallet {
+	if o == nil || isNil(o.DebitWallet) {
+		var ret ActivityDebitWallet
+		return ret
+	}
+	return *o.DebitWallet
+}
+
+// GetDebitWalletOk returns a tuple with the DebitWallet field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStageInput) GetDebitWalletOk() (*ActivityDebitWallet, bool) {
+	if o == nil || isNil(o.DebitWallet) {
+		return nil, false
+	}
+	return o.DebitWallet, true
+}
+
+// HasDebitWallet returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStageInput) HasDebitWallet() bool {
+	if o != nil && !isNil(o.DebitWallet) {
+		return true
 	}
 
-	if src.ActivityVoidHold != nil {
-		return json.Marshal(&src.ActivityVoidHold)
+	return false
+}
+
+// SetDebitWallet gets a reference to the given ActivityDebitWallet and assigns it to the DebitWallet field.
+func (o *WorkflowInstanceHistoryStageInput) SetDebitWallet(v ActivityDebitWallet) {
+	o.DebitWallet = &v
+}
+
+// GetGetWallet returns the GetWallet field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStageInput) GetGetWallet() ActivityGetWallet {
+	if o == nil || isNil(o.GetWallet) {
+		var ret ActivityGetWallet
+		return ret
+	}
+	return *o.GetWallet
+}
+
+// GetGetWalletOk returns a tuple with the GetWallet field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStageInput) GetGetWalletOk() (*ActivityGetWallet, bool) {
+	if o == nil || isNil(o.GetWallet) {
+		return nil, false
+	}
+	return o.GetWallet, true
+}
+
+// HasGetWallet returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStageInput) HasGetWallet() bool {
+	if o != nil && !isNil(o.GetWallet) {
+		return true
 	}
 
-	if src.StripeTransferRequest != nil {
-		return json.Marshal(&src.StripeTransferRequest)
+	return false
+}
+
+// SetGetWallet gets a reference to the given ActivityGetWallet and assigns it to the GetWallet field.
+func (o *WorkflowInstanceHistoryStageInput) SetGetWallet(v ActivityGetWallet) {
+	o.GetWallet = &v
+}
+
+// GetVoidHold returns the VoidHold field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStageInput) GetVoidHold() ActivityVoidHold {
+	if o == nil || isNil(o.VoidHold) {
+		var ret ActivityVoidHold
+		return ret
+	}
+	return *o.VoidHold
+}
+
+// GetVoidHoldOk returns a tuple with the VoidHold field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStageInput) GetVoidHoldOk() (*ActivityVoidHold, bool) {
+	if o == nil || isNil(o.VoidHold) {
+		return nil, false
+	}
+	return o.VoidHold, true
+}
+
+// HasVoidHold returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStageInput) HasVoidHold() bool {
+	if o != nil && !isNil(o.VoidHold) {
+		return true
 	}
 
-	return nil, nil // no data in anyOf schemas
+	return false
+}
+
+// SetVoidHold gets a reference to the given ActivityVoidHold and assigns it to the VoidHold field.
+func (o *WorkflowInstanceHistoryStageInput) SetVoidHold(v ActivityVoidHold) {
+	o.VoidHold = &v
+}
+
+func (o WorkflowInstanceHistoryStageInput) MarshalJSON() ([]byte, error) {
+	toSerialize,err := o.ToMap()
+	if err != nil {
+		return []byte{}, err
+	}
+	return json.Marshal(toSerialize)
+}
+
+func (o WorkflowInstanceHistoryStageInput) ToMap() (map[string]interface{}, error) {
+	toSerialize := map[string]interface{}{}
+	if !isNil(o.GetAccount) {
+		toSerialize["GetAccount"] = o.GetAccount
+	}
+	if !isNil(o.CreateTransaction) {
+		toSerialize["CreateTransaction"] = o.CreateTransaction
+	}
+	if !isNil(o.RevertTransaction) {
+		toSerialize["RevertTransaction"] = o.RevertTransaction
+	}
+	if !isNil(o.StripeTransfer) {
+		toSerialize["StripeTransfer"] = o.StripeTransfer
+	}
+	if !isNil(o.GetPayment) {
+		toSerialize["GetPayment"] = o.GetPayment
+	}
+	if !isNil(o.ConfirmHold) {
+		toSerialize["ConfirmHold"] = o.ConfirmHold
+	}
+	if !isNil(o.CreditWallet) {
+		toSerialize["CreditWallet"] = o.CreditWallet
+	}
+	if !isNil(o.DebitWallet) {
+		toSerialize["DebitWallet"] = o.DebitWallet
+	}
+	if !isNil(o.GetWallet) {
+		toSerialize["GetWallet"] = o.GetWallet
+	}
+	if !isNil(o.VoidHold) {
+		toSerialize["VoidHold"] = o.VoidHold
+	}
+	return toSerialize, nil
 }
 
 type NullableWorkflowInstanceHistoryStageInput struct {

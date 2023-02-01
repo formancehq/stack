@@ -128,7 +128,6 @@ docs/Model/MappingResponse.md
 docs/Model/MigrationInfo.md
 docs/Model/ModulrConfig.md
 docs/Model/Monetary.md
-docs/Model/OrchestrationCursor.md
 docs/Model/Payment.md
 docs/Model/PaymentAdjustment.md
 docs/Model/PaymentMetadata.md
@@ -352,7 +351,6 @@ lib/Model/MigrationInfo.php
 lib/Model/ModelInterface.php
 lib/Model/ModulrConfig.php
 lib/Model/Monetary.php
-lib/Model/OrchestrationCursor.php
 lib/Model/Payment.php
 lib/Model/PaymentAdjustment.php
 lib/Model/PaymentMetadata.php

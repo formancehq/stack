@@ -24,7 +24,6 @@ import com.formance.formance.model.ActivityGetPayment;
 import com.formance.formance.model.ActivityGetWallet;
 import com.formance.formance.model.ActivityRevertTransaction;
 import com.formance.formance.model.ActivityVoidHold;
-import com.formance.formance.model.DebitWalletRequest;
 import com.formance.formance.model.StripeTransferRequest;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
@@ -38,189 +37,266 @@ import java.io.IOException;
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class WorkflowInstanceHistoryStageInput {
-  public static final String SERIALIZED_NAME_ID = "id";
-  @SerializedName(SERIALIZED_NAME_ID)
-  private String id;
+  public static final String SERIALIZED_NAME_GET_ACCOUNT = "GetAccount";
+  @SerializedName(SERIALIZED_NAME_GET_ACCOUNT)
+  private ActivityGetAccount getAccount;
 
-  public static final String SERIALIZED_NAME_LEDGER = "ledger";
-  @SerializedName(SERIALIZED_NAME_LEDGER)
-  private String ledger;
+  public static final String SERIALIZED_NAME_CREATE_TRANSACTION = "CreateTransaction";
+  @SerializedName(SERIALIZED_NAME_CREATE_TRANSACTION)
+  private ActivityCreateTransaction createTransaction;
 
-  public static final String SERIALIZED_NAME_DATA = "data";
-  @SerializedName(SERIALIZED_NAME_DATA)
-  private DebitWalletRequest data;
+  public static final String SERIALIZED_NAME_REVERT_TRANSACTION = "RevertTransaction";
+  @SerializedName(SERIALIZED_NAME_REVERT_TRANSACTION)
+  private ActivityRevertTransaction revertTransaction;
 
-  public static final String SERIALIZED_NAME_AMOUNT = "amount";
-  @SerializedName(SERIALIZED_NAME_AMOUNT)
-  private Long amount;
+  public static final String SERIALIZED_NAME_STRIPE_TRANSFER = "StripeTransfer";
+  @SerializedName(SERIALIZED_NAME_STRIPE_TRANSFER)
+  private StripeTransferRequest stripeTransfer;
 
-  public static final String SERIALIZED_NAME_ASSET = "asset";
-  @SerializedName(SERIALIZED_NAME_ASSET)
-  private String asset;
+  public static final String SERIALIZED_NAME_GET_PAYMENT = "GetPayment";
+  @SerializedName(SERIALIZED_NAME_GET_PAYMENT)
+  private ActivityGetPayment getPayment;
 
-  public static final String SERIALIZED_NAME_DESTINATION = "destination";
-  @SerializedName(SERIALIZED_NAME_DESTINATION)
-  private String destination;
+  public static final String SERIALIZED_NAME_CONFIRM_HOLD = "ConfirmHold";
+  @SerializedName(SERIALIZED_NAME_CONFIRM_HOLD)
+  private ActivityConfirmHold confirmHold;
 
-  public static final String SERIALIZED_NAME_METADATA = "metadata";
-  @SerializedName(SERIALIZED_NAME_METADATA)
-  private Object metadata;
+  public static final String SERIALIZED_NAME_CREDIT_WALLET = "CreditWallet";
+  @SerializedName(SERIALIZED_NAME_CREDIT_WALLET)
+  private ActivityCreditWallet creditWallet;
+
+  public static final String SERIALIZED_NAME_DEBIT_WALLET = "DebitWallet";
+  @SerializedName(SERIALIZED_NAME_DEBIT_WALLET)
+  private ActivityDebitWallet debitWallet;
+
+  public static final String SERIALIZED_NAME_GET_WALLET = "GetWallet";
+  @SerializedName(SERIALIZED_NAME_GET_WALLET)
+  private ActivityGetWallet getWallet;
+
+  public static final String SERIALIZED_NAME_VOID_HOLD = "VoidHold";
+  @SerializedName(SERIALIZED_NAME_VOID_HOLD)
+  private ActivityVoidHold voidHold;
 
   public WorkflowInstanceHistoryStageInput() {
   }
 
-  public WorkflowInstanceHistoryStageInput id(String id) {
+  public WorkflowInstanceHistoryStageInput getAccount(ActivityGetAccount getAccount) {
     
-    this.id = id;
+    this.getAccount = getAccount;
     return this;
   }
 
    /**
-   * Get id
-   * @return id
-  **/
-  @javax.annotation.Nonnull
-
-  public String getId() {
-    return id;
-  }
-
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-
-  public WorkflowInstanceHistoryStageInput ledger(String ledger) {
-    
-    this.ledger = ledger;
-    return this;
-  }
-
-   /**
-   * Get ledger
-   * @return ledger
-  **/
-  @javax.annotation.Nonnull
-
-  public String getLedger() {
-    return ledger;
-  }
-
-
-  public void setLedger(String ledger) {
-    this.ledger = ledger;
-  }
-
-
-  public WorkflowInstanceHistoryStageInput data(DebitWalletRequest data) {
-    
-    this.data = data;
-    return this;
-  }
-
-   /**
-   * Get data
-   * @return data
+   * Get getAccount
+   * @return getAccount
   **/
   @javax.annotation.Nullable
 
-  public DebitWalletRequest getData() {
-    return data;
+  public ActivityGetAccount getGetAccount() {
+    return getAccount;
   }
 
 
-  public void setData(DebitWalletRequest data) {
-    this.data = data;
+  public void setGetAccount(ActivityGetAccount getAccount) {
+    this.getAccount = getAccount;
   }
 
 
-  public WorkflowInstanceHistoryStageInput amount(Long amount) {
+  public WorkflowInstanceHistoryStageInput createTransaction(ActivityCreateTransaction createTransaction) {
     
-    this.amount = amount;
+    this.createTransaction = createTransaction;
     return this;
   }
 
    /**
-   * Get amount
-   * minimum: 0
-   * @return amount
+   * Get createTransaction
+   * @return createTransaction
   **/
   @javax.annotation.Nullable
 
-  public Long getAmount() {
-    return amount;
+  public ActivityCreateTransaction getCreateTransaction() {
+    return createTransaction;
   }
 
 
-  public void setAmount(Long amount) {
-    this.amount = amount;
+  public void setCreateTransaction(ActivityCreateTransaction createTransaction) {
+    this.createTransaction = createTransaction;
   }
 
 
-  public WorkflowInstanceHistoryStageInput asset(String asset) {
+  public WorkflowInstanceHistoryStageInput revertTransaction(ActivityRevertTransaction revertTransaction) {
     
-    this.asset = asset;
+    this.revertTransaction = revertTransaction;
     return this;
   }
 
    /**
-   * Get asset
-   * @return asset
+   * Get revertTransaction
+   * @return revertTransaction
   **/
   @javax.annotation.Nullable
 
-  public String getAsset() {
-    return asset;
+  public ActivityRevertTransaction getRevertTransaction() {
+    return revertTransaction;
   }
 
 
-  public void setAsset(String asset) {
-    this.asset = asset;
+  public void setRevertTransaction(ActivityRevertTransaction revertTransaction) {
+    this.revertTransaction = revertTransaction;
   }
 
 
-  public WorkflowInstanceHistoryStageInput destination(String destination) {
+  public WorkflowInstanceHistoryStageInput stripeTransfer(StripeTransferRequest stripeTransfer) {
     
-    this.destination = destination;
+    this.stripeTransfer = stripeTransfer;
     return this;
   }
 
    /**
-   * Get destination
-   * @return destination
+   * Get stripeTransfer
+   * @return stripeTransfer
   **/
   @javax.annotation.Nullable
 
-  public String getDestination() {
-    return destination;
+  public StripeTransferRequest getStripeTransfer() {
+    return stripeTransfer;
   }
 
 
-  public void setDestination(String destination) {
-    this.destination = destination;
+  public void setStripeTransfer(StripeTransferRequest stripeTransfer) {
+    this.stripeTransfer = stripeTransfer;
   }
 
 
-  public WorkflowInstanceHistoryStageInput metadata(Object metadata) {
+  public WorkflowInstanceHistoryStageInput getPayment(ActivityGetPayment getPayment) {
     
-    this.metadata = metadata;
+    this.getPayment = getPayment;
     return this;
   }
 
    /**
-   * A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format. 
-   * @return metadata
+   * Get getPayment
+   * @return getPayment
   **/
   @javax.annotation.Nullable
 
-  public Object getMetadata() {
-    return metadata;
+  public ActivityGetPayment getGetPayment() {
+    return getPayment;
   }
 
 
-  public void setMetadata(Object metadata) {
-    this.metadata = metadata;
+  public void setGetPayment(ActivityGetPayment getPayment) {
+    this.getPayment = getPayment;
+  }
+
+
+  public WorkflowInstanceHistoryStageInput confirmHold(ActivityConfirmHold confirmHold) {
+    
+    this.confirmHold = confirmHold;
+    return this;
+  }
+
+   /**
+   * Get confirmHold
+   * @return confirmHold
+  **/
+  @javax.annotation.Nullable
+
+  public ActivityConfirmHold getConfirmHold() {
+    return confirmHold;
+  }
+
+
+  public void setConfirmHold(ActivityConfirmHold confirmHold) {
+    this.confirmHold = confirmHold;
+  }
+
+
+  public WorkflowInstanceHistoryStageInput creditWallet(ActivityCreditWallet creditWallet) {
+    
+    this.creditWallet = creditWallet;
+    return this;
+  }
+
+   /**
+   * Get creditWallet
+   * @return creditWallet
+  **/
+  @javax.annotation.Nullable
+
+  public ActivityCreditWallet getCreditWallet() {
+    return creditWallet;
+  }
+
+
+  public void setCreditWallet(ActivityCreditWallet creditWallet) {
+    this.creditWallet = creditWallet;
+  }
+
+
+  public WorkflowInstanceHistoryStageInput debitWallet(ActivityDebitWallet debitWallet) {
+    
+    this.debitWallet = debitWallet;
+    return this;
+  }
+
+   /**
+   * Get debitWallet
+   * @return debitWallet
+  **/
+  @javax.annotation.Nullable
+
+  public ActivityDebitWallet getDebitWallet() {
+    return debitWallet;
+  }
+
+
+  public void setDebitWallet(ActivityDebitWallet debitWallet) {
+    this.debitWallet = debitWallet;
+  }
+
+
+  public WorkflowInstanceHistoryStageInput getWallet(ActivityGetWallet getWallet) {
+    
+    this.getWallet = getWallet;
+    return this;
+  }
+
+   /**
+   * Get getWallet
+   * @return getWallet
+  **/
+  @javax.annotation.Nullable
+
+  public ActivityGetWallet getGetWallet() {
+    return getWallet;
+  }
+
+
+  public void setGetWallet(ActivityGetWallet getWallet) {
+    this.getWallet = getWallet;
+  }
+
+
+  public WorkflowInstanceHistoryStageInput voidHold(ActivityVoidHold voidHold) {
+    
+    this.voidHold = voidHold;
+    return this;
+  }
+
+   /**
+   * Get voidHold
+   * @return voidHold
+  **/
+  @javax.annotation.Nullable
+
+  public ActivityVoidHold getVoidHold() {
+    return voidHold;
+  }
+
+
+  public void setVoidHold(ActivityVoidHold voidHold) {
+    this.voidHold = voidHold;
   }
 
 
@@ -233,31 +309,37 @@ public class WorkflowInstanceHistoryStageInput {
       return false;
     }
     WorkflowInstanceHistoryStageInput workflowInstanceHistoryStageInput = (WorkflowInstanceHistoryStageInput) o;
-    return Objects.equals(this.id, workflowInstanceHistoryStageInput.id) &&
-        Objects.equals(this.ledger, workflowInstanceHistoryStageInput.ledger) &&
-        Objects.equals(this.data, workflowInstanceHistoryStageInput.data) &&
-        Objects.equals(this.amount, workflowInstanceHistoryStageInput.amount) &&
-        Objects.equals(this.asset, workflowInstanceHistoryStageInput.asset) &&
-        Objects.equals(this.destination, workflowInstanceHistoryStageInput.destination) &&
-        Objects.equals(this.metadata, workflowInstanceHistoryStageInput.metadata);
+    return Objects.equals(this.getAccount, workflowInstanceHistoryStageInput.getAccount) &&
+        Objects.equals(this.createTransaction, workflowInstanceHistoryStageInput.createTransaction) &&
+        Objects.equals(this.revertTransaction, workflowInstanceHistoryStageInput.revertTransaction) &&
+        Objects.equals(this.stripeTransfer, workflowInstanceHistoryStageInput.stripeTransfer) &&
+        Objects.equals(this.getPayment, workflowInstanceHistoryStageInput.getPayment) &&
+        Objects.equals(this.confirmHold, workflowInstanceHistoryStageInput.confirmHold) &&
+        Objects.equals(this.creditWallet, workflowInstanceHistoryStageInput.creditWallet) &&
+        Objects.equals(this.debitWallet, workflowInstanceHistoryStageInput.debitWallet) &&
+        Objects.equals(this.getWallet, workflowInstanceHistoryStageInput.getWallet) &&
+        Objects.equals(this.voidHold, workflowInstanceHistoryStageInput.voidHold);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, ledger, data, amount, asset, destination, metadata);
+    return Objects.hash(getAccount, createTransaction, revertTransaction, stripeTransfer, getPayment, confirmHold, creditWallet, debitWallet, getWallet, voidHold);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class WorkflowInstanceHistoryStageInput {\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    ledger: ").append(toIndentedString(ledger)).append("\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
-    sb.append("    amount: ").append(toIndentedString(amount)).append("\n");
-    sb.append("    asset: ").append(toIndentedString(asset)).append("\n");
-    sb.append("    destination: ").append(toIndentedString(destination)).append("\n");
-    sb.append("    metadata: ").append(toIndentedString(metadata)).append("\n");
+    sb.append("    getAccount: ").append(toIndentedString(getAccount)).append("\n");
+    sb.append("    createTransaction: ").append(toIndentedString(createTransaction)).append("\n");
+    sb.append("    revertTransaction: ").append(toIndentedString(revertTransaction)).append("\n");
+    sb.append("    stripeTransfer: ").append(toIndentedString(stripeTransfer)).append("\n");
+    sb.append("    getPayment: ").append(toIndentedString(getPayment)).append("\n");
+    sb.append("    confirmHold: ").append(toIndentedString(confirmHold)).append("\n");
+    sb.append("    creditWallet: ").append(toIndentedString(creditWallet)).append("\n");
+    sb.append("    debitWallet: ").append(toIndentedString(debitWallet)).append("\n");
+    sb.append("    getWallet: ").append(toIndentedString(getWallet)).append("\n");
+    sb.append("    voidHold: ").append(toIndentedString(voidHold)).append("\n");
     sb.append("}");
     return sb.toString();
   }

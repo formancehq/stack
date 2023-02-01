@@ -228,7 +228,9 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 
 			activityHistory := ActivityHistory{
 				Name:  attributes.ActivityType.Name,
-				Input: input,
+				Input: map[string]any{
+					attributes.ActivityType.Name: input,
+				},
 			}
 
 			for historyIterator.HasNext() {

@@ -105,7 +105,6 @@ export * from '../models/MigrationInfo';
 export * from '../models/ModelError';
 export * from '../models/ModulrConfig';
 export * from '../models/Monetary';
-export * from '../models/OrchestrationCursor';
 export * from '../models/Payment';
 export * from '../models/PaymentAdjustment';
 export * from '../models/PaymentMetadata';
@@ -307,7 +306,6 @@ import { MigrationInfo   , MigrationInfoStateEnum   } from '../models/MigrationI
 import { ModelError, ModelErrorErrorCodeEnum    } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
 import { Monetary } from '../models/Monetary';
-import { OrchestrationCursor } from '../models/OrchestrationCursor';
 import { Payment   , PaymentTypeEnum     , PaymentSchemeEnum        } from '../models/Payment';
 import { PaymentAdjustment      } from '../models/PaymentAdjustment';
 import { PaymentMetadata } from '../models/PaymentMetadata';
@@ -540,7 +538,6 @@ let typeMap: {[index: string]: any} = {
     "ModelError": ModelError,
     "ModulrConfig": ModulrConfig,
     "Monetary": Monetary,
-    "OrchestrationCursor": OrchestrationCursor,
     "Payment": Payment,
     "PaymentAdjustment": PaymentAdjustment,
     "PaymentMetadata": PaymentMetadata,

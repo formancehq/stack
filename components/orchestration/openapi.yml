@@ -574,17 +574,28 @@ components:
     ActivityGetWalletOutput:
       $ref: '#/components/schemas/GetWalletResponse'
     WorkflowInstanceHistoryStageInput:
-      anyOf:
-      - $ref: '#/components/schemas/ActivityGetAccount'
-      - $ref: '#/components/schemas/ActivityCreateTransaction'
-      - $ref: '#/components/schemas/ActivityRevertTransaction'
-      - $ref: '#/components/schemas/ActivityStripeTransfer'
-      - $ref: '#/components/schemas/ActivityGetPayment'
-      - $ref: '#/components/schemas/ActivityConfirmHold'
-      - $ref: '#/components/schemas/ActivityCreditWallet'
-      - $ref: '#/components/schemas/ActivityDebitWallet'
-      - $ref: '#/components/schemas/ActivityGetWallet'
-      - $ref: '#/components/schemas/ActivityVoidHold'
+      type: object
+      properties:
+        GetAccount:
+          $ref: '#/components/schemas/ActivityGetAccount'
+        CreateTransaction:
+          $ref: '#/components/schemas/ActivityCreateTransaction'
+        RevertTransaction:
+          $ref: '#/components/schemas/ActivityRevertTransaction'
+        StripeTransfer:
+          $ref: '#/components/schemas/ActivityStripeTransfer'
+        GetPayment:
+          $ref: '#/components/schemas/ActivityGetPayment'
+        ConfirmHold:
+          $ref: '#/components/schemas/ActivityConfirmHold'
+        CreditWallet:
+          $ref: '#/components/schemas/ActivityCreditWallet'
+        DebitWallet:
+          $ref: '#/components/schemas/ActivityDebitWallet'
+        GetWallet:
+          $ref: '#/components/schemas/ActivityGetWallet'
+        VoidHold:
+          $ref: '#/components/schemas/ActivityVoidHold'
     WorkflowInstanceHistoryStageOutput:
       anyOf:
       - $ref: '#/components/schemas/ActivityGetAccountOutput'

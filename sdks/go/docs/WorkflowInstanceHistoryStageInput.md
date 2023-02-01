@@ -4,19 +4,22 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** |  | 
-**Ledger** | **string** |  | 
-**Data** | Pointer to [**DebitWalletRequest**](DebitWalletRequest.md) |  | [optional] 
-**Amount** | Pointer to **int64** |  | [optional] 
-**Asset** | Pointer to **string** |  | [optional] 
-**Destination** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** | A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.  | [optional] 
+**GetAccount** | Pointer to [**ActivityGetAccount**](ActivityGetAccount.md) |  | [optional] 
+**CreateTransaction** | Pointer to [**ActivityCreateTransaction**](ActivityCreateTransaction.md) |  | [optional] 
+**RevertTransaction** | Pointer to [**ActivityRevertTransaction**](ActivityRevertTransaction.md) |  | [optional] 
+**StripeTransfer** | Pointer to [**StripeTransferRequest**](StripeTransferRequest.md) |  | [optional] 
+**GetPayment** | Pointer to [**ActivityGetPayment**](ActivityGetPayment.md) |  | [optional] 
+**ConfirmHold** | Pointer to [**ActivityConfirmHold**](ActivityConfirmHold.md) |  | [optional] 
+**CreditWallet** | Pointer to [**ActivityCreditWallet**](ActivityCreditWallet.md) |  | [optional] 
+**DebitWallet** | Pointer to [**ActivityDebitWallet**](ActivityDebitWallet.md) |  | [optional] 
+**GetWallet** | Pointer to [**ActivityGetWallet**](ActivityGetWallet.md) |  | [optional] 
+**VoidHold** | Pointer to [**ActivityVoidHold**](ActivityVoidHold.md) |  | [optional] 
 
 ## Methods
 
 ### NewWorkflowInstanceHistoryStageInput
 
-`func NewWorkflowInstanceHistoryStageInput(id string, ledger string, ) *WorkflowInstanceHistoryStageInput`
+`func NewWorkflowInstanceHistoryStageInput() *WorkflowInstanceHistoryStageInput`
 
 NewWorkflowInstanceHistoryStageInput instantiates a new WorkflowInstanceHistoryStageInput object
 This constructor will assign default values to properties that have it defined,
@@ -31,170 +34,255 @@ NewWorkflowInstanceHistoryStageInputWithDefaults instantiates a new WorkflowInst
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetId
+### GetGetAccount
 
-`func (o *WorkflowInstanceHistoryStageInput) GetId() string`
+`func (o *WorkflowInstanceHistoryStageInput) GetGetAccount() ActivityGetAccount`
 
-GetId returns the Id field if non-nil, zero value otherwise.
+GetGetAccount returns the GetAccount field if non-nil, zero value otherwise.
 
-### GetIdOk
+### GetGetAccountOk
 
-`func (o *WorkflowInstanceHistoryStageInput) GetIdOk() (*string, bool)`
+`func (o *WorkflowInstanceHistoryStageInput) GetGetAccountOk() (*ActivityGetAccount, bool)`
 
-GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
+GetGetAccountOk returns a tuple with the GetAccount field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetId
+### SetGetAccount
 
-`func (o *WorkflowInstanceHistoryStageInput) SetId(v string)`
+`func (o *WorkflowInstanceHistoryStageInput) SetGetAccount(v ActivityGetAccount)`
 
-SetId sets Id field to given value.
+SetGetAccount sets GetAccount field to given value.
 
+### HasGetAccount
 
-### GetLedger
+`func (o *WorkflowInstanceHistoryStageInput) HasGetAccount() bool`
 
-`func (o *WorkflowInstanceHistoryStageInput) GetLedger() string`
+HasGetAccount returns a boolean if a field has been set.
 
-GetLedger returns the Ledger field if non-nil, zero value otherwise.
+### GetCreateTransaction
 
-### GetLedgerOk
+`func (o *WorkflowInstanceHistoryStageInput) GetCreateTransaction() ActivityCreateTransaction`
 
-`func (o *WorkflowInstanceHistoryStageInput) GetLedgerOk() (*string, bool)`
+GetCreateTransaction returns the CreateTransaction field if non-nil, zero value otherwise.
 
-GetLedgerOk returns a tuple with the Ledger field if it's non-nil, zero value otherwise
+### GetCreateTransactionOk
+
+`func (o *WorkflowInstanceHistoryStageInput) GetCreateTransactionOk() (*ActivityCreateTransaction, bool)`
+
+GetCreateTransactionOk returns a tuple with the CreateTransaction field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetLedger
+### SetCreateTransaction
 
-`func (o *WorkflowInstanceHistoryStageInput) SetLedger(v string)`
+`func (o *WorkflowInstanceHistoryStageInput) SetCreateTransaction(v ActivityCreateTransaction)`
 
-SetLedger sets Ledger field to given value.
+SetCreateTransaction sets CreateTransaction field to given value.
 
+### HasCreateTransaction
 
-### GetData
+`func (o *WorkflowInstanceHistoryStageInput) HasCreateTransaction() bool`
 
-`func (o *WorkflowInstanceHistoryStageInput) GetData() DebitWalletRequest`
+HasCreateTransaction returns a boolean if a field has been set.
 
-GetData returns the Data field if non-nil, zero value otherwise.
+### GetRevertTransaction
 
-### GetDataOk
+`func (o *WorkflowInstanceHistoryStageInput) GetRevertTransaction() ActivityRevertTransaction`
 
-`func (o *WorkflowInstanceHistoryStageInput) GetDataOk() (*DebitWalletRequest, bool)`
+GetRevertTransaction returns the RevertTransaction field if non-nil, zero value otherwise.
 
-GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
+### GetRevertTransactionOk
+
+`func (o *WorkflowInstanceHistoryStageInput) GetRevertTransactionOk() (*ActivityRevertTransaction, bool)`
+
+GetRevertTransactionOk returns a tuple with the RevertTransaction field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetData
+### SetRevertTransaction
 
-`func (o *WorkflowInstanceHistoryStageInput) SetData(v DebitWalletRequest)`
+`func (o *WorkflowInstanceHistoryStageInput) SetRevertTransaction(v ActivityRevertTransaction)`
 
-SetData sets Data field to given value.
+SetRevertTransaction sets RevertTransaction field to given value.
 
-### HasData
+### HasRevertTransaction
 
-`func (o *WorkflowInstanceHistoryStageInput) HasData() bool`
+`func (o *WorkflowInstanceHistoryStageInput) HasRevertTransaction() bool`
 
-HasData returns a boolean if a field has been set.
+HasRevertTransaction returns a boolean if a field has been set.
 
-### GetAmount
+### GetStripeTransfer
 
-`func (o *WorkflowInstanceHistoryStageInput) GetAmount() int64`
+`func (o *WorkflowInstanceHistoryStageInput) GetStripeTransfer() StripeTransferRequest`
 
-GetAmount returns the Amount field if non-nil, zero value otherwise.
+GetStripeTransfer returns the StripeTransfer field if non-nil, zero value otherwise.
 
-### GetAmountOk
+### GetStripeTransferOk
 
-`func (o *WorkflowInstanceHistoryStageInput) GetAmountOk() (*int64, bool)`
+`func (o *WorkflowInstanceHistoryStageInput) GetStripeTransferOk() (*StripeTransferRequest, bool)`
 
-GetAmountOk returns a tuple with the Amount field if it's non-nil, zero value otherwise
+GetStripeTransferOk returns a tuple with the StripeTransfer field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetAmount
+### SetStripeTransfer
 
-`func (o *WorkflowInstanceHistoryStageInput) SetAmount(v int64)`
+`func (o *WorkflowInstanceHistoryStageInput) SetStripeTransfer(v StripeTransferRequest)`
 
-SetAmount sets Amount field to given value.
+SetStripeTransfer sets StripeTransfer field to given value.
 
-### HasAmount
+### HasStripeTransfer
 
-`func (o *WorkflowInstanceHistoryStageInput) HasAmount() bool`
+`func (o *WorkflowInstanceHistoryStageInput) HasStripeTransfer() bool`
 
-HasAmount returns a boolean if a field has been set.
+HasStripeTransfer returns a boolean if a field has been set.
 
-### GetAsset
+### GetGetPayment
 
-`func (o *WorkflowInstanceHistoryStageInput) GetAsset() string`
+`func (o *WorkflowInstanceHistoryStageInput) GetGetPayment() ActivityGetPayment`
 
-GetAsset returns the Asset field if non-nil, zero value otherwise.
+GetGetPayment returns the GetPayment field if non-nil, zero value otherwise.
 
-### GetAssetOk
+### GetGetPaymentOk
 
-`func (o *WorkflowInstanceHistoryStageInput) GetAssetOk() (*string, bool)`
+`func (o *WorkflowInstanceHistoryStageInput) GetGetPaymentOk() (*ActivityGetPayment, bool)`
 
-GetAssetOk returns a tuple with the Asset field if it's non-nil, zero value otherwise
+GetGetPaymentOk returns a tuple with the GetPayment field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetAsset
+### SetGetPayment
 
-`func (o *WorkflowInstanceHistoryStageInput) SetAsset(v string)`
+`func (o *WorkflowInstanceHistoryStageInput) SetGetPayment(v ActivityGetPayment)`
 
-SetAsset sets Asset field to given value.
+SetGetPayment sets GetPayment field to given value.
 
-### HasAsset
+### HasGetPayment
 
-`func (o *WorkflowInstanceHistoryStageInput) HasAsset() bool`
+`func (o *WorkflowInstanceHistoryStageInput) HasGetPayment() bool`
 
-HasAsset returns a boolean if a field has been set.
+HasGetPayment returns a boolean if a field has been set.
 
-### GetDestination
+### GetConfirmHold
 
-`func (o *WorkflowInstanceHistoryStageInput) GetDestination() string`
+`func (o *WorkflowInstanceHistoryStageInput) GetConfirmHold() ActivityConfirmHold`
 
-GetDestination returns the Destination field if non-nil, zero value otherwise.
+GetConfirmHold returns the ConfirmHold field if non-nil, zero value otherwise.
 
-### GetDestinationOk
+### GetConfirmHoldOk
 
-`func (o *WorkflowInstanceHistoryStageInput) GetDestinationOk() (*string, bool)`
+`func (o *WorkflowInstanceHistoryStageInput) GetConfirmHoldOk() (*ActivityConfirmHold, bool)`
 
-GetDestinationOk returns a tuple with the Destination field if it's non-nil, zero value otherwise
+GetConfirmHoldOk returns a tuple with the ConfirmHold field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetDestination
+### SetConfirmHold
 
-`func (o *WorkflowInstanceHistoryStageInput) SetDestination(v string)`
+`func (o *WorkflowInstanceHistoryStageInput) SetConfirmHold(v ActivityConfirmHold)`
 
-SetDestination sets Destination field to given value.
+SetConfirmHold sets ConfirmHold field to given value.
 
-### HasDestination
+### HasConfirmHold
 
-`func (o *WorkflowInstanceHistoryStageInput) HasDestination() bool`
+`func (o *WorkflowInstanceHistoryStageInput) HasConfirmHold() bool`
 
-HasDestination returns a boolean if a field has been set.
+HasConfirmHold returns a boolean if a field has been set.
 
-### GetMetadata
+### GetCreditWallet
 
-`func (o *WorkflowInstanceHistoryStageInput) GetMetadata() map[string]interface{}`
+`func (o *WorkflowInstanceHistoryStageInput) GetCreditWallet() ActivityCreditWallet`
 
-GetMetadata returns the Metadata field if non-nil, zero value otherwise.
+GetCreditWallet returns the CreditWallet field if non-nil, zero value otherwise.
 
-### GetMetadataOk
+### GetCreditWalletOk
 
-`func (o *WorkflowInstanceHistoryStageInput) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *WorkflowInstanceHistoryStageInput) GetCreditWalletOk() (*ActivityCreditWallet, bool)`
 
-GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
+GetCreditWalletOk returns a tuple with the CreditWallet field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetMetadata
+### SetCreditWallet
 
-`func (o *WorkflowInstanceHistoryStageInput) SetMetadata(v map[string]interface{})`
+`func (o *WorkflowInstanceHistoryStageInput) SetCreditWallet(v ActivityCreditWallet)`
 
-SetMetadata sets Metadata field to given value.
+SetCreditWallet sets CreditWallet field to given value.
 
-### HasMetadata
+### HasCreditWallet
 
-`func (o *WorkflowInstanceHistoryStageInput) HasMetadata() bool`
+`func (o *WorkflowInstanceHistoryStageInput) HasCreditWallet() bool`
 
-HasMetadata returns a boolean if a field has been set.
+HasCreditWallet returns a boolean if a field has been set.
+
+### GetDebitWallet
+
+`func (o *WorkflowInstanceHistoryStageInput) GetDebitWallet() ActivityDebitWallet`
+
+GetDebitWallet returns the DebitWallet field if non-nil, zero value otherwise.
+
+### GetDebitWalletOk
+
+`func (o *WorkflowInstanceHistoryStageInput) GetDebitWalletOk() (*ActivityDebitWallet, bool)`
+
+GetDebitWalletOk returns a tuple with the DebitWallet field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDebitWallet
+
+`func (o *WorkflowInstanceHistoryStageInput) SetDebitWallet(v ActivityDebitWallet)`
+
+SetDebitWallet sets DebitWallet field to given value.
+
+### HasDebitWallet
+
+`func (o *WorkflowInstanceHistoryStageInput) HasDebitWallet() bool`
+
+HasDebitWallet returns a boolean if a field has been set.
+
+### GetGetWallet
+
+`func (o *WorkflowInstanceHistoryStageInput) GetGetWallet() ActivityGetWallet`
+
+GetGetWallet returns the GetWallet field if non-nil, zero value otherwise.
+
+### GetGetWalletOk
+
+`func (o *WorkflowInstanceHistoryStageInput) GetGetWalletOk() (*ActivityGetWallet, bool)`
+
+GetGetWalletOk returns a tuple with the GetWallet field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetGetWallet
+
+`func (o *WorkflowInstanceHistoryStageInput) SetGetWallet(v ActivityGetWallet)`
+
+SetGetWallet sets GetWallet field to given value.
+
+### HasGetWallet
+
+`func (o *WorkflowInstanceHistoryStageInput) HasGetWallet() bool`
+
+HasGetWallet returns a boolean if a field has been set.
+
+### GetVoidHold
+
+`func (o *WorkflowInstanceHistoryStageInput) GetVoidHold() ActivityVoidHold`
+
+GetVoidHold returns the VoidHold field if non-nil, zero value otherwise.
+
+### GetVoidHoldOk
+
+`func (o *WorkflowInstanceHistoryStageInput) GetVoidHoldOk() (*ActivityVoidHold, bool)`
+
+GetVoidHoldOk returns a tuple with the VoidHold field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetVoidHold
+
+`func (o *WorkflowInstanceHistoryStageInput) SetVoidHold(v ActivityVoidHold)`
+
+SetVoidHold sets VoidHold field to given value.
+
+### HasVoidHold
+
+`func (o *WorkflowInstanceHistoryStageInput) HasVoidHold() bool`
+
+HasVoidHold returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

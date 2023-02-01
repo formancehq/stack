@@ -32,7 +32,7 @@ import java.util.List;
 public class LedgerInfoStorage {
   public static final String SERIALIZED_NAME_MIGRATIONS = "migrations";
   @SerializedName(SERIALIZED_NAME_MIGRATIONS)
-  private List<MigrationInfo> migrations = new ArrayList<>();
+  private List<MigrationInfo> migrations = null;
 
   public LedgerInfoStorage() {
   }

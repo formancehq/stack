@@ -3,22 +3,22 @@
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO |  | 
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
 
-### Composed Schemas (allOf/anyOf/oneOf/not)
-#### anyOf
-Class Name | Input Type | Accessed Type | Description | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-[ActivityGetAccount](ActivityGetAccount.md) | [**ActivityGetAccount**](ActivityGetAccount.md) | [**ActivityGetAccount**](ActivityGetAccount.md) |  | 
-[ActivityCreateTransaction](ActivityCreateTransaction.md) | [**ActivityCreateTransaction**](ActivityCreateTransaction.md) | [**ActivityCreateTransaction**](ActivityCreateTransaction.md) |  | 
-[ActivityRevertTransaction](ActivityRevertTransaction.md) | [**ActivityRevertTransaction**](ActivityRevertTransaction.md) | [**ActivityRevertTransaction**](ActivityRevertTransaction.md) |  | 
-[StripeTransferRequest](StripeTransferRequest.md) | [**StripeTransferRequest**](StripeTransferRequest.md) | [**StripeTransferRequest**](StripeTransferRequest.md) |  | 
-[ActivityGetPayment](ActivityGetPayment.md) | [**ActivityGetPayment**](ActivityGetPayment.md) | [**ActivityGetPayment**](ActivityGetPayment.md) |  | 
-[ActivityConfirmHold](ActivityConfirmHold.md) | [**ActivityConfirmHold**](ActivityConfirmHold.md) | [**ActivityConfirmHold**](ActivityConfirmHold.md) |  | 
-[ActivityCreditWallet](ActivityCreditWallet.md) | [**ActivityCreditWallet**](ActivityCreditWallet.md) | [**ActivityCreditWallet**](ActivityCreditWallet.md) |  | 
-[ActivityDebitWallet](ActivityDebitWallet.md) | [**ActivityDebitWallet**](ActivityDebitWallet.md) | [**ActivityDebitWallet**](ActivityDebitWallet.md) |  | 
-[ActivityGetWallet](ActivityGetWallet.md) | [**ActivityGetWallet**](ActivityGetWallet.md) | [**ActivityGetWallet**](ActivityGetWallet.md) |  | 
-[ActivityVoidHold](ActivityVoidHold.md) | [**ActivityVoidHold**](ActivityVoidHold.md) | [**ActivityVoidHold**](ActivityVoidHold.md) |  | 
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**GetAccount** | [**ActivityGetAccount**](ActivityGetAccount.md) | [**ActivityGetAccount**](ActivityGetAccount.md) |  | [optional] 
+**CreateTransaction** | [**ActivityCreateTransaction**](ActivityCreateTransaction.md) | [**ActivityCreateTransaction**](ActivityCreateTransaction.md) |  | [optional] 
+**RevertTransaction** | [**ActivityRevertTransaction**](ActivityRevertTransaction.md) | [**ActivityRevertTransaction**](ActivityRevertTransaction.md) |  | [optional] 
+**StripeTransfer** | [**StripeTransferRequest**](StripeTransferRequest.md) | [**StripeTransferRequest**](StripeTransferRequest.md) |  | [optional] 
+**GetPayment** | [**ActivityGetPayment**](ActivityGetPayment.md) | [**ActivityGetPayment**](ActivityGetPayment.md) |  | [optional] 
+**ConfirmHold** | [**ActivityConfirmHold**](ActivityConfirmHold.md) | [**ActivityConfirmHold**](ActivityConfirmHold.md) |  | [optional] 
+**CreditWallet** | [**ActivityCreditWallet**](ActivityCreditWallet.md) | [**ActivityCreditWallet**](ActivityCreditWallet.md) |  | [optional] 
+**DebitWallet** | [**ActivityDebitWallet**](ActivityDebitWallet.md) | [**ActivityDebitWallet**](ActivityDebitWallet.md) |  | [optional] 
+**GetWallet** | [**ActivityGetWallet**](ActivityGetWallet.md) | [**ActivityGetWallet**](ActivityGetWallet.md) |  | [optional] 
+**VoidHold** | [**ActivityVoidHold**](ActivityVoidHold.md) | [**ActivityVoidHold**](ActivityVoidHold.md) |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

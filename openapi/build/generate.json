@@ -7184,38 +7184,39 @@
         "$ref": "#/components/schemas/GetWalletResponse"
       },
       "WorkflowInstanceHistoryStageInput": {
-        "anyOf": [
-          {
+        "type": "object",
+        "properties": {
+          "GetAccount": {
             "$ref": "#/components/schemas/ActivityGetAccount"
           },
-          {
+          "CreateTransaction": {
             "$ref": "#/components/schemas/ActivityCreateTransaction"
           },
-          {
+          "RevertTransaction": {
             "$ref": "#/components/schemas/ActivityRevertTransaction"
           },
-          {
+          "StripeTransfer": {
             "$ref": "#/components/schemas/ActivityStripeTransfer"
           },
-          {
+          "GetPayment": {
             "$ref": "#/components/schemas/ActivityGetPayment"
           },
-          {
+          "ConfirmHold": {
             "$ref": "#/components/schemas/ActivityConfirmHold"
           },
-          {
+          "CreditWallet": {
             "$ref": "#/components/schemas/ActivityCreditWallet"
           },
-          {
+          "DebitWallet": {
             "$ref": "#/components/schemas/ActivityDebitWallet"
           },
-          {
+          "GetWallet": {
             "$ref": "#/components/schemas/ActivityGetWallet"
           },
-          {
+          "VoidHold": {
             "$ref": "#/components/schemas/ActivityVoidHold"
           }
-        ]
+        }
       },
       "WorkflowInstanceHistoryStageOutput": {
         "anyOf": [

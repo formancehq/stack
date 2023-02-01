@@ -58,13 +58,16 @@ class WorkflowInstanceHistoryStageInput implements ModelInterface, ArrayAccess, 
       * @var string[]
       */
     protected static $openAPITypes = [
-        'id' => 'string',
-        'ledger' => 'string',
-        'data' => '\Formance\Model\DebitWalletRequest',
-        'amount' => 'int',
-        'asset' => 'string',
-        'destination' => 'string',
-        'metadata' => 'object'
+        'get_account' => '\Formance\Model\ActivityGetAccount',
+        'create_transaction' => '\Formance\Model\ActivityCreateTransaction',
+        'revert_transaction' => '\Formance\Model\ActivityRevertTransaction',
+        'stripe_transfer' => '\Formance\Model\StripeTransferRequest',
+        'get_payment' => '\Formance\Model\ActivityGetPayment',
+        'confirm_hold' => '\Formance\Model\ActivityConfirmHold',
+        'credit_wallet' => '\Formance\Model\ActivityCreditWallet',
+        'debit_wallet' => '\Formance\Model\ActivityDebitWallet',
+        'get_wallet' => '\Formance\Model\ActivityGetWallet',
+        'void_hold' => '\Formance\Model\ActivityVoidHold'
     ];
 
     /**
@@ -75,13 +78,16 @@ class WorkflowInstanceHistoryStageInput implements ModelInterface, ArrayAccess, 
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'id' => null,
-        'ledger' => null,
-        'data' => null,
-        'amount' => 'int64',
-        'asset' => null,
-        'destination' => null,
-        'metadata' => null
+        'get_account' => null,
+        'create_transaction' => null,
+        'revert_transaction' => null,
+        'stripe_transfer' => null,
+        'get_payment' => null,
+        'confirm_hold' => null,
+        'credit_wallet' => null,
+        'debit_wallet' => null,
+        'get_wallet' => null,
+        'void_hold' => null
     ];
 
     /**
@@ -90,13 +96,16 @@ class WorkflowInstanceHistoryStageInput implements ModelInterface, ArrayAccess, 
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'id' => false,
-		'ledger' => false,
-		'data' => false,
-		'amount' => false,
-		'asset' => false,
-		'destination' => false,
-		'metadata' => false
+        'get_account' => false,
+		'create_transaction' => false,
+		'revert_transaction' => false,
+		'stripe_transfer' => false,
+		'get_payment' => false,
+		'confirm_hold' => false,
+		'credit_wallet' => false,
+		'debit_wallet' => false,
+		'get_wallet' => false,
+		'void_hold' => false
     ];
 
     /**
@@ -185,13 +194,16 @@ class WorkflowInstanceHistoryStageInput implements ModelInterface, ArrayAccess, 
      * @var string[]
      */
     protected static $attributeMap = [
-        'id' => 'id',
-        'ledger' => 'ledger',
-        'data' => 'data',
-        'amount' => 'amount',
-        'asset' => 'asset',
-        'destination' => 'destination',
-        'metadata' => 'metadata'
+        'get_account' => 'GetAccount',
+        'create_transaction' => 'CreateTransaction',
+        'revert_transaction' => 'RevertTransaction',
+        'stripe_transfer' => 'StripeTransfer',
+        'get_payment' => 'GetPayment',
+        'confirm_hold' => 'ConfirmHold',
+        'credit_wallet' => 'CreditWallet',
+        'debit_wallet' => 'DebitWallet',
+        'get_wallet' => 'GetWallet',
+        'void_hold' => 'VoidHold'
     ];
 
     /**
@@ -200,13 +212,16 @@ class WorkflowInstanceHistoryStageInput implements ModelInterface, ArrayAccess, 
      * @var string[]
      */
     protected static $setters = [
-        'id' => 'setId',
-        'ledger' => 'setLedger',
-        'data' => 'setData',
-        'amount' => 'setAmount',
-        'asset' => 'setAsset',
-        'destination' => 'setDestination',
-        'metadata' => 'setMetadata'
+        'get_account' => 'setGetAccount',
+        'create_transaction' => 'setCreateTransaction',
+        'revert_transaction' => 'setRevertTransaction',
+        'stripe_transfer' => 'setStripeTransfer',
+        'get_payment' => 'setGetPayment',
+        'confirm_hold' => 'setConfirmHold',
+        'credit_wallet' => 'setCreditWallet',
+        'debit_wallet' => 'setDebitWallet',
+        'get_wallet' => 'setGetWallet',
+        'void_hold' => 'setVoidHold'
     ];
 
     /**
@@ -215,13 +230,16 @@ class WorkflowInstanceHistoryStageInput implements ModelInterface, ArrayAccess, 
      * @var string[]
      */
     protected static $getters = [
-        'id' => 'getId',
-        'ledger' => 'getLedger',
-        'data' => 'getData',
-        'amount' => 'getAmount',
-        'asset' => 'getAsset',
-        'destination' => 'getDestination',
-        'metadata' => 'getMetadata'
+        'get_account' => 'getGetAccount',
+        'create_transaction' => 'getCreateTransaction',
+        'revert_transaction' => 'getRevertTransaction',
+        'stripe_transfer' => 'getStripeTransfer',
+        'get_payment' => 'getGetPayment',
+        'confirm_hold' => 'getConfirmHold',
+        'credit_wallet' => 'getCreditWallet',
+        'debit_wallet' => 'getDebitWallet',
+        'get_wallet' => 'getGetWallet',
+        'void_hold' => 'getVoidHold'
     ];
 
     /**
@@ -281,13 +299,16 @@ class WorkflowInstanceHistoryStageInput implements ModelInterface, ArrayAccess, 
      */
     public function __construct(array $data = null)
     {
-        $this->setIfExists('id', $data ?? [], null);
-        $this->setIfExists('ledger', $data ?? [], null);
-        $this->setIfExists('data', $data ?? [], null);
-        $this->setIfExists('amount', $data ?? [], null);
-        $this->setIfExists('asset', $data ?? [], null);
-        $this->setIfExists('destination', $data ?? [], null);
-        $this->setIfExists('metadata', $data ?? [], null);
+        $this->setIfExists('get_account', $data ?? [], null);
+        $this->setIfExists('create_transaction', $data ?? [], null);
+        $this->setIfExists('revert_transaction', $data ?? [], null);
+        $this->setIfExists('stripe_transfer', $data ?? [], null);
+        $this->setIfExists('get_payment', $data ?? [], null);
+        $this->setIfExists('confirm_hold', $data ?? [], null);
+        $this->setIfExists('credit_wallet', $data ?? [], null);
+        $this->setIfExists('debit_wallet', $data ?? [], null);
+        $this->setIfExists('get_wallet', $data ?? [], null);
+        $this->setIfExists('void_hold', $data ?? [], null);
     }
 
     /**
@@ -317,16 +338,6 @@ class WorkflowInstanceHistoryStageInput implements ModelInterface, ArrayAccess, 
     {
         $invalidProperties = [];
 
-        if ($this->container['id'] === null) {
-            $invalidProperties[] = "'id' can't be null";
-        }
-        if ($this->container['ledger'] === null) {
-            $invalidProperties[] = "'ledger' can't be null";
-        }
-        if (!is_null($this->container['amount']) && ($this->container['amount'] < 0)) {
-            $invalidProperties[] = "invalid value for 'amount', must be bigger than or equal to 0.";
-        }
-
         return $invalidProperties;
     }
 
@@ -343,195 +354,271 @@ class WorkflowInstanceHistoryStageInput implements ModelInterface, ArrayAccess, 
 
 
     /**
-     * Gets id
+     * Gets get_account
      *
-     * @return string
+     * @return \Formance\Model\ActivityGetAccount|null
      */
-    public function getId()
+    public function getGetAccount()
     {
-        return $this->container['id'];
+        return $this->container['get_account'];
     }
 
     /**
-     * Sets id
+     * Sets get_account
      *
-     * @param string $id id
+     * @param \Formance\Model\ActivityGetAccount|null $get_account get_account
      *
      * @return self
      */
-    public function setId($id)
+    public function setGetAccount($get_account)
     {
-        if (is_null($id)) {
-            throw new \InvalidArgumentException('non-nullable id cannot be null');
+        if (is_null($get_account)) {
+            throw new \InvalidArgumentException('non-nullable get_account cannot be null');
         }
-        $this->container['id'] = $id;
+        $this->container['get_account'] = $get_account;
 
         return $this;
     }
 
     /**
-     * Gets ledger
+     * Gets create_transaction
      *
-     * @return string
+     * @return \Formance\Model\ActivityCreateTransaction|null
      */
-    public function getLedger()
+    public function getCreateTransaction()
     {
-        return $this->container['ledger'];
+        return $this->container['create_transaction'];
     }
 
     /**
-     * Sets ledger
+     * Sets create_transaction
      *
-     * @param string $ledger ledger
+     * @param \Formance\Model\ActivityCreateTransaction|null $create_transaction create_transaction
      *
      * @return self
      */
-    public function setLedger($ledger)
+    public function setCreateTransaction($create_transaction)
     {
-        if (is_null($ledger)) {
-            throw new \InvalidArgumentException('non-nullable ledger cannot be null');
+        if (is_null($create_transaction)) {
+            throw new \InvalidArgumentException('non-nullable create_transaction cannot be null');
         }
-        $this->container['ledger'] = $ledger;
+        $this->container['create_transaction'] = $create_transaction;
 
         return $this;
     }
 
     /**
-     * Gets data
+     * Gets revert_transaction
      *
-     * @return \Formance\Model\DebitWalletRequest|null
+     * @return \Formance\Model\ActivityRevertTransaction|null
      */
-    public function getData()
+    public function getRevertTransaction()
     {
-        return $this->container['data'];
+        return $this->container['revert_transaction'];
     }
 
     /**
-     * Sets data
+     * Sets revert_transaction
      *
-     * @param \Formance\Model\DebitWalletRequest|null $data data
+     * @param \Formance\Model\ActivityRevertTransaction|null $revert_transaction revert_transaction
      *
      * @return self
      */
-    public function setData($data)
+    public function setRevertTransaction($revert_transaction)
     {
-        if (is_null($data)) {
-            throw new \InvalidArgumentException('non-nullable data cannot be null');
+        if (is_null($revert_transaction)) {
+            throw new \InvalidArgumentException('non-nullable revert_transaction cannot be null');
         }
-        $this->container['data'] = $data;
+        $this->container['revert_transaction'] = $revert_transaction;
 
         return $this;
     }
 
     /**
-     * Gets amount
+     * Gets stripe_transfer
      *
-     * @return int|null
+     * @return \Formance\Model\StripeTransferRequest|null
      */
-    public function getAmount()
+    public function getStripeTransfer()
     {
-        return $this->container['amount'];
+        return $this->container['stripe_transfer'];
     }
 
     /**
-     * Sets amount
+     * Sets stripe_transfer
      *
-     * @param int|null $amount amount
+     * @param \Formance\Model\StripeTransferRequest|null $stripe_transfer stripe_transfer
      *
      * @return self
      */
-    public function setAmount($amount)
+    public function setStripeTransfer($stripe_transfer)
     {
-        if (is_null($amount)) {
-            throw new \InvalidArgumentException('non-nullable amount cannot be null');
+        if (is_null($stripe_transfer)) {
+            throw new \InvalidArgumentException('non-nullable stripe_transfer cannot be null');
         }
-
-        if (($amount < 0)) {
-            throw new \InvalidArgumentException('invalid value for $amount when calling WorkflowInstanceHistoryStageInput., must be bigger than or equal to 0.');
-        }
-
-        $this->container['amount'] = $amount;
+        $this->container['stripe_transfer'] = $stripe_transfer;
 
         return $this;
     }
 
     /**
-     * Gets asset
+     * Gets get_payment
      *
-     * @return string|null
+     * @return \Formance\Model\ActivityGetPayment|null
      */
-    public function getAsset()
+    public function getGetPayment()
     {
-        return $this->container['asset'];
+        return $this->container['get_payment'];
     }
 
     /**
-     * Sets asset
+     * Sets get_payment
      *
-     * @param string|null $asset asset
+     * @param \Formance\Model\ActivityGetPayment|null $get_payment get_payment
      *
      * @return self
      */
-    public function setAsset($asset)
+    public function setGetPayment($get_payment)
     {
-        if (is_null($asset)) {
-            throw new \InvalidArgumentException('non-nullable asset cannot be null');
+        if (is_null($get_payment)) {
+            throw new \InvalidArgumentException('non-nullable get_payment cannot be null');
         }
-        $this->container['asset'] = $asset;
+        $this->container['get_payment'] = $get_payment;
 
         return $this;
     }
 
     /**
-     * Gets destination
+     * Gets confirm_hold
      *
-     * @return string|null
+     * @return \Formance\Model\ActivityConfirmHold|null
      */
-    public function getDestination()
+    public function getConfirmHold()
     {
-        return $this->container['destination'];
+        return $this->container['confirm_hold'];
     }
 
     /**
-     * Sets destination
+     * Sets confirm_hold
      *
-     * @param string|null $destination destination
+     * @param \Formance\Model\ActivityConfirmHold|null $confirm_hold confirm_hold
      *
      * @return self
      */
-    public function setDestination($destination)
+    public function setConfirmHold($confirm_hold)
     {
-        if (is_null($destination)) {
-            throw new \InvalidArgumentException('non-nullable destination cannot be null');
+        if (is_null($confirm_hold)) {
+            throw new \InvalidArgumentException('non-nullable confirm_hold cannot be null');
         }
-        $this->container['destination'] = $destination;
+        $this->container['confirm_hold'] = $confirm_hold;
 
         return $this;
     }
 
     /**
-     * Gets metadata
+     * Gets credit_wallet
      *
-     * @return object|null
+     * @return \Formance\Model\ActivityCreditWallet|null
      */
-    public function getMetadata()
+    public function getCreditWallet()
     {
-        return $this->container['metadata'];
+        return $this->container['credit_wallet'];
     }
 
     /**
-     * Sets metadata
+     * Sets credit_wallet
      *
-     * @param object|null $metadata A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format.
+     * @param \Formance\Model\ActivityCreditWallet|null $credit_wallet credit_wallet
      *
      * @return self
      */
-    public function setMetadata($metadata)
+    public function setCreditWallet($credit_wallet)
     {
-        if (is_null($metadata)) {
-            throw new \InvalidArgumentException('non-nullable metadata cannot be null');
+        if (is_null($credit_wallet)) {
+            throw new \InvalidArgumentException('non-nullable credit_wallet cannot be null');
         }
-        $this->container['metadata'] = $metadata;
+        $this->container['credit_wallet'] = $credit_wallet;
+
+        return $this;
+    }
+
+    /**
+     * Gets debit_wallet
+     *
+     * @return \Formance\Model\ActivityDebitWallet|null
+     */
+    public function getDebitWallet()
+    {
+        return $this->container['debit_wallet'];
+    }
+
+    /**
+     * Sets debit_wallet
+     *
+     * @param \Formance\Model\ActivityDebitWallet|null $debit_wallet debit_wallet
+     *
+     * @return self
+     */
+    public function setDebitWallet($debit_wallet)
+    {
+        if (is_null($debit_wallet)) {
+            throw new \InvalidArgumentException('non-nullable debit_wallet cannot be null');
+        }
+        $this->container['debit_wallet'] = $debit_wallet;
+
+        return $this;
+    }
+
+    /**
+     * Gets get_wallet
+     *
+     * @return \Formance\Model\ActivityGetWallet|null
+     */
+    public function getGetWallet()
+    {
+        return $this->container['get_wallet'];
+    }
+
+    /**
+     * Sets get_wallet
+     *
+     * @param \Formance\Model\ActivityGetWallet|null $get_wallet get_wallet
+     *
+     * @return self
+     */
+    public function setGetWallet($get_wallet)
+    {
+        if (is_null($get_wallet)) {
+            throw new \InvalidArgumentException('non-nullable get_wallet cannot be null');
+        }
+        $this->container['get_wallet'] = $get_wallet;
+
+        return $this;
+    }
+
+    /**
+     * Gets void_hold
+     *
+     * @return \Formance\Model\ActivityVoidHold|null
+     */
+    public function getVoidHold()
+    {
+        return $this->container['void_hold'];
+    }
+
+    /**
+     * Sets void_hold
+     *
+     * @param \Formance\Model\ActivityVoidHold|null $void_hold void_hold
+     *
+     * @return self
+     */
+    public function setVoidHold($void_hold)
+    {
+        if (is_null($void_hold)) {
+            throw new \InvalidArgumentException('non-nullable void_hold cannot be null');
+        }
+        $this->container['void_hold'] = $void_hold;
 
         return $this;
     }

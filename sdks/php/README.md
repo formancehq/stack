@@ -285,7 +285,6 @@ Class | Method | HTTP request | Description
 - [MigrationInfo](docs/Model/MigrationInfo.md)
 - [ModulrConfig](docs/Model/ModulrConfig.md)
 - [Monetary](docs/Model/Monetary.md)
-- [OrchestrationCursor](docs/Model/OrchestrationCursor.md)
 - [Payment](docs/Model/Payment.md)
 - [PaymentAdjustment](docs/Model/PaymentAdjustment.md)
 - [PaymentMetadata](docs/Model/PaymentMetadata.md)

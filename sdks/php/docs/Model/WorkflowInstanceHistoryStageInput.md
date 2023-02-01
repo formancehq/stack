@@ -4,12 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **string** |  |
-**ledger** | **string** |  |
-**data** | [**\Formance\Model\DebitWalletRequest**](DebitWalletRequest.md) |  | [optional]
-**amount** | **int** |  | [optional]
-**asset** | **string** |  | [optional]
-**destination** | **string** |  | [optional]
-**metadata** | **object** | A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format. | [optional]
+**get_account** | [**\Formance\Model\ActivityGetAccount**](ActivityGetAccount.md) |  | [optional]
+**create_transaction** | [**\Formance\Model\ActivityCreateTransaction**](ActivityCreateTransaction.md) |  | [optional]
+**revert_transaction** | [**\Formance\Model\ActivityRevertTransaction**](ActivityRevertTransaction.md) |  | [optional]
+**stripe_transfer** | [**\Formance\Model\StripeTransferRequest**](StripeTransferRequest.md) |  | [optional]
+**get_payment** | [**\Formance\Model\ActivityGetPayment**](ActivityGetPayment.md) |  | [optional]
+**confirm_hold** | [**\Formance\Model\ActivityConfirmHold**](ActivityConfirmHold.md) |  | [optional]
+**credit_wallet** | [**\Formance\Model\ActivityCreditWallet**](ActivityCreditWallet.md) |  | [optional]
+**debit_wallet** | [**\Formance\Model\ActivityDebitWallet**](ActivityDebitWallet.md) |  | [optional]
+**get_wallet** | [**\Formance\Model\ActivityGetWallet**](ActivityGetWallet.md) |  | [optional]
+**void_hold** | [**\Formance\Model\ActivityVoidHold**](ActivityVoidHold.md) |  | [optional]
 
 [[Back to Model list]](../../README.md#models) [[Back to API list]](../../README.md#endpoints) [[Back to README]](../../README.md)

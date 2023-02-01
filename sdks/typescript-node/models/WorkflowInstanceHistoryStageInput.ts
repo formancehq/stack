@@ -19,65 +19,82 @@ import { ActivityGetPayment } from '../models/ActivityGetPayment';
 import { ActivityGetWallet } from '../models/ActivityGetWallet';
 import { ActivityRevertTransaction } from '../models/ActivityRevertTransaction';
 import { ActivityVoidHold } from '../models/ActivityVoidHold';
-import { DebitWalletRequest } from '../models/DebitWalletRequest';
 import { StripeTransferRequest } from '../models/StripeTransferRequest';
 import { HttpFile } from '../http/http';
 
 export class WorkflowInstanceHistoryStageInput {
-    'id': string;
-    'ledger': string;
-    'data'?: DebitWalletRequest;
-    'amount'?: number;
-    'asset'?: string;
-    'destination'?: string;
-    /**
-    * A set of key/value pairs that you can attach to a transfer object. It can be useful for storing additional information about the transfer in a structured format. 
-    */
-    'metadata'?: any;
+    'getAccount'?: ActivityGetAccount;
+    'createTransaction'?: ActivityCreateTransaction;
+    'revertTransaction'?: ActivityRevertTransaction;
+    'stripeTransfer'?: StripeTransferRequest;
+    'getPayment'?: ActivityGetPayment;
+    'confirmHold'?: ActivityConfirmHold;
+    'creditWallet'?: ActivityCreditWallet;
+    'debitWallet'?: ActivityDebitWallet;
+    'getWallet'?: ActivityGetWallet;
+    'voidHold'?: ActivityVoidHold;
 
     static readonly discriminator: string | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "id",
-            "baseName": "id",
-            "type": "string",
+            "name": "getAccount",
+            "baseName": "GetAccount",
+            "type": "ActivityGetAccount",
             "format": ""
         },
         {
-            "name": "ledger",
-            "baseName": "ledger",
-            "type": "string",
+            "name": "createTransaction",
+            "baseName": "CreateTransaction",
+            "type": "ActivityCreateTransaction",
             "format": ""
         },
         {
-            "name": "data",
-            "baseName": "data",
-            "type": "DebitWalletRequest",
+            "name": "revertTransaction",
+            "baseName": "RevertTransaction",
+            "type": "ActivityRevertTransaction",
             "format": ""
         },
         {
-            "name": "amount",
-            "baseName": "amount",
-            "type": "number",
-            "format": "int64"
-        },
-        {
-            "name": "asset",
-            "baseName": "asset",
-            "type": "string",
+            "name": "stripeTransfer",
+            "baseName": "StripeTransfer",
+            "type": "StripeTransferRequest",
             "format": ""
         },
         {
-            "name": "destination",
-            "baseName": "destination",
-            "type": "string",
+            "name": "getPayment",
+            "baseName": "GetPayment",
+            "type": "ActivityGetPayment",
             "format": ""
         },
         {
-            "name": "metadata",
-            "baseName": "metadata",
-            "type": "any",
+            "name": "confirmHold",
+            "baseName": "ConfirmHold",
+            "type": "ActivityConfirmHold",
+            "format": ""
+        },
+        {
+            "name": "creditWallet",
+            "baseName": "CreditWallet",
+            "type": "ActivityCreditWallet",
+            "format": ""
+        },
+        {
+            "name": "debitWallet",
+            "baseName": "DebitWallet",
+            "type": "ActivityDebitWallet",
+            "format": ""
+        },
+        {
+            "name": "getWallet",
+            "baseName": "GetWallet",
+            "type": "ActivityGetWallet",
+            "format": ""
+        },
+        {
+            "name": "voidHold",
+            "baseName": "VoidHold",
+            "type": "ActivityVoidHold",
             "format": ""
         }    ];
 

@@ -108,7 +108,6 @@ import { MigrationInfo } from '../models/MigrationInfo';
 import { ModelError } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
 import { Monetary } from '../models/Monetary';
-import { OrchestrationCursor } from '../models/OrchestrationCursor';
 import { Payment } from '../models/Payment';
 import { PaymentAdjustment } from '../models/PaymentAdjustment';
 import { PaymentMetadata } from '../models/PaymentMetadata';
