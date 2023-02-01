@@ -5572,6 +5572,8 @@ components:
         type: AggregatedVolumes
     walletsTransaction:
       properties:
+        ledger:
+          type: string
         timestamp:
           format: date-time
           type: string

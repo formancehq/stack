@@ -644,6 +644,8 @@ components:
     Transaction:
       type: object
       properties:
+        ledger:
+          type: string
         timestamp:
           type: string
           format: date-time

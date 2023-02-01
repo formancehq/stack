@@ -34,6 +34,10 @@ import java.util.Map;
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class WalletsTransaction {
+  public static final String SERIALIZED_NAME_LEDGER = "ledger";
+  @SerializedName(SERIALIZED_NAME_LEDGER)
+  private String ledger;
+
   public static final String SERIALIZED_NAME_TIMESTAMP = "timestamp";
   @SerializedName(SERIALIZED_NAME_TIMESTAMP)
   private OffsetDateTime timestamp;
@@ -64,6 +68,28 @@ public class WalletsTransaction {
 
   public WalletsTransaction() {
   }
+
+  public WalletsTransaction ledger(String ledger) {
+    
+    this.ledger = ledger;
+    return this;
+  }
+
+   /**
+   * Get ledger
+   * @return ledger
+  **/
+  @javax.annotation.Nullable
+
+  public String getLedger() {
+    return ledger;
+  }
+
+
+  public void setLedger(String ledger) {
+    this.ledger = ledger;
+  }
+
 
   public WalletsTransaction timestamp(OffsetDateTime timestamp) {
     
@@ -258,7 +284,8 @@ public class WalletsTransaction {
       return false;
     }
     WalletsTransaction walletsTransaction = (WalletsTransaction) o;
-    return Objects.equals(this.timestamp, walletsTransaction.timestamp) &&
+    return Objects.equals(this.ledger, walletsTransaction.ledger) &&
+        Objects.equals(this.timestamp, walletsTransaction.timestamp) &&
         Objects.equals(this.postings, walletsTransaction.postings) &&
         Objects.equals(this.reference, walletsTransaction.reference) &&
         Objects.equals(this.metadata, walletsTransaction.metadata) &&
@@ -269,13 +296,14 @@ public class WalletsTransaction {
 
   @Override
   public int hashCode() {
-    return Objects.hash(timestamp, postings, reference, metadata, txid, preCommitVolumes, postCommitVolumes);
+    return Objects.hash(ledger, timestamp, postings, reference, metadata, txid, preCommitVolumes, postCommitVolumes);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class WalletsTransaction {\n");
+    sb.append("    ledger: ").append(toIndentedString(ledger)).append("\n");
     sb.append("    timestamp: ").append(toIndentedString(timestamp)).append("\n");
     sb.append("    postings: ").append(toIndentedString(postings)).append("\n");
     sb.append("    reference: ").append(toIndentedString(reference)).append("\n");

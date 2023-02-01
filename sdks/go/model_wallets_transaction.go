@@ -21,6 +21,7 @@ var _ MappedNullable = &WalletsTransaction{}
 
 // WalletsTransaction struct for WalletsTransaction
 type WalletsTransaction struct {
+	Ledger *string `json:"ledger,omitempty"`
 	Timestamp time.Time `json:"timestamp"`
 	Postings []Posting `json:"postings"`
 	Reference *string `json:"reference,omitempty"`
@@ -49,6 +50,38 @@ func NewWalletsTransaction(timestamp time.Time, postings []Posting, txid int64) 
 func NewWalletsTransactionWithDefaults() *WalletsTransaction {
 	this := WalletsTransaction{}
 	return &this
+}
+
+// GetLedger returns the Ledger field value if set, zero value otherwise.
+func (o *WalletsTransaction) GetLedger() string {
+	if o == nil || isNil(o.Ledger) {
+		var ret string
+		return ret
+	}
+	return *o.Ledger
+}
+
+// GetLedgerOk returns a tuple with the Ledger field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WalletsTransaction) GetLedgerOk() (*string, bool) {
+	if o == nil || isNil(o.Ledger) {
+		return nil, false
+	}
+	return o.Ledger, true
+}
+
+// HasLedger returns a boolean if a field has been set.
+func (o *WalletsTransaction) HasLedger() bool {
+	if o != nil && !isNil(o.Ledger) {
+		return true
+	}
+
+	return false
+}
+
+// SetLedger gets a reference to the given string and assigns it to the Ledger field.
+func (o *WalletsTransaction) SetLedger(v string) {
+	o.Ledger = &v
 }
 
 // GetTimestamp returns the Timestamp field value
@@ -261,6 +294,9 @@ func (o WalletsTransaction) MarshalJSON() ([]byte, error) {
 
 func (o WalletsTransaction) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !isNil(o.Ledger) {
+		toSerialize["ledger"] = o.Ledger
+	}
 	toSerialize["timestamp"] = o.Timestamp
 	toSerialize["postings"] = o.Postings
 	if !isNil(o.Reference) {

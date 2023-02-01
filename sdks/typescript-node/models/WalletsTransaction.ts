@@ -15,6 +15,7 @@ import { WalletsVolume } from '../models/WalletsVolume';
 import { HttpFile } from '../http/http';
 
 export class WalletsTransaction {
+    'ledger'?: string;
     'timestamp': Date;
     'postings': Array<Posting>;
     'reference'?: string;
@@ -29,6 +30,12 @@ export class WalletsTransaction {
     static readonly discriminator: string | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
+        {
+            "name": "ledger",
+            "baseName": "ledger",
+            "type": "string",
+            "format": ""
+        },
         {
             "name": "timestamp",
             "baseName": "timestamp",
