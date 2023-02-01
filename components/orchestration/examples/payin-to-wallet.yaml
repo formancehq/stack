@@ -10,4 +10,4 @@ stages:
         id: "${walletID}"
     amount:
       amount: "${amount}"
-      asset: "USD/2"
+      asset: "EUR/2"

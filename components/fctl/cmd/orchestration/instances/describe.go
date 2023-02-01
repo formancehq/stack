@@ -53,65 +53,67 @@ func NewDescribeCommand() *cobra.Command {
 					greenWriter := pterm.DefaultBasicText.WithWriter(cmd.OutOrStdout()).WithStyle(pterm.NewStyle(pterm.FgLightGreen))
 					redWriter := pterm.DefaultBasicText.WithWriter(cmd.OutOrStdout()).WithStyle(pterm.NewStyle(pterm.FgLightRed))
 
-					for i := 0; ; i++ {
-						stageResponse, _, err := client.OrchestrationApi.GetInstanceStageHistory(cmd.Context(), args[0], int32(i)).Execute()
-						if err != nil {
-							return err
-						}
+					stageResponse, _, err := client.OrchestrationApi.GetInstanceStageHistory(cmd.Context(), args[0], int32(i)).Execute()
+					if err != nil {
+						return err
+					}
 
-						for _, historyStage := range stageResponse.Data {
-							switch {
-							case historyStage.Input.StripeTransfer != nil:
-								greenWriter.Printfln("Send %d %s (from @world) to Stripe connected account: %s",
-									*historyStage.Input.StripeTransfer.Amount,
-									*historyStage.Input.StripeTransfer.Asset,
-									*historyStage.Input.StripeTransfer.Destination,
-								)
-							case historyStage.Input.CreateTransaction != nil:
-								greenWriter.Printfln("Send %d %s from account %s to account %s",
-									historyStage.Input.CreateTransaction.Data.Postings[0].Amount,
-									historyStage.Input.CreateTransaction.Data.Postings[0].Asset,
-									historyStage.Input.CreateTransaction.Data.Postings[0].Source,
-									historyStage.Input.CreateTransaction.Data.Postings[0].Destination,
-								)
-								fctl.Printf("\tCreate transaction: %d", historyStage.Output.CreateTransaction.Data[0].Txid)
-							case historyStage.Input.ConfirmHold != nil:
-								greenWriter.Printfln("Confirm debit hold %s", historyStage.Input.ConfirmHold.Id)
-							case historyStage.Input.CreditWallet != nil:
-								greenWriter.Printfln("Credit wallet %s (balance: %s) of %d %s from %s",
-									*historyStage.Input.CreditWallet.Id,
-									*historyStage.Input.CreditWallet.Data.Balance,
-									historyStage.Input.CreditWallet.Data.Amount.Amount,
-									historyStage.Input.CreditWallet.Data.Amount.Asset,
-									subjectName(historyStage.Input.CreditWallet.Data.Sources[0]),
-								)
-							case historyStage.Input.DebitWallet != nil:
-								greenWriter.Printfln("Debit wallet %s (balance: %s) of %d %s to %s",
-									*historyStage.Input.DebitWallet.Id,
-									historyStage.Input.DebitWallet.Data.Balances[0],
-									historyStage.Input.DebitWallet.Data.Amount.Amount,
-									historyStage.Input.DebitWallet.Data.Amount.Asset,
-									subjectName(*historyStage.Input.DebitWallet.Data.Destination),
-								)
-							case historyStage.Input.GetAccount != nil:
-								greenWriter.Printfln("Read account %s of ledger %s",
-									historyStage.Input.GetAccount.Id,
-									historyStage.Input.GetAccount.Ledger,
-								)
-							case historyStage.Input.GetPayment != nil:
-								greenWriter.Printfln("Read payment %s", historyStage.Input.GetPayment.Id)
-							case historyStage.Input.GetWallet != nil:
-								greenWriter.Printfln("Read wallet '%s'", historyStage.Input.GetWallet.Id)
-							case historyStage.Input.RevertTransaction != nil:
-								greenWriter.Printfln("Revert transaction %s", historyStage.Input.RevertTransaction.Id)
-								fctl.Printf("\tCreate transaction: %d", historyStage.Output.RevertTransaction.Data.Txid)
-							case historyStage.Input.VoidHold != nil:
-								greenWriter.Printfln("Cancel debit hold %s", historyStage.Input.VoidHold.Id)
+					for _, historyStage := range stageResponse.Data {
+						switch {
+						case historyStage.Input.StripeTransfer != nil:
+							greenWriter.Printfln("Send %d %s (from @world) to Stripe connected account: %s",
+								*historyStage.Input.StripeTransfer.Amount,
+								*historyStage.Input.StripeTransfer.Asset,
+								*historyStage.Input.StripeTransfer.Destination,
+							)
+						case historyStage.Input.CreateTransaction != nil:
+							greenWriter.Printfln("Send %d %s from account %s to account %s",
+								historyStage.Input.CreateTransaction.Data.Postings[0].Amount,
+								historyStage.Input.CreateTransaction.Data.Postings[0].Asset,
+								historyStage.Input.CreateTransaction.Data.Postings[0].Source,
+								historyStage.Input.CreateTransaction.Data.Postings[0].Destination,
+							)
+							fctl.Printf("\tCreate transaction: %d", historyStage.Output.CreateTransaction.Data[0].Txid)
+							if historyStage.Error == nil {
+								fctl.Printf("\tCreated transaction: %d", historyStage.Output.RevertTransaction.Data.Txid)
 							}
-							if historyStage.Error != nil {
-								redWriter.WithWriter(cmd.OutOrStdout()).Printfln("\t%s", *historyStage.Error)
-								return nil
+						case historyStage.Input.ConfirmHold != nil:
+							greenWriter.Printfln("Confirm debit hold %s", historyStage.Input.ConfirmHold.Id)
+						case historyStage.Input.CreditWallet != nil:
+							greenWriter.Printfln("Credit wallet %s (balance: %s) of %d %s from %s",
+								*historyStage.Input.CreditWallet.Id,
+								*historyStage.Input.CreditWallet.Data.Balance,
+								historyStage.Input.CreditWallet.Data.Amount.Amount,
+								historyStage.Input.CreditWallet.Data.Amount.Asset,
+								subjectName(historyStage.Input.CreditWallet.Data.Sources[0]),
+							)
+						case historyStage.Input.DebitWallet != nil:
+							greenWriter.Printfln("Debit wallet %s (balance: %s) of %d %s to %s",
+								*historyStage.Input.DebitWallet.Id,
+								historyStage.Input.DebitWallet.Data.Balances[0],
+								historyStage.Input.DebitWallet.Data.Amount.Amount,
+								historyStage.Input.DebitWallet.Data.Amount.Asset,
+								subjectName(*historyStage.Input.DebitWallet.Data.Destination),
+							)
+						case historyStage.Input.GetAccount != nil:
+							greenWriter.Printfln("Read account %s of ledger %s",
+								historyStage.Input.GetAccount.Id,
+								historyStage.Input.GetAccount.Ledger,
+							)
+						case historyStage.Input.GetPayment != nil:
+							greenWriter.Printfln("Read payment %s", historyStage.Input.GetPayment.Id)
+						case historyStage.Input.GetWallet != nil:
+							greenWriter.Printfln("Read wallet '%s'", historyStage.Input.GetWallet.Id)
+						case historyStage.Input.RevertTransaction != nil:
+							greenWriter.Printfln("Revert transaction %s", historyStage.Input.RevertTransaction.Id)
+							if historyStage.Error == nil {
+								fctl.Printf("\tCreated transaction: %d", historyStage.Output.RevertTransaction.Data.Txid)
 							}
+						case historyStage.Input.VoidHold != nil:
+							greenWriter.Printfln("Cancel debit hold %s", historyStage.Input.VoidHold.Id)
+						}
+						if historyStage.Error != nil {
+							redWriter.WithWriter(cmd.OutOrStdout()).Printfln("\t%s", *historyStage.Error)
 						}
 					}
 

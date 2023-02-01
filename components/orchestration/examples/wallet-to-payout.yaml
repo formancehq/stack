@@ -11,4 +11,4 @@ stages:
         psp: stripe
     amount:
       amount: "${amount}"
-      asset: "USD/2"
+      asset: "EUR/2"

@@ -243,7 +243,7 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 					activityHistory.Error = "cancelled"
 				case enums.EVENT_TYPE_ACTIVITY_TASK_COMPLETED:
 					result := event.Attributes.(*history.HistoryEvent_ActivityTaskCompletedEventAttributes).ActivityTaskCompletedEventAttributes.Result
-					if len(result.Payloads) > 0 {
+					if result != nil && len(result.Payloads) > 0 {
 						output := make(map[string]any)
 						if err := json.Unmarshal(result.Payloads[0].Data, &output); err != nil {
 							panic(err)
