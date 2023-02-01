@@ -181,6 +181,7 @@ models/SecretAllOf.ts
 models/SecretOptions.ts
 models/ServerInfo.ts
 models/Stage.ts
+models/StageDelay.ts
 models/StageSend.ts
 models/StageSendDestination.ts
 models/StageSendDestinationPayment.ts

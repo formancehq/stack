@@ -487,9 +487,18 @@ components:
           $ref: '#/components/schemas/StageSendDestination'
         source:
           $ref: '#/components/schemas/StageSendSource'
+    StageDelay:
+      type: object
+      properties:
+        until:
+          type: string
+          format: date-time
+        duration:
+          type: string
     Stage:
       anyOf:
       - $ref: '#/components/schemas/StageSend'
+      - $ref: '#/components/schemas/StageDelay'
     ActivityStripeTransfer:
       $ref: '#/components/schemas/StripeTransferRequest'
     ActivityGetAccount:

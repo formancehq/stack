@@ -315,6 +315,7 @@ Class | Method | HTTP request | Description
  - [SecretOptions](docs/SecretOptions.md)
  - [ServerInfo](docs/ServerInfo.md)
  - [Stage](docs/Stage.md)
+ - [StageDelay](docs/StageDelay.md)
  - [StageSend](docs/StageSend.md)
  - [StageSendDestination](docs/StageSendDestination.md)
  - [StageSendDestinationPayment](docs/StageSendDestinationPayment.md)

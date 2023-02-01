@@ -7048,10 +7048,25 @@
           }
         }
       },
+      "StageDelay": {
+        "type": "object",
+        "properties": {
+          "until": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration": {
+            "type": "string"
+          }
+        }
+      },
       "Stage": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/StageSend"
+          },
+          {
+            "$ref": "#/components/schemas/StageDelay"
           }
         ]
       },

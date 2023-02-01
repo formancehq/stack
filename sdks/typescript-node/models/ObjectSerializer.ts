@@ -133,6 +133,7 @@ export * from '../models/SecretAllOf';
 export * from '../models/SecretOptions';
 export * from '../models/ServerInfo';
 export * from '../models/Stage';
+export * from '../models/StageDelay';
 export * from '../models/StageSend';
 export * from '../models/StageSendDestination';
 export * from '../models/StageSendDestinationPayment';
@@ -334,6 +335,7 @@ import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
 import { ServerInfo } from '../models/ServerInfo';
 import { Stage } from '../models/Stage';
+import { StageDelay } from '../models/StageDelay';
 import { StageSend } from '../models/StageSend';
 import { StageSendDestination } from '../models/StageSendDestination';
 import { StageSendDestinationPayment } from '../models/StageSendDestinationPayment';
@@ -565,6 +567,7 @@ let typeMap: {[index: string]: any} = {
     "SecretOptions": SecretOptions,
     "ServerInfo": ServerInfo,
     "Stage": Stage,
+    "StageDelay": StageDelay,
     "StageSend": StageSend,
     "StageSendDestination": StageSendDestination,
     "StageSendDestinationPayment": StageSendDestinationPayment,

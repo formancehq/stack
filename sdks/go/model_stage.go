@@ -18,12 +18,26 @@ import (
 
 // Stage struct for Stage
 type Stage struct {
+	StageDelay *StageDelay
 	StageSend *StageSend
 }
 
 // Unmarshal JSON data into any of the pointers in the struct
 func (dst *Stage) UnmarshalJSON(data []byte) error {
 	var err error
+	// try to unmarshal JSON data into StageDelay
+	err = json.Unmarshal(data, &dst.StageDelay);
+	if err == nil {
+		jsonStageDelay, _ := json.Marshal(dst.StageDelay)
+		if string(jsonStageDelay) == "{}" { // empty struct
+			dst.StageDelay = nil
+		} else {
+			return nil // data stored in dst.StageDelay, return on the first match
+		}
+	} else {
+		dst.StageDelay = nil
+	}
+
 	// try to unmarshal JSON data into StageSend
 	err = json.Unmarshal(data, &dst.StageSend);
 	if err == nil {
@@ -42,6 +56,10 @@ func (dst *Stage) UnmarshalJSON(data []byte) error {
 
 // Marshal data from the first non-nil pointers in the struct to JSON
 func (src *Stage) MarshalJSON() ([]byte, error) {
+	if src.StageDelay != nil {
+		return json.Marshal(&src.StageDelay)
+	}
+
 	if src.StageSend != nil {
 		return json.Marshal(&src.StageSend)
 	}

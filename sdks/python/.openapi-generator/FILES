@@ -229,8 +229,6 @@ Formance/model/modulr_config.py
 Formance/model/modulr_config.pyi
 Formance/model/monetary.py
 Formance/model/monetary.pyi
-Formance/model/orchestration_cursor.py
-Formance/model/orchestration_cursor.pyi
 Formance/model/payment.py
 Formance/model/payment.pyi
 Formance/model/payment_adjustment.py
@@ -281,6 +279,8 @@ Formance/model/server_info.py
 Formance/model/server_info.pyi
 Formance/model/stage.py
 Formance/model/stage.pyi
+Formance/model/stage_delay.py
+Formance/model/stage_delay.pyi
 Formance/model/stage_send.py
 Formance/model/stage_send.pyi
 Formance/model/stage_send_destination.py
@@ -519,7 +519,6 @@ docs/models/Metadata.md
 docs/models/MigrationInfo.md
 docs/models/ModulrConfig.md
 docs/models/Monetary.md
-docs/models/OrchestrationCursor.md
 docs/models/Payment.md
 docs/models/PaymentAdjustment.md
 docs/models/PaymentMetadata.md
@@ -545,6 +544,7 @@ docs/models/Secret.md
 docs/models/SecretOptions.md
 docs/models/ServerInfo.md
 docs/models/Stage.md
+docs/models/StageDelay.md
 docs/models/StageSend.md
 docs/models/StageSendDestination.md
 docs/models/StageSendDestinationAccount.md

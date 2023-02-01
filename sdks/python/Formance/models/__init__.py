@@ -113,7 +113,6 @@ from Formance.model.metadata import Metadata
 from Formance.model.migration_info import MigrationInfo
 from Formance.model.modulr_config import ModulrConfig
 from Formance.model.monetary import Monetary
-from Formance.model.orchestration_cursor import OrchestrationCursor
 from Formance.model.payment import Payment
 from Formance.model.payment_adjustment import PaymentAdjustment
 from Formance.model.payment_metadata import PaymentMetadata
@@ -139,6 +138,7 @@ from Formance.model.secret import Secret
 from Formance.model.secret_options import SecretOptions
 from Formance.model.server_info import ServerInfo
 from Formance.model.stage import Stage
+from Formance.model.stage_delay import StageDelay
 from Formance.model.stage_send import StageSend
 from Formance.model.stage_send_destination import StageSendDestination
 from Formance.model.stage_send_destination_account import StageSendDestinationAccount

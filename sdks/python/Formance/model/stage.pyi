@@ -48,6 +48,7 @@ class Stage(
             # loading
             return [
                 StageSend,
+                StageDelay,
             ]
 
 
@@ -64,4 +65,5 @@ class Stage(
             **kwargs,
         )
 
+from Formance.model.stage_delay import StageDelay
 from Formance.model.stage_send import StageSend

@@ -313,6 +313,7 @@ Class | Method | HTTP request | Description
 - [SecretOptions](docs/Model/SecretOptions.md)
 - [ServerInfo](docs/Model/ServerInfo.md)
 - [Stage](docs/Model/Stage.md)
+- [StageDelay](docs/Model/StageDelay.md)
 - [StageSend](docs/Model/StageSend.md)
 - [StageSendDestination](docs/Model/StageSendDestination.md)
 - [StageSendDestinationPayment](docs/Model/StageSendDestinationPayment.md)

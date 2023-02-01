@@ -22,3 +22,5 @@ class TagValues(str, enum.Enum):
     TRANSACTIONS = "Transactions"
     USERS = "Users"
     WALLETS = "Wallets"
+    WEBHOOKS = "Webhooks"
+    DEFAULT = "default"

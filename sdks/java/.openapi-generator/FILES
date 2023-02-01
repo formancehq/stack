@@ -153,6 +153,7 @@ docs/SecretOptions.md
 docs/ServerApi.md
 docs/ServerInfo.md
 docs/Stage.md
+docs/StageDelay.md
 docs/StageSend.md
 docs/StageSendDestination.md
 docs/StageSendDestinationPayment.md
@@ -397,6 +398,7 @@ src/main/java/com/formance/formance/model/SecretAllOf.java
 src/main/java/com/formance/formance/model/SecretOptions.java
 src/main/java/com/formance/formance/model/ServerInfo.java
 src/main/java/com/formance/formance/model/Stage.java
+src/main/java/com/formance/formance/model/StageDelay.java
 src/main/java/com/formance/formance/model/StageSend.java
 src/main/java/com/formance/formance/model/StageSendDestination.java
 src/main/java/com/formance/formance/model/StageSendDestinationPayment.java

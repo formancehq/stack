@@ -10,41 +10,15 @@
  * Do not edit the class manually.
  */
 
-import { Monetary } from '../models/Monetary';
-import { StageDelay } from '../models/StageDelay';
-import { StageSend } from '../models/StageSend';
-import { StageSendDestination } from '../models/StageSendDestination';
-import { StageSendSource } from '../models/StageSendSource';
 import { HttpFile } from '../http/http';
 
-export class Stage {
-    'amount'?: Monetary;
-    'destination'?: StageSendDestination;
-    'source'?: StageSendSource;
+export class StageDelay {
     'until'?: Date;
     'duration'?: string;
 
     static readonly discriminator: string | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
-        {
-            "name": "amount",
-            "baseName": "amount",
-            "type": "Monetary",
-            "format": ""
-        },
-        {
-            "name": "destination",
-            "baseName": "destination",
-            "type": "StageSendDestination",
-            "format": ""
-        },
-        {
-            "name": "source",
-            "baseName": "source",
-            "type": "StageSendSource",
-            "format": ""
-        },
         {
             "name": "until",
             "baseName": "until",
@@ -59,7 +33,7 @@ export class Stage {
         }    ];
 
     static getAttributeTypeMap() {
-        return Stage.attributeTypeMap;
+        return StageDelay.attributeTypeMap;
     }
 
     public constructor() {

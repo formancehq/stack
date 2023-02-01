@@ -1,6 +1,6 @@
 <?php
 /**
- * WorkflowInstanceHistoryStageOutput
+ * StageDelay
  *
  * PHP version 7.4
  *
@@ -33,7 +33,7 @@ use \ArrayAccess;
 use \Formance\ObjectSerializer;
 
 /**
- * WorkflowInstanceHistoryStageOutput Class Doc Comment
+ * StageDelay Class Doc Comment
  *
  * @category Class
  * @package  Formance
@@ -41,7 +41,7 @@ use \Formance\ObjectSerializer;
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess, \JsonSerializable
+class StageDelay implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
       *
       * @var string
       */
-    protected static $openAPIModelName = 'WorkflowInstanceHistoryStageOutput';
+    protected static $openAPIModelName = 'StageDelay';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,12 +58,8 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
       * @var string[]
       */
     protected static $openAPITypes = [
-        'get_account' => '\Formance\Model\AccountResponse',
-        'create_transaction' => '\Formance\Model\TransactionsResponse',
-        'revert_transaction' => '\Formance\Model\TransactionResponse',
-        'get_payment' => '\Formance\Model\PaymentResponse',
-        'debit_wallet' => '\Formance\Model\DebitWalletResponse',
-        'get_wallet' => '\Formance\Model\GetWalletResponse'
+        'until' => '\DateTime',
+        'duration' => 'string'
     ];
 
     /**
@@ -74,12 +70,8 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'get_account' => null,
-        'create_transaction' => null,
-        'revert_transaction' => null,
-        'get_payment' => null,
-        'debit_wallet' => null,
-        'get_wallet' => null
+        'until' => 'date-time',
+        'duration' => null
     ];
 
     /**
@@ -88,12 +80,8 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'get_account' => false,
-		'create_transaction' => false,
-		'revert_transaction' => false,
-		'get_payment' => false,
-		'debit_wallet' => false,
-		'get_wallet' => false
+        'until' => false,
+		'duration' => false
     ];
 
     /**
@@ -182,12 +170,8 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
      * @var string[]
      */
     protected static $attributeMap = [
-        'get_account' => 'GetAccount',
-        'create_transaction' => 'CreateTransaction',
-        'revert_transaction' => 'RevertTransaction',
-        'get_payment' => 'GetPayment',
-        'debit_wallet' => 'DebitWallet',
-        'get_wallet' => 'GetWallet'
+        'until' => 'until',
+        'duration' => 'duration'
     ];
 
     /**
@@ -196,12 +180,8 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
      * @var string[]
      */
     protected static $setters = [
-        'get_account' => 'setGetAccount',
-        'create_transaction' => 'setCreateTransaction',
-        'revert_transaction' => 'setRevertTransaction',
-        'get_payment' => 'setGetPayment',
-        'debit_wallet' => 'setDebitWallet',
-        'get_wallet' => 'setGetWallet'
+        'until' => 'setUntil',
+        'duration' => 'setDuration'
     ];
 
     /**
@@ -210,12 +190,8 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
      * @var string[]
      */
     protected static $getters = [
-        'get_account' => 'getGetAccount',
-        'create_transaction' => 'getCreateTransaction',
-        'revert_transaction' => 'getRevertTransaction',
-        'get_payment' => 'getGetPayment',
-        'debit_wallet' => 'getDebitWallet',
-        'get_wallet' => 'getGetWallet'
+        'until' => 'getUntil',
+        'duration' => 'getDuration'
     ];
 
     /**
@@ -275,12 +251,8 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
      */
     public function __construct(array $data = null)
     {
-        $this->setIfExists('get_account', $data ?? [], null);
-        $this->setIfExists('create_transaction', $data ?? [], null);
-        $this->setIfExists('revert_transaction', $data ?? [], null);
-        $this->setIfExists('get_payment', $data ?? [], null);
-        $this->setIfExists('debit_wallet', $data ?? [], null);
-        $this->setIfExists('get_wallet', $data ?? [], null);
+        $this->setIfExists('until', $data ?? [], null);
+        $this->setIfExists('duration', $data ?? [], null);
     }
 
     /**
@@ -326,163 +298,55 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
 
 
     /**
-     * Gets get_account
+     * Gets until
      *
-     * @return \Formance\Model\AccountResponse|null
+     * @return \DateTime|null
      */
-    public function getGetAccount()
+    public function getUntil()
     {
-        return $this->container['get_account'];
+        return $this->container['until'];
     }
 
     /**
-     * Sets get_account
+     * Sets until
      *
-     * @param \Formance\Model\AccountResponse|null $get_account get_account
+     * @param \DateTime|null $until until
      *
      * @return self
      */
-    public function setGetAccount($get_account)
+    public function setUntil($until)
     {
-        if (is_null($get_account)) {
-            throw new \InvalidArgumentException('non-nullable get_account cannot be null');
+        if (is_null($until)) {
+            throw new \InvalidArgumentException('non-nullable until cannot be null');
         }
-        $this->container['get_account'] = $get_account;
+        $this->container['until'] = $until;
 
         return $this;
     }
 
     /**
-     * Gets create_transaction
+     * Gets duration
      *
-     * @return \Formance\Model\TransactionsResponse|null
+     * @return string|null
      */
-    public function getCreateTransaction()
+    public function getDuration()
     {
-        return $this->container['create_transaction'];
+        return $this->container['duration'];
     }
 
     /**
-     * Sets create_transaction
+     * Sets duration
      *
-     * @param \Formance\Model\TransactionsResponse|null $create_transaction create_transaction
+     * @param string|null $duration duration
      *
      * @return self
      */
-    public function setCreateTransaction($create_transaction)
+    public function setDuration($duration)
     {
-        if (is_null($create_transaction)) {
-            throw new \InvalidArgumentException('non-nullable create_transaction cannot be null');
+        if (is_null($duration)) {
+            throw new \InvalidArgumentException('non-nullable duration cannot be null');
         }
-        $this->container['create_transaction'] = $create_transaction;
-
-        return $this;
-    }
-
-    /**
-     * Gets revert_transaction
-     *
-     * @return \Formance\Model\TransactionResponse|null
-     */
-    public function getRevertTransaction()
-    {
-        return $this->container['revert_transaction'];
-    }
-
-    /**
-     * Sets revert_transaction
-     *
-     * @param \Formance\Model\TransactionResponse|null $revert_transaction revert_transaction
-     *
-     * @return self
-     */
-    public function setRevertTransaction($revert_transaction)
-    {
-        if (is_null($revert_transaction)) {
-            throw new \InvalidArgumentException('non-nullable revert_transaction cannot be null');
-        }
-        $this->container['revert_transaction'] = $revert_transaction;
-
-        return $this;
-    }
-
-    /**
-     * Gets get_payment
-     *
-     * @return \Formance\Model\PaymentResponse|null
-     */
-    public function getGetPayment()
-    {
-        return $this->container['get_payment'];
-    }
-
-    /**
-     * Sets get_payment
-     *
-     * @param \Formance\Model\PaymentResponse|null $get_payment get_payment
-     *
-     * @return self
-     */
-    public function setGetPayment($get_payment)
-    {
-        if (is_null($get_payment)) {
-            throw new \InvalidArgumentException('non-nullable get_payment cannot be null');
-        }
-        $this->container['get_payment'] = $get_payment;
-
-        return $this;
-    }
-
-    /**
-     * Gets debit_wallet
-     *
-     * @return \Formance\Model\DebitWalletResponse|null
-     */
-    public function getDebitWallet()
-    {
-        return $this->container['debit_wallet'];
-    }
-
-    /**
-     * Sets debit_wallet
-     *
-     * @param \Formance\Model\DebitWalletResponse|null $debit_wallet debit_wallet
-     *
-     * @return self
-     */
-    public function setDebitWallet($debit_wallet)
-    {
-        if (is_null($debit_wallet)) {
-            throw new \InvalidArgumentException('non-nullable debit_wallet cannot be null');
-        }
-        $this->container['debit_wallet'] = $debit_wallet;
-
-        return $this;
-    }
-
-    /**
-     * Gets get_wallet
-     *
-     * @return \Formance\Model\GetWalletResponse|null
-     */
-    public function getGetWallet()
-    {
-        return $this->container['get_wallet'];
-    }
-
-    /**
-     * Sets get_wallet
-     *
-     * @param \Formance\Model\GetWalletResponse|null $get_wallet get_wallet
-     *
-     * @return self
-     */
-    public function setGetWallet($get_wallet)
-    {
-        if (is_null($get_wallet)) {
-            throw new \InvalidArgumentException('non-nullable get_wallet cannot be null');
-        }
-        $this->container['get_wallet'] = $get_wallet;
+        $this->container['duration'] = $duration;
 
         return $this;
     }

@@ -170,6 +170,7 @@ docs/SecretOptions.md
 docs/ServerApi.md
 docs/ServerInfo.md
 docs/Stage.md
+docs/StageDelay.md
 docs/StageSend.md
 docs/StageSendDestination.md
 docs/StageSendDestinationPayment.md
@@ -378,6 +379,7 @@ model_secret_all_of.go
 model_secret_options.go
 model_server_info.go
 model_stage.go
+model_stage_delay.go
 model_stage_send.go
 model_stage_send_destination.go
 model_stage_send_destination_payment.go

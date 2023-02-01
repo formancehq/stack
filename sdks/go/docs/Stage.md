@@ -7,6 +7,8 @@ Name | Type | Description | Notes
 **Amount** | Pointer to [**Monetary**](Monetary.md) |  | [optional] 
 **Destination** | Pointer to [**StageSendDestination**](StageSendDestination.md) |  | [optional] 
 **Source** | Pointer to [**StageSendSource**](StageSendSource.md) |  | [optional] 
+**Until** | Pointer to **time.Time** |  | [optional] 
+**Duration** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -101,6 +103,56 @@ SetSource sets Source field to given value.
 `func (o *Stage) HasSource() bool`
 
 HasSource returns a boolean if a field has been set.
+
+### GetUntil
+
+`func (o *Stage) GetUntil() time.Time`
+
+GetUntil returns the Until field if non-nil, zero value otherwise.
+
+### GetUntilOk
+
+`func (o *Stage) GetUntilOk() (*time.Time, bool)`
+
+GetUntilOk returns a tuple with the Until field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetUntil
+
+`func (o *Stage) SetUntil(v time.Time)`
+
+SetUntil sets Until field to given value.
+
+### HasUntil
+
+`func (o *Stage) HasUntil() bool`
+
+HasUntil returns a boolean if a field has been set.
+
+### GetDuration
+
+`func (o *Stage) GetDuration() string`
+
+GetDuration returns the Duration field if non-nil, zero value otherwise.
+
+### GetDurationOk
+
+`func (o *Stage) GetDurationOk() (*string, bool)`
+
+GetDurationOk returns a tuple with the Duration field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetDuration
+
+`func (o *Stage) SetDuration(v string)`
+
+SetDuration sets Duration field to given value.
+
+### HasDuration
+
+`func (o *Stage) HasDuration() bool`
+
+HasDuration returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

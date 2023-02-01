@@ -156,6 +156,7 @@ docs/Model/SecretAllOf.md
 docs/Model/SecretOptions.md
 docs/Model/ServerInfo.md
 docs/Model/Stage.md
+docs/Model/StageDelay.md
 docs/Model/StageSend.md
 docs/Model/StageSendDestination.md
 docs/Model/StageSendDestinationPayment.md
@@ -379,6 +380,7 @@ lib/Model/SecretAllOf.php
 lib/Model/SecretOptions.php
 lib/Model/ServerInfo.php
 lib/Model/Stage.php
+lib/Model/StageDelay.php
 lib/Model/StageSend.php
 lib/Model/StageSendDestination.php
 lib/Model/StageSendDestinationPayment.php

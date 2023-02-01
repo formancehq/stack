@@ -1,12 +1,9 @@
-# # Stage
+# # StageDelay
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**amount** | [**\Formance\Model\Monetary**](Monetary.md) |  | [optional]
-**destination** | [**\Formance\Model\StageSendDestination**](StageSendDestination.md) |  | [optional]
-**source** | [**\Formance\Model\StageSendSource**](StageSendSource.md) |  | [optional]
 **until** | **\DateTime** |  | [optional]
 **duration** | **string** |  | [optional]
 

@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/formancehq/orchestration/internal/workflow/stages"
 	"github.com/pkg/errors"
@@ -86,6 +87,36 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 			return fmt.Errorf("expected uint or interpolated string but was %T", json)
 		}
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		if _, isDuration := spec.Interface().(Duration); isDuration {
+			switch json := raw.(type) {
+			case string:
+				interpolated := interpolate(ctx, json)
+				if interpolated == "" {
+					interpolated = tag.defaultValue
+					if interpolated == "" {
+						return nil
+					}
+				}
+				duration, err := time.ParseDuration(interpolated)
+				if err != nil {
+					return fmt.Errorf("unable to resolve field '%s' to duration value", spec.Type().Name())
+				}
+				spec.SetInt(int64(duration))
+			case nil:
+				defaultValue := tag.defaultValue
+				if defaultValue == "" {
+					return nil
+				}
+				duration, err := time.ParseDuration(defaultValue)
+				if err != nil {
+					return fmt.Errorf("unable to resolve field '%s' to duration value", spec.Type().Name())
+				}
+				spec.SetInt(int64(duration))
+			default:
+				return fmt.Errorf("expected uint or interpolated string but was %T", json)
+			}
+			return nil
+		}
 		switch json := raw.(type) {
 		case string:
 			interpolated := interpolate(ctx, json)
@@ -97,7 +128,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 			}
 			int64Value, err := strconv.ParseInt(interpolated, 10, 64)
 			if err != nil {
-				return fmt.Errorf("unable to resolve field '%s' to uint value", spec.Type().Name())
+				return fmt.Errorf("unable to resolve field '%s' to int value", spec.Type().Name())
 			}
 			spec.SetInt(int64Value)
 		case float64:
@@ -109,7 +140,7 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 			}
 			int64Value, err := strconv.ParseInt(defaultValue, 10, 64)
 			if err != nil {
-				return fmt.Errorf("unable to resolve field '%s' to uint value", spec.Type().Name())
+				return fmt.Errorf("unable to resolve field '%s' to int value", spec.Type().Name())
 			}
 			spec.SetInt(int64Value)
 		default:
@@ -159,6 +190,29 @@ func mapObjectField(ctx Context, raw any, spec reflect.Value, tag tag) error {
 			return fmt.Errorf("expected uint or interpolated string but was %T", json)
 		}
 	case reflect.Struct:
+		if _, isDate := spec.Interface().(time.Time); isDate {
+			switch json := raw.(type) {
+			case string:
+				interpolated := interpolate(ctx, json)
+				if interpolated == "" {
+					interpolated = tag.defaultValue
+				}
+				date, err := time.Parse(time.RFC3339, interpolated)
+				if err != nil {
+					return fmt.Errorf("expected date as rfc3339 format")
+				}
+				spec.Set(reflect.ValueOf(date))
+			case nil:
+				date, err := time.Parse(time.RFC3339, tag.defaultValue)
+				if err != nil {
+					return fmt.Errorf("expected date as rfc3339 format")
+				}
+				spec.Set(reflect.ValueOf(date))
+			default:
+				return fmt.Errorf("expected string but was %T", json)
+			}
+			return nil
+		}
 		asMap, ok := raw.(map[string]any)
 		if !ok {
 			return fmt.Errorf("expected map but was %T", raw)

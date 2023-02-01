@@ -16,19 +16,53 @@ import { GetWalletResponse } from '../models/GetWalletResponse';
 import { PaymentResponse } from '../models/PaymentResponse';
 import { TransactionResponse } from '../models/TransactionResponse';
 import { TransactionsResponse } from '../models/TransactionsResponse';
-import { WalletWithBalances } from '../models/WalletWithBalances';
 import { HttpFile } from '../http/http';
 
 export class WorkflowInstanceHistoryStageOutput {
-    'data': WalletWithBalances;
+    'getAccount'?: AccountResponse;
+    'createTransaction'?: TransactionsResponse;
+    'revertTransaction'?: TransactionResponse;
+    'getPayment'?: PaymentResponse;
+    'debitWallet'?: DebitWalletResponse;
+    'getWallet'?: GetWalletResponse;
 
     static readonly discriminator: string | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "data",
-            "baseName": "data",
-            "type": "WalletWithBalances",
+            "name": "getAccount",
+            "baseName": "GetAccount",
+            "type": "AccountResponse",
+            "format": ""
+        },
+        {
+            "name": "createTransaction",
+            "baseName": "CreateTransaction",
+            "type": "TransactionsResponse",
+            "format": ""
+        },
+        {
+            "name": "revertTransaction",
+            "baseName": "RevertTransaction",
+            "type": "TransactionResponse",
+            "format": ""
+        },
+        {
+            "name": "getPayment",
+            "baseName": "GetPayment",
+            "type": "PaymentResponse",
+            "format": ""
+        },
+        {
+            "name": "debitWallet",
+            "baseName": "DebitWallet",
+            "type": "DebitWalletResponse",
+            "format": ""
+        },
+        {
+            "name": "getWallet",
+            "baseName": "GetWallet",
+            "type": "GetWalletResponse",
             "format": ""
         }    ];
 

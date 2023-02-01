@@ -136,6 +136,7 @@ import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
 import { ServerInfo } from '../models/ServerInfo';
 import { Stage } from '../models/Stage';
+import { StageDelay } from '../models/StageDelay';
 import { StageSend } from '../models/StageSend';
 import { StageSendDestination } from '../models/StageSendDestination';
 import { StageSendDestinationPayment } from '../models/StageSendDestinationPayment';

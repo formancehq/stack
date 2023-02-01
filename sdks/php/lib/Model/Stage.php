@@ -60,7 +60,9 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPITypes = [
         'amount' => '\Formance\Model\Monetary',
         'destination' => '\Formance\Model\StageSendDestination',
-        'source' => '\Formance\Model\StageSendSource'
+        'source' => '\Formance\Model\StageSendSource',
+        'until' => '\DateTime',
+        'duration' => 'string'
     ];
 
     /**
@@ -73,7 +75,9 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPIFormats = [
         'amount' => null,
         'destination' => null,
-        'source' => null
+        'source' => null,
+        'until' => 'date-time',
+        'duration' => null
     ];
 
     /**
@@ -84,7 +88,9 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static array $openAPINullables = [
         'amount' => false,
 		'destination' => false,
-		'source' => false
+		'source' => false,
+		'until' => false,
+		'duration' => false
     ];
 
     /**
@@ -175,7 +181,9 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $attributeMap = [
         'amount' => 'amount',
         'destination' => 'destination',
-        'source' => 'source'
+        'source' => 'source',
+        'until' => 'until',
+        'duration' => 'duration'
     ];
 
     /**
@@ -186,7 +194,9 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $setters = [
         'amount' => 'setAmount',
         'destination' => 'setDestination',
-        'source' => 'setSource'
+        'source' => 'setSource',
+        'until' => 'setUntil',
+        'duration' => 'setDuration'
     ];
 
     /**
@@ -197,7 +207,9 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $getters = [
         'amount' => 'getAmount',
         'destination' => 'getDestination',
-        'source' => 'getSource'
+        'source' => 'getSource',
+        'until' => 'getUntil',
+        'duration' => 'getDuration'
     ];
 
     /**
@@ -260,6 +272,8 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('amount', $data ?? [], null);
         $this->setIfExists('destination', $data ?? [], null);
         $this->setIfExists('source', $data ?? [], null);
+        $this->setIfExists('until', $data ?? [], null);
+        $this->setIfExists('duration', $data ?? [], null);
     }
 
     /**
@@ -381,6 +395,60 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable source cannot be null');
         }
         $this->container['source'] = $source;
+
+        return $this;
+    }
+
+    /**
+     * Gets until
+     *
+     * @return \DateTime|null
+     */
+    public function getUntil()
+    {
+        return $this->container['until'];
+    }
+
+    /**
+     * Sets until
+     *
+     * @param \DateTime|null $until until
+     *
+     * @return self
+     */
+    public function setUntil($until)
+    {
+        if (is_null($until)) {
+            throw new \InvalidArgumentException('non-nullable until cannot be null');
+        }
+        $this->container['until'] = $until;
+
+        return $this;
+    }
+
+    /**
+     * Gets duration
+     *
+     * @return string|null
+     */
+    public function getDuration()
+    {
+        return $this->container['duration'];
+    }
+
+    /**
+     * Sets duration
+     *
+     * @param string|null $duration duration
+     *
+     * @return self
+     */
+    public function setDuration($duration)
+    {
+        if (is_null($duration)) {
+            throw new \InvalidArgumentException('non-nullable duration cannot be null');
+        }
+        $this->container['duration'] = $duration;
 
         return $this;
     }

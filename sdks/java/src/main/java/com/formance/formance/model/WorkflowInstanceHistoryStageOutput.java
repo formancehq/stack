@@ -21,7 +21,6 @@ import com.formance.formance.model.GetWalletResponse;
 import com.formance.formance.model.PaymentResponse;
 import com.formance.formance.model.TransactionResponse;
 import com.formance.formance.model.TransactionsResponse;
-import com.formance.formance.model.WalletWithBalances;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -34,32 +33,162 @@ import java.io.IOException;
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
 public class WorkflowInstanceHistoryStageOutput {
-  public static final String SERIALIZED_NAME_DATA = "data";
-  @SerializedName(SERIALIZED_NAME_DATA)
-  private WalletWithBalances data;
+  public static final String SERIALIZED_NAME_GET_ACCOUNT = "GetAccount";
+  @SerializedName(SERIALIZED_NAME_GET_ACCOUNT)
+  private AccountResponse getAccount;
+
+  public static final String SERIALIZED_NAME_CREATE_TRANSACTION = "CreateTransaction";
+  @SerializedName(SERIALIZED_NAME_CREATE_TRANSACTION)
+  private TransactionsResponse createTransaction;
+
+  public static final String SERIALIZED_NAME_REVERT_TRANSACTION = "RevertTransaction";
+  @SerializedName(SERIALIZED_NAME_REVERT_TRANSACTION)
+  private TransactionResponse revertTransaction;
+
+  public static final String SERIALIZED_NAME_GET_PAYMENT = "GetPayment";
+  @SerializedName(SERIALIZED_NAME_GET_PAYMENT)
+  private PaymentResponse getPayment;
+
+  public static final String SERIALIZED_NAME_DEBIT_WALLET = "DebitWallet";
+  @SerializedName(SERIALIZED_NAME_DEBIT_WALLET)
+  private DebitWalletResponse debitWallet;
+
+  public static final String SERIALIZED_NAME_GET_WALLET = "GetWallet";
+  @SerializedName(SERIALIZED_NAME_GET_WALLET)
+  private GetWalletResponse getWallet;
 
   public WorkflowInstanceHistoryStageOutput() {
   }
 
-  public WorkflowInstanceHistoryStageOutput data(WalletWithBalances data) {
+  public WorkflowInstanceHistoryStageOutput getAccount(AccountResponse getAccount) {
     
-    this.data = data;
+    this.getAccount = getAccount;
     return this;
   }
 
    /**
-   * Get data
-   * @return data
+   * Get getAccount
+   * @return getAccount
   **/
-  @javax.annotation.Nonnull
+  @javax.annotation.Nullable
 
-  public WalletWithBalances getData() {
-    return data;
+  public AccountResponse getGetAccount() {
+    return getAccount;
   }
 
 
-  public void setData(WalletWithBalances data) {
-    this.data = data;
+  public void setGetAccount(AccountResponse getAccount) {
+    this.getAccount = getAccount;
+  }
+
+
+  public WorkflowInstanceHistoryStageOutput createTransaction(TransactionsResponse createTransaction) {
+    
+    this.createTransaction = createTransaction;
+    return this;
+  }
+
+   /**
+   * Get createTransaction
+   * @return createTransaction
+  **/
+  @javax.annotation.Nullable
+
+  public TransactionsResponse getCreateTransaction() {
+    return createTransaction;
+  }
+
+
+  public void setCreateTransaction(TransactionsResponse createTransaction) {
+    this.createTransaction = createTransaction;
+  }
+
+
+  public WorkflowInstanceHistoryStageOutput revertTransaction(TransactionResponse revertTransaction) {
+    
+    this.revertTransaction = revertTransaction;
+    return this;
+  }
+
+   /**
+   * Get revertTransaction
+   * @return revertTransaction
+  **/
+  @javax.annotation.Nullable
+
+  public TransactionResponse getRevertTransaction() {
+    return revertTransaction;
+  }
+
+
+  public void setRevertTransaction(TransactionResponse revertTransaction) {
+    this.revertTransaction = revertTransaction;
+  }
+
+
+  public WorkflowInstanceHistoryStageOutput getPayment(PaymentResponse getPayment) {
+    
+    this.getPayment = getPayment;
+    return this;
+  }
+
+   /**
+   * Get getPayment
+   * @return getPayment
+  **/
+  @javax.annotation.Nullable
+
+  public PaymentResponse getGetPayment() {
+    return getPayment;
+  }
+
+
+  public void setGetPayment(PaymentResponse getPayment) {
+    this.getPayment = getPayment;
+  }
+
+
+  public WorkflowInstanceHistoryStageOutput debitWallet(DebitWalletResponse debitWallet) {
+    
+    this.debitWallet = debitWallet;
+    return this;
+  }
+
+   /**
+   * Get debitWallet
+   * @return debitWallet
+  **/
+  @javax.annotation.Nullable
+
+  public DebitWalletResponse getDebitWallet() {
+    return debitWallet;
+  }
+
+
+  public void setDebitWallet(DebitWalletResponse debitWallet) {
+    this.debitWallet = debitWallet;
+  }
+
+
+  public WorkflowInstanceHistoryStageOutput getWallet(GetWalletResponse getWallet) {
+    
+    this.getWallet = getWallet;
+    return this;
+  }
+
+   /**
+   * Get getWallet
+   * @return getWallet
+  **/
+  @javax.annotation.Nullable
+
+  public GetWalletResponse getGetWallet() {
+    return getWallet;
+  }
+
+
+  public void setGetWallet(GetWalletResponse getWallet) {
+    this.getWallet = getWallet;
   }
 
 
@@ -72,19 +201,29 @@ public class WorkflowInstanceHistoryStageOutput {
       return false;
     }
     WorkflowInstanceHistoryStageOutput workflowInstanceHistoryStageOutput = (WorkflowInstanceHistoryStageOutput) o;
-    return Objects.equals(this.data, workflowInstanceHistoryStageOutput.data);
+    return Objects.equals(this.getAccount, workflowInstanceHistoryStageOutput.getAccount) &&
+        Objects.equals(this.createTransaction, workflowInstanceHistoryStageOutput.createTransaction) &&
+        Objects.equals(this.revertTransaction, workflowInstanceHistoryStageOutput.revertTransaction) &&
+        Objects.equals(this.getPayment, workflowInstanceHistoryStageOutput.getPayment) &&
+        Objects.equals(this.debitWallet, workflowInstanceHistoryStageOutput.debitWallet) &&
+        Objects.equals(this.getWallet, workflowInstanceHistoryStageOutput.getWallet);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(data);
+    return Objects.hash(getAccount, createTransaction, revertTransaction, getPayment, debitWallet, getWallet);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class WorkflowInstanceHistoryStageOutput {\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("    getAccount: ").append(toIndentedString(getAccount)).append("\n");
+    sb.append("    createTransaction: ").append(toIndentedString(createTransaction)).append("\n");
+    sb.append("    revertTransaction: ").append(toIndentedString(revertTransaction)).append("\n");
+    sb.append("    getPayment: ").append(toIndentedString(getPayment)).append("\n");
+    sb.append("    debitWallet: ").append(toIndentedString(debitWallet)).append("\n");
+    sb.append("    getWallet: ").append(toIndentedString(getWallet)).append("\n");
     sb.append("}");
     return sb.toString();
   }

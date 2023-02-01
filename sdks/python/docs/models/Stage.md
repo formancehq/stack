@@ -10,6 +10,7 @@ dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal
 Class Name | Input Type | Accessed Type | Description | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 [StageSend](StageSend.md) | [**StageSend**](StageSend.md) | [**StageSend**](StageSend.md) |  | 
+[StageDelay](StageDelay.md) | [**StageDelay**](StageDelay.md) | [**StageDelay**](StageDelay.md) |  | 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

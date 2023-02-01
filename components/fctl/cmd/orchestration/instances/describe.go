@@ -120,7 +120,14 @@ func NewDescribeCommand() *cobra.Command {
 							redWriter.WithWriter(cmd.OutOrStdout()).Printfln("\t%s", *historyStage.Error)
 						}
 					}
-
+				case history.Input.StageDelay != nil:
+					fctl.Section.Printf("Stage %d : delay\n", i)
+					switch {
+					case history.Input.StageDelay.Duration != nil:
+						fctl.Highlightln(cmd.OutOrStdout(), "Pause workflow for a delay of %s", *history.Input.StageDelay.Duration)
+					case history.Input.StageDelay.Until != nil:
+						fctl.Highlightln(cmd.OutOrStdout(), "Pause workflow until %s", *history.Input.StageDelay.Until)
+					}
 				default:
 					// Display error?
 				}
