@@ -60,7 +60,10 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
     protected static $openAPITypes = [
         'name' => 'string',
         'input' => '\Formance\Model\Stage',
-        'error' => 'string'
+        'error' => 'string',
+        'terminated' => 'Bool',
+        'started_at' => '\DateTime',
+        'terminated_at' => '\DateTime'
     ];
 
     /**
@@ -73,7 +76,10 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
     protected static $openAPIFormats = [
         'name' => null,
         'input' => null,
-        'error' => null
+        'error' => null,
+        'terminated' => null,
+        'started_at' => 'date-time',
+        'terminated_at' => 'date-time'
     ];
 
     /**
@@ -84,7 +90,10 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
     protected static array $openAPINullables = [
         'name' => false,
 		'input' => false,
-		'error' => false
+		'error' => false,
+		'terminated' => false,
+		'started_at' => false,
+		'terminated_at' => false
     ];
 
     /**
@@ -175,7 +184,10 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
     protected static $attributeMap = [
         'name' => 'name',
         'input' => 'input',
-        'error' => 'error'
+        'error' => 'error',
+        'terminated' => 'terminated',
+        'started_at' => 'startedAt',
+        'terminated_at' => 'terminatedAt'
     ];
 
     /**
@@ -186,7 +198,10 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
     protected static $setters = [
         'name' => 'setName',
         'input' => 'setInput',
-        'error' => 'setError'
+        'error' => 'setError',
+        'terminated' => 'setTerminated',
+        'started_at' => 'setStartedAt',
+        'terminated_at' => 'setTerminatedAt'
     ];
 
     /**
@@ -197,7 +212,10 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
     protected static $getters = [
         'name' => 'getName',
         'input' => 'getInput',
-        'error' => 'getError'
+        'error' => 'getError',
+        'terminated' => 'getTerminated',
+        'started_at' => 'getStartedAt',
+        'terminated_at' => 'getTerminatedAt'
     ];
 
     /**
@@ -260,6 +278,9 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
         $this->setIfExists('name', $data ?? [], null);
         $this->setIfExists('input', $data ?? [], null);
         $this->setIfExists('error', $data ?? [], null);
+        $this->setIfExists('terminated', $data ?? [], null);
+        $this->setIfExists('started_at', $data ?? [], null);
+        $this->setIfExists('terminated_at', $data ?? [], null);
     }
 
     /**
@@ -294,6 +315,12 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
         }
         if ($this->container['input'] === null) {
             $invalidProperties[] = "'input' can't be null";
+        }
+        if ($this->container['terminated'] === null) {
+            $invalidProperties[] = "'terminated' can't be null";
+        }
+        if ($this->container['started_at'] === null) {
+            $invalidProperties[] = "'started_at' can't be null";
         }
         return $invalidProperties;
     }
@@ -387,6 +414,87 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
             throw new \InvalidArgumentException('non-nullable error cannot be null');
         }
         $this->container['error'] = $error;
+
+        return $this;
+    }
+
+    /**
+     * Gets terminated
+     *
+     * @return Bool
+     */
+    public function getTerminated()
+    {
+        return $this->container['terminated'];
+    }
+
+    /**
+     * Sets terminated
+     *
+     * @param Bool $terminated terminated
+     *
+     * @return self
+     */
+    public function setTerminated($terminated)
+    {
+        if (is_null($terminated)) {
+            throw new \InvalidArgumentException('non-nullable terminated cannot be null');
+        }
+        $this->container['terminated'] = $terminated;
+
+        return $this;
+    }
+
+    /**
+     * Gets started_at
+     *
+     * @return \DateTime
+     */
+    public function getStartedAt()
+    {
+        return $this->container['started_at'];
+    }
+
+    /**
+     * Sets started_at
+     *
+     * @param \DateTime $started_at started_at
+     *
+     * @return self
+     */
+    public function setStartedAt($started_at)
+    {
+        if (is_null($started_at)) {
+            throw new \InvalidArgumentException('non-nullable started_at cannot be null');
+        }
+        $this->container['started_at'] = $started_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets terminated_at
+     *
+     * @return \DateTime|null
+     */
+    public function getTerminatedAt()
+    {
+        return $this->container['terminated_at'];
+    }
+
+    /**
+     * Sets terminated_at
+     *
+     * @param \DateTime|null $terminated_at terminated_at
+     *
+     * @return self
+     */
+    public function setTerminatedAt($terminated_at)
+    {
+        if (is_null($terminated_at)) {
+            throw new \InvalidArgumentException('non-nullable terminated_at cannot be null');
+        }
+        $this->container['terminated_at'] = $terminated_at;
 
         return $this;
     }

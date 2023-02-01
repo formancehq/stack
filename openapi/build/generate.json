@@ -6790,7 +6790,9 @@
         "type": "object",
         "required": [
           "name",
-          "input"
+          "input",
+          "startedAt",
+          "terminated"
         ],
         "properties": {
           "name": {
@@ -6804,6 +6806,17 @@
           },
           "error": {
             "type": "string"
+          },
+          "terminated": {
+            "type": "bool"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "terminatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -6811,7 +6824,9 @@
         "type": "object",
         "required": [
           "name",
-          "input"
+          "input",
+          "terminated",
+          "startedAt"
         ],
         "properties": {
           "name": {
@@ -6822,6 +6837,17 @@
           },
           "error": {
             "type": "string"
+          },
+          "terminated": {
+            "type": "bool"
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "terminatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },

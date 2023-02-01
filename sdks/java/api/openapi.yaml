@@ -6323,8 +6323,11 @@ components:
             id: id
           GetWallet:
             id: id
+        terminatedAt: 2000-01-23T04:56:07.000+00:00
         name: name
+        startedAt: 2000-01-23T04:56:07.000+00:00
         error: error
+        terminated: ""
       properties:
         name:
           type: string
@@ -6334,15 +6337,28 @@ components:
           $ref: '#/components/schemas/WorkflowInstanceHistoryStageOutput'
         error:
           type: string
+        terminated:
+          type: bool
+        startedAt:
+          format: date-time
+          type: string
+        terminatedAt:
+          format: date-time
+          type: string
       required:
       - input
       - name
+      - startedAt
+      - terminated
       type: object
     WorkflowInstanceHistory:
       example:
         input: null
+        terminatedAt: 2000-01-23T04:56:07.000+00:00
         name: name
+        startedAt: 2000-01-23T04:56:07.000+00:00
         error: error
+        terminated: ""
       properties:
         name:
           type: string
@@ -6350,9 +6366,19 @@ components:
           $ref: '#/components/schemas/Stage'
         error:
           type: string
+        terminated:
+          type: bool
+        startedAt:
+          format: date-time
+          type: string
+        terminatedAt:
+          format: date-time
+          type: string
       required:
       - input
       - name
+      - startedAt
+      - terminated
       type: object
     WorkflowInstanceHistoryList:
       items:
@@ -6528,11 +6554,17 @@ components:
       example:
         data:
         - input: null
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
           name: name
+          startedAt: 2000-01-23T04:56:07.000+00:00
           error: error
+          terminated: ""
         - input: null
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
           name: name
+          startedAt: 2000-01-23T04:56:07.000+00:00
           error: error
+          terminated: ""
       properties:
         data:
           items:
@@ -6793,8 +6825,11 @@ components:
               id: id
             GetWallet:
               id: id
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
           name: name
+          startedAt: 2000-01-23T04:56:07.000+00:00
           error: error
+          terminated: ""
         - output:
             CreateTransaction:
               data:
@@ -7044,8 +7079,11 @@ components:
               id: id
             GetWallet:
               id: id
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
           name: name
+          startedAt: 2000-01-23T04:56:07.000+00:00
           error: error
+          terminated: ""
       properties:
         data:
           items:

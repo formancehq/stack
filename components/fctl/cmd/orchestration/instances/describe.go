@@ -2,11 +2,11 @@ package instances
 
 import (
 	"fmt"
+	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
-	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -40,18 +40,25 @@ func NewDescribeCommand() *cobra.Command {
 				return err
 			}
 
-			greenWriter := pterm.DefaultBasicText.WithWriter(cmd.OutOrStdout()).WithStyle(pterm.NewStyle(pterm.FgLightGreen))
-			redWriter := pterm.DefaultBasicText.WithWriter(cmd.OutOrStdout()).WithStyle(pterm.NewStyle(pterm.FgLightRed))
+			defaultWriter := fctl.BasicText.WithWriter(cmd.OutOrStdout())
+			greenWriter := fctl.BasicTextGreen.WithWriter(cmd.OutOrStdout())
+			redWriter := fctl.BasicTextRed.WithWriter(cmd.OutOrStdout())
+			cyanWriter := fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout())
+			sectionWriter := fctl.Section.WithWriter(cmd.OutOrStdout())
 
 			for i, history := range ret.Data {
 				switch {
 				case history.Input.StageSend != nil:
-					fctl.Section.Printf("Stage %d : send\n", i)
-					fctl.Highlightln(cmd.OutOrStdout(), "Send %d %s from %s to %s", history.Input.StageSend.Amount.Amount,
+					sectionWriter.Printf("Stage %d : send\n", i)
+					cyanWriter.Printfln("Send %d %s from %s to %s", history.Input.StageSend.Amount.Amount,
 						history.Input.StageSend.Amount.Asset, stageSourceName(history.Input.StageSend.Source),
 						stageDestinationName(history.Input.StageSend.Destination))
 					fctl.Println()
-					fctl.Println("Activities :")
+					defaultWriter.Printfln("Started at: %s", history.StartedAt.Format(time.RFC3339))
+					if history.Terminated {
+						defaultWriter.Printfln("Terminated at: %s", history.StartedAt.Format(time.RFC3339))
+					}
+					defaultWriter.Println("Activities :")
 
 					stageResponse, _, err := client.OrchestrationApi.GetInstanceStageHistory(cmd.Context(), args[0], int32(i)).Execute()
 					if err != nil {
@@ -61,7 +68,7 @@ func NewDescribeCommand() *cobra.Command {
 					for _, historyStage := range stageResponse.Data {
 						switch {
 						case historyStage.Input.StripeTransfer != nil:
-							greenWriter.Printfln("Send %d %s (from @world) to Stripe connected account: %s",
+							greenWriter.Printfln("Send %d %s to Stripe connected account: %s",
 								*historyStage.Input.StripeTransfer.Amount,
 								*historyStage.Input.StripeTransfer.Asset,
 								*historyStage.Input.StripeTransfer.Destination,
@@ -73,9 +80,9 @@ func NewDescribeCommand() *cobra.Command {
 								historyStage.Input.CreateTransaction.Data.Postings[0].Source,
 								historyStage.Input.CreateTransaction.Data.Postings[0].Destination,
 							)
-							fctl.Printf("\tCreate transaction: %d", historyStage.Output.CreateTransaction.Data[0].Txid)
+							defaultWriter.Printfln("\tCreate transaction: %d", historyStage.Output.CreateTransaction.Data[0].Txid)
 							if historyStage.Error == nil {
-								fctl.Printf("\tCreated transaction: %d", historyStage.Output.RevertTransaction.Data.Txid)
+								defaultWriter.Printfln("\tCreated transaction: %d", historyStage.Output.RevertTransaction.Data.Txid)
 							}
 						case historyStage.Input.ConfirmHold != nil:
 							greenWriter.Printfln("Confirm debit hold %s", historyStage.Input.ConfirmHold.Id)
@@ -111,7 +118,7 @@ func NewDescribeCommand() *cobra.Command {
 						case historyStage.Input.RevertTransaction != nil:
 							greenWriter.Printfln("Revert transaction %s", historyStage.Input.RevertTransaction.Id)
 							if historyStage.Error == nil {
-								fctl.Printf("\tCreated transaction: %d", historyStage.Output.RevertTransaction.Data.Txid)
+								defaultWriter.Printfln("\tCreated transaction: %d", historyStage.Output.RevertTransaction.Data.Txid)
 							}
 						case historyStage.Input.VoidHold != nil:
 							greenWriter.Printfln("Cancel debit hold %s", historyStage.Input.VoidHold.Id)
@@ -121,12 +128,12 @@ func NewDescribeCommand() *cobra.Command {
 						}
 					}
 				case history.Input.StageDelay != nil:
-					fctl.Section.Printf("Stage %d : delay\n", i)
+					sectionWriter.Printfln("Stage %d : delay", i)
 					switch {
 					case history.Input.StageDelay.Duration != nil:
-						fctl.Highlightln(cmd.OutOrStdout(), "Pause workflow for a delay of %s", *history.Input.StageDelay.Duration)
+						cyanWriter.Printfln("Pause workflow for a delay of %s", *history.Input.StageDelay.Duration)
 					case history.Input.StageDelay.Until != nil:
-						fctl.Highlightln(cmd.OutOrStdout(), "Pause workflow until %s", *history.Input.StageDelay.Until)
+						cyanWriter.Printfln("Pause workflow until %s", *history.Input.StageDelay.Until)
 					}
 				default:
 					// Display error?

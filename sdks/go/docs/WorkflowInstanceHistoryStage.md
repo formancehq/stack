@@ -8,12 +8,15 @@ Name | Type | Description | Notes
 **Input** | [**WorkflowInstanceHistoryStageInput**](WorkflowInstanceHistoryStageInput.md) |  | 
 **Output** | Pointer to [**WorkflowInstanceHistoryStageOutput**](WorkflowInstanceHistoryStageOutput.md) |  | [optional] 
 **Error** | Pointer to **string** |  | [optional] 
+**Terminated** | **bool** |  | 
+**StartedAt** | **time.Time** |  | 
+**TerminatedAt** | Pointer to **time.Time** |  | [optional] 
 
 ## Methods
 
 ### NewWorkflowInstanceHistoryStage
 
-`func NewWorkflowInstanceHistoryStage(name string, input WorkflowInstanceHistoryStageInput, ) *WorkflowInstanceHistoryStage`
+`func NewWorkflowInstanceHistoryStage(name string, input WorkflowInstanceHistoryStageInput, terminated bool, startedAt time.Time, ) *WorkflowInstanceHistoryStage`
 
 NewWorkflowInstanceHistoryStage instantiates a new WorkflowInstanceHistoryStage object
 This constructor will assign default values to properties that have it defined,
@@ -117,6 +120,71 @@ SetError sets Error field to given value.
 `func (o *WorkflowInstanceHistoryStage) HasError() bool`
 
 HasError returns a boolean if a field has been set.
+
+### GetTerminated
+
+`func (o *WorkflowInstanceHistoryStage) GetTerminated() bool`
+
+GetTerminated returns the Terminated field if non-nil, zero value otherwise.
+
+### GetTerminatedOk
+
+`func (o *WorkflowInstanceHistoryStage) GetTerminatedOk() (*bool, bool)`
+
+GetTerminatedOk returns a tuple with the Terminated field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTerminated
+
+`func (o *WorkflowInstanceHistoryStage) SetTerminated(v bool)`
+
+SetTerminated sets Terminated field to given value.
+
+
+### GetStartedAt
+
+`func (o *WorkflowInstanceHistoryStage) GetStartedAt() time.Time`
+
+GetStartedAt returns the StartedAt field if non-nil, zero value otherwise.
+
+### GetStartedAtOk
+
+`func (o *WorkflowInstanceHistoryStage) GetStartedAtOk() (*time.Time, bool)`
+
+GetStartedAtOk returns a tuple with the StartedAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStartedAt
+
+`func (o *WorkflowInstanceHistoryStage) SetStartedAt(v time.Time)`
+
+SetStartedAt sets StartedAt field to given value.
+
+
+### GetTerminatedAt
+
+`func (o *WorkflowInstanceHistoryStage) GetTerminatedAt() time.Time`
+
+GetTerminatedAt returns the TerminatedAt field if non-nil, zero value otherwise.
+
+### GetTerminatedAtOk
+
+`func (o *WorkflowInstanceHistoryStage) GetTerminatedAtOk() (*time.Time, bool)`
+
+GetTerminatedAtOk returns a tuple with the TerminatedAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTerminatedAt
+
+`func (o *WorkflowInstanceHistoryStage) SetTerminatedAt(v time.Time)`
+
+SetTerminatedAt sets TerminatedAt field to given value.
+
+### HasTerminatedAt
+
+`func (o *WorkflowInstanceHistoryStage) HasTerminatedAt() bool`
+
+HasTerminatedAt returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

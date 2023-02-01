@@ -78,12 +78,12 @@ func NewRootCommand() *cobra.Command {
 	//
 	//	serverVersion, err := semver.NewVersion(serverInfo.Version)
 	//	if err != nil {
-	//		pterm.Warning.Printf("Server version is not semver, skip version checks: %s\r\n", err)
+	//		pterm.Warning.Printfln("Server version is not semver, skip version checks: %s\r\n", err)
 	//		return nil
 	//	}
 	//	fctlVersion, err := semver.NewVersion(Version)
 	//	if err != nil {
-	//		pterm.Warning.Printf("FCTL version is not semver, skip version checks: %s\r\n", err)
+	//		pterm.Warning.Printfln("FCTL version is not semver, skip version checks: %s\r\n", err)
 	//		return nil
 	//	}
 	//

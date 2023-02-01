@@ -38,6 +38,8 @@ class WorkflowInstanceHistoryStage(
         required = {
             "input",
             "name",
+            "startedAt",
+            "terminated",
         }
         
         class properties:
@@ -48,18 +50,29 @@ class WorkflowInstanceHistoryStage(
                 return WorkflowInstanceHistoryStageInput
         
             @staticmethod
+            def terminated() -> typing.Type['ModelBool']:
+                return ModelBool
+            startedAt = schemas.DateTimeSchema
+        
+            @staticmethod
             def output() -> typing.Type['WorkflowInstanceHistoryStageOutput']:
                 return WorkflowInstanceHistoryStageOutput
             error = schemas.StrSchema
+            terminatedAt = schemas.DateTimeSchema
             __annotations__ = {
                 "name": name,
                 "input": input,
+                "terminated": terminated,
+                "startedAt": startedAt,
                 "output": output,
                 "error": error,
+                "terminatedAt": terminatedAt,
             }
     
     input: 'WorkflowInstanceHistoryStageInput'
     name: MetaOapg.properties.name
+    startedAt: MetaOapg.properties.startedAt
+    terminated: 'ModelBool'
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["name"]) -> MetaOapg.properties.name: ...
@@ -68,15 +81,24 @@ class WorkflowInstanceHistoryStage(
     def __getitem__(self, name: typing_extensions.Literal["input"]) -> 'WorkflowInstanceHistoryStageInput': ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["terminated"]) -> 'ModelBool': ...
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["startedAt"]) -> MetaOapg.properties.startedAt: ...
+    
+    @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["output"]) -> 'WorkflowInstanceHistoryStageOutput': ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["error"]) -> MetaOapg.properties.error: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["terminatedAt"]) -> MetaOapg.properties.terminatedAt: ...
+    
+    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["name", "input", "output", "error", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["name", "input", "terminated", "startedAt", "output", "error", "terminatedAt", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -88,15 +110,24 @@ class WorkflowInstanceHistoryStage(
     def get_item_oapg(self, name: typing_extensions.Literal["input"]) -> 'WorkflowInstanceHistoryStageInput': ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["terminated"]) -> 'ModelBool': ...
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["startedAt"]) -> MetaOapg.properties.startedAt: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["output"]) -> typing.Union['WorkflowInstanceHistoryStageOutput', schemas.Unset]: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["error"]) -> typing.Union[MetaOapg.properties.error, schemas.Unset]: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["terminatedAt"]) -> typing.Union[MetaOapg.properties.terminatedAt, schemas.Unset]: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["name", "input", "output", "error", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["name", "input", "terminated", "startedAt", "output", "error", "terminatedAt", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -105,8 +136,11 @@ class WorkflowInstanceHistoryStage(
         *_args: typing.Union[dict, frozendict.frozendict, ],
         input: 'WorkflowInstanceHistoryStageInput',
         name: typing.Union[MetaOapg.properties.name, str, ],
+        startedAt: typing.Union[MetaOapg.properties.startedAt, str, datetime, ],
+        terminated: 'ModelBool',
         output: typing.Union['WorkflowInstanceHistoryStageOutput', schemas.Unset] = schemas.unset,
         error: typing.Union[MetaOapg.properties.error, str, schemas.Unset] = schemas.unset,
+        terminatedAt: typing.Union[MetaOapg.properties.terminatedAt, str, datetime, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'WorkflowInstanceHistoryStage':
@@ -115,11 +149,15 @@ class WorkflowInstanceHistoryStage(
             *_args,
             input=input,
             name=name,
+            startedAt=startedAt,
+            terminated=terminated,
             output=output,
             error=error,
+            terminatedAt=terminatedAt,
             _configuration=_configuration,
             **kwargs,
         )
 
+from Formance.model.model_bool import ModelBool
 from Formance.model.workflow_instance_history_stage_input import WorkflowInstanceHistoryStageInput
 from Formance.model.workflow_instance_history_stage_output import WorkflowInstanceHistoryStageOutput

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
@@ -151,9 +152,12 @@ func (m *Manager) ListInstances(ctx context.Context, workflowID string) ([]Insta
 }
 
 type StageHistory struct {
-	Name  string         `json:"name"`
-	Input map[string]any `json:"input"`
-	Error string         `json:"error,omitempty"`
+	Name         string         `json:"name"`
+	Input        map[string]any `json:"input"`
+	Error        string         `json:"error,omitempty"`
+	Terminated   bool           `json:"terminated"`
+	StartedAt    time.Time      `json:"startedAt"`
+	TerminatedAt *time.Time     `json:"terminatedAt"`
 }
 
 func (m *Manager) ReadInstanceHistory(ctx context.Context, instanceID string) ([]StageHistory, error) {
@@ -173,8 +177,9 @@ func (m *Manager) ReadInstanceHistory(ctx context.Context, instanceID string) ([
 				panic(err)
 			}
 			stageHistory := StageHistory{
-				Name:  attributes.StartChildWorkflowExecutionInitiatedEventAttributes.WorkflowType.Name,
-				Input: input,
+				Name:      attributes.StartChildWorkflowExecutionInitiatedEventAttributes.WorkflowType.Name,
+				Input:     input,
+				StartedAt: *event.EventTime,
 			}
 			for historyIterator.HasNext() {
 				event, err = historyIterator.Next()
@@ -184,8 +189,9 @@ func (m *Manager) ReadInstanceHistory(ctx context.Context, instanceID string) ([
 				switch event.EventType {
 				case enums.EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_TERMINATED:
 				case enums.EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_FAILED:
-					stageHistory.Error = event.Attributes.(*history.HistoryEvent_ChildWorkflowExecutionFailedEventAttributes).
-						ChildWorkflowExecutionFailedEventAttributes.Failure.Message
+					attributes := event.Attributes.(*history.HistoryEvent_ChildWorkflowExecutionFailedEventAttributes).
+						ChildWorkflowExecutionFailedEventAttributes
+					stageHistory.Error = attributes.Failure.Message
 				case enums.EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_COMPLETED:
 				case enums.EVENT_TYPE_CHILD_WORKFLOW_EXECUTION_TIMED_OUT:
 					stageHistory.Error = "timeout"
@@ -194,6 +200,9 @@ func (m *Manager) ReadInstanceHistory(ctx context.Context, instanceID string) ([
 				default:
 					continue
 				}
+				stageHistory.TerminatedAt = event.EventTime
+				stageHistory.Terminated = true
+				break
 			}
 			ret = append(ret, stageHistory)
 		}
@@ -202,10 +211,13 @@ func (m *Manager) ReadInstanceHistory(ctx context.Context, instanceID string) ([
 }
 
 type ActivityHistory struct {
-	Name   string         `json:"name"`
-	Input  map[string]any `json:"input"`
-	Output map[string]any `json:"output,omitempty"`
-	Error  string         `json:"error,omitempty"`
+	Name         string         `json:"name"`
+	Input        map[string]any `json:"input"`
+	Output       map[string]any `json:"output,omitempty"`
+	Error        string         `json:"error,omitempty"`
+	Terminated   bool           `json:"terminated"`
+	StartedAt    time.Time      `json:"startedAt"`
+	TerminatedAt *time.Time     `json:"terminatedAt"`
 }
 
 func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage int) ([]ActivityHistory, error) {
@@ -231,6 +243,7 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 				Input: map[string]any{
 					attributes.ActivityType.Name: input,
 				},
+				StartedAt: *event.EventTime,
 			}
 
 			for historyIterator.HasNext() {
@@ -260,6 +273,8 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 				default:
 					continue
 				}
+				activityHistory.TerminatedAt = event.EventTime
+				activityHistory.Terminated = true
 				break
 			}
 			ret = append(ret, activityHistory)

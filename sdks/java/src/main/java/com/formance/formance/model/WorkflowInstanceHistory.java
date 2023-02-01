@@ -15,6 +15,7 @@ package com.formance.formance.model;
 
 import java.util.Objects;
 import java.util.Arrays;
+import com.formance.formance.model.Bool;
 import com.formance.formance.model.Stage;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
@@ -22,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.time.OffsetDateTime;
 
 /**
  * WorkflowInstanceHistory
@@ -39,6 +41,18 @@ public class WorkflowInstanceHistory {
   public static final String SERIALIZED_NAME_ERROR = "error";
   @SerializedName(SERIALIZED_NAME_ERROR)
   private String error;
+
+  public static final String SERIALIZED_NAME_TERMINATED = "terminated";
+  @SerializedName(SERIALIZED_NAME_TERMINATED)
+  private Bool terminated = null;
+
+  public static final String SERIALIZED_NAME_STARTED_AT = "startedAt";
+  @SerializedName(SERIALIZED_NAME_STARTED_AT)
+  private OffsetDateTime startedAt;
+
+  public static final String SERIALIZED_NAME_TERMINATED_AT = "terminatedAt";
+  @SerializedName(SERIALIZED_NAME_TERMINATED_AT)
+  private OffsetDateTime terminatedAt;
 
   public WorkflowInstanceHistory() {
   }
@@ -109,6 +123,72 @@ public class WorkflowInstanceHistory {
   }
 
 
+  public WorkflowInstanceHistory terminated(Bool terminated) {
+    
+    this.terminated = terminated;
+    return this;
+  }
+
+   /**
+   * Get terminated
+   * @return terminated
+  **/
+  @javax.annotation.Nonnull
+
+  public Bool getTerminated() {
+    return terminated;
+  }
+
+
+  public void setTerminated(Bool terminated) {
+    this.terminated = terminated;
+  }
+
+
+  public WorkflowInstanceHistory startedAt(OffsetDateTime startedAt) {
+    
+    this.startedAt = startedAt;
+    return this;
+  }
+
+   /**
+   * Get startedAt
+   * @return startedAt
+  **/
+  @javax.annotation.Nonnull
+
+  public OffsetDateTime getStartedAt() {
+    return startedAt;
+  }
+
+
+  public void setStartedAt(OffsetDateTime startedAt) {
+    this.startedAt = startedAt;
+  }
+
+
+  public WorkflowInstanceHistory terminatedAt(OffsetDateTime terminatedAt) {
+    
+    this.terminatedAt = terminatedAt;
+    return this;
+  }
+
+   /**
+   * Get terminatedAt
+   * @return terminatedAt
+  **/
+  @javax.annotation.Nullable
+
+  public OffsetDateTime getTerminatedAt() {
+    return terminatedAt;
+  }
+
+
+  public void setTerminatedAt(OffsetDateTime terminatedAt) {
+    this.terminatedAt = terminatedAt;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -120,12 +200,15 @@ public class WorkflowInstanceHistory {
     WorkflowInstanceHistory workflowInstanceHistory = (WorkflowInstanceHistory) o;
     return Objects.equals(this.name, workflowInstanceHistory.name) &&
         Objects.equals(this.input, workflowInstanceHistory.input) &&
-        Objects.equals(this.error, workflowInstanceHistory.error);
+        Objects.equals(this.error, workflowInstanceHistory.error) &&
+        Objects.equals(this.terminated, workflowInstanceHistory.terminated) &&
+        Objects.equals(this.startedAt, workflowInstanceHistory.startedAt) &&
+        Objects.equals(this.terminatedAt, workflowInstanceHistory.terminatedAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, input, error);
+    return Objects.hash(name, input, error, terminated, startedAt, terminatedAt);
   }
 
   @Override
@@ -135,6 +218,9 @@ public class WorkflowInstanceHistory {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    input: ").append(toIndentedString(input)).append("\n");
     sb.append("    error: ").append(toIndentedString(error)).append("\n");
+    sb.append("    terminated: ").append(toIndentedString(terminated)).append("\n");
+    sb.append("    startedAt: ").append(toIndentedString(startedAt)).append("\n");
+    sb.append("    terminatedAt: ").append(toIndentedString(terminatedAt)).append("\n");
     sb.append("}");
     return sb.toString();
   }

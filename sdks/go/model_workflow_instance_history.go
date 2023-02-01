@@ -13,6 +13,7 @@ package formance
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // checks if the WorkflowInstanceHistory type satisfies the MappedNullable interface at compile time
@@ -23,16 +24,21 @@ type WorkflowInstanceHistory struct {
 	Name string `json:"name"`
 	Input Stage `json:"input"`
 	Error *string `json:"error,omitempty"`
+	Terminated bool `json:"terminated"`
+	StartedAt time.Time `json:"startedAt"`
+	TerminatedAt *time.Time `json:"terminatedAt,omitempty"`
 }
 
 // NewWorkflowInstanceHistory instantiates a new WorkflowInstanceHistory object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWorkflowInstanceHistory(name string, input Stage) *WorkflowInstanceHistory {
+func NewWorkflowInstanceHistory(name string, input Stage, terminated bool, startedAt time.Time) *WorkflowInstanceHistory {
 	this := WorkflowInstanceHistory{}
 	this.Name = name
 	this.Input = input
+	this.Terminated = terminated
+	this.StartedAt = startedAt
 	return &this
 }
 
@@ -124,6 +130,86 @@ func (o *WorkflowInstanceHistory) SetError(v string) {
 	o.Error = &v
 }
 
+// GetTerminated returns the Terminated field value
+func (o *WorkflowInstanceHistory) GetTerminated() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Terminated
+}
+
+// GetTerminatedOk returns a tuple with the Terminated field value
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistory) GetTerminatedOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Terminated, true
+}
+
+// SetTerminated sets field value
+func (o *WorkflowInstanceHistory) SetTerminated(v bool) {
+	o.Terminated = v
+}
+
+// GetStartedAt returns the StartedAt field value
+func (o *WorkflowInstanceHistory) GetStartedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.StartedAt
+}
+
+// GetStartedAtOk returns a tuple with the StartedAt field value
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistory) GetStartedAtOk() (*time.Time, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.StartedAt, true
+}
+
+// SetStartedAt sets field value
+func (o *WorkflowInstanceHistory) SetStartedAt(v time.Time) {
+	o.StartedAt = v
+}
+
+// GetTerminatedAt returns the TerminatedAt field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistory) GetTerminatedAt() time.Time {
+	if o == nil || isNil(o.TerminatedAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.TerminatedAt
+}
+
+// GetTerminatedAtOk returns a tuple with the TerminatedAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistory) GetTerminatedAtOk() (*time.Time, bool) {
+	if o == nil || isNil(o.TerminatedAt) {
+		return nil, false
+	}
+	return o.TerminatedAt, true
+}
+
+// HasTerminatedAt returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistory) HasTerminatedAt() bool {
+	if o != nil && !isNil(o.TerminatedAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetTerminatedAt gets a reference to the given time.Time and assigns it to the TerminatedAt field.
+func (o *WorkflowInstanceHistory) SetTerminatedAt(v time.Time) {
+	o.TerminatedAt = &v
+}
+
 func (o WorkflowInstanceHistory) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -138,6 +224,11 @@ func (o WorkflowInstanceHistory) ToMap() (map[string]interface{}, error) {
 	toSerialize["input"] = o.Input
 	if !isNil(o.Error) {
 		toSerialize["error"] = o.Error
+	}
+	toSerialize["terminated"] = o.Terminated
+	toSerialize["startedAt"] = o.StartedAt
+	if !isNil(o.TerminatedAt) {
+		toSerialize["terminatedAt"] = o.TerminatedAt
 	}
 	return toSerialize, nil
 }

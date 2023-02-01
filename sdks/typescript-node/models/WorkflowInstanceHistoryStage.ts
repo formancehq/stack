@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import { Bool } from '../models/Bool';
 import { WorkflowInstanceHistoryStageInput } from '../models/WorkflowInstanceHistoryStageInput';
 import { WorkflowInstanceHistoryStageOutput } from '../models/WorkflowInstanceHistoryStageOutput';
 import { HttpFile } from '../http/http';
@@ -19,6 +20,9 @@ export class WorkflowInstanceHistoryStage {
     'input': WorkflowInstanceHistoryStageInput;
     'output'?: WorkflowInstanceHistoryStageOutput;
     'error'?: string;
+    'terminated': Bool;
+    'startedAt': Date;
+    'terminatedAt'?: Date;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -46,6 +50,24 @@ export class WorkflowInstanceHistoryStage {
             "baseName": "error",
             "type": "string",
             "format": ""
+        },
+        {
+            "name": "terminated",
+            "baseName": "terminated",
+            "type": "Bool",
+            "format": ""
+        },
+        {
+            "name": "startedAt",
+            "baseName": "startedAt",
+            "type": "Date",
+            "format": "date-time"
+        },
+        {
+            "name": "terminatedAt",
+            "baseName": "terminatedAt",
+            "type": "Date",
+            "format": "date-time"
         }    ];
 
     static getAttributeTypeMap() {

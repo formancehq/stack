@@ -13,6 +13,7 @@ package formance
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // checks if the WorkflowInstanceHistoryStage type satisfies the MappedNullable interface at compile time
@@ -24,16 +25,21 @@ type WorkflowInstanceHistoryStage struct {
 	Input WorkflowInstanceHistoryStageInput `json:"input"`
 	Output *WorkflowInstanceHistoryStageOutput `json:"output,omitempty"`
 	Error *string `json:"error,omitempty"`
+	Terminated bool `json:"terminated"`
+	StartedAt time.Time `json:"startedAt"`
+	TerminatedAt *time.Time `json:"terminatedAt,omitempty"`
 }
 
 // NewWorkflowInstanceHistoryStage instantiates a new WorkflowInstanceHistoryStage object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWorkflowInstanceHistoryStage(name string, input WorkflowInstanceHistoryStageInput) *WorkflowInstanceHistoryStage {
+func NewWorkflowInstanceHistoryStage(name string, input WorkflowInstanceHistoryStageInput, terminated bool, startedAt time.Time) *WorkflowInstanceHistoryStage {
 	this := WorkflowInstanceHistoryStage{}
 	this.Name = name
 	this.Input = input
+	this.Terminated = terminated
+	this.StartedAt = startedAt
 	return &this
 }
 
@@ -157,6 +163,86 @@ func (o *WorkflowInstanceHistoryStage) SetError(v string) {
 	o.Error = &v
 }
 
+// GetTerminated returns the Terminated field value
+func (o *WorkflowInstanceHistoryStage) GetTerminated() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Terminated
+}
+
+// GetTerminatedOk returns a tuple with the Terminated field value
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStage) GetTerminatedOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Terminated, true
+}
+
+// SetTerminated sets field value
+func (o *WorkflowInstanceHistoryStage) SetTerminated(v bool) {
+	o.Terminated = v
+}
+
+// GetStartedAt returns the StartedAt field value
+func (o *WorkflowInstanceHistoryStage) GetStartedAt() time.Time {
+	if o == nil {
+		var ret time.Time
+		return ret
+	}
+
+	return o.StartedAt
+}
+
+// GetStartedAtOk returns a tuple with the StartedAt field value
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStage) GetStartedAtOk() (*time.Time, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.StartedAt, true
+}
+
+// SetStartedAt sets field value
+func (o *WorkflowInstanceHistoryStage) SetStartedAt(v time.Time) {
+	o.StartedAt = v
+}
+
+// GetTerminatedAt returns the TerminatedAt field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStage) GetTerminatedAt() time.Time {
+	if o == nil || isNil(o.TerminatedAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.TerminatedAt
+}
+
+// GetTerminatedAtOk returns a tuple with the TerminatedAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStage) GetTerminatedAtOk() (*time.Time, bool) {
+	if o == nil || isNil(o.TerminatedAt) {
+		return nil, false
+	}
+	return o.TerminatedAt, true
+}
+
+// HasTerminatedAt returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStage) HasTerminatedAt() bool {
+	if o != nil && !isNil(o.TerminatedAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetTerminatedAt gets a reference to the given time.Time and assigns it to the TerminatedAt field.
+func (o *WorkflowInstanceHistoryStage) SetTerminatedAt(v time.Time) {
+	o.TerminatedAt = &v
+}
+
 func (o WorkflowInstanceHistoryStage) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -174,6 +260,11 @@ func (o WorkflowInstanceHistoryStage) ToMap() (map[string]interface{}, error) {
 	}
 	if !isNil(o.Error) {
 		toSerialize["error"] = o.Error
+	}
+	toSerialize["terminated"] = o.Terminated
+	toSerialize["startedAt"] = o.StartedAt
+	if !isNil(o.TerminatedAt) {
+		toSerialize["terminatedAt"] = o.TerminatedAt
 	}
 	return toSerialize, nil
 }

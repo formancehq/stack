@@ -323,6 +323,8 @@ components:
       required:
       - name
       - input
+      - startedAt
+      - terminated
       properties:
         name:
           type: string
@@ -332,11 +334,21 @@ components:
           $ref: '#/components/schemas/WorkflowInstanceHistoryStageOutput'
         error:
           type: string
+        terminated:
+          type: bool
+        startedAt:
+          type: string
+          format: date-time
+        terminatedAt:
+          type: string
+          format: date-time
     WorkflowInstanceHistory:
       type: object
       required:
       - name
       - input
+      - terminated
+      - startedAt
       properties:
         name:
           type: string
@@ -344,6 +356,14 @@ components:
           $ref: '#/components/schemas/Stage'
         error:
           type: string
+        terminated:
+          type: bool
+        startedAt:
+          type: string
+          format: date-time
+        terminatedAt:
+          type: string
+          format: date-time
     WorkflowInstanceHistoryList:
       type: array
       items:
