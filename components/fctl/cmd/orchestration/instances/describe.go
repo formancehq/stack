@@ -3,6 +3,7 @@ package instances
 import (
 	"fmt"
 
+	"github.com/davecgh/go-spew/spew"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
@@ -52,6 +53,7 @@ func NewDescribeCommand() *cobra.Command {
 					if err != nil {
 						return err
 					}
+					spew.Dump(stageResponse.Data)
 
 					for _, historyStage := range stageResponse.Data {
 						switch {
@@ -115,27 +117,27 @@ func NewDescribeCommand() *cobra.Command {
 	)
 }
 
-func stageSourceName(src any) string {
-	switch src := src.(type) {
-	case *formance.WalletSource:
-		return fmt.Sprintf("wallet %s (balance: %s)", src.Id, src.Balance)
-	case *formance.LedgerAccountSource:
-		return fmt.Sprintf("account %s (ledger: %s)", src.Id, src.Ledger)
-	case *formance.PaymentSource:
-		return fmt.Sprintf("payment %s", src.Id)
+func stageSourceName(src *formance.StageSendSource) string {
+	switch {
+	case src.Wallet != nil:
+		return fmt.Sprintf("wallet '%s' (balance: %s)", src.Wallet.Id, *src.Wallet.Balance)
+	case src.Account != nil:
+		return fmt.Sprintf("account '%s' (ledger: %s)", src.Account.Id, *src.Account.Ledger)
+	case src.Payment != nil:
+		return fmt.Sprintf("payment '%s'", src.Payment.Id)
 	default:
 		return "unknown_source_type"
 	}
 }
 
-func stageDestinationName(dst any) string {
-	switch src := dst.(type) {
-	case *formance.WalletSource:
-		return fmt.Sprintf("wallet %s (balance: %s)", src.Id, src.Balance)
-	case *formance.LedgerAccountSource:
-		return fmt.Sprintf("account %s (ledger: %s)", src.Id, src.Ledger)
-	case *formance.PaymentDestination:
-		return src.Psp
+func stageDestinationName(dst *formance.StageSendDestination) string {
+	switch {
+	case dst.Wallet != nil:
+		return fmt.Sprintf("wallet %s (balance: %s)", dst.Wallet.Id, *dst.Wallet.Balance)
+	case dst.Account != nil:
+		return fmt.Sprintf("account %s (ledger: %s)", dst.Account.Id, *dst.Account.Ledger)
+	case dst.Payment != nil:
+		return dst.Payment.Psp
 	default:
 		return "unknown_source_type"
 	}
