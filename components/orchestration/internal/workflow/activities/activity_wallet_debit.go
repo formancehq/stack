@@ -8,8 +8,8 @@ import (
 )
 
 type DebitWalletRequest struct {
-	ID   string
-	Data sdk.DebitWalletRequest
+	ID   string                 `json:"id"`
+	Data sdk.DebitWalletRequest `json:"data"`
 }
 
 func (a Activities) DebitWallet(ctx context.Context, request DebitWalletRequest) (*sdk.DebitWalletResponse, error) {

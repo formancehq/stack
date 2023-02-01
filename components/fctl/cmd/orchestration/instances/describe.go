@@ -40,6 +40,9 @@ func NewDescribeCommand() *cobra.Command {
 				return err
 			}
 
+			greenWriter := pterm.DefaultBasicText.WithWriter(cmd.OutOrStdout()).WithStyle(pterm.NewStyle(pterm.FgLightGreen))
+			redWriter := pterm.DefaultBasicText.WithWriter(cmd.OutOrStdout()).WithStyle(pterm.NewStyle(pterm.FgLightRed))
+
 			for i, history := range ret.Data {
 				switch {
 				case history.Input.StageSend != nil:
@@ -48,10 +51,7 @@ func NewDescribeCommand() *cobra.Command {
 						history.Input.StageSend.Amount.Asset, stageSourceName(history.Input.StageSend.Source),
 						stageDestinationName(history.Input.StageSend.Destination))
 					fctl.Println()
-					fctl.Println("Details:")
-
-					greenWriter := pterm.DefaultBasicText.WithWriter(cmd.OutOrStdout()).WithStyle(pterm.NewStyle(pterm.FgLightGreen))
-					redWriter := pterm.DefaultBasicText.WithWriter(cmd.OutOrStdout()).WithStyle(pterm.NewStyle(pterm.FgLightRed))
+					fctl.Println("Activities :")
 
 					stageResponse, _, err := client.OrchestrationApi.GetInstanceStageHistory(cmd.Context(), args[0], int32(i)).Execute()
 					if err != nil {
@@ -123,6 +123,10 @@ func NewDescribeCommand() *cobra.Command {
 
 				default:
 					// Display error?
+				}
+				fctl.Println("")
+				if history.Error != nil {
+					redWriter.WithWriter(cmd.OutOrStdout()).Printfln("Stage terminated with error: %s", *history.Error)
 				}
 			}
 
