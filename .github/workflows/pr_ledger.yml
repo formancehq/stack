@@ -1,0 +1,25 @@
+name: Ledger - PR
+on:
+  pull_request:
+    types: [ assigned, opened, synchronize, reopened ]
+    paths:
+      - 'components/ledger/**'
+      - 'tests/benchmark/**'
+
+jobs:
+  K6:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Task
+        uses: arduino/setup-task@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Launch bench
+        run: |
+          cd tests/benchmark
+          task run:ledger
