@@ -227,7 +227,7 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 			}
 
 			activityHistory := ActivityHistory{
-				Name:  attributes.ActivityType.Name,
+				Name: attributes.ActivityType.Name,
 				Input: map[string]any{
 					attributes.ActivityType.Name: input,
 				},
@@ -260,6 +260,7 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 				default:
 					continue
 				}
+				break
 			}
 			ret = append(ret, activityHistory)
 		}

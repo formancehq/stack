@@ -41,9 +41,9 @@ func RunSend(ctx workflow.Context, send Send) error {
 		if err != nil {
 			return errors.Wrapf(err, "reading account: %s", send.Source.Account.ID)
 		}
-		stripeConnectID := account.Metadata["stripeConnectID"].(string)
-		if stripeConnectID == "" {
-			return errors.New("stripe connect ID not found")
+		stripeConnectID, err := extractStripeConnectID(account)
+		if err != nil {
+			return err
 		}
 		if err := activities.StripeTransfer(internal.SingleTryContext(ctx), sdk.StripeTransferRequest{
 			Amount:      sdk.PtrInt64(send.Amount.Amount),
@@ -84,9 +84,10 @@ func RunSend(ctx workflow.Context, send Send) error {
 		if err != nil {
 			return errors.Wrapf(err, "reading account: %s", send.Source.Account.ID)
 		}
-		stripeConnectID := wallet.Metadata["stripeConnectID"].(string)
-		if stripeConnectID == "" {
-			return errors.New("stripe connect ID not found")
+
+		stripeConnectID, err := extractStripeConnectID(wallet)
+		if err != nil {
+			return err
 		}
 		if err := activities.StripeTransfer(internal.SingleTryContext(ctx), sdk.StripeTransferRequest{
 			Amount:      sdk.PtrInt64(send.Amount.Amount),
@@ -144,4 +145,21 @@ func RunSend(ctx workflow.Context, send Send) error {
 		return errors.New("send from payment to payment is not supported")
 	}
 	panic("should not happen")
+}
+
+func extractStripeConnectID(object interface {
+	GetMetadata() map[string]any
+}) (string, error) {
+	stripeConnectIDAny, ok := object.GetMetadata()["stripeConnectID"]
+	if !ok {
+		return "", errors.New("expected 'stripeConnectID' metadata containing connected account ID")
+	}
+	stripeConnectID, ok := stripeConnectIDAny.(string)
+	if !ok {
+		return "", errors.New("expected 'stripeConnectID' to be a string")
+	}
+	if stripeConnectID == "" {
+		return "", errors.New("stripe connect ID empty")
+	}
+	return stripeConnectID, nil
 }
