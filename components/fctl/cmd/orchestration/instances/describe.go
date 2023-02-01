@@ -88,12 +88,16 @@ func NewDescribeCommand() *cobra.Command {
 								subjectName(historyStage.Input.CreditWallet.Data.Sources[0]),
 							)
 						case historyStage.Input.DebitWallet != nil:
+							destination := "@world"
+							if historyStage.Input.DebitWallet.Data.Destination != nil {
+								destination = subjectName(*historyStage.Input.DebitWallet.Data.Destination)
+							}
 							greenWriter.Printfln("Debit wallet %s (balance: %s) of %d %s to %s",
 								*historyStage.Input.DebitWallet.Id,
 								historyStage.Input.DebitWallet.Data.Balances[0],
 								historyStage.Input.DebitWallet.Data.Amount.Amount,
 								historyStage.Input.DebitWallet.Data.Amount.Asset,
-								subjectName(*historyStage.Input.DebitWallet.Data.Destination),
+								destination,
 							)
 						case historyStage.Input.GetAccount != nil:
 							greenWriter.Printfln("Read account %s of ledger %s",
