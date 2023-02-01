@@ -3,4 +3,3 @@ RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lis
 COPY operator /usr/bin/operator
 ENV OTEL_SERVICE_NAME operator
 ENTRYPOINT ["/usr/bin/operator"]
-CMD ["serve"]

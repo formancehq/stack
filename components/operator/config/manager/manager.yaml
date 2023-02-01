@@ -35,7 +35,7 @@ spec:
         #   type: RuntimeDefault
       containers:
       - command:
-        - /manager
+        - /usr/bin/operator
         args:
         - --leader-elect
         image: controller:latest

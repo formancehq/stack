@@ -20,6 +20,6 @@ RUN go install github.com/cosmtrek/air@latest
 FROM gcr.io/distroless/static:nonroot as release
 LABEL org.opencontainers.image.source=https://github.com/formancehq/operator
 WORKDIR /
-COPY --from=builder /workspace/manager .
+COPY --from=builder /workspace/manager /usr/bin/manager
 USER 65532:65532
-ENTRYPOINT ["/manager"]
+ENTRYPOINT ["/usr/bin/manager"]
