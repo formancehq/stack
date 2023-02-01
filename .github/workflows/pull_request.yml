@@ -135,9 +135,6 @@ jobs:
 
   K6:
     runs-on: ubuntu-latest
-    needs:
-      - Lint
-      - Tests
     steps:
       - uses: actions/checkout@v3
       - name: Install Task
