@@ -7219,26 +7219,27 @@
         }
       },
       "WorkflowInstanceHistoryStageOutput": {
-        "anyOf": [
-          {
+        "type": "object",
+        "properties": {
+          "GetAccount": {
             "$ref": "#/components/schemas/ActivityGetAccountOutput"
           },
-          {
+          "CreateTransaction": {
             "$ref": "#/components/schemas/ActivityCreateTransactionOutput"
           },
-          {
+          "RevertTransaction": {
             "$ref": "#/components/schemas/ActivityRevertTransactionOutput"
           },
-          {
+          "GetPayment": {
             "$ref": "#/components/schemas/ActivityGetPaymentOutput"
           },
-          {
+          "DebitWallet": {
             "$ref": "#/components/schemas/ActivityDebitWalletOutput"
           },
-          {
+          "GetWallet": {
             "$ref": "#/components/schemas/ActivityGetWalletOutput"
           }
-        ]
+        }
       }
     },
     "responses": {
