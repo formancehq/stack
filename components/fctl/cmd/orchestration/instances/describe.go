@@ -3,6 +3,7 @@ package instances
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
@@ -46,20 +47,15 @@ func NewDescribeCommand() *cobra.Command {
 			greenWriter := fctl.BasicTextGreen.WithWriter(cmd.OutOrStdout())
 			redWriter := fctl.BasicTextRed.WithWriter(cmd.OutOrStdout())
 			cyanWriter := fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout())
-			sectionWriter := fctl.Section.WithWriter(cmd.OutOrStdout())
 
 			for i, history := range ret.Data {
 				switch {
 				case history.Input.StageSend != nil:
-					sectionWriter.Printf("Stage %d : send\n", i)
+					printHistoryBaseInfo(cmd.OutOrStdout(), "send", i, history)
 					cyanWriter.Printfln("Send %d %s from %s to %s", history.Input.StageSend.Amount.Amount,
 						history.Input.StageSend.Amount.Asset, stageSourceName(history.Input.StageSend.Source),
 						stageDestinationName(history.Input.StageSend.Destination))
 					fctl.Println()
-					defaultWriter.Printfln("Started at: %s", history.StartedAt.Format(time.RFC3339))
-					if history.Terminated {
-						defaultWriter.Printfln("Terminated at: %s", history.StartedAt.Format(time.RFC3339))
-					}
 					defaultWriter.Println("Activities :")
 
 					stageResponse, _, err := client.OrchestrationApi.GetInstanceStageHistory(cmd.Context(), args[0], int32(i)).Execute()
@@ -82,12 +78,11 @@ func NewDescribeCommand() *cobra.Command {
 								historyStage.Input.CreateTransaction.Data.Postings[0].Source,
 								historyStage.Input.CreateTransaction.Data.Postings[0].Destination,
 							)
-							defaultWriter.Printfln("\tCreate transaction: %d", historyStage.Output.CreateTransaction.Data[0].Txid)
-							if len(historyStage.Input.CreateTransaction.Data.Metadata) > 0 {
-								printMetadata(defaultWriter, historyStage.Input.CreateTransaction.Data.Metadata)
-							}
 							if historyStage.Error == nil {
-								defaultWriter.Printfln("\tCreated transaction: %d", historyStage.Output.RevertTransaction.Data.Txid)
+								defaultWriter.Printfln("\tCreated transaction: %d", historyStage.Output.CreateTransaction.Data[0].Txid)
+								if len(historyStage.Input.CreateTransaction.Data.Metadata) > 0 {
+									printMetadata(defaultWriter, historyStage.Input.CreateTransaction.Data.Metadata)
+								}
 							}
 						case historyStage.Input.ConfirmHold != nil:
 							greenWriter.Printfln("Confirm debit hold %s", historyStage.Input.ConfirmHold.Id)
@@ -99,8 +94,10 @@ func NewDescribeCommand() *cobra.Command {
 								historyStage.Input.CreditWallet.Data.Amount.Asset,
 								subjectName(historyStage.Input.CreditWallet.Data.Sources[0]),
 							)
-							if len(historyStage.Input.CreditWallet.Data.Metadata) > 0 {
-								printMetadata(defaultWriter, historyStage.Input.CreditWallet.Data.Metadata)
+							if historyStage.Error == nil {
+								if len(historyStage.Input.CreditWallet.Data.Metadata) > 0 {
+									printMetadata(defaultWriter, historyStage.Input.CreditWallet.Data.Metadata)
+								}
 							}
 						case historyStage.Input.DebitWallet != nil:
 							destination := "@world"
@@ -114,8 +111,10 @@ func NewDescribeCommand() *cobra.Command {
 								historyStage.Input.DebitWallet.Data.Amount.Asset,
 								destination,
 							)
-							if len(historyStage.Input.DebitWallet.Data.Metadata) > 0 {
-								printMetadata(defaultWriter, historyStage.Input.DebitWallet.Data.Metadata)
+							if historyStage.Error == nil {
+								if len(historyStage.Input.DebitWallet.Data.Metadata) > 0 {
+									printMetadata(defaultWriter, historyStage.Input.DebitWallet.Data.Metadata)
+								}
 							}
 						case historyStage.Input.GetAccount != nil:
 							greenWriter.Printfln("Read account %s of ledger %s",
@@ -139,7 +138,7 @@ func NewDescribeCommand() *cobra.Command {
 						}
 					}
 				case history.Input.StageDelay != nil:
-					sectionWriter.Printfln("Stage %d : delay", i)
+					printHistoryBaseInfo(cmd.OutOrStdout(), "delay", i, history)
 					switch {
 					case history.Input.StageDelay.Duration != nil:
 						cyanWriter.Printfln("Pause workflow for a delay of %s", *history.Input.StageDelay.Duration)
@@ -147,12 +146,16 @@ func NewDescribeCommand() *cobra.Command {
 						cyanWriter.Printfln("Pause workflow until %s", *history.Input.StageDelay.Until)
 					}
 				case history.Input.StageWaitEvent != nil:
-					sectionWriter.Printfln("Stage %d: wait", i)
-					cyanWriter.Printfln("Wait event '%s'", history.Input.StageWaitEvent.Event)
+					printHistoryBaseInfo(cmd.OutOrStdout(), "wait_event", i, history)
+					cyanWriter.Printfln("Waiting event '%s'", history.Input.StageWaitEvent.Event)
+					if history.Terminated {
+						defaultWriter.Printfln("\tEvent received!")
+					} else {
+						defaultWriter.Printfln("\tStill waiting event...")
+					}
 				default:
 					// Display error?
 				}
-				fctl.Println("")
 				if history.Error != nil {
 					redWriter.WithWriter(cmd.OutOrStdout()).Printfln("Stage terminated with error: %s", *history.Error)
 				}
@@ -161,6 +164,14 @@ func NewDescribeCommand() *cobra.Command {
 			return nil
 		}),
 	)
+}
+
+func printHistoryBaseInfo(out io.Writer, name string, ind int, history formance.WorkflowInstanceHistory) {
+	fctl.Section.WithWriter(out).Printf("Stage %d : %s\n", ind, name)
+	fctl.BasicText.WithWriter(out).Printfln("Started at: %s", history.StartedAt.Format(time.RFC3339))
+	if history.Terminated {
+		fctl.BasicText.WithWriter(out).Printfln("Terminated at: %s", history.StartedAt.Format(time.RFC3339))
+	}
 }
 
 func stageSourceName(src *formance.StageSendSource) string {
