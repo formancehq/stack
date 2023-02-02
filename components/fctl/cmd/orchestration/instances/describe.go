@@ -135,6 +135,9 @@ func NewDescribeCommand() *cobra.Command {
 					case history.Input.StageDelay.Until != nil:
 						cyanWriter.Printfln("Pause workflow until %s", *history.Input.StageDelay.Until)
 					}
+				case history.Input.StageWaitEvent != nil:
+					sectionWriter.Printfln("Stage %d: wait", i)
+					cyanWriter.Printfln("Wait event '%s'", history.Input.StageWaitEvent.Event)
 				default:
 					// Display error?
 				}
