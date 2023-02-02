@@ -13,6 +13,7 @@ All URIs are relative to *http://localhost*
 | [**listWorkflows**](OrchestrationApi.md#listWorkflows) | **GET** api/orchestration/workflows | List registered workflows |
 | [**orchestrationgetServerInfo**](OrchestrationApi.md#orchestrationgetServerInfo) | **GET** api/orchestration/_info | Get server info |
 | [**runWorkflow**](OrchestrationApi.md#runWorkflow) | **POST** api/orchestration/workflows/{workflowID}/instances | Run workflow |
+| [**sendEvent**](OrchestrationApi.md#sendEvent) | **POST** api/orchestration/instances/{instanceID}/events | Send an event to a running workflow |
 
 
 
@@ -657,5 +658,78 @@ public class Example {
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **201** | The workflow instance |  -  |
+| **0** | General error |  -  |
+
+
+## sendEvent
+
+> sendEvent(instanceID, sendEventRequest)
+
+Send an event to a running workflow
+
+Send an event to a running workflow
+
+### Example
+
+```java
+// Import classes:
+import com.formance.formance.ApiClient;
+import com.formance.formance.ApiException;
+import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
+import com.formance.formance.models.*;
+import com.formance.formance.api.OrchestrationApi;
+
+public class Example {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
+
+        OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
+        String instanceID = "xxx"; // String | The instance id
+        SendEventRequest sendEventRequest = new SendEventRequest(); // SendEventRequest | 
+        try {
+            apiInstance.sendEvent(instanceID, sendEventRequest);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling OrchestrationApi#sendEvent");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **instanceID** | **String**| The instance id | |
+| **sendEventRequest** | [**SendEventRequest**](SendEventRequest.md)|  | [optional] |
+
+### Return type
+
+null (empty response body)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **204** | No content |  -  |
 | **0** | General error |  -  |
 

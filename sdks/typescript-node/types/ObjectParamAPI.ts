@@ -134,6 +134,7 @@ import { ScriptResponse } from '../models/ScriptResponse';
 import { Secret } from '../models/Secret';
 import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
+import { SendEventRequest } from '../models/SendEventRequest';
 import { ServerInfo } from '../models/ServerInfo';
 import { Stage } from '../models/Stage';
 import { StageDelay } from '../models/StageDelay';
@@ -940,6 +941,21 @@ export interface OrchestrationApiRunWorkflowRequest {
     requestBody?: { [key: string]: string; }
 }
 
+export interface OrchestrationApiSendEventRequest {
+    /**
+     * The instance id
+     * @type string
+     * @memberof OrchestrationApisendEvent
+     */
+    instanceID: string
+    /**
+     * 
+     * @type SendEventRequest
+     * @memberof OrchestrationApisendEvent
+     */
+    sendEventRequest?: SendEventRequest
+}
+
 export class ObjectOrchestrationApi {
     private api: ObservableOrchestrationApi
 
@@ -1025,6 +1041,15 @@ export class ObjectOrchestrationApi {
      */
     public runWorkflow(param: OrchestrationApiRunWorkflowRequest, options?: Configuration): Promise<RunWorkflowResponse> {
         return this.api.runWorkflow(param.workflowID, param.wait, param.requestBody,  options).toPromise();
+    }
+
+    /**
+     * Send an event to a running workflow
+     * Send an event to a running workflow
+     * @param param the request object
+     */
+    public sendEvent(param: OrchestrationApiSendEventRequest, options?: Configuration): Promise<void> {
+        return this.api.sendEvent(param.instanceID, param.sendEventRequest,  options).toPromise();
     }
 
 }

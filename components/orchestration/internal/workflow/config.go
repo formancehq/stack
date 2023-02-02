@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime/debug"
 	"time"
 
 	"github.com/formancehq/orchestration/internal/schema"
@@ -43,6 +44,7 @@ func (c *Config) runStage(ctx workflow.Context, s Stage, stage RawStage, variabl
 		return err
 	}
 
+	fmt.Println("execute child workflow")
 	err = workflow.ExecuteChildWorkflow(
 		workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{
 			WorkflowID: s.TemporalWorkflowID(),
@@ -62,6 +64,13 @@ func (c *Config) runStage(ctx workflow.Context, s Stage, stage RawStage, variabl
 }
 
 func (c *Config) run(ctx workflow.Context, db *bun.DB, instance Instance, variables map[string]string) error {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Println(e)
+			debug.PrintStack()
+		}
+	}()
+
 	logger := workflow.GetLogger(ctx)
 	for ind, rawStage := range c.Stages {
 		logger.Info("run stage", "index", ind, "workflowID", instance.ID)

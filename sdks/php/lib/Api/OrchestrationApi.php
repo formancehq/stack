@@ -99,6 +99,9 @@ class OrchestrationApi
         'runWorkflow' => [
             'application/json',
         ],
+        'sendEvent' => [
+            'application/json',
+        ],
     ];
 
 /**
@@ -2888,6 +2891,260 @@ class OrchestrationApi
                 $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($request_body));
             } else {
                 $httpBody = $request_body;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'POST',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation sendEvent
+     *
+     * Send an event to a running workflow
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  \Formance\Model\SendEventRequest $send_event_request send_event_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['sendEvent'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return void
+     */
+    public function sendEvent($instance_id, $send_event_request = null, string $contentType = self::contentTypes['sendEvent'][0])
+    {
+        $this->sendEventWithHttpInfo($instance_id, $send_event_request, $contentType);
+    }
+
+    /**
+     * Operation sendEventWithHttpInfo
+     *
+     * Send an event to a running workflow
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  \Formance\Model\SendEventRequest $send_event_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['sendEvent'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function sendEventWithHttpInfo($instance_id, $send_event_request = null, string $contentType = self::contentTypes['sendEvent'][0])
+    {
+        $request = $this->sendEventRequest($instance_id, $send_event_request, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return [null, $statusCode, $response->getHeaders()];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation sendEventAsync
+     *
+     * Send an event to a running workflow
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  \Formance\Model\SendEventRequest $send_event_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['sendEvent'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function sendEventAsync($instance_id, $send_event_request = null, string $contentType = self::contentTypes['sendEvent'][0])
+    {
+        return $this->sendEventAsyncWithHttpInfo($instance_id, $send_event_request, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation sendEventAsyncWithHttpInfo
+     *
+     * Send an event to a running workflow
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  \Formance\Model\SendEventRequest $send_event_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['sendEvent'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function sendEventAsyncWithHttpInfo($instance_id, $send_event_request = null, string $contentType = self::contentTypes['sendEvent'][0])
+    {
+        $returnType = '';
+        $request = $this->sendEventRequest($instance_id, $send_event_request, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'sendEvent'
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  \Formance\Model\SendEventRequest $send_event_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['sendEvent'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function sendEventRequest($instance_id, $send_event_request = null, string $contentType = self::contentTypes['sendEvent'][0])
+    {
+
+        // verify the required parameter 'instance_id' is set
+        if ($instance_id === null || (is_array($instance_id) && count($instance_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $instance_id when calling sendEvent'
+            );
+        }
+
+
+
+        $resourcePath = '/api/orchestration/instances/{instanceID}/events';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($instance_id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'instanceID' . '}',
+                ObjectSerializer::toPathValue($instance_id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($send_event_request)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($send_event_request));
+            } else {
+                $httpBody = $send_event_request;
             }
         } elseif (count($formParams) > 0) {
             if ($multipart) {

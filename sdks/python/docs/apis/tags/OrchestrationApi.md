@@ -14,6 +14,7 @@ Method | HTTP request | Description
 [**list_workflows**](#list_workflows) | **get** /api/orchestration/workflows | List registered workflows
 [**orchestrationget_server_info**](#orchestrationget_server_info) | **get** /api/orchestration/_info | Get server info
 [**run_workflow**](#run_workflow) | **post** /api/orchestration/workflows/{workflowID}/instances | Run workflow
+[**send_event**](#send_event) | **post** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow
 
 # **create_workflow**
 <a name="create_workflow"></a>
@@ -1040,6 +1041,146 @@ Type | Description  | Notes
 
 
 #### run_workflow.ApiResponseForDefault
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor0ResponseBodyApplicationJson, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor0ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**Error**](../../models/Error.md) |  | 
+
+
+### Authorization
+
+[Authorization](../../../README.md#Authorization)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **send_event**
+<a name="send_event"></a>
+> send_event(instance_id)
+
+Send an event to a running workflow
+
+Send an event to a running workflow
+
+### Example
+
+* OAuth Authentication (Authorization):
+```python
+import Formance
+from Formance.apis.tags import orchestration_api
+from Formance.model.error import Error
+from pprint import pprint
+# Defining the host is optional and defaults to http://localhost
+# See configuration.py for a list of all supported configuration parameters.
+configuration = Formance.Configuration(
+    host = "http://localhost"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
+# Enter a context with an instance of the API client
+with Formance.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = orchestration_api.OrchestrationApi(api_client)
+
+    # example passing only required values which don't have defaults set
+    path_params = {
+        'instanceID': "xxx",
+    }
+    try:
+        # Send an event to a running workflow
+        api_response = api_instance.send_event(
+            path_params=path_params,
+        )
+    except Formance.ApiException as e:
+        print("Exception when calling OrchestrationApi->send_event: %s\n" % e)
+
+    # example passing only optional values
+    path_params = {
+        'instanceID': "xxx",
+    }
+    body = dict(
+        name="name_example",
+    )
+    try:
+        # Send an event to a running workflow
+        api_response = api_instance.send_event(
+            path_params=path_params,
+            body=body,
+        )
+    except Formance.ApiException as e:
+        print("Exception when calling OrchestrationApi->send_event: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+body | typing.Union[SchemaForRequestBodyApplicationJson, Unset] | optional, default is unset |
+path_params | RequestPathParams | |
+content_type | str | optional, default is 'application/json' | Selects the schema and serialization of the request body
+accept_content_types | typing.Tuple[str] | default is ('application/json', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### body
+
+# SchemaForRequestBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**name** | str,  | str,  |  | 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+### path_params
+#### RequestPathParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+instanceID | InstanceIDSchema | | 
+
+# InstanceIDSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str,  | str,  |  | 
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+204 | [ApiResponseFor204](#send_event.ApiResponseFor204) | No content
+default | [ApiResponseForDefault](#send_event.ApiResponseForDefault) | General error
+
+#### send_event.ApiResponseFor204
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+#### send_event.ApiResponseForDefault
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |

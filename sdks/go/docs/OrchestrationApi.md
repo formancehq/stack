@@ -13,6 +13,7 @@ Method | HTTP request | Description
 [**ListWorkflows**](OrchestrationApi.md#ListWorkflows) | **Get** /api/orchestration/workflows | List registered workflows
 [**OrchestrationgetServerInfo**](OrchestrationApi.md#OrchestrationgetServerInfo) | **Get** /api/orchestration/_info | Get server info
 [**RunWorkflow**](OrchestrationApi.md#RunWorkflow) | **Post** /api/orchestration/workflows/{workflowID}/instances | Run workflow
+[**SendEvent**](OrchestrationApi.md#SendEvent) | **Post** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow
 
 
 
@@ -610,6 +611,76 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**RunWorkflowResponse**](RunWorkflowResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## SendEvent
+
+> SendEvent(ctx, instanceID).SendEventRequest(sendEventRequest).Execute()
+
+Send an event to a running workflow
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    instanceID := "xxx" // string | The instance id
+    sendEventRequest := *client.NewSendEventRequest("Name_example") // SendEventRequest |  (optional)
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.OrchestrationApi.SendEvent(context.Background(), instanceID).SendEventRequest(sendEventRequest).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.SendEvent``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**instanceID** | **string** | The instance id | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiSendEventRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **sendEventRequest** | [**SendEventRequest**](SendEventRequest.md) |  | 
+
+### Return type
+
+ (empty response body)
 
 ### Authorization
 

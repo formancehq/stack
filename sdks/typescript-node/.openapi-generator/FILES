@@ -179,6 +179,7 @@ models/ScriptResponse.ts
 models/Secret.ts
 models/SecretAllOf.ts
 models/SecretOptions.ts
+models/SendEventRequest.ts
 models/ServerInfo.ts
 models/Stage.ts
 models/StageDelay.ts

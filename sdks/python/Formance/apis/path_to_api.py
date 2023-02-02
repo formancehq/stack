@@ -67,6 +67,7 @@ from Formance.apis.paths.api_orchestration_workflows_flow_id import ApiOrchestra
 from Formance.apis.paths.api_orchestration_workflows_workflow_id_instances import ApiOrchestrationWorkflowsWorkflowIDInstances
 from Formance.apis.paths.api_orchestration_instances import ApiOrchestrationInstances
 from Formance.apis.paths.api_orchestration_instances_instance_id import ApiOrchestrationInstancesInstanceID
+from Formance.apis.paths.api_orchestration_instances_instance_id_events import ApiOrchestrationInstancesInstanceIDEvents
 from Formance.apis.paths.api_orchestration_instances_instance_id_history import ApiOrchestrationInstancesInstanceIDHistory
 from Formance.apis.paths.api_orchestration_instances_instance_id_stages_number_history import ApiOrchestrationInstancesInstanceIDStagesNumberHistory
 
@@ -139,6 +140,7 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.API_ORCHESTRATION_WORKFLOWS_WORKFLOW_ID_INSTANCES: ApiOrchestrationWorkflowsWorkflowIDInstances,
         PathValues.API_ORCHESTRATION_INSTANCES: ApiOrchestrationInstances,
         PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID: ApiOrchestrationInstancesInstanceID,
+        PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_EVENTS: ApiOrchestrationInstancesInstanceIDEvents,
         PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_HISTORY: ApiOrchestrationInstancesInstanceIDHistory,
         PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_STAGES_NUMBER_HISTORY: ApiOrchestrationInstancesInstanceIDStagesNumberHistory,
     }
@@ -212,6 +214,7 @@ path_to_api = PathToApi(
         PathValues.API_ORCHESTRATION_WORKFLOWS_WORKFLOW_ID_INSTANCES: ApiOrchestrationWorkflowsWorkflowIDInstances,
         PathValues.API_ORCHESTRATION_INSTANCES: ApiOrchestrationInstances,
         PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID: ApiOrchestrationInstancesInstanceID,
+        PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_EVENTS: ApiOrchestrationInstancesInstanceIDEvents,
         PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_HISTORY: ApiOrchestrationInstancesInstanceIDHistory,
         PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_STAGES_NUMBER_HISTORY: ApiOrchestrationInstancesInstanceIDStagesNumberHistory,
     }

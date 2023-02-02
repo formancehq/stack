@@ -13,6 +13,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 | [**listWorkflows()**](OrchestrationApi.md#listWorkflows) | **GET** /api/orchestration/workflows | List registered workflows |
 | [**orchestrationgetServerInfo()**](OrchestrationApi.md#orchestrationgetServerInfo) | **GET** /api/orchestration/_info | Get server info |
 | [**runWorkflow()**](OrchestrationApi.md#runWorkflow) | **POST** /api/orchestration/workflows/{workflowID}/instances | Run workflow |
+| [**sendEvent()**](OrchestrationApi.md#sendEvent) | **POST** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow |
 
 
 ## `createWorkflow()`
@@ -539,6 +540,67 @@ try {
 ### Return type
 
 [**\Formance\Model\RunWorkflowResponse**](../Model/RunWorkflowResponse.md)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `sendEvent()`
+
+```php
+sendEvent($instance_id, $send_event_request)
+```
+
+Send an event to a running workflow
+
+Send an event to a running workflow
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\OrchestrationApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$instance_id = xxx; // string | The instance id
+$send_event_request = new \Formance\Model\SendEventRequest(); // \Formance\Model\SendEventRequest
+
+try {
+    $apiInstance->sendEvent($instance_id, $send_event_request);
+} catch (Exception $e) {
+    echo 'Exception when calling OrchestrationApi->sendEvent: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+| Name | Type | Description  | Notes |
+| ------------- | ------------- | ------------- | ------------- |
+| **instance_id** | **string**| The instance id | |
+| **send_event_request** | [**\Formance\Model\SendEventRequest**](../Model/SendEventRequest.md)|  | [optional] |
+
+### Return type
+
+void (empty response body)
 
 ### Authorization
 

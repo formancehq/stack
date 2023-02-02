@@ -154,6 +154,7 @@ docs/Model/ScriptResponse.md
 docs/Model/Secret.md
 docs/Model/SecretAllOf.md
 docs/Model/SecretOptions.md
+docs/Model/SendEventRequest.md
 docs/Model/ServerInfo.md
 docs/Model/Stage.md
 docs/Model/StageDelay.md
@@ -379,6 +380,7 @@ lib/Model/ScriptResponse.php
 lib/Model/Secret.php
 lib/Model/SecretAllOf.php
 lib/Model/SecretOptions.php
+lib/Model/SendEventRequest.php
 lib/Model/ServerInfo.php
 lib/Model/Stage.php
 lib/Model/StageDelay.php

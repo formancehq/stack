@@ -152,6 +152,20 @@ type OrchestrationApi interface {
 	// RunWorkflowExecute executes the request
 	//  @return RunWorkflowResponse
 	RunWorkflowExecute(r ApiRunWorkflowRequest) (*RunWorkflowResponse, *http.Response, error)
+
+	/*
+	SendEvent Send an event to a running workflow
+
+	Send an event to a running workflow
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param instanceID The instance id
+	@return ApiSendEventRequest
+	*/
+	SendEvent(ctx context.Context, instanceID string) ApiSendEventRequest
+
+	// SendEventExecute executes the request
+	SendEventExecute(r ApiSendEventRequest) (*http.Response, error)
 }
 
 // OrchestrationApiService OrchestrationApi service
@@ -1177,4 +1191,112 @@ func (a *OrchestrationApiService) RunWorkflowExecute(r ApiRunWorkflowRequest) (*
 	}
 
 	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiSendEventRequest struct {
+	ctx context.Context
+	ApiService OrchestrationApi
+	instanceID string
+	sendEventRequest *SendEventRequest
+}
+
+func (r ApiSendEventRequest) SendEventRequest(sendEventRequest SendEventRequest) ApiSendEventRequest {
+	r.sendEventRequest = &sendEventRequest
+	return r
+}
+
+func (r ApiSendEventRequest) Execute() (*http.Response, error) {
+	return r.ApiService.SendEventExecute(r)
+}
+
+/*
+SendEvent Send an event to a running workflow
+
+Send an event to a running workflow
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param instanceID The instance id
+ @return ApiSendEventRequest
+*/
+func (a *OrchestrationApiService) SendEvent(ctx context.Context, instanceID string) ApiSendEventRequest {
+	return ApiSendEventRequest{
+		ApiService: a,
+		ctx: ctx,
+		instanceID: instanceID,
+	}
+}
+
+// Execute executes the request
+func (a *OrchestrationApiService) SendEventExecute(r ApiSendEventRequest) (*http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.SendEvent")
+	if err != nil {
+		return nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/orchestration/instances/{instanceID}/events"
+	localVarPath = strings.Replace(localVarPath, "{"+"instanceID"+"}", url.PathEscape(parameterValueToString(r.instanceID, "instanceID")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.sendEventRequest
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
 }

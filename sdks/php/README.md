@@ -120,6 +120,7 @@ Class | Method | HTTP request | Description
 *OrchestrationApi* | [**listWorkflows**](docs/Api/OrchestrationApi.md#listworkflows) | **GET** /api/orchestration/workflows | List registered workflows
 *OrchestrationApi* | [**orchestrationgetServerInfo**](docs/Api/OrchestrationApi.md#orchestrationgetserverinfo) | **GET** /api/orchestration/_info | Get server info
 *OrchestrationApi* | [**runWorkflow**](docs/Api/OrchestrationApi.md#runworkflow) | **POST** /api/orchestration/workflows/{workflowID}/instances | Run workflow
+*OrchestrationApi* | [**sendEvent**](docs/Api/OrchestrationApi.md#sendevent) | **POST** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow
 *PaymentsApi* | [**connectorsStripeTransfer**](docs/Api/PaymentsApi.md#connectorsstripetransfer) | **POST** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts
 *PaymentsApi* | [**getConnectorTask**](docs/Api/PaymentsApi.md#getconnectortask) | **GET** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 *PaymentsApi* | [**getPayment**](docs/Api/PaymentsApi.md#getpayment) | **GET** /api/payments/payments/{paymentId} | Get a payment
@@ -311,6 +312,7 @@ Class | Method | HTTP request | Description
 - [Secret](docs/Model/Secret.md)
 - [SecretAllOf](docs/Model/SecretAllOf.md)
 - [SecretOptions](docs/Model/SecretOptions.md)
+- [SendEventRequest](docs/Model/SendEventRequest.md)
 - [ServerInfo](docs/Model/ServerInfo.md)
 - [Stage](docs/Model/Stage.md)
 - [StageDelay](docs/Model/StageDelay.md)

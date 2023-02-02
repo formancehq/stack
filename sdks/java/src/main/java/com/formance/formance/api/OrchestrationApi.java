@@ -18,6 +18,7 @@ import com.formance.formance.model.GetWorkflowResponse;
 import com.formance.formance.model.ListRunsResponse;
 import com.formance.formance.model.ListWorkflowsResponse;
 import com.formance.formance.model.RunWorkflowResponse;
+import com.formance.formance.model.SendEventRequest;
 import com.formance.formance.model.ServerInfo;
 import com.formance.formance.model.WorkflowConfig;
 
@@ -130,6 +131,21 @@ public interface OrchestrationApi {
   @POST("api/orchestration/workflows/{workflowID}/instances")
   Call<RunWorkflowResponse> runWorkflow(
     @retrofit2.http.Path("workflowID") String workflowID, @retrofit2.http.Query("wait") Boolean wait, @retrofit2.http.Body Map<String, String> requestBody
+  );
+
+  /**
+   * Send an event to a running workflow
+   * Send an event to a running workflow
+   * @param instanceID The instance id (required)
+   * @param sendEventRequest  (optional)
+   * @return Call&lt;Void&gt;
+   */
+  @Headers({
+    "Content-Type:application/json"
+  })
+  @POST("api/orchestration/instances/{instanceID}/events")
+  Call<Void> sendEvent(
+    @retrofit2.http.Path("instanceID") String instanceID, @retrofit2.http.Body SendEventRequest sendEventRequest
   );
 
 }

@@ -119,15 +119,17 @@ func (m *Manager) ReadWorkflow(ctx context.Context, id string) (Workflow, error)
 }
 
 func (m *Manager) PostEvent(ctx context.Context, instanceID string, event Event) error {
-	instance := Instance{}
+	stage := Stage{}
 	if err := m.db.NewSelect().
-		Model(&instance).
-		Where("id = ?", instanceID).
+		Model(&stage).
+		Where("instance_id = ?", instanceID).
+		Limit(1).
+		OrderExpr("stage desc").
 		Scan(ctx); err != nil {
 		return errors.Wrap(err, "retrieving workflow")
 	}
 
-	err := m.temporalClient.SignalWorkflow(ctx, instance.ID, "", EventSignalName, event)
+	err := m.temporalClient.SignalWorkflow(ctx, stage.TemporalWorkflowID(), "", EventSignalName, event)
 	if err != nil {
 		return errors.Wrap(err, "sending signal to server")
 	}

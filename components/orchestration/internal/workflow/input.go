@@ -13,5 +13,4 @@ type Input struct {
 
 func (i Input) run(ctx workflow.Context, db *bun.DB) error {
 	return i.Workflow.Config.run(ctx, db, i.Instance, i.Variables)
-
 }

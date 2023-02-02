@@ -1,0 +1,4 @@
+---
+stages:
+- wait_event:
+    event: continue

@@ -167,6 +167,7 @@ docs/SearchApi.md
 docs/Secret.md
 docs/SecretAllOf.md
 docs/SecretOptions.md
+docs/SendEventRequest.md
 docs/ServerApi.md
 docs/ServerInfo.md
 docs/Stage.md
@@ -378,6 +379,7 @@ model_script_response.go
 model_secret.go
 model_secret_all_of.go
 model_secret_options.go
+model_send_event_request.go
 model_server_info.go
 model_stage.go
 model_stage_delay.go

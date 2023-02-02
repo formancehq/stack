@@ -3623,6 +3623,53 @@
         }
       }
     },
+    "/api/orchestration/instances/{instanceID}/events": {
+      "parameters": [
+        {
+          "in": "path",
+          "description": "The instance id",
+          "name": "instanceID",
+          "schema": {
+            "type": "string"
+          },
+          "example": "xxx",
+          "required": true
+        }
+      ],
+      "post": {
+        "summary": "Send an event to a running workflow",
+        "description": "Send an event to a running workflow",
+        "operationId": "sendEvent",
+        "tags": [
+          "Orchestration"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
     "/api/orchestration/instances/{instanceID}/history": {
       "parameters": [
         {

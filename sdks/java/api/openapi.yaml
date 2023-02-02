@@ -3139,6 +3139,39 @@ paths:
       tags:
       - Orchestration
       x-accepts: application/json
+  /api/orchestration/instances/{instanceID}/events:
+    post:
+      description: Send an event to a running workflow
+      operationId: sendEvent
+      parameters:
+      - description: The instance id
+        example: xxx
+        explode: false
+        in: path
+        name: instanceID
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/sendEvent_request'
+      responses:
+        "204":
+          description: No content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Send an event to a running workflow
+      tags:
+      - Orchestration
+      x-content-type: application/json
+      x-accepts: application/json
   /api/orchestration/instances/{instanceID}/history:
     get:
       description: Get a workflow instance history by id
@@ -7610,6 +7643,13 @@ components:
           additionalProperties: {}
           description: Custom metadata to attach to this wallet.
           type: object
+      type: object
+    sendEvent_request:
+      properties:
+        name:
+          type: string
+      required:
+      - name
       type: object
     Client_allOf:
       properties:

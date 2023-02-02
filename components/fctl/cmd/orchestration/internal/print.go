@@ -28,7 +28,12 @@ func PrintWorkflowInstance(out io.Writer, w formance.Workflow, instance formance
 						return []string{
 							name,
 							src.StartedAt.Format(time.RFC3339),
-							src.TerminatedAt.Format(time.RFC3339),
+							func() string {
+								if src.TerminatedAt != nil {
+									return src.TerminatedAt.Format(time.RFC3339)
+								}
+								return ""
+							}(),
 							func() string {
 								if src.Error != nil {
 									return *src.Error

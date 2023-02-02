@@ -225,6 +225,7 @@ Class | Method | HTTP request | Description
 *OrchestrationApi* | [**list_workflows**](docs/apis/tags/OrchestrationApi.md#list_workflows) | **get** /api/orchestration/workflows | List registered workflows
 *OrchestrationApi* | [**orchestrationget_server_info**](docs/apis/tags/OrchestrationApi.md#orchestrationget_server_info) | **get** /api/orchestration/_info | Get server info
 *OrchestrationApi* | [**run_workflow**](docs/apis/tags/OrchestrationApi.md#run_workflow) | **post** /api/orchestration/workflows/{workflowID}/instances | Run workflow
+*OrchestrationApi* | [**send_event**](docs/apis/tags/OrchestrationApi.md#send_event) | **post** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow
 *PaymentsApi* | [**connectors_stripe_transfer**](docs/apis/tags/PaymentsApi.md#connectors_stripe_transfer) | **post** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts
 *PaymentsApi* | [**get_connector_task**](docs/apis/tags/PaymentsApi.md#get_connector_task) | **get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 *PaymentsApi* | [**get_payment**](docs/apis/tags/PaymentsApi.md#get_payment) | **get** /api/payments/payments/{paymentId} | Get a payment

@@ -150,6 +150,7 @@ docs/SearchApi.md
 docs/Secret.md
 docs/SecretAllOf.md
 docs/SecretOptions.md
+docs/SendEventRequest.md
 docs/ServerApi.md
 docs/ServerInfo.md
 docs/Stage.md
@@ -397,6 +398,7 @@ src/main/java/com/formance/formance/model/ScriptResponse.java
 src/main/java/com/formance/formance/model/Secret.java
 src/main/java/com/formance/formance/model/SecretAllOf.java
 src/main/java/com/formance/formance/model/SecretOptions.java
+src/main/java/com/formance/formance/model/SendEventRequest.java
 src/main/java/com/formance/formance/model/ServerInfo.java
 src/main/java/com/formance/formance/model/Stage.java
 src/main/java/com/formance/formance/model/StageDelay.java

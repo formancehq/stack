@@ -134,6 +134,7 @@ import { ScriptResponse } from '../models/ScriptResponse';
 import { Secret } from '../models/Secret';
 import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
+import { SendEventRequest } from '../models/SendEventRequest';
 import { ServerInfo } from '../models/ServerInfo';
 import { Stage } from '../models/Stage';
 import { StageDelay } from '../models/StageDelay';
@@ -668,6 +669,17 @@ export class PromiseOrchestrationApi {
      */
     public runWorkflow(workflowID: string, wait?: boolean, requestBody?: { [key: string]: string; }, _options?: Configuration): Promise<RunWorkflowResponse> {
         const result = this.api.runWorkflow(workflowID, wait, requestBody, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Send an event to a running workflow
+     * Send an event to a running workflow
+     * @param instanceID The instance id
+     * @param sendEventRequest 
+     */
+    public sendEvent(instanceID: string, sendEventRequest?: SendEventRequest, _options?: Configuration): Promise<void> {
+        const result = this.api.sendEvent(instanceID, sendEventRequest, _options);
         return result.toPromise();
     }
 

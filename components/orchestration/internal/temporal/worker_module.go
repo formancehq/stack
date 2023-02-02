@@ -20,7 +20,6 @@ func NewWorker(c client.Client, db *bun.DB, apiClient *sdk.APIClient, taskQueue 
 
 	workflow := workflow.NewWorkflows(db)
 	activities := activities.New(apiClient)
-	w.RegisterWorkflow(workflow.Run)
 
 	valueOfActivities := reflect.ValueOf(activities)
 	for i := 0; i < valueOfActivities.NumMethod(); i++ {
@@ -28,12 +27,18 @@ func NewWorker(c client.Client, db *bun.DB, apiClient *sdk.APIClient, taskQueue 
 			Name: reflect.TypeOf(activities).Method(i).Name,
 		})
 	}
+	RegisterWorkflows(workflow, w)
 
+	return w
+}
+
+func RegisterWorkflows(workflows *workflow.Workflows, w interface {
+	RegisterWorkflow(any)
+}) {
+	w.RegisterWorkflow(workflows.Run)
 	for _, schema := range stages.All() {
 		w.RegisterWorkflow(schema.GetWorkflow())
 	}
-
-	return w
 }
 
 func NewWorkerModule(taskQueue string) fx.Option {

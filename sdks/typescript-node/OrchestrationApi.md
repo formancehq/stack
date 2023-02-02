@@ -13,6 +13,7 @@ Method | HTTP request | Description
 [**listWorkflows**](OrchestrationApi.md#listWorkflows) | **GET** /api/orchestration/workflows | List registered workflows
 [**orchestrationgetServerInfo**](OrchestrationApi.md#orchestrationgetServerInfo) | **GET** /api/orchestration/_info | Get server info
 [**runWorkflow**](OrchestrationApi.md#runWorkflow) | **POST** /api/orchestration/workflows/{workflowID}/instances | Run workflow
+[**sendEvent**](OrchestrationApi.md#sendEvent) | **POST** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow
 
 
 # **createWorkflow**
@@ -511,6 +512,66 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **201** | The workflow instance |  -  |
+**0** | General error |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **sendEvent**
+> void sendEvent()
+
+Send an event to a running workflow
+
+### Example
+
+
+```typescript
+import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new OrchestrationApi(configuration);
+
+let body:OrchestrationApiSendEventRequest = {
+  // string | The instance id
+  instanceID: "xxx",
+  // SendEventRequest (optional)
+  sendEventRequest: {
+    name: "name_example",
+  },
+};
+
+apiInstance.sendEvent(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **sendEventRequest** | **SendEventRequest**|  |
+ **instanceID** | [**string**] | The instance id | defaults to undefined
+
+
+### Return type
+
+**void**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**204** | No content |  -  |
 **0** | General error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
