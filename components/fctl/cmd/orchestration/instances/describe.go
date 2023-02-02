@@ -1,12 +1,14 @@
 package instances
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -81,6 +83,9 @@ func NewDescribeCommand() *cobra.Command {
 								historyStage.Input.CreateTransaction.Data.Postings[0].Destination,
 							)
 							defaultWriter.Printfln("\tCreate transaction: %d", historyStage.Output.CreateTransaction.Data[0].Txid)
+							if len(historyStage.Input.CreateTransaction.Data.Metadata) > 0 {
+								printMetadata(defaultWriter, historyStage.Input.CreateTransaction.Data.Metadata)
+							}
 							if historyStage.Error == nil {
 								defaultWriter.Printfln("\tCreated transaction: %d", historyStage.Output.RevertTransaction.Data.Txid)
 							}
@@ -94,6 +99,9 @@ func NewDescribeCommand() *cobra.Command {
 								historyStage.Input.CreditWallet.Data.Amount.Asset,
 								subjectName(historyStage.Input.CreditWallet.Data.Sources[0]),
 							)
+							if len(historyStage.Input.CreditWallet.Data.Metadata) > 0 {
+								printMetadata(defaultWriter, historyStage.Input.CreditWallet.Data.Metadata)
+							}
 						case historyStage.Input.DebitWallet != nil:
 							destination := "@world"
 							if historyStage.Input.DebitWallet.Data.Destination != nil {
@@ -106,6 +114,9 @@ func NewDescribeCommand() *cobra.Command {
 								historyStage.Input.DebitWallet.Data.Amount.Asset,
 								destination,
 							)
+							if len(historyStage.Input.DebitWallet.Data.Metadata) > 0 {
+								printMetadata(defaultWriter, historyStage.Input.DebitWallet.Data.Metadata)
+							}
 						case historyStage.Input.GetAccount != nil:
 							greenWriter.Printfln("Read account %s of ledger %s",
 								historyStage.Input.GetAccount.Id,
@@ -186,5 +197,16 @@ func subjectName(src formance.Subject) string {
 		return fmt.Sprintf("account %s", src.LedgerAccountSubject.Identifier)
 	default:
 		return "unknown_subject_type"
+	}
+}
+
+func printMetadata(writer *pterm.BasicTextPrinter, metadata map[string]any) {
+	writer.Printfln("\tAdded metadata:")
+	for k, v := range metadata {
+		jsonValue, err := json.Marshal(v)
+		if err != nil {
+			panic(err)
+		}
+		writer.Printfln("\t- %s: %s", k, string(jsonValue))
 	}
 }
