@@ -131,7 +131,7 @@ func runWalletToPayment(ctx workflow.Context, send Send) error {
 		return errors.Wrapf(err, "reading account: %s", send.Source.Account.ID)
 	}
 
-	stripeConnectID, err := extractStripeConnectID(wallet)
+	stripeConnectID, err := extractStripeConnectID(send.Destination.Payment.Metadata, wallet)
 	if err != nil {
 		return err
 	}
@@ -227,16 +227,17 @@ func runAccountToWallet(ctx workflow.Context, send Send) error {
 	})
 }
 
-func extractStripeConnectID(object interface {
+func extractStripeConnectID(metadataKey string, object interface {
 	GetMetadata() map[string]any
 }) (string, error) {
-	stripeConnectIDAny, ok := object.GetMetadata()["stripeConnectID"]
+
+	stripeConnectIDAny, ok := object.GetMetadata()[metadataKey]
 	if !ok {
-		return "", errors.New("expected 'stripeConnectID' metadata containing connected account ID")
+		return "", fmt.Errorf("expected '%s' metadata containing connected account ID", metadataKey)
 	}
 	stripeConnectID, ok := stripeConnectIDAny.(string)
 	if !ok {
-		return "", errors.New("expected 'stripeConnectID' to be a string")
+		return "", fmt.Errorf("expected '%s' to be a string", metadataKey)
 	}
 	if stripeConnectID == "" {
 		return "", errors.New("stripe connect ID empty")
@@ -294,7 +295,7 @@ func runAccountToPayment(ctx workflow.Context, send Send) error {
 	if err != nil {
 		return errors.Wrapf(err, "reading account: %s", send.Source.Account.ID)
 	}
-	stripeConnectID, err := extractStripeConnectID(account)
+	stripeConnectID, err := extractStripeConnectID(send.Destination.Payment.Metadata, account)
 	if err != nil {
 		return err
 	}

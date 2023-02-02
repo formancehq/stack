@@ -422,7 +422,8 @@ var (
 				Ledger: "default",
 			}),
 			Destination: NewDestination().WithPayment(&PaymentDestination{
-				PSP: "stripe",
+				PSP:      "stripe",
+				Metadata: "stripeConnectID",
 			}),
 			Amount: *sdk.NewMonetary("USD", 100),
 		},
@@ -729,7 +730,8 @@ var (
 				Balance: "main",
 			}),
 			Destination: NewDestination().WithPayment(&PaymentDestination{
-				PSP: "stripe",
+				PSP:      "stripe",
+				Metadata: "stripeConnectID",
 			}),
 			Amount: *sdk.NewMonetary("USD", 100),
 		},
