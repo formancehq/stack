@@ -115,5 +115,5 @@ func GetCurrentProfileName(cmd *cobra.Command, config *Config) string {
 }
 
 func GetCurrentProfile(cmd *cobra.Command, cfg *Config) *Profile {
-	return cfg.GetProfileOrDefault(GetCurrentProfileName(cmd, cfg), GetString(cmd, MembershipURIFlag))
+	return cfg.GetProfileOrDefault(GetCurrentProfileName(cmd, cfg), DefaultMembershipURI)
 }
