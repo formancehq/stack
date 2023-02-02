@@ -136,15 +136,36 @@ func runWalletToAccount(ctx workflow.Context, send Send) error {
 	if err != nil {
 		return err
 	}
-	if wallet.Ledger != send.Destination.Account.Ledger {
-		return errors.New("wallet not on the same ledger than the account")
+	if wallet.Ledger == send.Destination.Account.Ledger {
+		return justError(activities.DebitWallet(internal.SingleTryContext(ctx), send.Source.Wallet.ID, sdk.DebitWalletRequest{
+			Amount: *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount),
+			Destination: &sdk.Subject{
+				LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", send.Destination.Account.ID),
+			},
+			Balances: []string{send.Source.Wallet.Balance},
+		}))
 	}
-	return justError(activities.DebitWallet(internal.SingleTryContext(ctx), send.Source.Wallet.ID, sdk.DebitWalletRequest{
-		Amount: *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount),
-		Destination: &sdk.Subject{
-			LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", send.Destination.Account.ID),
-		},
+
+	if err := justError(activities.DebitWallet(internal.SingleTryContext(ctx), send.Source.Wallet.ID, sdk.DebitWalletRequest{
+		Amount:   *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount),
 		Balances: []string{send.Source.Wallet.Balance},
+		Metadata: map[string]interface{}{
+			moveToLedgerMetadata: send.Destination.Account.Ledger,
+		},
+	})); err != nil {
+		return err
+	}
+
+	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), send.Destination.Account.Ledger, sdk.PostTransaction{
+		Postings: []sdk.Posting{{
+			Amount:      send.Amount.Amount,
+			Asset:       send.Amount.Asset,
+			Destination: send.Destination.Account.ID,
+			Source:      "world",
+		}},
+		Metadata: map[string]interface{}{
+			moveFromLedgerMetadata: wallet.Ledger,
+		},
 	}))
 }
 
