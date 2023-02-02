@@ -9,12 +9,13 @@ Name | Type | Description | Notes
 **Source** | Pointer to [**StageSendSource**](StageSendSource.md) |  | [optional] 
 **Until** | Pointer to **time.Time** |  | [optional] 
 **Duration** | Pointer to **string** |  | [optional] 
+**Event** | **string** |  | 
 
 ## Methods
 
 ### NewStage
 
-`func NewStage() *Stage`
+`func NewStage(event string, ) *Stage`
 
 NewStage instantiates a new Stage object
 This constructor will assign default values to properties that have it defined,
@@ -153,6 +154,26 @@ SetDuration sets Duration field to given value.
 `func (o *Stage) HasDuration() bool`
 
 HasDuration returns a boolean if a field has been set.
+
+### GetEvent
+
+`func (o *Stage) GetEvent() string`
+
+GetEvent returns the Event field if non-nil, zero value otherwise.
+
+### GetEventOk
+
+`func (o *Stage) GetEventOk() (*string, bool)`
+
+GetEventOk returns a tuple with the Event field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetEvent
+
+`func (o *Stage) SetEvent(v string)`
+
+SetEvent sets Event field to given value.
+
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

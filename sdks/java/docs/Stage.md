@@ -12,6 +12,7 @@
 |**source** | [**StageSendSource**](StageSendSource.md) |  |  [optional] |
 |**until** | **OffsetDateTime** |  |  [optional] |
 |**duration** | **String** |  |  [optional] |
+|**event** | **String** |  |  |
 
 
 

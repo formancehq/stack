@@ -179,6 +179,7 @@ docs/StageSendSourceAccount.md
 docs/StageSendSourcePayment.md
 docs/StageSendSourceWallet.md
 docs/StageStatus.md
+docs/StageWaitEvent.md
 docs/Stats.md
 docs/StatsApi.md
 docs/StatsResponse.md
@@ -388,6 +389,7 @@ model_stage_send_source_account.go
 model_stage_send_source_payment.go
 model_stage_send_source_wallet.go
 model_stage_status.go
+model_stage_wait_event.go
 model_stats.go
 model_stats_response.go
 model_stripe_config.go

@@ -165,6 +165,7 @@ docs/Model/StageSendSourceAccount.md
 docs/Model/StageSendSourcePayment.md
 docs/Model/StageSendSourceWallet.md
 docs/Model/StageStatus.md
+docs/Model/StageWaitEvent.md
 docs/Model/Stats.md
 docs/Model/StatsResponse.md
 docs/Model/StripeConfig.md
@@ -389,6 +390,7 @@ lib/Model/StageSendSourceAccount.php
 lib/Model/StageSendSourcePayment.php
 lib/Model/StageSendSourceWallet.php
 lib/Model/StageStatus.php
+lib/Model/StageWaitEvent.php
 lib/Model/Stats.php
 lib/Model/StatsResponse.php
 lib/Model/StripeConfig.php

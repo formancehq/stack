@@ -20,6 +20,7 @@ import (
 type Stage struct {
 	StageDelay *StageDelay
 	StageSend *StageSend
+	StageWaitEvent *StageWaitEvent
 }
 
 // Unmarshal JSON data into any of the pointers in the struct
@@ -51,6 +52,19 @@ func (dst *Stage) UnmarshalJSON(data []byte) error {
 		dst.StageSend = nil
 	}
 
+	// try to unmarshal JSON data into StageWaitEvent
+	err = json.Unmarshal(data, &dst.StageWaitEvent);
+	if err == nil {
+		jsonStageWaitEvent, _ := json.Marshal(dst.StageWaitEvent)
+		if string(jsonStageWaitEvent) == "{}" { // empty struct
+			dst.StageWaitEvent = nil
+		} else {
+			return nil // data stored in dst.StageWaitEvent, return on the first match
+		}
+	} else {
+		dst.StageWaitEvent = nil
+	}
+
 	return fmt.Errorf("data failed to match schemas in anyOf(Stage)")
 }
 
@@ -62,6 +76,10 @@ func (src *Stage) MarshalJSON() ([]byte, error) {
 
 	if src.StageSend != nil {
 		return json.Marshal(&src.StageSend)
+	}
+
+	if src.StageWaitEvent != nil {
+		return json.Marshal(&src.StageWaitEvent)
 	}
 
 	return nil, nil // no data in anyOf schemas

@@ -190,6 +190,7 @@ models/StageSendSourceAccount.ts
 models/StageSendSourcePayment.ts
 models/StageSendSourceWallet.ts
 models/StageStatus.ts
+models/StageWaitEvent.ts
 models/Stats.ts
 models/StatsResponse.ts
 models/StripeConfig.ts

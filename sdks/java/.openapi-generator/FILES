@@ -162,6 +162,7 @@ docs/StageSendSourceAccount.md
 docs/StageSendSourcePayment.md
 docs/StageSendSourceWallet.md
 docs/StageStatus.md
+docs/StageWaitEvent.md
 docs/Stats.md
 docs/StatsApi.md
 docs/StatsResponse.md
@@ -407,6 +408,7 @@ src/main/java/com/formance/formance/model/StageSendSourceAccount.java
 src/main/java/com/formance/formance/model/StageSendSourcePayment.java
 src/main/java/com/formance/formance/model/StageSendSourceWallet.java
 src/main/java/com/formance/formance/model/StageStatus.java
+src/main/java/com/formance/formance/model/StageWaitEvent.java
 src/main/java/com/formance/formance/model/Stats.java
 src/main/java/com/formance/formance/model/StatsResponse.java
 src/main/java/com/formance/formance/model/StripeConfig.java

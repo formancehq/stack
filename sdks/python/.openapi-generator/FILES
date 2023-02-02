@@ -301,6 +301,8 @@ Formance/model/stage_send_source_wallet.py
 Formance/model/stage_send_source_wallet.pyi
 Formance/model/stage_status.py
 Formance/model/stage_status.pyi
+Formance/model/stage_wait_event.py
+Formance/model/stage_wait_event.pyi
 Formance/model/stats.py
 Formance/model/stats.pyi
 Formance/model/stats_response.py
@@ -555,6 +557,7 @@ docs/models/StageSendSourceAccount.md
 docs/models/StageSendSourcePayment.md
 docs/models/StageSendSourceWallet.md
 docs/models/StageStatus.md
+docs/models/StageWaitEvent.md
 docs/models/Stats.md
 docs/models/StatsResponse.md
 docs/models/StripeConfig.md

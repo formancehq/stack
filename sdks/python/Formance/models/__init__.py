@@ -149,6 +149,7 @@ from Formance.model.stage_send_source_account import StageSendSourceAccount
 from Formance.model.stage_send_source_payment import StageSendSourcePayment
 from Formance.model.stage_send_source_wallet import StageSendSourceWallet
 from Formance.model.stage_status import StageStatus
+from Formance.model.stage_wait_event import StageWaitEvent
 from Formance.model.stats import Stats
 from Formance.model.stats_response import StatsResponse
 from Formance.model.stripe_config import StripeConfig

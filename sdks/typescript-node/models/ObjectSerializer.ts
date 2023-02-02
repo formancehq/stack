@@ -142,6 +142,7 @@ export * from '../models/StageSendSourceAccount';
 export * from '../models/StageSendSourcePayment';
 export * from '../models/StageSendSourceWallet';
 export * from '../models/StageStatus';
+export * from '../models/StageWaitEvent';
 export * from '../models/Stats';
 export * from '../models/StatsResponse';
 export * from '../models/StripeConfig';
@@ -344,6 +345,7 @@ import { StageSendSourceAccount } from '../models/StageSendSourceAccount';
 import { StageSendSourcePayment } from '../models/StageSendSourcePayment';
 import { StageSendSourceWallet } from '../models/StageSendSourceWallet';
 import { StageStatus } from '../models/StageStatus';
+import { StageWaitEvent } from '../models/StageWaitEvent';
 import { Stats } from '../models/Stats';
 import { StatsResponse } from '../models/StatsResponse';
 import { StripeConfig } from '../models/StripeConfig';
@@ -576,6 +578,7 @@ let typeMap: {[index: string]: any} = {
     "StageSendSourcePayment": StageSendSourcePayment,
     "StageSendSourceWallet": StageSendSourceWallet,
     "StageStatus": StageStatus,
+    "StageWaitEvent": StageWaitEvent,
     "Stats": Stats,
     "StatsResponse": StatsResponse,
     "StripeConfig": StripeConfig,

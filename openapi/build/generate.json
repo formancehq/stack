@@ -7086,6 +7086,17 @@
           }
         }
       },
+      "StageWaitEvent": {
+        "type": "object",
+        "required": [
+          "event"
+        ],
+        "properties": {
+          "event": {
+            "type": "string"
+          }
+        }
+      },
       "Stage": {
         "anyOf": [
           {
@@ -7093,6 +7104,9 @@
           },
           {
             "$ref": "#/components/schemas/StageDelay"
+          },
+          {
+            "$ref": "#/components/schemas/StageWaitEvent"
           }
         ]
       },

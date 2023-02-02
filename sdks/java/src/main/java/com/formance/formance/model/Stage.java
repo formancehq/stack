@@ -20,6 +20,7 @@ import com.formance.formance.model.StageDelay;
 import com.formance.formance.model.StageSend;
 import com.formance.formance.model.StageSendDestination;
 import com.formance.formance.model.StageSendSource;
+import com.formance.formance.model.StageWaitEvent;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -52,6 +53,10 @@ public class Stage {
   public static final String SERIALIZED_NAME_DURATION = "duration";
   @SerializedName(SERIALIZED_NAME_DURATION)
   private String duration;
+
+  public static final String SERIALIZED_NAME_EVENT = "event";
+  @SerializedName(SERIALIZED_NAME_EVENT)
+  private String event;
 
   public Stage() {
   }
@@ -166,6 +171,28 @@ public class Stage {
   }
 
 
+  public Stage event(String event) {
+    
+    this.event = event;
+    return this;
+  }
+
+   /**
+   * Get event
+   * @return event
+  **/
+  @javax.annotation.Nonnull
+
+  public String getEvent() {
+    return event;
+  }
+
+
+  public void setEvent(String event) {
+    this.event = event;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -179,12 +206,13 @@ public class Stage {
         Objects.equals(this.destination, stage.destination) &&
         Objects.equals(this.source, stage.source) &&
         Objects.equals(this.until, stage.until) &&
-        Objects.equals(this.duration, stage.duration);
+        Objects.equals(this.duration, stage.duration) &&
+        Objects.equals(this.event, stage.event);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(amount, destination, source, until, duration);
+    return Objects.hash(amount, destination, source, until, duration, event);
   }
 
   @Override
@@ -196,6 +224,7 @@ public class Stage {
     sb.append("    source: ").append(toIndentedString(source)).append("\n");
     sb.append("    until: ").append(toIndentedString(until)).append("\n");
     sb.append("    duration: ").append(toIndentedString(duration)).append("\n");
+    sb.append("    event: ").append(toIndentedString(event)).append("\n");
     sb.append("}");
     return sb.toString();
   }

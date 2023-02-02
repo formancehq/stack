@@ -49,6 +49,7 @@ class Stage(
             return [
                 StageSend,
                 StageDelay,
+                StageWaitEvent,
             ]
 
 
@@ -67,3 +68,4 @@ class Stage(
 
 from Formance.model.stage_delay import StageDelay
 from Formance.model.stage_send import StageSend
+from Formance.model.stage_wait_event import StageWaitEvent

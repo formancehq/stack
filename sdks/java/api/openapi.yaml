@@ -7163,10 +7163,18 @@ components:
         duration:
           type: string
       type: object
+    StageWaitEvent:
+      properties:
+        event:
+          type: string
+      required:
+      - event
+      type: object
     Stage:
       anyOf:
       - $ref: '#/components/schemas/StageSend'
       - $ref: '#/components/schemas/StageDelay'
+      - $ref: '#/components/schemas/StageWaitEvent'
     ActivityStripeTransfer:
       $ref: '#/components/schemas/StripeTransferRequest'
     ActivityGetAccount:

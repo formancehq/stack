@@ -322,6 +322,7 @@ Class | Method | HTTP request | Description
 - [StageSendSourcePayment](docs/Model/StageSendSourcePayment.md)
 - [StageSendSourceWallet](docs/Model/StageSendSourceWallet.md)
 - [StageStatus](docs/Model/StageStatus.md)
+- [StageWaitEvent](docs/Model/StageWaitEvent.md)
 - [Stats](docs/Model/Stats.md)
 - [StatsResponse](docs/Model/StatsResponse.md)
 - [StripeConfig](docs/Model/StripeConfig.md)

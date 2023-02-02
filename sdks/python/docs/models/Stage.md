@@ -11,6 +11,7 @@ Class Name | Input Type | Accessed Type | Description | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 [StageSend](StageSend.md) | [**StageSend**](StageSend.md) | [**StageSend**](StageSend.md) |  | 
 [StageDelay](StageDelay.md) | [**StageDelay**](StageDelay.md) | [**StageDelay**](StageDelay.md) |  | 
+[StageWaitEvent](StageWaitEvent.md) | [**StageWaitEvent**](StageWaitEvent.md) | [**StageWaitEvent**](StageWaitEvent.md) |  | 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

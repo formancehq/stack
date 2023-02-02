@@ -1,6 +1,6 @@
 <?php
 /**
- * Stage
+ * StageWaitEvent
  *
  * PHP version 7.4
  *
@@ -33,7 +33,7 @@ use \ArrayAccess;
 use \Formance\ObjectSerializer;
 
 /**
- * Stage Class Doc Comment
+ * StageWaitEvent Class Doc Comment
  *
  * @category Class
  * @package  Formance
@@ -41,7 +41,7 @@ use \Formance\ObjectSerializer;
  * @link     https://openapi-generator.tech
  * @implements \ArrayAccess<string, mixed>
  */
-class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
+class StageWaitEvent implements ModelInterface, ArrayAccess, \JsonSerializable
 {
     public const DISCRIMINATOR = null;
 
@@ -50,7 +50,7 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
       *
       * @var string
       */
-    protected static $openAPIModelName = 'Stage';
+    protected static $openAPIModelName = 'StageWaitEvent';
 
     /**
       * Array of property to type mappings. Used for (de)serialization
@@ -58,11 +58,6 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var string[]
       */
     protected static $openAPITypes = [
-        'amount' => '\Formance\Model\Monetary',
-        'destination' => '\Formance\Model\StageSendDestination',
-        'source' => '\Formance\Model\StageSendSource',
-        'until' => '\DateTime',
-        'duration' => 'string',
         'event' => 'string'
     ];
 
@@ -74,11 +69,6 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'amount' => null,
-        'destination' => null,
-        'source' => null,
-        'until' => 'date-time',
-        'duration' => null,
         'event' => null
     ];
 
@@ -88,12 +78,7 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'amount' => false,
-		'destination' => false,
-		'source' => false,
-		'until' => false,
-		'duration' => false,
-		'event' => false
+        'event' => false
     ];
 
     /**
@@ -182,11 +167,6 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'amount' => 'amount',
-        'destination' => 'destination',
-        'source' => 'source',
-        'until' => 'until',
-        'duration' => 'duration',
         'event' => 'event'
     ];
 
@@ -196,11 +176,6 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'amount' => 'setAmount',
-        'destination' => 'setDestination',
-        'source' => 'setSource',
-        'until' => 'setUntil',
-        'duration' => 'setDuration',
         'event' => 'setEvent'
     ];
 
@@ -210,11 +185,6 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'amount' => 'getAmount',
-        'destination' => 'getDestination',
-        'source' => 'getSource',
-        'until' => 'getUntil',
-        'duration' => 'getDuration',
         'event' => 'getEvent'
     ];
 
@@ -275,11 +245,6 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(array $data = null)
     {
-        $this->setIfExists('amount', $data ?? [], null);
-        $this->setIfExists('destination', $data ?? [], null);
-        $this->setIfExists('source', $data ?? [], null);
-        $this->setIfExists('until', $data ?? [], null);
-        $this->setIfExists('duration', $data ?? [], null);
         $this->setIfExists('event', $data ?? [], null);
     }
 
@@ -327,141 +292,6 @@ class Stage implements ModelInterface, ArrayAccess, \JsonSerializable
         return count($this->listInvalidProperties()) === 0;
     }
 
-
-    /**
-     * Gets amount
-     *
-     * @return \Formance\Model\Monetary|null
-     */
-    public function getAmount()
-    {
-        return $this->container['amount'];
-    }
-
-    /**
-     * Sets amount
-     *
-     * @param \Formance\Model\Monetary|null $amount amount
-     *
-     * @return self
-     */
-    public function setAmount($amount)
-    {
-        if (is_null($amount)) {
-            throw new \InvalidArgumentException('non-nullable amount cannot be null');
-        }
-        $this->container['amount'] = $amount;
-
-        return $this;
-    }
-
-    /**
-     * Gets destination
-     *
-     * @return \Formance\Model\StageSendDestination|null
-     */
-    public function getDestination()
-    {
-        return $this->container['destination'];
-    }
-
-    /**
-     * Sets destination
-     *
-     * @param \Formance\Model\StageSendDestination|null $destination destination
-     *
-     * @return self
-     */
-    public function setDestination($destination)
-    {
-        if (is_null($destination)) {
-            throw new \InvalidArgumentException('non-nullable destination cannot be null');
-        }
-        $this->container['destination'] = $destination;
-
-        return $this;
-    }
-
-    /**
-     * Gets source
-     *
-     * @return \Formance\Model\StageSendSource|null
-     */
-    public function getSource()
-    {
-        return $this->container['source'];
-    }
-
-    /**
-     * Sets source
-     *
-     * @param \Formance\Model\StageSendSource|null $source source
-     *
-     * @return self
-     */
-    public function setSource($source)
-    {
-        if (is_null($source)) {
-            throw new \InvalidArgumentException('non-nullable source cannot be null');
-        }
-        $this->container['source'] = $source;
-
-        return $this;
-    }
-
-    /**
-     * Gets until
-     *
-     * @return \DateTime|null
-     */
-    public function getUntil()
-    {
-        return $this->container['until'];
-    }
-
-    /**
-     * Sets until
-     *
-     * @param \DateTime|null $until until
-     *
-     * @return self
-     */
-    public function setUntil($until)
-    {
-        if (is_null($until)) {
-            throw new \InvalidArgumentException('non-nullable until cannot be null');
-        }
-        $this->container['until'] = $until;
-
-        return $this;
-    }
-
-    /**
-     * Gets duration
-     *
-     * @return string|null
-     */
-    public function getDuration()
-    {
-        return $this->container['duration'];
-    }
-
-    /**
-     * Sets duration
-     *
-     * @param string|null $duration duration
-     *
-     * @return self
-     */
-    public function setDuration($duration)
-    {
-        if (is_null($duration)) {
-            throw new \InvalidArgumentException('non-nullable duration cannot be null');
-        }
-        $this->container['duration'] = $duration;
-
-        return $this;
-    }
 
     /**
      * Gets event

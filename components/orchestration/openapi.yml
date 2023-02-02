@@ -515,10 +515,18 @@ components:
           format: date-time
         duration:
           type: string
+    StageWaitEvent:
+      type: object
+      required:
+      - event
+      properties:
+        event:
+          type: string
     Stage:
       anyOf:
       - $ref: '#/components/schemas/StageSend'
       - $ref: '#/components/schemas/StageDelay'
+      - $ref: '#/components/schemas/StageWaitEvent'
     ActivityStripeTransfer:
       $ref: '#/components/schemas/StripeTransferRequest'
     ActivityGetAccount:

@@ -15,6 +15,7 @@ import { StageDelay } from '../models/StageDelay';
 import { StageSend } from '../models/StageSend';
 import { StageSendDestination } from '../models/StageSendDestination';
 import { StageSendSource } from '../models/StageSendSource';
+import { StageWaitEvent } from '../models/StageWaitEvent';
 import { HttpFile } from '../http/http';
 
 export class Stage {
@@ -23,6 +24,7 @@ export class Stage {
     'source'?: StageSendSource;
     'until'?: Date;
     'duration'?: string;
+    'event': string;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -54,6 +56,12 @@ export class Stage {
         {
             "name": "duration",
             "baseName": "duration",
+            "type": "string",
+            "format": ""
+        },
+        {
+            "name": "event",
+            "baseName": "event",
             "type": "string",
             "format": ""
         }    ];

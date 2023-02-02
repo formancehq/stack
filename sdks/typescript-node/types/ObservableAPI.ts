@@ -146,6 +146,7 @@ import { StageSendSourceAccount } from '../models/StageSendSourceAccount';
 import { StageSendSourcePayment } from '../models/StageSendSourcePayment';
 import { StageSendSourceWallet } from '../models/StageSendSourceWallet';
 import { StageStatus } from '../models/StageStatus';
+import { StageWaitEvent } from '../models/StageWaitEvent';
 import { Stats } from '../models/Stats';
 import { StatsResponse } from '../models/StatsResponse';
 import { StripeConfig } from '../models/StripeConfig';

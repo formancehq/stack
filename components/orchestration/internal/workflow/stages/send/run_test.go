@@ -97,6 +97,7 @@ func TestSendSchemaValidation(t *testing.T) {
 }
 
 var paymentToWallet = stagestesting.WorkflowTestCase[Send]{
+	Name: "payment to wallet",
 	Stage: Send{
 		Source: NewSource().WithPayment(&PaymentSource{
 			ID: "payment1",
@@ -158,6 +159,7 @@ var paymentToWallet = stagestesting.WorkflowTestCase[Send]{
 }
 
 var paymentToAccount = stagestesting.WorkflowTestCase[Send]{
+	Name: "payment to account",
 	Stage: Send{
 		Source: NewSource().WithPayment(&PaymentSource{
 			ID: "payment1",
@@ -208,6 +210,7 @@ var paymentToAccount = stagestesting.WorkflowTestCase[Send]{
 }
 
 var accountToAccount = stagestesting.WorkflowTestCase[Send]{
+	Name: "account to account",
 	Stage: Send{
 		Source: NewSource().WithAccount(&LedgerAccountSource{
 			ID:     "foo",
@@ -243,6 +246,7 @@ var accountToAccount = stagestesting.WorkflowTestCase[Send]{
 }
 
 var accountToWallet = stagestesting.WorkflowTestCase[Send]{
+	Name: "account to wallet",
 	Stage: Send{
 		Source: NewSource().WithAccount(&LedgerAccountSource{
 			ID:     "foo",
@@ -255,6 +259,17 @@ var accountToWallet = stagestesting.WorkflowTestCase[Send]{
 		Amount: *sdk.NewMonetary("USD", 100),
 	},
 	MockedActivities: []stagestesting.MockedActivity{
+		{
+			Activity: activities.GetWalletActivity,
+			Args: []any{mock.Anything, activities.GetWalletRequest{
+				ID: "bar",
+			}},
+			Returns: []any{&sdk.GetWalletResponse{
+				Data: sdk.WalletWithBalances{
+					Ledger: "default",
+				},
+			}, nil},
+		},
 		{
 			Activity: activities.CreditWalletActivity,
 			Args: []any{
@@ -275,6 +290,7 @@ var accountToWallet = stagestesting.WorkflowTestCase[Send]{
 }
 
 var accountToPayment = stagestesting.WorkflowTestCase[Send]{
+	Name: "account to payment",
 	Stage: Send{
 		Source: NewSource().WithAccount(&LedgerAccountSource{
 			ID:     "foo",
@@ -335,6 +351,7 @@ var accountToPayment = stagestesting.WorkflowTestCase[Send]{
 }
 
 var walletToAccount = stagestesting.WorkflowTestCase[Send]{
+	Name: "wallet to account",
 	Stage: Send{
 		Source: NewSource().WithWallet(&WalletSource{
 			ID:      "foo",
@@ -384,6 +401,7 @@ var walletToAccount = stagestesting.WorkflowTestCase[Send]{
 }
 
 var walletToWallet = stagestesting.WorkflowTestCase[Send]{
+	Name: "wallet to wallet",
 	Stage: Send{
 		Source: NewSource().WithWallet(&WalletSource{
 			ID:      "foo",
@@ -396,6 +414,28 @@ var walletToWallet = stagestesting.WorkflowTestCase[Send]{
 		Amount: *sdk.NewMonetary("USD", 100),
 	},
 	MockedActivities: []stagestesting.MockedActivity{
+		{
+			Activity: activities.GetWalletActivity,
+			Args: []any{mock.Anything, activities.GetWalletRequest{
+				ID: "foo",
+			}},
+			Returns: []any{&sdk.GetWalletResponse{
+				Data: sdk.WalletWithBalances{
+					Ledger: "default",
+				},
+			}, nil},
+		},
+		{
+			Activity: activities.GetWalletActivity,
+			Args: []any{mock.Anything, activities.GetWalletRequest{
+				ID: "bar",
+			}},
+			Returns: []any{&sdk.GetWalletResponse{
+				Data: sdk.WalletWithBalances{
+					Ledger: "default",
+				},
+			}, nil},
+		},
 		{
 			Activity: activities.CreditWalletActivity,
 			Args: []any{
@@ -420,6 +460,7 @@ var walletToWallet = stagestesting.WorkflowTestCase[Send]{
 }
 
 var walletToPayment = stagestesting.WorkflowTestCase[Send]{
+	Name: "wallet to payment",
 	Stage: Send{
 		Source: NewSource().WithWallet(&WalletSource{
 			ID:      "foo",

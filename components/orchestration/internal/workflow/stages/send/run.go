@@ -25,6 +25,9 @@ func RunSend(ctx workflow.Context, send Send) error {
 	amount := *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount)
 	switch {
 	case send.Source.Account != nil && send.Destination.Account != nil:
+		if send.Source.Account.Ledger != send.Destination.Account.Ledger {
+			return errors.New("both accounts must be on the same ledger")
+		}
 		return justError(activities.CreateTransaction(internal.SingleTryContext(ctx), send.Destination.Account.Ledger, sdk.PostTransaction{
 			Postings: []sdk.Posting{{
 				Amount:      send.Amount.Amount,
@@ -61,6 +64,13 @@ func RunSend(ctx workflow.Context, send Send) error {
 			}},
 		}))
 	case send.Source.Account != nil && send.Destination.Wallet != nil:
+		wallet, err := activities.GetWallet(internal.SingleTryContext(ctx), send.Destination.Wallet.ID)
+		if err != nil {
+			return err
+		}
+		if wallet.Ledger != send.Source.Account.Ledger {
+			return errors.New("wallet not on the same ledger than the account")
+		}
 		return activities.CreditWallet(internal.SingleTryContext(ctx), send.Destination.Wallet.ID, sdk.CreditWalletRequest{
 			Amount: amount,
 			Sources: []sdk.Subject{{
@@ -69,6 +79,13 @@ func RunSend(ctx workflow.Context, send Send) error {
 			Balance: sdk.PtrString(send.Destination.Wallet.Balance),
 		})
 	case send.Source.Wallet != nil && send.Destination.Account != nil:
+		wallet, err := activities.GetWallet(internal.SingleTryContext(ctx), send.Destination.Wallet.ID)
+		if err != nil {
+			return err
+		}
+		if wallet.Ledger != send.Destination.Account.Ledger {
+			return errors.New("wallet not on the same ledger than the account")
+		}
 		return justError(activities.DebitWallet(internal.SingleTryContext(ctx), send.Source.Wallet.ID, sdk.DebitWalletRequest{
 			Amount: amount,
 			Destination: &sdk.Subject{
@@ -101,6 +118,17 @@ func RunSend(ctx workflow.Context, send Send) error {
 			Balances: []string{send.Source.Wallet.Balance},
 		}))
 	case send.Source.Wallet != nil && send.Destination.Wallet != nil:
+		walletSource, err := activities.GetWallet(internal.SingleTryContext(ctx), send.Source.Wallet.ID)
+		if err != nil {
+			return err
+		}
+		walletDestination, err := activities.GetWallet(internal.SingleTryContext(ctx), send.Destination.Wallet.ID)
+		if err != nil {
+			return err
+		}
+		if walletSource.Ledger != walletDestination.Ledger {
+			return errors.New("wallets not on the same ledger")
+		}
 		sourceSubject := sdk.NewWalletSubject("WALLET", send.Source.Wallet.ID)
 		sourceSubject.SetBalance("main")
 		return activities.CreditWallet(internal.SingleTryContext(ctx), send.Destination.Wallet.ID, sdk.CreditWalletRequest{
