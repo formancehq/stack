@@ -132,7 +132,7 @@ func runWalletToPayment(ctx workflow.Context, send Send) error {
 }
 
 func runWalletToAccount(ctx workflow.Context, send Send) error {
-	wallet, err := activities.GetWallet(internal.SingleTryContext(ctx), send.Destination.Wallet.ID)
+	wallet, err := activities.GetWallet(internal.SingleTryContext(ctx), send.Source.Wallet.ID)
 	if err != nil {
 		return err
 	}
@@ -182,17 +182,45 @@ func extractStripeConnectID(object interface {
 	return stripeConnectID, nil
 }
 
+const (
+	moveToLedgerMetadata   = "orchestration/move-to-ledger"
+	moveFromLedgerMetadata = "orchestration/move-from-ledger"
+)
+
 func runAccountToAccount(ctx workflow.Context, send Send) error {
-	if send.Source.Account.Ledger != send.Destination.Account.Ledger {
-		return errors.New("both accounts must be on the same ledger")
+	if send.Source.Account.Ledger == send.Destination.Account.Ledger {
+		return justError(activities.CreateTransaction(internal.SingleTryContext(ctx), send.Destination.Account.Ledger, sdk.PostTransaction{
+			Postings: []sdk.Posting{{
+				Amount:      send.Amount.Amount,
+				Asset:       send.Amount.Asset,
+				Destination: send.Destination.Account.ID,
+				Source:      send.Source.Account.ID,
+			}},
+		}))
 	}
-	return justError(activities.CreateTransaction(internal.SingleTryContext(ctx), send.Destination.Account.Ledger, sdk.PostTransaction{
+	if err := justError(activities.CreateTransaction(internal.SingleTryContext(ctx), send.Source.Account.Ledger, sdk.PostTransaction{
+		Postings: []sdk.Posting{{
+			Amount:      send.Amount.Amount,
+			Asset:       send.Amount.Asset,
+			Destination: "world",
+			Source:      send.Source.Account.ID,
+		}},
+		Metadata: map[string]interface{}{
+			moveToLedgerMetadata: send.Destination.Account.Ledger,
+		},
+	})); err != nil {
+		return err
+	}
+	return justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), send.Destination.Account.Ledger, sdk.PostTransaction{
 		Postings: []sdk.Posting{{
 			Amount:      send.Amount.Amount,
 			Asset:       send.Amount.Asset,
 			Destination: send.Destination.Account.ID,
-			Source:      send.Source.Account.ID,
+			Source:      "world",
 		}},
+		Metadata: map[string]interface{}{
+			moveFromLedgerMetadata: send.Source.Account.Ledger,
+		},
 	}))
 }
 

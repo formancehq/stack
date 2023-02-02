@@ -245,6 +245,67 @@ var accountToAccount = stagestesting.WorkflowTestCase[Send]{
 	},
 }
 
+var accountToAccountMixedLedger = stagestesting.WorkflowTestCase[Send]{
+	Name: "account to account mixed ledger",
+	Stage: Send{
+		Source: NewSource().WithAccount(&LedgerAccountSource{
+			ID:     "account1",
+			Ledger: "ledger1",
+		}),
+		Destination: NewDestination().WithAccount(&LedgerAccountDestination{
+			ID:     "account2",
+			Ledger: "ledger2",
+		}),
+		Amount: *sdk.NewMonetary("USD", 100),
+	},
+	MockedActivities: []stagestesting.MockedActivity{
+		{
+			Activity: activities.CreateTransactionActivity,
+			Args: []any{
+				mock.Anything, activities.CreateTransactionRequest{
+					Ledger: "ledger1",
+					Data: sdk.PostTransaction{
+						Postings: []sdk.Posting{{
+							Amount:      100,
+							Asset:       "USD",
+							Destination: "world",
+							Source:      "account1",
+						}},
+						Metadata: map[string]interface{}{
+							moveToLedgerMetadata: "ledger2",
+						},
+					},
+				},
+			},
+			Returns: []any{&sdk.TransactionsResponse{
+				Data: []sdk.Transaction{{}},
+			}, nil},
+		},
+		{
+			Activity: activities.CreateTransactionActivity,
+			Args: []any{
+				mock.Anything, activities.CreateTransactionRequest{
+					Ledger: "ledger2",
+					Data: sdk.PostTransaction{
+						Postings: []sdk.Posting{{
+							Amount:      100,
+							Asset:       "USD",
+							Destination: "account2",
+							Source:      "world",
+						}},
+						Metadata: map[string]interface{}{
+							moveFromLedgerMetadata: "ledger1",
+						},
+					},
+				},
+			},
+			Returns: []any{&sdk.TransactionsResponse{
+				Data: []sdk.Transaction{{}},
+			}, nil},
+		},
+	},
+}
+
 var accountToWallet = stagestesting.WorkflowTestCase[Send]{
 	Name: "account to wallet",
 	Stage: Send{
@@ -375,6 +436,7 @@ var walletToAccount = stagestesting.WorkflowTestCase[Send]{
 					Metadata: map[string]interface{}{
 						"stripeConnectID": "abcd",
 					},
+					Ledger: "default",
 				},
 			}, nil},
 		},
@@ -519,6 +581,7 @@ var testCases = []stagestesting.WorkflowTestCase[Send]{
 	paymentToWallet,
 	paymentToAccount,
 	accountToAccount,
+	accountToAccountMixedLedger,
 	accountToWallet,
 	accountToPayment,
 	walletToAccount,
