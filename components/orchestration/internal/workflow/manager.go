@@ -19,6 +19,14 @@ var (
 	ErrInstanceNotFound = errors.New("Instance not found")
 )
 
+const (
+	EventSignalName = "event"
+)
+
+type Event struct {
+	Name string `json:"name"`
+}
+
 type Manager struct {
 	db             *bun.DB
 	temporalClient client.Client
@@ -110,7 +118,7 @@ func (m *Manager) ReadWorkflow(ctx context.Context, id string) (Workflow, error)
 	return workflow, nil
 }
 
-func (m *Manager) PostEvent(ctx context.Context, instanceID string, event event) error {
+func (m *Manager) PostEvent(ctx context.Context, instanceID string, event Event) error {
 	instance := Instance{}
 	if err := m.db.NewSelect().
 		Model(&instance).
@@ -119,7 +127,7 @@ func (m *Manager) PostEvent(ctx context.Context, instanceID string, event event)
 		return errors.Wrap(err, "retrieving workflow")
 	}
 
-	err := m.temporalClient.SignalWorkflow(ctx, instance.ID, "", waitEventSignalName, event)
+	err := m.temporalClient.SignalWorkflow(ctx, instance.ID, "", EventSignalName, event)
 	if err != nil {
 		return errors.Wrap(err, "sending signal to server")
 	}

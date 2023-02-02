@@ -10,7 +10,7 @@ import (
 
 func postEventToWorkflowInstance(m *workflow.Manager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		event := workflow.NewEmptyEvent()
+		event := workflow.Event{}
 		if err := json.NewDecoder(r.Body).Decode(&event); err != nil {
 			api.BadRequest(w, "VALIDATION", err)
 			return

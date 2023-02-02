@@ -1,25 +1,19 @@
 package send
 
 import (
-	"fmt"
 	"testing"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/orchestration/internal/schema"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
+	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-	"go.temporal.io/sdk/testsuite"
 )
 
 func TestSendSchemaValidation(t *testing.T) {
-	type testCase struct {
-		data          map[string]any
-		expectedError bool
-	}
-	testCases := []testCase{
+	stagestesting.TestSchemas(t, "send", []stagestesting.SchemaTestCase{
 		{
-			data: map[string]any{
+			Name: "twice destination",
+			Data: map[string]any{
 				"source": map[string]any{
 					"account": map[string]any{
 						"id": "bar",
@@ -38,10 +32,33 @@ func TestSendSchemaValidation(t *testing.T) {
 					"asset":  "USD",
 				},
 			},
-			expectedError: true,
+			ExpectedResolved: Send{
+				Source: Source{
+					Account: &LedgerAccountSource{
+						ID:     "bar",
+						Ledger: "default",
+					},
+				},
+				Destination: Destination{
+					Wallet: &WalletDestination{
+						ID:      "foo",
+						Balance: "main",
+					},
+					Account: &LedgerAccountSource{
+						ID:     "foo",
+						Ledger: "default",
+					},
+				},
+				Amount: sdk.Monetary{
+					Amount: 100,
+					Asset:  "USD",
+				},
+			},
+			ExpectedValidationError: true,
 		},
 		{
-			data: map[string]any{
+			Name: "valid case",
+			Data: map[string]any{
 				"source": map[string]any{
 					"account": map[string]any{
 						"id": "bar",
@@ -57,52 +74,46 @@ func TestSendSchemaValidation(t *testing.T) {
 					"asset":  "USD",
 				},
 			},
+			ExpectedResolved: Send{
+				Source: Source{
+					Account: &LedgerAccountSource{
+						ID:     "bar",
+						Ledger: "default",
+					},
+				},
+				Destination: Destination{
+					Wallet: &WalletSource{
+						ID:      "foo",
+						Balance: "main",
+					},
+				},
+				Amount: sdk.Monetary{
+					Asset:  "USD",
+					Amount: 100,
+				},
+			},
 		},
-	}
-	for _, testCase := range testCases {
-		s, err := schema.Resolve(schema.Context{
-			Variables: map[string]string{},
-		}, testCase.data, "send")
-		require.NoError(t, err, "resolving schema")
-		err = schema.ValidateRequirements(s)
-		if testCase.expectedError {
-			require.Error(t, err)
-		} else {
-			require.NoError(t, err)
-		}
-	}
+	}...)
 }
 
-type mockedActivity struct {
-	activity any
-	args     []any
-	returns  []any
-}
-
-type testCase struct {
-	source         Source
-	destination    Destination
-	amount         sdk.Monetary
-	mockedActivity []mockedActivity
-	name           string
-}
-
-var paymentToWallet = testCase{
-	source: NewSource().WithPayment(&PaymentSource{
-		ID: "payment1",
-	}),
-	destination: NewDestination().WithWallet(&WalletDestination{
-		ID:      "wallet1",
-		Balance: "main",
-	}),
-	amount: *sdk.NewMonetary("USD", 100),
-	mockedActivity: []mockedActivity{
+var paymentToWallet = stagestesting.WorkflowTestCase[Send]{
+	Stage: Send{
+		Source: NewSource().WithPayment(&PaymentSource{
+			ID: "payment1",
+		}),
+		Destination: NewDestination().WithWallet(&WalletDestination{
+			ID:      "wallet1",
+			Balance: "main",
+		}),
+		Amount: *sdk.NewMonetary("USD", 100),
+	},
+	MockedActivities: []stagestesting.MockedActivity{
 		{
-			activity: activities.GetPaymentActivity,
-			args: []any{mock.Anything, activities.GetPaymentRequest{
+			Activity: activities.GetPaymentActivity,
+			Args: []any{mock.Anything, activities.GetPaymentRequest{
 				ID: "payment1",
 			}},
-			returns: []any{
+			Returns: []any{
 				&sdk.PaymentResponse{
 					Data: sdk.Payment{
 						InitialAmount: 100,
@@ -114,11 +125,11 @@ var paymentToWallet = testCase{
 			},
 		},
 		{
-			activity: activities.GetWalletActivity,
-			args: []any{mock.Anything, activities.GetWalletRequest{
+			Activity: activities.GetWalletActivity,
+			Args: []any{mock.Anything, activities.GetWalletRequest{
 				ID: "wallet1",
 			}},
-			returns: []any{
+			Returns: []any{
 				&sdk.GetWalletResponse{
 					Data: sdk.WalletWithBalances{
 						Id:     "wallet1",
@@ -128,8 +139,8 @@ var paymentToWallet = testCase{
 			},
 		},
 		{
-			activity: activities.CreditWalletActivity,
-			args: []any{
+			Activity: activities.CreditWalletActivity,
+			Args: []any{
 				mock.Anything, activities.CreditWalletRequest{
 					ID: "wallet1",
 					Data: sdk.CreditWalletRequest{
@@ -141,27 +152,29 @@ var paymentToWallet = testCase{
 					},
 				},
 			},
-			returns: []any{nil},
+			Returns: []any{nil},
 		},
 	},
 }
 
-var paymentToAccount = testCase{
-	source: NewSource().WithPayment(&PaymentSource{
-		ID: "payment1",
-	}),
-	destination: NewDestination().WithAccount(&LedgerAccountDestination{
-		ID:     "foo",
-		Ledger: "default",
-	}),
-	amount: *sdk.NewMonetary("USD", 100),
-	mockedActivity: []mockedActivity{
+var paymentToAccount = stagestesting.WorkflowTestCase[Send]{
+	Stage: Send{
+		Source: NewSource().WithPayment(&PaymentSource{
+			ID: "payment1",
+		}),
+		Destination: NewDestination().WithAccount(&LedgerAccountDestination{
+			ID:     "foo",
+			Ledger: "default",
+		}),
+		Amount: *sdk.NewMonetary("USD", 100),
+	},
+	MockedActivities: []stagestesting.MockedActivity{
 		{
-			activity: activities.GetPaymentActivity,
-			args: []any{mock.Anything, activities.GetPaymentRequest{
+			Activity: activities.GetPaymentActivity,
+			Args: []any{mock.Anything, activities.GetPaymentRequest{
 				ID: "payment1",
 			}},
-			returns: []any{
+			Returns: []any{
 				&sdk.PaymentResponse{
 					Data: sdk.Payment{
 						InitialAmount: 100,
@@ -173,8 +186,8 @@ var paymentToAccount = testCase{
 			},
 		},
 		{
-			activity: activities.CreateTransactionActivity,
-			args: []any{
+			Activity: activities.CreateTransactionActivity,
+			Args: []any{
 				mock.Anything, activities.CreateTransactionRequest{
 					Ledger: "default",
 					Data: sdk.PostTransaction{
@@ -187,27 +200,29 @@ var paymentToAccount = testCase{
 					},
 				},
 			},
-			returns: []any{&sdk.TransactionsResponse{
+			Returns: []any{&sdk.TransactionsResponse{
 				Data: []sdk.Transaction{{}},
 			}, nil},
 		},
 	},
 }
 
-var accountToAccount = testCase{
-	source: NewSource().WithAccount(&LedgerAccountSource{
-		ID:     "foo",
-		Ledger: "default",
-	}),
-	destination: NewDestination().WithAccount(&LedgerAccountDestination{
-		ID:     "bar",
-		Ledger: "default",
-	}),
-	amount: *sdk.NewMonetary("USD", 100),
-	mockedActivity: []mockedActivity{
+var accountToAccount = stagestesting.WorkflowTestCase[Send]{
+	Stage: Send{
+		Source: NewSource().WithAccount(&LedgerAccountSource{
+			ID:     "foo",
+			Ledger: "default",
+		}),
+		Destination: NewDestination().WithAccount(&LedgerAccountDestination{
+			ID:     "bar",
+			Ledger: "default",
+		}),
+		Amount: *sdk.NewMonetary("USD", 100),
+	},
+	MockedActivities: []stagestesting.MockedActivity{
 		{
-			activity: activities.CreateTransactionActivity,
-			args: []any{
+			Activity: activities.CreateTransactionActivity,
+			Args: []any{
 				mock.Anything, activities.CreateTransactionRequest{
 					Ledger: "default",
 					Data: sdk.PostTransaction{
@@ -220,27 +235,29 @@ var accountToAccount = testCase{
 					},
 				},
 			},
-			returns: []any{&sdk.TransactionsResponse{
+			Returns: []any{&sdk.TransactionsResponse{
 				Data: []sdk.Transaction{{}},
 			}, nil},
 		},
 	},
 }
 
-var accountToWallet = testCase{
-	source: NewSource().WithAccount(&LedgerAccountSource{
-		ID:     "foo",
-		Ledger: "default",
-	}),
-	destination: NewDestination().WithWallet(&WalletDestination{
-		ID:      "bar",
-		Balance: "main",
-	}),
-	amount: *sdk.NewMonetary("USD", 100),
-	mockedActivity: []mockedActivity{
+var accountToWallet = stagestesting.WorkflowTestCase[Send]{
+	Stage: Send{
+		Source: NewSource().WithAccount(&LedgerAccountSource{
+			ID:     "foo",
+			Ledger: "default",
+		}),
+		Destination: NewDestination().WithWallet(&WalletDestination{
+			ID:      "bar",
+			Balance: "main",
+		}),
+		Amount: *sdk.NewMonetary("USD", 100),
+	},
+	MockedActivities: []stagestesting.MockedActivity{
 		{
-			activity: activities.CreditWalletActivity,
-			args: []any{
+			Activity: activities.CreditWalletActivity,
+			Args: []any{
 				mock.Anything, activities.CreditWalletRequest{
 					ID: "bar",
 					Data: sdk.CreditWalletRequest{
@@ -252,28 +269,30 @@ var accountToWallet = testCase{
 					},
 				},
 			},
-			returns: []any{nil},
+			Returns: []any{nil},
 		},
 	},
 }
 
-var accountToPayment = testCase{
-	source: NewSource().WithAccount(&LedgerAccountSource{
-		ID:     "foo",
-		Ledger: "default",
-	}),
-	destination: NewDestination().WithPayment(&PaymentDestination{
-		PSP: "stripe",
-	}),
-	amount: *sdk.NewMonetary("USD", 100),
-	mockedActivity: []mockedActivity{
+var accountToPayment = stagestesting.WorkflowTestCase[Send]{
+	Stage: Send{
+		Source: NewSource().WithAccount(&LedgerAccountSource{
+			ID:     "foo",
+			Ledger: "default",
+		}),
+		Destination: NewDestination().WithPayment(&PaymentDestination{
+			PSP: "stripe",
+		}),
+		Amount: *sdk.NewMonetary("USD", 100),
+	},
+	MockedActivities: []stagestesting.MockedActivity{
 		{
-			activity: activities.GetAccountActivity,
-			args: []any{mock.Anything, activities.GetAccountRequest{
+			Activity: activities.GetAccountActivity,
+			Args: []any{mock.Anything, activities.GetAccountRequest{
 				Ledger: "default",
 				ID:     "foo",
 			}},
-			returns: []any{&sdk.AccountResponse{
+			Returns: []any{&sdk.AccountResponse{
 				Data: sdk.AccountWithVolumesAndBalances{
 					Address: "foo",
 					Metadata: map[string]interface{}{
@@ -283,19 +302,19 @@ var accountToPayment = testCase{
 			}, nil},
 		},
 		{
-			activity: activities.StripeTransferActivity,
-			args: []any{
+			Activity: activities.StripeTransferActivity,
+			Args: []any{
 				mock.Anything, sdk.StripeTransferRequest{
 					Amount:      sdk.PtrInt64(100),
 					Asset:       sdk.PtrString("USD"),
 					Destination: sdk.PtrString("abcd"),
 				},
 			},
-			returns: []any{nil},
+			Returns: []any{nil},
 		},
 		{
-			activity: activities.CreateTransactionActivity,
-			args: []any{
+			Activity: activities.CreateTransactionActivity,
+			Args: []any{
 				mock.Anything, activities.CreateTransactionRequest{
 					Ledger: "default",
 					Data: sdk.PostTransaction{
@@ -308,30 +327,32 @@ var accountToPayment = testCase{
 					},
 				},
 			},
-			returns: []any{&sdk.TransactionsResponse{
+			Returns: []any{&sdk.TransactionsResponse{
 				Data: []sdk.Transaction{{}},
 			}, nil},
 		},
 	},
 }
 
-var walletToAccount = testCase{
-	source: NewSource().WithWallet(&WalletSource{
-		ID:      "foo",
-		Balance: "main",
-	}),
-	destination: NewDestination().WithAccount(&LedgerAccountDestination{
-		ID:     "bar",
-		Ledger: "default",
-	}),
-	amount: *sdk.NewMonetary("USD", 100),
-	mockedActivity: []mockedActivity{
+var walletToAccount = stagestesting.WorkflowTestCase[Send]{
+	Stage: Send{
+		Source: NewSource().WithWallet(&WalletSource{
+			ID:      "foo",
+			Balance: "main",
+		}),
+		Destination: NewDestination().WithAccount(&LedgerAccountDestination{
+			ID:     "bar",
+			Ledger: "default",
+		}),
+		Amount: *sdk.NewMonetary("USD", 100),
+	},
+	MockedActivities: []stagestesting.MockedActivity{
 		{
-			activity: activities.GetWalletActivity,
-			args: []any{mock.Anything, activities.GetWalletRequest{
+			Activity: activities.GetWalletActivity,
+			Args: []any{mock.Anything, activities.GetWalletRequest{
 				ID: "foo",
 			}},
-			returns: []any{&sdk.GetWalletResponse{
+			Returns: []any{&sdk.GetWalletResponse{
 				Data: sdk.WalletWithBalances{
 					Id: "foo",
 					Metadata: map[string]interface{}{
@@ -341,8 +362,8 @@ var walletToAccount = testCase{
 			}, nil},
 		},
 		{
-			activity: activities.DebitWalletActivity,
-			args: []any{
+			Activity: activities.DebitWalletActivity,
+			Args: []any{
 				mock.Anything, activities.DebitWalletRequest{
 					ID: "foo",
 					Data: sdk.DebitWalletRequest{
@@ -357,25 +378,27 @@ var walletToAccount = testCase{
 					},
 				},
 			},
-			returns: []any{nil, nil},
+			Returns: []any{nil, nil},
 		},
 	},
 }
 
-var walletToWallet = testCase{
-	source: NewSource().WithWallet(&WalletSource{
-		ID:      "foo",
-		Balance: "main",
-	}),
-	destination: NewDestination().WithWallet(&WalletDestination{
-		ID:      "bar",
-		Balance: "main",
-	}),
-	amount: *sdk.NewMonetary("USD", 100),
-	mockedActivity: []mockedActivity{
+var walletToWallet = stagestesting.WorkflowTestCase[Send]{
+	Stage: Send{
+		Source: NewSource().WithWallet(&WalletSource{
+			ID:      "foo",
+			Balance: "main",
+		}),
+		Destination: NewDestination().WithWallet(&WalletDestination{
+			ID:      "bar",
+			Balance: "main",
+		}),
+		Amount: *sdk.NewMonetary("USD", 100),
+	},
+	MockedActivities: []stagestesting.MockedActivity{
 		{
-			activity: activities.CreditWalletActivity,
-			args: []any{
+			Activity: activities.CreditWalletActivity,
+			Args: []any{
 				mock.Anything, activities.CreditWalletRequest{
 					ID: "bar",
 					Data: sdk.CreditWalletRequest{
@@ -391,27 +414,29 @@ var walletToWallet = testCase{
 					},
 				},
 			},
-			returns: []any{nil},
+			Returns: []any{nil},
 		},
 	},
 }
 
-var walletToPayment = testCase{
-	source: NewSource().WithWallet(&WalletSource{
-		ID:      "foo",
-		Balance: "main",
-	}),
-	destination: NewDestination().WithPayment(&PaymentDestination{
-		PSP: "stripe",
-	}),
-	amount: *sdk.NewMonetary("USD", 100),
-	mockedActivity: []mockedActivity{
+var walletToPayment = stagestesting.WorkflowTestCase[Send]{
+	Stage: Send{
+		Source: NewSource().WithWallet(&WalletSource{
+			ID:      "foo",
+			Balance: "main",
+		}),
+		Destination: NewDestination().WithPayment(&PaymentDestination{
+			PSP: "stripe",
+		}),
+		Amount: *sdk.NewMonetary("USD", 100),
+	},
+	MockedActivities: []stagestesting.MockedActivity{
 		{
-			activity: activities.GetWalletActivity,
-			args: []any{mock.Anything, activities.GetWalletRequest{
+			Activity: activities.GetWalletActivity,
+			Args: []any{mock.Anything, activities.GetWalletRequest{
 				ID: "foo",
 			}},
-			returns: []any{&sdk.GetWalletResponse{
+			Returns: []any{&sdk.GetWalletResponse{
 				Data: sdk.WalletWithBalances{
 					Metadata: map[string]interface{}{
 						"stripeConnectID": "abcd",
@@ -420,19 +445,19 @@ var walletToPayment = testCase{
 			}, nil},
 		},
 		{
-			activity: activities.StripeTransferActivity,
-			args: []any{
+			Activity: activities.StripeTransferActivity,
+			Args: []any{
 				mock.Anything, sdk.StripeTransferRequest{
 					Amount:      sdk.PtrInt64(100),
 					Asset:       sdk.PtrString("USD"),
 					Destination: sdk.PtrString("abcd"),
 				},
 			},
-			returns: []any{nil},
+			Returns: []any{nil},
 		},
 		{
-			activity: activities.DebitWalletActivity,
-			args: []any{
+			Activity: activities.DebitWalletActivity,
+			Args: []any{
 				mock.Anything, activities.DebitWalletRequest{
 					ID: "foo",
 					Data: sdk.DebitWalletRequest{
@@ -444,12 +469,12 @@ var walletToPayment = testCase{
 					},
 				},
 			},
-			returns: []any{nil, nil},
+			Returns: []any{nil, nil},
 		},
 	},
 }
 
-var testCases = []testCase{
+var testCases = []stagestesting.WorkflowTestCase[Send]{
 	paymentToWallet,
 	paymentToAccount,
 	accountToAccount,
@@ -461,49 +486,5 @@ var testCases = []testCase{
 }
 
 func TestSend(t *testing.T) {
-
-	for _, tc := range testCases {
-		var (
-			from, to string
-		)
-		switch {
-		case tc.source.Wallet != nil:
-			from = "wallet"
-		case tc.source.Payment != nil:
-			from = "payment"
-		case tc.source.Account != nil:
-			from = "account"
-		}
-		switch {
-		case tc.destination.Wallet != nil:
-			to = "wallet"
-		case tc.destination.Payment != nil:
-			to = "payment"
-		case tc.destination.Account != nil:
-			to = "account"
-		}
-		tc := tc
-		testName := fmt.Sprintf("%s->%s", from, to)
-		if tc.name != "" {
-			testName += "/" + tc.name
-		}
-		t.Run(testName, func(t *testing.T) {
-			testSuite := &testsuite.WorkflowTestSuite{}
-
-			env := testSuite.NewTestWorkflowEnvironment()
-			for _, ma := range tc.mockedActivity {
-				env.OnActivity(ma.activity, ma.args...).Return(ma.returns...)
-			}
-
-			send := Send{
-				Source:      tc.source,
-				Destination: tc.destination,
-				Amount:      tc.amount,
-			}
-
-			env.ExecuteWorkflow(RunSend, send)
-			require.True(t, env.IsWorkflowCompleted())
-			require.NoError(t, env.GetWorkflowError())
-		})
-	}
+	stagestesting.RunWorkflows(t, testCases...)
 }

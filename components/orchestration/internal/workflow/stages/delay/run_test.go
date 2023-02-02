@@ -5,104 +5,72 @@ import (
 	"time"
 
 	"github.com/formancehq/orchestration/internal/schema"
-	"github.com/stretchr/testify/require"
-	"go.temporal.io/sdk/testsuite"
+	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
 )
 
 func TestDelaySchema(t *testing.T) {
-	type testCase struct {
-		data          map[string]any
-		expectedError bool
-	}
-	testCases := []testCase{
+	now := time.Now().Round(time.Second).UTC()
+	stagestesting.TestSchemas(t, "delay", []stagestesting.SchemaTestCase{
 		{
-			data: map[string]any{
-				"until": time.Now().Format(time.RFC3339),
+			Name: "valid case using until property",
+			Data: map[string]any{
+				"until": now.Format(time.RFC3339),
 			},
-			expectedError: false,
+			ExpectedResolved: Delay{
+				Until: &now,
+			},
+			ExpectedValidationError: false,
 		},
 		{
-			data: map[string]any{
+			Name: "valid case using duration",
+			Data: map[string]any{
 				"duration": "10s",
 			},
-			expectedError: false,
+			ExpectedValidationError: false,
+			ExpectedResolved: Delay{
+				Duration: (*schema.Duration)(ptr(time.Second * 10)),
+			},
 		},
 		{
-			data:          map[string]any{},
-			expectedError: true,
+			Name:                    "invalid case, missing until or duration",
+			Data:                    map[string]any{},
+			ExpectedResolved:        Delay{},
+			ExpectedValidationError: true,
 		},
 		{
-			data: map[string]any{
-				"until":    time.Now().Format(time.RFC3339),
+			Name: "invalid case, both until and duration specified",
+			Data: map[string]any{
+				"until":    now.Format(time.RFC3339),
 				"duration": "10s",
 			},
-			expectedError: true,
+			ExpectedResolved: Delay{
+				Duration: (*schema.Duration)(ptr(time.Second * 10)),
+				Until:    &now,
+			},
+			ExpectedValidationError: true,
 		},
-	}
-	for _, testCase := range testCases {
-		s, err := schema.Resolve(schema.Context{
-			Variables: map[string]string{},
-		}, testCase.data, "delay")
-		require.NoError(t, err, "resolving schema")
-		err = schema.ValidateRequirements(s)
-		if testCase.expectedError {
-			require.Error(t, err)
-		} else {
-			require.NoError(t, err)
-		}
-	}
-}
-
-type mockedActivity struct {
-	activity any
-	args     []any
-	returns  []any
-}
-
-type testCase struct {
-	delay          Delay
-	mockedActivity []mockedActivity
-	name           string
+	}...)
 }
 
 func ptr[T any](v T) *T {
 	return &v
 }
 
-var testCases = []testCase{
+var testCases = []stagestesting.WorkflowTestCase[Delay]{
 	{
-		delay: Delay{
+		Stage: Delay{
 			Until: ptr(time.Now().Add(time.Second)),
 		},
-		mockedActivity: nil,
-		name:           "delay-until",
+		Name: "delay-until",
 	},
 	{
-		delay: Delay{
+		Stage: Delay{
 			Duration: (*schema.Duration)(ptr(time.Second)),
 		},
-		mockedActivity: nil,
-		name:           "delay-duration",
+		Name: "delay-duration",
 	},
 }
 
 func TestDelay(t *testing.T) {
-	t.Parallel()
-
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.name, func(t *testing.T) {
-			testSuite := &testsuite.WorkflowTestSuite{}
-
-			env := testSuite.NewTestWorkflowEnvironment()
-			for _, ma := range tc.mockedActivity {
-				env.OnActivity(ma.activity, ma.args...).Return(ma.returns...)
-			}
-
-			env.ExecuteWorkflow(RunDelay, tc.delay)
-			require.True(t, env.IsWorkflowCompleted())
-			require.NoError(t, env.GetWorkflowError())
-		})
-
-	}
+	stagestesting.RunWorkflows(t, testCases...)
 }
