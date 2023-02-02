@@ -91,17 +91,34 @@ func runWalletToWallet(ctx workflow.Context, send Send) error {
 	if err != nil {
 		return err
 	}
-	if walletSource.Ledger != walletDestination.Ledger {
-		return errors.New("wallets not on the same ledger")
+	if walletSource.Ledger == walletDestination.Ledger {
+		sourceSubject := sdk.NewWalletSubject("WALLET", send.Source.Wallet.ID)
+		sourceSubject.SetBalance("main")
+		return activities.CreditWallet(internal.SingleTryContext(ctx), send.Destination.Wallet.ID, sdk.CreditWalletRequest{
+			Amount: *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount),
+			Sources: []sdk.Subject{{
+				WalletSubject: sourceSubject,
+			}},
+			Balance: sdk.PtrString(send.Destination.Wallet.Balance),
+		})
 	}
-	sourceSubject := sdk.NewWalletSubject("WALLET", send.Source.Wallet.ID)
-	sourceSubject.SetBalance("main")
-	return activities.CreditWallet(internal.SingleTryContext(ctx), send.Destination.Wallet.ID, sdk.CreditWalletRequest{
-		Amount: *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount),
-		Sources: []sdk.Subject{{
-			WalletSubject: sourceSubject,
-		}},
+
+	if err := justError(activities.DebitWallet(internal.SingleTryContext(ctx), send.Source.Wallet.ID, sdk.DebitWalletRequest{
+		Amount:   *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount),
+		Balances: []string{send.Source.Wallet.Balance},
+		Metadata: map[string]interface{}{
+			moveToLedgerMetadata: walletDestination.Ledger,
+		},
+	})); err != nil {
+		return err
+	}
+
+	return activities.CreditWallet(internal.InfiniteRetryContext(ctx), send.Destination.Wallet.ID, sdk.CreditWalletRequest{
+		Amount:  *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount),
 		Balance: sdk.PtrString(send.Destination.Wallet.Balance),
+		Metadata: map[string]interface{}{
+			moveFromLedgerMetadata: walletSource.Ledger,
+		},
 	})
 }
 
