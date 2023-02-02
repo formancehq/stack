@@ -153,15 +153,39 @@ func runAccountToWallet(ctx workflow.Context, send Send) error {
 	if err != nil {
 		return err
 	}
-	if wallet.Ledger != send.Source.Account.Ledger {
-		return errors.New("wallet not on the same ledger than the account")
+	if wallet.Ledger == send.Source.Account.Ledger {
+		return activities.CreditWallet(internal.SingleTryContext(ctx), send.Destination.Wallet.ID, sdk.CreditWalletRequest{
+			Amount: *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount),
+			Sources: []sdk.Subject{{
+				LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", send.Source.Account.ID),
+			}},
+			Balance: sdk.PtrString(send.Destination.Wallet.Balance),
+		})
 	}
-	return activities.CreditWallet(internal.SingleTryContext(ctx), send.Destination.Wallet.ID, sdk.CreditWalletRequest{
+
+	if err := justError(activities.CreateTransaction(internal.SingleTryContext(ctx), send.Source.Account.Ledger, sdk.PostTransaction{
+		Postings: []sdk.Posting{{
+			Amount:      send.Amount.Amount,
+			Asset:       send.Amount.Asset,
+			Destination: "world",
+			Source:      send.Source.Account.ID,
+		}},
+		Metadata: map[string]interface{}{
+			moveToLedgerMetadata: wallet.Ledger,
+		},
+	})); err != nil {
+		return err
+	}
+
+	return activities.CreditWallet(internal.InfiniteRetryContext(ctx), send.Destination.Wallet.ID, sdk.CreditWalletRequest{
 		Amount: *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount),
 		Sources: []sdk.Subject{{
-			LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", send.Source.Account.ID),
+			LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", "world"),
 		}},
 		Balance: sdk.PtrString(send.Destination.Wallet.Balance),
+		Metadata: map[string]interface{}{
+			moveFromLedgerMetadata: send.Source.Account.Ledger,
+		},
 	})
 }
 
