@@ -920,7 +920,13 @@ export interface OrchestrationApiListInstancesRequest {
      * @type string
      * @memberof OrchestrationApilistInstances
      */
-    workflowID: string
+    workflowID?: string
+    /**
+     * Filter running instances
+     * @type boolean
+     * @memberof OrchestrationApilistInstances
+     */
+    running?: boolean
 }
 
 export interface OrchestrationApiListWorkflowsRequest {
@@ -1031,8 +1037,8 @@ export class ObjectOrchestrationApi {
      * List instances of a workflow
      * @param param the request object
      */
-    public listInstances(param: OrchestrationApiListInstancesRequest, options?: Configuration): Promise<ListRunsResponse> {
-        return this.api.listInstances(param.workflowID,  options).toPromise();
+    public listInstances(param: OrchestrationApiListInstancesRequest = {}, options?: Configuration): Promise<ListRunsResponse> {
+        return this.api.listInstances(param.workflowID, param.running,  options).toPromise();
     }
 
     /**

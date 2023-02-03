@@ -647,9 +647,10 @@ export class PromiseOrchestrationApi {
      * List instances of a workflow
      * List instances of a workflow
      * @param workflowID A workflow id
+     * @param running Filter running instances
      */
-    public listInstances(workflowID: string, _options?: Configuration): Promise<ListRunsResponse> {
-        const result = this.api.listInstances(workflowID, _options);
+    public listInstances(workflowID?: string, running?: boolean, _options?: Configuration): Promise<ListRunsResponse> {
+        const result = this.api.listInstances(workflowID, running, _options);
         return result.toPromise();
     }
 

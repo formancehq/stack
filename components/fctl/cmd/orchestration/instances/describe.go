@@ -148,10 +148,12 @@ func NewDescribeCommand() *cobra.Command {
 				case history.Input.StageWaitEvent != nil:
 					printHistoryBaseInfo(cmd.OutOrStdout(), "wait_event", i, history)
 					cyanWriter.Printfln("Waiting event '%s'", history.Input.StageWaitEvent.Event)
-					if history.Terminated {
-						defaultWriter.Printfln("\tEvent received!")
-					} else {
-						defaultWriter.Printfln("\tStill waiting event...")
+					if history.Error == nil {
+						if history.Terminated {
+							defaultWriter.Printfln("\tEvent received!")
+						} else {
+							defaultWriter.Printfln("\tStill waiting event...")
+						}
 					}
 				default:
 					// Display error?

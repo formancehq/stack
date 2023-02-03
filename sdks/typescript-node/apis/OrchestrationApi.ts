@@ -272,14 +272,11 @@ export class OrchestrationApiRequestFactory extends BaseAPIRequestFactory {
      * List instances of a workflow
      * List instances of a workflow
      * @param workflowID A workflow id
+     * @param running Filter running instances
      */
-    public async listInstances(workflowID: string, _options?: Configuration): Promise<RequestContext> {
+    public async listInstances(workflowID?: string, running?: boolean, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
-        // verify required parameter 'workflowID' is not null or undefined
-        if (workflowID === null || workflowID === undefined) {
-            throw new RequiredError("OrchestrationApi", "listInstances", "workflowID");
-        }
 
 
         // Path Params
@@ -292,6 +289,11 @@ export class OrchestrationApiRequestFactory extends BaseAPIRequestFactory {
         // Query Params
         if (workflowID !== undefined) {
             requestContext.setQueryParam("workflowID", ObjectSerializer.serialize(workflowID, "string", ""));
+        }
+
+        // Query Params
+        if (running !== undefined) {
+            requestContext.setQueryParam("running", ObjectSerializer.serialize(running, "boolean", ""));
         }
 
 

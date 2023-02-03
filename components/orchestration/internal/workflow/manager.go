@@ -61,7 +61,7 @@ func (m *Manager) RunWorkflow(ctx context.Context, id string, variables map[stri
 		return Instance{}, err
 	}
 
-	instance := newInstance(id)
+	instance := NewInstance(id)
 
 	if _, err := m.db.
 		NewInsert().
@@ -141,7 +141,7 @@ func (m *Manager) AbortRun(ctx context.Context, instanceID string) error {
 	instance := Instance{}
 	if err := m.db.NewSelect().
 		Model(&instance).
-		Where("id", instanceID).
+		Where("id = ?", instanceID).
 		Scan(ctx); err != nil {
 		return errors.Wrap(err, "retrieving workflow execution")
 	}
@@ -149,11 +149,14 @@ func (m *Manager) AbortRun(ctx context.Context, instanceID string) error {
 	return m.temporalClient.CancelWorkflow(ctx, instanceID, "")
 }
 
-func (m *Manager) ListInstances(ctx context.Context, workflowID string) ([]Instance, error) {
+func (m *Manager) ListInstances(ctx context.Context, workflowID string, running bool) ([]Instance, error) {
 	instances := make([]Instance, 0)
 	query := m.db.NewSelect().Model(&instances)
 	if workflowID != "" {
 		query = query.Where("workflow_id = ?", workflowID)
+	}
+	if running {
+		query = query.Where("terminated = false")
 	}
 	if err := query.Scan(ctx); err != nil {
 		return nil, errors.Wrap(err, "retrieving workflow")

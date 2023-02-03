@@ -11,6 +11,7 @@ Name | Type | Description | Notes
 **Status** | Pointer to [**[]StageStatus**](StageStatus.md) |  | [optional] 
 **Terminated** | **bool** |  | 
 **TerminatedAt** | Pointer to **time.Time** |  | [optional] 
+**Error** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -180,6 +181,31 @@ SetTerminatedAt sets TerminatedAt field to given value.
 `func (o *WorkflowInstance) HasTerminatedAt() bool`
 
 HasTerminatedAt returns a boolean if a field has been set.
+
+### GetError
+
+`func (o *WorkflowInstance) GetError() string`
+
+GetError returns the Error field if non-nil, zero value otherwise.
+
+### GetErrorOk
+
+`func (o *WorkflowInstance) GetErrorOk() (*string, bool)`
+
+GetErrorOk returns a tuple with the Error field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetError
+
+`func (o *WorkflowInstance) SetError(v string)`
+
+SetError sets Error field to given value.
+
+### HasError
+
+`func (o *WorkflowInstance) HasError() bool`
+
+HasError returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
