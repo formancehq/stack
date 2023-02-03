@@ -3,6 +3,7 @@ package send
 import (
 	"fmt"
 	"runtime/debug"
+	"strings"
 
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
@@ -64,6 +65,7 @@ func runPaymentToWallet(ctx workflow.Context, source *PaymentSource, destination
 }
 
 func paymentAccountName(paymentID string) string {
+	paymentID = strings.ReplaceAll(paymentID, "-", "_")
 	return fmt.Sprintf("payment:%s", paymentID)
 }
 
@@ -81,7 +83,7 @@ func savePayment(ctx workflow.Context, paymentID string) error {
 		}},
 		Reference: sdk.PtrString(paymentAccountName(paymentID)),
 	})
-	if err != nil && errors.Is(err, activities.ErrTransactionReferenceConflict) {
+	if err != nil && err.Error() != activities.ErrTransactionReferenceConflict.Error() {
 		return err
 	}
 	return nil
