@@ -2,7 +2,6 @@ package send
 
 import (
 	"fmt"
-	"runtime/debug"
 	"strings"
 
 	sdk "github.com/formancehq/formance-sdk-go"
@@ -13,18 +12,36 @@ import (
 )
 
 const (
-	internalLedger = "orchestration-000-internal"
+	internalLedger         = "orchestration-000-internal"
+	moveToLedgerMetadata   = "orchestration/move-to-ledger"
+	moveFromLedgerMetadata = "orchestration/move-from-ledger"
 )
+
+func extractStripeConnectID(metadataKey string, object interface {
+	GetMetadata() map[string]any
+}) (string, error) {
+	stripeConnectIDAny, ok := object.GetMetadata()[metadataKey]
+	if !ok {
+		return "", fmt.Errorf("expected '%s' metadata containing connected account ID", metadataKey)
+	}
+	stripeConnectID, ok := stripeConnectIDAny.(string)
+	if !ok {
+		return "", fmt.Errorf("expected '%s' to be a string", metadataKey)
+	}
+	if stripeConnectID == "" {
+		return "", errors.New("stripe connect ID empty")
+	}
+	return stripeConnectID, nil
+}
 
 func justError[T any](v T, err error) error {
 	return err
 }
 
-func RunSend(ctx workflow.Context, send Send) error {
+func RunSend(ctx workflow.Context, send Send) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
-			fmt.Println(e)
-			debug.PrintStack()
+			err = errors.WithStack(fmt.Errorf("%s", e))
 		}
 	}()
 	amount := *sdk.NewMonetary(send.Amount.Asset, send.Amount.Amount)
@@ -243,29 +260,6 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 		},
 	})
 }
-
-func extractStripeConnectID(metadataKey string, object interface {
-	GetMetadata() map[string]any
-}) (string, error) {
-
-	stripeConnectIDAny, ok := object.GetMetadata()[metadataKey]
-	if !ok {
-		return "", fmt.Errorf("expected '%s' metadata containing connected account ID", metadataKey)
-	}
-	stripeConnectID, ok := stripeConnectIDAny.(string)
-	if !ok {
-		return "", fmt.Errorf("expected '%s' to be a string", metadataKey)
-	}
-	if stripeConnectID == "" {
-		return "", errors.New("stripe connect ID empty")
-	}
-	return stripeConnectID, nil
-}
-
-const (
-	moveToLedgerMetadata   = "orchestration/move-to-ledger"
-	moveFromLedgerMetadata = "orchestration/move-from-ledger"
-)
 
 func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, destination *LedgerAccountDestination, amount sdk.Monetary) error {
 	if source.Ledger == destination.Ledger {
