@@ -80,6 +80,9 @@ func NewDescribeCommand() *cobra.Command {
 							)
 							if historyStage.Error == nil {
 								defaultWriter.Printfln("\tCreated transaction: %d", historyStage.Output.CreateTransaction.Data[0].Txid)
+								if historyStage.Input.CreateTransaction.Data.Reference != nil {
+									defaultWriter.Printfln("\tReference: %s", *historyStage.Output.CreateTransaction.Data[0].Reference)
+								}
 								if len(historyStage.Input.CreateTransaction.Data.Metadata) > 0 {
 									printMetadata(defaultWriter, historyStage.Input.CreateTransaction.Data.Metadata)
 								}
