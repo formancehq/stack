@@ -193,6 +193,9 @@ var (
 								LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", "world"),
 							}},
 							Balance: sdk.PtrString("main"),
+							Metadata: map[string]interface{}{
+								moveFromLedgerMetadata: internalLedger,
+							},
 						},
 					},
 				},

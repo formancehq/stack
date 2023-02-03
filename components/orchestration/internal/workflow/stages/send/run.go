@@ -72,13 +72,10 @@ func runPaymentToWallet(ctx workflow.Context, source *PaymentSource, destination
 	if err := savePayment(ctx, source.ID); err != nil {
 		return err
 	}
-	return activities.CreditWallet(internal.SingleTryContext(ctx), destination.ID, sdk.CreditWalletRequest{
-		Amount: amount,
-		Sources: []sdk.Subject{{
-			LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", "world"),
-		}},
-		Balance: sdk.PtrString(destination.Balance),
-	})
+	return runAccountToWallet(ctx, &LedgerAccountSource{
+		ID:     paymentAccountName(source.ID),
+		Ledger: internalLedger,
+	}, destination, amount)
 }
 
 func paymentAccountName(paymentID string) string {
