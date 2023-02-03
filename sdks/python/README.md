@@ -216,6 +216,7 @@ Class | Method | HTTP request | Description
 *LogsApi* | [**list_logs**](docs/apis/tags/LogsApi.md#list_logs) | **get** /api/ledger/{ledger}/logs | List the logs from a ledger
 *MappingApi* | [**get_mapping**](docs/apis/tags/MappingApi.md#get_mapping) | **get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
 *MappingApi* | [**update_mapping**](docs/apis/tags/MappingApi.md#update_mapping) | **put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
+*OrchestrationApi* | [**cancel_event**](docs/apis/tags/OrchestrationApi.md#cancel_event) | **put** /api/orchestration/instances/{instanceID}/abort | Cancel a running workflow
 *OrchestrationApi* | [**create_workflow**](docs/apis/tags/OrchestrationApi.md#create_workflow) | **post** /api/orchestration/workflows | Create workflow
 *OrchestrationApi* | [**get_instance**](docs/apis/tags/OrchestrationApi.md#get_instance) | **get** /api/orchestration/instances/{instanceID} | Get a workflow instance by id
 *OrchestrationApi* | [**get_instance_history**](docs/apis/tags/OrchestrationApi.md#get_instance_history) | **get** /api/orchestration/instances/{instanceID}/history | Get a workflow instance history by id

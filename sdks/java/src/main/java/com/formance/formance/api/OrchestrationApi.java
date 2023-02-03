@@ -30,6 +30,17 @@ import java.util.Set;
 
 public interface OrchestrationApi {
   /**
+   * Cancel a running workflow
+   * Cancel a running workflow
+   * @param instanceID The instance id (required)
+   * @return Call&lt;Void&gt;
+   */
+  @PUT("api/orchestration/instances/{instanceID}/abort")
+  Call<Void> cancelEvent(
+    @retrofit2.http.Path("instanceID") String instanceID
+  );
+
+  /**
    * Create workflow
    * Create a workflow
    * @param body  (optional)

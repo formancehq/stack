@@ -19,6 +19,8 @@ export class WorkflowInstance {
     'createdAt': Date;
     'updatedAt': Date;
     'status'?: Array<StageStatus>;
+    'terminated': boolean;
+    'terminatedAt'?: Date;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -52,6 +54,18 @@ export class WorkflowInstance {
             "baseName": "status",
             "type": "Array<StageStatus>",
             "format": ""
+        },
+        {
+            "name": "terminated",
+            "baseName": "terminated",
+            "type": "boolean",
+            "format": ""
+        },
+        {
+            "name": "terminatedAt",
+            "baseName": "terminatedAt",
+            "type": "Date",
+            "format": "date-time"
         }    ];
 
     static getAttributeTypeMap() {

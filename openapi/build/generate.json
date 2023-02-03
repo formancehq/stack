@@ -3670,6 +3670,36 @@
         }
       }
     },
+    "/api/orchestration/instances/{instanceID}/abort": {
+      "parameters": [
+        {
+          "in": "path",
+          "description": "The instance id",
+          "name": "instanceID",
+          "schema": {
+            "type": "string"
+          },
+          "example": "xxx",
+          "required": true
+        }
+      ],
+      "put": {
+        "summary": "Cancel a running workflow",
+        "description": "Cancel a running workflow",
+        "operationId": "cancelEvent",
+        "tags": [
+          "Orchestration"
+        ],
+        "responses": {
+          "204": {
+            "description": "No content"
+          },
+          "default": {
+            "$ref": "#/components/responses/ErrorResponse"
+          }
+        }
+      }
+    },
     "/api/orchestration/instances/{instanceID}/history": {
       "parameters": [
         {
@@ -6811,7 +6841,8 @@
           "id",
           "createdAt",
           "updatedAt",
-          "statuses"
+          "statuses",
+          "terminated"
         ],
         "properties": {
           "workflowID": {
@@ -6833,6 +6864,13 @@
             "items": {
               "$ref": "#/components/schemas/StageStatus"
             }
+          },
+          "terminated": {
+            "type": "boolean"
+          },
+          "terminatedAt": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },

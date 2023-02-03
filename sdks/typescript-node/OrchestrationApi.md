@@ -4,6 +4,7 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**cancelEvent**](OrchestrationApi.md#cancelEvent) | **PUT** /api/orchestration/instances/{instanceID}/abort | Cancel a running workflow
 [**createWorkflow**](OrchestrationApi.md#createWorkflow) | **POST** /api/orchestration/workflows | Create workflow
 [**getInstance**](OrchestrationApi.md#getInstance) | **GET** /api/orchestration/instances/{instanceID} | Get a workflow instance by id
 [**getInstanceHistory**](OrchestrationApi.md#getInstanceHistory) | **GET** /api/orchestration/instances/{instanceID}/history | Get a workflow instance history by id
@@ -15,6 +16,61 @@ Method | HTTP request | Description
 [**runWorkflow**](OrchestrationApi.md#runWorkflow) | **POST** /api/orchestration/workflows/{workflowID}/instances | Run workflow
 [**sendEvent**](OrchestrationApi.md#sendEvent) | **POST** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow
 
+
+# **cancelEvent**
+> void cancelEvent()
+
+Cancel a running workflow
+
+### Example
+
+
+```typescript
+import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new OrchestrationApi(configuration);
+
+let body:OrchestrationApiCancelEventRequest = {
+  // string | The instance id
+  instanceID: "xxx",
+};
+
+apiInstance.cancelEvent(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **instanceID** | [**string**] | The instance id | defaults to undefined
+
+
+### Return type
+
+**void**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**204** | No content |  -  |
+**0** | General error |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **createWorkflow**
 > CreateWorkflowResponse createWorkflow()

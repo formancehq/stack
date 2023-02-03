@@ -14,6 +14,7 @@ func NewCommand() *cobra.Command {
 			NewShowCommand(),
 			NewDescribeCommand(),
 			NewSendEventCommand(),
+			NewStopCommand(),
 		),
 	)
 }

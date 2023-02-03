@@ -64,9 +64,15 @@ func NewListCommand() *cobra.Command {
 									src.WorkflowID,
 									src.CreatedAt.Format(time.RFC3339),
 									src.UpdatedAt.Format(time.RFC3339),
+									func() string {
+										if src.Terminated {
+											return src.TerminatedAt.Format(time.RFC3339)
+										}
+										return ""
+									}(),
 								}
 							}),
-						[]string{"ID", "Workflow ID", "Created at", "Updated at"},
+						[]string{"ID", "Workflow ID", "Created at", "Updated at", "Terminated at"},
 					),
 				).Render(); err != nil {
 				return errors.Wrap(err, "rendering table")

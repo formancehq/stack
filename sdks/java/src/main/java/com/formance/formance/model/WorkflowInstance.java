@@ -51,6 +51,14 @@ public class WorkflowInstance {
   @SerializedName(SERIALIZED_NAME_STATUS)
   private List<StageStatus> status = null;
 
+  public static final String SERIALIZED_NAME_TERMINATED = "terminated";
+  @SerializedName(SERIALIZED_NAME_TERMINATED)
+  private Boolean terminated;
+
+  public static final String SERIALIZED_NAME_TERMINATED_AT = "terminatedAt";
+  @SerializedName(SERIALIZED_NAME_TERMINATED_AT)
+  private OffsetDateTime terminatedAt;
+
   public WorkflowInstance() {
   }
 
@@ -172,6 +180,50 @@ public class WorkflowInstance {
   }
 
 
+  public WorkflowInstance terminated(Boolean terminated) {
+    
+    this.terminated = terminated;
+    return this;
+  }
+
+   /**
+   * Get terminated
+   * @return terminated
+  **/
+  @javax.annotation.Nonnull
+
+  public Boolean getTerminated() {
+    return terminated;
+  }
+
+
+  public void setTerminated(Boolean terminated) {
+    this.terminated = terminated;
+  }
+
+
+  public WorkflowInstance terminatedAt(OffsetDateTime terminatedAt) {
+    
+    this.terminatedAt = terminatedAt;
+    return this;
+  }
+
+   /**
+   * Get terminatedAt
+   * @return terminatedAt
+  **/
+  @javax.annotation.Nullable
+
+  public OffsetDateTime getTerminatedAt() {
+    return terminatedAt;
+  }
+
+
+  public void setTerminatedAt(OffsetDateTime terminatedAt) {
+    this.terminatedAt = terminatedAt;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -185,12 +237,14 @@ public class WorkflowInstance {
         Objects.equals(this.id, workflowInstance.id) &&
         Objects.equals(this.createdAt, workflowInstance.createdAt) &&
         Objects.equals(this.updatedAt, workflowInstance.updatedAt) &&
-        Objects.equals(this.status, workflowInstance.status);
+        Objects.equals(this.status, workflowInstance.status) &&
+        Objects.equals(this.terminated, workflowInstance.terminated) &&
+        Objects.equals(this.terminatedAt, workflowInstance.terminatedAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(workflowID, id, createdAt, updatedAt, status);
+    return Objects.hash(workflowID, id, createdAt, updatedAt, status, terminated, terminatedAt);
   }
 
   @Override
@@ -202,6 +256,8 @@ public class WorkflowInstance {
     sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
     sb.append("    updatedAt: ").append(toIndentedString(updatedAt)).append("\n");
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    terminated: ").append(toIndentedString(terminated)).append("\n");
+    sb.append("    terminatedAt: ").append(toIndentedString(terminatedAt)).append("\n");
     sb.append("}");
     return sb.toString();
   }

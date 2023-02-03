@@ -4,6 +4,7 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**CancelEvent**](OrchestrationApi.md#CancelEvent) | **Put** /api/orchestration/instances/{instanceID}/abort | Cancel a running workflow
 [**CreateWorkflow**](OrchestrationApi.md#CreateWorkflow) | **Post** /api/orchestration/workflows | Create workflow
 [**GetInstance**](OrchestrationApi.md#GetInstance) | **Get** /api/orchestration/instances/{instanceID} | Get a workflow instance by id
 [**GetInstanceHistory**](OrchestrationApi.md#GetInstanceHistory) | **Get** /api/orchestration/instances/{instanceID}/history | Get a workflow instance history by id
@@ -15,6 +16,74 @@ Method | HTTP request | Description
 [**RunWorkflow**](OrchestrationApi.md#RunWorkflow) | **Post** /api/orchestration/workflows/{workflowID}/instances | Run workflow
 [**SendEvent**](OrchestrationApi.md#SendEvent) | **Post** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow
 
+
+
+## CancelEvent
+
+> CancelEvent(ctx, instanceID).Execute()
+
+Cancel a running workflow
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    instanceID := "xxx" // string | The instance id
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.OrchestrationApi.CancelEvent(context.Background(), instanceID).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.CancelEvent``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**instanceID** | **string** | The instance id | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCancelEventRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
 
 ## CreateWorkflow
