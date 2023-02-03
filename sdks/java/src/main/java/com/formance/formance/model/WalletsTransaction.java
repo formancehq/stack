@@ -48,7 +48,7 @@ public class WalletsTransaction {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = new HashMap<>();
+  private Map<String, Object> metadata = null;
 
   public static final String SERIALIZED_NAME_TXID = "txid";
   @SerializedName(SERIALIZED_NAME_TXID)
@@ -56,11 +56,11 @@ public class WalletsTransaction {
 
   public static final String SERIALIZED_NAME_PRE_COMMIT_VOLUMES = "preCommitVolumes";
   @SerializedName(SERIALIZED_NAME_PRE_COMMIT_VOLUMES)
-  private Map<String, Map<String, WalletsVolume>> preCommitVolumes = new HashMap<>();
+  private Map<String, Map<String, WalletsVolume>> preCommitVolumes = null;
 
   public static final String SERIALIZED_NAME_POST_COMMIT_VOLUMES = "postCommitVolumes";
   @SerializedName(SERIALIZED_NAME_POST_COMMIT_VOLUMES)
-  private Map<String, Map<String, WalletsVolume>> postCommitVolumes = new HashMap<>();
+  private Map<String, Map<String, WalletsVolume>> postCommitVolumes = null;
 
   public WalletsTransaction() {
   }

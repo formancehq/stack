@@ -43,11 +43,11 @@ public class AccountWithVolumesAndBalances {
 
   public static final String SERIALIZED_NAME_VOLUMES = "volumes";
   @SerializedName(SERIALIZED_NAME_VOLUMES)
-  private Map<String, Map<String, Long>> volumes = new HashMap<>();
+  private Map<String, Map<String, Long>> volumes = null;
 
   public static final String SERIALIZED_NAME_BALANCES = "balances";
   @SerializedName(SERIALIZED_NAME_BALANCES)
-  private Map<String, Long> balances = new HashMap<>();
+  private Map<String, Long> balances = null;
 
   public AccountWithVolumesAndBalances() {
   }

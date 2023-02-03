@@ -45,7 +45,7 @@ public class WebhooksConfig {
 
   public static final String SERIALIZED_NAME_EVENT_TYPES = "eventTypes";
   @SerializedName(SERIALIZED_NAME_EVENT_TYPES)
-  private List<String> eventTypes = new ArrayList<>();
+  private List<String> eventTypes = null;
 
   public static final String SERIALIZED_NAME_ACTIVE = "active";
   @SerializedName(SERIALIZED_NAME_ACTIVE)

@@ -2,6 +2,7 @@ package invitations
 
 import (
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -39,7 +40,7 @@ func NewSendCommand() *cobra.Command {
 				return err
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Invitation sent")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Invitation sent")
 			return nil
 		}),
 	)

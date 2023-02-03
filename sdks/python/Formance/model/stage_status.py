@@ -36,34 +36,34 @@ class StageStatus(
 
     class MetaOapg:
         required = {
+            "instanceID",
             "stage",
             "startedAt",
-            "occurrenceID",
         }
         
         class properties:
             stage = schemas.NumberSchema
-            occurrenceID = schemas.StrSchema
+            instanceID = schemas.StrSchema
             startedAt = schemas.DateTimeSchema
             terminatedAt = schemas.DateTimeSchema
             error = schemas.StrSchema
             __annotations__ = {
                 "stage": stage,
-                "occurrenceID": occurrenceID,
+                "instanceID": instanceID,
                 "startedAt": startedAt,
                 "terminatedAt": terminatedAt,
                 "error": error,
             }
     
+    instanceID: MetaOapg.properties.instanceID
     stage: MetaOapg.properties.stage
     startedAt: MetaOapg.properties.startedAt
-    occurrenceID: MetaOapg.properties.occurrenceID
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["stage"]) -> MetaOapg.properties.stage: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["occurrenceID"]) -> MetaOapg.properties.occurrenceID: ...
+    def __getitem__(self, name: typing_extensions.Literal["instanceID"]) -> MetaOapg.properties.instanceID: ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["startedAt"]) -> MetaOapg.properties.startedAt: ...
@@ -77,7 +77,7 @@ class StageStatus(
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["stage", "occurrenceID", "startedAt", "terminatedAt", "error", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["stage", "instanceID", "startedAt", "terminatedAt", "error", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -86,7 +86,7 @@ class StageStatus(
     def get_item_oapg(self, name: typing_extensions.Literal["stage"]) -> MetaOapg.properties.stage: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["occurrenceID"]) -> MetaOapg.properties.occurrenceID: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["instanceID"]) -> MetaOapg.properties.instanceID: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["startedAt"]) -> MetaOapg.properties.startedAt: ...
@@ -100,16 +100,16 @@ class StageStatus(
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["stage", "occurrenceID", "startedAt", "terminatedAt", "error", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["stage", "instanceID", "startedAt", "terminatedAt", "error", ], str]):
         return super().get_item_oapg(name)
     
 
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
+        instanceID: typing.Union[MetaOapg.properties.instanceID, str, ],
         stage: typing.Union[MetaOapg.properties.stage, decimal.Decimal, int, float, ],
         startedAt: typing.Union[MetaOapg.properties.startedAt, str, datetime, ],
-        occurrenceID: typing.Union[MetaOapg.properties.occurrenceID, str, ],
         terminatedAt: typing.Union[MetaOapg.properties.terminatedAt, str, datetime, schemas.Unset] = schemas.unset,
         error: typing.Union[MetaOapg.properties.error, str, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
@@ -118,9 +118,9 @@ class StageStatus(
         return super().__new__(
             cls,
             *_args,
+            instanceID=instanceID,
             stage=stage,
             startedAt=startedAt,
-            occurrenceID=occurrenceID,
             terminatedAt=terminatedAt,
             error=error,
             _configuration=_configuration,

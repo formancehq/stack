@@ -13,11 +13,18 @@
 import { HttpFile } from '../http/http';
 
 export class WorkflowConfig {
+    'name'?: string;
     'stages': Array<{ [key: string]: any; }>;
 
     static readonly discriminator: string | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
+        {
+            "name": "name",
+            "baseName": "name",
+            "type": "string",
+            "format": ""
+        },
         {
             "name": "stages",
             "baseName": "stages",

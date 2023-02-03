@@ -9,7 +9,7 @@ import (
 
 func readWorkflow(m *workflow.Manager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		workflow, err := m.ReadWorkflow(r.Context(), workflowId(r))
+		workflow, err := m.ReadWorkflow(r.Context(), workflowID(r))
 		if err != nil {
 			api.InternalServerError(w, r, err)
 			return

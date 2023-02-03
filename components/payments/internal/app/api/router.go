@@ -36,6 +36,7 @@ func httpRouter(store *storage.Storage, serviceInfo api.ServiceInfo, connectorHa
 
 	authGroup.Path("/payments").Methods(http.MethodGet).Handler(listPaymentsHandler(store))
 	authGroup.Path("/payments/{paymentID}").Methods(http.MethodGet).Handler(readPaymentHandler(store))
+	authGroup.Path("/payments/{paymentID}/metadata").Methods(http.MethodPatch).Handler(updateMetadataHandler(store))
 
 	authGroup.Path("/accounts").Methods(http.MethodGet).Handler(listAccountsHandler(store))
 

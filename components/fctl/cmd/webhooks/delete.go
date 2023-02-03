@@ -3,6 +3,7 @@ package webhooks
 import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -42,7 +43,7 @@ func NewDeleteCommand() *cobra.Command {
 				return errors.Wrap(err, "deleting config")
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Config deleted successfully")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config deleted successfully")
 			return nil
 		}),
 	)

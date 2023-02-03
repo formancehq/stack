@@ -9,6 +9,15 @@ import { AccountsCursorCursor } from '../models/AccountsCursorCursor';
 import { AccountsCursorCursorAllOf } from '../models/AccountsCursorCursorAllOf';
 import { AccountsCursorResponse } from '../models/AccountsCursorResponse';
 import { AccountsCursorResponseCursor } from '../models/AccountsCursorResponseCursor';
+import { ActivityConfirmHold } from '../models/ActivityConfirmHold';
+import { ActivityCreateTransaction } from '../models/ActivityCreateTransaction';
+import { ActivityCreditWallet } from '../models/ActivityCreditWallet';
+import { ActivityDebitWallet } from '../models/ActivityDebitWallet';
+import { ActivityGetAccount } from '../models/ActivityGetAccount';
+import { ActivityGetPayment } from '../models/ActivityGetPayment';
+import { ActivityGetWallet } from '../models/ActivityGetWallet';
+import { ActivityRevertTransaction } from '../models/ActivityRevertTransaction';
+import { ActivityVoidHold } from '../models/ActivityVoidHold';
 import { AggregateBalancesResponse } from '../models/AggregateBalancesResponse';
 import { AssetHolder } from '../models/AssetHolder';
 import { Attempt } from '../models/Attempt';
@@ -69,7 +78,9 @@ import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
 import { GetWalletResponse } from '../models/GetWalletResponse';
-import { GetWorkflowOccurrenceResponse } from '../models/GetWorkflowOccurrenceResponse';
+import { GetWorkflowInstanceHistoryResponse } from '../models/GetWorkflowInstanceHistoryResponse';
+import { GetWorkflowInstanceHistoryStageResponse } from '../models/GetWorkflowInstanceHistoryStageResponse';
+import { GetWorkflowInstanceResponse } from '../models/GetWorkflowInstanceResponse';
 import { GetWorkflowResponse } from '../models/GetWorkflowResponse';
 import { Hold } from '../models/Hold';
 import { LedgerAccountSubject } from '../models/LedgerAccountSubject';
@@ -82,8 +93,6 @@ import { ListBalancesResponseCursor } from '../models/ListBalancesResponseCursor
 import { ListBalancesResponseCursorAllOf } from '../models/ListBalancesResponseCursorAllOf';
 import { ListClientsResponse } from '../models/ListClientsResponse';
 import { ListRunsResponse } from '../models/ListRunsResponse';
-import { ListRunsResponseCursor } from '../models/ListRunsResponseCursor';
-import { ListRunsResponseCursorAllOf } from '../models/ListRunsResponseCursorAllOf';
 import { ListScopesResponse } from '../models/ListScopesResponse';
 import { ListUsersResponse } from '../models/ListUsersResponse';
 import { ListWalletsResponse } from '../models/ListWalletsResponse';
@@ -99,11 +108,9 @@ import { MigrationInfo } from '../models/MigrationInfo';
 import { ModelError } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
 import { Monetary } from '../models/Monetary';
-import { OrchestrationCursor } from '../models/OrchestrationCursor';
 import { Payment } from '../models/Payment';
 import { PaymentAdjustment } from '../models/PaymentAdjustment';
 import { PaymentMetadata } from '../models/PaymentMetadata';
-import { PaymentMetadataChangelog } from '../models/PaymentMetadataChangelog';
 import { PaymentResponse } from '../models/PaymentResponse';
 import { PaymentStatus } from '../models/PaymentStatus';
 import { PaymentsAccount } from '../models/PaymentsAccount';
@@ -127,8 +134,19 @@ import { ScriptResponse } from '../models/ScriptResponse';
 import { Secret } from '../models/Secret';
 import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
+import { SendEventRequest } from '../models/SendEventRequest';
 import { ServerInfo } from '../models/ServerInfo';
+import { Stage } from '../models/Stage';
+import { StageDelay } from '../models/StageDelay';
+import { StageSend } from '../models/StageSend';
+import { StageSendDestination } from '../models/StageSendDestination';
+import { StageSendDestinationPayment } from '../models/StageSendDestinationPayment';
+import { StageSendSource } from '../models/StageSendSource';
+import { StageSendSourceAccount } from '../models/StageSendSourceAccount';
+import { StageSendSourcePayment } from '../models/StageSendSourcePayment';
+import { StageSendSourceWallet } from '../models/StageSendSourceWallet';
 import { StageStatus } from '../models/StageStatus';
+import { StageWaitEvent } from '../models/StageWaitEvent';
 import { Stats } from '../models/Stats';
 import { StatsResponse } from '../models/StatsResponse';
 import { StripeConfig } from '../models/StripeConfig';
@@ -181,7 +199,11 @@ import { WebhooksConfig } from '../models/WebhooksConfig';
 import { WiseConfig } from '../models/WiseConfig';
 import { Workflow } from '../models/Workflow';
 import { WorkflowConfig } from '../models/WorkflowConfig';
-import { WorkflowOccurrence } from '../models/WorkflowOccurrence';
+import { WorkflowInstance } from '../models/WorkflowInstance';
+import { WorkflowInstanceHistory } from '../models/WorkflowInstanceHistory';
+import { WorkflowInstanceHistoryStage } from '../models/WorkflowInstanceHistoryStage';
+import { WorkflowInstanceHistoryStageInput } from '../models/WorkflowInstanceHistoryStageInput';
+import { WorkflowInstanceHistoryStageOutput } from '../models/WorkflowInstanceHistoryStageOutput';
 import { ObservableAccountsApi } from './ObservableAPI';
 
 import { AccountsApiRequestFactory, AccountsApiResponseProcessor} from "../apis/AccountsApi";
@@ -571,42 +593,62 @@ export class PromiseOrchestrationApi {
     }
 
     /**
+     * Get a workflow instance by id
+     * Get a workflow instance by id
+     * @param instanceID The instance id
+     */
+    public getInstance(instanceID: string, _options?: Configuration): Promise<GetWorkflowInstanceResponse> {
+        const result = this.api.getInstance(instanceID, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get a workflow instance history by id
+     * Get a workflow instance history by id
+     * @param instanceID The instance id
+     */
+    public getInstanceHistory(instanceID: string, _options?: Configuration): Promise<GetWorkflowInstanceHistoryResponse> {
+        const result = this.api.getInstanceHistory(instanceID, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get a workflow instance stage history
+     * Get a workflow instance stage history
+     * @param instanceID The instance id
+     * @param number The stage number
+     */
+    public getInstanceStageHistory(instanceID: string, number: number, _options?: Configuration): Promise<GetWorkflowInstanceHistoryStageResponse> {
+        const result = this.api.getInstanceStageHistory(instanceID, number, _options);
+        return result.toPromise();
+    }
+
+    /**
      * Get a flow by id
      * Get a flow by id
      * @param flowId The flow id
      */
-    public getFlow(flowId: string, _options?: Configuration): Promise<GetWorkflowResponse> {
-        const result = this.api.getFlow(flowId, _options);
+    public getWorkflow(flowId: string, _options?: Configuration): Promise<GetWorkflowResponse> {
+        const result = this.api.getWorkflow(flowId, _options);
         return result.toPromise();
     }
 
     /**
-     * Get a workflow occurrence by id
-     * Get a workflow occurrence by id
-     * @param flowId The flow id
-     * @param runId The occurrence id
+     * List instances of a workflow
+     * List instances of a workflow
+     * @param workflowID A workflow id
      */
-    public getWorkflowOccurrence(flowId: string, runId: string, _options?: Configuration): Promise<GetWorkflowOccurrenceResponse> {
-        const result = this.api.getWorkflowOccurrence(flowId, runId, _options);
+    public listInstances(workflowID: string, _options?: Configuration): Promise<ListRunsResponse> {
+        const result = this.api.listInstances(workflowID, _options);
         return result.toPromise();
     }
 
     /**
-     * List registered flows
-     * List registered flows
+     * List registered workflows
+     * List registered workflows
      */
-    public listFlows(_options?: Configuration): Promise<ListWorkflowsResponse> {
-        const result = this.api.listFlows(_options);
-        return result.toPromise();
-    }
-
-    /**
-     * List occurrences of a workflow
-     * List occurrences of a workflow
-     * @param flowId The flow id
-     */
-    public listRuns(flowId: string, _options?: Configuration): Promise<ListRunsResponse> {
-        const result = this.api.listRuns(flowId, _options);
+    public listWorkflows(_options?: Configuration): Promise<ListWorkflowsResponse> {
+        const result = this.api.listWorkflows(_options);
         return result.toPromise();
     }
 
@@ -621,12 +663,23 @@ export class PromiseOrchestrationApi {
     /**
      * Run workflow
      * Run workflow
-     * @param flowId The flow id
+     * @param workflowID The flow id
      * @param wait Wait end of the workflow before return
      * @param requestBody 
      */
-    public runWorkflow(flowId: string, wait?: boolean, requestBody?: { [key: string]: string; }, _options?: Configuration): Promise<RunWorkflowResponse> {
-        const result = this.api.runWorkflow(flowId, wait, requestBody, _options);
+    public runWorkflow(workflowID: string, wait?: boolean, requestBody?: { [key: string]: string; }, _options?: Configuration): Promise<RunWorkflowResponse> {
+        const result = this.api.runWorkflow(workflowID, wait, requestBody, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Send an event to a running workflow
+     * Send an event to a running workflow
+     * @param instanceID The instance id
+     * @param sendEventRequest 
+     */
+    public sendEvent(instanceID: string, sendEventRequest?: SendEventRequest, _options?: Configuration): Promise<void> {
+        const result = this.api.sendEvent(instanceID, sendEventRequest, _options);
         return result.toPromise();
     }
 
@@ -769,6 +822,16 @@ export class PromisePaymentsApi {
      */
     public uninstallConnector(connector: Connector, _options?: Configuration): Promise<void> {
         const result = this.api.uninstallConnector(connector, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Update metadata
+     * @param paymentId The payment ID.
+     * @param paymentMetadata 
+     */
+    public updateMetadata(paymentId: string, paymentMetadata: PaymentMetadata, _options?: Configuration): Promise<void> {
+        const result = this.api.updateMetadata(paymentId, paymentMetadata, _options);
         return result.toPromise();
     }
 

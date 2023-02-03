@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Stage** | **float32** |  | 
-**OccurrenceID** | **string** |  | 
+**InstanceID** | **string** |  | 
 **StartedAt** | **time.Time** |  | 
 **TerminatedAt** | Pointer to **time.Time** |  | [optional] 
 **Error** | Pointer to **string** |  | [optional] 
@@ -14,7 +14,7 @@ Name | Type | Description | Notes
 
 ### NewStageStatus
 
-`func NewStageStatus(stage float32, occurrenceID string, startedAt time.Time, ) *StageStatus`
+`func NewStageStatus(stage float32, instanceID string, startedAt time.Time, ) *StageStatus`
 
 NewStageStatus instantiates a new StageStatus object
 This constructor will assign default values to properties that have it defined,
@@ -49,24 +49,24 @@ and a boolean to check if the value has been set.
 SetStage sets Stage field to given value.
 
 
-### GetOccurrenceID
+### GetInstanceID
 
-`func (o *StageStatus) GetOccurrenceID() string`
+`func (o *StageStatus) GetInstanceID() string`
 
-GetOccurrenceID returns the OccurrenceID field if non-nil, zero value otherwise.
+GetInstanceID returns the InstanceID field if non-nil, zero value otherwise.
 
-### GetOccurrenceIDOk
+### GetInstanceIDOk
 
-`func (o *StageStatus) GetOccurrenceIDOk() (*string, bool)`
+`func (o *StageStatus) GetInstanceIDOk() (*string, bool)`
 
-GetOccurrenceIDOk returns a tuple with the OccurrenceID field if it's non-nil, zero value otherwise
+GetInstanceIDOk returns a tuple with the InstanceID field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetOccurrenceID
+### SetInstanceID
 
-`func (o *StageStatus) SetOccurrenceID(v string)`
+`func (o *StageStatus) SetInstanceID(v string)`
 
-SetOccurrenceID sets OccurrenceID field to given value.
+SetInstanceID sets InstanceID field to given value.
 
 
 ### GetStartedAt

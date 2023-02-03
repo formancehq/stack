@@ -4,7 +4,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 
 | Method | HTTP request | Description |
 | ------------- | ------------- | ------------- |
-| [**connectorsStripeTransfer()**](PaymentsApi.md#connectorsStripeTransfer) | **POST** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts |
+| [**connectorsStripeTransfer()**](PaymentsApi.md#connectorsStripeTransfer) | **POST** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts |
 | [**getConnectorTask()**](PaymentsApi.md#getConnectorTask) | **GET** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector |
 | [**getPayment()**](PaymentsApi.md#getPayment) | **GET** /api/payments/payments/{paymentId} | Get a payment |
 | [**installConnector()**](PaymentsApi.md#installConnector) | **POST** /api/payments/connectors/{connector} | Install a connector |
@@ -16,6 +16,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 | [**readConnectorConfig()**](PaymentsApi.md#readConnectorConfig) | **GET** /api/payments/connectors/{connector}/config | Read the config of a connector |
 | [**resetConnector()**](PaymentsApi.md#resetConnector) | **POST** /api/payments/connectors/{connector}/reset | Reset a connector |
 | [**uninstallConnector()**](PaymentsApi.md#uninstallConnector) | **DELETE** /api/payments/connectors/{connector} | Uninstall a connector |
+| [**updateMetadata()**](PaymentsApi.md#updateMetadata) | **PATCH** /api/payments/payments/{paymentId}/metadata | Update metadata |
 
 
 ## `connectorsStripeTransfer()`
@@ -733,6 +734,65 @@ void (empty response body)
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `updateMetadata()`
+
+```php
+updateMetadata($payment_id, $payment_metadata)
+```
+
+Update metadata
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\PaymentsApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$payment_id = XXX; // string | The payment ID.
+$payment_metadata = new \Formance\Model\PaymentMetadata(); // \Formance\Model\PaymentMetadata
+
+try {
+    $apiInstance->updateMetadata($payment_id, $payment_metadata);
+} catch (Exception $e) {
+    echo 'Exception when calling PaymentsApi->updateMetadata: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+| Name | Type | Description  | Notes |
+| ------------- | ------------- | ------------- | ------------- |
+| **payment_id** | **string**| The payment ID. | |
+| **payment_metadata** | [**\Formance\Model\PaymentMetadata**](../Model/PaymentMetadata.md)|  | |
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
 - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../../README.md#endpoints)

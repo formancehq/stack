@@ -31,11 +31,11 @@ import java.util.List;
 public class Query {
   public static final String SERIALIZED_NAME_LEDGERS = "ledgers";
   @SerializedName(SERIALIZED_NAME_LEDGERS)
-  private List<String> ledgers = new ArrayList<>();
+  private List<String> ledgers = null;
 
   public static final String SERIALIZED_NAME_AFTER = "after";
   @SerializedName(SERIALIZED_NAME_AFTER)
-  private List<String> after = new ArrayList<>();
+  private List<String> after = null;
 
   public static final String SERIALIZED_NAME_PAGE_SIZE = "pageSize";
   @SerializedName(SERIALIZED_NAME_PAGE_SIZE)
@@ -43,7 +43,7 @@ public class Query {
 
   public static final String SERIALIZED_NAME_TERMS = "terms";
   @SerializedName(SERIALIZED_NAME_TERMS)
-  private List<String> terms = new ArrayList<>();
+  private List<String> terms = null;
 
   public static final String SERIALIZED_NAME_SORT = "sort";
   @SerializedName(SERIALIZED_NAME_SORT)

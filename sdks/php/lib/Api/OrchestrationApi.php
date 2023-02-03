@@ -75,22 +75,31 @@ class OrchestrationApi
         'createWorkflow' => [
             'application/json',
         ],
-        'getFlow' => [
+        'getInstance' => [
             'application/json',
         ],
-        'getWorkflowOccurrence' => [
+        'getInstanceHistory' => [
             'application/json',
         ],
-        'listFlows' => [
+        'getInstanceStageHistory' => [
             'application/json',
         ],
-        'listRuns' => [
+        'getWorkflow' => [
+            'application/json',
+        ],
+        'listInstances' => [
+            'application/json',
+        ],
+        'listWorkflows' => [
             'application/json',
         ],
         'orchestrationgetServerInfo' => [
             'application/json',
         ],
         'runWorkflow' => [
+            'application/json',
+        ],
+        'sendEvent' => [
             'application/json',
         ],
     ];
@@ -369,7 +378,7 @@ class OrchestrationApi
 
 
 
-        $resourcePath = '/api/orchestration/flows';
+        $resourcePath = '/api/orchestration/workflows';
         $formParams = [];
         $queryParams = [];
         $headerParams = [];
@@ -445,38 +454,988 @@ class OrchestrationApi
     }
 
     /**
-     * Operation getFlow
+     * Operation getInstance
+     *
+     * Get a workflow instance by id
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstance'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Formance\Model\GetWorkflowInstanceResponse|\Formance\Model\Error
+     */
+    public function getInstance($instance_id, string $contentType = self::contentTypes['getInstance'][0])
+    {
+        list($response) = $this->getInstanceWithHttpInfo($instance_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation getInstanceWithHttpInfo
+     *
+     * Get a workflow instance by id
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstance'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Formance\Model\GetWorkflowInstanceResponse|\Formance\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getInstanceWithHttpInfo($instance_id, string $contentType = self::contentTypes['getInstance'][0])
+    {
+        $request = $this->getInstanceRequest($instance_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            switch($statusCode) {
+                case 200:
+                    if ('\Formance\Model\GetWorkflowInstanceResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\GetWorkflowInstanceResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\GetWorkflowInstanceResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                default:
+                    if ('\Formance\Model\Error' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\Error' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\Error', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Formance\Model\GetWorkflowInstanceResponse';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\GetWorkflowInstanceResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getInstanceAsync
+     *
+     * Get a workflow instance by id
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstance'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getInstanceAsync($instance_id, string $contentType = self::contentTypes['getInstance'][0])
+    {
+        return $this->getInstanceAsyncWithHttpInfo($instance_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getInstanceAsyncWithHttpInfo
+     *
+     * Get a workflow instance by id
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstance'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getInstanceAsyncWithHttpInfo($instance_id, string $contentType = self::contentTypes['getInstance'][0])
+    {
+        $returnType = '\Formance\Model\GetWorkflowInstanceResponse';
+        $request = $this->getInstanceRequest($instance_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getInstance'
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstance'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function getInstanceRequest($instance_id, string $contentType = self::contentTypes['getInstance'][0])
+    {
+
+        // verify the required parameter 'instance_id' is set
+        if ($instance_id === null || (is_array($instance_id) && count($instance_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $instance_id when calling getInstance'
+            );
+        }
+
+
+        $resourcePath = '/api/orchestration/instances/{instanceID}';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($instance_id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'instanceID' . '}',
+                ObjectSerializer::toPathValue($instance_id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation getInstanceHistory
+     *
+     * Get a workflow instance history by id
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstanceHistory'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Formance\Model\GetWorkflowInstanceHistoryResponse|\Formance\Model\Error
+     */
+    public function getInstanceHistory($instance_id, string $contentType = self::contentTypes['getInstanceHistory'][0])
+    {
+        list($response) = $this->getInstanceHistoryWithHttpInfo($instance_id, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation getInstanceHistoryWithHttpInfo
+     *
+     * Get a workflow instance history by id
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstanceHistory'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Formance\Model\GetWorkflowInstanceHistoryResponse|\Formance\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getInstanceHistoryWithHttpInfo($instance_id, string $contentType = self::contentTypes['getInstanceHistory'][0])
+    {
+        $request = $this->getInstanceHistoryRequest($instance_id, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            switch($statusCode) {
+                case 200:
+                    if ('\Formance\Model\GetWorkflowInstanceHistoryResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\GetWorkflowInstanceHistoryResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\GetWorkflowInstanceHistoryResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                default:
+                    if ('\Formance\Model\Error' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\Error' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\Error', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Formance\Model\GetWorkflowInstanceHistoryResponse';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\GetWorkflowInstanceHistoryResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getInstanceHistoryAsync
+     *
+     * Get a workflow instance history by id
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstanceHistory'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getInstanceHistoryAsync($instance_id, string $contentType = self::contentTypes['getInstanceHistory'][0])
+    {
+        return $this->getInstanceHistoryAsyncWithHttpInfo($instance_id, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getInstanceHistoryAsyncWithHttpInfo
+     *
+     * Get a workflow instance history by id
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstanceHistory'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getInstanceHistoryAsyncWithHttpInfo($instance_id, string $contentType = self::contentTypes['getInstanceHistory'][0])
+    {
+        $returnType = '\Formance\Model\GetWorkflowInstanceHistoryResponse';
+        $request = $this->getInstanceHistoryRequest($instance_id, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getInstanceHistory'
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstanceHistory'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function getInstanceHistoryRequest($instance_id, string $contentType = self::contentTypes['getInstanceHistory'][0])
+    {
+
+        // verify the required parameter 'instance_id' is set
+        if ($instance_id === null || (is_array($instance_id) && count($instance_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $instance_id when calling getInstanceHistory'
+            );
+        }
+
+
+        $resourcePath = '/api/orchestration/instances/{instanceID}/history';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($instance_id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'instanceID' . '}',
+                ObjectSerializer::toPathValue($instance_id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation getInstanceStageHistory
+     *
+     * Get a workflow instance stage history
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  int $number The stage number (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstanceStageHistory'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Formance\Model\GetWorkflowInstanceHistoryStageResponse|\Formance\Model\Error
+     */
+    public function getInstanceStageHistory($instance_id, $number, string $contentType = self::contentTypes['getInstanceStageHistory'][0])
+    {
+        list($response) = $this->getInstanceStageHistoryWithHttpInfo($instance_id, $number, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation getInstanceStageHistoryWithHttpInfo
+     *
+     * Get a workflow instance stage history
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  int $number The stage number (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstanceStageHistory'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Formance\Model\GetWorkflowInstanceHistoryStageResponse|\Formance\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function getInstanceStageHistoryWithHttpInfo($instance_id, $number, string $contentType = self::contentTypes['getInstanceStageHistory'][0])
+    {
+        $request = $this->getInstanceStageHistoryRequest($instance_id, $number, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            switch($statusCode) {
+                case 200:
+                    if ('\Formance\Model\GetWorkflowInstanceHistoryStageResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\GetWorkflowInstanceHistoryStageResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\GetWorkflowInstanceHistoryStageResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                default:
+                    if ('\Formance\Model\Error' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\Error' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\Error', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Formance\Model\GetWorkflowInstanceHistoryStageResponse';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\GetWorkflowInstanceHistoryStageResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation getInstanceStageHistoryAsync
+     *
+     * Get a workflow instance stage history
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  int $number The stage number (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstanceStageHistory'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getInstanceStageHistoryAsync($instance_id, $number, string $contentType = self::contentTypes['getInstanceStageHistory'][0])
+    {
+        return $this->getInstanceStageHistoryAsyncWithHttpInfo($instance_id, $number, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation getInstanceStageHistoryAsyncWithHttpInfo
+     *
+     * Get a workflow instance stage history
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  int $number The stage number (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstanceStageHistory'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function getInstanceStageHistoryAsyncWithHttpInfo($instance_id, $number, string $contentType = self::contentTypes['getInstanceStageHistory'][0])
+    {
+        $returnType = '\Formance\Model\GetWorkflowInstanceHistoryStageResponse';
+        $request = $this->getInstanceStageHistoryRequest($instance_id, $number, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'getInstanceStageHistory'
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  int $number The stage number (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getInstanceStageHistory'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function getInstanceStageHistoryRequest($instance_id, $number, string $contentType = self::contentTypes['getInstanceStageHistory'][0])
+    {
+
+        // verify the required parameter 'instance_id' is set
+        if ($instance_id === null || (is_array($instance_id) && count($instance_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $instance_id when calling getInstanceStageHistory'
+            );
+        }
+
+        // verify the required parameter 'number' is set
+        if ($number === null || (is_array($number) && count($number) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $number when calling getInstanceStageHistory'
+            );
+        }
+
+
+        $resourcePath = '/api/orchestration/instances/{instanceID}/stages/{number}/history';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($instance_id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'instanceID' . '}',
+                ObjectSerializer::toPathValue($instance_id),
+                $resourcePath
+            );
+        }
+        // path params
+        if ($number !== null) {
+            $resourcePath = str_replace(
+                '{' . 'number' . '}',
+                ObjectSerializer::toPathValue($number),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation getWorkflow
      *
      * Get a flow by id
      *
      * @param  string $flow_id The flow id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getFlow'] to see the possible values for this operation
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getWorkflow'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \Formance\Model\GetWorkflowResponse|\Formance\Model\Error
      */
-    public function getFlow($flow_id, string $contentType = self::contentTypes['getFlow'][0])
+    public function getWorkflow($flow_id, string $contentType = self::contentTypes['getWorkflow'][0])
     {
-        list($response) = $this->getFlowWithHttpInfo($flow_id, $contentType);
+        list($response) = $this->getWorkflowWithHttpInfo($flow_id, $contentType);
         return $response;
     }
 
     /**
-     * Operation getFlowWithHttpInfo
+     * Operation getWorkflowWithHttpInfo
      *
      * Get a flow by id
      *
      * @param  string $flow_id The flow id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getFlow'] to see the possible values for this operation
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getWorkflow'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\GetWorkflowResponse|\Formance\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getFlowWithHttpInfo($flow_id, string $contentType = self::contentTypes['getFlow'][0])
+    public function getWorkflowWithHttpInfo($flow_id, string $contentType = self::contentTypes['getWorkflow'][0])
     {
-        $request = $this->getFlowRequest($flow_id, $contentType);
+        $request = $this->getWorkflowRequest($flow_id, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -586,19 +1545,19 @@ class OrchestrationApi
     }
 
     /**
-     * Operation getFlowAsync
+     * Operation getWorkflowAsync
      *
      * Get a flow by id
      *
      * @param  string $flow_id The flow id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getFlow'] to see the possible values for this operation
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getWorkflow'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getFlowAsync($flow_id, string $contentType = self::contentTypes['getFlow'][0])
+    public function getWorkflowAsync($flow_id, string $contentType = self::contentTypes['getWorkflow'][0])
     {
-        return $this->getFlowAsyncWithHttpInfo($flow_id, $contentType)
+        return $this->getWorkflowAsyncWithHttpInfo($flow_id, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -607,20 +1566,20 @@ class OrchestrationApi
     }
 
     /**
-     * Operation getFlowAsyncWithHttpInfo
+     * Operation getWorkflowAsyncWithHttpInfo
      *
      * Get a flow by id
      *
      * @param  string $flow_id The flow id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getFlow'] to see the possible values for this operation
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getWorkflow'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getFlowAsyncWithHttpInfo($flow_id, string $contentType = self::contentTypes['getFlow'][0])
+    public function getWorkflowAsyncWithHttpInfo($flow_id, string $contentType = self::contentTypes['getWorkflow'][0])
     {
         $returnType = '\Formance\Model\GetWorkflowResponse';
-        $request = $this->getFlowRequest($flow_id, $contentType);
+        $request = $this->getWorkflowRequest($flow_id, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -659,26 +1618,26 @@ class OrchestrationApi
     }
 
     /**
-     * Create request for operation 'getFlow'
+     * Create request for operation 'getWorkflow'
      *
      * @param  string $flow_id The flow id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getFlow'] to see the possible values for this operation
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getWorkflow'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function getFlowRequest($flow_id, string $contentType = self::contentTypes['getFlow'][0])
+    public function getWorkflowRequest($flow_id, string $contentType = self::contentTypes['getWorkflow'][0])
     {
 
         // verify the required parameter 'flow_id' is set
         if ($flow_id === null || (is_array($flow_id) && count($flow_id) === 0)) {
             throw new \InvalidArgumentException(
-                'Missing the required parameter $flow_id when calling getFlow'
+                'Missing the required parameter $flow_id when calling getWorkflow'
             );
         }
 
 
-        $resourcePath = '/api/orchestration/flows/{flowId}';
+        $resourcePath = '/api/orchestration/workflows/{flowId}';
         $formParams = [];
         $queryParams = [];
         $headerParams = [];
@@ -755,658 +1714,38 @@ class OrchestrationApi
     }
 
     /**
-     * Operation getWorkflowOccurrence
+     * Operation listInstances
      *
-     * Get a workflow occurrence by id
+     * List instances of a workflow
      *
-     * @param  string $flow_id The flow id (required)
-     * @param  string $run_id The occurrence id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getWorkflowOccurrence'] to see the possible values for this operation
-     *
-     * @throws \Formance\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return \Formance\Model\GetWorkflowOccurrenceResponse|\Formance\Model\Error
-     */
-    public function getWorkflowOccurrence($flow_id, $run_id, string $contentType = self::contentTypes['getWorkflowOccurrence'][0])
-    {
-        list($response) = $this->getWorkflowOccurrenceWithHttpInfo($flow_id, $run_id, $contentType);
-        return $response;
-    }
-
-    /**
-     * Operation getWorkflowOccurrenceWithHttpInfo
-     *
-     * Get a workflow occurrence by id
-     *
-     * @param  string $flow_id The flow id (required)
-     * @param  string $run_id The occurrence id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getWorkflowOccurrence'] to see the possible values for this operation
-     *
-     * @throws \Formance\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\GetWorkflowOccurrenceResponse|\Formance\Model\Error, HTTP status code, HTTP response headers (array of strings)
-     */
-    public function getWorkflowOccurrenceWithHttpInfo($flow_id, $run_id, string $contentType = self::contentTypes['getWorkflowOccurrence'][0])
-    {
-        $request = $this->getWorkflowOccurrenceRequest($flow_id, $run_id, $contentType);
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    (int) $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            } catch (ConnectException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    (int) $e->getCode(),
-                    null,
-                    null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        (string) $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    (string) $response->getBody()
-                );
-            }
-
-            switch($statusCode) {
-                case 200:
-                    if ('\Formance\Model\GetWorkflowOccurrenceResponse' === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ('\Formance\Model\GetWorkflowOccurrenceResponse' !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\GetWorkflowOccurrenceResponse', []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-                default:
-                    if ('\Formance\Model\Error' === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ('\Formance\Model\Error' !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\Error', []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-            }
-
-            $returnType = '\Formance\Model\GetWorkflowOccurrenceResponse';
-            if ($returnType === '\SplFileObject') {
-                $content = $response->getBody(); //stream goes to serializer
-            } else {
-                $content = (string) $response->getBody();
-                if ($returnType !== 'string') {
-                    $content = json_decode($content);
-                }
-            }
-
-            return [
-                ObjectSerializer::deserialize($content, $returnType, []),
-                $response->getStatusCode(),
-                $response->getHeaders()
-            ];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Formance\Model\GetWorkflowOccurrenceResponse',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                default:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Formance\Model\Error',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation getWorkflowOccurrenceAsync
-     *
-     * Get a workflow occurrence by id
-     *
-     * @param  string $flow_id The flow id (required)
-     * @param  string $run_id The occurrence id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getWorkflowOccurrence'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function getWorkflowOccurrenceAsync($flow_id, $run_id, string $contentType = self::contentTypes['getWorkflowOccurrence'][0])
-    {
-        return $this->getWorkflowOccurrenceAsyncWithHttpInfo($flow_id, $run_id, $contentType)
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation getWorkflowOccurrenceAsyncWithHttpInfo
-     *
-     * Get a workflow occurrence by id
-     *
-     * @param  string $flow_id The flow id (required)
-     * @param  string $run_id The occurrence id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getWorkflowOccurrence'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function getWorkflowOccurrenceAsyncWithHttpInfo($flow_id, $run_id, string $contentType = self::contentTypes['getWorkflowOccurrence'][0])
-    {
-        $returnType = '\Formance\Model\GetWorkflowOccurrenceResponse';
-        $request = $this->getWorkflowOccurrenceRequest($flow_id, $run_id, $contentType);
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    if ($returnType === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ($returnType !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, $returnType, []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'getWorkflowOccurrence'
-     *
-     * @param  string $flow_id The flow id (required)
-     * @param  string $run_id The occurrence id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getWorkflowOccurrence'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    public function getWorkflowOccurrenceRequest($flow_id, $run_id, string $contentType = self::contentTypes['getWorkflowOccurrence'][0])
-    {
-
-        // verify the required parameter 'flow_id' is set
-        if ($flow_id === null || (is_array($flow_id) && count($flow_id) === 0)) {
-            throw new \InvalidArgumentException(
-                'Missing the required parameter $flow_id when calling getWorkflowOccurrence'
-            );
-        }
-
-        // verify the required parameter 'run_id' is set
-        if ($run_id === null || (is_array($run_id) && count($run_id) === 0)) {
-            throw new \InvalidArgumentException(
-                'Missing the required parameter $run_id when calling getWorkflowOccurrence'
-            );
-        }
-
-
-        $resourcePath = '/api/orchestration/flows/{flowId}/runs/{runId}';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-
-        // path params
-        if ($flow_id !== null) {
-            $resourcePath = str_replace(
-                '{' . 'flowId' . '}',
-                ObjectSerializer::toPathValue($flow_id),
-                $resourcePath
-            );
-        }
-        // path params
-        if ($run_id !== null) {
-            $resourcePath = str_replace(
-                '{' . 'runId' . '}',
-                ObjectSerializer::toPathValue($run_id),
-                $resourcePath
-            );
-        }
-
-
-        $headers = $this->headerSelector->selectHeaders(
-            ['application/json', ],
-            $contentType,
-            $multipart
-        );
-
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
-                # if Content-Type contains "application/json", json_encode the form parameters
-                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = ObjectSerializer::buildQuery($formParams);
-            }
-        }
-
-        // this endpoint requires OAuth (access token)
-        if (!empty($this->config->getAccessToken())) {
-            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
-        }
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $operationHost = $this->config->getHost();
-        $query = ObjectSerializer::buildQuery($queryParams);
-        return new Request(
-            'GET',
-            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
-     * Operation listFlows
-     *
-     * List registered flows
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listFlows'] to see the possible values for this operation
-     *
-     * @throws \Formance\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return \Formance\Model\ListWorkflowsResponse|\Formance\Model\Error
-     */
-    public function listFlows(string $contentType = self::contentTypes['listFlows'][0])
-    {
-        list($response) = $this->listFlowsWithHttpInfo($contentType);
-        return $response;
-    }
-
-    /**
-     * Operation listFlowsWithHttpInfo
-     *
-     * List registered flows
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listFlows'] to see the possible values for this operation
-     *
-     * @throws \Formance\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ListWorkflowsResponse|\Formance\Model\Error, HTTP status code, HTTP response headers (array of strings)
-     */
-    public function listFlowsWithHttpInfo(string $contentType = self::contentTypes['listFlows'][0])
-    {
-        $request = $this->listFlowsRequest($contentType);
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    (int) $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            } catch (ConnectException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    (int) $e->getCode(),
-                    null,
-                    null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        (string) $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    (string) $response->getBody()
-                );
-            }
-
-            switch($statusCode) {
-                case 200:
-                    if ('\Formance\Model\ListWorkflowsResponse' === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ('\Formance\Model\ListWorkflowsResponse' !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\ListWorkflowsResponse', []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-                default:
-                    if ('\Formance\Model\Error' === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ('\Formance\Model\Error' !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\Error', []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-            }
-
-            $returnType = '\Formance\Model\ListWorkflowsResponse';
-            if ($returnType === '\SplFileObject') {
-                $content = $response->getBody(); //stream goes to serializer
-            } else {
-                $content = (string) $response->getBody();
-                if ($returnType !== 'string') {
-                    $content = json_decode($content);
-                }
-            }
-
-            return [
-                ObjectSerializer::deserialize($content, $returnType, []),
-                $response->getStatusCode(),
-                $response->getHeaders()
-            ];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Formance\Model\ListWorkflowsResponse',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                default:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Formance\Model\Error',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation listFlowsAsync
-     *
-     * List registered flows
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listFlows'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function listFlowsAsync(string $contentType = self::contentTypes['listFlows'][0])
-    {
-        return $this->listFlowsAsyncWithHttpInfo($contentType)
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation listFlowsAsyncWithHttpInfo
-     *
-     * List registered flows
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listFlows'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function listFlowsAsyncWithHttpInfo(string $contentType = self::contentTypes['listFlows'][0])
-    {
-        $returnType = '\Formance\Model\ListWorkflowsResponse';
-        $request = $this->listFlowsRequest($contentType);
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    if ($returnType === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ($returnType !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, $returnType, []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'listFlows'
-     *
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listFlows'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    public function listFlowsRequest(string $contentType = self::contentTypes['listFlows'][0])
-    {
-
-
-        $resourcePath = '/api/orchestration/flows';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-
-
-
-        $headers = $this->headerSelector->selectHeaders(
-            ['application/json', ],
-            $contentType,
-            $multipart
-        );
-
-        // for model (json/xml)
-        if (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
-                # if Content-Type contains "application/json", json_encode the form parameters
-                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = ObjectSerializer::buildQuery($formParams);
-            }
-        }
-
-        // this endpoint requires OAuth (access token)
-        if (!empty($this->config->getAccessToken())) {
-            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
-        }
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $operationHost = $this->config->getHost();
-        $query = ObjectSerializer::buildQuery($queryParams);
-        return new Request(
-            'GET',
-            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
-     * Operation listRuns
-     *
-     * List occurrences of a workflow
-     *
-     * @param  string $flow_id The flow id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listRuns'] to see the possible values for this operation
+     * @param  string $workflow_id A workflow id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listInstances'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \Formance\Model\ListRunsResponse|\Formance\Model\Error
      */
-    public function listRuns($flow_id, string $contentType = self::contentTypes['listRuns'][0])
+    public function listInstances($workflow_id, string $contentType = self::contentTypes['listInstances'][0])
     {
-        list($response) = $this->listRunsWithHttpInfo($flow_id, $contentType);
+        list($response) = $this->listInstancesWithHttpInfo($workflow_id, $contentType);
         return $response;
     }
 
     /**
-     * Operation listRunsWithHttpInfo
+     * Operation listInstancesWithHttpInfo
      *
-     * List occurrences of a workflow
+     * List instances of a workflow
      *
-     * @param  string $flow_id The flow id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listRuns'] to see the possible values for this operation
+     * @param  string $workflow_id A workflow id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listInstances'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\ListRunsResponse|\Formance\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listRunsWithHttpInfo($flow_id, string $contentType = self::contentTypes['listRuns'][0])
+    public function listInstancesWithHttpInfo($workflow_id, string $contentType = self::contentTypes['listInstances'][0])
     {
-        $request = $this->listRunsRequest($flow_id, $contentType);
+        $request = $this->listInstancesRequest($workflow_id, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1516,19 +1855,19 @@ class OrchestrationApi
     }
 
     /**
-     * Operation listRunsAsync
+     * Operation listInstancesAsync
      *
-     * List occurrences of a workflow
+     * List instances of a workflow
      *
-     * @param  string $flow_id The flow id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listRuns'] to see the possible values for this operation
+     * @param  string $workflow_id A workflow id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listInstances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listRunsAsync($flow_id, string $contentType = self::contentTypes['listRuns'][0])
+    public function listInstancesAsync($workflow_id, string $contentType = self::contentTypes['listInstances'][0])
     {
-        return $this->listRunsAsyncWithHttpInfo($flow_id, $contentType)
+        return $this->listInstancesAsyncWithHttpInfo($workflow_id, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1537,20 +1876,20 @@ class OrchestrationApi
     }
 
     /**
-     * Operation listRunsAsyncWithHttpInfo
+     * Operation listInstancesAsyncWithHttpInfo
      *
-     * List occurrences of a workflow
+     * List instances of a workflow
      *
-     * @param  string $flow_id The flow id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listRuns'] to see the possible values for this operation
+     * @param  string $workflow_id A workflow id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listInstances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listRunsAsyncWithHttpInfo($flow_id, string $contentType = self::contentTypes['listRuns'][0])
+    public function listInstancesAsyncWithHttpInfo($workflow_id, string $contentType = self::contentTypes['listInstances'][0])
     {
         $returnType = '\Formance\Model\ListRunsResponse';
-        $request = $this->listRunsRequest($flow_id, $contentType);
+        $request = $this->listInstancesRequest($workflow_id, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1589,26 +1928,325 @@ class OrchestrationApi
     }
 
     /**
-     * Create request for operation 'listRuns'
+     * Create request for operation 'listInstances'
      *
-     * @param  string $flow_id The flow id (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listRuns'] to see the possible values for this operation
+     * @param  string $workflow_id A workflow id (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listInstances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listRunsRequest($flow_id, string $contentType = self::contentTypes['listRuns'][0])
+    public function listInstancesRequest($workflow_id, string $contentType = self::contentTypes['listInstances'][0])
     {
 
-        // verify the required parameter 'flow_id' is set
-        if ($flow_id === null || (is_array($flow_id) && count($flow_id) === 0)) {
+        // verify the required parameter 'workflow_id' is set
+        if ($workflow_id === null || (is_array($workflow_id) && count($workflow_id) === 0)) {
             throw new \InvalidArgumentException(
-                'Missing the required parameter $flow_id when calling listRuns'
+                'Missing the required parameter $workflow_id when calling listInstances'
             );
         }
 
 
-        $resourcePath = '/api/orchestration/flows/{flowId}/runs';
+        $resourcePath = '/api/orchestration/instances';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $workflow_id,
+            'workflowID', // param base name
+            'string', // openApiType
+            'form', // style
+            true, // explode
+            true // required
+        ) ?? []);
+
+
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation listWorkflows
+     *
+     * List registered workflows
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listWorkflows'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Formance\Model\ListWorkflowsResponse|\Formance\Model\Error
+     */
+    public function listWorkflows(string $contentType = self::contentTypes['listWorkflows'][0])
+    {
+        list($response) = $this->listWorkflowsWithHttpInfo($contentType);
+        return $response;
+    }
+
+    /**
+     * Operation listWorkflowsWithHttpInfo
+     *
+     * List registered workflows
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listWorkflows'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Formance\Model\ListWorkflowsResponse|\Formance\Model\Error, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function listWorkflowsWithHttpInfo(string $contentType = self::contentTypes['listWorkflows'][0])
+    {
+        $request = $this->listWorkflowsRequest($contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            switch($statusCode) {
+                case 200:
+                    if ('\Formance\Model\ListWorkflowsResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\ListWorkflowsResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ListWorkflowsResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                default:
+                    if ('\Formance\Model\Error' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\Error' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\Error', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Formance\Model\ListWorkflowsResponse';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\ListWorkflowsResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation listWorkflowsAsync
+     *
+     * List registered workflows
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listWorkflows'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function listWorkflowsAsync(string $contentType = self::contentTypes['listWorkflows'][0])
+    {
+        return $this->listWorkflowsAsyncWithHttpInfo($contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation listWorkflowsAsyncWithHttpInfo
+     *
+     * List registered workflows
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listWorkflows'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function listWorkflowsAsyncWithHttpInfo(string $contentType = self::contentTypes['listWorkflows'][0])
+    {
+        $returnType = '\Formance\Model\ListWorkflowsResponse';
+        $request = $this->listWorkflowsRequest($contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'listWorkflows'
+     *
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listWorkflows'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function listWorkflowsRequest(string $contentType = self::contentTypes['listWorkflows'][0])
+    {
+
+
+        $resourcePath = '/api/orchestration/workflows';
         $formParams = [];
         $queryParams = [];
         $headerParams = [];
@@ -1617,14 +2255,6 @@ class OrchestrationApi
 
 
 
-        // path params
-        if ($flow_id !== null) {
-            $resourcePath = str_replace(
-                '{' . 'flowId' . '}',
-                ObjectSerializer::toPathValue($flow_id),
-                $resourcePath
-            );
-        }
 
 
         $headers = $this->headerSelector->selectHeaders(
@@ -1979,7 +2609,7 @@ class OrchestrationApi
      *
      * Run workflow
      *
-     * @param  string $flow_id The flow id (required)
+     * @param  string $workflow_id The flow id (required)
      * @param  bool $wait Wait end of the workflow before return (optional)
      * @param  array<string,string> $request_body request_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['runWorkflow'] to see the possible values for this operation
@@ -1988,9 +2618,9 @@ class OrchestrationApi
      * @throws \InvalidArgumentException
      * @return \Formance\Model\RunWorkflowResponse|\Formance\Model\Error
      */
-    public function runWorkflow($flow_id, $wait = null, $request_body = null, string $contentType = self::contentTypes['runWorkflow'][0])
+    public function runWorkflow($workflow_id, $wait = null, $request_body = null, string $contentType = self::contentTypes['runWorkflow'][0])
     {
-        list($response) = $this->runWorkflowWithHttpInfo($flow_id, $wait, $request_body, $contentType);
+        list($response) = $this->runWorkflowWithHttpInfo($workflow_id, $wait, $request_body, $contentType);
         return $response;
     }
 
@@ -1999,7 +2629,7 @@ class OrchestrationApi
      *
      * Run workflow
      *
-     * @param  string $flow_id The flow id (required)
+     * @param  string $workflow_id The flow id (required)
      * @param  bool $wait Wait end of the workflow before return (optional)
      * @param  array<string,string> $request_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['runWorkflow'] to see the possible values for this operation
@@ -2008,9 +2638,9 @@ class OrchestrationApi
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\RunWorkflowResponse|\Formance\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function runWorkflowWithHttpInfo($flow_id, $wait = null, $request_body = null, string $contentType = self::contentTypes['runWorkflow'][0])
+    public function runWorkflowWithHttpInfo($workflow_id, $wait = null, $request_body = null, string $contentType = self::contentTypes['runWorkflow'][0])
     {
-        $request = $this->runWorkflowRequest($flow_id, $wait, $request_body, $contentType);
+        $request = $this->runWorkflowRequest($workflow_id, $wait, $request_body, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -2124,7 +2754,7 @@ class OrchestrationApi
      *
      * Run workflow
      *
-     * @param  string $flow_id The flow id (required)
+     * @param  string $workflow_id The flow id (required)
      * @param  bool $wait Wait end of the workflow before return (optional)
      * @param  array<string,string> $request_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['runWorkflow'] to see the possible values for this operation
@@ -2132,9 +2762,9 @@ class OrchestrationApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function runWorkflowAsync($flow_id, $wait = null, $request_body = null, string $contentType = self::contentTypes['runWorkflow'][0])
+    public function runWorkflowAsync($workflow_id, $wait = null, $request_body = null, string $contentType = self::contentTypes['runWorkflow'][0])
     {
-        return $this->runWorkflowAsyncWithHttpInfo($flow_id, $wait, $request_body, $contentType)
+        return $this->runWorkflowAsyncWithHttpInfo($workflow_id, $wait, $request_body, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2147,7 +2777,7 @@ class OrchestrationApi
      *
      * Run workflow
      *
-     * @param  string $flow_id The flow id (required)
+     * @param  string $workflow_id The flow id (required)
      * @param  bool $wait Wait end of the workflow before return (optional)
      * @param  array<string,string> $request_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['runWorkflow'] to see the possible values for this operation
@@ -2155,10 +2785,10 @@ class OrchestrationApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function runWorkflowAsyncWithHttpInfo($flow_id, $wait = null, $request_body = null, string $contentType = self::contentTypes['runWorkflow'][0])
+    public function runWorkflowAsyncWithHttpInfo($workflow_id, $wait = null, $request_body = null, string $contentType = self::contentTypes['runWorkflow'][0])
     {
         $returnType = '\Formance\Model\RunWorkflowResponse';
-        $request = $this->runWorkflowRequest($flow_id, $wait, $request_body, $contentType);
+        $request = $this->runWorkflowRequest($workflow_id, $wait, $request_body, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2199,7 +2829,7 @@ class OrchestrationApi
     /**
      * Create request for operation 'runWorkflow'
      *
-     * @param  string $flow_id The flow id (required)
+     * @param  string $workflow_id The flow id (required)
      * @param  bool $wait Wait end of the workflow before return (optional)
      * @param  array<string,string> $request_body (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['runWorkflow'] to see the possible values for this operation
@@ -2207,20 +2837,20 @@ class OrchestrationApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function runWorkflowRequest($flow_id, $wait = null, $request_body = null, string $contentType = self::contentTypes['runWorkflow'][0])
+    public function runWorkflowRequest($workflow_id, $wait = null, $request_body = null, string $contentType = self::contentTypes['runWorkflow'][0])
     {
 
-        // verify the required parameter 'flow_id' is set
-        if ($flow_id === null || (is_array($flow_id) && count($flow_id) === 0)) {
+        // verify the required parameter 'workflow_id' is set
+        if ($workflow_id === null || (is_array($workflow_id) && count($workflow_id) === 0)) {
             throw new \InvalidArgumentException(
-                'Missing the required parameter $flow_id when calling runWorkflow'
+                'Missing the required parameter $workflow_id when calling runWorkflow'
             );
         }
 
 
 
 
-        $resourcePath = '/api/orchestration/flows/{flowId}/runs';
+        $resourcePath = '/api/orchestration/workflows/{workflowID}/instances';
         $formParams = [];
         $queryParams = [];
         $headerParams = [];
@@ -2239,10 +2869,10 @@ class OrchestrationApi
 
 
         // path params
-        if ($flow_id !== null) {
+        if ($workflow_id !== null) {
             $resourcePath = str_replace(
-                '{' . 'flowId' . '}',
-                ObjectSerializer::toPathValue($flow_id),
+                '{' . 'workflowID' . '}',
+                ObjectSerializer::toPathValue($workflow_id),
                 $resourcePath
             );
         }
@@ -2261,6 +2891,260 @@ class OrchestrationApi
                 $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($request_body));
             } else {
                 $httpBody = $request_body;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'POST',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation sendEvent
+     *
+     * Send an event to a running workflow
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  \Formance\Model\SendEventRequest $send_event_request send_event_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['sendEvent'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return void
+     */
+    public function sendEvent($instance_id, $send_event_request = null, string $contentType = self::contentTypes['sendEvent'][0])
+    {
+        $this->sendEventWithHttpInfo($instance_id, $send_event_request, $contentType);
+    }
+
+    /**
+     * Operation sendEventWithHttpInfo
+     *
+     * Send an event to a running workflow
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  \Formance\Model\SendEventRequest $send_event_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['sendEvent'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function sendEventWithHttpInfo($instance_id, $send_event_request = null, string $contentType = self::contentTypes['sendEvent'][0])
+    {
+        $request = $this->sendEventRequest($instance_id, $send_event_request, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            return [null, $statusCode, $response->getHeaders()];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\Error',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation sendEventAsync
+     *
+     * Send an event to a running workflow
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  \Formance\Model\SendEventRequest $send_event_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['sendEvent'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function sendEventAsync($instance_id, $send_event_request = null, string $contentType = self::contentTypes['sendEvent'][0])
+    {
+        return $this->sendEventAsyncWithHttpInfo($instance_id, $send_event_request, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation sendEventAsyncWithHttpInfo
+     *
+     * Send an event to a running workflow
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  \Formance\Model\SendEventRequest $send_event_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['sendEvent'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function sendEventAsyncWithHttpInfo($instance_id, $send_event_request = null, string $contentType = self::contentTypes['sendEvent'][0])
+    {
+        $returnType = '';
+        $request = $this->sendEventRequest($instance_id, $send_event_request, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'sendEvent'
+     *
+     * @param  string $instance_id The instance id (required)
+     * @param  \Formance\Model\SendEventRequest $send_event_request (optional)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['sendEvent'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function sendEventRequest($instance_id, $send_event_request = null, string $contentType = self::contentTypes['sendEvent'][0])
+    {
+
+        // verify the required parameter 'instance_id' is set
+        if ($instance_id === null || (is_array($instance_id) && count($instance_id) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $instance_id when calling sendEvent'
+            );
+        }
+
+
+
+        $resourcePath = '/api/orchestration/instances/{instanceID}/events';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($instance_id !== null) {
+            $resourcePath = str_replace(
+                '{' . 'instanceID' . '}',
+                ObjectSerializer::toPathValue($instance_id),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($send_event_request)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($send_event_request));
+            } else {
+                $httpBody = $send_event_request;
             }
         } elseif (count($formParams) > 0) {
             if ($multipart) {

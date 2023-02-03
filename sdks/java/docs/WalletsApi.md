@@ -374,7 +374,7 @@ public class Example {
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | Wallet successfully debited as a pending hold |  -  |
+| **201** | Wallet successfully debited as a pending hold |  -  |
 | **204** | Wallet successfully debited |  -  |
 | **0** | Error |  -  |
 

@@ -15,7 +15,7 @@ package com.formance.formance.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import com.formance.formance.model.WorkflowOccurrence;
+import com.formance.formance.model.WorkflowInstance;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -30,12 +30,12 @@ import java.io.IOException;
 public class RunWorkflowResponse {
   public static final String SERIALIZED_NAME_DATA = "data";
   @SerializedName(SERIALIZED_NAME_DATA)
-  private WorkflowOccurrence data;
+  private WorkflowInstance data;
 
   public RunWorkflowResponse() {
   }
 
-  public RunWorkflowResponse data(WorkflowOccurrence data) {
+  public RunWorkflowResponse data(WorkflowInstance data) {
     
     this.data = data;
     return this;
@@ -47,12 +47,12 @@ public class RunWorkflowResponse {
   **/
   @javax.annotation.Nonnull
 
-  public WorkflowOccurrence getData() {
+  public WorkflowInstance getData() {
     return data;
   }
 
 
-  public void setData(WorkflowOccurrence data) {
+  public void setData(WorkflowInstance data) {
     this.data = data;
   }
 

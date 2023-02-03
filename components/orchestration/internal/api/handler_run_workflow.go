@@ -18,7 +18,7 @@ func runWorkflow(m *workflow.Manager) http.HandlerFunc {
 				return
 			}
 		}
-		occurrence, err := m.RunWorkflow(r.Context(), workflowId(r), input)
+		instance, err := m.RunWorkflow(r.Context(), workflowID(r), input)
 		if err != nil {
 			api.InternalServerError(w, r, err)
 			return
@@ -26,22 +26,23 @@ func runWorkflow(m *workflow.Manager) http.HandlerFunc {
 
 		if wait := strings.ToLower(r.URL.Query().Get("wait")); wait == "true" || wait == "1" {
 			ret := struct {
-				*workflow.Occurrence
+				*workflow.Instance
 				Error string `json:"error,omitempty"`
 			}{
-				Occurrence: &occurrence,
+				Instance: &instance,
 			}
-			if err := m.Wait(r.Context(), occurrence.WorkflowID, occurrence.ID); err != nil {
+			if err := m.Wait(r.Context(), instance.ID); err != nil {
 				ret.Error = err.Error()
 			}
-			ret.Occurrence, err = m.GetOccurrence(r.Context(), occurrence.WorkflowID, occurrence.ID)
+			ret.Instance, err = m.GetInstance(r.Context(), instance.ID)
 			if err != nil {
 				panic(err)
 			}
+
 			api.Created(w, ret)
 			return
 		}
 
-		api.Created(w, occurrence)
+		api.Created(w, instance)
 	}
 }

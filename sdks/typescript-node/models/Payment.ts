@@ -29,7 +29,7 @@ export class Payment {
     'createdAt': Date;
     'raw': any;
     'adjustments': Array<PaymentAdjustment>;
-    'metadata': Array<PaymentMetadata>;
+    'metadata': PaymentMetadata;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -109,7 +109,7 @@ export class Payment {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "Array<PaymentMetadata>",
+            "type": "PaymentMetadata",
             "format": ""
         }    ];
 

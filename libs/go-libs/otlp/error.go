@@ -21,12 +21,10 @@ func RecordAsError(ctx context.Context, e any) {
 	if e == nil {
 		return
 	}
-	span := trace.SpanFromContext(ctx)
 	switch ee := e.(type) {
 	case error:
 		RecordError(ctx, ee)
 	default:
-		span.SetStatus(codes.Error, fmt.Sprint(e))
-		span.RecordError(fmt.Errorf("%s", e), trace.WithStackTrace(true))
+		RecordError(ctx, fmt.Errorf("%s", e))
 	}
 }

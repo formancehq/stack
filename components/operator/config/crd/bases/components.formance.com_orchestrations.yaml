@@ -1128,6 +1128,8 @@ spec:
                     type: string
                   namespace:
                     type: string
+                  taskQueue:
+                    type: string
                   tls:
                     properties:
                       crt:
@@ -1141,6 +1143,7 @@ spec:
                 required:
                 - address
                 - namespace
+                - taskQueue
                 - tls
                 type: object
               version:

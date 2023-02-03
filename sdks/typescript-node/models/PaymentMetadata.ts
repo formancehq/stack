@@ -10,13 +10,10 @@
  * Do not edit the class manually.
  */
 
-import { PaymentMetadataChangelog } from '../models/PaymentMetadataChangelog';
 import { HttpFile } from '../http/http';
 
 export class PaymentMetadata {
-    'key': string;
-    'value': string;
-    'changelog'?: PaymentMetadataChangelog;
+    'key'?: string;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -25,18 +22,6 @@ export class PaymentMetadata {
             "name": "key",
             "baseName": "key",
             "type": "string",
-            "format": ""
-        },
-        {
-            "name": "value",
-            "baseName": "value",
-            "type": "string",
-            "format": ""
-        },
-        {
-            "name": "changelog",
-            "baseName": "changelog",
-            "type": "PaymentMetadataChangelog",
             "format": ""
         }    ];
 

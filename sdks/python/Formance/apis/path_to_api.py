@@ -31,6 +31,7 @@ from Formance.apis.paths.api_ledger_ledger_logs import ApiLedgerLedgerLogs
 from Formance.apis.paths.api_payments__info import ApiPaymentsInfo
 from Formance.apis.paths.api_payments_payments import ApiPaymentsPayments
 from Formance.apis.paths.api_payments_payments_payment_id import ApiPaymentsPaymentsPaymentId
+from Formance.apis.paths.api_payments_payments_payment_id_metadata import ApiPaymentsPaymentsPaymentIdMetadata
 from Formance.apis.paths.api_payments_accounts import ApiPaymentsAccounts
 from Formance.apis.paths.api_payments_connectors import ApiPaymentsConnectors
 from Formance.apis.paths.api_payments_connectors_configs import ApiPaymentsConnectorsConfigs
@@ -39,7 +40,7 @@ from Formance.apis.paths.api_payments_connectors_connector_config import ApiPaym
 from Formance.apis.paths.api_payments_connectors_connector_reset import ApiPaymentsConnectorsConnectorReset
 from Formance.apis.paths.api_payments_connectors_connector_tasks import ApiPaymentsConnectorsConnectorTasks
 from Formance.apis.paths.api_payments_connectors_connector_tasks_task_id import ApiPaymentsConnectorsConnectorTasksTaskId
-from Formance.apis.paths.api_payments_connectors_stripe_transfer import ApiPaymentsConnectorsStripeTransfer
+from Formance.apis.paths.api_payments_connectors_stripe_transfers import ApiPaymentsConnectorsStripeTransfers
 from Formance.apis.paths.api_search__info import ApiSearchInfo
 from Formance.apis.paths.api_search_ import ApiSearch
 from Formance.apis.paths.api_webhooks_configs import ApiWebhooksConfigs
@@ -61,10 +62,14 @@ from Formance.apis.paths.api_wallets_holds_hold_id import ApiWalletsHoldsHoldID
 from Formance.apis.paths.api_wallets_holds_hold_id_confirm import ApiWalletsHoldsHoldIdConfirm
 from Formance.apis.paths.api_wallets_holds_hold_id_void import ApiWalletsHoldsHoldIdVoid
 from Formance.apis.paths.api_orchestration__info import ApiOrchestrationInfo
-from Formance.apis.paths.api_orchestration_flows import ApiOrchestrationFlows
-from Formance.apis.paths.api_orchestration_flows_flow_id import ApiOrchestrationFlowsFlowId
-from Formance.apis.paths.api_orchestration_flows_flow_id_runs import ApiOrchestrationFlowsFlowIdRuns
-from Formance.apis.paths.api_orchestration_flows_flow_id_runs_run_id import ApiOrchestrationFlowsFlowIdRunsRunId
+from Formance.apis.paths.api_orchestration_workflows import ApiOrchestrationWorkflows
+from Formance.apis.paths.api_orchestration_workflows_flow_id import ApiOrchestrationWorkflowsFlowId
+from Formance.apis.paths.api_orchestration_workflows_workflow_id_instances import ApiOrchestrationWorkflowsWorkflowIDInstances
+from Formance.apis.paths.api_orchestration_instances import ApiOrchestrationInstances
+from Formance.apis.paths.api_orchestration_instances_instance_id import ApiOrchestrationInstancesInstanceID
+from Formance.apis.paths.api_orchestration_instances_instance_id_events import ApiOrchestrationInstancesInstanceIDEvents
+from Formance.apis.paths.api_orchestration_instances_instance_id_history import ApiOrchestrationInstancesInstanceIDHistory
+from Formance.apis.paths.api_orchestration_instances_instance_id_stages_number_history import ApiOrchestrationInstancesInstanceIDStagesNumberHistory
 
 PathToApi = typing_extensions.TypedDict(
     'PathToApi',
@@ -99,6 +104,7 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.API_PAYMENTS__INFO: ApiPaymentsInfo,
         PathValues.API_PAYMENTS_PAYMENTS: ApiPaymentsPayments,
         PathValues.API_PAYMENTS_PAYMENTS_PAYMENT_ID: ApiPaymentsPaymentsPaymentId,
+        PathValues.API_PAYMENTS_PAYMENTS_PAYMENT_ID_METADATA: ApiPaymentsPaymentsPaymentIdMetadata,
         PathValues.API_PAYMENTS_ACCOUNTS: ApiPaymentsAccounts,
         PathValues.API_PAYMENTS_CONNECTORS: ApiPaymentsConnectors,
         PathValues.API_PAYMENTS_CONNECTORS_CONFIGS: ApiPaymentsConnectorsConfigs,
@@ -107,7 +113,7 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.API_PAYMENTS_CONNECTORS_CONNECTOR_RESET: ApiPaymentsConnectorsConnectorReset,
         PathValues.API_PAYMENTS_CONNECTORS_CONNECTOR_TASKS: ApiPaymentsConnectorsConnectorTasks,
         PathValues.API_PAYMENTS_CONNECTORS_CONNECTOR_TASKS_TASK_ID: ApiPaymentsConnectorsConnectorTasksTaskId,
-        PathValues.API_PAYMENTS_CONNECTORS_STRIPE_TRANSFER: ApiPaymentsConnectorsStripeTransfer,
+        PathValues.API_PAYMENTS_CONNECTORS_STRIPE_TRANSFERS: ApiPaymentsConnectorsStripeTransfers,
         PathValues.API_SEARCH__INFO: ApiSearchInfo,
         PathValues.API_SEARCH_: ApiSearch,
         PathValues.API_WEBHOOKS_CONFIGS: ApiWebhooksConfigs,
@@ -129,10 +135,14 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.API_WALLETS_HOLDS_HOLD_ID_CONFIRM: ApiWalletsHoldsHoldIdConfirm,
         PathValues.API_WALLETS_HOLDS_HOLD_ID_VOID: ApiWalletsHoldsHoldIdVoid,
         PathValues.API_ORCHESTRATION__INFO: ApiOrchestrationInfo,
-        PathValues.API_ORCHESTRATION_FLOWS: ApiOrchestrationFlows,
-        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID: ApiOrchestrationFlowsFlowId,
-        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID_RUNS: ApiOrchestrationFlowsFlowIdRuns,
-        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID_RUNS_RUN_ID: ApiOrchestrationFlowsFlowIdRunsRunId,
+        PathValues.API_ORCHESTRATION_WORKFLOWS: ApiOrchestrationWorkflows,
+        PathValues.API_ORCHESTRATION_WORKFLOWS_FLOW_ID: ApiOrchestrationWorkflowsFlowId,
+        PathValues.API_ORCHESTRATION_WORKFLOWS_WORKFLOW_ID_INSTANCES: ApiOrchestrationWorkflowsWorkflowIDInstances,
+        PathValues.API_ORCHESTRATION_INSTANCES: ApiOrchestrationInstances,
+        PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID: ApiOrchestrationInstancesInstanceID,
+        PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_EVENTS: ApiOrchestrationInstancesInstanceIDEvents,
+        PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_HISTORY: ApiOrchestrationInstancesInstanceIDHistory,
+        PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_STAGES_NUMBER_HISTORY: ApiOrchestrationInstancesInstanceIDStagesNumberHistory,
     }
 )
 
@@ -168,6 +178,7 @@ path_to_api = PathToApi(
         PathValues.API_PAYMENTS__INFO: ApiPaymentsInfo,
         PathValues.API_PAYMENTS_PAYMENTS: ApiPaymentsPayments,
         PathValues.API_PAYMENTS_PAYMENTS_PAYMENT_ID: ApiPaymentsPaymentsPaymentId,
+        PathValues.API_PAYMENTS_PAYMENTS_PAYMENT_ID_METADATA: ApiPaymentsPaymentsPaymentIdMetadata,
         PathValues.API_PAYMENTS_ACCOUNTS: ApiPaymentsAccounts,
         PathValues.API_PAYMENTS_CONNECTORS: ApiPaymentsConnectors,
         PathValues.API_PAYMENTS_CONNECTORS_CONFIGS: ApiPaymentsConnectorsConfigs,
@@ -176,7 +187,7 @@ path_to_api = PathToApi(
         PathValues.API_PAYMENTS_CONNECTORS_CONNECTOR_RESET: ApiPaymentsConnectorsConnectorReset,
         PathValues.API_PAYMENTS_CONNECTORS_CONNECTOR_TASKS: ApiPaymentsConnectorsConnectorTasks,
         PathValues.API_PAYMENTS_CONNECTORS_CONNECTOR_TASKS_TASK_ID: ApiPaymentsConnectorsConnectorTasksTaskId,
-        PathValues.API_PAYMENTS_CONNECTORS_STRIPE_TRANSFER: ApiPaymentsConnectorsStripeTransfer,
+        PathValues.API_PAYMENTS_CONNECTORS_STRIPE_TRANSFERS: ApiPaymentsConnectorsStripeTransfers,
         PathValues.API_SEARCH__INFO: ApiSearchInfo,
         PathValues.API_SEARCH_: ApiSearch,
         PathValues.API_WEBHOOKS_CONFIGS: ApiWebhooksConfigs,
@@ -198,9 +209,13 @@ path_to_api = PathToApi(
         PathValues.API_WALLETS_HOLDS_HOLD_ID_CONFIRM: ApiWalletsHoldsHoldIdConfirm,
         PathValues.API_WALLETS_HOLDS_HOLD_ID_VOID: ApiWalletsHoldsHoldIdVoid,
         PathValues.API_ORCHESTRATION__INFO: ApiOrchestrationInfo,
-        PathValues.API_ORCHESTRATION_FLOWS: ApiOrchestrationFlows,
-        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID: ApiOrchestrationFlowsFlowId,
-        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID_RUNS: ApiOrchestrationFlowsFlowIdRuns,
-        PathValues.API_ORCHESTRATION_FLOWS_FLOW_ID_RUNS_RUN_ID: ApiOrchestrationFlowsFlowIdRunsRunId,
+        PathValues.API_ORCHESTRATION_WORKFLOWS: ApiOrchestrationWorkflows,
+        PathValues.API_ORCHESTRATION_WORKFLOWS_FLOW_ID: ApiOrchestrationWorkflowsFlowId,
+        PathValues.API_ORCHESTRATION_WORKFLOWS_WORKFLOW_ID_INSTANCES: ApiOrchestrationWorkflowsWorkflowIDInstances,
+        PathValues.API_ORCHESTRATION_INSTANCES: ApiOrchestrationInstances,
+        PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID: ApiOrchestrationInstancesInstanceID,
+        PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_EVENTS: ApiOrchestrationInstancesInstanceIDEvents,
+        PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_HISTORY: ApiOrchestrationInstancesInstanceIDHistory,
+        PathValues.API_ORCHESTRATION_INSTANCES_INSTANCE_ID_STAGES_NUMBER_HISTORY: ApiOrchestrationInstancesInstanceIDStagesNumberHistory,
     }
 )

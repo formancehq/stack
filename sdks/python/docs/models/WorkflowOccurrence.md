@@ -9,13 +9,14 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **createdAt** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
-**[statuses](#statuses)** | list, tuple,  | tuple,  |  | 
+**statuses** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO |  | 
 **id** | str,  | str,  |  | 
 **workflowID** | str,  | str,  |  | 
 **updatedAt** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
+**[status](#status)** | list, tuple,  | tuple,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
-# statuses
+# status
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -165,6 +165,12 @@ func WithHiddenFlag(name string) CommandOptionFn {
 	}
 }
 
+func WithHidden() CommandOptionFn {
+	return func(cmd *cobra.Command) {
+		cmd.Hidden = true
+	}
+}
+
 func WithRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		cmd.RunE = fn

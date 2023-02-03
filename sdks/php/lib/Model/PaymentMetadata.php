@@ -58,9 +58,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var string[]
       */
     protected static $openAPITypes = [
-        'key' => 'string',
-        'value' => 'string',
-        'changelog' => '\Formance\Model\PaymentMetadataChangelog'
+        'key' => 'string'
     ];
 
     /**
@@ -71,9 +69,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'key' => null,
-        'value' => null,
-        'changelog' => null
+        'key' => null
     ];
 
     /**
@@ -82,9 +78,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'key' => false,
-		'value' => false,
-		'changelog' => false
+        'key' => false
     ];
 
     /**
@@ -173,9 +167,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'key' => 'key',
-        'value' => 'value',
-        'changelog' => 'changelog'
+        'key' => 'key'
     ];
 
     /**
@@ -184,9 +176,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'key' => 'setKey',
-        'value' => 'setValue',
-        'changelog' => 'setChangelog'
+        'key' => 'setKey'
     ];
 
     /**
@@ -195,9 +185,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'key' => 'getKey',
-        'value' => 'getValue',
-        'changelog' => 'getChangelog'
+        'key' => 'getKey'
     ];
 
     /**
@@ -258,8 +246,6 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
     public function __construct(array $data = null)
     {
         $this->setIfExists('key', $data ?? [], null);
-        $this->setIfExists('value', $data ?? [], null);
-        $this->setIfExists('changelog', $data ?? [], null);
     }
 
     /**
@@ -289,12 +275,6 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['key'] === null) {
-            $invalidProperties[] = "'key' can't be null";
-        }
-        if ($this->container['value'] === null) {
-            $invalidProperties[] = "'value' can't be null";
-        }
         return $invalidProperties;
     }
 
@@ -313,7 +293,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets key
      *
-     * @return string
+     * @return string|null
      */
     public function getKey()
     {
@@ -323,7 +303,7 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets key
      *
-     * @param string $key key
+     * @param string|null $key key
      *
      * @return self
      */
@@ -333,60 +313,6 @@ class PaymentMetadata implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable key cannot be null');
         }
         $this->container['key'] = $key;
-
-        return $this;
-    }
-
-    /**
-     * Gets value
-     *
-     * @return string
-     */
-    public function getValue()
-    {
-        return $this->container['value'];
-    }
-
-    /**
-     * Sets value
-     *
-     * @param string $value value
-     *
-     * @return self
-     */
-    public function setValue($value)
-    {
-        if (is_null($value)) {
-            throw new \InvalidArgumentException('non-nullable value cannot be null');
-        }
-        $this->container['value'] = $value;
-
-        return $this;
-    }
-
-    /**
-     * Gets changelog
-     *
-     * @return \Formance\Model\PaymentMetadataChangelog|null
-     */
-    public function getChangelog()
-    {
-        return $this->container['changelog'];
-    }
-
-    /**
-     * Sets changelog
-     *
-     * @param \Formance\Model\PaymentMetadataChangelog|null $changelog changelog
-     *
-     * @return self
-     */
-    public function setChangelog($changelog)
-    {
-        if (is_null($changelog)) {
-            throw new \InvalidArgumentException('non-nullable changelog cannot be null');
-        }
-        $this->container['changelog'] = $changelog;
 
         return $this;
     }

@@ -234,32 +234,10 @@ class Payment(
             
                 def __getitem__(self, i: int) -> 'PaymentAdjustment':
                     return super().__getitem__(i)
-            
-            
-            class metadata(
-                schemas.ListSchema
-            ):
-            
-            
-                class MetaOapg:
-                    
-                    @staticmethod
-                    def items() -> typing.Type['PaymentMetadata']:
-                        return PaymentMetadata
-            
-                def __new__(
-                    cls,
-                    _arg: typing.Union[typing.Tuple['PaymentMetadata'], typing.List['PaymentMetadata']],
-                    _configuration: typing.Optional[schemas.Configuration] = None,
-                ) -> 'metadata':
-                    return super().__new__(
-                        cls,
-                        _arg,
-                        _configuration=_configuration,
-                    )
-            
-                def __getitem__(self, i: int) -> 'PaymentMetadata':
-                    return super().__getitem__(i)
+        
+            @staticmethod
+            def metadata() -> typing.Type['PaymentMetadata']:
+                return PaymentMetadata
             __annotations__ = {
                 "id": id,
                 "reference": reference,
@@ -276,7 +254,7 @@ class Payment(
                 "metadata": metadata,
             }
     
-    metadata: MetaOapg.properties.metadata
+    metadata: 'PaymentMetadata'
     adjustments: MetaOapg.properties.adjustments
     scheme: MetaOapg.properties.scheme
     raw: MetaOapg.properties.raw
@@ -327,7 +305,7 @@ class Payment(
     def __getitem__(self, name: typing_extensions.Literal["adjustments"]) -> MetaOapg.properties.adjustments: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
+    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> 'PaymentMetadata': ...
     
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
@@ -374,7 +352,7 @@ class Payment(
     def get_item_oapg(self, name: typing_extensions.Literal["adjustments"]) -> MetaOapg.properties.adjustments: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> 'PaymentMetadata': ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -386,7 +364,7 @@ class Payment(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        metadata: typing.Union[MetaOapg.properties.metadata, list, tuple, ],
+        metadata: 'PaymentMetadata',
         adjustments: typing.Union[MetaOapg.properties.adjustments, list, tuple, ],
         scheme: typing.Union[MetaOapg.properties.scheme, str, ],
         raw: typing.Union[MetaOapg.properties.raw, dict, frozendict.frozendict, ],

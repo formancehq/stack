@@ -11,7 +11,7 @@
 |**id** | **String** |  |  |
 |**createdAt** | **OffsetDateTime** |  |  |
 |**updatedAt** | **OffsetDateTime** |  |  |
-|**statuses** | [**List&lt;StageStatus&gt;**](StageStatus.md) |  |  |
+|**status** | [**List&lt;StageStatus&gt;**](StageStatus.md) |  |  [optional] |
 
 
 

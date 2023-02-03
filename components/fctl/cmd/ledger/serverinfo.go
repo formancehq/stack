@@ -51,7 +51,7 @@ func NewServerInfoCommand() *cobra.Command {
 				return err
 			}
 
-			fctl.Highlightln(cmd.OutOrStdout(), "Ledgers :")
+			fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Ledgers :")
 			if err := pterm.DefaultBulletList.
 				WithWriter(cmd.OutOrStdout()).
 				WithItems(fctl.Map(response.Data.Config.Storage.Ledgers, func(ledger string) pterm.BulletListItem {

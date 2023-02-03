@@ -33,14 +33,14 @@ type Payment struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Raw map[string]interface{} `json:"raw"`
 	Adjustments []PaymentAdjustment `json:"adjustments"`
-	Metadata []PaymentMetadata `json:"metadata"`
+	Metadata PaymentMetadata `json:"metadata"`
 }
 
 // NewPayment instantiates a new Payment object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPayment(id string, reference string, accountID string, type_ string, provider Connector, status PaymentStatus, initialAmount int64, scheme string, asset string, createdAt time.Time, raw map[string]interface{}, adjustments []PaymentAdjustment, metadata []PaymentMetadata) *Payment {
+func NewPayment(id string, reference string, accountID string, type_ string, provider Connector, status PaymentStatus, initialAmount int64, scheme string, asset string, createdAt time.Time, raw map[string]interface{}, adjustments []PaymentAdjustment, metadata PaymentMetadata) *Payment {
 	this := Payment{}
 	this.Id = id
 	this.Reference = reference
@@ -355,9 +355,9 @@ func (o *Payment) SetAdjustments(v []PaymentAdjustment) {
 }
 
 // GetMetadata returns the Metadata field value
-func (o *Payment) GetMetadata() []PaymentMetadata {
+func (o *Payment) GetMetadata() PaymentMetadata {
 	if o == nil {
-		var ret []PaymentMetadata
+		var ret PaymentMetadata
 		return ret
 	}
 
@@ -366,15 +366,15 @@ func (o *Payment) GetMetadata() []PaymentMetadata {
 
 // GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
-func (o *Payment) GetMetadataOk() ([]PaymentMetadata, bool) {
+func (o *Payment) GetMetadataOk() (*PaymentMetadata, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
 // SetMetadata sets field value
-func (o *Payment) SetMetadata(v []PaymentMetadata) {
+func (o *Payment) SetMetadata(v PaymentMetadata) {
 	o.Metadata = v
 }
 

@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**ConnectorsStripeTransfer**](PaymentsApi.md#ConnectorsStripeTransfer) | **Post** /api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts
+[**ConnectorsStripeTransfer**](PaymentsApi.md#ConnectorsStripeTransfer) | **Post** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts
 [**GetConnectorTask**](PaymentsApi.md#GetConnectorTask) | **Get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 [**GetPayment**](PaymentsApi.md#GetPayment) | **Get** /api/payments/payments/{paymentId} | Get a payment
 [**InstallConnector**](PaymentsApi.md#InstallConnector) | **Post** /api/payments/connectors/{connector} | Install a connector
@@ -16,6 +16,7 @@ Method | HTTP request | Description
 [**ReadConnectorConfig**](PaymentsApi.md#ReadConnectorConfig) | **Get** /api/payments/connectors/{connector}/config | Read the config of a connector
 [**ResetConnector**](PaymentsApi.md#ResetConnector) | **Post** /api/payments/connectors/{connector}/reset | Reset a connector
 [**UninstallConnector**](PaymentsApi.md#UninstallConnector) | **Delete** /api/payments/connectors/{connector} | Uninstall a connector
+[**UpdateMetadata**](PaymentsApi.md#UpdateMetadata) | **Patch** /api/payments/payments/{paymentId}/metadata | Update metadata
 
 
 
@@ -827,6 +828,74 @@ Name | Type | Description  | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## UpdateMetadata
+
+> UpdateMetadata(ctx, paymentId).PaymentMetadata(paymentMetadata).Execute()
+
+Update metadata
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    paymentId := "XXX" // string | The payment ID.
+    paymentMetadata := *client.NewPaymentMetadata() // PaymentMetadata | 
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.PaymentsApi.UpdateMetadata(context.Background(), paymentId).PaymentMetadata(paymentMetadata).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.UpdateMetadata``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**paymentId** | **string** | The payment ID. | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpdateMetadataRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **paymentMetadata** | [**PaymentMetadata**](PaymentMetadata.md) |  | 
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

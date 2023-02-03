@@ -6,6 +6,15 @@ export * from '../models/AccountsCursorCursor';
 export * from '../models/AccountsCursorCursorAllOf';
 export * from '../models/AccountsCursorResponse';
 export * from '../models/AccountsCursorResponseCursor';
+export * from '../models/ActivityConfirmHold';
+export * from '../models/ActivityCreateTransaction';
+export * from '../models/ActivityCreditWallet';
+export * from '../models/ActivityDebitWallet';
+export * from '../models/ActivityGetAccount';
+export * from '../models/ActivityGetPayment';
+export * from '../models/ActivityGetWallet';
+export * from '../models/ActivityRevertTransaction';
+export * from '../models/ActivityVoidHold';
 export * from '../models/AggregateBalancesResponse';
 export * from '../models/AssetHolder';
 export * from '../models/Attempt';
@@ -66,7 +75,9 @@ export * from '../models/GetTransactionsResponse';
 export * from '../models/GetTransactionsResponseCursor';
 export * from '../models/GetTransactionsResponseCursorAllOf';
 export * from '../models/GetWalletResponse';
-export * from '../models/GetWorkflowOccurrenceResponse';
+export * from '../models/GetWorkflowInstanceHistoryResponse';
+export * from '../models/GetWorkflowInstanceHistoryStageResponse';
+export * from '../models/GetWorkflowInstanceResponse';
 export * from '../models/GetWorkflowResponse';
 export * from '../models/Hold';
 export * from '../models/LedgerAccountSubject';
@@ -79,8 +90,6 @@ export * from '../models/ListBalancesResponseCursor';
 export * from '../models/ListBalancesResponseCursorAllOf';
 export * from '../models/ListClientsResponse';
 export * from '../models/ListRunsResponse';
-export * from '../models/ListRunsResponseCursor';
-export * from '../models/ListRunsResponseCursorAllOf';
 export * from '../models/ListScopesResponse';
 export * from '../models/ListUsersResponse';
 export * from '../models/ListWalletsResponse';
@@ -96,11 +105,9 @@ export * from '../models/MigrationInfo';
 export * from '../models/ModelError';
 export * from '../models/ModulrConfig';
 export * from '../models/Monetary';
-export * from '../models/OrchestrationCursor';
 export * from '../models/Payment';
 export * from '../models/PaymentAdjustment';
 export * from '../models/PaymentMetadata';
-export * from '../models/PaymentMetadataChangelog';
 export * from '../models/PaymentResponse';
 export * from '../models/PaymentStatus';
 export * from '../models/PaymentsAccount';
@@ -124,8 +131,19 @@ export * from '../models/ScriptResponse';
 export * from '../models/Secret';
 export * from '../models/SecretAllOf';
 export * from '../models/SecretOptions';
+export * from '../models/SendEventRequest';
 export * from '../models/ServerInfo';
+export * from '../models/Stage';
+export * from '../models/StageDelay';
+export * from '../models/StageSend';
+export * from '../models/StageSendDestination';
+export * from '../models/StageSendDestinationPayment';
+export * from '../models/StageSendSource';
+export * from '../models/StageSendSourceAccount';
+export * from '../models/StageSendSourcePayment';
+export * from '../models/StageSendSourceWallet';
 export * from '../models/StageStatus';
+export * from '../models/StageWaitEvent';
 export * from '../models/Stats';
 export * from '../models/StatsResponse';
 export * from '../models/StripeConfig';
@@ -178,7 +196,11 @@ export * from '../models/WebhooksConfig';
 export * from '../models/WiseConfig';
 export * from '../models/Workflow';
 export * from '../models/WorkflowConfig';
-export * from '../models/WorkflowOccurrence';
+export * from '../models/WorkflowInstance';
+export * from '../models/WorkflowInstanceHistory';
+export * from '../models/WorkflowInstanceHistoryStage';
+export * from '../models/WorkflowInstanceHistoryStageInput';
+export * from '../models/WorkflowInstanceHistoryStageOutput';
 
 import { Account } from '../models/Account';
 import { AccountResponse } from '../models/AccountResponse';
@@ -188,6 +210,15 @@ import { AccountsCursorCursor } from '../models/AccountsCursorCursor';
 import { AccountsCursorCursorAllOf } from '../models/AccountsCursorCursorAllOf';
 import { AccountsCursorResponse } from '../models/AccountsCursorResponse';
 import { AccountsCursorResponseCursor } from '../models/AccountsCursorResponseCursor';
+import { ActivityConfirmHold } from '../models/ActivityConfirmHold';
+import { ActivityCreateTransaction } from '../models/ActivityCreateTransaction';
+import { ActivityCreditWallet } from '../models/ActivityCreditWallet';
+import { ActivityDebitWallet } from '../models/ActivityDebitWallet';
+import { ActivityGetAccount } from '../models/ActivityGetAccount';
+import { ActivityGetPayment } from '../models/ActivityGetPayment';
+import { ActivityGetWallet } from '../models/ActivityGetWallet';
+import { ActivityRevertTransaction } from '../models/ActivityRevertTransaction';
+import { ActivityVoidHold } from '../models/ActivityVoidHold';
 import { AggregateBalancesResponse } from '../models/AggregateBalancesResponse';
 import { AssetHolder } from '../models/AssetHolder';
 import { Attempt } from '../models/Attempt';
@@ -248,7 +279,9 @@ import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
 import { GetWalletResponse } from '../models/GetWalletResponse';
-import { GetWorkflowOccurrenceResponse } from '../models/GetWorkflowOccurrenceResponse';
+import { GetWorkflowInstanceHistoryResponse } from '../models/GetWorkflowInstanceHistoryResponse';
+import { GetWorkflowInstanceHistoryStageResponse } from '../models/GetWorkflowInstanceHistoryStageResponse';
+import { GetWorkflowInstanceResponse } from '../models/GetWorkflowInstanceResponse';
 import { GetWorkflowResponse } from '../models/GetWorkflowResponse';
 import { Hold } from '../models/Hold';
 import { LedgerAccountSubject } from '../models/LedgerAccountSubject';
@@ -261,8 +294,6 @@ import { ListBalancesResponseCursor } from '../models/ListBalancesResponseCursor
 import { ListBalancesResponseCursorAllOf } from '../models/ListBalancesResponseCursorAllOf';
 import { ListClientsResponse } from '../models/ListClientsResponse';
 import { ListRunsResponse } from '../models/ListRunsResponse';
-import { ListRunsResponseCursor } from '../models/ListRunsResponseCursor';
-import { ListRunsResponseCursorAllOf } from '../models/ListRunsResponseCursorAllOf';
 import { ListScopesResponse } from '../models/ListScopesResponse';
 import { ListUsersResponse } from '../models/ListUsersResponse';
 import { ListWalletsResponse } from '../models/ListWalletsResponse';
@@ -278,11 +309,9 @@ import { MigrationInfo   , MigrationInfoStateEnum   } from '../models/MigrationI
 import { ModelError, ModelErrorErrorCodeEnum    } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
 import { Monetary } from '../models/Monetary';
-import { OrchestrationCursor } from '../models/OrchestrationCursor';
 import { Payment   , PaymentTypeEnum     , PaymentSchemeEnum        } from '../models/Payment';
 import { PaymentAdjustment      } from '../models/PaymentAdjustment';
 import { PaymentMetadata } from '../models/PaymentMetadata';
-import { PaymentMetadataChangelog } from '../models/PaymentMetadataChangelog';
 import { PaymentResponse } from '../models/PaymentResponse';
 import { PaymentStatus } from '../models/PaymentStatus';
 import { PaymentsAccount    , PaymentsAccountTypeEnum   } from '../models/PaymentsAccount';
@@ -306,8 +335,19 @@ import { ScriptResponse     } from '../models/ScriptResponse';
 import { Secret } from '../models/Secret';
 import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
+import { SendEventRequest } from '../models/SendEventRequest';
 import { ServerInfo } from '../models/ServerInfo';
+import { Stage } from '../models/Stage';
+import { StageDelay } from '../models/StageDelay';
+import { StageSend } from '../models/StageSend';
+import { StageSendDestination } from '../models/StageSendDestination';
+import { StageSendDestinationPayment } from '../models/StageSendDestinationPayment';
+import { StageSendSource } from '../models/StageSendSource';
+import { StageSendSourceAccount } from '../models/StageSendSourceAccount';
+import { StageSendSourcePayment } from '../models/StageSendSourcePayment';
+import { StageSendSourceWallet } from '../models/StageSendSourceWallet';
 import { StageStatus } from '../models/StageStatus';
+import { StageWaitEvent } from '../models/StageWaitEvent';
 import { Stats } from '../models/Stats';
 import { StatsResponse } from '../models/StatsResponse';
 import { StripeConfig } from '../models/StripeConfig';
@@ -360,7 +400,11 @@ import { WebhooksConfig } from '../models/WebhooksConfig';
 import { WiseConfig } from '../models/WiseConfig';
 import { Workflow } from '../models/Workflow';
 import { WorkflowConfig } from '../models/WorkflowConfig';
-import { WorkflowOccurrence } from '../models/WorkflowOccurrence';
+import { WorkflowInstance } from '../models/WorkflowInstance';
+import { WorkflowInstanceHistory } from '../models/WorkflowInstanceHistory';
+import { WorkflowInstanceHistoryStage } from '../models/WorkflowInstanceHistoryStage';
+import { WorkflowInstanceHistoryStageInput } from '../models/WorkflowInstanceHistoryStageInput';
+import { WorkflowInstanceHistoryStageOutput } from '../models/WorkflowInstanceHistoryStageOutput';
 
 /* tslint:disable:no-unused-variable */
 let primitives = [
@@ -403,6 +447,15 @@ let typeMap: {[index: string]: any} = {
     "AccountsCursorCursorAllOf": AccountsCursorCursorAllOf,
     "AccountsCursorResponse": AccountsCursorResponse,
     "AccountsCursorResponseCursor": AccountsCursorResponseCursor,
+    "ActivityConfirmHold": ActivityConfirmHold,
+    "ActivityCreateTransaction": ActivityCreateTransaction,
+    "ActivityCreditWallet": ActivityCreditWallet,
+    "ActivityDebitWallet": ActivityDebitWallet,
+    "ActivityGetAccount": ActivityGetAccount,
+    "ActivityGetPayment": ActivityGetPayment,
+    "ActivityGetWallet": ActivityGetWallet,
+    "ActivityRevertTransaction": ActivityRevertTransaction,
+    "ActivityVoidHold": ActivityVoidHold,
     "AggregateBalancesResponse": AggregateBalancesResponse,
     "AssetHolder": AssetHolder,
     "Attempt": Attempt,
@@ -461,7 +514,9 @@ let typeMap: {[index: string]: any} = {
     "GetTransactionsResponseCursor": GetTransactionsResponseCursor,
     "GetTransactionsResponseCursorAllOf": GetTransactionsResponseCursorAllOf,
     "GetWalletResponse": GetWalletResponse,
-    "GetWorkflowOccurrenceResponse": GetWorkflowOccurrenceResponse,
+    "GetWorkflowInstanceHistoryResponse": GetWorkflowInstanceHistoryResponse,
+    "GetWorkflowInstanceHistoryStageResponse": GetWorkflowInstanceHistoryStageResponse,
+    "GetWorkflowInstanceResponse": GetWorkflowInstanceResponse,
     "GetWorkflowResponse": GetWorkflowResponse,
     "Hold": Hold,
     "LedgerAccountSubject": LedgerAccountSubject,
@@ -474,8 +529,6 @@ let typeMap: {[index: string]: any} = {
     "ListBalancesResponseCursorAllOf": ListBalancesResponseCursorAllOf,
     "ListClientsResponse": ListClientsResponse,
     "ListRunsResponse": ListRunsResponse,
-    "ListRunsResponseCursor": ListRunsResponseCursor,
-    "ListRunsResponseCursorAllOf": ListRunsResponseCursorAllOf,
     "ListScopesResponse": ListScopesResponse,
     "ListUsersResponse": ListUsersResponse,
     "ListWalletsResponse": ListWalletsResponse,
@@ -491,11 +544,9 @@ let typeMap: {[index: string]: any} = {
     "ModelError": ModelError,
     "ModulrConfig": ModulrConfig,
     "Monetary": Monetary,
-    "OrchestrationCursor": OrchestrationCursor,
     "Payment": Payment,
     "PaymentAdjustment": PaymentAdjustment,
     "PaymentMetadata": PaymentMetadata,
-    "PaymentMetadataChangelog": PaymentMetadataChangelog,
     "PaymentResponse": PaymentResponse,
     "PaymentsAccount": PaymentsAccount,
     "PaymentsCursor": PaymentsCursor,
@@ -518,8 +569,19 @@ let typeMap: {[index: string]: any} = {
     "Secret": Secret,
     "SecretAllOf": SecretAllOf,
     "SecretOptions": SecretOptions,
+    "SendEventRequest": SendEventRequest,
     "ServerInfo": ServerInfo,
+    "Stage": Stage,
+    "StageDelay": StageDelay,
+    "StageSend": StageSend,
+    "StageSendDestination": StageSendDestination,
+    "StageSendDestinationPayment": StageSendDestinationPayment,
+    "StageSendSource": StageSendSource,
+    "StageSendSourceAccount": StageSendSourceAccount,
+    "StageSendSourcePayment": StageSendSourcePayment,
+    "StageSendSourceWallet": StageSendSourceWallet,
     "StageStatus": StageStatus,
+    "StageWaitEvent": StageWaitEvent,
     "Stats": Stats,
     "StatsResponse": StatsResponse,
     "StripeConfig": StripeConfig,
@@ -572,7 +634,11 @@ let typeMap: {[index: string]: any} = {
     "WiseConfig": WiseConfig,
     "Workflow": Workflow,
     "WorkflowConfig": WorkflowConfig,
-    "WorkflowOccurrence": WorkflowOccurrence,
+    "WorkflowInstance": WorkflowInstance,
+    "WorkflowInstanceHistory": WorkflowInstanceHistory,
+    "WorkflowInstanceHistoryStage": WorkflowInstanceHistoryStage,
+    "WorkflowInstanceHistoryStageInput": WorkflowInstanceHistoryStageInput,
+    "WorkflowInstanceHistoryStageOutput": WorkflowInstanceHistoryStageOutput,
 }
 
 export class ObjectSerializer {

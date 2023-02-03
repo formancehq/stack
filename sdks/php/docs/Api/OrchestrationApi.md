@@ -4,13 +4,16 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 
 | Method | HTTP request | Description |
 | ------------- | ------------- | ------------- |
-| [**createWorkflow()**](OrchestrationApi.md#createWorkflow) | **POST** /api/orchestration/flows | Create workflow |
-| [**getFlow()**](OrchestrationApi.md#getFlow) | **GET** /api/orchestration/flows/{flowId} | Get a flow by id |
-| [**getWorkflowOccurrence()**](OrchestrationApi.md#getWorkflowOccurrence) | **GET** /api/orchestration/flows/{flowId}/runs/{runId} | Get a workflow occurrence by id |
-| [**listFlows()**](OrchestrationApi.md#listFlows) | **GET** /api/orchestration/flows | List registered flows |
-| [**listRuns()**](OrchestrationApi.md#listRuns) | **GET** /api/orchestration/flows/{flowId}/runs | List occurrences of a workflow |
+| [**createWorkflow()**](OrchestrationApi.md#createWorkflow) | **POST** /api/orchestration/workflows | Create workflow |
+| [**getInstance()**](OrchestrationApi.md#getInstance) | **GET** /api/orchestration/instances/{instanceID} | Get a workflow instance by id |
+| [**getInstanceHistory()**](OrchestrationApi.md#getInstanceHistory) | **GET** /api/orchestration/instances/{instanceID}/history | Get a workflow instance history by id |
+| [**getInstanceStageHistory()**](OrchestrationApi.md#getInstanceStageHistory) | **GET** /api/orchestration/instances/{instanceID}/stages/{number}/history | Get a workflow instance stage history |
+| [**getWorkflow()**](OrchestrationApi.md#getWorkflow) | **GET** /api/orchestration/workflows/{flowId} | Get a flow by id |
+| [**listInstances()**](OrchestrationApi.md#listInstances) | **GET** /api/orchestration/instances | List instances of a workflow |
+| [**listWorkflows()**](OrchestrationApi.md#listWorkflows) | **GET** /api/orchestration/workflows | List registered workflows |
 | [**orchestrationgetServerInfo()**](OrchestrationApi.md#orchestrationgetServerInfo) | **GET** /api/orchestration/_info | Get server info |
-| [**runWorkflow()**](OrchestrationApi.md#runWorkflow) | **POST** /api/orchestration/flows/{flowId}/runs | Run workflow |
+| [**runWorkflow()**](OrchestrationApi.md#runWorkflow) | **POST** /api/orchestration/workflows/{workflowID}/instances | Run workflow |
+| [**sendEvent()**](OrchestrationApi.md#sendEvent) | **POST** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow |
 
 
 ## `createWorkflow()`
@@ -73,10 +76,192 @@ try {
 [[Back to Model list]](../../README.md#models)
 [[Back to README]](../../README.md)
 
-## `getFlow()`
+## `getInstance()`
 
 ```php
-getFlow($flow_id): \Formance\Model\GetWorkflowResponse
+getInstance($instance_id): \Formance\Model\GetWorkflowInstanceResponse
+```
+
+Get a workflow instance by id
+
+Get a workflow instance by id
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\OrchestrationApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$instance_id = xxx; // string | The instance id
+
+try {
+    $result = $apiInstance->getInstance($instance_id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling OrchestrationApi->getInstance: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+| Name | Type | Description  | Notes |
+| ------------- | ------------- | ------------- | ------------- |
+| **instance_id** | **string**| The instance id | |
+
+### Return type
+
+[**\Formance\Model\GetWorkflowInstanceResponse**](../Model/GetWorkflowInstanceResponse.md)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `getInstanceHistory()`
+
+```php
+getInstanceHistory($instance_id): \Formance\Model\GetWorkflowInstanceHistoryResponse
+```
+
+Get a workflow instance history by id
+
+Get a workflow instance history by id
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\OrchestrationApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$instance_id = xxx; // string | The instance id
+
+try {
+    $result = $apiInstance->getInstanceHistory($instance_id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling OrchestrationApi->getInstanceHistory: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+| Name | Type | Description  | Notes |
+| ------------- | ------------- | ------------- | ------------- |
+| **instance_id** | **string**| The instance id | |
+
+### Return type
+
+[**\Formance\Model\GetWorkflowInstanceHistoryResponse**](../Model/GetWorkflowInstanceHistoryResponse.md)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `getInstanceStageHistory()`
+
+```php
+getInstanceStageHistory($instance_id, $number): \Formance\Model\GetWorkflowInstanceHistoryStageResponse
+```
+
+Get a workflow instance stage history
+
+Get a workflow instance stage history
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\OrchestrationApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$instance_id = xxx; // string | The instance id
+$number = 0; // int | The stage number
+
+try {
+    $result = $apiInstance->getInstanceStageHistory($instance_id, $number);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling OrchestrationApi->getInstanceStageHistory: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+| Name | Type | Description  | Notes |
+| ------------- | ------------- | ------------- | ------------- |
+| **instance_id** | **string**| The instance id | |
+| **number** | **int**| The stage number | |
+
+### Return type
+
+[**\Formance\Model\GetWorkflowInstanceHistoryStageResponse**](../Model/GetWorkflowInstanceHistoryStageResponse.md)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `getWorkflow()`
+
+```php
+getWorkflow($flow_id): \Formance\Model\GetWorkflowResponse
 ```
 
 Get a flow by id
@@ -103,10 +288,10 @@ $apiInstance = new Formance\Api\OrchestrationApi(
 $flow_id = xxx; // string | The flow id
 
 try {
-    $result = $apiInstance->getFlow($flow_id);
+    $result = $apiInstance->getWorkflow($flow_id);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling OrchestrationApi->getFlow: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling OrchestrationApi->getWorkflow: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -133,15 +318,15 @@ try {
 [[Back to Model list]](../../README.md#models)
 [[Back to README]](../../README.md)
 
-## `getWorkflowOccurrence()`
+## `listInstances()`
 
 ```php
-getWorkflowOccurrence($flow_id, $run_id): \Formance\Model\GetWorkflowOccurrenceResponse
+listInstances($workflow_id): \Formance\Model\ListRunsResponse
 ```
 
-Get a workflow occurrence by id
+List instances of a workflow
 
-Get a workflow occurrence by id
+List instances of a workflow
 
 ### Example
 
@@ -160,14 +345,13 @@ $apiInstance = new Formance\Api\OrchestrationApi(
     new GuzzleHttp\Client(),
     $config
 );
-$flow_id = xxx; // string | The flow id
-$run_id = xxx; // string | The occurrence id
+$workflow_id = xxx; // string | A workflow id
 
 try {
-    $result = $apiInstance->getWorkflowOccurrence($flow_id, $run_id);
+    $result = $apiInstance->listInstances($workflow_id);
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling OrchestrationApi->getWorkflowOccurrence: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling OrchestrationApi->listInstances: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -175,12 +359,11 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **flow_id** | **string**| The flow id | |
-| **run_id** | **string**| The occurrence id | |
+| **workflow_id** | **string**| A workflow id | |
 
 ### Return type
 
-[**\Formance\Model\GetWorkflowOccurrenceResponse**](../Model/GetWorkflowOccurrenceResponse.md)
+[**\Formance\Model\ListRunsResponse**](../Model/ListRunsResponse.md)
 
 ### Authorization
 
@@ -195,15 +378,15 @@ try {
 [[Back to Model list]](../../README.md#models)
 [[Back to README]](../../README.md)
 
-## `listFlows()`
+## `listWorkflows()`
 
 ```php
-listFlows(): \Formance\Model\ListWorkflowsResponse
+listWorkflows(): \Formance\Model\ListWorkflowsResponse
 ```
 
-List registered flows
+List registered workflows
 
-List registered flows
+List registered workflows
 
 ### Example
 
@@ -224,10 +407,10 @@ $apiInstance = new Formance\Api\OrchestrationApi(
 );
 
 try {
-    $result = $apiInstance->listFlows();
+    $result = $apiInstance->listWorkflows();
     print_r($result);
 } catch (Exception $e) {
-    echo 'Exception when calling OrchestrationApi->listFlows: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling OrchestrationApi->listWorkflows: ', $e->getMessage(), PHP_EOL;
 }
 ```
 
@@ -238,66 +421,6 @@ This endpoint does not need any parameter.
 ### Return type
 
 [**\Formance\Model\ListWorkflowsResponse**](../Model/ListWorkflowsResponse.md)
-
-### Authorization
-
-[Authorization](../../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: `application/json`
-
-[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
-[[Back to Model list]](../../README.md#models)
-[[Back to README]](../../README.md)
-
-## `listRuns()`
-
-```php
-listRuns($flow_id): \Formance\Model\ListRunsResponse
-```
-
-List occurrences of a workflow
-
-List occurrences of a workflow
-
-### Example
-
-```php
-<?php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-
-// Configure OAuth2 access token for authorization: Authorization
-$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
-
-
-$apiInstance = new Formance\Api\OrchestrationApi(
-    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
-    // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client(),
-    $config
-);
-$flow_id = xxx; // string | The flow id
-
-try {
-    $result = $apiInstance->listRuns($flow_id);
-    print_r($result);
-} catch (Exception $e) {
-    echo 'Exception when calling OrchestrationApi->listRuns: ', $e->getMessage(), PHP_EOL;
-}
-```
-
-### Parameters
-
-| Name | Type | Description  | Notes |
-| ------------- | ------------- | ------------- | ------------- |
-| **flow_id** | **string**| The flow id | |
-
-### Return type
-
-[**\Formance\Model\ListRunsResponse**](../Model/ListRunsResponse.md)
 
 ### Authorization
 
@@ -370,7 +493,7 @@ This endpoint does not need any parameter.
 ## `runWorkflow()`
 
 ```php
-runWorkflow($flow_id, $wait, $request_body): \Formance\Model\RunWorkflowResponse
+runWorkflow($workflow_id, $wait, $request_body): \Formance\Model\RunWorkflowResponse
 ```
 
 Run workflow
@@ -394,12 +517,12 @@ $apiInstance = new Formance\Api\OrchestrationApi(
     new GuzzleHttp\Client(),
     $config
 );
-$flow_id = xxx; // string | The flow id
+$workflow_id = xxx; // string | The flow id
 $wait = True; // bool | Wait end of the workflow before return
 $request_body = array('key' => 'request_body_example'); // array<string,string>
 
 try {
-    $result = $apiInstance->runWorkflow($flow_id, $wait, $request_body);
+    $result = $apiInstance->runWorkflow($workflow_id, $wait, $request_body);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling OrchestrationApi->runWorkflow: ', $e->getMessage(), PHP_EOL;
@@ -410,13 +533,74 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **flow_id** | **string**| The flow id | |
+| **workflow_id** | **string**| The flow id | |
 | **wait** | **bool**| Wait end of the workflow before return | [optional] |
 | **request_body** | [**array<string,string>**](../Model/string.md)|  | [optional] |
 
 ### Return type
 
 [**\Formance\Model\RunWorkflowResponse**](../Model/RunWorkflowResponse.md)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `sendEvent()`
+
+```php
+sendEvent($instance_id, $send_event_request)
+```
+
+Send an event to a running workflow
+
+Send an event to a running workflow
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\OrchestrationApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$instance_id = xxx; // string | The instance id
+$send_event_request = new \Formance\Model\SendEventRequest(); // \Formance\Model\SendEventRequest
+
+try {
+    $apiInstance->sendEvent($instance_id, $send_event_request);
+} catch (Exception $e) {
+    echo 'Exception when calling OrchestrationApi->sendEvent: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+| Name | Type | Description  | Notes |
+| ------------- | ------------- | ------------- | ------------- |
+| **instance_id** | **string**| The instance id | |
+| **send_event_request** | [**\Formance\Model\SendEventRequest**](../Model/SendEventRequest.md)|  | [optional] |
+
+### Return type
+
+void (empty response body)
 
 ### Authorization
 

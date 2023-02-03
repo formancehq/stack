@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +31,7 @@ func NewSetupCommand() *cobra.Command {
 
 			billing, _, err := apiClient.DefaultApi.BillingSetup(cmd.Context(), organizationID).Execute()
 			if err != nil {
-				fctl.Error(cmd.OutOrStdout(), "You already have an active subscription")
+				pterm.Error.WithWriter(cmd.OutOrStderr()).Printfln("You already have an active subscription")
 				return nil
 			}
 			_ = fmt.Sprintf("Billing Portal: %s", billing.Data.Url)
@@ -39,7 +40,7 @@ func NewSetupCommand() *cobra.Command {
 				return err
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Billing Setup opened in your browser")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Billing Setup opened in your browser")
 			return nil
 		}),
 	)

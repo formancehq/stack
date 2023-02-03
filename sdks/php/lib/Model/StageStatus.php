@@ -59,7 +59,7 @@ class StageStatus implements ModelInterface, ArrayAccess, \JsonSerializable
       */
     protected static $openAPITypes = [
         'stage' => 'float',
-        'occurrence_id' => 'string',
+        'instance_id' => 'string',
         'started_at' => '\DateTime',
         'terminated_at' => '\DateTime',
         'error' => 'string'
@@ -74,7 +74,7 @@ class StageStatus implements ModelInterface, ArrayAccess, \JsonSerializable
       */
     protected static $openAPIFormats = [
         'stage' => null,
-        'occurrence_id' => null,
+        'instance_id' => null,
         'started_at' => 'date-time',
         'terminated_at' => 'date-time',
         'error' => null
@@ -87,7 +87,7 @@ class StageStatus implements ModelInterface, ArrayAccess, \JsonSerializable
       */
     protected static array $openAPINullables = [
         'stage' => false,
-		'occurrence_id' => false,
+		'instance_id' => false,
 		'started_at' => false,
 		'terminated_at' => false,
 		'error' => false
@@ -180,7 +180,7 @@ class StageStatus implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     protected static $attributeMap = [
         'stage' => 'stage',
-        'occurrence_id' => 'occurrenceID',
+        'instance_id' => 'instanceID',
         'started_at' => 'startedAt',
         'terminated_at' => 'terminatedAt',
         'error' => 'error'
@@ -193,7 +193,7 @@ class StageStatus implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     protected static $setters = [
         'stage' => 'setStage',
-        'occurrence_id' => 'setOccurrenceId',
+        'instance_id' => 'setInstanceId',
         'started_at' => 'setStartedAt',
         'terminated_at' => 'setTerminatedAt',
         'error' => 'setError'
@@ -206,7 +206,7 @@ class StageStatus implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     protected static $getters = [
         'stage' => 'getStage',
-        'occurrence_id' => 'getOccurrenceId',
+        'instance_id' => 'getInstanceId',
         'started_at' => 'getStartedAt',
         'terminated_at' => 'getTerminatedAt',
         'error' => 'getError'
@@ -270,7 +270,7 @@ class StageStatus implements ModelInterface, ArrayAccess, \JsonSerializable
     public function __construct(array $data = null)
     {
         $this->setIfExists('stage', $data ?? [], null);
-        $this->setIfExists('occurrence_id', $data ?? [], null);
+        $this->setIfExists('instance_id', $data ?? [], null);
         $this->setIfExists('started_at', $data ?? [], null);
         $this->setIfExists('terminated_at', $data ?? [], null);
         $this->setIfExists('error', $data ?? [], null);
@@ -306,8 +306,8 @@ class StageStatus implements ModelInterface, ArrayAccess, \JsonSerializable
         if ($this->container['stage'] === null) {
             $invalidProperties[] = "'stage' can't be null";
         }
-        if ($this->container['occurrence_id'] === null) {
-            $invalidProperties[] = "'occurrence_id' can't be null";
+        if ($this->container['instance_id'] === null) {
+            $invalidProperties[] = "'instance_id' can't be null";
         }
         if ($this->container['started_at'] === null) {
             $invalidProperties[] = "'started_at' can't be null";
@@ -355,28 +355,28 @@ class StageStatus implements ModelInterface, ArrayAccess, \JsonSerializable
     }
 
     /**
-     * Gets occurrence_id
+     * Gets instance_id
      *
      * @return string
      */
-    public function getOccurrenceId()
+    public function getInstanceId()
     {
-        return $this->container['occurrence_id'];
+        return $this->container['instance_id'];
     }
 
     /**
-     * Sets occurrence_id
+     * Sets instance_id
      *
-     * @param string $occurrence_id occurrence_id
+     * @param string $instance_id instance_id
      *
      * @return self
      */
-    public function setOccurrenceId($occurrence_id)
+    public function setInstanceId($instance_id)
     {
-        if (is_null($occurrence_id)) {
-            throw new \InvalidArgumentException('non-nullable occurrence_id cannot be null');
+        if (is_null($instance_id)) {
+            throw new \InvalidArgumentException('non-nullable instance_id cannot be null');
         }
-        $this->container['occurrence_id'] = $occurrence_id;
+        $this->container['instance_id'] = $instance_id;
 
         return $this;
     }

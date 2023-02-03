@@ -42,16 +42,16 @@ class RunWorkflowResponse(
         class properties:
         
             @staticmethod
-            def data() -> typing.Type['WorkflowOccurrence']:
-                return WorkflowOccurrence
+            def data() -> typing.Type['WorkflowInstance']:
+                return WorkflowInstance
             __annotations__ = {
                 "data": data,
             }
     
-    data: 'WorkflowOccurrence'
+    data: 'WorkflowInstance'
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["data"]) -> 'WorkflowOccurrence': ...
+    def __getitem__(self, name: typing_extensions.Literal["data"]) -> 'WorkflowInstance': ...
     
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
@@ -62,7 +62,7 @@ class RunWorkflowResponse(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["data"]) -> 'WorkflowOccurrence': ...
+    def get_item_oapg(self, name: typing_extensions.Literal["data"]) -> 'WorkflowInstance': ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -74,7 +74,7 @@ class RunWorkflowResponse(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        data: 'WorkflowOccurrence',
+        data: 'WorkflowInstance',
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'RunWorkflowResponse':
@@ -86,4 +86,4 @@ class RunWorkflowResponse(
             **kwargs,
         )
 
-from Formance.model.workflow_occurrence import WorkflowOccurrence
+from Formance.model.workflow_instance import WorkflowInstance

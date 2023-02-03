@@ -57,7 +57,9 @@ func ProvideTracerProviderOption(v any, annotations ...fx.Annotation) fx.Option 
 func loadResource(cfg ModuleConfig) (*resource.Resource, error) {
 	defaultResource := resource.Default()
 	attributes := make([]attribute.KeyValue, 0)
-	attributes = append(attributes, attribute.String("service.name", cfg.ServiceName))
+	if cfg.ServiceName != "" {
+		attributes = append(attributes, attribute.String("service.name", cfg.ServiceName))
+	}
 	for _, ra := range cfg.ResourceAttributes {
 		parts := strings.SplitN(ra, "=", 2)
 		if len(parts) < 2 {

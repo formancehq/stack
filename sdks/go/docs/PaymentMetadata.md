@@ -4,15 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Key** | **string** |  | 
-**Value** | **string** |  | 
-**Changelog** | Pointer to [**PaymentMetadataChangelog**](PaymentMetadataChangelog.md) |  | [optional] 
+**Key** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
 ### NewPaymentMetadata
 
-`func NewPaymentMetadata(key string, value string, ) *PaymentMetadata`
+`func NewPaymentMetadata() *PaymentMetadata`
 
 NewPaymentMetadata instantiates a new PaymentMetadata object
 This constructor will assign default values to properties that have it defined,
@@ -46,51 +44,11 @@ and a boolean to check if the value has been set.
 
 SetKey sets Key field to given value.
 
+### HasKey
 
-### GetValue
+`func (o *PaymentMetadata) HasKey() bool`
 
-`func (o *PaymentMetadata) GetValue() string`
-
-GetValue returns the Value field if non-nil, zero value otherwise.
-
-### GetValueOk
-
-`func (o *PaymentMetadata) GetValueOk() (*string, bool)`
-
-GetValueOk returns a tuple with the Value field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetValue
-
-`func (o *PaymentMetadata) SetValue(v string)`
-
-SetValue sets Value field to given value.
-
-
-### GetChangelog
-
-`func (o *PaymentMetadata) GetChangelog() PaymentMetadataChangelog`
-
-GetChangelog returns the Changelog field if non-nil, zero value otherwise.
-
-### GetChangelogOk
-
-`func (o *PaymentMetadata) GetChangelogOk() (*PaymentMetadataChangelog, bool)`
-
-GetChangelogOk returns a tuple with the Changelog field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetChangelog
-
-`func (o *PaymentMetadata) SetChangelog(v PaymentMetadataChangelog)`
-
-SetChangelog sets Changelog field to given value.
-
-### HasChangelog
-
-`func (o *PaymentMetadata) HasChangelog() bool`
-
-HasChangelog returns a boolean if a field has been set.
+HasKey returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

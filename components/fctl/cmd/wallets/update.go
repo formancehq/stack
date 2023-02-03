@@ -4,6 +4,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -54,7 +55,7 @@ func NewUpdateCommand() *cobra.Command {
 				return errors.Wrap(err, "Updating wallets")
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Wallet updated successfully!")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Wallet updated successfully!")
 			return nil
 		}),
 	)

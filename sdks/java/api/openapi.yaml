@@ -1863,6 +1863,29 @@ paths:
       tags:
       - Payments
       x-accepts: application/json
+  /api/payments/payments/{paymentId}/metadata:
+    patch:
+      operationId: updateMetadata
+      parameters:
+      - description: The payment ID.
+        example: XXX
+        explode: false
+        in: path
+        name: paymentId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateMetadata'
+      responses:
+        "204":
+          description: No content
+      summary: Update metadata
+      tags:
+      - Payments
+      x-content-type: application/json
+      x-accepts: application/json
   /api/payments/accounts:
     get:
       operationId: paymentslistAccounts
@@ -2118,7 +2141,7 @@ paths:
       tags:
       - Payments
       x-accepts: application/json
-  /api/payments/connectors/stripe/transfer:
+  /api/payments/connectors/stripe/transfers:
     post:
       description: Execute a transfer between two Stripe accounts.
       operationId: connectorsStripeTransfer
@@ -2709,7 +2732,7 @@ paths:
             schema:
               $ref: '#/components/schemas/DebitWalletRequest'
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
@@ -2931,10 +2954,10 @@ paths:
       tags:
       - Orchestration
       x-accepts: application/json
-  /api/orchestration/flows:
+  /api/orchestration/workflows:
     get:
-      description: List registered flows
-      operationId: listFlows
+      description: List registered workflows
+      operationId: listWorkflows
       responses:
         "200":
           content:
@@ -2948,7 +2971,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: General error
-      summary: List registered flows
+      summary: List registered workflows
       tags:
       - Orchestration
       x-accepts: application/json
@@ -2978,10 +3001,10 @@ paths:
       - Orchestration
       x-content-type: application/json
       x-accepts: application/json
-  /api/orchestration/flows/{flowId}:
+  /api/orchestration/workflows/{flowId}:
     get:
       description: Get a flow by id
-      operationId: getFlow
+      operationId: getWorkflow
       parameters:
       - description: The flow id
         example: xxx
@@ -3009,37 +3032,7 @@ paths:
       tags:
       - Orchestration
       x-accepts: application/json
-  /api/orchestration/flows/{flowId}/runs:
-    get:
-      description: List occurrences of a workflow
-      operationId: listRuns
-      parameters:
-      - description: The flow id
-        example: xxx
-        explode: false
-        in: path
-        name: flowId
-        required: true
-        schema:
-          type: string
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ListRunsResponse'
-          description: List of workflow occurrences
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-          description: General error
-      summary: List occurrences of a workflow
-      tags:
-      - Orchestration
-      x-accepts: application/json
+  /api/orchestration/workflows/{workflowID}/instances:
     post:
       description: Run workflow
       operationId: runWorkflow
@@ -3048,7 +3041,7 @@ paths:
         example: xxx
         explode: false
         in: path
-        name: flowId
+        name: workflowID
         required: true
         schema:
           type: string
@@ -3072,7 +3065,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RunWorkflowResponse'
-          description: The workflow occurrence
+          description: The workflow instance
         default:
           content:
             application/json:
@@ -3084,25 +3077,47 @@ paths:
       - Orchestration
       x-content-type: application/json
       x-accepts: application/json
-  /api/orchestration/flows/{flowId}/runs/{runId}:
+  /api/orchestration/instances:
     get:
-      description: Get a workflow occurrence by id
-      operationId: getWorkflowOccurrence
+      description: List instances of a workflow
+      operationId: listInstances
       parameters:
-      - description: The flow id
+      - description: A workflow id
         example: xxx
-        explode: false
-        in: path
-        name: flowId
+        explode: true
+        in: query
+        name: workflowID
         required: true
         schema:
           type: string
-        style: simple
-      - description: The occurrence id
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListRunsResponse'
+          description: List of workflow instances
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: List instances of a workflow
+      tags:
+      - Orchestration
+      x-accepts: application/json
+  /api/orchestration/instances/{instanceID}:
+    get:
+      description: Get a workflow instance by id
+      operationId: getInstance
+      parameters:
+      - description: The instance id
         example: xxx
         explode: false
         in: path
-        name: runId
+        name: instanceID
         required: true
         schema:
           type: string
@@ -3112,15 +3127,119 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetWorkflowOccurrenceResponse'
-          description: The workflow occurrence
+                $ref: '#/components/schemas/GetWorkflowInstanceResponse'
+          description: The workflow instance
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
           description: General error
-      summary: Get a workflow occurrence by id
+      summary: Get a workflow instance by id
+      tags:
+      - Orchestration
+      x-accepts: application/json
+  /api/orchestration/instances/{instanceID}/events:
+    post:
+      description: Send an event to a running workflow
+      operationId: sendEvent
+      parameters:
+      - description: The instance id
+        example: xxx
+        explode: false
+        in: path
+        name: instanceID
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/sendEvent_request'
+      responses:
+        "204":
+          description: No content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Send an event to a running workflow
+      tags:
+      - Orchestration
+      x-content-type: application/json
+      x-accepts: application/json
+  /api/orchestration/instances/{instanceID}/history:
+    get:
+      description: Get a workflow instance history by id
+      operationId: getInstanceHistory
+      parameters:
+      - description: The instance id
+        example: xxx
+        explode: false
+        in: path
+        name: instanceID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetWorkflowInstanceHistoryResponse'
+          description: The workflow instance history
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Get a workflow instance history by id
+      tags:
+      - Orchestration
+      x-accepts: application/json
+  /api/orchestration/instances/{instanceID}/stages/{number}/history:
+    get:
+      description: Get a workflow instance stage history
+      operationId: getInstanceStageHistory
+      parameters:
+      - description: The instance id
+        example: xxx
+        explode: false
+        in: path
+        name: instanceID
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: The stage number
+        example: 0
+        explode: false
+        in: path
+        name: number
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetWorkflowInstanceHistoryStageResponse'
+          description: The workflow instance stage history
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Get a workflow instance stage history
       tags:
       - Orchestration
       x-accepts: application/json
@@ -3208,6 +3327,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/StripeTransferRequest'
+      required: true
+    UpdateMetadata:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentMetadata'
       required: true
   responses:
     NoContent:
@@ -4669,15 +4794,6 @@ components:
       example:
         data:
           metadata:
-          - changelog:
-              value: value
-              timestamp: 2000-01-23T04:56:07.000+00:00
-            value: value
-            key: key
-          - changelog:
-              value: value
-              timestamp: 2000-01-23T04:56:07.000+00:00
-            value: value
             key: key
           adjustments:
           - date: 2000-01-23T04:56:07.000+00:00
@@ -4870,15 +4986,6 @@ components:
     Payment:
       example:
         metadata:
-        - changelog:
-            value: value
-            timestamp: 2000-01-23T04:56:07.000+00:00
-          value: value
-          key: key
-        - changelog:
-            value: value
-            timestamp: 2000-01-23T04:56:07.000+00:00
-          value: value
           key: key
         adjustments:
         - date: 2000-01-23T04:56:07.000+00:00
@@ -4960,9 +5067,7 @@ components:
             $ref: '#/components/schemas/PaymentAdjustment'
           type: array
         metadata:
-          items:
-            $ref: '#/components/schemas/PaymentMetadata'
-          type: array
+          $ref: '#/components/schemas/PaymentMetadata'
       required:
       - accountID
       - adjustments
@@ -5009,35 +5114,10 @@ components:
       type: object
     PaymentMetadata:
       example:
-        changelog:
-          value: value
-          timestamp: 2000-01-23T04:56:07.000+00:00
-        value: value
         key: key
       properties:
         key:
           type: string
-        value:
-          type: string
-        changelog:
-          $ref: '#/components/schemas/PaymentMetadataChangelog'
-      required:
-      - key
-      - value
-      type: object
-    PaymentMetadataChangelog:
-      example:
-        value: value
-        timestamp: 2000-01-23T04:56:07.000+00:00
-      properties:
-        timestamp:
-          format: date-time
-          type: string
-        value:
-          type: string
-      required:
-      - timestamp
-      - value
       type: object
     paymentsAccount:
       properties:
@@ -5150,6 +5230,7 @@ components:
       - ACTIVE
       - TERMINATED
       - FAILED
+      - SUCCEEDED
       type: string
     Query:
       example:
@@ -5904,26 +5985,6 @@ components:
       - errorCode
       - errorMessage
       type: object
-    orchestrationCursor:
-      properties:
-        pageSize:
-          example: 15
-          format: int64
-          maximum: 1000
-          minimum: 1
-          type: integer
-        hasMore:
-          example: false
-          type: boolean
-        previous:
-          example: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
-          type: string
-        next:
-          example: ""
-          type: string
-      required:
-      - pageSize
-      type: object
     Error:
       properties:
         errorCode:
@@ -5938,10 +5999,13 @@ components:
       type: object
     WorkflowConfig:
       example:
+        name: name
         stages:
         - key: ""
         - key: ""
       properties:
+        name:
+          type: string
         stages:
           items:
             additionalProperties: {}
@@ -5955,6 +6019,7 @@ components:
         createdAt: 2000-01-23T04:56:07.000+00:00
         id: id
         config:
+          name: name
           stages:
           - key: ""
           - key: ""
@@ -5978,15 +6043,15 @@ components:
       type: object
     StageStatus:
       example:
+        instanceID: instanceID
         stage: 0.8008281904610115
         terminatedAt: 2000-01-23T04:56:07.000+00:00
         startedAt: 2000-01-23T04:56:07.000+00:00
-        occurrenceID: occurrenceID
         error: error
       properties:
         stage:
           type: number
-        occurrenceID:
+        instanceID:
           type: string
         startedAt:
           format: date-time
@@ -5997,27 +6062,27 @@ components:
         error:
           type: string
       required:
-      - occurrenceID
+      - instanceID
       - stage
       - startedAt
       type: object
-    WorkflowOccurrence:
+    WorkflowInstance:
       example:
         createdAt: 2000-01-23T04:56:07.000+00:00
-        statuses:
-        - stage: 0.8008281904610115
-          terminatedAt: 2000-01-23T04:56:07.000+00:00
-          startedAt: 2000-01-23T04:56:07.000+00:00
-          occurrenceID: occurrenceID
-          error: error
-        - stage: 0.8008281904610115
-          terminatedAt: 2000-01-23T04:56:07.000+00:00
-          startedAt: 2000-01-23T04:56:07.000+00:00
-          occurrenceID: occurrenceID
-          error: error
         id: id
         workflowID: workflowID
         updatedAt: 2000-01-23T04:56:07.000+00:00
+        status:
+        - instanceID: instanceID
+          stage: 0.8008281904610115
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
+          startedAt: 2000-01-23T04:56:07.000+00:00
+          error: error
+        - instanceID: instanceID
+          stage: 0.8008281904610115
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
+          startedAt: 2000-01-23T04:56:07.000+00:00
+          error: error
       properties:
         workflowID:
           type: string
@@ -6029,7 +6094,7 @@ components:
         updatedAt:
           format: date-time
           type: string
-        statuses:
+        status:
           items:
             $ref: '#/components/schemas/StageStatus'
           type: array
@@ -6040,12 +6105,329 @@ components:
       - updatedAt
       - workflowID
       type: object
+    WorkflowInstanceHistoryStage:
+      example:
+        output:
+          CreateTransaction:
+            data:
+            - reference: ref:001
+              metadata:
+                admin: true
+                a:
+                  nested:
+                    key: value
+              postings:
+              - amount: 100
+                destination: users:002
+                source: users:001
+                asset: COIN
+              - amount: 100
+                destination: users:002
+                source: users:001
+                asset: COIN
+              txid: 0
+              postCommitVolumes:
+                orders:1:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+                orders:2:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+              preCommitVolumes:
+                orders:1:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+                orders:2:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+              timestamp: 2000-01-23T04:56:07.000+00:00
+            - reference: ref:001
+              metadata:
+                admin: true
+                a:
+                  nested:
+                    key: value
+              postings:
+              - amount: 100
+                destination: users:002
+                source: users:001
+                asset: COIN
+              - amount: 100
+                destination: users:002
+                source: users:001
+                asset: COIN
+              txid: 0
+              postCommitVolumes:
+                orders:1:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+                orders:2:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+              preCommitVolumes:
+                orders:1:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+                orders:2:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+              timestamp: 2000-01-23T04:56:07.000+00:00
+          RevertTransaction:
+            data:
+              reference: ref:001
+              metadata:
+                admin: true
+                a:
+                  nested:
+                    key: value
+              postings:
+              - amount: 100
+                destination: users:002
+                source: users:001
+                asset: COIN
+              - amount: 100
+                destination: users:002
+                source: users:001
+                asset: COIN
+              txid: 0
+              postCommitVolumes:
+                orders:1:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+                orders:2:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+              preCommitVolumes:
+                orders:1:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+                orders:2:
+                  USD:
+                    input: 100
+                    output: 10
+                    balance: 90
+              timestamp: 2000-01-23T04:56:07.000+00:00
+          GetAccount:
+            data:
+              metadata:
+                admin: true
+                a:
+                  nested:
+                    key: value
+              balances:
+                COIN: 100
+              address: users:001
+              volumes:
+                COIN:
+                  input: 100
+                  output: 0
+              type: virtual
+          GetPayment:
+            data:
+              metadata:
+                key: key
+              adjustments:
+              - date: 2000-01-23T04:56:07.000+00:00
+                amount: 100
+                absolute: true
+                raw: "{}"
+                status: null
+              - date: 2000-01-23T04:56:07.000+00:00
+                amount: 100
+                absolute: true
+                raw: "{}"
+                status: null
+              scheme: visa
+              raw: "{}"
+              type: PAY-IN
+              reference: reference
+              accountID: accountID
+              createdAt: 2000-01-23T04:56:07.000+00:00
+              provider: null
+              initialAmount: 100
+              id: XXX
+              asset: USD
+              status: null
+          DebitWallet:
+            data:
+              walletID: walletID
+              metadata:
+                key: ""
+              destination: null
+              description: description
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          GetWallet:
+            data:
+              ledger: ledger
+              createdAt: 2000-01-23T04:56:07.000+00:00
+              metadata:
+                key: ""
+              balances:
+                main:
+                  assets:
+                    key: 0.8008281904610115
+              name: name
+              id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        input:
+          CreateTransaction:
+            ledger: ledger
+            data:
+              reference: ref:001
+              metadata:
+                admin: true
+                a:
+                  nested:
+                    key: value
+              postings:
+              - amount: 100
+                destination: users:002
+                source: users:001
+                asset: COIN
+              - amount: 100
+                destination: users:002
+                source: users:001
+                asset: COIN
+              script:
+                plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+                  \tdestination = $user\n)\n"
+                vars:
+                  vars:
+                    user: users:042
+              timestamp: 2000-01-23T04:56:07.000+00:00
+          RevertTransaction:
+            ledger: ledger
+            id: id
+          ConfirmHold:
+            id: id
+          GetAccount:
+            ledger: ledger
+            id: id
+          CreditWallet:
+            data:
+              reference: reference
+              amount:
+                amount: 0
+                asset: asset
+              metadata:
+                key: ""
+              sources:
+              - null
+              - null
+              balance: balance
+            id: id
+          VoidHold:
+            id: id
+          GetPayment:
+            id: id
+          StripeTransfer:
+            amount: 100
+            metadata:
+              order_id: "6735"
+            destination: acct_1Gqj58KZcSIg2N2q
+            asset: USD
+          DebitWallet:
+            data:
+              amount:
+                asset: USD/2
+                amount: 100
+              pending: true
+            id: id
+          GetWallet:
+            id: id
+        terminatedAt: 2000-01-23T04:56:07.000+00:00
+        name: name
+        startedAt: 2000-01-23T04:56:07.000+00:00
+        error: error
+        terminated: ""
+      properties:
+        name:
+          type: string
+        input:
+          $ref: '#/components/schemas/WorkflowInstanceHistoryStageInput'
+        output:
+          $ref: '#/components/schemas/WorkflowInstanceHistoryStageOutput'
+        error:
+          type: string
+        terminated:
+          type: bool
+        startedAt:
+          format: date-time
+          type: string
+        terminatedAt:
+          format: date-time
+          type: string
+      required:
+      - input
+      - name
+      - startedAt
+      - terminated
+      type: object
+    WorkflowInstanceHistory:
+      example:
+        input: null
+        terminatedAt: 2000-01-23T04:56:07.000+00:00
+        name: name
+        startedAt: 2000-01-23T04:56:07.000+00:00
+        error: error
+        terminated: ""
+      properties:
+        name:
+          type: string
+        input:
+          $ref: '#/components/schemas/Stage'
+        error:
+          type: string
+        terminated:
+          type: bool
+        startedAt:
+          format: date-time
+          type: string
+        terminatedAt:
+          format: date-time
+          type: string
+      required:
+      - input
+      - name
+      - startedAt
+      - terminated
+      type: object
+    WorkflowInstanceHistoryList:
+      items:
+        $ref: '#/components/schemas/WorkflowInstanceHistory'
+      type: array
+    WorkflowInstanceHistoryStageList:
+      items:
+        $ref: '#/components/schemas/WorkflowInstanceHistoryStage'
+      type: array
     ListWorkflowsResponse:
       example:
         data:
         - createdAt: 2000-01-23T04:56:07.000+00:00
           id: id
           config:
+            name: name
             stages:
             - key: ""
             - key: ""
@@ -6053,6 +6435,7 @@ components:
         - createdAt: 2000-01-23T04:56:07.000+00:00
           id: id
           config:
+            name: name
             stages:
             - key: ""
             - key: ""
@@ -6080,6 +6463,7 @@ components:
           createdAt: 2000-01-23T04:56:07.000+00:00
           id: id
           config:
+            name: name
             stages:
             - key: ""
             - key: ""
@@ -6098,40 +6482,73 @@ components:
       example:
         data:
           createdAt: 2000-01-23T04:56:07.000+00:00
-          statuses:
-          - stage: 0.8008281904610115
-            terminatedAt: 2000-01-23T04:56:07.000+00:00
-            startedAt: 2000-01-23T04:56:07.000+00:00
-            occurrenceID: occurrenceID
-            error: error
-          - stage: 0.8008281904610115
-            terminatedAt: 2000-01-23T04:56:07.000+00:00
-            startedAt: 2000-01-23T04:56:07.000+00:00
-            occurrenceID: occurrenceID
-            error: error
           id: id
           workflowID: workflowID
           updatedAt: 2000-01-23T04:56:07.000+00:00
+          status:
+          - instanceID: instanceID
+            stage: 0.8008281904610115
+            terminatedAt: 2000-01-23T04:56:07.000+00:00
+            startedAt: 2000-01-23T04:56:07.000+00:00
+            error: error
+          - instanceID: instanceID
+            stage: 0.8008281904610115
+            terminatedAt: 2000-01-23T04:56:07.000+00:00
+            startedAt: 2000-01-23T04:56:07.000+00:00
+            error: error
       properties:
         data:
-          $ref: '#/components/schemas/WorkflowOccurrence'
+          $ref: '#/components/schemas/WorkflowInstance'
       required:
       - data
       type: object
     ListRunsResponse:
       example:
-        cursor: null
+        data:
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          id: id
+          workflowID: workflowID
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+          status:
+          - instanceID: instanceID
+            stage: 0.8008281904610115
+            terminatedAt: 2000-01-23T04:56:07.000+00:00
+            startedAt: 2000-01-23T04:56:07.000+00:00
+            error: error
+          - instanceID: instanceID
+            stage: 0.8008281904610115
+            terminatedAt: 2000-01-23T04:56:07.000+00:00
+            startedAt: 2000-01-23T04:56:07.000+00:00
+            error: error
+        - createdAt: 2000-01-23T04:56:07.000+00:00
+          id: id
+          workflowID: workflowID
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+          status:
+          - instanceID: instanceID
+            stage: 0.8008281904610115
+            terminatedAt: 2000-01-23T04:56:07.000+00:00
+            startedAt: 2000-01-23T04:56:07.000+00:00
+            error: error
+          - instanceID: instanceID
+            stage: 0.8008281904610115
+            terminatedAt: 2000-01-23T04:56:07.000+00:00
+            startedAt: 2000-01-23T04:56:07.000+00:00
+            error: error
       properties:
-        cursor:
-          $ref: '#/components/schemas/ListRunsResponse_cursor'
+        data:
+          items:
+            $ref: '#/components/schemas/WorkflowInstance'
+          type: array
       required:
-      - cursor
+      - data
     GetWorkflowResponse:
       example:
         data:
           createdAt: 2000-01-23T04:56:07.000+00:00
           id: id
           config:
+            name: name
             stages:
             - key: ""
             - key: ""
@@ -6142,29 +6559,1083 @@ components:
       required:
       - data
       type: object
-    GetWorkflowOccurrenceResponse:
+    GetWorkflowInstanceResponse:
       example:
         data:
           createdAt: 2000-01-23T04:56:07.000+00:00
-          statuses:
-          - stage: 0.8008281904610115
-            terminatedAt: 2000-01-23T04:56:07.000+00:00
-            startedAt: 2000-01-23T04:56:07.000+00:00
-            occurrenceID: occurrenceID
-            error: error
-          - stage: 0.8008281904610115
-            terminatedAt: 2000-01-23T04:56:07.000+00:00
-            startedAt: 2000-01-23T04:56:07.000+00:00
-            occurrenceID: occurrenceID
-            error: error
           id: id
           workflowID: workflowID
           updatedAt: 2000-01-23T04:56:07.000+00:00
+          status:
+          - instanceID: instanceID
+            stage: 0.8008281904610115
+            terminatedAt: 2000-01-23T04:56:07.000+00:00
+            startedAt: 2000-01-23T04:56:07.000+00:00
+            error: error
+          - instanceID: instanceID
+            stage: 0.8008281904610115
+            terminatedAt: 2000-01-23T04:56:07.000+00:00
+            startedAt: 2000-01-23T04:56:07.000+00:00
+            error: error
       properties:
         data:
-          $ref: '#/components/schemas/WorkflowOccurrence'
+          $ref: '#/components/schemas/WorkflowInstance'
       required:
       - data
+      type: object
+    GetWorkflowInstanceHistoryResponse:
+      example:
+        data:
+        - input: null
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
+          name: name
+          startedAt: 2000-01-23T04:56:07.000+00:00
+          error: error
+          terminated: ""
+        - input: null
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
+          name: name
+          startedAt: 2000-01-23T04:56:07.000+00:00
+          error: error
+          terminated: ""
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/WorkflowInstanceHistory'
+          type: array
+      required:
+      - data
+      type: object
+    GetWorkflowInstanceHistoryStageResponse:
+      example:
+        data:
+        - output:
+            CreateTransaction:
+              data:
+              - reference: ref:001
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                postings:
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                txid: 0
+                postCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                preCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                timestamp: 2000-01-23T04:56:07.000+00:00
+              - reference: ref:001
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                postings:
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                txid: 0
+                postCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                preCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                timestamp: 2000-01-23T04:56:07.000+00:00
+            RevertTransaction:
+              data:
+                reference: ref:001
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                postings:
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                txid: 0
+                postCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                preCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                timestamp: 2000-01-23T04:56:07.000+00:00
+            GetAccount:
+              data:
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                balances:
+                  COIN: 100
+                address: users:001
+                volumes:
+                  COIN:
+                    input: 100
+                    output: 0
+                type: virtual
+            GetPayment:
+              data:
+                metadata:
+                  key: key
+                adjustments:
+                - date: 2000-01-23T04:56:07.000+00:00
+                  amount: 100
+                  absolute: true
+                  raw: "{}"
+                  status: null
+                - date: 2000-01-23T04:56:07.000+00:00
+                  amount: 100
+                  absolute: true
+                  raw: "{}"
+                  status: null
+                scheme: visa
+                raw: "{}"
+                type: PAY-IN
+                reference: reference
+                accountID: accountID
+                createdAt: 2000-01-23T04:56:07.000+00:00
+                provider: null
+                initialAmount: 100
+                id: XXX
+                asset: USD
+                status: null
+            DebitWallet:
+              data:
+                walletID: walletID
+                metadata:
+                  key: ""
+                destination: null
+                description: description
+                id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            GetWallet:
+              data:
+                ledger: ledger
+                createdAt: 2000-01-23T04:56:07.000+00:00
+                metadata:
+                  key: ""
+                balances:
+                  main:
+                    assets:
+                      key: 0.8008281904610115
+                name: name
+                id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          input:
+            CreateTransaction:
+              ledger: ledger
+              data:
+                reference: ref:001
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                postings:
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                script:
+                  plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+                    \tdestination = $user\n)\n"
+                  vars:
+                    vars:
+                      user: users:042
+                timestamp: 2000-01-23T04:56:07.000+00:00
+            RevertTransaction:
+              ledger: ledger
+              id: id
+            ConfirmHold:
+              id: id
+            GetAccount:
+              ledger: ledger
+              id: id
+            CreditWallet:
+              data:
+                reference: reference
+                amount:
+                  amount: 0
+                  asset: asset
+                metadata:
+                  key: ""
+                sources:
+                - null
+                - null
+                balance: balance
+              id: id
+            VoidHold:
+              id: id
+            GetPayment:
+              id: id
+            StripeTransfer:
+              amount: 100
+              metadata:
+                order_id: "6735"
+              destination: acct_1Gqj58KZcSIg2N2q
+              asset: USD
+            DebitWallet:
+              data:
+                amount:
+                  asset: USD/2
+                  amount: 100
+                pending: true
+              id: id
+            GetWallet:
+              id: id
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
+          name: name
+          startedAt: 2000-01-23T04:56:07.000+00:00
+          error: error
+          terminated: ""
+        - output:
+            CreateTransaction:
+              data:
+              - reference: ref:001
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                postings:
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                txid: 0
+                postCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                preCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                timestamp: 2000-01-23T04:56:07.000+00:00
+              - reference: ref:001
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                postings:
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                txid: 0
+                postCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                preCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                timestamp: 2000-01-23T04:56:07.000+00:00
+            RevertTransaction:
+              data:
+                reference: ref:001
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                postings:
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                txid: 0
+                postCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                preCommitVolumes:
+                  orders:1:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                  orders:2:
+                    USD:
+                      input: 100
+                      output: 10
+                      balance: 90
+                timestamp: 2000-01-23T04:56:07.000+00:00
+            GetAccount:
+              data:
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                balances:
+                  COIN: 100
+                address: users:001
+                volumes:
+                  COIN:
+                    input: 100
+                    output: 0
+                type: virtual
+            GetPayment:
+              data:
+                metadata:
+                  key: key
+                adjustments:
+                - date: 2000-01-23T04:56:07.000+00:00
+                  amount: 100
+                  absolute: true
+                  raw: "{}"
+                  status: null
+                - date: 2000-01-23T04:56:07.000+00:00
+                  amount: 100
+                  absolute: true
+                  raw: "{}"
+                  status: null
+                scheme: visa
+                raw: "{}"
+                type: PAY-IN
+                reference: reference
+                accountID: accountID
+                createdAt: 2000-01-23T04:56:07.000+00:00
+                provider: null
+                initialAmount: 100
+                id: XXX
+                asset: USD
+                status: null
+            DebitWallet:
+              data:
+                walletID: walletID
+                metadata:
+                  key: ""
+                destination: null
+                description: description
+                id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+            GetWallet:
+              data:
+                ledger: ledger
+                createdAt: 2000-01-23T04:56:07.000+00:00
+                metadata:
+                  key: ""
+                balances:
+                  main:
+                    assets:
+                      key: 0.8008281904610115
+                name: name
+                id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          input:
+            CreateTransaction:
+              ledger: ledger
+              data:
+                reference: ref:001
+                metadata:
+                  admin: true
+                  a:
+                    nested:
+                      key: value
+                postings:
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                - amount: 100
+                  destination: users:002
+                  source: users:001
+                  asset: COIN
+                script:
+                  plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+                    \tdestination = $user\n)\n"
+                  vars:
+                    vars:
+                      user: users:042
+                timestamp: 2000-01-23T04:56:07.000+00:00
+            RevertTransaction:
+              ledger: ledger
+              id: id
+            ConfirmHold:
+              id: id
+            GetAccount:
+              ledger: ledger
+              id: id
+            CreditWallet:
+              data:
+                reference: reference
+                amount:
+                  amount: 0
+                  asset: asset
+                metadata:
+                  key: ""
+                sources:
+                - null
+                - null
+                balance: balance
+              id: id
+            VoidHold:
+              id: id
+            GetPayment:
+              id: id
+            StripeTransfer:
+              amount: 100
+              metadata:
+                order_id: "6735"
+              destination: acct_1Gqj58KZcSIg2N2q
+              asset: USD
+            DebitWallet:
+              data:
+                amount:
+                  asset: USD/2
+                  amount: 100
+                pending: true
+              id: id
+            GetWallet:
+              id: id
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
+          name: name
+          startedAt: 2000-01-23T04:56:07.000+00:00
+          error: error
+          terminated: ""
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/WorkflowInstanceHistoryStage'
+          type: array
+      required:
+      - data
+      type: object
+    StageSendSourceWallet:
+      properties:
+        id:
+          type: string
+        balance:
+          type: string
+      required:
+      - id
+      type: object
+    StageSendDestinationWallet:
+      $ref: '#/components/schemas/StageSendSourceWallet'
+    StageSendSourceAccount:
+      properties:
+        id:
+          type: string
+        ledger:
+          type: string
+      required:
+      - id
+      type: object
+    StageSendDestinationAccount:
+      $ref: '#/components/schemas/StageSendSourceAccount'
+    StageSendSourcePayment:
+      properties:
+        id:
+          type: string
+      required:
+      - id
+      type: object
+    StageSendDestinationPayment:
+      properties:
+        psp:
+          type: string
+      required:
+      - psp
+      type: object
+    StageSendSource:
+      properties:
+        wallet:
+          $ref: '#/components/schemas/StageSendSourceWallet'
+        account:
+          $ref: '#/components/schemas/StageSendSourceAccount'
+        payment:
+          $ref: '#/components/schemas/StageSendSourcePayment'
+      type: object
+    StageSendDestination:
+      properties:
+        wallet:
+          $ref: '#/components/schemas/StageSendSourceWallet'
+        account:
+          $ref: '#/components/schemas/StageSendSourceAccount'
+        payment:
+          $ref: '#/components/schemas/StageSendDestinationPayment'
+      type: object
+    StageSend:
+      properties:
+        amount:
+          $ref: '#/components/schemas/Monetary'
+        destination:
+          $ref: '#/components/schemas/StageSendDestination'
+        source:
+          $ref: '#/components/schemas/StageSendSource'
+      type: object
+    StageDelay:
+      properties:
+        until:
+          format: date-time
+          type: string
+        duration:
+          type: string
+      type: object
+    StageWaitEvent:
+      properties:
+        event:
+          type: string
+      required:
+      - event
+      type: object
+    Stage:
+      anyOf:
+      - $ref: '#/components/schemas/StageSend'
+      - $ref: '#/components/schemas/StageDelay'
+      - $ref: '#/components/schemas/StageWaitEvent'
+    ActivityStripeTransfer:
+      $ref: '#/components/schemas/StripeTransferRequest'
+    ActivityGetAccount:
+      example:
+        ledger: ledger
+        id: id
+      properties:
+        id:
+          type: string
+        ledger:
+          type: string
+      required:
+      - id
+      - ledger
+      type: object
+    ActivityCreateTransaction:
+      example:
+        ledger: ledger
+        data:
+          reference: ref:001
+          metadata:
+            admin: true
+            a:
+              nested:
+                key: value
+          postings:
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          - amount: 100
+            destination: users:002
+            source: users:001
+            asset: COIN
+          script:
+            plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+              \tdestination = $user\n)\n"
+            vars:
+              vars:
+                user: users:042
+          timestamp: 2000-01-23T04:56:07.000+00:00
+      properties:
+        ledger:
+          type: string
+        data:
+          $ref: '#/components/schemas/PostTransaction'
+      type: object
+    ActivityRevertTransaction:
+      example:
+        ledger: ledger
+        id: id
+      properties:
+        ledger:
+          type: string
+        id:
+          type: string
+      required:
+      - id
+      - ledger
+      type: object
+    ActivityGetPayment:
+      example:
+        id: id
+      properties:
+        id:
+          type: string
+      required:
+      - id
+      type: object
+    ActivityConfirmHold:
+      example:
+        id: id
+      properties:
+        id:
+          type: string
+      required:
+      - id
+      type: object
+    ActivityCreditWallet:
+      example:
+        data:
+          reference: reference
+          amount:
+            amount: 0
+            asset: asset
+          metadata:
+            key: ""
+          sources:
+          - null
+          - null
+          balance: balance
+        id: id
+      properties:
+        id:
+          type: string
+        data:
+          $ref: '#/components/schemas/CreditWalletRequest'
+      type: object
+    ActivityDebitWallet:
+      example:
+        data:
+          amount:
+            asset: USD/2
+            amount: 100
+          pending: true
+        id: id
+      properties:
+        id:
+          type: string
+        data:
+          $ref: '#/components/schemas/DebitWalletRequest'
+      type: object
+    ActivityGetWallet:
+      example:
+        id: id
+      properties:
+        id:
+          type: string
+      required:
+      - id
+      type: object
+    ActivityVoidHold:
+      example:
+        id: id
+      properties:
+        id:
+          type: string
+      required:
+      - id
+      type: object
+    ActivityGetAccountOutput:
+      $ref: '#/components/schemas/AccountResponse'
+    ActivityCreateTransactionOutput:
+      $ref: '#/components/schemas/TransactionsResponse'
+    ActivityRevertTransactionOutput:
+      $ref: '#/components/schemas/TransactionResponse'
+    ActivityGetPaymentOutput:
+      $ref: '#/components/schemas/PaymentResponse'
+    ActivityDebitWalletOutput:
+      $ref: '#/components/schemas/DebitWalletResponse'
+    ActivityGetWalletOutput:
+      $ref: '#/components/schemas/GetWalletResponse'
+    WorkflowInstanceHistoryStageInput:
+      example:
+        CreateTransaction:
+          ledger: ledger
+          data:
+            reference: ref:001
+            metadata:
+              admin: true
+              a:
+                nested:
+                  key: value
+            postings:
+            - amount: 100
+              destination: users:002
+              source: users:001
+              asset: COIN
+            - amount: 100
+              destination: users:002
+              source: users:001
+              asset: COIN
+            script:
+              plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
+                \tdestination = $user\n)\n"
+              vars:
+                vars:
+                  user: users:042
+            timestamp: 2000-01-23T04:56:07.000+00:00
+        RevertTransaction:
+          ledger: ledger
+          id: id
+        ConfirmHold:
+          id: id
+        GetAccount:
+          ledger: ledger
+          id: id
+        CreditWallet:
+          data:
+            reference: reference
+            amount:
+              amount: 0
+              asset: asset
+            metadata:
+              key: ""
+            sources:
+            - null
+            - null
+            balance: balance
+          id: id
+        VoidHold:
+          id: id
+        GetPayment:
+          id: id
+        StripeTransfer:
+          amount: 100
+          metadata:
+            order_id: "6735"
+          destination: acct_1Gqj58KZcSIg2N2q
+          asset: USD
+        DebitWallet:
+          data:
+            amount:
+              asset: USD/2
+              amount: 100
+            pending: true
+          id: id
+        GetWallet:
+          id: id
+      properties:
+        GetAccount:
+          $ref: '#/components/schemas/ActivityGetAccount'
+        CreateTransaction:
+          $ref: '#/components/schemas/ActivityCreateTransaction'
+        RevertTransaction:
+          $ref: '#/components/schemas/ActivityRevertTransaction'
+        StripeTransfer:
+          $ref: '#/components/schemas/StripeTransferRequest'
+        GetPayment:
+          $ref: '#/components/schemas/ActivityGetPayment'
+        ConfirmHold:
+          $ref: '#/components/schemas/ActivityConfirmHold'
+        CreditWallet:
+          $ref: '#/components/schemas/ActivityCreditWallet'
+        DebitWallet:
+          $ref: '#/components/schemas/ActivityDebitWallet'
+        GetWallet:
+          $ref: '#/components/schemas/ActivityGetWallet'
+        VoidHold:
+          $ref: '#/components/schemas/ActivityVoidHold'
+      type: object
+    WorkflowInstanceHistoryStageOutput:
+      example:
+        CreateTransaction:
+          data:
+          - reference: ref:001
+            metadata:
+              admin: true
+              a:
+                nested:
+                  key: value
+            postings:
+            - amount: 100
+              destination: users:002
+              source: users:001
+              asset: COIN
+            - amount: 100
+              destination: users:002
+              source: users:001
+              asset: COIN
+            txid: 0
+            postCommitVolumes:
+              orders:1:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+              orders:2:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+            preCommitVolumes:
+              orders:1:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+              orders:2:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+            timestamp: 2000-01-23T04:56:07.000+00:00
+          - reference: ref:001
+            metadata:
+              admin: true
+              a:
+                nested:
+                  key: value
+            postings:
+            - amount: 100
+              destination: users:002
+              source: users:001
+              asset: COIN
+            - amount: 100
+              destination: users:002
+              source: users:001
+              asset: COIN
+            txid: 0
+            postCommitVolumes:
+              orders:1:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+              orders:2:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+            preCommitVolumes:
+              orders:1:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+              orders:2:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+            timestamp: 2000-01-23T04:56:07.000+00:00
+        RevertTransaction:
+          data:
+            reference: ref:001
+            metadata:
+              admin: true
+              a:
+                nested:
+                  key: value
+            postings:
+            - amount: 100
+              destination: users:002
+              source: users:001
+              asset: COIN
+            - amount: 100
+              destination: users:002
+              source: users:001
+              asset: COIN
+            txid: 0
+            postCommitVolumes:
+              orders:1:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+              orders:2:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+            preCommitVolumes:
+              orders:1:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+              orders:2:
+                USD:
+                  input: 100
+                  output: 10
+                  balance: 90
+            timestamp: 2000-01-23T04:56:07.000+00:00
+        GetAccount:
+          data:
+            metadata:
+              admin: true
+              a:
+                nested:
+                  key: value
+            balances:
+              COIN: 100
+            address: users:001
+            volumes:
+              COIN:
+                input: 100
+                output: 0
+            type: virtual
+        GetPayment:
+          data:
+            metadata:
+              key: key
+            adjustments:
+            - date: 2000-01-23T04:56:07.000+00:00
+              amount: 100
+              absolute: true
+              raw: "{}"
+              status: null
+            - date: 2000-01-23T04:56:07.000+00:00
+              amount: 100
+              absolute: true
+              raw: "{}"
+              status: null
+            scheme: visa
+            raw: "{}"
+            type: PAY-IN
+            reference: reference
+            accountID: accountID
+            createdAt: 2000-01-23T04:56:07.000+00:00
+            provider: null
+            initialAmount: 100
+            id: XXX
+            asset: USD
+            status: null
+        DebitWallet:
+          data:
+            walletID: walletID
+            metadata:
+              key: ""
+            destination: null
+            description: description
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        GetWallet:
+          data:
+            ledger: ledger
+            createdAt: 2000-01-23T04:56:07.000+00:00
+            metadata:
+              key: ""
+            balances:
+              main:
+                assets:
+                  key: 0.8008281904610115
+            name: name
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      properties:
+        GetAccount:
+          $ref: '#/components/schemas/AccountResponse'
+        CreateTransaction:
+          $ref: '#/components/schemas/TransactionsResponse'
+        RevertTransaction:
+          $ref: '#/components/schemas/TransactionResponse'
+        GetPayment:
+          $ref: '#/components/schemas/PaymentResponse'
+        DebitWallet:
+          $ref: '#/components/schemas/DebitWalletResponse'
+        GetWallet:
+          $ref: '#/components/schemas/GetWalletResponse'
       type: object
     updateWallet_request:
       properties:
@@ -6172,6 +7643,13 @@ components:
           additionalProperties: {}
           description: Custom metadata to attach to this wallet.
           type: object
+      type: object
+    sendEvent_request:
+      properties:
+        name:
+          type: string
+      required:
+      - name
       type: object
     Client_allOf:
       properties:
@@ -6838,19 +8316,6 @@ components:
       allOf:
       - $ref: '#/components/schemas/walletsCursor'
       - $ref: '#/components/schemas/ListBalancesResponse_cursor_allOf'
-    ListRunsResponse_cursor_allOf:
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/WorkflowOccurrence'
-          type: array
-      required:
-      - data
-      type: object
-    ListRunsResponse_cursor:
-      allOf:
-      - $ref: '#/components/schemas/orchestrationCursor'
-      - $ref: '#/components/schemas/ListRunsResponse_cursor_allOf'
   securitySchemes:
     Authorization:
       flows:

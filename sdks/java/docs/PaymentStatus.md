@@ -13,5 +13,7 @@
 
 * `FAILED` (value: `"FAILED"`)
 
+* `SUCCEEDED` (value: `"SUCCEEDED"`)
+
 
 

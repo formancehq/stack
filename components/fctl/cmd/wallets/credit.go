@@ -7,6 +7,7 @@ import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -94,7 +95,7 @@ func NewCreditWalletCommand() *cobra.Command {
 				return err
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Wallet credited successfully!")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Wallet credited successfully!")
 
 			return nil
 		}),

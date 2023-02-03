@@ -7,7 +7,7 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**cursor** | [**ListRunsResponseCursor**](ListRunsResponseCursor.md) |  |  |
+|**data** | [**List&lt;WorkflowInstance&gt;**](WorkflowInstance.md) |  |  |
 
 
 

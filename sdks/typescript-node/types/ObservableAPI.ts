@@ -10,6 +10,15 @@ import { AccountsCursorCursor } from '../models/AccountsCursorCursor';
 import { AccountsCursorCursorAllOf } from '../models/AccountsCursorCursorAllOf';
 import { AccountsCursorResponse } from '../models/AccountsCursorResponse';
 import { AccountsCursorResponseCursor } from '../models/AccountsCursorResponseCursor';
+import { ActivityConfirmHold } from '../models/ActivityConfirmHold';
+import { ActivityCreateTransaction } from '../models/ActivityCreateTransaction';
+import { ActivityCreditWallet } from '../models/ActivityCreditWallet';
+import { ActivityDebitWallet } from '../models/ActivityDebitWallet';
+import { ActivityGetAccount } from '../models/ActivityGetAccount';
+import { ActivityGetPayment } from '../models/ActivityGetPayment';
+import { ActivityGetWallet } from '../models/ActivityGetWallet';
+import { ActivityRevertTransaction } from '../models/ActivityRevertTransaction';
+import { ActivityVoidHold } from '../models/ActivityVoidHold';
 import { AggregateBalancesResponse } from '../models/AggregateBalancesResponse';
 import { AssetHolder } from '../models/AssetHolder';
 import { Attempt } from '../models/Attempt';
@@ -70,7 +79,9 @@ import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
 import { GetWalletResponse } from '../models/GetWalletResponse';
-import { GetWorkflowOccurrenceResponse } from '../models/GetWorkflowOccurrenceResponse';
+import { GetWorkflowInstanceHistoryResponse } from '../models/GetWorkflowInstanceHistoryResponse';
+import { GetWorkflowInstanceHistoryStageResponse } from '../models/GetWorkflowInstanceHistoryStageResponse';
+import { GetWorkflowInstanceResponse } from '../models/GetWorkflowInstanceResponse';
 import { GetWorkflowResponse } from '../models/GetWorkflowResponse';
 import { Hold } from '../models/Hold';
 import { LedgerAccountSubject } from '../models/LedgerAccountSubject';
@@ -83,8 +94,6 @@ import { ListBalancesResponseCursor } from '../models/ListBalancesResponseCursor
 import { ListBalancesResponseCursorAllOf } from '../models/ListBalancesResponseCursorAllOf';
 import { ListClientsResponse } from '../models/ListClientsResponse';
 import { ListRunsResponse } from '../models/ListRunsResponse';
-import { ListRunsResponseCursor } from '../models/ListRunsResponseCursor';
-import { ListRunsResponseCursorAllOf } from '../models/ListRunsResponseCursorAllOf';
 import { ListScopesResponse } from '../models/ListScopesResponse';
 import { ListUsersResponse } from '../models/ListUsersResponse';
 import { ListWalletsResponse } from '../models/ListWalletsResponse';
@@ -100,11 +109,9 @@ import { MigrationInfo } from '../models/MigrationInfo';
 import { ModelError } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
 import { Monetary } from '../models/Monetary';
-import { OrchestrationCursor } from '../models/OrchestrationCursor';
 import { Payment } from '../models/Payment';
 import { PaymentAdjustment } from '../models/PaymentAdjustment';
 import { PaymentMetadata } from '../models/PaymentMetadata';
-import { PaymentMetadataChangelog } from '../models/PaymentMetadataChangelog';
 import { PaymentResponse } from '../models/PaymentResponse';
 import { PaymentStatus } from '../models/PaymentStatus';
 import { PaymentsAccount } from '../models/PaymentsAccount';
@@ -128,8 +135,19 @@ import { ScriptResponse } from '../models/ScriptResponse';
 import { Secret } from '../models/Secret';
 import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
+import { SendEventRequest } from '../models/SendEventRequest';
 import { ServerInfo } from '../models/ServerInfo';
+import { Stage } from '../models/Stage';
+import { StageDelay } from '../models/StageDelay';
+import { StageSend } from '../models/StageSend';
+import { StageSendDestination } from '../models/StageSendDestination';
+import { StageSendDestinationPayment } from '../models/StageSendDestinationPayment';
+import { StageSendSource } from '../models/StageSendSource';
+import { StageSendSourceAccount } from '../models/StageSendSourceAccount';
+import { StageSendSourcePayment } from '../models/StageSendSourcePayment';
+import { StageSendSourceWallet } from '../models/StageSendSourceWallet';
 import { StageStatus } from '../models/StageStatus';
+import { StageWaitEvent } from '../models/StageWaitEvent';
 import { Stats } from '../models/Stats';
 import { StatsResponse } from '../models/StatsResponse';
 import { StripeConfig } from '../models/StripeConfig';
@@ -182,7 +200,11 @@ import { WebhooksConfig } from '../models/WebhooksConfig';
 import { WiseConfig } from '../models/WiseConfig';
 import { Workflow } from '../models/Workflow';
 import { WorkflowConfig } from '../models/WorkflowConfig';
-import { WorkflowOccurrence } from '../models/WorkflowOccurrence';
+import { WorkflowInstance } from '../models/WorkflowInstance';
+import { WorkflowInstanceHistory } from '../models/WorkflowInstanceHistory';
+import { WorkflowInstanceHistoryStage } from '../models/WorkflowInstanceHistoryStage';
+import { WorkflowInstanceHistoryStageInput } from '../models/WorkflowInstanceHistoryStageInput';
+import { WorkflowInstanceHistoryStageOutput } from '../models/WorkflowInstanceHistoryStageOutput';
 
 import { AccountsApiRequestFactory, AccountsApiResponseProcessor} from "../apis/AccountsApi";
 export class ObservableAccountsApi {
@@ -890,12 +912,85 @@ export class ObservableOrchestrationApi {
     }
 
     /**
+     * Get a workflow instance by id
+     * Get a workflow instance by id
+     * @param instanceID The instance id
+     */
+    public getInstance(instanceID: string, _options?: Configuration): Observable<GetWorkflowInstanceResponse> {
+        const requestContextPromise = this.requestFactory.getInstance(instanceID, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (let middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (let middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getInstance(rsp)));
+            }));
+    }
+
+    /**
+     * Get a workflow instance history by id
+     * Get a workflow instance history by id
+     * @param instanceID The instance id
+     */
+    public getInstanceHistory(instanceID: string, _options?: Configuration): Observable<GetWorkflowInstanceHistoryResponse> {
+        const requestContextPromise = this.requestFactory.getInstanceHistory(instanceID, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (let middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (let middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getInstanceHistory(rsp)));
+            }));
+    }
+
+    /**
+     * Get a workflow instance stage history
+     * Get a workflow instance stage history
+     * @param instanceID The instance id
+     * @param number The stage number
+     */
+    public getInstanceStageHistory(instanceID: string, number: number, _options?: Configuration): Observable<GetWorkflowInstanceHistoryStageResponse> {
+        const requestContextPromise = this.requestFactory.getInstanceStageHistory(instanceID, number, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (let middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (let middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getInstanceStageHistory(rsp)));
+            }));
+    }
+
+    /**
      * Get a flow by id
      * Get a flow by id
      * @param flowId The flow id
      */
-    public getFlow(flowId: string, _options?: Configuration): Observable<GetWorkflowResponse> {
-        const requestContextPromise = this.requestFactory.getFlow(flowId, _options);
+    public getWorkflow(flowId: string, _options?: Configuration): Observable<GetWorkflowResponse> {
+        const requestContextPromise = this.requestFactory.getWorkflow(flowId, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);
@@ -909,18 +1004,17 @@ export class ObservableOrchestrationApi {
                 for (let middleware of this.configuration.middleware) {
                     middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
                 }
-                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getFlow(rsp)));
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getWorkflow(rsp)));
             }));
     }
 
     /**
-     * Get a workflow occurrence by id
-     * Get a workflow occurrence by id
-     * @param flowId The flow id
-     * @param runId The occurrence id
+     * List instances of a workflow
+     * List instances of a workflow
+     * @param workflowID A workflow id
      */
-    public getWorkflowOccurrence(flowId: string, runId: string, _options?: Configuration): Observable<GetWorkflowOccurrenceResponse> {
-        const requestContextPromise = this.requestFactory.getWorkflowOccurrence(flowId, runId, _options);
+    public listInstances(workflowID: string, _options?: Configuration): Observable<ListRunsResponse> {
+        const requestContextPromise = this.requestFactory.listInstances(workflowID, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);
@@ -934,16 +1028,16 @@ export class ObservableOrchestrationApi {
                 for (let middleware of this.configuration.middleware) {
                     middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
                 }
-                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getWorkflowOccurrence(rsp)));
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.listInstances(rsp)));
             }));
     }
 
     /**
-     * List registered flows
-     * List registered flows
+     * List registered workflows
+     * List registered workflows
      */
-    public listFlows(_options?: Configuration): Observable<ListWorkflowsResponse> {
-        const requestContextPromise = this.requestFactory.listFlows(_options);
+    public listWorkflows(_options?: Configuration): Observable<ListWorkflowsResponse> {
+        const requestContextPromise = this.requestFactory.listWorkflows(_options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);
@@ -957,31 +1051,7 @@ export class ObservableOrchestrationApi {
                 for (let middleware of this.configuration.middleware) {
                     middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
                 }
-                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.listFlows(rsp)));
-            }));
-    }
-
-    /**
-     * List occurrences of a workflow
-     * List occurrences of a workflow
-     * @param flowId The flow id
-     */
-    public listRuns(flowId: string, _options?: Configuration): Observable<ListRunsResponse> {
-        const requestContextPromise = this.requestFactory.listRuns(flowId, _options);
-
-        // build promise chain
-        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
-        for (let middleware of this.configuration.middleware) {
-            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
-        }
-
-        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
-            pipe(mergeMap((response: ResponseContext) => {
-                let middlewarePostObservable = of(response);
-                for (let middleware of this.configuration.middleware) {
-                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
-                }
-                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.listRuns(rsp)));
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.listWorkflows(rsp)));
             }));
     }
 
@@ -1010,12 +1080,12 @@ export class ObservableOrchestrationApi {
     /**
      * Run workflow
      * Run workflow
-     * @param flowId The flow id
+     * @param workflowID The flow id
      * @param wait Wait end of the workflow before return
      * @param requestBody 
      */
-    public runWorkflow(flowId: string, wait?: boolean, requestBody?: { [key: string]: string; }, _options?: Configuration): Observable<RunWorkflowResponse> {
-        const requestContextPromise = this.requestFactory.runWorkflow(flowId, wait, requestBody, _options);
+    public runWorkflow(workflowID: string, wait?: boolean, requestBody?: { [key: string]: string; }, _options?: Configuration): Observable<RunWorkflowResponse> {
+        const requestContextPromise = this.requestFactory.runWorkflow(workflowID, wait, requestBody, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);
@@ -1030,6 +1100,31 @@ export class ObservableOrchestrationApi {
                     middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
                 }
                 return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.runWorkflow(rsp)));
+            }));
+    }
+
+    /**
+     * Send an event to a running workflow
+     * Send an event to a running workflow
+     * @param instanceID The instance id
+     * @param sendEventRequest 
+     */
+    public sendEvent(instanceID: string, sendEventRequest?: SendEventRequest, _options?: Configuration): Observable<void> {
+        const requestContextPromise = this.requestFactory.sendEvent(instanceID, sendEventRequest, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (let middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (let middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.sendEvent(rsp)));
             }));
     }
 
@@ -1339,6 +1434,30 @@ export class ObservablePaymentsApi {
                     middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
                 }
                 return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.uninstallConnector(rsp)));
+            }));
+    }
+
+    /**
+     * Update metadata
+     * @param paymentId The payment ID.
+     * @param paymentMetadata 
+     */
+    public updateMetadata(paymentId: string, paymentMetadata: PaymentMetadata, _options?: Configuration): Observable<void> {
+        const requestContextPromise = this.requestFactory.updateMetadata(paymentId, paymentMetadata, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (let middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (let middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.updateMetadata(rsp)));
             }));
     }
 

@@ -25,20 +25,19 @@ type WorkflowOccurrence struct {
 	Id string `json:"id"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	Statuses []StageStatus `json:"statuses"`
+	Status []StageStatus `json:"status,omitempty"`
 }
 
 // NewWorkflowOccurrence instantiates a new WorkflowOccurrence object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWorkflowOccurrence(workflowID string, id string, createdAt time.Time, updatedAt time.Time, statuses []StageStatus) *WorkflowOccurrence {
+func NewWorkflowOccurrence(workflowID string, id string, createdAt time.Time, updatedAt time.Time) *WorkflowOccurrence {
 	this := WorkflowOccurrence{}
 	this.WorkflowID = workflowID
 	this.Id = id
 	this.CreatedAt = createdAt
 	this.UpdatedAt = updatedAt
-	this.Statuses = statuses
 	return &this
 }
 
@@ -146,28 +145,36 @@ func (o *WorkflowOccurrence) SetUpdatedAt(v time.Time) {
 	o.UpdatedAt = v
 }
 
-// GetStatuses returns the Statuses field value
-func (o *WorkflowOccurrence) GetStatuses() []StageStatus {
-	if o == nil {
+// GetStatus returns the Status field value if set, zero value otherwise.
+func (o *WorkflowOccurrence) GetStatus() []StageStatus {
+	if o == nil || isNil(o.Status) {
 		var ret []StageStatus
 		return ret
 	}
-
-	return o.Statuses
+	return o.Status
 }
 
-// GetStatusesOk returns a tuple with the Statuses field value
+// GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *WorkflowOccurrence) GetStatusesOk() ([]StageStatus, bool) {
-	if o == nil {
+func (o *WorkflowOccurrence) GetStatusOk() ([]StageStatus, bool) {
+	if o == nil || isNil(o.Status) {
 		return nil, false
 	}
-	return o.Statuses, true
+	return o.Status, true
 }
 
-// SetStatuses sets field value
-func (o *WorkflowOccurrence) SetStatuses(v []StageStatus) {
-	o.Statuses = v
+// HasStatus returns a boolean if a field has been set.
+func (o *WorkflowOccurrence) HasStatus() bool {
+	if o != nil && !isNil(o.Status) {
+		return true
+	}
+
+	return false
+}
+
+// SetStatus gets a reference to the given []StageStatus and assigns it to the Status field.
+func (o *WorkflowOccurrence) SetStatus(v []StageStatus) {
+	o.Status = v
 }
 
 func (o WorkflowOccurrence) MarshalJSON() ([]byte, error) {
@@ -184,7 +191,9 @@ func (o WorkflowOccurrence) ToMap() (map[string]interface{}, error) {
 	toSerialize["id"] = o.Id
 	toSerialize["createdAt"] = o.CreatedAt
 	toSerialize["updatedAt"] = o.UpdatedAt
-	toSerialize["statuses"] = o.Statuses
+	if !isNil(o.Status) {
+		toSerialize["status"] = o.Status
+	}
 	return toSerialize, nil
 }
 

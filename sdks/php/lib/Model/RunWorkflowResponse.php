@@ -58,7 +58,7 @@ class RunWorkflowResponse implements ModelInterface, ArrayAccess, \JsonSerializa
       * @var string[]
       */
     protected static $openAPITypes = [
-        'data' => '\Formance\Model\WorkflowOccurrence'
+        'data' => '\Formance\Model\WorkflowInstance'
     ];
 
     /**
@@ -296,7 +296,7 @@ class RunWorkflowResponse implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Gets data
      *
-     * @return \Formance\Model\WorkflowOccurrence
+     * @return \Formance\Model\WorkflowInstance
      */
     public function getData()
     {
@@ -306,7 +306,7 @@ class RunWorkflowResponse implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Sets data
      *
-     * @param \Formance\Model\WorkflowOccurrence $data data
+     * @param \Formance\Model\WorkflowInstance $data data
      *
      * @return self
      */

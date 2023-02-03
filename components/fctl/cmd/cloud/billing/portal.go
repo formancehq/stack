@@ -2,6 +2,7 @@ package billing
 
 import (
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -32,7 +33,7 @@ func NewPortalCommand() *cobra.Command {
 			}
 
 			if billing == nil {
-				fctl.Error(cmd.OutOrStdout(), "Please subscribe to a plan to access Billing Portal")
+				pterm.Error.WithWriter(cmd.OutOrStdout()).Printfln("Please subscribe to a plan to access Billing Portal")
 				return nil
 			}
 
@@ -40,7 +41,7 @@ func NewPortalCommand() *cobra.Command {
 				return err
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Billing Portal opened in your browser")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Billing Portal opened in your browser")
 			return nil
 		}),
 	)

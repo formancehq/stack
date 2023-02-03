@@ -7,7 +7,7 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**data** | [**WorkflowOccurrence**](WorkflowOccurrence.md) |  |  |
+|**data** | [**WorkflowInstance**](WorkflowInstance.md) |  |  |
 
 
 

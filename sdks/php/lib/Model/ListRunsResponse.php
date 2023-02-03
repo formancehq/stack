@@ -58,7 +58,7 @@ class ListRunsResponse implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var string[]
       */
     protected static $openAPITypes = [
-        'cursor' => '\Formance\Model\ListRunsResponseCursor'
+        'data' => '\Formance\Model\WorkflowInstance[]'
     ];
 
     /**
@@ -69,7 +69,7 @@ class ListRunsResponse implements ModelInterface, ArrayAccess, \JsonSerializable
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'cursor' => null
+        'data' => null
     ];
 
     /**
@@ -78,7 +78,7 @@ class ListRunsResponse implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var boolean[]
       */
     protected static array $openAPINullables = [
-        'cursor' => false
+        'data' => false
     ];
 
     /**
@@ -167,7 +167,7 @@ class ListRunsResponse implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $attributeMap = [
-        'cursor' => 'cursor'
+        'data' => 'data'
     ];
 
     /**
@@ -176,7 +176,7 @@ class ListRunsResponse implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $setters = [
-        'cursor' => 'setCursor'
+        'data' => 'setData'
     ];
 
     /**
@@ -185,7 +185,7 @@ class ListRunsResponse implements ModelInterface, ArrayAccess, \JsonSerializable
      * @var string[]
      */
     protected static $getters = [
-        'cursor' => 'getCursor'
+        'data' => 'getData'
     ];
 
     /**
@@ -245,7 +245,7 @@ class ListRunsResponse implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     public function __construct(array $data = null)
     {
-        $this->setIfExists('cursor', $data ?? [], null);
+        $this->setIfExists('data', $data ?? [], null);
     }
 
     /**
@@ -275,8 +275,8 @@ class ListRunsResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
-        if ($this->container['cursor'] === null) {
-            $invalidProperties[] = "'cursor' can't be null";
+        if ($this->container['data'] === null) {
+            $invalidProperties[] = "'data' can't be null";
         }
         return $invalidProperties;
     }
@@ -294,28 +294,28 @@ class ListRunsResponse implements ModelInterface, ArrayAccess, \JsonSerializable
 
 
     /**
-     * Gets cursor
+     * Gets data
      *
-     * @return \Formance\Model\ListRunsResponseCursor
+     * @return \Formance\Model\WorkflowInstance[]
      */
-    public function getCursor()
+    public function getData()
     {
-        return $this->container['cursor'];
+        return $this->container['data'];
     }
 
     /**
-     * Sets cursor
+     * Sets data
      *
-     * @param \Formance\Model\ListRunsResponseCursor $cursor cursor
+     * @param \Formance\Model\WorkflowInstance[] $data data
      *
      * @return self
      */
-    public function setCursor($cursor)
+    public function setData($data)
     {
-        if (is_null($cursor)) {
-            throw new \InvalidArgumentException('non-nullable cursor cannot be null');
+        if (is_null($data)) {
+            throw new \InvalidArgumentException('non-nullable data cannot be null');
         }
-        $this->container['cursor'] = $cursor;
+        $this->container['data'] = $data;
 
         return $this;
     }

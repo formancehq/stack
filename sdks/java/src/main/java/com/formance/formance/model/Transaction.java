@@ -56,11 +56,11 @@ public class Transaction {
 
   public static final String SERIALIZED_NAME_PRE_COMMIT_VOLUMES = "preCommitVolumes";
   @SerializedName(SERIALIZED_NAME_PRE_COMMIT_VOLUMES)
-  private Map<String, Map<String, Volume>> preCommitVolumes = new HashMap<>();
+  private Map<String, Map<String, Volume>> preCommitVolumes = null;
 
   public static final String SERIALIZED_NAME_POST_COMMIT_VOLUMES = "postCommitVolumes";
   @SerializedName(SERIALIZED_NAME_POST_COMMIT_VOLUMES)
-  private Map<String, Map<String, Volume>> postCommitVolumes = new HashMap<>();
+  private Map<String, Map<String, Volume>> postCommitVolumes = null;
 
   public Transaction() {
   }
@@ -144,7 +144,7 @@ public class Transaction {
 
   public Transaction putMetadataItem(String key, Object metadataItem) {
     if (this.metadata == null) {
-      this.metadata = null;
+      this.metadata = new HashMap<>();
     }
     this.metadata.put(key, metadataItem);
     return this;

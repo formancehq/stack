@@ -35,77 +35,45 @@ class PaymentMetadata(
 
 
     class MetaOapg:
-        required = {
-            "value",
-            "key",
-        }
         
         class properties:
             key = schemas.StrSchema
-            value = schemas.StrSchema
-        
-            @staticmethod
-            def changelog() -> typing.Type['PaymentMetadataChangelog']:
-                return PaymentMetadataChangelog
             __annotations__ = {
                 "key": key,
-                "value": value,
-                "changelog": changelog,
             }
-    
-    value: MetaOapg.properties.value
-    key: MetaOapg.properties.key
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["key"]) -> MetaOapg.properties.key: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["value"]) -> MetaOapg.properties.value: ...
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["changelog"]) -> 'PaymentMetadataChangelog': ...
-    
-    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["key", "value", "changelog", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["key", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["key"]) -> MetaOapg.properties.key: ...
-    
-    @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["value"]) -> MetaOapg.properties.value: ...
-    
-    @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["changelog"]) -> typing.Union['PaymentMetadataChangelog', schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["key"]) -> typing.Union[MetaOapg.properties.key, schemas.Unset]: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["key", "value", "changelog", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["key", ], str]):
         return super().get_item_oapg(name)
     
 
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        value: typing.Union[MetaOapg.properties.value, str, ],
-        key: typing.Union[MetaOapg.properties.key, str, ],
-        changelog: typing.Union['PaymentMetadataChangelog', schemas.Unset] = schemas.unset,
+        key: typing.Union[MetaOapg.properties.key, str, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'PaymentMetadata':
         return super().__new__(
             cls,
             *_args,
-            value=value,
             key=key,
-            changelog=changelog,
             _configuration=_configuration,
             **kwargs,
         )
-
-from Formance.model.payment_metadata_changelog import PaymentMetadataChangelog

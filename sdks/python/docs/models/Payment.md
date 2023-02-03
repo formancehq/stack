@@ -8,7 +8,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**[metadata](#metadata)** | list, tuple,  | tuple,  |  | 
+**metadata** | [**PaymentMetadata**](PaymentMetadata.md) | [**PaymentMetadata**](PaymentMetadata.md) |  | 
 **[adjustments](#adjustments)** | list, tuple,  | tuple,  |  | 
 **scheme** | str,  | str,  |  | must be one of ["visa", "mastercard", "amex", "diners", "discover", "jcb", "unionpay", "sepa debit", "sepa credit", "sepa", "apple pay", "google pay", "a2a", "ach debit", "ach", "rtp", "unknown", "other", ] 
 **[raw](#raw)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
@@ -41,18 +41,6 @@ list, tuple,  | tuple,  |  |
 Class Name | Input Type | Accessed Type | Description | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 [**PaymentAdjustment**](PaymentAdjustment.md) | [**PaymentAdjustment**](PaymentAdjustment.md) | [**PaymentAdjustment**](PaymentAdjustment.md) |  | 
-
-# metadata
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-list, tuple,  | tuple,  |  | 
-
-### Tuple Items
-Class Name | Input Type | Accessed Type | Description | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-[**PaymentMetadata**](PaymentMetadata.md) | [**PaymentMetadata**](PaymentMetadata.md) | [**PaymentMetadata**](PaymentMetadata.md) |  | 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

@@ -214,7 +214,7 @@ public class Payment {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private List<PaymentMetadata> metadata = new ArrayList<>();
+  private PaymentMetadata metadata;
 
   public Payment() {
   }
@@ -489,14 +489,9 @@ public class Payment {
   }
 
 
-  public Payment metadata(List<PaymentMetadata> metadata) {
+  public Payment metadata(PaymentMetadata metadata) {
     
     this.metadata = metadata;
-    return this;
-  }
-
-  public Payment addMetadataItem(PaymentMetadata metadataItem) {
-    this.metadata.add(metadataItem);
     return this;
   }
 
@@ -506,12 +501,12 @@ public class Payment {
   **/
   @javax.annotation.Nonnull
 
-  public List<PaymentMetadata> getMetadata() {
+  public PaymentMetadata getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(List<PaymentMetadata> metadata) {
+  public void setMetadata(PaymentMetadata metadata) {
     this.metadata = metadata;
   }
 

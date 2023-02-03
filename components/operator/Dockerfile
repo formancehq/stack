@@ -8,7 +8,6 @@ COPY components/operator/go.sum .
 RUN go mod download
 RUN go install -v -installsuffix cgo -a std
 COPY components/operator .
-RUN ls -salhi .
 RUN go mod vendor
 RUN go build -v -a -o manager main.go
 
@@ -20,6 +19,6 @@ RUN go install github.com/cosmtrek/air@latest
 FROM gcr.io/distroless/static:nonroot as release
 LABEL org.opencontainers.image.source=https://github.com/formancehq/operator
 WORKDIR /
-COPY --from=builder /workspace/manager /usr/bin/manager
+COPY --from=builder /workspace/manager /usr/bin/operator
 USER 65532:65532
-ENTRYPOINT ["/usr/bin/manager"]
+ENTRYPOINT ["/usr/bin/operator"]

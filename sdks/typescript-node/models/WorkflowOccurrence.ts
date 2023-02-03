@@ -18,7 +18,7 @@ export class WorkflowOccurrence {
     'id': string;
     'createdAt': Date;
     'updatedAt': Date;
-    'statuses': Array<StageStatus>;
+    'status'?: Array<StageStatus>;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -48,8 +48,8 @@ export class WorkflowOccurrence {
             "format": "date-time"
         },
         {
-            "name": "statuses",
-            "baseName": "statuses",
+            "name": "status",
+            "baseName": "status",
             "type": "Array<StageStatus>",
             "format": ""
         }    ];

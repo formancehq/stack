@@ -36,6 +36,19 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Payment'
+  /payments/{paymentId}/metadata:
+    patch:
+      summary: Update metadata
+      tags:
+        - Payments
+      operationId: updateMetadata
+      parameters:
+        - $ref: '#/components/parameters/PaymentId'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateMetadata'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
   /accounts:
       get:
         summary: List accounts
@@ -147,7 +160,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Task'
-  /connectors/stripe/transfer:
+  /connectors/stripe/transfers:
     post:
       summary: Transfer funds between Stripe accounts
       tags:
@@ -298,6 +311,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/StripeTransferRequest'
+    UpdateMetadata:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentMetadata'
 
   # ---------------------- SCHEMAS ----------------------
   schemas:
@@ -644,9 +663,7 @@ components:
           items:
             $ref: '#/components/schemas/PaymentAdjustment'
         metadata:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaymentMetadata'
+          $ref: '#/components/schemas/PaymentMetadata'
     PaymentAdjustment:
         type: object
         required:
@@ -672,26 +689,8 @@ components:
             type: boolean
     PaymentMetadata:
       type: object
-      required:
-        - key
-        - value
       properties:
         key:
-          type: string
-        value:
-          type: string
-        changelog:
-          $ref: '#/components/schemas/PaymentMetadataChangelog'
-    PaymentMetadataChangelog:
-      type: object
-      required:
-        - timestamp
-        - value
-      properties:
-        timestamp:
-          type: string
-          format: date-time
-        value:
           type: string
     Account:
       type: object
@@ -870,6 +869,7 @@ components:
         - ACTIVE
         - TERMINATED
         - FAILED
+        - SUCCEEDED
     ServerInfo:
       type: object
       required:

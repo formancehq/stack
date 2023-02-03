@@ -20,19 +20,15 @@ var _ MappedNullable = &PaymentMetadata{}
 
 // PaymentMetadata struct for PaymentMetadata
 type PaymentMetadata struct {
-	Key string `json:"key"`
-	Value string `json:"value"`
-	Changelog *PaymentMetadataChangelog `json:"changelog,omitempty"`
+	Key *string `json:"key,omitempty"`
 }
 
 // NewPaymentMetadata instantiates a new PaymentMetadata object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPaymentMetadata(key string, value string) *PaymentMetadata {
+func NewPaymentMetadata() *PaymentMetadata {
 	this := PaymentMetadata{}
-	this.Key = key
-	this.Value = value
 	return &this
 }
 
@@ -44,84 +40,36 @@ func NewPaymentMetadataWithDefaults() *PaymentMetadata {
 	return &this
 }
 
-// GetKey returns the Key field value
+// GetKey returns the Key field value if set, zero value otherwise.
 func (o *PaymentMetadata) GetKey() string {
-	if o == nil {
+	if o == nil || isNil(o.Key) {
 		var ret string
 		return ret
 	}
-
-	return o.Key
+	return *o.Key
 }
 
-// GetKeyOk returns a tuple with the Key field value
+// GetKeyOk returns a tuple with the Key field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadata) GetKeyOk() (*string, bool) {
-	if o == nil {
+	if o == nil || isNil(o.Key) {
 		return nil, false
 	}
-	return &o.Key, true
+	return o.Key, true
 }
 
-// SetKey sets field value
-func (o *PaymentMetadata) SetKey(v string) {
-	o.Key = v
-}
-
-// GetValue returns the Value field value
-func (o *PaymentMetadata) GetValue() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Value
-}
-
-// GetValueOk returns a tuple with the Value field value
-// and a boolean to check if the value has been set.
-func (o *PaymentMetadata) GetValueOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Value, true
-}
-
-// SetValue sets field value
-func (o *PaymentMetadata) SetValue(v string) {
-	o.Value = v
-}
-
-// GetChangelog returns the Changelog field value if set, zero value otherwise.
-func (o *PaymentMetadata) GetChangelog() PaymentMetadataChangelog {
-	if o == nil || isNil(o.Changelog) {
-		var ret PaymentMetadataChangelog
-		return ret
-	}
-	return *o.Changelog
-}
-
-// GetChangelogOk returns a tuple with the Changelog field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PaymentMetadata) GetChangelogOk() (*PaymentMetadataChangelog, bool) {
-	if o == nil || isNil(o.Changelog) {
-		return nil, false
-	}
-	return o.Changelog, true
-}
-
-// HasChangelog returns a boolean if a field has been set.
-func (o *PaymentMetadata) HasChangelog() bool {
-	if o != nil && !isNil(o.Changelog) {
+// HasKey returns a boolean if a field has been set.
+func (o *PaymentMetadata) HasKey() bool {
+	if o != nil && !isNil(o.Key) {
 		return true
 	}
 
 	return false
 }
 
-// SetChangelog gets a reference to the given PaymentMetadataChangelog and assigns it to the Changelog field.
-func (o *PaymentMetadata) SetChangelog(v PaymentMetadataChangelog) {
-	o.Changelog = &v
+// SetKey gets a reference to the given string and assigns it to the Key field.
+func (o *PaymentMetadata) SetKey(v string) {
+	o.Key = &v
 }
 
 func (o PaymentMetadata) MarshalJSON() ([]byte, error) {
@@ -134,10 +82,8 @@ func (o PaymentMetadata) MarshalJSON() ([]byte, error) {
 
 func (o PaymentMetadata) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["key"] = o.Key
-	toSerialize["value"] = o.Value
-	if !isNil(o.Changelog) {
-		toSerialize["changelog"] = o.Changelog
+	if !isNil(o.Key) {
+		toSerialize["key"] = o.Key
 	}
 	return toSerialize, nil
 }

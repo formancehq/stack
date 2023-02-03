@@ -4,7 +4,7 @@ All URIs are relative to *http://localhost*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
-| [**connectorsStripeTransfer**](PaymentsApi.md#connectorsStripeTransfer) | **POST** api/payments/connectors/stripe/transfer | Transfer funds between Stripe accounts |
+| [**connectorsStripeTransfer**](PaymentsApi.md#connectorsStripeTransfer) | **POST** api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts |
 | [**getConnectorTask**](PaymentsApi.md#getConnectorTask) | **GET** api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector |
 | [**getPayment**](PaymentsApi.md#getPayment) | **GET** api/payments/payments/{paymentId} | Get a payment |
 | [**installConnector**](PaymentsApi.md#installConnector) | **POST** api/payments/connectors/{connector} | Install a connector |
@@ -16,6 +16,7 @@ All URIs are relative to *http://localhost*
 | [**readConnectorConfig**](PaymentsApi.md#readConnectorConfig) | **GET** api/payments/connectors/{connector}/config | Read the config of a connector |
 | [**resetConnector**](PaymentsApi.md#resetConnector) | **POST** api/payments/connectors/{connector}/reset | Reset a connector |
 | [**uninstallConnector**](PaymentsApi.md#uninstallConnector) | **DELETE** api/payments/connectors/{connector} | Uninstall a connector |
+| [**updateMetadata**](PaymentsApi.md#updateMetadata) | **PATCH** api/payments/payments/{paymentId}/metadata | Update metadata |
 
 
 
@@ -861,6 +862,76 @@ null (empty response body)
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: Not defined
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **204** | No content |  -  |
+
+
+## updateMetadata
+
+> updateMetadata(paymentId, paymentMetadata)
+
+Update metadata
+
+### Example
+
+```java
+// Import classes:
+import com.formance.formance.ApiClient;
+import com.formance.formance.ApiException;
+import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
+import com.formance.formance.models.*;
+import com.formance.formance.api.PaymentsApi;
+
+public class Example {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
+
+        PaymentsApi apiInstance = new PaymentsApi(defaultClient);
+        String paymentId = "XXX"; // String | The payment ID.
+        PaymentMetadata paymentMetadata = new PaymentMetadata(); // PaymentMetadata | 
+        try {
+            apiInstance.updateMetadata(paymentId, paymentMetadata);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentsApi#updateMetadata");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **paymentId** | **String**| The payment ID. | |
+| **paymentMetadata** | [**PaymentMetadata**](PaymentMetadata.md)|  | |
+
+### Return type
+
+null (empty response body)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: Not defined
 
 

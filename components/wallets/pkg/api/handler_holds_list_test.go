@@ -26,11 +26,12 @@ func TestHoldsList(t *testing.T) {
 		holds = append(holds, wallet.NewDebitHold(walletID, wallet.NewLedgerAccountSubject("bank"),
 			"USD", "", metadata.Metadata{}))
 	}
+	pageSize := 5
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
 		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
-			require.Equal(t, defaultLimit, query.Limit)
+			require.Equal(t, pageSize, query.Limit)
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.EqualValues(t, metadata.Metadata{
 				wallet.MetadataKeyWalletSpecType: wallet.HoldWallet,
@@ -38,20 +39,20 @@ func TestHoldsList(t *testing.T) {
 
 			hasMore := false
 			accounts := make([]sdk.Account, 0)
-			for _, wallet := range holds {
+			for _, wallet := range holds[:pageSize] {
 				accounts = append(accounts, sdk.Account{
 					Address:  testEnv.Chart().GetMainBalanceAccount(wallet.ID),
 					Metadata: wallet.LedgerMetadata(testEnv.Chart()),
 				})
 			}
 			return &sdk.AccountsCursorResponseCursor{
-				PageSize: defaultLimit,
+				PageSize: 5,
 				HasMore:  hasMore,
 				Data:     accounts,
 			}, nil
 		}),
 	)
-	req := newRequest(t, http.MethodGet, "/holds", nil)
+	req := newRequest(t, http.MethodGet, fmt.Sprintf("/holds?pageSize=%d", pageSize), nil)
 	rec := httptest.NewRecorder()
 	testEnv.Router().ServeHTTP(rec, req)
 

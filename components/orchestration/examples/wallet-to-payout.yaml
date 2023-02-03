@@ -1,10 +1,14 @@
 ---
+name: "Debit wallet to stripe connected account"
 stages:
-- payout:
+- send:
     source:
-      kind: "wallet"
-      wallet: "${walletID}"
-      balance: "${balance}"
+      wallet:
+        id: "${walletID}"
+        balance: "${balance}"
+    destination:
+      payment:
+        psp: stripe
     amount:
       amount: "${amount}"
-      asset: "USD/2"
+      asset: "EUR/2"

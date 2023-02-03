@@ -50,7 +50,7 @@ class WorkflowOccurrence(
             updatedAt = schemas.DateTimeSchema
             
             
-            class statuses(
+            class status(
                 schemas.ListSchema
             ):
             
@@ -65,7 +65,7 @@ class WorkflowOccurrence(
                     cls,
                     _arg: typing.Union[typing.Tuple['StageStatus'], typing.List['StageStatus']],
                     _configuration: typing.Optional[schemas.Configuration] = None,
-                ) -> 'statuses':
+                ) -> 'status':
                     return super().__new__(
                         cls,
                         _arg,
@@ -79,11 +79,11 @@ class WorkflowOccurrence(
                 "id": id,
                 "createdAt": createdAt,
                 "updatedAt": updatedAt,
-                "statuses": statuses,
+                "status": status,
             }
     
     createdAt: MetaOapg.properties.createdAt
-    statuses: MetaOapg.properties.statuses
+    statuses: schemas.AnyTypeSchema
     id: MetaOapg.properties.id
     workflowID: MetaOapg.properties.workflowID
     updatedAt: MetaOapg.properties.updatedAt
@@ -101,12 +101,12 @@ class WorkflowOccurrence(
     def __getitem__(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["statuses"]) -> MetaOapg.properties.statuses: ...
+    def __getitem__(self, name: typing_extensions.Literal["status"]) -> MetaOapg.properties.status: ...
     
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["workflowID", "id", "createdAt", "updatedAt", "statuses", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["workflowID", "id", "createdAt", "updatedAt", "status", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -124,12 +124,12 @@ class WorkflowOccurrence(
     def get_item_oapg(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["statuses"]) -> MetaOapg.properties.statuses: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["status"]) -> typing.Union[MetaOapg.properties.status, schemas.Unset]: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["workflowID", "id", "createdAt", "updatedAt", "statuses", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["workflowID", "id", "createdAt", "updatedAt", "status", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -137,10 +137,11 @@ class WorkflowOccurrence(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
         createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, ],
-        statuses: typing.Union[MetaOapg.properties.statuses, list, tuple, ],
+        statuses: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
         id: typing.Union[MetaOapg.properties.id, str, ],
         workflowID: typing.Union[MetaOapg.properties.workflowID, str, ],
         updatedAt: typing.Union[MetaOapg.properties.updatedAt, str, datetime, ],
+        status: typing.Union[MetaOapg.properties.status, list, tuple, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'WorkflowOccurrence':
@@ -152,6 +153,7 @@ class WorkflowOccurrence(
             id=id,
             workflowID=workflowID,
             updatedAt=updatedAt,
+            status=status,
             _configuration=_configuration,
             **kwargs,
         )

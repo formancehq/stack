@@ -11,6 +11,7 @@ func NewCommand() *cobra.Command {
 		fctl.WithShortDescription("Payments management"),
 		fctl.WithChildCommands(
 			connectors.NewConnectorsCommand(),
+			NewListPaymentsCommand(),
 		),
 	)
 }

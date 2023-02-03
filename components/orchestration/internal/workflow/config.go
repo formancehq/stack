@@ -2,24 +2,25 @@ package workflow
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"runtime/debug"
 	"time"
 
-	"github.com/formancehq/go-libs/logging"
-	"github.com/formancehq/orchestration/internal/processor"
-	"github.com/formancehq/orchestration/internal/spec"
-	"github.com/pkg/errors"
+	"github.com/formancehq/orchestration/internal/schema"
 	"github.com/uptrace/bun"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
-type Stage map[string]map[string]any
+type RawStage map[string]map[string]any
 
 type Config struct {
-	Stages []Stage `json:"stages"`
+	Name   string     `json:"name"`
+	Stages []RawStage `json:"stages"`
 }
 
-func (c *Config) runStage(ctx workflow.Context, stage Stage, variables map[string]string) (err error) {
+func (c *Config) runStage(ctx workflow.Context, s Stage, stage RawStage, variables map[string]string) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
 			err = fmt.Errorf("%s", e)
@@ -32,44 +33,67 @@ func (c *Config) runStage(ctx workflow.Context, stage Stage, variables map[strin
 	for name, value = range stage {
 	}
 
-	spec, err := spec.ResolveSpecification(name)
+	stageSchema, err := schema.Resolve(schema.Context{
+		Variables: variables,
+	}, value, name)
 	if err != nil {
 		return err
 	}
 
-	_, err = processor.Find(name).Run(ctx, processor.Input{
-		Specification: *spec,
-		Parameters:    value,
-		Variables:     variables,
-	})
-	if err != nil {
+	if err := schema.ValidateRequirements(stageSchema); err != nil {
 		return err
 	}
+
+	fmt.Println("execute child workflow")
+	err = workflow.ExecuteChildWorkflow(
+		workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{
+			WorkflowID: s.TemporalWorkflowID(),
+		}),
+		stageSchema.GetWorkflow(),
+		stageSchema,
+	).Get(ctx, nil)
+	if err != nil {
+		var appError *temporal.ApplicationError
+		if errors.As(err, &appError) {
+			return errors.New(appError.Message())
+		}
+		return err
+	}
+
 	return nil
 }
 
-func (c *Config) run(ctx workflow.Context, db *bun.DB, variables map[string]string) error {
+func (c *Config) run(ctx workflow.Context, db *bun.DB, instance Instance, variables map[string]string) error {
+	defer func() {
+		if e := recover(); e != nil {
+			fmt.Println(e)
+			debug.PrintStack()
+		}
+	}()
+
+	logger := workflow.GetLogger(ctx)
 	for ind, rawStage := range c.Stages {
-		status := Status{
-			Stage:        ind,
-			OccurrenceID: workflow.GetInfo(ctx).WorkflowExecution.RunID,
-			StartedAt:    workflow.Now(ctx).Round(time.Nanosecond),
+		logger.Info("run stage", "index", ind, "workflowID", instance.ID)
+
+		stage := NewStage(instance.ID, ind)
+
+		if _, dbErr := db.NewInsert().
+			Model(&stage).
+			Exec(context.Background()); dbErr != nil {
+			logger.Error("error inserting stage into database", "error", dbErr)
 		}
-		err := c.runStage(ctx, rawStage, variables)
+
+		err := c.runStage(ctx, stage, rawStage, variables)
+		stage.SetTerminated(err, workflow.Now(ctx).Round(time.Nanosecond))
 		if err != nil {
-			status.Error = err.Error()
-		}
-		status.TerminatedAt = workflow.Now(ctx).Round(time.Nanosecond)
-
-		logger := logging.WithFields(map[string]any{
-			"runID": workflow.GetInfo(ctx).ContinuedExecutionRunID,
-		})
-		if status.Error != "" {
-			logger.Errorf("error running stage: %s", status.Error)
+			logger.Debug("error running stage", "error", stage.Error)
 		}
 
-		if _, dbErr := db.NewInsert().Model(&status).Exec(context.Background()); dbErr != nil {
-			logger.Errorf("error inserting status into database: %s", dbErr)
+		if _, dbErr := db.NewUpdate().
+			Model(&stage).
+			WherePK().
+			Exec(context.Background()); dbErr != nil {
+			logger.Error("error updating stage into database", "error", dbErr)
 		}
 
 		if err != nil {
@@ -95,13 +119,9 @@ func (c *Config) Validate() error {
 		for name, value = range rawStage {
 		}
 
-		spec, err := spec.ResolveSpecification(name)
+		_, err := schema.Resolve(schema.Context{}, value, name)
 		if err != nil {
 			return err
-		}
-
-		if err := spec.Validate(value); err != nil {
-			return errors.Wrapf(err, "validating schema for specification: %s", name)
 		}
 	}
 	return nil

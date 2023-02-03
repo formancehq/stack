@@ -10,11 +10,11 @@
  * Do not edit the class manually.
  */
 
-import { WorkflowOccurrence } from '../models/WorkflowOccurrence';
+import { WorkflowInstance } from '../models/WorkflowInstance';
 import { HttpFile } from '../http/http';
 
 export class RunWorkflowResponse {
-    'data': WorkflowOccurrence;
+    'data': WorkflowInstance;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -22,7 +22,7 @@ export class RunWorkflowResponse {
         {
             "name": "data",
             "baseName": "data",
-            "type": "WorkflowOccurrence",
+            "type": "WorkflowInstance",
             "format": ""
         }    ];
 

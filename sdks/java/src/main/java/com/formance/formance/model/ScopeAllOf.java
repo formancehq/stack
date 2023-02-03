@@ -35,7 +35,7 @@ public class ScopeAllOf {
 
   public static final String SERIALIZED_NAME_TRANSIENT = "transient";
   @SerializedName(SERIALIZED_NAME_TRANSIENT)
-  private List<String> _transient = new ArrayList<>();
+  private List<String> _transient = null;
 
   public ScopeAllOf() {
   }

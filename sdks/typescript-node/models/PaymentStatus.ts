@@ -12,4 +12,4 @@
 
 import { HttpFile } from '../http/http';
 
-export type PaymentStatus = "PENDING" | "ACTIVE" | "TERMINATED" | "FAILED" ;
+export type PaymentStatus = "PENDING" | "ACTIVE" | "TERMINATED" | "FAILED" | "SUCCEEDED" ;

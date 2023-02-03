@@ -3,6 +3,7 @@ package webhooks
 import (
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
 
@@ -42,7 +43,7 @@ func NewDeactivateCommand() *cobra.Command {
 				return errors.Wrap(err, "deactivating config")
 			}
 
-			fctl.Success(cmd.OutOrStdout(), "Config deactivated successfully")
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Config deactivated successfully")
 			return nil
 		}),
 	)

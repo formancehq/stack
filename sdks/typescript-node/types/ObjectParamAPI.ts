@@ -9,6 +9,15 @@ import { AccountsCursorCursor } from '../models/AccountsCursorCursor';
 import { AccountsCursorCursorAllOf } from '../models/AccountsCursorCursorAllOf';
 import { AccountsCursorResponse } from '../models/AccountsCursorResponse';
 import { AccountsCursorResponseCursor } from '../models/AccountsCursorResponseCursor';
+import { ActivityConfirmHold } from '../models/ActivityConfirmHold';
+import { ActivityCreateTransaction } from '../models/ActivityCreateTransaction';
+import { ActivityCreditWallet } from '../models/ActivityCreditWallet';
+import { ActivityDebitWallet } from '../models/ActivityDebitWallet';
+import { ActivityGetAccount } from '../models/ActivityGetAccount';
+import { ActivityGetPayment } from '../models/ActivityGetPayment';
+import { ActivityGetWallet } from '../models/ActivityGetWallet';
+import { ActivityRevertTransaction } from '../models/ActivityRevertTransaction';
+import { ActivityVoidHold } from '../models/ActivityVoidHold';
 import { AggregateBalancesResponse } from '../models/AggregateBalancesResponse';
 import { AssetHolder } from '../models/AssetHolder';
 import { Attempt } from '../models/Attempt';
@@ -69,7 +78,9 @@ import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
 import { GetWalletResponse } from '../models/GetWalletResponse';
-import { GetWorkflowOccurrenceResponse } from '../models/GetWorkflowOccurrenceResponse';
+import { GetWorkflowInstanceHistoryResponse } from '../models/GetWorkflowInstanceHistoryResponse';
+import { GetWorkflowInstanceHistoryStageResponse } from '../models/GetWorkflowInstanceHistoryStageResponse';
+import { GetWorkflowInstanceResponse } from '../models/GetWorkflowInstanceResponse';
 import { GetWorkflowResponse } from '../models/GetWorkflowResponse';
 import { Hold } from '../models/Hold';
 import { LedgerAccountSubject } from '../models/LedgerAccountSubject';
@@ -82,8 +93,6 @@ import { ListBalancesResponseCursor } from '../models/ListBalancesResponseCursor
 import { ListBalancesResponseCursorAllOf } from '../models/ListBalancesResponseCursorAllOf';
 import { ListClientsResponse } from '../models/ListClientsResponse';
 import { ListRunsResponse } from '../models/ListRunsResponse';
-import { ListRunsResponseCursor } from '../models/ListRunsResponseCursor';
-import { ListRunsResponseCursorAllOf } from '../models/ListRunsResponseCursorAllOf';
 import { ListScopesResponse } from '../models/ListScopesResponse';
 import { ListUsersResponse } from '../models/ListUsersResponse';
 import { ListWalletsResponse } from '../models/ListWalletsResponse';
@@ -99,11 +108,9 @@ import { MigrationInfo } from '../models/MigrationInfo';
 import { ModelError } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
 import { Monetary } from '../models/Monetary';
-import { OrchestrationCursor } from '../models/OrchestrationCursor';
 import { Payment } from '../models/Payment';
 import { PaymentAdjustment } from '../models/PaymentAdjustment';
 import { PaymentMetadata } from '../models/PaymentMetadata';
-import { PaymentMetadataChangelog } from '../models/PaymentMetadataChangelog';
 import { PaymentResponse } from '../models/PaymentResponse';
 import { PaymentStatus } from '../models/PaymentStatus';
 import { PaymentsAccount } from '../models/PaymentsAccount';
@@ -127,8 +134,19 @@ import { ScriptResponse } from '../models/ScriptResponse';
 import { Secret } from '../models/Secret';
 import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
+import { SendEventRequest } from '../models/SendEventRequest';
 import { ServerInfo } from '../models/ServerInfo';
+import { Stage } from '../models/Stage';
+import { StageDelay } from '../models/StageDelay';
+import { StageSend } from '../models/StageSend';
+import { StageSendDestination } from '../models/StageSendDestination';
+import { StageSendDestinationPayment } from '../models/StageSendDestinationPayment';
+import { StageSendSource } from '../models/StageSendSource';
+import { StageSendSourceAccount } from '../models/StageSendSourceAccount';
+import { StageSendSourcePayment } from '../models/StageSendSourcePayment';
+import { StageSendSourceWallet } from '../models/StageSendSourceWallet';
 import { StageStatus } from '../models/StageStatus';
+import { StageWaitEvent } from '../models/StageWaitEvent';
 import { Stats } from '../models/Stats';
 import { StatsResponse } from '../models/StatsResponse';
 import { StripeConfig } from '../models/StripeConfig';
@@ -181,7 +199,11 @@ import { WebhooksConfig } from '../models/WebhooksConfig';
 import { WiseConfig } from '../models/WiseConfig';
 import { Workflow } from '../models/Workflow';
 import { WorkflowConfig } from '../models/WorkflowConfig';
-import { WorkflowOccurrence } from '../models/WorkflowOccurrence';
+import { WorkflowInstance } from '../models/WorkflowInstance';
+import { WorkflowInstanceHistory } from '../models/WorkflowInstanceHistory';
+import { WorkflowInstanceHistoryStage } from '../models/WorkflowInstanceHistoryStage';
+import { WorkflowInstanceHistoryStageInput } from '../models/WorkflowInstanceHistoryStageInput';
+import { WorkflowInstanceHistoryStageOutput } from '../models/WorkflowInstanceHistoryStageOutput';
 
 import { ObservableAccountsApi } from "./ObservableAPI";
 import { AccountsApiRequestFactory, AccountsApiResponseProcessor} from "../apis/AccountsApi";
@@ -841,40 +863,58 @@ export interface OrchestrationApiCreateWorkflowRequest {
     body?: WorkflowConfig
 }
 
-export interface OrchestrationApiGetFlowRequest {
+export interface OrchestrationApiGetInstanceRequest {
+    /**
+     * The instance id
+     * @type string
+     * @memberof OrchestrationApigetInstance
+     */
+    instanceID: string
+}
+
+export interface OrchestrationApiGetInstanceHistoryRequest {
+    /**
+     * The instance id
+     * @type string
+     * @memberof OrchestrationApigetInstanceHistory
+     */
+    instanceID: string
+}
+
+export interface OrchestrationApiGetInstanceStageHistoryRequest {
+    /**
+     * The instance id
+     * @type string
+     * @memberof OrchestrationApigetInstanceStageHistory
+     */
+    instanceID: string
+    /**
+     * The stage number
+     * @type number
+     * @memberof OrchestrationApigetInstanceStageHistory
+     */
+    number: number
+}
+
+export interface OrchestrationApiGetWorkflowRequest {
     /**
      * The flow id
      * @type string
-     * @memberof OrchestrationApigetFlow
+     * @memberof OrchestrationApigetWorkflow
      */
     flowId: string
 }
 
-export interface OrchestrationApiGetWorkflowOccurrenceRequest {
+export interface OrchestrationApiListInstancesRequest {
     /**
-     * The flow id
+     * A workflow id
      * @type string
-     * @memberof OrchestrationApigetWorkflowOccurrence
+     * @memberof OrchestrationApilistInstances
      */
-    flowId: string
-    /**
-     * The occurrence id
-     * @type string
-     * @memberof OrchestrationApigetWorkflowOccurrence
-     */
-    runId: string
+    workflowID: string
 }
 
-export interface OrchestrationApiListFlowsRequest {
-}
-
-export interface OrchestrationApiListRunsRequest {
-    /**
-     * The flow id
-     * @type string
-     * @memberof OrchestrationApilistRuns
-     */
-    flowId: string
+export interface OrchestrationApiListWorkflowsRequest {
 }
 
 export interface OrchestrationApiOrchestrationgetServerInfoRequest {
@@ -886,7 +926,7 @@ export interface OrchestrationApiRunWorkflowRequest {
      * @type string
      * @memberof OrchestrationApirunWorkflow
      */
-    flowId: string
+    workflowID: string
     /**
      * Wait end of the workflow before return
      * @type boolean
@@ -899,6 +939,21 @@ export interface OrchestrationApiRunWorkflowRequest {
      * @memberof OrchestrationApirunWorkflow
      */
     requestBody?: { [key: string]: string; }
+}
+
+export interface OrchestrationApiSendEventRequest {
+    /**
+     * The instance id
+     * @type string
+     * @memberof OrchestrationApisendEvent
+     */
+    instanceID: string
+    /**
+     * 
+     * @type SendEventRequest
+     * @memberof OrchestrationApisendEvent
+     */
+    sendEventRequest?: SendEventRequest
 }
 
 export class ObjectOrchestrationApi {
@@ -918,39 +973,57 @@ export class ObjectOrchestrationApi {
     }
 
     /**
+     * Get a workflow instance by id
+     * Get a workflow instance by id
+     * @param param the request object
+     */
+    public getInstance(param: OrchestrationApiGetInstanceRequest, options?: Configuration): Promise<GetWorkflowInstanceResponse> {
+        return this.api.getInstance(param.instanceID,  options).toPromise();
+    }
+
+    /**
+     * Get a workflow instance history by id
+     * Get a workflow instance history by id
+     * @param param the request object
+     */
+    public getInstanceHistory(param: OrchestrationApiGetInstanceHistoryRequest, options?: Configuration): Promise<GetWorkflowInstanceHistoryResponse> {
+        return this.api.getInstanceHistory(param.instanceID,  options).toPromise();
+    }
+
+    /**
+     * Get a workflow instance stage history
+     * Get a workflow instance stage history
+     * @param param the request object
+     */
+    public getInstanceStageHistory(param: OrchestrationApiGetInstanceStageHistoryRequest, options?: Configuration): Promise<GetWorkflowInstanceHistoryStageResponse> {
+        return this.api.getInstanceStageHistory(param.instanceID, param.number,  options).toPromise();
+    }
+
+    /**
      * Get a flow by id
      * Get a flow by id
      * @param param the request object
      */
-    public getFlow(param: OrchestrationApiGetFlowRequest, options?: Configuration): Promise<GetWorkflowResponse> {
-        return this.api.getFlow(param.flowId,  options).toPromise();
+    public getWorkflow(param: OrchestrationApiGetWorkflowRequest, options?: Configuration): Promise<GetWorkflowResponse> {
+        return this.api.getWorkflow(param.flowId,  options).toPromise();
     }
 
     /**
-     * Get a workflow occurrence by id
-     * Get a workflow occurrence by id
+     * List instances of a workflow
+     * List instances of a workflow
      * @param param the request object
      */
-    public getWorkflowOccurrence(param: OrchestrationApiGetWorkflowOccurrenceRequest, options?: Configuration): Promise<GetWorkflowOccurrenceResponse> {
-        return this.api.getWorkflowOccurrence(param.flowId, param.runId,  options).toPromise();
+    public listInstances(param: OrchestrationApiListInstancesRequest, options?: Configuration): Promise<ListRunsResponse> {
+        return this.api.listInstances(param.workflowID,  options).toPromise();
     }
 
     /**
-     * List registered flows
-     * List registered flows
+     * List registered workflows
+     * List registered workflows
      * @param param the request object
      */
-    public listFlows(param: OrchestrationApiListFlowsRequest = {}, options?: Configuration): Promise<ListWorkflowsResponse> {
-        return this.api.listFlows( options).toPromise();
-    }
-
-    /**
-     * List occurrences of a workflow
-     * List occurrences of a workflow
-     * @param param the request object
-     */
-    public listRuns(param: OrchestrationApiListRunsRequest, options?: Configuration): Promise<ListRunsResponse> {
-        return this.api.listRuns(param.flowId,  options).toPromise();
+    public listWorkflows(param: OrchestrationApiListWorkflowsRequest = {}, options?: Configuration): Promise<ListWorkflowsResponse> {
+        return this.api.listWorkflows( options).toPromise();
     }
 
     /**
@@ -967,7 +1040,16 @@ export class ObjectOrchestrationApi {
      * @param param the request object
      */
     public runWorkflow(param: OrchestrationApiRunWorkflowRequest, options?: Configuration): Promise<RunWorkflowResponse> {
-        return this.api.runWorkflow(param.flowId, param.wait, param.requestBody,  options).toPromise();
+        return this.api.runWorkflow(param.workflowID, param.wait, param.requestBody,  options).toPromise();
+    }
+
+    /**
+     * Send an event to a running workflow
+     * Send an event to a running workflow
+     * @param param the request object
+     */
+    public sendEvent(param: OrchestrationApiSendEventRequest, options?: Configuration): Promise<void> {
+        return this.api.sendEvent(param.instanceID, param.sendEventRequest,  options).toPromise();
     }
 
 }
@@ -1119,6 +1201,21 @@ export interface PaymentsApiUninstallConnectorRequest {
     connector: Connector
 }
 
+export interface PaymentsApiUpdateMetadataRequest {
+    /**
+     * The payment ID.
+     * @type string
+     * @memberof PaymentsApiupdateMetadata
+     */
+    paymentId: string
+    /**
+     * 
+     * @type PaymentMetadata
+     * @memberof PaymentsApiupdateMetadata
+     */
+    paymentMetadata: PaymentMetadata
+}
+
 export class ObjectPaymentsApi {
     private api: ObservablePaymentsApi
 
@@ -1229,6 +1326,14 @@ export class ObjectPaymentsApi {
      */
     public uninstallConnector(param: PaymentsApiUninstallConnectorRequest, options?: Configuration): Promise<void> {
         return this.api.uninstallConnector(param.connector,  options).toPromise();
+    }
+
+    /**
+     * Update metadata
+     * @param param the request object
+     */
+    public updateMetadata(param: PaymentsApiUpdateMetadataRequest, options?: Configuration): Promise<void> {
+        return this.api.updateMetadata(param.paymentId, param.paymentMetadata,  options).toPromise();
     }
 
 }

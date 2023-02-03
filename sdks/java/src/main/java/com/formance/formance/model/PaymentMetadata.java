@@ -15,7 +15,6 @@ package com.formance.formance.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import com.formance.formance.model.PaymentMetadataChangelog;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -32,14 +31,6 @@ public class PaymentMetadata {
   @SerializedName(SERIALIZED_NAME_KEY)
   private String key;
 
-  public static final String SERIALIZED_NAME_VALUE = "value";
-  @SerializedName(SERIALIZED_NAME_VALUE)
-  private String value;
-
-  public static final String SERIALIZED_NAME_CHANGELOG = "changelog";
-  @SerializedName(SERIALIZED_NAME_CHANGELOG)
-  private PaymentMetadataChangelog changelog;
-
   public PaymentMetadata() {
   }
 
@@ -53,7 +44,7 @@ public class PaymentMetadata {
    * Get key
    * @return key
   **/
-  @javax.annotation.Nonnull
+  @javax.annotation.Nullable
 
   public String getKey() {
     return key;
@@ -62,50 +53,6 @@ public class PaymentMetadata {
 
   public void setKey(String key) {
     this.key = key;
-  }
-
-
-  public PaymentMetadata value(String value) {
-    
-    this.value = value;
-    return this;
-  }
-
-   /**
-   * Get value
-   * @return value
-  **/
-  @javax.annotation.Nonnull
-
-  public String getValue() {
-    return value;
-  }
-
-
-  public void setValue(String value) {
-    this.value = value;
-  }
-
-
-  public PaymentMetadata changelog(PaymentMetadataChangelog changelog) {
-    
-    this.changelog = changelog;
-    return this;
-  }
-
-   /**
-   * Get changelog
-   * @return changelog
-  **/
-  @javax.annotation.Nullable
-
-  public PaymentMetadataChangelog getChangelog() {
-    return changelog;
-  }
-
-
-  public void setChangelog(PaymentMetadataChangelog changelog) {
-    this.changelog = changelog;
   }
 
 
@@ -118,14 +65,12 @@ public class PaymentMetadata {
       return false;
     }
     PaymentMetadata paymentMetadata = (PaymentMetadata) o;
-    return Objects.equals(this.key, paymentMetadata.key) &&
-        Objects.equals(this.value, paymentMetadata.value) &&
-        Objects.equals(this.changelog, paymentMetadata.changelog);
+    return Objects.equals(this.key, paymentMetadata.key);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(key, value, changelog);
+    return Objects.hash(key);
   }
 
   @Override
@@ -133,8 +78,6 @@ public class PaymentMetadata {
     StringBuilder sb = new StringBuilder();
     sb.append("class PaymentMetadata {\n");
     sb.append("    key: ").append(toIndentedString(key)).append("\n");
-    sb.append("    value: ").append(toIndentedString(value)).append("\n");
-    sb.append("    changelog: ").append(toIndentedString(changelog)).append("\n");
     sb.append("}");
     return sb.toString();
   }

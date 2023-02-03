@@ -20,6 +20,7 @@ var _ MappedNullable = &WorkflowConfig{}
 
 // WorkflowConfig struct for WorkflowConfig
 type WorkflowConfig struct {
+	Name *string `json:"name,omitempty"`
 	Stages []map[string]interface{} `json:"stages"`
 }
 
@@ -39,6 +40,38 @@ func NewWorkflowConfig(stages []map[string]interface{}) *WorkflowConfig {
 func NewWorkflowConfigWithDefaults() *WorkflowConfig {
 	this := WorkflowConfig{}
 	return &this
+}
+
+// GetName returns the Name field value if set, zero value otherwise.
+func (o *WorkflowConfig) GetName() string {
+	if o == nil || isNil(o.Name) {
+		var ret string
+		return ret
+	}
+	return *o.Name
+}
+
+// GetNameOk returns a tuple with the Name field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowConfig) GetNameOk() (*string, bool) {
+	if o == nil || isNil(o.Name) {
+		return nil, false
+	}
+	return o.Name, true
+}
+
+// HasName returns a boolean if a field has been set.
+func (o *WorkflowConfig) HasName() bool {
+	if o != nil && !isNil(o.Name) {
+		return true
+	}
+
+	return false
+}
+
+// SetName gets a reference to the given string and assigns it to the Name field.
+func (o *WorkflowConfig) SetName(v string) {
+	o.Name = &v
 }
 
 // GetStages returns the Stages field value
@@ -75,6 +108,9 @@ func (o WorkflowConfig) MarshalJSON() ([]byte, error) {
 
 func (o WorkflowConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !isNil(o.Name) {
+		toSerialize["name"] = o.Name
+	}
 	toSerialize["stages"] = o.Stages
 	return toSerialize, nil
 }

@@ -33,9 +33,9 @@ public class StageStatus {
   @SerializedName(SERIALIZED_NAME_STAGE)
   private BigDecimal stage;
 
-  public static final String SERIALIZED_NAME_OCCURRENCE_I_D = "occurrenceID";
-  @SerializedName(SERIALIZED_NAME_OCCURRENCE_I_D)
-  private String occurrenceID;
+  public static final String SERIALIZED_NAME_INSTANCE_I_D = "instanceID";
+  @SerializedName(SERIALIZED_NAME_INSTANCE_I_D)
+  private String instanceID;
 
   public static final String SERIALIZED_NAME_STARTED_AT = "startedAt";
   @SerializedName(SERIALIZED_NAME_STARTED_AT)
@@ -74,25 +74,25 @@ public class StageStatus {
   }
 
 
-  public StageStatus occurrenceID(String occurrenceID) {
+  public StageStatus instanceID(String instanceID) {
     
-    this.occurrenceID = occurrenceID;
+    this.instanceID = instanceID;
     return this;
   }
 
    /**
-   * Get occurrenceID
-   * @return occurrenceID
+   * Get instanceID
+   * @return instanceID
   **/
   @javax.annotation.Nonnull
 
-  public String getOccurrenceID() {
-    return occurrenceID;
+  public String getInstanceID() {
+    return instanceID;
   }
 
 
-  public void setOccurrenceID(String occurrenceID) {
-    this.occurrenceID = occurrenceID;
+  public void setInstanceID(String instanceID) {
+    this.instanceID = instanceID;
   }
 
 
@@ -172,7 +172,7 @@ public class StageStatus {
     }
     StageStatus stageStatus = (StageStatus) o;
     return Objects.equals(this.stage, stageStatus.stage) &&
-        Objects.equals(this.occurrenceID, stageStatus.occurrenceID) &&
+        Objects.equals(this.instanceID, stageStatus.instanceID) &&
         Objects.equals(this.startedAt, stageStatus.startedAt) &&
         Objects.equals(this.terminatedAt, stageStatus.terminatedAt) &&
         Objects.equals(this.error, stageStatus.error);
@@ -180,7 +180,7 @@ public class StageStatus {
 
   @Override
   public int hashCode() {
-    return Objects.hash(stage, occurrenceID, startedAt, terminatedAt, error);
+    return Objects.hash(stage, instanceID, startedAt, terminatedAt, error);
   }
 
   @Override
@@ -188,7 +188,7 @@ public class StageStatus {
     StringBuilder sb = new StringBuilder();
     sb.append("class StageStatus {\n");
     sb.append("    stage: ").append(toIndentedString(stage)).append("\n");
-    sb.append("    occurrenceID: ").append(toIndentedString(occurrenceID)).append("\n");
+    sb.append("    instanceID: ").append(toIndentedString(instanceID)).append("\n");
     sb.append("    startedAt: ").append(toIndentedString(startedAt)).append("\n");
     sb.append("    terminatedAt: ").append(toIndentedString(terminatedAt)).append("\n");
     sb.append("    error: ").append(toIndentedString(error)).append("\n");

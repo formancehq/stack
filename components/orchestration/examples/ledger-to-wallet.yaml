@@ -1,0 +1,13 @@
+---
+stages:
+- send:
+    source:
+      account:
+        id: "${accountID}"
+        ledger: "${ledger}"
+    destination:
+      wallet:
+        id: "${walletID}"
+    amount:
+      amount: "${amount}"
+      asset: "EUR/2"

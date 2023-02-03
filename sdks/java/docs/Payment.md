@@ -19,7 +19,7 @@
 |**createdAt** | **OffsetDateTime** |  |  |
 |**raw** | **Object** |  |  |
 |**adjustments** | [**List&lt;PaymentAdjustment&gt;**](PaymentAdjustment.md) |  |  |
-|**metadata** | [**List&lt;PaymentMetadata&gt;**](PaymentMetadata.md) |  |  |
+|**metadata** | [**PaymentMetadata**](PaymentMetadata.md) |  |  |
 
 
 

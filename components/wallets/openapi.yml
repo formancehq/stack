@@ -287,7 +287,7 @@ paths:
             schema:
               $ref: '#/components/schemas/DebitWalletRequest'
       responses:
-        200:
+        201:
           description: Wallet successfully debited as a pending hold
           content:
             application/json:

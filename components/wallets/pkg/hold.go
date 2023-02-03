@@ -26,7 +26,7 @@ func (h DebitHold) LedgerMetadata(chart *Chart) metadata.Metadata {
 		},
 		MetadataKeyHoldDestination: map[string]any{
 			"type":  "account",
-			"value": h.Destination,
+			"value": h.Destination.getAccount(chart),
 		},
 		MetadataKeyWalletCustomData:      map[string]any(h.Metadata),
 		MetadataKeyWalletHoldDescription: h.Description,

@@ -37,7 +37,7 @@ public class Scope {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = new HashMap<>();
+  private Map<String, Object> metadata = null;
 
   public static final String SERIALIZED_NAME_ID = "id";
   @SerializedName(SERIALIZED_NAME_ID)
@@ -45,7 +45,7 @@ public class Scope {
 
   public static final String SERIALIZED_NAME_TRANSIENT = "transient";
   @SerializedName(SERIALIZED_NAME_TRANSIENT)
-  private List<String> _transient = new ArrayList<>();
+  private List<String> _transient = null;
 
   public Scope() {
   }

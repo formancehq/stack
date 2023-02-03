@@ -85,14 +85,20 @@ func GetServiceList() []string {
 	return res
 }
 
+type TemporalConfig struct {
+	Address   string                    `json:"address"`
+	Namespace string                    `json:"namespace"`
+	TLS       v1beta2.TemporalTLSConfig `json:"tls"`
+}
+
 type ConfigurationSpec struct {
 	Services ConfigurationServicesSpec `json:"services"`
 	Kafka    apisv1beta2.KafkaConfig   `json:"kafka"`
 	// +optional
 	Monitoring *apisv1beta2.MonitoringSpec `json:"monitoring,omitempty"`
 	// +optional
-	Ingress  IngressGlobalConfig    `json:"ingress,omitempty"`
-	Temporal v1beta2.TemporalConfig `json:"temporal"`
+	Ingress  IngressGlobalConfig `json:"ingress,omitempty"`
+	Temporal TemporalConfig      `json:"temporal"`
 }
 
 func (in *ConfigurationSpec) Validate() field.ErrorList {
