@@ -62,7 +62,9 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => 'string',
         'created_at' => '\DateTime',
         'updated_at' => '\DateTime',
-        'status' => '\Formance\Model\StageStatus[]'
+        'status' => '\Formance\Model\StageStatus[]',
+        'terminated' => 'bool',
+        'terminated_at' => '\DateTime'
     ];
 
     /**
@@ -77,7 +79,9 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => null,
         'created_at' => 'date-time',
         'updated_at' => 'date-time',
-        'status' => null
+        'status' => null,
+        'terminated' => null,
+        'terminated_at' => 'date-time'
     ];
 
     /**
@@ -90,7 +94,9 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
 		'id' => false,
 		'created_at' => false,
 		'updated_at' => false,
-		'status' => false
+		'status' => false,
+		'terminated' => false,
+		'terminated_at' => false
     ];
 
     /**
@@ -183,7 +189,9 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => 'id',
         'created_at' => 'createdAt',
         'updated_at' => 'updatedAt',
-        'status' => 'status'
+        'status' => 'status',
+        'terminated' => 'terminated',
+        'terminated_at' => 'terminatedAt'
     ];
 
     /**
@@ -196,7 +204,9 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => 'setId',
         'created_at' => 'setCreatedAt',
         'updated_at' => 'setUpdatedAt',
-        'status' => 'setStatus'
+        'status' => 'setStatus',
+        'terminated' => 'setTerminated',
+        'terminated_at' => 'setTerminatedAt'
     ];
 
     /**
@@ -209,7 +219,9 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         'id' => 'getId',
         'created_at' => 'getCreatedAt',
         'updated_at' => 'getUpdatedAt',
-        'status' => 'getStatus'
+        'status' => 'getStatus',
+        'terminated' => 'getTerminated',
+        'terminated_at' => 'getTerminatedAt'
     ];
 
     /**
@@ -274,6 +286,8 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('created_at', $data ?? [], null);
         $this->setIfExists('updated_at', $data ?? [], null);
         $this->setIfExists('status', $data ?? [], null);
+        $this->setIfExists('terminated', $data ?? [], null);
+        $this->setIfExists('terminated_at', $data ?? [], null);
     }
 
     /**
@@ -314,6 +328,9 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         }
         if ($this->container['updated_at'] === null) {
             $invalidProperties[] = "'updated_at' can't be null";
+        }
+        if ($this->container['terminated'] === null) {
+            $invalidProperties[] = "'terminated' can't be null";
         }
         return $invalidProperties;
     }
@@ -461,6 +478,60 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable status cannot be null');
         }
         $this->container['status'] = $status;
+
+        return $this;
+    }
+
+    /**
+     * Gets terminated
+     *
+     * @return bool
+     */
+    public function getTerminated()
+    {
+        return $this->container['terminated'];
+    }
+
+    /**
+     * Sets terminated
+     *
+     * @param bool $terminated terminated
+     *
+     * @return self
+     */
+    public function setTerminated($terminated)
+    {
+        if (is_null($terminated)) {
+            throw new \InvalidArgumentException('non-nullable terminated cannot be null');
+        }
+        $this->container['terminated'] = $terminated;
+
+        return $this;
+    }
+
+    /**
+     * Gets terminated_at
+     *
+     * @return \DateTime|null
+     */
+    public function getTerminatedAt()
+    {
+        return $this->container['terminated_at'];
+    }
+
+    /**
+     * Sets terminated_at
+     *
+     * @param \DateTime|null $terminated_at terminated_at
+     *
+     * @return self
+     */
+    public function setTerminatedAt($terminated_at)
+    {
+        if (is_null($terminated_at)) {
+            throw new \InvalidArgumentException('non-nullable terminated_at cannot be null');
+        }
+        $this->container['terminated_at'] = $terminated_at;
 
         return $this;
     }

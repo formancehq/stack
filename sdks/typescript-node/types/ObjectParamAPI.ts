@@ -854,6 +854,15 @@ export class ObjectMappingApi {
 import { ObservableOrchestrationApi } from "./ObservableAPI";
 import { OrchestrationApiRequestFactory, OrchestrationApiResponseProcessor} from "../apis/OrchestrationApi";
 
+export interface OrchestrationApiCancelEventRequest {
+    /**
+     * The instance id
+     * @type string
+     * @memberof OrchestrationApicancelEvent
+     */
+    instanceID: string
+}
+
 export interface OrchestrationApiCreateWorkflowRequest {
     /**
      * 
@@ -961,6 +970,15 @@ export class ObjectOrchestrationApi {
 
     public constructor(configuration: Configuration, requestFactory?: OrchestrationApiRequestFactory, responseProcessor?: OrchestrationApiResponseProcessor) {
         this.api = new ObservableOrchestrationApi(configuration, requestFactory, responseProcessor);
+    }
+
+    /**
+     * Cancel a running workflow
+     * Cancel a running workflow
+     * @param param the request object
+     */
+    public cancelEvent(param: OrchestrationApiCancelEventRequest, options?: Configuration): Promise<void> {
+        return this.api.cancelEvent(param.instanceID,  options).toPromise();
     }
 
     /**

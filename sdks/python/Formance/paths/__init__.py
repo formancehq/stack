@@ -73,5 +73,6 @@ class PathValues(str, enum.Enum):
     API_ORCHESTRATION_INSTANCES = "/api/orchestration/instances"
     API_ORCHESTRATION_INSTANCES_INSTANCE_ID = "/api/orchestration/instances/{instanceID}"
     API_ORCHESTRATION_INSTANCES_INSTANCE_ID_EVENTS = "/api/orchestration/instances/{instanceID}/events"
+    API_ORCHESTRATION_INSTANCES_INSTANCE_ID_ABORT = "/api/orchestration/instances/{instanceID}/abort"
     API_ORCHESTRATION_INSTANCES_INSTANCE_ID_HISTORY = "/api/orchestration/instances/{instanceID}/history"
     API_ORCHESTRATION_INSTANCES_INSTANCE_ID_STAGES_NUMBER_HISTORY = "/api/orchestration/instances/{instanceID}/stages/{number}/history"

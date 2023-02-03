@@ -26,18 +26,21 @@ type WorkflowInstance struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	Status []StageStatus `json:"status,omitempty"`
+	Terminated bool `json:"terminated"`
+	TerminatedAt *time.Time `json:"terminatedAt,omitempty"`
 }
 
 // NewWorkflowInstance instantiates a new WorkflowInstance object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWorkflowInstance(workflowID string, id string, createdAt time.Time, updatedAt time.Time) *WorkflowInstance {
+func NewWorkflowInstance(workflowID string, id string, createdAt time.Time, updatedAt time.Time, terminated bool) *WorkflowInstance {
 	this := WorkflowInstance{}
 	this.WorkflowID = workflowID
 	this.Id = id
 	this.CreatedAt = createdAt
 	this.UpdatedAt = updatedAt
+	this.Terminated = terminated
 	return &this
 }
 
@@ -177,6 +180,62 @@ func (o *WorkflowInstance) SetStatus(v []StageStatus) {
 	o.Status = v
 }
 
+// GetTerminated returns the Terminated field value
+func (o *WorkflowInstance) GetTerminated() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Terminated
+}
+
+// GetTerminatedOk returns a tuple with the Terminated field value
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstance) GetTerminatedOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Terminated, true
+}
+
+// SetTerminated sets field value
+func (o *WorkflowInstance) SetTerminated(v bool) {
+	o.Terminated = v
+}
+
+// GetTerminatedAt returns the TerminatedAt field value if set, zero value otherwise.
+func (o *WorkflowInstance) GetTerminatedAt() time.Time {
+	if o == nil || isNil(o.TerminatedAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.TerminatedAt
+}
+
+// GetTerminatedAtOk returns a tuple with the TerminatedAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstance) GetTerminatedAtOk() (*time.Time, bool) {
+	if o == nil || isNil(o.TerminatedAt) {
+		return nil, false
+	}
+	return o.TerminatedAt, true
+}
+
+// HasTerminatedAt returns a boolean if a field has been set.
+func (o *WorkflowInstance) HasTerminatedAt() bool {
+	if o != nil && !isNil(o.TerminatedAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetTerminatedAt gets a reference to the given time.Time and assigns it to the TerminatedAt field.
+func (o *WorkflowInstance) SetTerminatedAt(v time.Time) {
+	o.TerminatedAt = &v
+}
+
 func (o WorkflowInstance) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -193,6 +252,10 @@ func (o WorkflowInstance) ToMap() (map[string]interface{}, error) {
 	toSerialize["updatedAt"] = o.UpdatedAt
 	if !isNil(o.Status) {
 		toSerialize["status"] = o.Status
+	}
+	toSerialize["terminated"] = o.Terminated
+	if !isNil(o.TerminatedAt) {
+		toSerialize["terminatedAt"] = o.TerminatedAt
 	}
 	return toSerialize, nil
 }

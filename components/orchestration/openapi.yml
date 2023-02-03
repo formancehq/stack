@@ -200,6 +200,27 @@ paths:
         204:
           description: No content
 
+  /instances/{instanceID}/abort:
+    parameters:
+    - in: path
+      description: The instance id
+      name: instanceID
+      schema:
+        type: string
+      example: xxx
+      required: true
+    put:
+      summary: Cancel a running workflow
+      description: Cancel a running workflow
+      operationId: cancelEvent
+      tags:
+      - Orchestration
+      responses:
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+        204:
+          description: No content
+
   /instances/{instanceID}/history:
     parameters:
     - in: path
@@ -335,6 +356,7 @@ components:
       - createdAt
       - updatedAt
       - statuses
+      - terminated
       properties:
         workflowID:
           type: string
@@ -350,6 +372,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StageStatus'
+        terminated:
+          type: boolean
+        terminatedAt:
+          type: string
+          format: date-time
     WorkflowInstanceHistoryStage:
       type: object
       required:

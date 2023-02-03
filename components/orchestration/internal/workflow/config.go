@@ -2,12 +2,11 @@ package workflow
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"runtime/debug"
 	"time"
 
 	"github.com/formancehq/orchestration/internal/schema"
+	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
@@ -44,7 +43,6 @@ func (c *Config) runStage(ctx workflow.Context, s Stage, stage RawStage, variabl
 		return err
 	}
 
-	fmt.Println("execute child workflow")
 	err = workflow.ExecuteChildWorkflow(
 		workflow.WithChildOptions(ctx, workflow.ChildWorkflowOptions{
 			WorkflowID: s.TemporalWorkflowID(),
@@ -63,11 +61,10 @@ func (c *Config) runStage(ctx workflow.Context, s Stage, stage RawStage, variabl
 	return nil
 }
 
-func (c *Config) run(ctx workflow.Context, db *bun.DB, instance Instance, variables map[string]string) error {
+func (c *Config) run(ctx workflow.Context, db *bun.DB, instance Instance, variables map[string]string) (err error) {
 	defer func() {
 		if e := recover(); e != nil {
-			fmt.Println(e)
-			debug.PrintStack()
+			err = errors.WithStack(fmt.Errorf("%s", e))
 		}
 	}()
 
@@ -99,6 +96,15 @@ func (c *Config) run(ctx workflow.Context, db *bun.DB, instance Instance, variab
 		if err != nil {
 			return err
 		}
+	}
+
+	if _, dbErr := db.NewUpdate().
+		Model(&instance).
+		WherePK().
+		SetColumn("terminated", "true").
+		SetColumn("terminated_at", time.Now().Format(time.RFC3339)).
+		Exec(context.Background()); dbErr != nil {
+		logger.Error("error updating instance into database", "error", dbErr)
 	}
 
 	return nil

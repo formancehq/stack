@@ -9,12 +9,14 @@ Name | Type | Description | Notes
 **CreatedAt** | **time.Time** |  | 
 **UpdatedAt** | **time.Time** |  | 
 **Status** | Pointer to [**[]StageStatus**](StageStatus.md) |  | [optional] 
+**Terminated** | **bool** |  | 
+**TerminatedAt** | Pointer to **time.Time** |  | [optional] 
 
 ## Methods
 
 ### NewWorkflowInstance
 
-`func NewWorkflowInstance(workflowID string, id string, createdAt time.Time, updatedAt time.Time, ) *WorkflowInstance`
+`func NewWorkflowInstance(workflowID string, id string, createdAt time.Time, updatedAt time.Time, terminated bool, ) *WorkflowInstance`
 
 NewWorkflowInstance instantiates a new WorkflowInstance object
 This constructor will assign default values to properties that have it defined,
@@ -133,6 +135,51 @@ SetStatus sets Status field to given value.
 `func (o *WorkflowInstance) HasStatus() bool`
 
 HasStatus returns a boolean if a field has been set.
+
+### GetTerminated
+
+`func (o *WorkflowInstance) GetTerminated() bool`
+
+GetTerminated returns the Terminated field if non-nil, zero value otherwise.
+
+### GetTerminatedOk
+
+`func (o *WorkflowInstance) GetTerminatedOk() (*bool, bool)`
+
+GetTerminatedOk returns a tuple with the Terminated field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTerminated
+
+`func (o *WorkflowInstance) SetTerminated(v bool)`
+
+SetTerminated sets Terminated field to given value.
+
+
+### GetTerminatedAt
+
+`func (o *WorkflowInstance) GetTerminatedAt() time.Time`
+
+GetTerminatedAt returns the TerminatedAt field if non-nil, zero value otherwise.
+
+### GetTerminatedAtOk
+
+`func (o *WorkflowInstance) GetTerminatedAtOk() (*time.Time, bool)`
+
+GetTerminatedAtOk returns a tuple with the TerminatedAt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTerminatedAt
+
+`func (o *WorkflowInstance) SetTerminatedAt(v time.Time)`
+
+SetTerminatedAt sets TerminatedAt field to given value.
+
+### HasTerminatedAt
+
+`func (o *WorkflowInstance) HasTerminatedAt() bool`
+
+HasTerminatedAt returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

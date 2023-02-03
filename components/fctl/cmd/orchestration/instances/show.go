@@ -45,6 +45,9 @@ func NewShowCommand() *cobra.Command {
 			tableData = append(tableData, []string{pterm.LightCyan("ID"), res.Data.Id})
 			tableData = append(tableData, []string{pterm.LightCyan("Created at"), res.Data.CreatedAt.Format(time.RFC3339)})
 			tableData = append(tableData, []string{pterm.LightCyan("Updated at"), res.Data.UpdatedAt.Format(time.RFC3339)})
+			if res.Data.Terminated {
+				tableData = append(tableData, []string{pterm.LightCyan("Terminated at"), res.Data.TerminatedAt.Format(time.RFC3339)})
+			}
 
 			if err := pterm.DefaultTable.
 				WithWriter(cmd.OutOrStdout()).

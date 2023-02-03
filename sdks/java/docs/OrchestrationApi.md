@@ -4,6 +4,7 @@ All URIs are relative to *http://localhost*
 
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
+| [**cancelEvent**](OrchestrationApi.md#cancelEvent) | **PUT** api/orchestration/instances/{instanceID}/abort | Cancel a running workflow |
 | [**createWorkflow**](OrchestrationApi.md#createWorkflow) | **POST** api/orchestration/workflows | Create workflow |
 | [**getInstance**](OrchestrationApi.md#getInstance) | **GET** api/orchestration/instances/{instanceID} | Get a workflow instance by id |
 | [**getInstanceHistory**](OrchestrationApi.md#getInstanceHistory) | **GET** api/orchestration/instances/{instanceID}/history | Get a workflow instance history by id |
@@ -15,6 +16,77 @@ All URIs are relative to *http://localhost*
 | [**runWorkflow**](OrchestrationApi.md#runWorkflow) | **POST** api/orchestration/workflows/{workflowID}/instances | Run workflow |
 | [**sendEvent**](OrchestrationApi.md#sendEvent) | **POST** api/orchestration/instances/{instanceID}/events | Send an event to a running workflow |
 
+
+
+## cancelEvent
+
+> cancelEvent(instanceID)
+
+Cancel a running workflow
+
+Cancel a running workflow
+
+### Example
+
+```java
+// Import classes:
+import com.formance.formance.ApiClient;
+import com.formance.formance.ApiException;
+import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
+import com.formance.formance.models.*;
+import com.formance.formance.api.OrchestrationApi;
+
+public class Example {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
+
+        OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
+        String instanceID = "xxx"; // String | The instance id
+        try {
+            apiInstance.cancelEvent(instanceID);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling OrchestrationApi#cancelEvent");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **instanceID** | **String**| The instance id | |
+
+### Return type
+
+null (empty response body)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **204** | No content |  -  |
+| **0** | General error |  -  |
 
 
 ## createWorkflow

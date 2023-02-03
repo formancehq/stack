@@ -24,6 +24,20 @@ import (
 type OrchestrationApi interface {
 
 	/*
+	CancelEvent Cancel a running workflow
+
+	Cancel a running workflow
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param instanceID The instance id
+	@return ApiCancelEventRequest
+	*/
+	CancelEvent(ctx context.Context, instanceID string) ApiCancelEventRequest
+
+	// CancelEventExecute executes the request
+	CancelEventExecute(r ApiCancelEventRequest) (*http.Response, error)
+
+	/*
 	CreateWorkflow Create workflow
 
 	Create a workflow
@@ -170,6 +184,106 @@ type OrchestrationApi interface {
 
 // OrchestrationApiService OrchestrationApi service
 type OrchestrationApiService service
+
+type ApiCancelEventRequest struct {
+	ctx context.Context
+	ApiService OrchestrationApi
+	instanceID string
+}
+
+func (r ApiCancelEventRequest) Execute() (*http.Response, error) {
+	return r.ApiService.CancelEventExecute(r)
+}
+
+/*
+CancelEvent Cancel a running workflow
+
+Cancel a running workflow
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param instanceID The instance id
+ @return ApiCancelEventRequest
+*/
+func (a *OrchestrationApiService) CancelEvent(ctx context.Context, instanceID string) ApiCancelEventRequest {
+	return ApiCancelEventRequest{
+		ApiService: a,
+		ctx: ctx,
+		instanceID: instanceID,
+	}
+}
+
+// Execute executes the request
+func (a *OrchestrationApiService) CancelEventExecute(r ApiCancelEventRequest) (*http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPut
+		localVarPostBody     interface{}
+		formFiles            []formFile
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "OrchestrationApiService.CancelEvent")
+	if err != nil {
+		return nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/api/orchestration/instances/{instanceID}/abort"
+	localVarPath = strings.Replace(localVarPath, "{"+"instanceID"+"}", url.PathEscape(parameterValueToString(r.instanceID, "instanceID")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+			var v Error
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
+}
 
 type ApiCreateWorkflowRequest struct {
 	ctx context.Context

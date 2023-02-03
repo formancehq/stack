@@ -111,6 +111,7 @@ Class | Method | HTTP request | Description
 *LogsApi* | [**listLogs**](docs/Api/LogsApi.md#listlogs) | **GET** /api/ledger/{ledger}/logs | List the logs from a ledger
 *MappingApi* | [**getMapping**](docs/Api/MappingApi.md#getmapping) | **GET** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
 *MappingApi* | [**updateMapping**](docs/Api/MappingApi.md#updatemapping) | **PUT** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
+*OrchestrationApi* | [**cancelEvent**](docs/Api/OrchestrationApi.md#cancelevent) | **PUT** /api/orchestration/instances/{instanceID}/abort | Cancel a running workflow
 *OrchestrationApi* | [**createWorkflow**](docs/Api/OrchestrationApi.md#createworkflow) | **POST** /api/orchestration/workflows | Create workflow
 *OrchestrationApi* | [**getInstance**](docs/Api/OrchestrationApi.md#getinstance) | **GET** /api/orchestration/instances/{instanceID} | Get a workflow instance by id
 *OrchestrationApi* | [**getInstanceHistory**](docs/Api/OrchestrationApi.md#getinstancehistory) | **GET** /api/orchestration/instances/{instanceID}/history | Get a workflow instance history by id

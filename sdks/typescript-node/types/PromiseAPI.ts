@@ -583,6 +583,16 @@ export class PromiseOrchestrationApi {
     }
 
     /**
+     * Cancel a running workflow
+     * Cancel a running workflow
+     * @param instanceID The instance id
+     */
+    public cancelEvent(instanceID: string, _options?: Configuration): Promise<void> {
+        const result = this.api.cancelEvent(instanceID, _options);
+        return result.toPromise();
+    }
+
+    /**
      * Create a workflow
      * Create workflow
      * @param body 

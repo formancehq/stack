@@ -888,6 +888,30 @@ export class ObservableOrchestrationApi {
     }
 
     /**
+     * Cancel a running workflow
+     * Cancel a running workflow
+     * @param instanceID The instance id
+     */
+    public cancelEvent(instanceID: string, _options?: Configuration): Observable<void> {
+        const requestContextPromise = this.requestFactory.cancelEvent(instanceID, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (let middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (let middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.cancelEvent(rsp)));
+            }));
+    }
+
+    /**
      * Create a workflow
      * Create workflow
      * @param body 

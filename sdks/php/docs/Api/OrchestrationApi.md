@@ -4,6 +4,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 
 | Method | HTTP request | Description |
 | ------------- | ------------- | ------------- |
+| [**cancelEvent()**](OrchestrationApi.md#cancelEvent) | **PUT** /api/orchestration/instances/{instanceID}/abort | Cancel a running workflow |
 | [**createWorkflow()**](OrchestrationApi.md#createWorkflow) | **POST** /api/orchestration/workflows | Create workflow |
 | [**getInstance()**](OrchestrationApi.md#getInstance) | **GET** /api/orchestration/instances/{instanceID} | Get a workflow instance by id |
 | [**getInstanceHistory()**](OrchestrationApi.md#getInstanceHistory) | **GET** /api/orchestration/instances/{instanceID}/history | Get a workflow instance history by id |
@@ -15,6 +16,65 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 | [**runWorkflow()**](OrchestrationApi.md#runWorkflow) | **POST** /api/orchestration/workflows/{workflowID}/instances | Run workflow |
 | [**sendEvent()**](OrchestrationApi.md#sendEvent) | **POST** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow |
 
+
+## `cancelEvent()`
+
+```php
+cancelEvent($instance_id)
+```
+
+Cancel a running workflow
+
+Cancel a running workflow
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\OrchestrationApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$instance_id = xxx; // string | The instance id
+
+try {
+    $apiInstance->cancelEvent($instance_id);
+} catch (Exception $e) {
+    echo 'Exception when calling OrchestrationApi->cancelEvent: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+| Name | Type | Description  | Notes |
+| ------------- | ------------- | ------------- | ------------- |
+| **instance_id** | **string**| The instance id | |
+
+### Return type
+
+void (empty response body)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
 
 ## `createWorkflow()`
 

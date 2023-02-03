@@ -3061,6 +3061,32 @@ paths:
       summary: Send an event to a running workflow
       tags:
       - Orchestration
+  /api/orchestration/instances/{instanceID}/abort:
+    put:
+      description: Cancel a running workflow
+      operationId: cancelEvent
+      parameters:
+      - description: The instance id
+        example: xxx
+        explode: false
+        in: path
+        name: instanceID
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: No content
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: General error
+      summary: Cancel a running workflow
+      tags:
+      - Orchestration
   /api/orchestration/instances/{instanceID}/history:
     get:
       description: Get a workflow instance history by id
@@ -5958,8 +5984,10 @@ components:
     WorkflowInstance:
       example:
         createdAt: 2000-01-23T04:56:07.000+00:00
+        terminatedAt: 2000-01-23T04:56:07.000+00:00
         id: id
         workflowID: workflowID
+        terminated: true
         updatedAt: 2000-01-23T04:56:07.000+00:00
         status:
         - instanceID: instanceID
@@ -5987,10 +6015,16 @@ components:
           items:
             $ref: '#/components/schemas/StageStatus'
           type: array
+        terminated:
+          type: boolean
+        terminatedAt:
+          format: date-time
+          type: string
       required:
       - createdAt
       - id
       - statuses
+      - terminated
       - updatedAt
       - workflowID
       type: object
@@ -6371,8 +6405,10 @@ components:
       example:
         data:
           createdAt: 2000-01-23T04:56:07.000+00:00
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
           id: id
           workflowID: workflowID
+          terminated: true
           updatedAt: 2000-01-23T04:56:07.000+00:00
           status:
           - instanceID: instanceID
@@ -6395,8 +6431,10 @@ components:
       example:
         data:
         - createdAt: 2000-01-23T04:56:07.000+00:00
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
           id: id
           workflowID: workflowID
+          terminated: true
           updatedAt: 2000-01-23T04:56:07.000+00:00
           status:
           - instanceID: instanceID
@@ -6410,8 +6448,10 @@ components:
             startedAt: 2000-01-23T04:56:07.000+00:00
             error: error
         - createdAt: 2000-01-23T04:56:07.000+00:00
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
           id: id
           workflowID: workflowID
+          terminated: true
           updatedAt: 2000-01-23T04:56:07.000+00:00
           status:
           - instanceID: instanceID
@@ -6452,8 +6492,10 @@ components:
       example:
         data:
           createdAt: 2000-01-23T04:56:07.000+00:00
+          terminatedAt: 2000-01-23T04:56:07.000+00:00
           id: id
           workflowID: workflowID
+          terminated: true
           updatedAt: 2000-01-23T04:56:07.000+00:00
           status:
           - instanceID: instanceID
