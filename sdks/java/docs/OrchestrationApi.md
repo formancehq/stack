@@ -453,7 +453,7 @@ public class Example {
 
 ## listInstances
 
-> ListRunsResponse listInstances(workflowID)
+> ListRunsResponse listInstances(workflowID, running)
 
 List instances of a workflow
 
@@ -481,8 +481,9 @@ public class Example {
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         String workflowID = "xxx"; // String | A workflow id
+        Boolean running = xxx; // Boolean | Filter running instances
         try {
-            ListRunsResponse result = apiInstance.listInstances(workflowID);
+            ListRunsResponse result = apiInstance.listInstances(workflowID, running);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling OrchestrationApi#listInstances");
@@ -500,7 +501,8 @@ public class Example {
 
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
-| **workflowID** | **String**| A workflow id | |
+| **workflowID** | **String**| A workflow id | [optional] |
+| **running** | **Boolean**| Filter running instances | [optional] |
 
 ### Return type
 

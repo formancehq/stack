@@ -131,7 +131,14 @@ paths:
         schema:
           type: string
         example: xxx
-        required: true
+        required: false
+      - in: query
+        description: Filter running instances
+        name: running
+        schema:
+          type: boolean
+        example: xxx
+        required: false
       tags:
       - Orchestration
       responses:
@@ -377,6 +384,8 @@ components:
         terminatedAt:
           type: string
           format: date-time
+        error:
+          type: string
     WorkflowInstanceHistoryStage:
       type: object
       required:

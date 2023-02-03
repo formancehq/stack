@@ -64,7 +64,8 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         'updated_at' => '\DateTime',
         'status' => '\Formance\Model\StageStatus[]',
         'terminated' => 'bool',
-        'terminated_at' => '\DateTime'
+        'terminated_at' => '\DateTime',
+        'error' => 'string'
     ];
 
     /**
@@ -81,7 +82,8 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         'updated_at' => 'date-time',
         'status' => null,
         'terminated' => null,
-        'terminated_at' => 'date-time'
+        'terminated_at' => 'date-time',
+        'error' => null
     ];
 
     /**
@@ -96,7 +98,8 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
 		'updated_at' => false,
 		'status' => false,
 		'terminated' => false,
-		'terminated_at' => false
+		'terminated_at' => false,
+		'error' => false
     ];
 
     /**
@@ -191,7 +194,8 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         'updated_at' => 'updatedAt',
         'status' => 'status',
         'terminated' => 'terminated',
-        'terminated_at' => 'terminatedAt'
+        'terminated_at' => 'terminatedAt',
+        'error' => 'error'
     ];
 
     /**
@@ -206,7 +210,8 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         'updated_at' => 'setUpdatedAt',
         'status' => 'setStatus',
         'terminated' => 'setTerminated',
-        'terminated_at' => 'setTerminatedAt'
+        'terminated_at' => 'setTerminatedAt',
+        'error' => 'setError'
     ];
 
     /**
@@ -221,7 +226,8 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         'updated_at' => 'getUpdatedAt',
         'status' => 'getStatus',
         'terminated' => 'getTerminated',
-        'terminated_at' => 'getTerminatedAt'
+        'terminated_at' => 'getTerminatedAt',
+        'error' => 'getError'
     ];
 
     /**
@@ -288,6 +294,7 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('status', $data ?? [], null);
         $this->setIfExists('terminated', $data ?? [], null);
         $this->setIfExists('terminated_at', $data ?? [], null);
+        $this->setIfExists('error', $data ?? [], null);
     }
 
     /**
@@ -532,6 +539,33 @@ class WorkflowInstance implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable terminated_at cannot be null');
         }
         $this->container['terminated_at'] = $terminated_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets error
+     *
+     * @return string|null
+     */
+    public function getError()
+    {
+        return $this->container['error'];
+    }
+
+    /**
+     * Sets error
+     *
+     * @param string|null $error error
+     *
+     * @return self
+     */
+    public function setError($error)
+    {
+        if (is_null($error)) {
+            throw new \InvalidArgumentException('non-nullable error cannot be null');
+        }
+        $this->container['error'] = $error;
 
         return $this;
     }

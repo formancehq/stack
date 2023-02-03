@@ -381,7 +381,7 @@ try {
 ## `listInstances()`
 
 ```php
-listInstances($workflow_id): \Formance\Model\ListRunsResponse
+listInstances($workflow_id, $running): \Formance\Model\ListRunsResponse
 ```
 
 List instances of a workflow
@@ -406,9 +406,10 @@ $apiInstance = new Formance\Api\OrchestrationApi(
     $config
 );
 $workflow_id = xxx; // string | A workflow id
+$running = xxx; // bool | Filter running instances
 
 try {
-    $result = $apiInstance->listInstances($workflow_id);
+    $result = $apiInstance->listInstances($workflow_id, $running);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling OrchestrationApi->listInstances: ', $e->getMessage(), PHP_EOL;
@@ -419,7 +420,8 @@ try {
 
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
-| **workflow_id** | **string**| A workflow id | |
+| **workflow_id** | **string**| A workflow id | [optional] |
+| **running** | **bool**| Filter running instances | [optional] |
 
 ### Return type
 

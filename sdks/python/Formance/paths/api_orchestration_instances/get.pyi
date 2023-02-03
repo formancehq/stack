@@ -30,15 +30,17 @@ from Formance.model.error import Error
 
 # Query params
 WorkflowIDSchema = schemas.StrSchema
+RunningSchema = schemas.BoolSchema
 RequestRequiredQueryParams = typing_extensions.TypedDict(
     'RequestRequiredQueryParams',
     {
-        'workflowID': typing.Union[WorkflowIDSchema, str, ],
     }
 )
 RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
+        'workflowID': typing.Union[WorkflowIDSchema, str, ],
+        'running': typing.Union[RunningSchema, bool, ],
     },
     total=False
 )
@@ -52,7 +54,12 @@ request_query_workflow_id = api_client.QueryParameter(
     name="workflowID",
     style=api_client.ParameterStyle.FORM,
     schema=WorkflowIDSchema,
-    required=True,
+    explode=True,
+)
+request_query_running = api_client.QueryParameter(
+    name="running",
+    style=api_client.ParameterStyle.FORM,
+    schema=RunningSchema,
     explode=True,
 )
 SchemaFor200ResponseBodyApplicationJson = ListRunsResponse
@@ -156,6 +163,7 @@ class BaseApi(api_client.Api):
         prefix_separator_iterator = None
         for parameter in (
             request_query_workflow_id,
+            request_query_running,
         ):
             parameter_data = query_params.get(parameter.name, schemas.unset)
             if parameter_data is schemas.unset:

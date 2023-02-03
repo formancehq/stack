@@ -1036,9 +1036,10 @@ export class ObservableOrchestrationApi {
      * List instances of a workflow
      * List instances of a workflow
      * @param workflowID A workflow id
+     * @param running Filter running instances
      */
-    public listInstances(workflowID: string, _options?: Configuration): Observable<ListRunsResponse> {
-        const requestContextPromise = this.requestFactory.listInstances(workflowID, _options);
+    public listInstances(workflowID?: string, running?: boolean, _options?: Configuration): Observable<ListRunsResponse> {
+        const requestContextPromise = this.requestFactory.listInstances(workflowID, running, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);

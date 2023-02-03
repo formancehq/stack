@@ -1962,16 +1962,17 @@ class OrchestrationApi
      *
      * List instances of a workflow
      *
-     * @param  string $workflow_id A workflow id (required)
+     * @param  string $workflow_id A workflow id (optional)
+     * @param  bool $running Filter running instances (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listInstances'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \Formance\Model\ListRunsResponse|\Formance\Model\Error
      */
-    public function listInstances($workflow_id, string $contentType = self::contentTypes['listInstances'][0])
+    public function listInstances($workflow_id = null, $running = null, string $contentType = self::contentTypes['listInstances'][0])
     {
-        list($response) = $this->listInstancesWithHttpInfo($workflow_id, $contentType);
+        list($response) = $this->listInstancesWithHttpInfo($workflow_id, $running, $contentType);
         return $response;
     }
 
@@ -1980,16 +1981,17 @@ class OrchestrationApi
      *
      * List instances of a workflow
      *
-     * @param  string $workflow_id A workflow id (required)
+     * @param  string $workflow_id A workflow id (optional)
+     * @param  bool $running Filter running instances (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listInstances'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\ListRunsResponse|\Formance\Model\Error, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listInstancesWithHttpInfo($workflow_id, string $contentType = self::contentTypes['listInstances'][0])
+    public function listInstancesWithHttpInfo($workflow_id = null, $running = null, string $contentType = self::contentTypes['listInstances'][0])
     {
-        $request = $this->listInstancesRequest($workflow_id, $contentType);
+        $request = $this->listInstancesRequest($workflow_id, $running, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -2103,15 +2105,16 @@ class OrchestrationApi
      *
      * List instances of a workflow
      *
-     * @param  string $workflow_id A workflow id (required)
+     * @param  string $workflow_id A workflow id (optional)
+     * @param  bool $running Filter running instances (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listInstances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listInstancesAsync($workflow_id, string $contentType = self::contentTypes['listInstances'][0])
+    public function listInstancesAsync($workflow_id = null, $running = null, string $contentType = self::contentTypes['listInstances'][0])
     {
-        return $this->listInstancesAsyncWithHttpInfo($workflow_id, $contentType)
+        return $this->listInstancesAsyncWithHttpInfo($workflow_id, $running, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -2124,16 +2127,17 @@ class OrchestrationApi
      *
      * List instances of a workflow
      *
-     * @param  string $workflow_id A workflow id (required)
+     * @param  string $workflow_id A workflow id (optional)
+     * @param  bool $running Filter running instances (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listInstances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listInstancesAsyncWithHttpInfo($workflow_id, string $contentType = self::contentTypes['listInstances'][0])
+    public function listInstancesAsyncWithHttpInfo($workflow_id = null, $running = null, string $contentType = self::contentTypes['listInstances'][0])
     {
         $returnType = '\Formance\Model\ListRunsResponse';
-        $request = $this->listInstancesRequest($workflow_id, $contentType);
+        $request = $this->listInstancesRequest($workflow_id, $running, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -2174,21 +2178,17 @@ class OrchestrationApi
     /**
      * Create request for operation 'listInstances'
      *
-     * @param  string $workflow_id A workflow id (required)
+     * @param  string $workflow_id A workflow id (optional)
+     * @param  bool $running Filter running instances (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listInstances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listInstancesRequest($workflow_id, string $contentType = self::contentTypes['listInstances'][0])
+    public function listInstancesRequest($workflow_id = null, $running = null, string $contentType = self::contentTypes['listInstances'][0])
     {
 
-        // verify the required parameter 'workflow_id' is set
-        if ($workflow_id === null || (is_array($workflow_id) && count($workflow_id) === 0)) {
-            throw new \InvalidArgumentException(
-                'Missing the required parameter $workflow_id when calling listInstances'
-            );
-        }
+
 
 
         $resourcePath = '/api/orchestration/instances';
@@ -2205,7 +2205,16 @@ class OrchestrationApi
             'string', // openApiType
             'form', // style
             true, // explode
-            true // required
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $running,
+            'running', // param base name
+            'boolean', // openApiType
+            'form', // style
+            true, // explode
+            false // required
         ) ?? []);
 
 

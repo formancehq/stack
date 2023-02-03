@@ -711,7 +711,7 @@ Type | Description  | Notes
 
 # **list_instances**
 <a name="list_instances"></a>
-> ListRunsResponse list_instances(workflow_id)
+> ListRunsResponse list_instances()
 
 List instances of a workflow
 
@@ -747,9 +747,10 @@ with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
-    # example passing only required values which don't have defaults set
+    # example passing only optional values
     query_params = {
         'workflowID': "xxx",
+        'running': True,
     }
     try:
         # List instances of a workflow
@@ -775,7 +776,8 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-workflowID | WorkflowIDSchema | | 
+workflowID | WorkflowIDSchema | | optional
+running | RunningSchema | | optional
 
 
 # WorkflowIDSchema
@@ -784,6 +786,13 @@ workflowID | WorkflowIDSchema | |
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 str,  | str,  |  | 
+
+# RunningSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+bool,  | BoolClass,  |  | 
 
 ### Return Types, Responses
 

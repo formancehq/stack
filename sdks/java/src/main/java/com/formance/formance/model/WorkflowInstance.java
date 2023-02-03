@@ -59,6 +59,10 @@ public class WorkflowInstance {
   @SerializedName(SERIALIZED_NAME_TERMINATED_AT)
   private OffsetDateTime terminatedAt;
 
+  public static final String SERIALIZED_NAME_ERROR = "error";
+  @SerializedName(SERIALIZED_NAME_ERROR)
+  private String error;
+
   public WorkflowInstance() {
   }
 
@@ -224,6 +228,28 @@ public class WorkflowInstance {
   }
 
 
+  public WorkflowInstance error(String error) {
+    
+    this.error = error;
+    return this;
+  }
+
+   /**
+   * Get error
+   * @return error
+  **/
+  @javax.annotation.Nullable
+
+  public String getError() {
+    return error;
+  }
+
+
+  public void setError(String error) {
+    this.error = error;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -239,12 +265,13 @@ public class WorkflowInstance {
         Objects.equals(this.updatedAt, workflowInstance.updatedAt) &&
         Objects.equals(this.status, workflowInstance.status) &&
         Objects.equals(this.terminated, workflowInstance.terminated) &&
-        Objects.equals(this.terminatedAt, workflowInstance.terminatedAt);
+        Objects.equals(this.terminatedAt, workflowInstance.terminatedAt) &&
+        Objects.equals(this.error, workflowInstance.error);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(workflowID, id, createdAt, updatedAt, status, terminated, terminatedAt);
+    return Objects.hash(workflowID, id, createdAt, updatedAt, status, terminated, terminatedAt, error);
   }
 
   @Override
@@ -258,6 +285,7 @@ public class WorkflowInstance {
     sb.append("    status: ").append(toIndentedString(status)).append("\n");
     sb.append("    terminated: ").append(toIndentedString(terminated)).append("\n");
     sb.append("    terminatedAt: ").append(toIndentedString(terminatedAt)).append("\n");
+    sb.append("    error: ").append(toIndentedString(error)).append("\n");
     sb.append("}");
     return sb.toString();
   }

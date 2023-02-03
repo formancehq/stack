@@ -3087,9 +3087,18 @@ paths:
         explode: true
         in: query
         name: workflowID
-        required: true
+        required: false
         schema:
           type: string
+        style: form
+      - description: Filter running instances
+        example: xxx
+        explode: true
+        in: query
+        name: running
+        required: false
+        schema:
+          type: boolean
         style: form
       responses:
         "200":
@@ -6100,6 +6109,7 @@ components:
         createdAt: 2000-01-23T04:56:07.000+00:00
         terminatedAt: 2000-01-23T04:56:07.000+00:00
         id: id
+        error: error
         workflowID: workflowID
         terminated: true
         updatedAt: 2000-01-23T04:56:07.000+00:00
@@ -6133,6 +6143,8 @@ components:
           type: boolean
         terminatedAt:
           format: date-time
+          type: string
+        error:
           type: string
       required:
       - createdAt
@@ -6521,6 +6533,7 @@ components:
           createdAt: 2000-01-23T04:56:07.000+00:00
           terminatedAt: 2000-01-23T04:56:07.000+00:00
           id: id
+          error: error
           workflowID: workflowID
           terminated: true
           updatedAt: 2000-01-23T04:56:07.000+00:00
@@ -6547,6 +6560,7 @@ components:
         - createdAt: 2000-01-23T04:56:07.000+00:00
           terminatedAt: 2000-01-23T04:56:07.000+00:00
           id: id
+          error: error
           workflowID: workflowID
           terminated: true
           updatedAt: 2000-01-23T04:56:07.000+00:00
@@ -6564,6 +6578,7 @@ components:
         - createdAt: 2000-01-23T04:56:07.000+00:00
           terminatedAt: 2000-01-23T04:56:07.000+00:00
           id: id
+          error: error
           workflowID: workflowID
           terminated: true
           updatedAt: 2000-01-23T04:56:07.000+00:00
@@ -6608,6 +6623,7 @@ components:
           createdAt: 2000-01-23T04:56:07.000+00:00
           terminatedAt: 2000-01-23T04:56:07.000+00:00
           id: id
+          error: error
           workflowID: workflowID
           terminated: true
           updatedAt: 2000-01-23T04:56:07.000+00:00

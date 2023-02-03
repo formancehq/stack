@@ -6,16 +6,17 @@ import (
 )
 
 func RunWaitEvent(ctx workflow.Context, waitEvent WaitEvent) error {
-	var signal internalWorkflow.Event
 	channel := workflow.GetSignalChannel(ctx, internalWorkflow.EventSignalName)
-	for {
-		_ = channel.Receive(ctx, &signal)
+	return workflow.Await(ctx, func() bool {
+		var signal internalWorkflow.Event
+		ok := channel.ReceiveAsync(&signal)
+		if !ok {
+			return false
+		}
 		if signal.Name != waitEvent.Event {
 			workflow.GetLogger(ctx).Debug("receive unexpected event", "event", signal.Name)
-			continue
+			return false
 		}
-		break
-	}
-
-	return nil
+		return true
+	})
 }

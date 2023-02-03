@@ -1,6 +1,8 @@
 package workflow
 
 import (
+	"context"
+
 	"github.com/uptrace/bun"
 	"go.temporal.io/sdk/workflow"
 )
@@ -12,5 +14,18 @@ type Input struct {
 }
 
 func (i Input) run(ctx workflow.Context, db *bun.DB) error {
-	return i.Workflow.Config.run(ctx, db, i.Instance, i.Variables)
+	instance := i.Instance
+	err := i.Workflow.Config.run(ctx, db, instance, i.Variables)
+	if err != nil {
+		instance.SetTerminatedWithError(workflow.Now(ctx), err)
+	} else {
+		instance.SetTerminated(workflow.Now(ctx))
+	}
+	if _, dbErr := db.NewUpdate().
+		Model(&instance).
+		WherePK().
+		Exec(context.Background()); dbErr != nil {
+		workflow.GetLogger(ctx).Error("error updating instance into database", "error", dbErr)
+	}
+	return err
 }

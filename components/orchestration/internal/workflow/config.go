@@ -55,6 +55,10 @@ func (c *Config) runStage(ctx workflow.Context, s Stage, stage RawStage, variabl
 		if errors.As(err, &appError) {
 			return errors.New(appError.Message())
 		}
+		var canceledError *temporal.CanceledError
+		if errors.As(err, &canceledError) {
+			return canceledError
+		}
 		return err
 	}
 
@@ -96,15 +100,6 @@ func (c *Config) run(ctx workflow.Context, db *bun.DB, instance Instance, variab
 		if err != nil {
 			return err
 		}
-	}
-
-	if _, dbErr := db.NewUpdate().
-		Model(&instance).
-		WherePK().
-		SetColumn("terminated", "true").
-		SetColumn("terminated_at", time.Now().Format(time.RFC3339)).
-		Exec(context.Background()); dbErr != nil {
-		logger.Error("error updating instance into database", "error", dbErr)
 	}
 
 	return nil

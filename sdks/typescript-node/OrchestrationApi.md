@@ -373,8 +373,10 @@ const configuration = createConfiguration();
 const apiInstance = new OrchestrationApi(configuration);
 
 let body:OrchestrationApiListInstancesRequest = {
-  // string | A workflow id
+  // string | A workflow id (optional)
   workflowID: "xxx",
+  // boolean | Filter running instances (optional)
+  running: true,
 };
 
 apiInstance.listInstances(body).then((data:any) => {
@@ -387,7 +389,8 @@ apiInstance.listInstances(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **workflowID** | [**string**] | A workflow id | defaults to undefined
+ **workflowID** | [**string**] | A workflow id | (optional) defaults to undefined
+ **running** | [**boolean**] | Filter running instances | (optional) defaults to undefined
 
 
 ### Return type

@@ -437,7 +437,7 @@ Name | Type | Description  | Notes
 
 ## ListInstances
 
-> ListRunsResponse ListInstances(ctx).WorkflowID(workflowID).Execute()
+> ListRunsResponse ListInstances(ctx).WorkflowID(workflowID).Running(running).Execute()
 
 List instances of a workflow
 
@@ -456,11 +456,12 @@ import (
 )
 
 func main() {
-    workflowID := "xxx" // string | A workflow id
+    workflowID := "xxx" // string | A workflow id (optional)
+    running := false // bool | Filter running instances (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.OrchestrationApi.ListInstances(context.Background()).WorkflowID(workflowID).Execute()
+    resp, r, err := apiClient.OrchestrationApi.ListInstances(context.Background()).WorkflowID(workflowID).Running(running).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `OrchestrationApi.ListInstances``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -482,6 +483,7 @@ Other parameters are passed through a pointer to a apiListInstancesRequest struc
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **workflowID** | **string** | A workflow id | 
+ **running** | **bool** | Filter running instances | 
 
 ### Return type
 

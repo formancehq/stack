@@ -102,12 +102,13 @@ public interface OrchestrationApi {
   /**
    * List instances of a workflow
    * List instances of a workflow
-   * @param workflowID A workflow id (required)
+   * @param workflowID A workflow id (optional)
+   * @param running Filter running instances (optional)
    * @return Call&lt;ListRunsResponse&gt;
    */
   @GET("api/orchestration/instances")
   Call<ListRunsResponse> listInstances(
-    @retrofit2.http.Query("workflowID") String workflowID
+    @retrofit2.http.Query("workflowID") String workflowID, @retrofit2.http.Query("running") Boolean running
   );
 
   /**

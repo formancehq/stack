@@ -13,12 +13,14 @@ import (
 func NewListCommand() *cobra.Command {
 	const (
 		workflowFlag = "workflow"
+		runningFlag  = "running"
 	)
 	return fctl.NewCommand("list",
 		fctl.WithShortDescription("List all workflows instances"),
 		fctl.WithAliases("ls", "l"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithStringFlag(workflowFlag, "", "Filter on workflow id"),
+		fctl.WithBoolFlag(runningFlag, false, "Filter on running instances"),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
 			cfg, err := fctl.GetConfig(cmd)
 			if err != nil {
@@ -42,6 +44,7 @@ func NewListCommand() *cobra.Command {
 
 			res, _, err := client.OrchestrationApi.ListInstances(cmd.Context()).
 				WorkflowID(fctl.GetString(cmd, workflowFlag)).
+				Running(fctl.GetBool(cmd, runningFlag)).
 				Execute()
 			if err != nil {
 				return errors.Wrap(err, "listing workflows")

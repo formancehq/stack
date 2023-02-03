@@ -852,11 +852,18 @@ type ApiListInstancesRequest struct {
 	ctx context.Context
 	ApiService OrchestrationApi
 	workflowID *string
+	running *bool
 }
 
 // A workflow id
 func (r ApiListInstancesRequest) WorkflowID(workflowID string) ApiListInstancesRequest {
 	r.workflowID = &workflowID
+	return r
+}
+
+// Filter running instances
+func (r ApiListInstancesRequest) Running(running bool) ApiListInstancesRequest {
+	r.running = &running
 	return r
 }
 
@@ -899,11 +906,13 @@ func (a *OrchestrationApiService) ListInstancesExecute(r ApiListInstancesRequest
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.workflowID == nil {
-		return localVarReturnValue, nil, reportError("workflowID is required and must be specified")
-	}
 
-	parameterAddToQuery(localVarQueryParams, "workflowID", r.workflowID, "")
+	if r.workflowID != nil {
+		parameterAddToQuery(localVarQueryParams, "workflowID", r.workflowID, "")
+	}
+	if r.running != nil {
+		parameterAddToQuery(localVarQueryParams, "running", r.running, "")
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 

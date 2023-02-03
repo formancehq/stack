@@ -28,6 +28,7 @@ type WorkflowInstance struct {
 	Status []StageStatus `json:"status,omitempty"`
 	Terminated bool `json:"terminated"`
 	TerminatedAt *time.Time `json:"terminatedAt,omitempty"`
+	Error *string `json:"error,omitempty"`
 }
 
 // NewWorkflowInstance instantiates a new WorkflowInstance object
@@ -236,6 +237,38 @@ func (o *WorkflowInstance) SetTerminatedAt(v time.Time) {
 	o.TerminatedAt = &v
 }
 
+// GetError returns the Error field value if set, zero value otherwise.
+func (o *WorkflowInstance) GetError() string {
+	if o == nil || isNil(o.Error) {
+		var ret string
+		return ret
+	}
+	return *o.Error
+}
+
+// GetErrorOk returns a tuple with the Error field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstance) GetErrorOk() (*string, bool) {
+	if o == nil || isNil(o.Error) {
+		return nil, false
+	}
+	return o.Error, true
+}
+
+// HasError returns a boolean if a field has been set.
+func (o *WorkflowInstance) HasError() bool {
+	if o != nil && !isNil(o.Error) {
+		return true
+	}
+
+	return false
+}
+
+// SetError gets a reference to the given string and assigns it to the Error field.
+func (o *WorkflowInstance) SetError(v string) {
+	o.Error = &v
+}
+
 func (o WorkflowInstance) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -256,6 +289,9 @@ func (o WorkflowInstance) ToMap() (map[string]interface{}, error) {
 	toSerialize["terminated"] = o.Terminated
 	if !isNil(o.TerminatedAt) {
 		toSerialize["terminatedAt"] = o.TerminatedAt
+	}
+	if !isNil(o.Error) {
+		toSerialize["error"] = o.Error
 	}
 	return toSerialize, nil
 }

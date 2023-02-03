@@ -77,6 +77,7 @@ class WorkflowInstance(
                 def __getitem__(self, i: int) -> 'StageStatus':
                     return super().__getitem__(i)
             terminatedAt = schemas.DateTimeSchema
+            error = schemas.StrSchema
             __annotations__ = {
                 "workflowID": workflowID,
                 "id": id,
@@ -85,6 +86,7 @@ class WorkflowInstance(
                 "terminated": terminated,
                 "status": status,
                 "terminatedAt": terminatedAt,
+                "error": error,
             }
     
     createdAt: MetaOapg.properties.createdAt
@@ -116,9 +118,12 @@ class WorkflowInstance(
     def __getitem__(self, name: typing_extensions.Literal["terminatedAt"]) -> MetaOapg.properties.terminatedAt: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["error"]) -> MetaOapg.properties.error: ...
+    
+    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["workflowID", "id", "createdAt", "updatedAt", "terminated", "status", "terminatedAt", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["workflowID", "id", "createdAt", "updatedAt", "terminated", "status", "terminatedAt", "error", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -145,9 +150,12 @@ class WorkflowInstance(
     def get_item_oapg(self, name: typing_extensions.Literal["terminatedAt"]) -> typing.Union[MetaOapg.properties.terminatedAt, schemas.Unset]: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["error"]) -> typing.Union[MetaOapg.properties.error, schemas.Unset]: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["workflowID", "id", "createdAt", "updatedAt", "terminated", "status", "terminatedAt", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["workflowID", "id", "createdAt", "updatedAt", "terminated", "status", "terminatedAt", "error", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -162,6 +170,7 @@ class WorkflowInstance(
         updatedAt: typing.Union[MetaOapg.properties.updatedAt, str, datetime, ],
         status: typing.Union[MetaOapg.properties.status, list, tuple, schemas.Unset] = schemas.unset,
         terminatedAt: typing.Union[MetaOapg.properties.terminatedAt, str, datetime, schemas.Unset] = schemas.unset,
+        error: typing.Union[MetaOapg.properties.error, str, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'WorkflowInstance':
@@ -176,6 +185,7 @@ class WorkflowInstance(
             updatedAt=updatedAt,
             status=status,
             terminatedAt=terminatedAt,
+            error=error,
             _configuration=_configuration,
             **kwargs,
         )
