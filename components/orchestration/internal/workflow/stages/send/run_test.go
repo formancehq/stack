@@ -127,6 +127,48 @@ var (
 				},
 			},
 			{
+				Activity: activities.CreateTransactionActivity,
+				Args: []any{
+					mock.Anything, activities.CreateTransactionRequest{
+						Ledger: internalLedger,
+						Data: sdk.PostTransaction{
+							Postings: []sdk.Posting{{
+								Amount:      100,
+								Asset:       "USD",
+								Destination: paymentAccountName("payment1"),
+								Source:      "world",
+							}},
+							Reference: sdk.PtrString(paymentAccountName("payment1")),
+						},
+					},
+				},
+				Returns: []any{&sdk.TransactionsResponse{
+					Data: []sdk.Transaction{{}},
+				}, nil},
+			},
+			{
+				Activity: activities.CreateTransactionActivity,
+				Args: []any{
+					mock.Anything, activities.CreateTransactionRequest{
+						Ledger: internalLedger,
+						Data: sdk.PostTransaction{
+							Postings: []sdk.Posting{{
+								Amount:      100,
+								Asset:       "USD",
+								Destination: "world",
+								Source:      paymentAccountName("payment1"),
+							}},
+							Metadata: map[string]interface{}{
+								moveToLedgerMetadata: "default",
+							},
+						},
+					},
+				},
+				Returns: []any{&sdk.TransactionsResponse{
+					Data: []sdk.Transaction{{}},
+				}, nil},
+			},
+			{
 				Activity: activities.GetWalletActivity,
 				Args: []any{mock.Anything, activities.GetWalletRequest{
 					ID: "wallet1",
@@ -191,6 +233,48 @@ var (
 				Activity: activities.CreateTransactionActivity,
 				Args: []any{
 					mock.Anything, activities.CreateTransactionRequest{
+						Ledger: internalLedger,
+						Data: sdk.PostTransaction{
+							Postings: []sdk.Posting{{
+								Amount:      100,
+								Asset:       "USD",
+								Destination: paymentAccountName("payment1"),
+								Source:      "world",
+							}},
+							Reference: sdk.PtrString(paymentAccountName("payment1")),
+						},
+					},
+				},
+				Returns: []any{&sdk.TransactionsResponse{
+					Data: []sdk.Transaction{{}},
+				}, nil},
+			},
+			{
+				Activity: activities.CreateTransactionActivity,
+				Args: []any{
+					mock.Anything, activities.CreateTransactionRequest{
+						Ledger: internalLedger,
+						Data: sdk.PostTransaction{
+							Postings: []sdk.Posting{{
+								Amount:      100,
+								Asset:       "USD",
+								Destination: "world",
+								Source:      paymentAccountName("payment1"),
+							}},
+							Metadata: map[string]interface{}{
+								moveToLedgerMetadata: "default",
+							},
+						},
+					},
+				},
+				Returns: []any{&sdk.TransactionsResponse{
+					Data: []sdk.Transaction{{}},
+				}, nil},
+			},
+			{
+				Activity: activities.CreateTransactionActivity,
+				Args: []any{
+					mock.Anything, activities.CreateTransactionRequest{
 						Ledger: "default",
 						Data: sdk.PostTransaction{
 							Postings: []sdk.Posting{{
@@ -199,6 +283,102 @@ var (
 								Destination: "foo",
 								Source:      "world",
 							}},
+							Metadata: map[string]interface{}{
+								moveFromLedgerMetadata: internalLedger,
+							},
+						},
+					},
+				},
+				Returns: []any{&sdk.TransactionsResponse{
+					Data: []sdk.Transaction{{}},
+				}, nil},
+			},
+		},
+	}
+	paymentToAccountWithAlreadyUsedPayment = stagestesting.WorkflowTestCase[Send]{
+		Name: "payment to account with already used payment",
+		Stage: Send{
+			Source: NewSource().WithPayment(&PaymentSource{
+				ID: "payment1",
+			}),
+			Destination: NewDestination().WithAccount(&LedgerAccountDestination{
+				ID:     "foo",
+				Ledger: "default",
+			}),
+			Amount: *sdk.NewMonetary("USD", 100),
+		},
+		MockedActivities: []stagestesting.MockedActivity{
+			{
+				Activity: activities.GetPaymentActivity,
+				Args: []any{mock.Anything, activities.GetPaymentRequest{
+					ID: "payment1",
+				}},
+				Returns: []any{
+					&sdk.PaymentResponse{
+						Data: sdk.Payment{
+							InitialAmount: 100,
+							Asset:         "USD",
+							Provider:      sdk.STRIPE,
+							Status:        sdk.SUCCEEDED,
+						},
+					}, nil,
+				},
+			},
+			{
+				Activity: activities.CreateTransactionActivity,
+				Args: []any{
+					mock.Anything, activities.CreateTransactionRequest{
+						Ledger: internalLedger,
+						Data: sdk.PostTransaction{
+							Postings: []sdk.Posting{{
+								Amount:      100,
+								Asset:       "USD",
+								Destination: paymentAccountName("payment1"),
+								Source:      "world",
+							}},
+							Reference: sdk.PtrString(paymentAccountName("payment1")),
+						},
+					},
+				},
+				Returns: []any{nil, activities.ErrTransactionReferenceConflict},
+			},
+			{
+				Activity: activities.CreateTransactionActivity,
+				Args: []any{
+					mock.Anything, activities.CreateTransactionRequest{
+						Ledger: internalLedger,
+						Data: sdk.PostTransaction{
+							Postings: []sdk.Posting{{
+								Amount:      100,
+								Asset:       "USD",
+								Destination: "world",
+								Source:      paymentAccountName("payment1"),
+							}},
+							Metadata: map[string]interface{}{
+								moveToLedgerMetadata: "default",
+							},
+						},
+					},
+				},
+				Returns: []any{&sdk.TransactionsResponse{
+					Data: []sdk.Transaction{{}},
+				}, nil},
+			},
+			{
+				Activity: activities.CreateTransactionActivity,
+				Args: []any{
+					mock.Anything, activities.CreateTransactionRequest{
+						Ledger: "default",
+						Data: sdk.PostTransaction{
+							Postings: []sdk.Posting{{
+								Amount:      100,
+								Asset:       "USD",
+								Destination: "foo",
+								Source:      "world",
+							}},
+							Metadata: map[string]interface{}{
+								moveFromLedgerMetadata: internalLedger,
+							},
 						},
 					},
 				},
@@ -783,6 +963,7 @@ var (
 var testCases = []stagestesting.WorkflowTestCase[Send]{
 	paymentToWallet,
 	paymentToAccount,
+	paymentToAccountWithAlreadyUsedPayment,
 	accountToAccount,
 	accountToAccountMixedLedger,
 	accountToWallet,

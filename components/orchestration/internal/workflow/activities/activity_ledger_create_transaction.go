@@ -2,9 +2,15 @@ package activities
 
 import (
 	"context"
+	"net/http"
 
 	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/pkg/errors"
 	"go.temporal.io/sdk/workflow"
+)
+
+var (
+	ErrTransactionReferenceConflict = errors.New("TRANSACTION_REFERENCE_CONFLICT")
 )
 
 type CreateTransactionRequest struct {
@@ -13,12 +19,17 @@ type CreateTransactionRequest struct {
 }
 
 func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*sdk.TransactionsResponse, error) {
-	ret, _, err := a.client.TransactionsApi.
+	ret, httpResponse, err := a.client.TransactionsApi.
 		CreateTransaction(ctx, request.Ledger).
 		PostTransaction(request.Data).
 		Execute()
 	if err != nil {
-		return nil, sdk.ExtractOpenAPIErrorMessage(err)
+		switch httpResponse.StatusCode {
+		case http.StatusConflict:
+			return nil, ErrTransactionReferenceConflict
+		default:
+			return nil, sdk.ExtractOpenAPIErrorMessage(err)
+		}
 	}
 	return ret, nil
 }
