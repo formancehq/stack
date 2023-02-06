@@ -309,7 +309,6 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 				activityHistory.Terminated = true
 				break
 			}
-			ret = append(ret, activityHistory)
 		}
 	}
 	return ret, nil
