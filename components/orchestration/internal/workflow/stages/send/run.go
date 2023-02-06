@@ -97,7 +97,7 @@ func savePayment(ctx workflow.Context, paymentID string) error {
 		}},
 		Reference: sdk.PtrString(paymentAccountName(paymentID)),
 	})
-	if err != nil && err.Error() != activities.ErrTransactionReferenceConflict.Error() {
+	if err != nil && err.Error() != "CONFLICT" {
 		return err
 	}
 	return nil

@@ -6,6 +6,7 @@ import (
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -343,7 +344,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{nil, activities.ErrTransactionReferenceConflict},
+				Returns: []any{nil, errors.New("CONFLICT")},
 			},
 			{
 				Activity: activities.CreateTransactionActivity,
