@@ -6409,7 +6409,10 @@ components:
         name: name
         startedAt: 2000-01-23T04:56:07.000+00:00
         error: error
+        nextExecution: 2000-01-23T04:56:07.000+00:00
+        attempt: 0
         terminated: ""
+        lastFailure: lastFailure
       properties:
         name:
           type: string
@@ -6427,7 +6430,15 @@ components:
         terminatedAt:
           format: date-time
           type: string
+        lastFailure:
+          type: string
+        attempt:
+          type: integer
+        nextExecution:
+          format: date-time
+          type: string
       required:
+      - attempt
       - input
       - name
       - startedAt
@@ -6923,7 +6934,10 @@ components:
           name: name
           startedAt: 2000-01-23T04:56:07.000+00:00
           error: error
+          nextExecution: 2000-01-23T04:56:07.000+00:00
+          attempt: 0
           terminated: ""
+          lastFailure: lastFailure
         - output:
             CreateTransaction:
               data:
@@ -7177,7 +7191,10 @@ components:
           name: name
           startedAt: 2000-01-23T04:56:07.000+00:00
           error: error
+          nextExecution: 2000-01-23T04:56:07.000+00:00
+          attempt: 0
           terminated: ""
+          lastFailure: lastFailure
       properties:
         data:
           items:

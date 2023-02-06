@@ -11,12 +11,15 @@ Name | Type | Description | Notes
 **Terminated** | **bool** |  | 
 **StartedAt** | **time.Time** |  | 
 **TerminatedAt** | Pointer to **time.Time** |  | [optional] 
+**LastFailure** | Pointer to **string** |  | [optional] 
+**Attempt** | **int32** |  | 
+**NextExecution** | Pointer to **time.Time** |  | [optional] 
 
 ## Methods
 
 ### NewWorkflowInstanceHistoryStage
 
-`func NewWorkflowInstanceHistoryStage(name string, input WorkflowInstanceHistoryStageInput, terminated bool, startedAt time.Time, ) *WorkflowInstanceHistoryStage`
+`func NewWorkflowInstanceHistoryStage(name string, input WorkflowInstanceHistoryStageInput, terminated bool, startedAt time.Time, attempt int32, ) *WorkflowInstanceHistoryStage`
 
 NewWorkflowInstanceHistoryStage instantiates a new WorkflowInstanceHistoryStage object
 This constructor will assign default values to properties that have it defined,
@@ -185,6 +188,76 @@ SetTerminatedAt sets TerminatedAt field to given value.
 `func (o *WorkflowInstanceHistoryStage) HasTerminatedAt() bool`
 
 HasTerminatedAt returns a boolean if a field has been set.
+
+### GetLastFailure
+
+`func (o *WorkflowInstanceHistoryStage) GetLastFailure() string`
+
+GetLastFailure returns the LastFailure field if non-nil, zero value otherwise.
+
+### GetLastFailureOk
+
+`func (o *WorkflowInstanceHistoryStage) GetLastFailureOk() (*string, bool)`
+
+GetLastFailureOk returns a tuple with the LastFailure field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetLastFailure
+
+`func (o *WorkflowInstanceHistoryStage) SetLastFailure(v string)`
+
+SetLastFailure sets LastFailure field to given value.
+
+### HasLastFailure
+
+`func (o *WorkflowInstanceHistoryStage) HasLastFailure() bool`
+
+HasLastFailure returns a boolean if a field has been set.
+
+### GetAttempt
+
+`func (o *WorkflowInstanceHistoryStage) GetAttempt() int32`
+
+GetAttempt returns the Attempt field if non-nil, zero value otherwise.
+
+### GetAttemptOk
+
+`func (o *WorkflowInstanceHistoryStage) GetAttemptOk() (*int32, bool)`
+
+GetAttemptOk returns a tuple with the Attempt field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAttempt
+
+`func (o *WorkflowInstanceHistoryStage) SetAttempt(v int32)`
+
+SetAttempt sets Attempt field to given value.
+
+
+### GetNextExecution
+
+`func (o *WorkflowInstanceHistoryStage) GetNextExecution() time.Time`
+
+GetNextExecution returns the NextExecution field if non-nil, zero value otherwise.
+
+### GetNextExecutionOk
+
+`func (o *WorkflowInstanceHistoryStage) GetNextExecutionOk() (*time.Time, bool)`
+
+GetNextExecutionOk returns a tuple with the NextExecution field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetNextExecution
+
+`func (o *WorkflowInstanceHistoryStage) SetNextExecution(v time.Time)`
+
+SetNextExecution sets NextExecution field to given value.
+
+### HasNextExecution
+
+`func (o *WorkflowInstanceHistoryStage) HasNextExecution() bool`
+
+HasNextExecution returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

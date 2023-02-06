@@ -23,6 +23,9 @@ export class WorkflowInstanceHistoryStage {
     'terminated': Bool;
     'startedAt': Date;
     'terminatedAt'?: Date;
+    'lastFailure'?: string;
+    'attempt': number;
+    'nextExecution'?: Date;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -66,6 +69,24 @@ export class WorkflowInstanceHistoryStage {
         {
             "name": "terminatedAt",
             "baseName": "terminatedAt",
+            "type": "Date",
+            "format": "date-time"
+        },
+        {
+            "name": "lastFailure",
+            "baseName": "lastFailure",
+            "type": "string",
+            "format": ""
+        },
+        {
+            "name": "attempt",
+            "baseName": "attempt",
+            "type": "number",
+            "format": ""
+        },
+        {
+            "name": "nextExecution",
+            "baseName": "nextExecution",
             "type": "Date",
             "format": "date-time"
         }    ];

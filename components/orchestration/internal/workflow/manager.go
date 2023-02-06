@@ -264,6 +264,7 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 					activityTaskScheduledEventAttributes.ActivityType.Name: input,
 				},
 				StartedAt: *event.EventTime,
+				Attempt:   1,
 			}
 			ret = append(ret, activityHistory)
 

@@ -28,18 +28,22 @@ type WorkflowInstanceHistoryStage struct {
 	Terminated bool `json:"terminated"`
 	StartedAt time.Time `json:"startedAt"`
 	TerminatedAt *time.Time `json:"terminatedAt,omitempty"`
+	LastFailure *string `json:"lastFailure,omitempty"`
+	Attempt int32 `json:"attempt"`
+	NextExecution *time.Time `json:"nextExecution,omitempty"`
 }
 
 // NewWorkflowInstanceHistoryStage instantiates a new WorkflowInstanceHistoryStage object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWorkflowInstanceHistoryStage(name string, input WorkflowInstanceHistoryStageInput, terminated bool, startedAt time.Time) *WorkflowInstanceHistoryStage {
+func NewWorkflowInstanceHistoryStage(name string, input WorkflowInstanceHistoryStageInput, terminated bool, startedAt time.Time, attempt int32) *WorkflowInstanceHistoryStage {
 	this := WorkflowInstanceHistoryStage{}
 	this.Name = name
 	this.Input = input
 	this.Terminated = terminated
 	this.StartedAt = startedAt
+	this.Attempt = attempt
 	return &this
 }
 
@@ -243,6 +247,94 @@ func (o *WorkflowInstanceHistoryStage) SetTerminatedAt(v time.Time) {
 	o.TerminatedAt = &v
 }
 
+// GetLastFailure returns the LastFailure field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStage) GetLastFailure() string {
+	if o == nil || isNil(o.LastFailure) {
+		var ret string
+		return ret
+	}
+	return *o.LastFailure
+}
+
+// GetLastFailureOk returns a tuple with the LastFailure field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStage) GetLastFailureOk() (*string, bool) {
+	if o == nil || isNil(o.LastFailure) {
+		return nil, false
+	}
+	return o.LastFailure, true
+}
+
+// HasLastFailure returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStage) HasLastFailure() bool {
+	if o != nil && !isNil(o.LastFailure) {
+		return true
+	}
+
+	return false
+}
+
+// SetLastFailure gets a reference to the given string and assigns it to the LastFailure field.
+func (o *WorkflowInstanceHistoryStage) SetLastFailure(v string) {
+	o.LastFailure = &v
+}
+
+// GetAttempt returns the Attempt field value
+func (o *WorkflowInstanceHistoryStage) GetAttempt() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.Attempt
+}
+
+// GetAttemptOk returns a tuple with the Attempt field value
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStage) GetAttemptOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Attempt, true
+}
+
+// SetAttempt sets field value
+func (o *WorkflowInstanceHistoryStage) SetAttempt(v int32) {
+	o.Attempt = v
+}
+
+// GetNextExecution returns the NextExecution field value if set, zero value otherwise.
+func (o *WorkflowInstanceHistoryStage) GetNextExecution() time.Time {
+	if o == nil || isNil(o.NextExecution) {
+		var ret time.Time
+		return ret
+	}
+	return *o.NextExecution
+}
+
+// GetNextExecutionOk returns a tuple with the NextExecution field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WorkflowInstanceHistoryStage) GetNextExecutionOk() (*time.Time, bool) {
+	if o == nil || isNil(o.NextExecution) {
+		return nil, false
+	}
+	return o.NextExecution, true
+}
+
+// HasNextExecution returns a boolean if a field has been set.
+func (o *WorkflowInstanceHistoryStage) HasNextExecution() bool {
+	if o != nil && !isNil(o.NextExecution) {
+		return true
+	}
+
+	return false
+}
+
+// SetNextExecution gets a reference to the given time.Time and assigns it to the NextExecution field.
+func (o *WorkflowInstanceHistoryStage) SetNextExecution(v time.Time) {
+	o.NextExecution = &v
+}
+
 func (o WorkflowInstanceHistoryStage) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -265,6 +357,13 @@ func (o WorkflowInstanceHistoryStage) ToMap() (map[string]interface{}, error) {
 	toSerialize["startedAt"] = o.StartedAt
 	if !isNil(o.TerminatedAt) {
 		toSerialize["terminatedAt"] = o.TerminatedAt
+	}
+	if !isNil(o.LastFailure) {
+		toSerialize["lastFailure"] = o.LastFailure
+	}
+	toSerialize["attempt"] = o.Attempt
+	if !isNil(o.NextExecution) {
+		toSerialize["nextExecution"] = o.NextExecution
 	}
 	return toSerialize, nil
 }

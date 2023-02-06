@@ -59,6 +59,18 @@ public class WorkflowInstanceHistoryStage {
   @SerializedName(SERIALIZED_NAME_TERMINATED_AT)
   private OffsetDateTime terminatedAt;
 
+  public static final String SERIALIZED_NAME_LAST_FAILURE = "lastFailure";
+  @SerializedName(SERIALIZED_NAME_LAST_FAILURE)
+  private String lastFailure;
+
+  public static final String SERIALIZED_NAME_ATTEMPT = "attempt";
+  @SerializedName(SERIALIZED_NAME_ATTEMPT)
+  private Integer attempt;
+
+  public static final String SERIALIZED_NAME_NEXT_EXECUTION = "nextExecution";
+  @SerializedName(SERIALIZED_NAME_NEXT_EXECUTION)
+  private OffsetDateTime nextExecution;
+
   public WorkflowInstanceHistoryStage() {
   }
 
@@ -216,6 +228,72 @@ public class WorkflowInstanceHistoryStage {
   }
 
 
+  public WorkflowInstanceHistoryStage lastFailure(String lastFailure) {
+    
+    this.lastFailure = lastFailure;
+    return this;
+  }
+
+   /**
+   * Get lastFailure
+   * @return lastFailure
+  **/
+  @javax.annotation.Nullable
+
+  public String getLastFailure() {
+    return lastFailure;
+  }
+
+
+  public void setLastFailure(String lastFailure) {
+    this.lastFailure = lastFailure;
+  }
+
+
+  public WorkflowInstanceHistoryStage attempt(Integer attempt) {
+    
+    this.attempt = attempt;
+    return this;
+  }
+
+   /**
+   * Get attempt
+   * @return attempt
+  **/
+  @javax.annotation.Nonnull
+
+  public Integer getAttempt() {
+    return attempt;
+  }
+
+
+  public void setAttempt(Integer attempt) {
+    this.attempt = attempt;
+  }
+
+
+  public WorkflowInstanceHistoryStage nextExecution(OffsetDateTime nextExecution) {
+    
+    this.nextExecution = nextExecution;
+    return this;
+  }
+
+   /**
+   * Get nextExecution
+   * @return nextExecution
+  **/
+  @javax.annotation.Nullable
+
+  public OffsetDateTime getNextExecution() {
+    return nextExecution;
+  }
+
+
+  public void setNextExecution(OffsetDateTime nextExecution) {
+    this.nextExecution = nextExecution;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -231,12 +309,15 @@ public class WorkflowInstanceHistoryStage {
         Objects.equals(this.error, workflowInstanceHistoryStage.error) &&
         Objects.equals(this.terminated, workflowInstanceHistoryStage.terminated) &&
         Objects.equals(this.startedAt, workflowInstanceHistoryStage.startedAt) &&
-        Objects.equals(this.terminatedAt, workflowInstanceHistoryStage.terminatedAt);
+        Objects.equals(this.terminatedAt, workflowInstanceHistoryStage.terminatedAt) &&
+        Objects.equals(this.lastFailure, workflowInstanceHistoryStage.lastFailure) &&
+        Objects.equals(this.attempt, workflowInstanceHistoryStage.attempt) &&
+        Objects.equals(this.nextExecution, workflowInstanceHistoryStage.nextExecution);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, input, output, error, terminated, startedAt, terminatedAt);
+    return Objects.hash(name, input, output, error, terminated, startedAt, terminatedAt, lastFailure, attempt, nextExecution);
   }
 
   @Override
@@ -250,6 +331,9 @@ public class WorkflowInstanceHistoryStage {
     sb.append("    terminated: ").append(toIndentedString(terminated)).append("\n");
     sb.append("    startedAt: ").append(toIndentedString(startedAt)).append("\n");
     sb.append("    terminatedAt: ").append(toIndentedString(terminatedAt)).append("\n");
+    sb.append("    lastFailure: ").append(toIndentedString(lastFailure)).append("\n");
+    sb.append("    attempt: ").append(toIndentedString(attempt)).append("\n");
+    sb.append("    nextExecution: ").append(toIndentedString(nextExecution)).append("\n");
     sb.append("}");
     return sb.toString();
   }

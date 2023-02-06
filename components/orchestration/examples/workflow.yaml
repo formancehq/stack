@@ -6,7 +6,7 @@ stages:
         id: "${paymentID}"
     destination:
       account:
-        id: "${paymentID}:pending"
+        id: "${temporaryAccount}"
         ledger: "${ledger}"
     amount:
       amount: "${amount}"
@@ -16,7 +16,7 @@ stages:
 - send:
     source:
       account:
-        id: "${paymentID}:pending"
+        id: "${temporaryAccount}"
         ledger: "${ledger}"
     destination:
       account:

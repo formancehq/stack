@@ -5,10 +5,14 @@ import (
 )
 
 var (
+	StyleGreen = pterm.NewStyle(pterm.FgLightGreen)
+	StyleRed   = pterm.NewStyle(pterm.FgLightRed)
+	StyleCyan  = pterm.NewStyle(pterm.FgLightCyan)
+
 	BasicText      = pterm.DefaultBasicText
-	BasicTextGreen = pterm.DefaultBasicText.WithStyle(pterm.NewStyle(pterm.FgLightGreen))
-	BasicTextRed   = pterm.DefaultBasicText.WithStyle(pterm.NewStyle(pterm.FgLightRed))
-	BasicTextCyan  = pterm.DefaultBasicText.WithStyle(pterm.NewStyle(pterm.FgLightCyan))
+	BasicTextGreen = pterm.DefaultBasicText.WithStyle(StyleGreen)
+	BasicTextRed   = pterm.DefaultBasicText.WithStyle(StyleRed)
+	BasicTextCyan  = pterm.DefaultBasicText.WithStyle(StyleCyan)
 	Section        = pterm.SectionPrinter{
 		Style:           &pterm.ThemeDefault.SectionStyle,
 		Level:           1,
