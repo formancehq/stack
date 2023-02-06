@@ -48,7 +48,7 @@ services:
     - ./deploy/auth/config.yaml:/config.yaml
 
   ledger:
-    image: "ghcr.io/formancehq/ledger:latest"
+    image: "ghcr.io/formancehq/ledger:e3f04fb7918b158850ef6f80a15df9a9f8a21e5c"
     depends_on:
       postgres:
         condition: service_healthy
