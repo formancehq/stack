@@ -224,19 +224,27 @@ func (m *Manager) ReadInstanceHistory(ctx context.Context, instanceID string) ([
 }
 
 type ActivityHistory struct {
-	Name         string         `json:"name"`
-	Input        map[string]any `json:"input"`
-	Output       map[string]any `json:"output,omitempty"`
-	Error        string         `json:"error,omitempty"`
-	Terminated   bool           `json:"terminated"`
-	StartedAt    time.Time      `json:"startedAt"`
-	TerminatedAt *time.Time     `json:"terminatedAt"`
+	Name          string         `json:"name"`
+	Input         map[string]any `json:"input"`
+	Output        map[string]any `json:"output,omitempty"`
+	Error         string         `json:"error,omitempty"`
+	Terminated    bool           `json:"terminated"`
+	StartedAt     time.Time      `json:"startedAt"`
+	TerminatedAt  *time.Time     `json:"terminatedAt"`
+	LastFailure   string         `json:"lastFailure,omitempty"`
+	Attempt       int            `json:"attempt"`
+	NextExecution *time.Time     `json:"nextExecution,omitempty"`
 }
 
-func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage int) ([]ActivityHistory, error) {
+func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage int) ([]*ActivityHistory, error) {
+	described, err := m.temporalClient.DescribeWorkflowExecution(ctx, instanceID+"-0", "")
+	if err != nil {
+		panic(err)
+	}
+
 	historyIterator := m.temporalClient.GetWorkflowHistory(ctx, fmt.Sprintf("%s-%d", instanceID, stage), "",
 		false, enums.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT)
-	ret := make([]ActivityHistory, 0)
+	ret := make([]*ActivityHistory, 0)
 	for historyIterator.HasNext() {
 		event, err := historyIterator.Next()
 		if err != nil {
@@ -244,19 +252,31 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 		}
 		switch event.EventType {
 		case enums.EVENT_TYPE_ACTIVITY_TASK_SCHEDULED:
-			attributes := event.Attributes.(*history.HistoryEvent_ActivityTaskScheduledEventAttributes).ActivityTaskScheduledEventAttributes
-
+			activityTaskScheduledEventAttributes := event.Attributes.(*history.HistoryEvent_ActivityTaskScheduledEventAttributes).ActivityTaskScheduledEventAttributes
 			input := make(map[string]any)
-			if err := json.Unmarshal(attributes.Input.Payloads[0].Data, &input); err != nil {
+			if err := json.Unmarshal(activityTaskScheduledEventAttributes.Input.Payloads[0].Data, &input); err != nil {
 				panic(err)
 			}
 
-			activityHistory := ActivityHistory{
-				Name: attributes.ActivityType.Name,
+			activityHistory := &ActivityHistory{
+				Name: activityTaskScheduledEventAttributes.ActivityType.Name,
 				Input: map[string]any{
-					attributes.ActivityType.Name: input,
+					activityTaskScheduledEventAttributes.ActivityType.Name: input,
 				},
 				StartedAt: *event.EventTime,
+				Attempt:   1,
+			}
+			ret = append(ret, activityHistory)
+
+			if len(described.PendingActivities) > 0 &&
+				activityTaskScheduledEventAttributes.ActivityId == described.PendingActivities[0].ActivityId {
+				pendingActivity := described.PendingActivities[0]
+				if pendingActivity.LastFailure != nil {
+					activityHistory.LastFailure = pendingActivity.LastFailure.Message
+				}
+				activityHistory.Attempt = int(pendingActivity.Attempt)
+				activityHistory.NextExecution = pendingActivity.ScheduledTime
+				return ret, nil
 			}
 
 			for historyIterator.HasNext() {
@@ -275,7 +295,7 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 							panic(err)
 						}
 						activityHistory.Output = map[string]any{
-							attributes.ActivityType.Name: output,
+							activityTaskScheduledEventAttributes.ActivityType.Name: output,
 						}
 					}
 				case enums.EVENT_TYPE_ACTIVITY_TASK_TIMED_OUT:
@@ -290,7 +310,6 @@ func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage
 				activityHistory.Terminated = true
 				break
 			}
-			ret = append(ret, activityHistory)
 		}
 	}
 	return ret, nil

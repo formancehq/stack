@@ -393,6 +393,7 @@ components:
       - input
       - startedAt
       - terminated
+      - attempt
       properties:
         name:
           type: string
@@ -408,6 +409,13 @@ components:
           type: string
           format: date-time
         terminatedAt:
+          type: string
+          format: date-time
+        lastFailure:
+          type: string
+        attempt:
+          type: integer
+        nextExecution:
           type: string
           format: date-time
     WorkflowInstanceHistory:

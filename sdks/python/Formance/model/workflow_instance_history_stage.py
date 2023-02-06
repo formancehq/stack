@@ -39,6 +39,7 @@ class WorkflowInstanceHistoryStage(
             "input",
             "name",
             "startedAt",
+            "attempt",
             "terminated",
         }
         
@@ -53,25 +54,32 @@ class WorkflowInstanceHistoryStage(
             def terminated() -> typing.Type['ModelBool']:
                 return ModelBool
             startedAt = schemas.DateTimeSchema
+            attempt = schemas.IntSchema
         
             @staticmethod
             def output() -> typing.Type['WorkflowInstanceHistoryStageOutput']:
                 return WorkflowInstanceHistoryStageOutput
             error = schemas.StrSchema
             terminatedAt = schemas.DateTimeSchema
+            lastFailure = schemas.StrSchema
+            nextExecution = schemas.DateTimeSchema
             __annotations__ = {
                 "name": name,
                 "input": input,
                 "terminated": terminated,
                 "startedAt": startedAt,
+                "attempt": attempt,
                 "output": output,
                 "error": error,
                 "terminatedAt": terminatedAt,
+                "lastFailure": lastFailure,
+                "nextExecution": nextExecution,
             }
     
     input: 'WorkflowInstanceHistoryStageInput'
     name: MetaOapg.properties.name
     startedAt: MetaOapg.properties.startedAt
+    attempt: MetaOapg.properties.attempt
     terminated: 'ModelBool'
     
     @typing.overload
@@ -87,6 +95,9 @@ class WorkflowInstanceHistoryStage(
     def __getitem__(self, name: typing_extensions.Literal["startedAt"]) -> MetaOapg.properties.startedAt: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["attempt"]) -> MetaOapg.properties.attempt: ...
+    
+    @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["output"]) -> 'WorkflowInstanceHistoryStageOutput': ...
     
     @typing.overload
@@ -96,9 +107,15 @@ class WorkflowInstanceHistoryStage(
     def __getitem__(self, name: typing_extensions.Literal["terminatedAt"]) -> MetaOapg.properties.terminatedAt: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["lastFailure"]) -> MetaOapg.properties.lastFailure: ...
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["nextExecution"]) -> MetaOapg.properties.nextExecution: ...
+    
+    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["name", "input", "terminated", "startedAt", "output", "error", "terminatedAt", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["name", "input", "terminated", "startedAt", "attempt", "output", "error", "terminatedAt", "lastFailure", "nextExecution", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -116,6 +133,9 @@ class WorkflowInstanceHistoryStage(
     def get_item_oapg(self, name: typing_extensions.Literal["startedAt"]) -> MetaOapg.properties.startedAt: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["attempt"]) -> MetaOapg.properties.attempt: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["output"]) -> typing.Union['WorkflowInstanceHistoryStageOutput', schemas.Unset]: ...
     
     @typing.overload
@@ -125,9 +145,15 @@ class WorkflowInstanceHistoryStage(
     def get_item_oapg(self, name: typing_extensions.Literal["terminatedAt"]) -> typing.Union[MetaOapg.properties.terminatedAt, schemas.Unset]: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["lastFailure"]) -> typing.Union[MetaOapg.properties.lastFailure, schemas.Unset]: ...
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["nextExecution"]) -> typing.Union[MetaOapg.properties.nextExecution, schemas.Unset]: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["name", "input", "terminated", "startedAt", "output", "error", "terminatedAt", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["name", "input", "terminated", "startedAt", "attempt", "output", "error", "terminatedAt", "lastFailure", "nextExecution", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -137,10 +163,13 @@ class WorkflowInstanceHistoryStage(
         input: 'WorkflowInstanceHistoryStageInput',
         name: typing.Union[MetaOapg.properties.name, str, ],
         startedAt: typing.Union[MetaOapg.properties.startedAt, str, datetime, ],
+        attempt: typing.Union[MetaOapg.properties.attempt, decimal.Decimal, int, ],
         terminated: 'ModelBool',
         output: typing.Union['WorkflowInstanceHistoryStageOutput', schemas.Unset] = schemas.unset,
         error: typing.Union[MetaOapg.properties.error, str, schemas.Unset] = schemas.unset,
         terminatedAt: typing.Union[MetaOapg.properties.terminatedAt, str, datetime, schemas.Unset] = schemas.unset,
+        lastFailure: typing.Union[MetaOapg.properties.lastFailure, str, schemas.Unset] = schemas.unset,
+        nextExecution: typing.Union[MetaOapg.properties.nextExecution, str, datetime, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'WorkflowInstanceHistoryStage':
@@ -150,10 +179,13 @@ class WorkflowInstanceHistoryStage(
             input=input,
             name=name,
             startedAt=startedAt,
+            attempt=attempt,
             terminated=terminated,
             output=output,
             error=error,
             terminatedAt=terminatedAt,
+            lastFailure=lastFailure,
+            nextExecution=nextExecution,
             _configuration=_configuration,
             **kwargs,
         )

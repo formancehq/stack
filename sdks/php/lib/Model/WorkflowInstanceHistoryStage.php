@@ -64,7 +64,10 @@ class WorkflowInstanceHistoryStage implements ModelInterface, ArrayAccess, \Json
         'error' => 'string',
         'terminated' => 'Bool',
         'started_at' => '\DateTime',
-        'terminated_at' => '\DateTime'
+        'terminated_at' => '\DateTime',
+        'last_failure' => 'string',
+        'attempt' => 'int',
+        'next_execution' => '\DateTime'
     ];
 
     /**
@@ -81,7 +84,10 @@ class WorkflowInstanceHistoryStage implements ModelInterface, ArrayAccess, \Json
         'error' => null,
         'terminated' => null,
         'started_at' => 'date-time',
-        'terminated_at' => 'date-time'
+        'terminated_at' => 'date-time',
+        'last_failure' => null,
+        'attempt' => null,
+        'next_execution' => 'date-time'
     ];
 
     /**
@@ -96,7 +102,10 @@ class WorkflowInstanceHistoryStage implements ModelInterface, ArrayAccess, \Json
 		'error' => false,
 		'terminated' => false,
 		'started_at' => false,
-		'terminated_at' => false
+		'terminated_at' => false,
+		'last_failure' => false,
+		'attempt' => false,
+		'next_execution' => false
     ];
 
     /**
@@ -191,7 +200,10 @@ class WorkflowInstanceHistoryStage implements ModelInterface, ArrayAccess, \Json
         'error' => 'error',
         'terminated' => 'terminated',
         'started_at' => 'startedAt',
-        'terminated_at' => 'terminatedAt'
+        'terminated_at' => 'terminatedAt',
+        'last_failure' => 'lastFailure',
+        'attempt' => 'attempt',
+        'next_execution' => 'nextExecution'
     ];
 
     /**
@@ -206,7 +218,10 @@ class WorkflowInstanceHistoryStage implements ModelInterface, ArrayAccess, \Json
         'error' => 'setError',
         'terminated' => 'setTerminated',
         'started_at' => 'setStartedAt',
-        'terminated_at' => 'setTerminatedAt'
+        'terminated_at' => 'setTerminatedAt',
+        'last_failure' => 'setLastFailure',
+        'attempt' => 'setAttempt',
+        'next_execution' => 'setNextExecution'
     ];
 
     /**
@@ -221,7 +236,10 @@ class WorkflowInstanceHistoryStage implements ModelInterface, ArrayAccess, \Json
         'error' => 'getError',
         'terminated' => 'getTerminated',
         'started_at' => 'getStartedAt',
-        'terminated_at' => 'getTerminatedAt'
+        'terminated_at' => 'getTerminatedAt',
+        'last_failure' => 'getLastFailure',
+        'attempt' => 'getAttempt',
+        'next_execution' => 'getNextExecution'
     ];
 
     /**
@@ -288,6 +306,9 @@ class WorkflowInstanceHistoryStage implements ModelInterface, ArrayAccess, \Json
         $this->setIfExists('terminated', $data ?? [], null);
         $this->setIfExists('started_at', $data ?? [], null);
         $this->setIfExists('terminated_at', $data ?? [], null);
+        $this->setIfExists('last_failure', $data ?? [], null);
+        $this->setIfExists('attempt', $data ?? [], null);
+        $this->setIfExists('next_execution', $data ?? [], null);
     }
 
     /**
@@ -328,6 +349,9 @@ class WorkflowInstanceHistoryStage implements ModelInterface, ArrayAccess, \Json
         }
         if ($this->container['started_at'] === null) {
             $invalidProperties[] = "'started_at' can't be null";
+        }
+        if ($this->container['attempt'] === null) {
+            $invalidProperties[] = "'attempt' can't be null";
         }
         return $invalidProperties;
     }
@@ -529,6 +553,87 @@ class WorkflowInstanceHistoryStage implements ModelInterface, ArrayAccess, \Json
             throw new \InvalidArgumentException('non-nullable terminated_at cannot be null');
         }
         $this->container['terminated_at'] = $terminated_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets last_failure
+     *
+     * @return string|null
+     */
+    public function getLastFailure()
+    {
+        return $this->container['last_failure'];
+    }
+
+    /**
+     * Sets last_failure
+     *
+     * @param string|null $last_failure last_failure
+     *
+     * @return self
+     */
+    public function setLastFailure($last_failure)
+    {
+        if (is_null($last_failure)) {
+            throw new \InvalidArgumentException('non-nullable last_failure cannot be null');
+        }
+        $this->container['last_failure'] = $last_failure;
+
+        return $this;
+    }
+
+    /**
+     * Gets attempt
+     *
+     * @return int
+     */
+    public function getAttempt()
+    {
+        return $this->container['attempt'];
+    }
+
+    /**
+     * Sets attempt
+     *
+     * @param int $attempt attempt
+     *
+     * @return self
+     */
+    public function setAttempt($attempt)
+    {
+        if (is_null($attempt)) {
+            throw new \InvalidArgumentException('non-nullable attempt cannot be null');
+        }
+        $this->container['attempt'] = $attempt;
+
+        return $this;
+    }
+
+    /**
+     * Gets next_execution
+     *
+     * @return \DateTime|null
+     */
+    public function getNextExecution()
+    {
+        return $this->container['next_execution'];
+    }
+
+    /**
+     * Sets next_execution
+     *
+     * @param \DateTime|null $next_execution next_execution
+     *
+     * @return self
+     */
+    public function setNextExecution($next_execution)
+    {
+        if (is_null($next_execution)) {
+            throw new \InvalidArgumentException('non-nullable next_execution cannot be null');
+        }
+        $this->container['next_execution'] = $next_execution;
 
         return $this;
     }

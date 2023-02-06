@@ -14,6 +14,9 @@
 |**terminated** | **Bool** |  |  |
 |**startedAt** | **OffsetDateTime** |  |  |
 |**terminatedAt** | **OffsetDateTime** |  |  [optional] |
+|**lastFailure** | **String** |  |  [optional] |
+|**attempt** | **Integer** |  |  |
+|**nextExecution** | **OffsetDateTime** |  |  [optional] |
 
 
 

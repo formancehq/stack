@@ -11,5 +11,8 @@ Name | Type | Description | Notes
 **terminated** | [**Bool**](Bool.md) |  |
 **started_at** | **\DateTime** |  |
 **terminated_at** | **\DateTime** |  | [optional]
+**last_failure** | **string** |  | [optional]
+**attempt** | **int** |  |
+**next_execution** | **\DateTime** |  | [optional]
 
 [[Back to Model list]](../../README.md#models) [[Back to API list]](../../README.md#endpoints) [[Back to README]](../../README.md)
