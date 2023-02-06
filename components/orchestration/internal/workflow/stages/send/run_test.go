@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
 	"github.com/stretchr/testify/mock"
+	"go.temporal.io/sdk/temporal"
 )
 
 func TestSendSchemaValidation(t *testing.T) {
@@ -343,7 +344,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{nil, activities.ErrTransactionReferenceConflict},
+				Returns: []any{nil, temporal.NewApplicationError("", "CONFLICT", "")},
 			},
 			{
 				Activity: activities.CreateTransactionActivity,

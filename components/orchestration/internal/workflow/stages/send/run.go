@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal"
 	"github.com/pkg/errors"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -97,8 +98,15 @@ func savePayment(ctx workflow.Context, paymentID string) error {
 		}},
 		Reference: sdk.PtrString(paymentAccountName(paymentID)),
 	})
-	if err != nil && err.Error() != activities.ErrTransactionReferenceConflict.Error() {
-		return err
+	if err != nil {
+		applicationError := &temporal.ApplicationError{}
+		if errors.As(err, &applicationError) {
+			if applicationError.Type() != "CONFLICT" {
+				return err
+			}
+		} else {
+			return err
+		}
 	}
 	return nil
 }

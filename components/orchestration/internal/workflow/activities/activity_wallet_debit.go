@@ -18,7 +18,7 @@ func (a Activities) DebitWallet(ctx context.Context, request DebitWalletRequest)
 		DebitWalletRequest(request.Data).
 		Execute()
 	if err != nil {
-		return nil, sdk.ExtractOpenAPIErrorMessage(err)
+		return nil, openApiErrorToApplicationError(err)
 	}
 	return ret, nil
 }

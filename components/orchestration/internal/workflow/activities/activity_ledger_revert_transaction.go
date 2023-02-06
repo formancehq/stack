@@ -17,7 +17,7 @@ func (a Activities) RevertTransaction(ctx context.Context, request RevertTransac
 		RevertTransaction(ctx, request.Ledger, request.TxID).
 		Execute()
 	if err != nil {
-		return nil, sdk.ExtractOpenAPIErrorMessage(err)
+		return nil, openApiErrorToApplicationError(err)
 	}
 	return &ret.Data, nil
 }

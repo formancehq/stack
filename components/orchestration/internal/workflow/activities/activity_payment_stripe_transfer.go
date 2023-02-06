@@ -12,7 +12,7 @@ func (a Activities) StripeTransfer(ctx context.Context, request sdk.StripeTransf
 		ConnectorsStripeTransfer(ctx).
 		StripeTransferRequest(request).
 		Execute()
-	return sdk.ExtractOpenAPIErrorMessage(err)
+	return openApiErrorToApplicationError(err)
 }
 
 var StripeTransferActivity = Activities{}.StripeTransfer
