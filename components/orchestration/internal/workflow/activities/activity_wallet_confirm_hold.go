@@ -3,7 +3,6 @@ package activities
 import (
 	"context"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -16,7 +15,7 @@ func (a Activities) ConfirmHold(ctx context.Context, request ConfirmHoldRequest)
 		ConfirmHold(ctx, request.ID).
 		Execute()
 	if err != nil {
-		return sdk.ExtractOpenAPIErrorMessage(err)
+		return openApiErrorToApplicationError(err)
 	}
 	return nil
 }

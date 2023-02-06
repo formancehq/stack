@@ -22,7 +22,7 @@ func (a Activities) GetWallet(ctx context.Context, request GetWalletRequest) (*s
 		case http.StatusNotFound:
 			return nil, errors.New("wallet not found")
 		default:
-			return nil, sdk.ExtractOpenAPIErrorMessage(err)
+			return nil, openApiErrorToApplicationError(err)
 		}
 	}
 	return ret, nil

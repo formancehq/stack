@@ -22,7 +22,7 @@ func (a Activities) GetPayment(ctx context.Context, request GetPaymentRequest) (
 		case http.StatusNotFound:
 			return nil, errors.New("payment not found")
 		default:
-			return nil, sdk.ExtractOpenAPIErrorMessage(err)
+			return nil, openApiErrorToApplicationError(err)
 		}
 	}
 	return ret, nil

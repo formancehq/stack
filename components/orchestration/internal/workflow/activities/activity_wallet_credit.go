@@ -24,7 +24,7 @@ func (a Activities) CreditWallet(ctx context.Context, request CreditWalletReques
 		case http.StatusNotFound:
 			return errors.New("wallet not found")
 		default:
-			return sdk.ExtractOpenAPIErrorMessage(err)
+			return openApiErrorToApplicationError(err)
 		}
 	}
 	return nil

@@ -6,8 +6,8 @@ import (
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/mock"
+	"go.temporal.io/sdk/temporal"
 )
 
 func TestSendSchemaValidation(t *testing.T) {
@@ -344,7 +344,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{nil, errors.New("CONFLICT")},
+				Returns: []any{nil, temporal.NewApplicationError("", "CONFLICT", "")},
 			},
 			{
 				Activity: activities.CreateTransactionActivity,

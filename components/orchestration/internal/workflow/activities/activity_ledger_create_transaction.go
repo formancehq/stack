@@ -18,7 +18,7 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 		PostTransaction(request.Data).
 		Execute()
 	if err != nil {
-		return nil, err
+		return nil, openApiErrorToApplicationError(err)
 	}
 	return ret, nil
 }
