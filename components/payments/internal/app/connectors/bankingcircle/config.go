@@ -2,6 +2,7 @@ package bankingcircle
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/formancehq/payments/internal/app/connectors/configtemplate"
 )
@@ -11,6 +12,12 @@ type Config struct {
 	Password              string `json:"password" yaml:"password" bson:"password"`
 	Endpoint              string `json:"endpoint" yaml:"endpoint" bson:"endpoint"`
 	AuthorizationEndpoint string `json:"authorizationEndpoint" yaml:"authorizationEndpoint" bson:"authorizationEndpoint"`
+}
+
+// String obfuscates sensitive fields and returns a string representation of the config.
+// This is used for logging.
+func (c Config) String() string {
+	return fmt.Sprintf("username=%s, password=****, endpoint=%s, authorizationEndpoint=%s", c.Username, c.Endpoint, c.AuthorizationEndpoint)
 }
 
 func (c Config) Validate() error {

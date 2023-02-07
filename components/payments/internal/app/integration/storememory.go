@@ -21,8 +21,8 @@ func (i *InMemoryConnectorStore) Uninstall(ctx context.Context, name models.Conn
 	return nil
 }
 
-func (i *InMemoryConnectorStore) FindAll(_ context.Context) ([]models.Connector, error) {
-	return []models.Connector{}, nil
+func (i *InMemoryConnectorStore) ListConnectors(_ context.Context) ([]*models.Connector, error) {
+	return []*models.Connector{}, nil
 }
 
 func (i *InMemoryConnectorStore) IsInstalled(ctx context.Context, name models.ConnectorProvider) (bool, error) {
@@ -86,6 +86,14 @@ func (i *InMemoryConnectorStore) ReadConfig(ctx context.Context, name models.Con
 	}
 
 	return nil
+}
+
+func (i *InMemoryConnectorStore) CreateNewTransfer(ctx context.Context, name models.ConnectorProvider, source, destination, currency string, amount int64) (models.Transfer, error) {
+	return models.Transfer{}, nil
+}
+
+func (i *InMemoryConnectorStore) ListTransfers(ctx context.Context, name models.ConnectorProvider) ([]models.Transfer, error) {
+	return []models.Transfer{}, nil
 }
 
 var _ Repository = &InMemoryConnectorStore{}

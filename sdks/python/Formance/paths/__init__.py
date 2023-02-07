@@ -45,6 +45,7 @@ class PathValues(str, enum.Enum):
     API_PAYMENTS_CONNECTORS_CONNECTOR_RESET = "/api/payments/connectors/{connector}/reset"
     API_PAYMENTS_CONNECTORS_CONNECTOR_TASKS = "/api/payments/connectors/{connector}/tasks"
     API_PAYMENTS_CONNECTORS_CONNECTOR_TASKS_TASK_ID = "/api/payments/connectors/{connector}/tasks/{taskId}"
+    API_PAYMENTS_CONNECTORS_CONNECTOR_TRANSFERS = "/api/payments/connectors/{connector}/transfers"
     API_PAYMENTS_CONNECTORS_STRIPE_TRANSFERS = "/api/payments/connectors/stripe/transfers"
     API_SEARCH__INFO = "/api/search/_info"
     API_SEARCH_ = "/api/search/"

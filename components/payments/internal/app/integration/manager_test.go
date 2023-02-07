@@ -68,7 +68,7 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 		schedulerFactory, nil)
 
 	defer func() {
-		_ = manager.Uninstall(context.Background())
+		_ = manager.Uninstall(context.TODO())
 	}()
 
 	callback(&testContext[ConnectorConfig]{
@@ -91,11 +91,11 @@ func TestInstallConnector(t *testing.T) {
 			return nil
 		})
 	withManager(builder, func(tc *testContext[models.EmptyConnectorConfig]) {
-		err := tc.manager.Install(context.Background(), models.EmptyConnectorConfig{})
+		err := tc.manager.Install(context.TODO(), models.EmptyConnectorConfig{})
 		require.NoError(t, err)
 		require.True(t, ChanClosed(installed))
 
-		err = tc.manager.Install(context.Background(), models.EmptyConnectorConfig{})
+		err = tc.manager.Install(context.TODO(), models.EmptyConnectorConfig{})
 		require.Equal(t, ErrAlreadyInstalled, err)
 	})
 }
@@ -127,15 +127,15 @@ func TestUninstallConnector(t *testing.T) {
 			return nil
 		})
 	withManager(builder, func(tc *testContext[models.EmptyConnectorConfig]) {
-		err := tc.manager.Install(context.Background(), models.EmptyConnectorConfig{})
+		err := tc.manager.Install(context.TODO(), models.EmptyConnectorConfig{})
 		require.NoError(t, err)
 		<-taskStarted
-		require.NoError(t, tc.manager.Uninstall(context.Background()))
+		require.NoError(t, tc.manager.Uninstall(context.TODO()))
 		require.True(t, ChanClosed(uninstalled))
 		// TODO: We need to give a chance to the connector to properly stop execution
 		require.True(t, ChanClosed(taskTerminated))
 
-		isInstalled, err := tc.manager.IsInstalled(context.Background())
+		isInstalled, err := tc.manager.IsInstalled(context.TODO())
 		require.NoError(t, err)
 		require.False(t, isInstalled)
 	})
@@ -152,15 +152,15 @@ func TestDisableConnector(t *testing.T) {
 			return nil
 		})
 	withManager[models.EmptyConnectorConfig](builder, func(tc *testContext[models.EmptyConnectorConfig]) {
-		err := tc.manager.Install(context.Background(), models.EmptyConnectorConfig{})
+		err := tc.manager.Install(context.TODO(), models.EmptyConnectorConfig{})
 		require.NoError(t, err)
 
-		enabled, err := tc.manager.IsEnabled(context.Background())
+		enabled, err := tc.manager.IsEnabled(context.TODO())
 		require.NoError(t, err)
 		require.True(t, enabled)
 
-		require.NoError(t, tc.manager.Disable(context.Background()))
-		enabled, err = tc.manager.IsEnabled(context.Background())
+		require.NoError(t, tc.manager.Disable(context.TODO()))
+		enabled, err = tc.manager.IsEnabled(context.TODO())
 		require.NoError(t, err)
 		require.False(t, enabled)
 	})
@@ -171,10 +171,10 @@ func TestEnableConnector(t *testing.T) {
 
 	builder := NewConnectorBuilder()
 	withManager[models.EmptyConnectorConfig](builder, func(tc *testContext[models.EmptyConnectorConfig]) {
-		err := tc.connectorStore.Enable(context.Background(), tc.loader.Name())
+		err := tc.connectorStore.Enable(context.TODO(), tc.loader.Name())
 		require.NoError(t, err)
 
-		err = tc.manager.Install(context.Background(), models.EmptyConnectorConfig{})
+		err = tc.manager.Install(context.TODO(), models.EmptyConnectorConfig{})
 		require.NoError(t, err)
 	})
 }
@@ -187,10 +187,10 @@ func TestRestoreEnabledConnector(t *testing.T) {
 		cfg, err := models.EmptyConnectorConfig{}.Marshal()
 		require.NoError(t, err)
 
-		err = tc.connectorStore.Install(context.Background(), tc.loader.Name(), cfg)
+		err = tc.connectorStore.Install(context.TODO(), tc.loader.Name(), cfg)
 		require.NoError(t, err)
 
-		err = tc.manager.Restore(context.Background())
+		err = tc.manager.Restore(context.TODO())
 		require.NoError(t, err)
 		require.NotNil(t, tc.manager.connector)
 	})
@@ -201,7 +201,7 @@ func TestRestoreNotInstalledConnector(t *testing.T) {
 
 	builder := NewConnectorBuilder()
 	withManager(builder, func(tc *testContext[models.EmptyConnectorConfig]) {
-		err := tc.manager.Restore(context.Background())
+		err := tc.manager.Restore(context.TODO())
 		require.Equal(t, ErrNotInstalled, err)
 	})
 }

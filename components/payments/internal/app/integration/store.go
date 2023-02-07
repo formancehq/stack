@@ -8,7 +8,7 @@ import (
 )
 
 type Repository interface {
-	FindAll(ctx context.Context) ([]models.Connector, error)
+	ListConnectors(ctx context.Context) ([]*models.Connector, error)
 	IsInstalled(ctx context.Context, name models.ConnectorProvider) (bool, error)
 	Install(ctx context.Context, name models.ConnectorProvider, config json.RawMessage) error
 	Uninstall(ctx context.Context, name models.ConnectorProvider) error
@@ -17,4 +17,7 @@ type Repository interface {
 	Disable(ctx context.Context, name models.ConnectorProvider) error
 	IsEnabled(ctx context.Context, name models.ConnectorProvider) (bool, error)
 	GetConnector(ctx context.Context, name models.ConnectorProvider) (*models.Connector, error)
+	CreateNewTransfer(ctx context.Context, name models.ConnectorProvider,
+		source, destination, currency string, amount int64) (models.Transfer, error)
+	ListTransfers(ctx context.Context, name models.ConnectorProvider) ([]models.Transfer, error)
 }

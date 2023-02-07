@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/formancehq/payments/internal/app/migrations"
+
 	"github.com/spf13/viper"
 
-	// allow blank import to initiate migrations.
-	_ "github.com/formancehq/payments/internal/app/migrations"
+	// Import the postgres driver.
 	_ "github.com/lib/pq"
 
 	"github.com/pressly/goose/v3"
@@ -46,6 +47,15 @@ func runMigrate(cmd *cobra.Command, args []string) error {
 
 	if postgresURI == "" {
 		return fmt.Errorf("postgres uri is not set")
+	}
+
+	cfgEncryptionKey := viper.GetString(configEncryptionKeyFlag)
+	if cfgEncryptionKey == "" {
+		cfgEncryptionKey = cmd.Flag(configEncryptionKeyFlag).Value.String()
+	}
+
+	if cfgEncryptionKey != "" {
+		migrations.EncryptionKey = cfgEncryptionKey
 	}
 
 	database, err := goose.OpenDBWithDriver("postgres", postgresURI)

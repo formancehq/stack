@@ -20,7 +20,7 @@ import (
 
 const dbName = "paymentsDB"
 
-func Module(uri string) fx.Option {
+func Module(uri, configEncryptionKey string) fx.Option {
 	return fx.Options(
 		fx.Provide(func() (*pgx.ConnConfig, error) {
 			config, err := pgx.ParseConfig(uri)
@@ -40,7 +40,7 @@ func Module(uri string) fx.Option {
 
 			db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(dbName)))
 
-			return newStorage(db)
+			return newStorage(db, configEncryptionKey)
 		}),
 
 		fx.Invoke(func(lc fx.Lifecycle, repo *Storage) {

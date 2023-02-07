@@ -1,12 +1,15 @@
 package wise
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/google/uuid"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -159,6 +162,66 @@ func (w *client) getTransfers(ctx context.Context, profile *profile) ([]transfer
 	}
 
 	return transfers, nil
+}
+
+type quote struct {
+	ID uuid.UUID `json:"id"`
+}
+
+func (w *client) createQuote(profileID uint64, currency string, amount int64) (quote, error) {
+	var response quote
+
+	req, err := json.Marshal(map[string]interface{}{
+		"sourceCurrency": currency,
+		"targetCurrency": currency,
+		"sourceAmount":   amount,
+	})
+	if err != nil {
+		return response, err
+	}
+
+	res, err := w.httpClient.Post(w.endpoint("v3/profiles/"+fmt.Sprint(profileID)+"/quotes"), "application/json", bytes.NewBuffer(req))
+	if err != nil {
+		return response, err
+	}
+
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return response, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return response, fmt.Errorf("failed to unmarshal profiles: %w", err)
+	}
+
+	return response, nil
+}
+
+func (w *client) createTransfer(quote quote, targetAccount uint64, transactionID string) error {
+	req, err := json.Marshal(map[string]interface{}{
+		"targetAccount":         targetAccount,
+		"quoteUuid":             quote.ID.String(),
+		"customerTransactionId": transactionID,
+	})
+	if err != nil {
+		return err
+	}
+
+	res, err := w.httpClient.Post(w.endpoint("v1/transfers"), "application/json", bytes.NewBuffer(req))
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	}
+
+	return nil
 }
 
 func newClient(apiKey string) *client {

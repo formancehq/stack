@@ -30,6 +30,7 @@ import (
 //nolint:gosec // false positive
 const (
 	postgresURIFlag                 = "postgres-uri"
+	configEncryptionKeyFlag         = "config-encryption-key"
 	otelTracesFlag                  = "otel-traces"
 	envFlag                         = "env"
 	publisherKafkaEnabledFlag       = "publisher-kafka-enabled"
@@ -157,7 +158,12 @@ func prepareDatabaseOptions() (fx.Option, error) {
 		return nil, errors.New("missing postgres uri")
 	}
 
-	return storage.Module(postgresURI), nil
+	configEncryptionKey := viper.GetString(configEncryptionKeyFlag)
+	if configEncryptionKey == "" {
+		return nil, errors.New("missing config encryption key")
+	}
+
+	return storage.Module(postgresURI, configEncryptionKey), nil
 }
 
 func topicsMapping() map[string]string {

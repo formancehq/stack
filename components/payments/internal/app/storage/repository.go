@@ -6,14 +6,17 @@ import (
 )
 
 type Storage struct {
-	db *bun.DB
+	db                  *bun.DB
+	configEncryptionKey string
 }
 
-func newStorage(db *bun.DB) *Storage {
-	return &Storage{db: db}
+const encryptionOptions = "compress-algo=1, cipher-algo=aes256"
+
+func newStorage(db *bun.DB, configEncryptionKey string) *Storage {
+	return &Storage{db: db, configEncryptionKey: configEncryptionKey}
 }
 
-// nolint:unused // used for SQL debugging purposes
+//nolint:unused // used in debug mode
 func (s *Storage) debug() {
 	s.db.AddQueryHook(bundebug.NewQueryHook(bundebug.WithVerbose(true)))
 }

@@ -124,12 +124,14 @@ Class | Method | HTTP request | Description
 *OrchestrationApi* | [**RunWorkflow**](docs/OrchestrationApi.md#runworkflow) | **Post** /api/orchestration/workflows/{workflowID}/instances | Run workflow
 *OrchestrationApi* | [**SendEvent**](docs/OrchestrationApi.md#sendevent) | **Post** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow
 *PaymentsApi* | [**ConnectorsStripeTransfer**](docs/PaymentsApi.md#connectorsstripetransfer) | **Post** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts
+*PaymentsApi* | [**ConnectorsTransfer**](docs/PaymentsApi.md#connectorstransfer) | **Post** /api/payments/connectors/{connector}/transfers | Transfer funds between Connector accounts
 *PaymentsApi* | [**GetConnectorTask**](docs/PaymentsApi.md#getconnectortask) | **Get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 *PaymentsApi* | [**GetPayment**](docs/PaymentsApi.md#getpayment) | **Get** /api/payments/payments/{paymentId} | Get a payment
 *PaymentsApi* | [**InstallConnector**](docs/PaymentsApi.md#installconnector) | **Post** /api/payments/connectors/{connector} | Install a connector
 *PaymentsApi* | [**ListAllConnectors**](docs/PaymentsApi.md#listallconnectors) | **Get** /api/payments/connectors | List all installed connectors
 *PaymentsApi* | [**ListConfigsAvailableConnectors**](docs/PaymentsApi.md#listconfigsavailableconnectors) | **Get** /api/payments/connectors/configs | List the configs of each available connector
 *PaymentsApi* | [**ListConnectorTasks**](docs/PaymentsApi.md#listconnectortasks) | **Get** /api/payments/connectors/{connector}/tasks | List tasks from a connector
+*PaymentsApi* | [**ListConnectorsTransfers**](docs/PaymentsApi.md#listconnectorstransfers) | **Get** /api/payments/connectors/{connector}/transfers | List transfers and their statuses
 *PaymentsApi* | [**ListPayments**](docs/PaymentsApi.md#listpayments) | **Get** /api/payments/payments | List payments
 *PaymentsApi* | [**PaymentslistAccounts**](docs/PaymentsApi.md#paymentslistaccounts) | **Get** /api/payments/accounts | List accounts
 *PaymentsApi* | [**ReadConnectorConfig**](docs/PaymentsApi.md#readconnectorconfig) | **Get** /api/payments/connectors/{connector}/config | Read the config of a connector
@@ -365,6 +367,10 @@ Class | Method | HTTP request | Description
  - [TransactionsCursorResponse](docs/TransactionsCursorResponse.md)
  - [TransactionsCursorResponseCursor](docs/TransactionsCursorResponseCursor.md)
  - [TransactionsResponse](docs/TransactionsResponse.md)
+ - [TransferRequest](docs/TransferRequest.md)
+ - [TransferResponse](docs/TransferResponse.md)
+ - [TransfersResponse](docs/TransfersResponse.md)
+ - [TransfersResponseDataInner](docs/TransfersResponseDataInner.md)
  - [UpdateWalletRequest](docs/UpdateWalletRequest.md)
  - [User](docs/User.md)
  - [Volume](docs/Volume.md)

@@ -19,7 +19,7 @@ func TestConfigString(t *testing.T) {
 		FileGenerationPeriod: connectors.Duration{Duration: time.Minute},
 	}
 
-	assert.Equal(t, "directory: test, filePollingPeriod: 1s, fileGenerationPeriod: 1m0s", config.String())
+	assert.Equal(t, "directory=test, filePollingPeriod=1s, fileGenerationPeriod=1m0s", config.String())
 }
 
 // TestConfigValidate tests the validation of the config.

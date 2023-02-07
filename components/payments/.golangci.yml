@@ -1,4 +1,6 @@
 linters-settings:
+  interfacebloat:
+    max: 20
   dupl:
     threshold: 30
   funlen:

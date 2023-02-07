@@ -2,6 +2,7 @@ package integration
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/formancehq/payments/internal/app/messages"
 
@@ -107,7 +108,7 @@ func (l *ConnectorManager[ConnectorConfig]) Install(ctx context.Context, config 
 		return err
 	}
 
-	err = l.connector.Install(task.NewConnectorContext(context.Background(), l.scheduler))
+	err = l.connector.Install(task.NewConnectorContext(context.TODO(), l.scheduler))
 	if err != nil {
 		l.logger.Errorf("Error starting connector: %s", err)
 
@@ -213,8 +214,8 @@ func (l *ConnectorManager[ConnectorConfig]) IsEnabled(ctx context.Context) (bool
 	return l.store.IsEnabled(ctx, l.loader.Name())
 }
 
-func (l *ConnectorManager[ConnectorConfig]) FindAll(ctx context.Context) ([]models.Connector, error) {
-	return l.store.FindAll(ctx)
+func (l *ConnectorManager[ConnectorConfig]) FindAll(ctx context.Context) ([]*models.Connector, error) {
+	return l.store.ListConnectors(ctx)
 }
 
 func (l *ConnectorManager[ConnectorConfig]) IsInstalled(ctx context.Context) (bool, error) {
@@ -253,6 +254,37 @@ func (l *ConnectorManager[ConnectorConfig]) Reset(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+type Transfer struct {
+	Source      string
+	Destination string
+	Currency    string
+	Amount      int64
+}
+
+func (l *ConnectorManager[ConnectorConfig]) InitiateTransfer(ctx context.Context, transfer Transfer) (uuid.UUID, error) {
+	newTransfer, err := l.store.CreateNewTransfer(ctx, l.loader.Name(),
+		transfer.Source, transfer.Destination, transfer.Currency, transfer.Amount)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("creating new transfer: %w", err)
+	}
+
+	err = l.connector.InitiateTransfer(task.NewConnectorContext(ctx, l.scheduler), newTransfer)
+	if err != nil {
+		return uuid.Nil, fmt.Errorf("initiating transfer: %w", err)
+	}
+
+	return newTransfer.ID, nil
+}
+
+func (l *ConnectorManager[ConnectorConfig]) ListTransfers(ctx context.Context) ([]models.Transfer, error) {
+	transfers, err := l.store.ListTransfers(ctx, l.loader.Name())
+	if err != nil {
+		return nil, fmt.Errorf("retrieving transfers: %w", err)
+	}
+
+	return transfers, nil
 }
 
 func NewConnectorManager[ConnectorConfig models.ConnectorConfigObject](

@@ -9,20 +9,25 @@ import (
 )
 
 func (s *Storage) ListConnectors(ctx context.Context) ([]*models.Connector, error) {
-	var res []*models.Connector
-	err := s.db.NewSelect().Model(&res).Scan(ctx)
+	var connectors []*models.Connector
+
+	err := s.db.NewSelect().
+		Model(&connectors).
+		ColumnExpr("*, pgp_sym_decrypt(config, ?, ?) AS decrypted_config", s.configEncryptionKey, encryptionOptions).
+		Scan(ctx)
 	if err != nil {
 		return nil, e("list connectors", err)
 	}
 
-	return res, nil
+	return connectors, nil
 }
 
 func (s *Storage) GetConfig(ctx context.Context, connectorProvider models.ConnectorProvider, destination any) error {
 	var connector models.Connector
 
-	err := s.db.NewSelect().Model(&connector).
-		Column("config").
+	err := s.db.NewSelect().
+		Model(&connector).
+		ColumnExpr("pgp_sym_decrypt(config, ?, ?) AS decrypted_config", s.configEncryptionKey, encryptionOptions).
 		Where("provider = ?", connectorProvider).
 		Scan(ctx)
 	if err != nil {
@@ -35,17 +40,6 @@ func (s *Storage) GetConfig(ctx context.Context, connectorProvider models.Connec
 	}
 
 	return nil
-}
-
-func (s *Storage) FindAll(ctx context.Context) ([]models.Connector, error) {
-	var connectors []models.Connector
-
-	err := s.db.NewSelect().Model(&connectors).Scan(ctx)
-	if err != nil {
-		return nil, e("find all connectors", err)
-	}
-
-	return connectors, err
 }
 
 func (s *Storage) IsInstalled(ctx context.Context, provider models.ConnectorProvider) (bool, error) {
@@ -64,7 +58,6 @@ func (s *Storage) Install(ctx context.Context, provider models.ConnectorProvider
 	connector := models.Connector{
 		Provider: provider,
 		Enabled:  true,
-		Config:   config,
 	}
 
 	_, err := s.db.NewInsert().Model(&connector).Exec(ctx)
@@ -72,7 +65,7 @@ func (s *Storage) Install(ctx context.Context, provider models.ConnectorProvider
 		return e("install connector", err)
 	}
 
-	return nil
+	return s.UpdateConfig(ctx, provider, config)
 }
 
 func (s *Storage) Uninstall(ctx context.Context, provider models.ConnectorProvider) error {
@@ -90,7 +83,7 @@ func (s *Storage) Uninstall(ctx context.Context, provider models.ConnectorProvid
 func (s *Storage) UpdateConfig(ctx context.Context, provider models.ConnectorProvider, config json.RawMessage) error {
 	_, err := s.db.NewUpdate().
 		Model(&models.Connector{}).
-		Set("config = ?", config).
+		Set("config = pgp_sym_encrypt(?::TEXT, ?, ?)", config, s.configEncryptionKey, encryptionOptions).
 		Where("provider = ?", provider).
 		Exec(ctx)
 	if err != nil {
@@ -131,6 +124,7 @@ func (s *Storage) IsEnabled(ctx context.Context, provider models.ConnectorProvid
 
 	err := s.db.NewSelect().
 		Model(&connector).
+		Column("enabled").
 		Where("provider = ?", provider).
 		Scan(ctx)
 	if err != nil {
@@ -145,6 +139,7 @@ func (s *Storage) GetConnector(ctx context.Context, provider models.ConnectorPro
 
 	err := s.db.NewSelect().
 		Model(&connector).
+		ColumnExpr("*, pgp_sym_decrypt(config, ?, ?) AS decrypted_config", s.configEncryptionKey, encryptionOptions).
 		Where("provider = ?", provider).
 		Scan(ctx)
 	if err != nil {

@@ -84,7 +84,7 @@ func (s *DefaultTaskScheduler) Schedule(descriptor models.TaskDescriptor, restar
 	}
 
 	if !restart {
-		_, err := s.ReadTaskByDescriptor(context.Background(), descriptor)
+		_, err := s.ReadTaskByDescriptor(context.TODO(), descriptor)
 		if err == nil {
 			return nil
 		}
@@ -186,7 +186,7 @@ func (s *DefaultTaskScheduler) deleteTask(holder *taskHolder) {
 		return
 	}
 
-	oldestPendingTask, err := s.store.ReadOldestPendingTask(context.Background(), s.provider)
+	oldestPendingTask, err := s.store.ReadOldestPendingTask(context.TODO(), s.provider)
 	if err != nil {
 		if errors.Is(err, storage.ErrNotFound) {
 			return
@@ -213,7 +213,7 @@ func (s *DefaultTaskScheduler) deleteTask(holder *taskHolder) {
 type StopChan chan chan struct{}
 
 func (s *DefaultTaskScheduler) startTask(descriptor models.TaskDescriptor) error {
-	task, err := s.store.FindAndUpsertTask(context.Background(), s.provider, descriptor,
+	task, err := s.store.FindAndUpsertTask(context.TODO(), s.provider, descriptor,
 		models.TaskStatusActive, "")
 	if err != nil {
 		return errors.Wrap(err, "finding task and update")
@@ -228,7 +228,7 @@ func (s *DefaultTaskScheduler) startTask(descriptor models.TaskDescriptor) error
 		return ErrUnableToResolve
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.TODO())
 	ctx, span := otel.Tracer("com.formance.payments").Start(ctx, "Task", trace.WithAttributes(
 		attribute.Stringer("id", task.ID),
 		attribute.Stringer("connector", s.provider),
@@ -339,7 +339,7 @@ func (s *DefaultTaskScheduler) stackTask(descriptor models.TaskDescriptor) error
 	}).Infof("Stacking task")
 
 	return s.store.UpdateTaskStatus(
-		context.Background(), s.provider, descriptor, models.TaskStatusPending, "")
+		context.TODO(), s.provider, descriptor, models.TaskStatusPending, "")
 }
 
 var _ Scheduler = &DefaultTaskScheduler{}

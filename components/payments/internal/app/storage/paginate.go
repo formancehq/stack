@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -70,14 +71,14 @@ func Paginate(pageSize int, token string, sorter Sorter) (Paginator, error) {
 }
 
 func (p Paginator) apply(query *bun.SelectQuery, column string) *bun.SelectQuery {
-	query = query.Limit(p.pageSize + 1).Order(column + " DESC")
+	query = query.Limit(p.pageSize + 1)
 
 	if p.cursor.Reference == "" {
 		if p.sorter != nil {
 			query = p.sorter.apply(query)
 		}
 
-		return query
+		return query.Order(column + " DESC")
 	}
 
 	if p.cursor.Sorter != nil {
@@ -85,20 +86,43 @@ func (p Paginator) apply(query *bun.SelectQuery, column string) *bun.SelectQuery
 	}
 
 	if p.cursor.Next {
-		return query.Where(fmt.Sprintf("%s < ?", column), p.cursor.Reference)
+		return query.Where(fmt.Sprintf("%s < ?", column), p.cursor.Reference).Order(column + " DESC")
 	}
 
-	return query.Where(fmt.Sprintf("%s > ?", column), p.cursor.Reference)
+	return query.Where(fmt.Sprintf("%s >= ?", column), p.cursor.Reference).Order(column + " ASC")
 }
 
-func (p Paginator) paginationDetails(hasMore bool, firstReference, lastReference string) (PaginationDetails, error) {
+func (p Paginator) hasPrevious(ctx context.Context, query *bun.SelectQuery, column, reference string) (bool, error) {
+	query = query.Limit(1).Order(column + " DESC")
+
+	if p.cursor.Reference == "" {
+		if p.sorter != nil {
+			query = p.sorter.apply(query)
+		}
+	}
+
+	if p.cursor.Sorter != nil {
+		query = p.cursor.Sorter.apply(query)
+	}
+
+	query = query.Where(fmt.Sprintf("%s > ?", column), reference)
+
+	exists, err := query.Exists(ctx)
+	if err != nil {
+		return false, fmt.Errorf("error checking if previous page exists: %w", err)
+	}
+
+	return exists, nil
+}
+
+func (p Paginator) paginationDetails(hasMore, hasPrevious bool, firstReference, lastReference string) (PaginationDetails, error) {
 	var (
 		previousPage string
 		nextPage     string
 		err          error
 	)
 
-	if p.cursor.Reference != "" {
+	if hasPrevious && firstReference != "" {
 		previousPage, err = baseCursor{
 			Reference: firstReference,
 			Sorter:    p.sorter,
@@ -109,7 +133,7 @@ func (p Paginator) paginationDetails(hasMore bool, firstReference, lastReference
 		}
 	}
 
-	if hasMore {
+	if hasMore && lastReference != "" {
 		nextPage, err = baseCursor{
 			Reference: lastReference,
 			Sorter:    p.sorter,

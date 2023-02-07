@@ -46,8 +46,9 @@ func httpRouter(store *storage.Storage, serviceInfo api.ServiceInfo, connectorHa
 
 	connectorGroup.Path("/configs").Handler(connectorConfigsHandler())
 
-	// TODO: It's not ideal to define it explicitly here
-	// Refactor it when refactoring the HTTP lib.
+	// Deprecated
+	// TODO: Remove this endpoint
+	// Use /connectors/stripe/transfers instead
 	connectorGroup.Path("/stripe/transfers").Methods(http.MethodPost).
 		Handler(handleStripeTransfers(store))
 
@@ -74,6 +75,8 @@ func connectorRouter[Config models.ConnectorConfigObject](
 	addRoute(r, provider, "/reset", http.MethodPost, reset(manager))
 	addRoute(r, provider, "/tasks", http.MethodGet, listTasks(manager))
 	addRoute(r, provider, "/tasks/{taskID}", http.MethodGet, readTask(manager))
+	addRoute(r, provider, "/transfers", http.MethodPost, initiateTransfer(manager))
+	addRoute(r, provider, "/transfers", http.MethodGet, listTransfers(manager))
 
 	return r
 }

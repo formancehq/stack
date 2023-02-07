@@ -185,6 +185,10 @@ import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
 import { TransactionsResponse } from '../models/TransactionsResponse';
+import { TransferRequest } from '../models/TransferRequest';
+import { TransferResponse } from '../models/TransferResponse';
+import { TransfersResponse } from '../models/TransfersResponse';
+import { TransfersResponseDataInner } from '../models/TransfersResponseDataInner';
 import { UpdateWalletRequest } from '../models/UpdateWalletRequest';
 import { User } from '../models/User';
 import { Volume } from '../models/Volume';
@@ -1196,6 +1200,31 @@ export class ObservablePaymentsApi {
     }
 
     /**
+     * Execute a transfer between two accounts.
+     * Transfer funds between Connector accounts
+     * @param connector The name of the connector.
+     * @param transferRequest 
+     */
+    public connectorsTransfer(connector: Connector, transferRequest: TransferRequest, _options?: Configuration): Observable<TransferResponse> {
+        const requestContextPromise = this.requestFactory.connectorsTransfer(connector, transferRequest, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (let middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (let middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.connectorsTransfer(rsp)));
+            }));
+    }
+
+    /**
      * Get a specific task associated to the connector.
      * Read a specific task of the connector
      * @param connector The name of the connector.
@@ -1337,6 +1366,30 @@ export class ObservablePaymentsApi {
                     middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
                 }
                 return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.listConnectorTasks(rsp)));
+            }));
+    }
+
+    /**
+     * List transfers
+     * List transfers and their statuses
+     * @param connector The name of the connector.
+     */
+    public listConnectorsTransfers(connector: Connector, _options?: Configuration): Observable<TransfersResponse> {
+        const requestContextPromise = this.requestFactory.listConnectorsTransfers(connector, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (let middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (let middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.listConnectorsTransfers(rsp)));
             }));
     }
 

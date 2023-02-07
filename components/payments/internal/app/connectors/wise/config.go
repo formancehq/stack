@@ -10,6 +10,12 @@ type Config struct {
 	APIKey string `json:"apiKey" yaml:"apiKey" bson:"apiKey"`
 }
 
+// String obfuscates sensitive fields and returns a string representation of the config.
+// This is used for logging.
+func (c Config) String() string {
+	return "apiKey=***"
+}
+
 func (c Config) Validate() error {
 	if c.APIKey == "" {
 		return ErrMissingAPIKey

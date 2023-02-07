@@ -19,11 +19,23 @@ type Connector struct {
 	Provider  ConnectorProvider
 	Enabled   bool
 
-	// TODO: Enable DB-level encryption
-	Config json.RawMessage
+	// EncryptedConfig is a PGP-encrypted JSON string.
+	EncryptedConfig string `bun:"config"`
+
+	// Config is a decrypted config. It is not stored in the database.
+	Config json.RawMessage `bun:"decrypted_config,scanonly"`
 
 	Tasks    []*Task    `bun:"rel:has-many,join:id=connector_id"`
 	Payments []*Payment `bun:"rel:has-many,join:id=connector_id"`
+}
+
+func (c Connector) String() string {
+	c.EncryptedConfig = "****"
+	c.Config = nil
+
+	var t any = c
+
+	return fmt.Sprintf("%+v", t)
 }
 
 type ConnectorProvider string

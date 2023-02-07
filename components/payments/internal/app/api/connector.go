@@ -1,11 +1,11 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/formancehq/payments/internal/app/storage"
 
@@ -51,6 +51,10 @@ func handleError(w http.ResponseWriter, r *http.Request, err error) {
 func readConfig[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if connectorNotInstalled(connectorManager, w, r) {
+			return
+		}
+
 		config, err := connectorManager.ReadConfig(r.Context())
 		if err != nil {
 			handleError(w, r, err)
@@ -81,6 +85,10 @@ type listTasksResponseElement struct {
 func listTasks[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if connectorNotInstalled(connectorManager, w, r) {
+			return
+		}
+
 		pageSize, err := pageSizeQueryParam(r)
 		if err != nil {
 			handleValidationError(w, r, err)
@@ -134,6 +142,10 @@ func listTasks[Config models.ConnectorConfigObject](connectorManager *integratio
 func readTask[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if connectorNotInstalled(connectorManager, w, r) {
+			return
+		}
+
 		taskID, err := uuid.Parse(mux.Vars(r)["taskID"])
 		if err != nil {
 			handleErrorBadRequest(w, r, err)
@@ -171,6 +183,10 @@ func readTask[Config models.ConnectorConfigObject](connectorManager *integration
 func uninstall[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if connectorNotInstalled(connectorManager, w, r) {
+			return
+		}
+
 		err := connectorManager.Uninstall(r.Context())
 		if err != nil {
 			handleError(w, r, err)
@@ -185,7 +201,7 @@ func uninstall[Config models.ConnectorConfigObject](connectorManager *integratio
 func install[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		installed, err := connectorManager.IsInstalled(context.Background())
+		installed, err := connectorManager.IsInstalled(r.Context())
 		if err != nil {
 			handleError(w, r, err)
 
@@ -222,7 +238,76 @@ func install[Config models.ConnectorConfigObject](connectorManager *integration.
 func reset[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
 ) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		installed, err := connectorManager.IsInstalled(context.Background())
+		if connectorNotInstalled(connectorManager, w, r) {
+			return
+		}
+
+		err := connectorManager.Reset(r.Context())
+		if err != nil {
+			handleError(w, r, err)
+
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+type transferRequest struct {
+	Amount      int64  `json:"amount"`
+	Source      string `json:"source"`
+	Destination string `json:"destination"`
+	Asset       string `json:"asset"`
+
+	currency string
+}
+
+func (req *transferRequest) validate() error {
+	if req.Amount <= 0 {
+		return errors.New("amount must be greater than 0")
+	}
+
+	if req.Asset == "" {
+		return errors.New("asset is required")
+	}
+
+	if len(req.Asset) < 3 { //nolint:gomnd // allow length 3 for POC
+		return errors.New("asset is invalid")
+	}
+
+	req.currency = req.Asset[:3]
+
+	if req.Destination == "" {
+		return errors.New("destination is required")
+	}
+
+	return nil
+}
+
+type initiateTransferResponse struct {
+	ID string `json:"id"`
+}
+
+func initiateTransfer[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
+) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req transferRequest
+
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			handleError(w, r, err)
+
+			return
+		}
+
+		err = req.validate()
+		if err != nil {
+			handleErrorBadRequest(w, r, err)
+
+			return
+		}
+
+		installed, err := connectorManager.IsInstalled(r.Context())
 		if err != nil {
 			handleError(w, r, err)
 
@@ -235,13 +320,102 @@ func reset[Config models.ConnectorConfigObject](connectorManager *integration.Co
 			return
 		}
 
-		err = connectorManager.Reset(r.Context())
+		transfer := integration.Transfer{
+			Source:      req.Source,
+			Destination: req.Destination,
+			Currency:    req.currency,
+			Amount:      req.Amount,
+		}
+
+		transferID, err := connectorManager.InitiateTransfer(r.Context(), transfer)
 		if err != nil {
 			handleError(w, r, err)
 
 			return
 		}
 
-		w.WriteHeader(http.StatusNoContent)
+		err = json.NewEncoder(w).Encode(api.BaseResponse[initiateTransferResponse]{
+			Data: &initiateTransferResponse{
+				ID: transferID.String(),
+			},
+		})
+		if err != nil {
+			panic(err)
+		}
 	}
+}
+
+type listTransfersResponseElement struct {
+	ID          string  `json:"id"`
+	Source      string  `json:"source"`
+	Destination string  `json:"destination"`
+	Amount      int64   `json:"amount"`
+	Currency    string  `json:"asset"`
+	Status      string  `json:"status"`
+	Error       *string `json:"error"`
+}
+
+func listTransfers[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
+) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		installed, err := connectorManager.IsInstalled(r.Context())
+		if err != nil {
+			handleError(w, r, err)
+
+			return
+		}
+
+		if !installed {
+			handleError(w, r, errors.New("connector not installed"))
+
+			return
+		}
+
+		transfers, err := connectorManager.ListTransfers(r.Context())
+		if err != nil {
+			handleError(w, r, err)
+
+			return
+		}
+
+		response := make([]listTransfersResponseElement, len(transfers))
+
+		for transferIdx := range transfers {
+			response[transferIdx] = listTransfersResponseElement{
+				ID:          transfers[transferIdx].ID.String(),
+				Source:      transfers[transferIdx].Source,
+				Destination: transfers[transferIdx].Destination,
+				Amount:      transfers[transferIdx].Amount,
+				Currency:    transfers[transferIdx].Currency,
+				Status:      transfers[transferIdx].Status.String(),
+				Error:       transfers[transferIdx].Error,
+			}
+		}
+
+		err = json.NewEncoder(w).Encode(api.BaseResponse[[]listTransfersResponseElement]{
+			Data: &response,
+		})
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
+func connectorNotInstalled[Config models.ConnectorConfigObject](connectorManager *integration.ConnectorManager[Config],
+	w http.ResponseWriter, r *http.Request,
+) bool {
+	installed, err := connectorManager.IsInstalled(r.Context())
+	if err != nil {
+		handleError(w, r, err)
+
+		return true
+	}
+
+	if !installed {
+		handleErrorBadRequest(w, r, integration.ErrNotInstalled)
+
+		return true
+	}
+
+	return false
 }

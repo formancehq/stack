@@ -23,7 +23,7 @@ type Config struct {
 
 // String returns a string representation of the configuration.
 func (c Config) String() string {
-	return fmt.Sprintf("directory: %s, filePollingPeriod: %s, fileGenerationPeriod: %s",
+	return fmt.Sprintf("directory=%s, filePollingPeriod=%s, fileGenerationPeriod=%s",
 		c.Directory, c.FilePollingPeriod.String(), c.FileGenerationPeriod.String())
 }
 

@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
@@ -51,19 +52,35 @@ func (s *Storage) ListAccounts(ctx context.Context, pagination Paginator) ([]*mo
 
 	var (
 		hasMore                       = len(accounts) > pagination.pageSize
+		hasPrevious                   bool
 		firstReference, lastReference string
 	)
 
 	if hasMore {
-		accounts = accounts[:pagination.pageSize]
+		if pagination.cursor.Next || pagination.cursor.Reference == "" {
+			accounts = accounts[:pagination.pageSize]
+		} else {
+			accounts = accounts[1:]
+		}
 	}
+
+	sort.Slice(accounts, func(i, j int) bool {
+		return accounts[i].CreatedAt.After(accounts[j].CreatedAt)
+	})
 
 	if len(accounts) > 0 {
 		firstReference = accounts[0].CreatedAt.Format(time.RFC3339Nano)
 		lastReference = accounts[len(accounts)-1].CreatedAt.Format(time.RFC3339Nano)
+
+		query = s.db.NewSelect().Model(&accounts)
+
+		hasPrevious, err = pagination.hasPrevious(ctx, query, "account.created_at", firstReference)
+		if err != nil {
+			return nil, PaginationDetails{}, fmt.Errorf("failed to check if there is a previous page: %w", err)
+		}
 	}
 
-	paginationDetails, err := pagination.paginationDetails(hasMore, firstReference, lastReference)
+	paginationDetails, err := pagination.paginationDetails(hasMore, hasPrevious, firstReference, lastReference)
 	if err != nil {
 		return nil, PaginationDetails{}, fmt.Errorf("failed to get pagination details: %w", err)
 	}

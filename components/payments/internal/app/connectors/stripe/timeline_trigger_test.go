@@ -24,7 +24,7 @@ func TestTimelineTrigger(t *testing.T) {
 
 	ingestedTx := make([]*stripe.BalanceTransaction, 0)
 	trigger := NewTimelineTrigger(
-		logging.GetLogger(context.Background()),
+		logging.GetLogger(context.TODO()),
 		IngesterFn(func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
 			ingestedTx = append(ingestedTx, batch...)
 
@@ -53,7 +53,7 @@ func TestTimelineTrigger(t *testing.T) {
 		mock.Expect().Limit(2).RespondsWith(i < txCount/2-2, allTxs[txCount/2-i-2], allTxs[txCount/2-i-1])
 	}
 
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second))
+	ctx, cancel := context.WithDeadline(context.TODO(), time.Now().Add(time.Second))
 	defer cancel()
 
 	require.NoError(t, trigger.Fetch(ctx))
@@ -73,7 +73,7 @@ func TestCancelTimelineTrigger(t *testing.T) {
 
 	waiting := make(chan struct{})
 	trigger := NewTimelineTrigger(
-		logging.GetLogger(context.Background()),
+		logging.GetLogger(context.TODO()),
 		IngesterFn(func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
 			close(waiting) // Instruct the test the trigger is in fetching state
 			<-ctx.Done()
@@ -93,13 +93,13 @@ func TestCancelTimelineTrigger(t *testing.T) {
 
 	go func() {
 		// TODO: Handle error
-		_ = trigger.Fetch(context.Background())
+		_ = trigger.Fetch(context.TODO())
 	}()
 	select {
 	case <-time.After(time.Second):
 		t.Fatalf("timeout")
 	case <-waiting:
-		trigger.Cancel(context.Background())
+		trigger.Cancel(context.TODO())
 		require.NotEmpty(t, mock.expectations)
 	}
 }

@@ -11,12 +11,14 @@
 """
 
 from Formance.paths.api_payments_connectors_stripe_transfers.post import ConnectorsStripeTransfer
+from Formance.paths.api_payments_connectors_connector_transfers.post import ConnectorsTransfer
 from Formance.paths.api_payments_connectors_connector_tasks_task_id.get import GetConnectorTask
 from Formance.paths.api_payments_payments_payment_id.get import GetPayment
 from Formance.paths.api_payments_connectors_connector.post import InstallConnector
 from Formance.paths.api_payments_connectors.get import ListAllConnectors
 from Formance.paths.api_payments_connectors_configs.get import ListConfigsAvailableConnectors
 from Formance.paths.api_payments_connectors_connector_tasks.get import ListConnectorTasks
+from Formance.paths.api_payments_connectors_connector_transfers.get import ListConnectorsTransfers
 from Formance.paths.api_payments_payments.get import ListPayments
 from Formance.paths.api_payments_accounts.get import PaymentslistAccounts
 from Formance.paths.api_payments_connectors_connector_config.get import ReadConnectorConfig
@@ -27,12 +29,14 @@ from Formance.paths.api_payments_payments_payment_id_metadata.patch import Updat
 
 class PaymentsApi(
     ConnectorsStripeTransfer,
+    ConnectorsTransfer,
     GetConnectorTask,
     GetPayment,
     InstallConnector,
     ListAllConnectors,
     ListConfigsAvailableConnectors,
     ListConnectorTasks,
+    ListConnectorsTransfers,
     ListPayments,
     PaymentslistAccounts,
     ReadConnectorConfig,

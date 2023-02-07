@@ -5,12 +5,14 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**connectorsStripeTransfer**](PaymentsApi.md#connectorsStripeTransfer) | **POST** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts
+[**connectorsTransfer**](PaymentsApi.md#connectorsTransfer) | **POST** /api/payments/connectors/{connector}/transfers | Transfer funds between Connector accounts
 [**getConnectorTask**](PaymentsApi.md#getConnectorTask) | **GET** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 [**getPayment**](PaymentsApi.md#getPayment) | **GET** /api/payments/payments/{paymentId} | Get a payment
 [**installConnector**](PaymentsApi.md#installConnector) | **POST** /api/payments/connectors/{connector} | Install a connector
 [**listAllConnectors**](PaymentsApi.md#listAllConnectors) | **GET** /api/payments/connectors | List all installed connectors
 [**listConfigsAvailableConnectors**](PaymentsApi.md#listConfigsAvailableConnectors) | **GET** /api/payments/connectors/configs | List the configs of each available connector
 [**listConnectorTasks**](PaymentsApi.md#listConnectorTasks) | **GET** /api/payments/connectors/{connector}/tasks | List tasks from a connector
+[**listConnectorsTransfers**](PaymentsApi.md#listConnectorsTransfers) | **GET** /api/payments/connectors/{connector}/transfers | List transfers and their statuses
 [**listPayments**](PaymentsApi.md#listPayments) | **GET** /api/payments/payments | List payments
 [**paymentslistAccounts**](PaymentsApi.md#paymentslistAccounts) | **GET** /api/payments/accounts | List accounts
 [**readConnectorConfig**](PaymentsApi.md#readConnectorConfig) | **GET** /api/payments/connectors/{connector}/config | Read the config of a connector
@@ -60,6 +62,68 @@ Name | Type | Description  | Notes
 ### Return type
 
 **any**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **connectorsTransfer**
+> TransferResponse connectorsTransfer(transferRequest)
+
+Execute a transfer between two accounts.
+
+### Example
+
+
+```typescript
+import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new PaymentsApi(configuration);
+
+let body:PaymentsApiConnectorsTransferRequest = {
+  // Connector | The name of the connector.
+  connector: "STRIPE",
+  // TransferRequest
+  transferRequest: {
+    amount: 100,
+    asset: "USD",
+    destination: "acct_1Gqj58KZcSIg2N2q",
+    source: "acct_1Gqj58KZcSIg2N2q",
+  },
+};
+
+apiInstance.connectorsTransfer(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **transferRequest** | **TransferRequest**|  |
+ **connector** | **Connector** | The name of the connector. | defaults to undefined
+
+
+### Return type
+
+**TransferResponse**
 
 ### Authorization
 
@@ -383,6 +447,60 @@ Name | Type | Description  | Notes
 ### Return type
 
 **TasksCursor**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **listConnectorsTransfers**
+> TransfersResponse listConnectorsTransfers()
+
+List transfers
+
+### Example
+
+
+```typescript
+import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new PaymentsApi(configuration);
+
+let body:PaymentsApiListConnectorsTransfersRequest = {
+  // Connector | The name of the connector.
+  connector: "STRIPE",
+};
+
+apiInstance.listConnectorsTransfers(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **connector** | **Connector** | The name of the connector. | defaults to undefined
+
+
+### Return type
+
+**TransfersResponse**
 
 ### Authorization
 

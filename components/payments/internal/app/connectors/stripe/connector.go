@@ -3,6 +3,8 @@ package stripe
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	"github.com/formancehq/payments/internal/app/models"
 
 	"github.com/formancehq/payments/internal/app/integration"
@@ -44,7 +46,23 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 		return MainTask(c.cfg)
 	}
 
+	if taskDescriptor.TransferID != uuid.Nil {
+		return TransferTask(c.cfg, taskDescriptor.TransferID)
+	}
+
 	return ConnectedAccountTask(c.cfg, taskDescriptor.Account)
+}
+
+func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.Transfer) error {
+	descriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{
+		Name:       "Task to initiate transfer",
+		TransferID: transfer.ID,
+	})
+	if err != nil {
+		return err
+	}
+
+	return ctx.Scheduler().Schedule(descriptor, false)
 }
 
 var _ integration.Connector = &Connector{}

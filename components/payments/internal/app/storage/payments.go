@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/uptrace/bun"
@@ -29,19 +30,35 @@ func (s *Storage) ListPayments(ctx context.Context, pagination Paginator) ([]*mo
 
 	var (
 		hasMore                       = len(payments) > pagination.pageSize
+		hasPrevious                   bool
 		firstReference, lastReference string
 	)
 
 	if hasMore {
-		payments = payments[:pagination.pageSize]
+		if pagination.cursor.Next || pagination.cursor.Reference == "" {
+			payments = payments[:pagination.pageSize]
+		} else {
+			payments = payments[1:]
+		}
 	}
+
+	sort.Slice(payments, func(i, j int) bool {
+		return payments[i].CreatedAt.After(payments[j].CreatedAt)
+	})
 
 	if len(payments) > 0 {
 		firstReference = payments[0].CreatedAt.Format(time.RFC3339Nano)
 		lastReference = payments[len(payments)-1].CreatedAt.Format(time.RFC3339Nano)
+
+		query = s.db.NewSelect().Model(&payments)
+
+		hasPrevious, err = pagination.hasPrevious(ctx, query, "payment.created_at", firstReference)
+		if err != nil {
+			return nil, PaginationDetails{}, fmt.Errorf("failed to check if there is a previous page: %w", err)
+		}
 	}
 
-	paginationDetails, err := pagination.paginationDetails(hasMore, firstReference, lastReference)
+	paginationDetails, err := pagination.paginationDetails(hasMore, hasPrevious, firstReference, lastReference)
 	if err != nil {
 		return nil, PaginationDetails{}, fmt.Errorf("failed to get pagination details: %w", err)
 	}
@@ -161,6 +178,11 @@ func (s *Storage) UpsertPayments(ctx context.Context, provider models.ConnectorP
 		if err != nil {
 			return e("failed to create metadata", err)
 		}
+	}
+
+	err = s.UpdateTransfersFromPayments(ctx, payments)
+	if err != nil {
+		return e("failed to update transfers", err)
 	}
 
 	return nil

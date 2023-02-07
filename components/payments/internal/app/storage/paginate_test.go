@@ -159,6 +159,7 @@ func TestPaginatorPaginationDetails(t *testing.T) {
 
 	type args struct {
 		hasMore        bool
+		hasPrevious    bool
 		firstReference string
 		lastReference  string
 	}
@@ -175,7 +176,7 @@ func TestPaginatorPaginationDetails(t *testing.T) {
 	}
 
 	tokenNext, err := baseCursor{
-		Reference: "",
+		Reference: "abc",
 		Sorter:    nil,
 		Next:      true,
 	}.Encode()
@@ -193,21 +194,21 @@ func TestPaginatorPaginationDetails(t *testing.T) {
 		{
 			name:    "no cursor",
 			fields:  fields{pageSize: 10, token: "", cursor: baseCursor{}, sorter: nil},
-			args:    args{hasMore: false, firstReference: "", lastReference: ""},
+			args:    args{hasMore: false, hasPrevious: false, firstReference: "", lastReference: ""},
 			want:    PaginationDetails{PageSize: 10, HasMore: false},
 			wantErr: false,
 		},
 		{
 			name:    "with cursor",
 			fields:  fields{pageSize: 10, token: "", cursor: cursor, sorter: nil},
-			args:    args{hasMore: false, firstReference: "abc", lastReference: ""},
+			args:    args{hasMore: false, hasPrevious: true, firstReference: "abc", lastReference: ""},
 			want:    PaginationDetails{PageSize: 10, HasMore: false, PreviousPage: token},
 			wantErr: false,
 		},
 		{
 			name:    "has more",
 			fields:  fields{pageSize: 10, token: "", cursor: baseCursor{}, sorter: nil},
-			args:    args{hasMore: true, firstReference: "", lastReference: ""},
+			args:    args{hasMore: true, hasPrevious: false, firstReference: "", lastReference: "abc"},
 			want:    PaginationDetails{PageSize: 10, HasMore: true, NextPage: tokenNext},
 			wantErr: false,
 		},
@@ -226,7 +227,7 @@ func TestPaginatorPaginationDetails(t *testing.T) {
 				sorter:   tt.fields.sorter,
 			}
 
-			got, err := p.paginationDetails(tt.args.hasMore, tt.args.firstReference, tt.args.lastReference)
+			got, err := p.paginationDetails(tt.args.hasMore, tt.args.hasPrevious, tt.args.firstReference, tt.args.lastReference)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("paginationDetails() error = %v, wantErr %v", err, tt.wantErr)
 

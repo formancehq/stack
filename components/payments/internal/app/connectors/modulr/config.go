@@ -2,6 +2,7 @@ package modulr
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/formancehq/payments/internal/app/connectors/configtemplate"
 )
@@ -10,6 +11,12 @@ type Config struct {
 	APIKey    string `json:"apiKey" bson:"apiKey"`
 	APISecret string `json:"apiSecret" bson:"apiSecret"`
 	Endpoint  string `json:"endpoint" bson:"endpoint"`
+}
+
+// String obfuscates sensitive fields and returns a string representation of the config.
+// This is used for logging.
+func (c Config) String() string {
+	return fmt.Sprintf("endpoint=%s, apiSecret=***, apiKey=****", c.Endpoint)
 }
 
 func (c Config) Validate() error {

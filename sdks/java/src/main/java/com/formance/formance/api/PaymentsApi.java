@@ -21,6 +21,9 @@ import com.formance.formance.model.PaymentsCursor;
 import com.formance.formance.model.StripeTransferRequest;
 import com.formance.formance.model.TaskResponse;
 import com.formance.formance.model.TasksCursor;
+import com.formance.formance.model.TransferRequest;
+import com.formance.formance.model.TransferResponse;
+import com.formance.formance.model.TransfersResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +44,21 @@ public interface PaymentsApi {
   @POST("api/payments/connectors/stripe/transfers")
   Call<Object> connectorsStripeTransfer(
     @retrofit2.http.Body StripeTransferRequest stripeTransferRequest
+  );
+
+  /**
+   * Transfer funds between Connector accounts
+   * Execute a transfer between two accounts.
+   * @param connector The name of the connector. (required)
+   * @param transferRequest  (required)
+   * @return Call&lt;TransferResponse&gt;
+   */
+  @Headers({
+    "Content-Type:application/json"
+  })
+  @POST("api/payments/connectors/{connector}/transfers")
+  Call<TransferResponse> connectorsTransfer(
+    @retrofit2.http.Path("connector") Connector connector, @retrofit2.http.Body TransferRequest transferRequest
   );
 
   /**
@@ -110,6 +128,17 @@ public interface PaymentsApi {
   @GET("api/payments/connectors/{connector}/tasks")
   Call<TasksCursor> listConnectorTasks(
     @retrofit2.http.Path("connector") Connector connector, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("cursor") String cursor
+  );
+
+  /**
+   * List transfers and their statuses
+   * List transfers
+   * @param connector The name of the connector. (required)
+   * @return Call&lt;TransfersResponse&gt;
+   */
+  @GET("api/payments/connectors/{connector}/transfers")
+  Call<TransfersResponse> listConnectorsTransfers(
+    @retrofit2.http.Path("connector") Connector connector
   );
 
   /**

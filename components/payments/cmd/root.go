@@ -43,9 +43,11 @@ func rootCommand() *cobra.Command {
 	root.PersistentFlags().Bool(debugFlag, false, "Debug mode")
 
 	migrate.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
+	migrate.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 
 	server.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	server.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
+	server.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 	server.Flags().String(envFlag, "local", "Environment")
 	server.Flags().Bool(publisherKafkaEnabledFlag, false, "Publish write events to kafka")
 	server.Flags().StringSlice(publisherKafkaBrokerFlag, []string{}, "Kafka address is kafka enabled")

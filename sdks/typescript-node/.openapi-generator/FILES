@@ -229,6 +229,10 @@ models/Transactions.ts
 models/TransactionsCursorResponse.ts
 models/TransactionsCursorResponseCursor.ts
 models/TransactionsResponse.ts
+models/TransferRequest.ts
+models/TransferResponse.ts
+models/TransfersResponse.ts
+models/TransfersResponseDataInner.ts
 models/UpdateWalletRequest.ts
 models/User.ts
 models/Volume.ts

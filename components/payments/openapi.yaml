@@ -160,6 +160,31 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Task'
+  /connectors/{connector}/transfers:
+    post:
+      summary: Transfer funds between Connector accounts
+      tags:
+        - Payments
+      operationId: connectorsTransfer
+      description: Execute a transfer between two accounts.
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+      requestBody:
+        $ref: '#/components/requestBodies/Transfer'
+      responses:
+        '200':
+          $ref: '#/components/responses/Transfer'
+    get:
+      summary: List transfers and their statuses
+      tags:
+        - Payments
+      operationId: listConnectorsTransfers
+      description: List transfers
+      parameters:
+        - $ref: '#/components/parameters/Connector'
+      responses:
+        '200':
+          $ref: '#/components/responses/Transfers'
   /connectors/stripe/transfers:
     post:
       summary: Transfer funds between Stripe accounts
@@ -297,6 +322,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/StripeTransferResponse'
+    Transfer:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferResponse'
+    Transfers:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransfersResponse'
   # ---------------------- REQUESTS ----------------------
   requestBodies:
     ConnectorConfig:
@@ -317,6 +354,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PaymentMetadata'
+    Transfer:
+      required: true
+      content:
+        application/json:
+          schema:
+              $ref: '#/components/schemas/TransferRequest'
 
   # ---------------------- SCHEMAS ----------------------
   schemas:
@@ -466,7 +509,37 @@ components:
             - $ref: '#/components/schemas/TaskDummyPay'
             - $ref: '#/components/schemas/TaskModulr'
             - $ref: '#/components/schemas/TaskBankingCircle'
-
+    TransferResponse:
+      type: object
+      properties:
+        id:
+          type: string
+    TransfersResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              amount:
+                type: integer
+                format: int64
+                minimum: 0
+              asset:
+                type: string
+              destination:
+                type: string
+              source:
+                type: string
+              currency:
+                type: string
+              status:
+                type: string
+              error:
+                type: string
     # ---------------------- DATA MODELS ----------------------
     Connector:
       type: string
@@ -839,6 +912,27 @@ components:
                   type: string
                 key:
                   type: string
+    TransferRequest:
+      type: object
+      required:
+        - asset
+        - amount
+        - destination
+      properties:
+        amount:
+          type: integer
+          format: int64
+          minimum: 0
+          example: 100
+        asset:
+          type: string
+          example: USD
+        destination:
+          type: string
+          example: acct_1Gqj58KZcSIg2N2q
+        source:
+          type: string
+          example: acct_1Gqj58KZcSIg2N2q
     StripeTransferRequest:
       type: object
       properties:

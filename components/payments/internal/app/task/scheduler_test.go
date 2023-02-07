@@ -210,7 +210,7 @@ func TestTaskScheduler(t *testing.T) {
 
 		require.NoError(t, scheduler.Schedule(mainDescriptor, false))
 		require.Eventually(t, TaskActive(store, provider, mainDescriptor), time.Second, 100*time.Millisecond)
-		require.NoError(t, scheduler.Shutdown(context.Background()))
+		require.NoError(t, scheduler.Shutdown(context.TODO()))
 		require.Eventually(t, TaskTerminated(store, provider, mainDescriptor), time.Second, 100*time.Millisecond)
 		require.Eventually(t, TaskPending(store, provider, workerDescriptor), time.Second, 100*time.Millisecond)
 	})

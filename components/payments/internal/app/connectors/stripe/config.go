@@ -16,8 +16,10 @@ type Config struct {
 	TimelineConfig `bson:",inline"`
 }
 
+// String obfuscates sensitive fields and returns a string representation of the config.
+// This is used for logging.
 func (c Config) String() string {
-	return fmt.Sprintf("pollingPeriod=%d, pageSize=%d, apiKey=%s", c.PollingPeriod, c.PageSize, c.APIKey)
+	return fmt.Sprintf("pollingPeriod=%d, pageSize=%d, apiKey=****", c.PollingPeriod, c.PageSize)
 }
 
 func (c Config) Validate() error {

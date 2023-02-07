@@ -184,6 +184,10 @@ import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
 import { TransactionsResponse } from '../models/TransactionsResponse';
+import { TransferRequest } from '../models/TransferRequest';
+import { TransferResponse } from '../models/TransferResponse';
+import { TransfersResponse } from '../models/TransfersResponse';
+import { TransfersResponseDataInner } from '../models/TransfersResponseDataInner';
 import { UpdateWalletRequest } from '../models/UpdateWalletRequest';
 import { User } from '../models/User';
 import { Volume } from '../models/Volume';
@@ -1090,6 +1094,21 @@ export interface PaymentsApiConnectorsStripeTransferRequest {
     stripeTransferRequest: StripeTransferRequest
 }
 
+export interface PaymentsApiConnectorsTransferRequest {
+    /**
+     * The name of the connector.
+     * @type Connector
+     * @memberof PaymentsApiconnectorsTransfer
+     */
+    connector: Connector
+    /**
+     * 
+     * @type TransferRequest
+     * @memberof PaymentsApiconnectorsTransfer
+     */
+    transferRequest: TransferRequest
+}
+
 export interface PaymentsApiGetConnectorTaskRequest {
     /**
      * The name of the connector.
@@ -1154,6 +1173,15 @@ export interface PaymentsApiListConnectorTasksRequest {
      * @memberof PaymentsApilistConnectorTasks
      */
     cursor?: string
+}
+
+export interface PaymentsApiListConnectorsTransfersRequest {
+    /**
+     * The name of the connector.
+     * @type Connector
+     * @memberof PaymentsApilistConnectorsTransfers
+     */
+    connector: Connector
 }
 
 export interface PaymentsApiListPaymentsRequest {
@@ -1257,6 +1285,15 @@ export class ObjectPaymentsApi {
     }
 
     /**
+     * Execute a transfer between two accounts.
+     * Transfer funds between Connector accounts
+     * @param param the request object
+     */
+    public connectorsTransfer(param: PaymentsApiConnectorsTransferRequest, options?: Configuration): Promise<TransferResponse> {
+        return this.api.connectorsTransfer(param.connector, param.transferRequest,  options).toPromise();
+    }
+
+    /**
      * Get a specific task associated to the connector.
      * Read a specific task of the connector
      * @param param the request object
@@ -1307,6 +1344,15 @@ export class ObjectPaymentsApi {
      */
     public listConnectorTasks(param: PaymentsApiListConnectorTasksRequest, options?: Configuration): Promise<TasksCursor> {
         return this.api.listConnectorTasks(param.connector, param.pageSize, param.cursor,  options).toPromise();
+    }
+
+    /**
+     * List transfers
+     * List transfers and their statuses
+     * @param param the request object
+     */
+    public listConnectorsTransfers(param: PaymentsApiListConnectorsTransfersRequest, options?: Configuration): Promise<TransfersResponse> {
+        return this.api.listConnectorsTransfers(param.connector,  options).toPromise();
     }
 
     /**

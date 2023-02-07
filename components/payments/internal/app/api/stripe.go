@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/formancehq/payments/internal/app/integration"
+
 	"github.com/formancehq/go-libs/api"
 
 	"github.com/formancehq/payments/internal/app/models"
@@ -49,13 +51,27 @@ func (req *stripeTransferRequest) validate() error {
 
 type stripeTransfersRepository interface {
 	GetConfig(ctx context.Context, connectorName models.ConnectorProvider, cfg any) error
+	IsInstalled(ctx context.Context, provider models.ConnectorProvider) (bool, error)
 }
 
 func handleStripeTransfers(repo stripeTransfersRepository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		installed, err := repo.IsInstalled(r.Context(), stripeConnector.Name)
+		if err != nil {
+			handleError(w, r, err)
+
+			return
+		}
+
+		if !installed {
+			handleErrorBadRequest(w, r, integration.ErrNotInstalled)
+
+			return
+		}
+
 		var cfg stripeConnector.Config
 
-		if err := repo.GetConfig(r.Context(), stripeConnector.Name, &cfg); err != nil {
+		if err = repo.GetConfig(r.Context(), stripeConnector.Name, &cfg); err != nil {
 			handleError(w, r, err)
 
 			return
@@ -65,7 +81,7 @@ func handleStripeTransfers(repo stripeTransfersRepository) http.HandlerFunc {
 
 		var transferRequest stripeTransferRequest
 
-		err := json.NewDecoder(r.Body).Decode(&transferRequest)
+		err = json.NewDecoder(r.Body).Decode(&transferRequest)
 		if err != nil {
 			handleError(w, r, err)
 

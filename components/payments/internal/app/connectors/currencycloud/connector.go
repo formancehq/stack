@@ -17,6 +17,11 @@ type Connector struct {
 	cfg    Config
 }
 
+func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.Transfer) error {
+	// TODO implement me
+	panic("implement me")
+}
+
 func (c *Connector) Install(ctx task.ConnectorContext) error {
 	taskDescriptor, err := models.EncodeTaskDescriptor(TaskDescriptor{Name: taskNameFetchTransactions})
 	if err != nil {

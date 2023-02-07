@@ -37,7 +37,7 @@ func TestConnector(t *testing.T) {
 	t.Parallel()
 
 	config := Config{}
-	logger := logging.GetLogger(context.Background())
+	logger := logging.GetLogger(context.TODO())
 
 	fileSystem := newTestFS()
 
@@ -75,5 +75,5 @@ func TestConnector(t *testing.T) {
 		reflect.ValueOf(connector.Resolve(taskDescriptor)).String(),
 	)
 
-	assert.NoError(t, connector.Uninstall(context.Background()))
+	assert.NoError(t, connector.Uninstall(context.TODO()))
 }

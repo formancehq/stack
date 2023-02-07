@@ -2,6 +2,7 @@ package currencycloud
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/formancehq/payments/internal/app/connectors/configtemplate"
@@ -12,6 +13,12 @@ type Config struct {
 	APIKey        string   `json:"apiKey" bson:"apiKey"`
 	Endpoint      string   `json:"endpoint" bson:"endpoint"`
 	PollingPeriod Duration `json:"pollingPeriod" bson:"pollingPeriod"`
+}
+
+// String obfuscates sensitive fields and returns a string representation of the config.
+// This is used for logging.
+func (c Config) String() string {
+	return fmt.Sprintf("loginID=%s, endpoint=%s, pollingPeriod=%s, apiKey=****", c.LoginID, c.Endpoint, c.PollingPeriod.String())
 }
 
 func (c Config) Validate() error {

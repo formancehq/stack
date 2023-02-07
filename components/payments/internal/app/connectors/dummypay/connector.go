@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/formancehq/payments/internal/app/integration"
+
 	"github.com/formancehq/payments/internal/app/models"
 
 	"github.com/formancehq/payments/internal/app/task"
@@ -19,6 +21,11 @@ type Connector struct {
 	logger logging.Logger
 	cfg    Config
 	fs     fs
+}
+
+func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.Transfer) error {
+	// TODO implement me
+	panic("implement me")
 }
 
 // Install executes post-installation steps to read and generate files.
@@ -69,6 +76,8 @@ func (c *Connector) Resolve(descriptor models.TaskDescriptor) task.Task {
 
 	return handleResolve(c.cfg, taskDescriptor, c.fs)
 }
+
+var _ integration.Connector = &Connector{}
 
 func newConnector(logger logging.Logger, cfg Config, fs fs) *Connector {
 	return &Connector{

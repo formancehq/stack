@@ -1,35 +1,44 @@
 project_name: payments
-
-monorepo:
-  tag_prefix: components/payments/
-  dir: ./components/payments/
+env:
+  - GO111MODULE=on
+  - GOPROXY=https://proxy.golang.org
+before:
+  hooks:
+    - go mod download
 
 builds:
   - binary: payments
     id: payments
     ldflags:
-      - -X github.com/numary/payments/cmd.BuildDate={{ .Date }}
-      - -X github.com/numary/payments/cmd.Version={{ .Version }}
-      - -X github.com/numary/payments/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/payments/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/payments/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/payments/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
     goos:
+      - windows
       - linux
+      - darwin
     goarch:
       - amd64
       - arm64
+    flags:
+      - -tags=json1
 
 archives:
-  - id: "{{.ProjectName}}"
+  - id: "payments"
     builds:
       - payments
     format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
 
 
 checksum:
-  name_template: '{{.ProjectName}}_checksums.txt'
+  name_template: 'checksums.txt'
 
 snapshot:
   name_template: "{{ .Tag }}"
@@ -58,47 +67,40 @@ changelog:
 
 release:
   prerelease: auto
-  draft: true
   footer: |
+    **Full Changelog**: https://github.com/formancehq/payments/compare/{{ .PreviousTag }}...{{ .Tag }}
     ## What to do next?
-    - Read the [documentation](https://docs.formance.com/)
-    - Join our [Slack server](https://formance.com/slack)
+    - Read the [documentation](https://docs.formance.com/oss/payments/get-started/installation)
+    - Join our [Discord server](https://discord.gg/xyHvcbzk4w)
 
+brews:
+  - tap:
+      owner: numary
+      name: homebrew-tap
+    name: payments
+    folder: Formula
+    homepage: https://formance.com
+    skip_upload: 'false'
+    test: |
+      system "#{bin}/payments version"
+    install: |
+      bin.install "payments"
 
-dockers:
-  - image_templates: ["ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64"]
-    dockerfile: build.Dockerfile
-    use: buildx
-    build_flag_templates:
-      - --platform=linux/amd64
-      - --label=org.opencontainers.image.title={{ .ProjectName }}
-      - --label=org.opencontainers.image.description={{ .ProjectName }}
-      - --label=org.opencontainers.image.url=https://github.com/formancehq/stack
-      - --label=org.opencontainers.image.source=https://github.com/formancehq/stack
-      - --label=org.opencontainers.image.version={{ .Version }}
-      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
-      - --label=org.opencontainers.image.revision={{ .FullCommit }}
-      - --label=org.opencontainers.image.licenses=MIT
-  - image_templates: [ "ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64" ]
-    goarch: arm64
-    dockerfile: build.Dockerfile
-    use: buildx
-    build_flag_templates:
-      - --platform=linux/arm64/v8
-      - --label=org.opencontainers.image.title={{ .ProjectName }}
-      - --label=org.opencontainers.image.description={{ .ProjectName }}
-      - --label=org.opencontainers.image.url=https://github.com/formancehq/stack
-      - --label=org.opencontainers.image.source=https://github.com/formancehq/stack
-      - --label=org.opencontainers.image.version={{ .Version }}
-      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
-      - --label=org.opencontainers.image.revision={{ .FullCommit }}
-      - --label=org.opencontainers.image.licenses=MIT
-docker_manifests:
-  - name_template: ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}
-    image_templates:
-      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64
-      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64
-  - name_template: ghcr.io/formancehq/{{ .ProjectName }}:latest
-    image_templates:
-      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64
-      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64
+nfpms:
+  - id: packages
+    package_name: payments
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    builds:
+      - payments
+    homepage: https://formance.com
+    maintainer: Maxence Maireaux <maxence@formance.com>
+    formats:
+      - deb
+      - rpm
+
+publishers:
+  - name: fury.io
+    ids:
+      - packages
+    dir: "{{ dir .ArtifactPath }}"
+    cmd: curl -F package=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/numary/
