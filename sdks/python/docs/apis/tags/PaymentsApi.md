@@ -6,12 +6,14 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**connectors_stripe_transfer**](#connectors_stripe_transfer) | **post** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts
+[**connectors_transfer**](#connectors_transfer) | **post** /api/payments/connectors/{connector}/transfers | Transfer funds between Connector accounts
 [**get_connector_task**](#get_connector_task) | **get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 [**get_payment**](#get_payment) | **get** /api/payments/payments/{paymentId} | Get a payment
 [**install_connector**](#install_connector) | **post** /api/payments/connectors/{connector} | Install a connector
 [**list_all_connectors**](#list_all_connectors) | **get** /api/payments/connectors | List all installed connectors
 [**list_configs_available_connectors**](#list_configs_available_connectors) | **get** /api/payments/connectors/configs | List the configs of each available connector
 [**list_connector_tasks**](#list_connector_tasks) | **get** /api/payments/connectors/{connector}/tasks | List tasks from a connector
+[**list_connectors_transfers**](#list_connectors_transfers) | **get** /api/payments/connectors/{connector}/transfers | List transfers and their statuses
 [**list_payments**](#list_payments) | **get** /api/payments/payments | List payments
 [**paymentslist_accounts**](#paymentslist_accounts) | **get** /api/payments/accounts | List accounts
 [**read_connector_config**](#read_connector_config) | **get** /api/payments/connectors/{connector}/config | Read the config of a connector
@@ -111,6 +113,124 @@ headers | Unset | headers were not defined |
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Authorization
+
+[Authorization](../../../README.md#Authorization)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **connectors_transfer**
+<a name="connectors_transfer"></a>
+> TransferResponse connectors_transfer(connectortransfer_request)
+
+Transfer funds between Connector accounts
+
+Execute a transfer between two accounts.
+
+### Example
+
+* OAuth Authentication (Authorization):
+```python
+import Formance
+from Formance.apis.tags import payments_api
+from Formance.model.connector import Connector
+from Formance.model.transfer_response import TransferResponse
+from Formance.model.transfer_request import TransferRequest
+from pprint import pprint
+# Defining the host is optional and defaults to http://localhost
+# See configuration.py for a list of all supported configuration parameters.
+configuration = Formance.Configuration(
+    host = "http://localhost"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
+# Enter a context with an instance of the API client
+with Formance.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = payments_api.PaymentsApi(api_client)
+
+    # example passing only required values which don't have defaults set
+    path_params = {
+        'connector': Connector("STRIPE"),
+    }
+    body = TransferRequest(
+        amount=100,
+        asset="USD",
+        destination="acct_1Gqj58KZcSIg2N2q",
+        source="acct_1Gqj58KZcSIg2N2q",
+    )
+    try:
+        # Transfer funds between Connector accounts
+        api_response = api_instance.connectors_transfer(
+            path_params=path_params,
+            body=body,
+        )
+        pprint(api_response)
+    except Formance.ApiException as e:
+        print("Exception when calling PaymentsApi->connectors_transfer: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+body | typing.Union[SchemaForRequestBodyApplicationJson] | required |
+path_params | RequestPathParams | |
+content_type | str | optional, default is 'application/json' | Selects the schema and serialization of the request body
+accept_content_types | typing.Tuple[str] | default is ('application/json', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### body
+
+# SchemaForRequestBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**TransferRequest**](../../models/TransferRequest.md) |  | 
+
+
+### path_params
+#### RequestPathParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+connector | ConnectorSchema | | 
+
+# ConnectorSchema
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**Connector**](../../models/Connector.md) |  | 
+
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#connectors_transfer.ApiResponseFor200) | OK
+
+#### connectors_transfer.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**TransferResponse**](../../models/TransferResponse.md) |  | 
+
 
 ### Authorization
 
@@ -714,6 +834,106 @@ headers | Unset | headers were not defined |
 Type | Description  | Notes
 ------------- | ------------- | -------------
 [**TasksCursor**](../../models/TasksCursor.md) |  | 
+
+
+### Authorization
+
+[Authorization](../../../README.md#Authorization)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **list_connectors_transfers**
+<a name="list_connectors_transfers"></a>
+> TransfersResponse list_connectors_transfers(connector)
+
+List transfers and their statuses
+
+List transfers
+
+### Example
+
+* OAuth Authentication (Authorization):
+```python
+import Formance
+from Formance.apis.tags import payments_api
+from Formance.model.connector import Connector
+from Formance.model.transfers_response import TransfersResponse
+from pprint import pprint
+# Defining the host is optional and defaults to http://localhost
+# See configuration.py for a list of all supported configuration parameters.
+configuration = Formance.Configuration(
+    host = "http://localhost"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
+# Enter a context with an instance of the API client
+with Formance.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = payments_api.PaymentsApi(api_client)
+
+    # example passing only required values which don't have defaults set
+    path_params = {
+        'connector': Connector("STRIPE"),
+    }
+    try:
+        # List transfers and their statuses
+        api_response = api_instance.list_connectors_transfers(
+            path_params=path_params,
+        )
+        pprint(api_response)
+    except Formance.ApiException as e:
+        print("Exception when calling PaymentsApi->list_connectors_transfers: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+path_params | RequestPathParams | |
+accept_content_types | typing.Tuple[str] | default is ('application/json', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### path_params
+#### RequestPathParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+connector | ConnectorSchema | | 
+
+# ConnectorSchema
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**Connector**](../../models/Connector.md) |  | 
+
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#list_connectors_transfers.ApiResponseFor200) | OK
+
+#### list_connectors_transfers.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**TransfersResponse**](../../models/TransfersResponse.md) |  | 
 
 
 ### Authorization

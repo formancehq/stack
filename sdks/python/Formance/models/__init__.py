@@ -170,6 +170,9 @@ from Formance.model.transaction_response import TransactionResponse
 from Formance.model.transactions import Transactions
 from Formance.model.transactions_cursor_response import TransactionsCursorResponse
 from Formance.model.transactions_response import TransactionsResponse
+from Formance.model.transfer_request import TransferRequest
+from Formance.model.transfer_response import TransferResponse
+from Formance.model.transfers_response import TransfersResponse
 from Formance.model.update_client_request import UpdateClientRequest
 from Formance.model.update_client_response import UpdateClientResponse
 from Formance.model.update_scope_request import UpdateScopeRequest

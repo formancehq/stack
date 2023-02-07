@@ -5,12 +5,14 @@ All URIs are relative to *http://localhost*
 | Method | HTTP request | Description |
 |------------- | ------------- | -------------|
 | [**connectorsStripeTransfer**](PaymentsApi.md#connectorsStripeTransfer) | **POST** api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts |
+| [**connectorsTransfer**](PaymentsApi.md#connectorsTransfer) | **POST** api/payments/connectors/{connector}/transfers | Transfer funds between Connector accounts |
 | [**getConnectorTask**](PaymentsApi.md#getConnectorTask) | **GET** api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector |
 | [**getPayment**](PaymentsApi.md#getPayment) | **GET** api/payments/payments/{paymentId} | Get a payment |
 | [**installConnector**](PaymentsApi.md#installConnector) | **POST** api/payments/connectors/{connector} | Install a connector |
 | [**listAllConnectors**](PaymentsApi.md#listAllConnectors) | **GET** api/payments/connectors | List all installed connectors |
 | [**listConfigsAvailableConnectors**](PaymentsApi.md#listConfigsAvailableConnectors) | **GET** api/payments/connectors/configs | List the configs of each available connector |
 | [**listConnectorTasks**](PaymentsApi.md#listConnectorTasks) | **GET** api/payments/connectors/{connector}/tasks | List tasks from a connector |
+| [**listConnectorsTransfers**](PaymentsApi.md#listConnectorsTransfers) | **GET** api/payments/connectors/{connector}/transfers | List transfers and their statuses |
 | [**listPayments**](PaymentsApi.md#listPayments) | **GET** api/payments/payments | List payments |
 | [**paymentslistAccounts**](PaymentsApi.md#paymentslistAccounts) | **GET** api/payments/accounts | List accounts |
 | [**readConnectorConfig**](PaymentsApi.md#readConnectorConfig) | **GET** api/payments/connectors/{connector}/config | Read the config of a connector |
@@ -74,6 +76,79 @@ public class Example {
 ### Return type
 
 **Object**
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | OK |  -  |
+
+
+## connectorsTransfer
+
+> TransferResponse connectorsTransfer(connector, transferRequest)
+
+Transfer funds between Connector accounts
+
+Execute a transfer between two accounts.
+
+### Example
+
+```java
+// Import classes:
+import com.formance.formance.ApiClient;
+import com.formance.formance.ApiException;
+import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
+import com.formance.formance.models.*;
+import com.formance.formance.api.PaymentsApi;
+
+public class Example {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
+
+        PaymentsApi apiInstance = new PaymentsApi(defaultClient);
+        Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
+        TransferRequest transferRequest = new TransferRequest(); // TransferRequest | 
+        try {
+            TransferResponse result = apiInstance.connectorsTransfer(connector, transferRequest);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentsApi#connectorsTransfer");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **connector** | [**Connector**](.md)| The name of the connector. | [enum: STRIPE, DUMMY-PAY, WISE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
+| **transferRequest** | [**TransferRequest**](TransferRequest.md)|  | |
+
+### Return type
+
+[**TransferResponse**](TransferResponse.md)
 
 ### Authorization
 
@@ -497,6 +572,77 @@ public class Example {
 ### Return type
 
 [**TasksCursor**](TasksCursor.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | OK |  -  |
+
+
+## listConnectorsTransfers
+
+> TransfersResponse listConnectorsTransfers(connector)
+
+List transfers and their statuses
+
+List transfers
+
+### Example
+
+```java
+// Import classes:
+import com.formance.formance.ApiClient;
+import com.formance.formance.ApiException;
+import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
+import com.formance.formance.models.*;
+import com.formance.formance.api.PaymentsApi;
+
+public class Example {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
+
+        PaymentsApi apiInstance = new PaymentsApi(defaultClient);
+        Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
+        try {
+            TransfersResponse result = apiInstance.listConnectorsTransfers(connector);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling PaymentsApi#listConnectorsTransfers");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **connector** | [**Connector**](.md)| The name of the connector. | [enum: STRIPE, DUMMY-PAY, WISE, MODULR, CURRENCY-CLOUD, BANKING-CIRCLE] |
+
+### Return type
+
+[**TransfersResponse**](TransfersResponse.md)
 
 ### Authorization
 

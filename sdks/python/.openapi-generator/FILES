@@ -343,6 +343,12 @@ Formance/model/transactions_cursor_response.py
 Formance/model/transactions_cursor_response.pyi
 Formance/model/transactions_response.py
 Formance/model/transactions_response.pyi
+Formance/model/transfer_request.py
+Formance/model/transfer_request.pyi
+Formance/model/transfer_response.py
+Formance/model/transfer_response.pyi
+Formance/model/transfers_response.py
+Formance/model/transfers_response.pyi
 Formance/model/update_client_request.py
 Formance/model/update_client_request.pyi
 Formance/model/update_client_response.py
@@ -578,6 +584,9 @@ docs/models/TransactionResponse.md
 docs/models/Transactions.md
 docs/models/TransactionsCursorResponse.md
 docs/models/TransactionsResponse.md
+docs/models/TransferRequest.md
+docs/models/TransferResponse.md
+docs/models/TransfersResponse.md
 docs/models/UpdateClientRequest.md
 docs/models/UpdateClientResponse.md
 docs/models/UpdateScopeRequest.md

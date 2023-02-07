@@ -22,6 +22,9 @@ import { PaymentsCursor } from '../models/PaymentsCursor';
 import { StripeTransferRequest } from '../models/StripeTransferRequest';
 import { TaskResponse } from '../models/TaskResponse';
 import { TasksCursor } from '../models/TasksCursor';
+import { TransferRequest } from '../models/TransferRequest';
+import { TransferResponse } from '../models/TransferResponse';
+import { TransfersResponse } from '../models/TransfersResponse';
 
 /**
  * no description
@@ -57,6 +60,62 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
         requestContext.setHeaderParam("Content-Type", contentType);
         const serializedBody = ObjectSerializer.stringify(
             ObjectSerializer.serialize(stripeTransferRequest, "StripeTransferRequest", ""),
+            contentType
+        );
+        requestContext.setBody(serializedBody);
+
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
+        
+        const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
+        if (defaultAuth?.applySecurityAuthentication) {
+            await defaultAuth?.applySecurityAuthentication(requestContext);
+        }
+
+        return requestContext;
+    }
+
+    /**
+     * Execute a transfer between two accounts.
+     * Transfer funds between Connector accounts
+     * @param connector The name of the connector.
+     * @param transferRequest 
+     */
+    public async connectorsTransfer(connector: Connector, transferRequest: TransferRequest, _options?: Configuration): Promise<RequestContext> {
+        let _config = _options || this.configuration;
+
+        // verify required parameter 'connector' is not null or undefined
+        if (connector === null || connector === undefined) {
+            throw new RequiredError("PaymentsApi", "connectorsTransfer", "connector");
+        }
+
+
+        // verify required parameter 'transferRequest' is not null or undefined
+        if (transferRequest === null || transferRequest === undefined) {
+            throw new RequiredError("PaymentsApi", "connectorsTransfer", "transferRequest");
+        }
+
+
+        // Path Params
+        const localVarPath = '/api/payments/connectors/{connector}/transfers'
+            .replace('{' + 'connector' + '}', encodeURIComponent(String(connector)));
+
+        // Make Request Context
+        const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.POST);
+        requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
+
+
+        // Body Params
+        const contentType = ObjectSerializer.getPreferredMediaType([
+            "application/json"
+        ]);
+        requestContext.setHeaderParam("Content-Type", contentType);
+        const serializedBody = ObjectSerializer.stringify(
+            ObjectSerializer.serialize(transferRequest, "TransferRequest", ""),
             contentType
         );
         requestContext.setBody(serializedBody);
@@ -310,6 +369,44 @@ export class PaymentsApiRequestFactory extends BaseAPIRequestFactory {
         if (cursor !== undefined) {
             requestContext.setQueryParam("cursor", ObjectSerializer.serialize(cursor, "string", ""));
         }
+
+
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
+        
+        const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
+        if (defaultAuth?.applySecurityAuthentication) {
+            await defaultAuth?.applySecurityAuthentication(requestContext);
+        }
+
+        return requestContext;
+    }
+
+    /**
+     * List transfers
+     * List transfers and their statuses
+     * @param connector The name of the connector.
+     */
+    public async listConnectorsTransfers(connector: Connector, _options?: Configuration): Promise<RequestContext> {
+        let _config = _options || this.configuration;
+
+        // verify required parameter 'connector' is not null or undefined
+        if (connector === null || connector === undefined) {
+            throw new RequiredError("PaymentsApi", "listConnectorsTransfers", "connector");
+        }
+
+
+        // Path Params
+        const localVarPath = '/api/payments/connectors/{connector}/transfers'
+            .replace('{' + 'connector' + '}', encodeURIComponent(String(connector)));
+
+        // Make Request Context
+        const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.GET);
+        requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
 
 
         let authMethod: SecurityAuthentication | undefined;
@@ -633,6 +730,35 @@ export class PaymentsApiResponseProcessor {
      * Unwraps the actual response sent by the server from the response context and deserializes the response content
      * to the expected objects
      *
+     * @params response Response returned by the server for a request to connectorsTransfer
+     * @throws ApiException if the response code was not in [200, 299]
+     */
+     public async connectorsTransfer(response: ResponseContext): Promise<TransferResponse > {
+        const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
+        if (isCodeInRange("200", response.httpStatusCode)) {
+            const body: TransferResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "TransferResponse", ""
+            ) as TransferResponse;
+            return body;
+        }
+
+        // Work around for missing responses in specification, e.g. for petstore.yaml
+        if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
+            const body: TransferResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "TransferResponse", ""
+            ) as TransferResponse;
+            return body;
+        }
+
+        throw new ApiException<string | Buffer | undefined>(response.httpStatusCode, "Unknown API Status Code!", await response.getBodyAsAny(), response.headers);
+    }
+
+    /**
+     * Unwraps the actual response sent by the server from the response context and deserializes the response content
+     * to the expected objects
+     *
      * @params response Response returned by the server for a request to getConnectorTask
      * @throws ApiException if the response code was not in [200, 299]
      */
@@ -793,6 +919,35 @@ export class PaymentsApiResponseProcessor {
                 ObjectSerializer.parse(await response.body.text(), contentType),
                 "TasksCursor", ""
             ) as TasksCursor;
+            return body;
+        }
+
+        throw new ApiException<string | Buffer | undefined>(response.httpStatusCode, "Unknown API Status Code!", await response.getBodyAsAny(), response.headers);
+    }
+
+    /**
+     * Unwraps the actual response sent by the server from the response context and deserializes the response content
+     * to the expected objects
+     *
+     * @params response Response returned by the server for a request to listConnectorsTransfers
+     * @throws ApiException if the response code was not in [200, 299]
+     */
+     public async listConnectorsTransfers(response: ResponseContext): Promise<TransfersResponse > {
+        const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
+        if (isCodeInRange("200", response.httpStatusCode)) {
+            const body: TransfersResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "TransfersResponse", ""
+            ) as TransfersResponse;
+            return body;
+        }
+
+        // Work around for missing responses in specification, e.g. for petstore.yaml
+        if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
+            const body: TransfersResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "TransfersResponse", ""
+            ) as TransfersResponse;
             return body;
         }
 

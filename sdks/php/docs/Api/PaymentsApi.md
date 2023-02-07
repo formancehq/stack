@@ -5,12 +5,14 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 | Method | HTTP request | Description |
 | ------------- | ------------- | ------------- |
 | [**connectorsStripeTransfer()**](PaymentsApi.md#connectorsStripeTransfer) | **POST** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts |
+| [**connectorsTransfer()**](PaymentsApi.md#connectorsTransfer) | **POST** /api/payments/connectors/{connector}/transfers | Transfer funds between Connector accounts |
 | [**getConnectorTask()**](PaymentsApi.md#getConnectorTask) | **GET** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector |
 | [**getPayment()**](PaymentsApi.md#getPayment) | **GET** /api/payments/payments/{paymentId} | Get a payment |
 | [**installConnector()**](PaymentsApi.md#installConnector) | **POST** /api/payments/connectors/{connector} | Install a connector |
 | [**listAllConnectors()**](PaymentsApi.md#listAllConnectors) | **GET** /api/payments/connectors | List all installed connectors |
 | [**listConfigsAvailableConnectors()**](PaymentsApi.md#listConfigsAvailableConnectors) | **GET** /api/payments/connectors/configs | List the configs of each available connector |
 | [**listConnectorTasks()**](PaymentsApi.md#listConnectorTasks) | **GET** /api/payments/connectors/{connector}/tasks | List tasks from a connector |
+| [**listConnectorsTransfers()**](PaymentsApi.md#listConnectorsTransfers) | **GET** /api/payments/connectors/{connector}/transfers | List transfers and their statuses |
 | [**listPayments()**](PaymentsApi.md#listPayments) | **GET** /api/payments/payments | List payments |
 | [**paymentslistAccounts()**](PaymentsApi.md#paymentslistAccounts) | **GET** /api/payments/accounts | List accounts |
 | [**readConnectorConfig()**](PaymentsApi.md#readConnectorConfig) | **GET** /api/payments/connectors/{connector}/config | Read the config of a connector |
@@ -65,6 +67,68 @@ try {
 ### Return type
 
 **object**
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `connectorsTransfer()`
+
+```php
+connectorsTransfer($connector, $transfer_request): \Formance\Model\TransferResponse
+```
+
+Transfer funds between Connector accounts
+
+Execute a transfer between two accounts.
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\PaymentsApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$connector = new \Formance\Model\Connector(); // Connector | The name of the connector.
+$transfer_request = new \Formance\Model\TransferRequest(); // \Formance\Model\TransferRequest
+
+try {
+    $result = $apiInstance->connectorsTransfer($connector, $transfer_request);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling PaymentsApi->connectorsTransfer: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+| Name | Type | Description  | Notes |
+| ------------- | ------------- | ------------- | ------------- |
+| **connector** | [**Connector**](../Model/.md)| The name of the connector. | |
+| **transfer_request** | [**\Formance\Model\TransferRequest**](../Model/TransferRequest.md)|  | |
+
+### Return type
+
+[**\Formance\Model\TransferResponse**](../Model/TransferResponse.md)
 
 ### Authorization
 
@@ -424,6 +488,66 @@ try {
 ### Return type
 
 [**\Formance\Model\TasksCursor**](../Model/TasksCursor.md)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `listConnectorsTransfers()`
+
+```php
+listConnectorsTransfers($connector): \Formance\Model\TransfersResponse
+```
+
+List transfers and their statuses
+
+List transfers
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\PaymentsApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$connector = new \Formance\Model\Connector(); // Connector | The name of the connector.
+
+try {
+    $result = $apiInstance->listConnectorsTransfers($connector);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling PaymentsApi->listConnectorsTransfers: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+| Name | Type | Description  | Notes |
+| ------------- | ------------- | ------------- | ------------- |
+| **connector** | [**Connector**](../Model/.md)| The name of the connector. | |
+
+### Return type
+
+[**\Formance\Model\TransfersResponse**](../Model/TransfersResponse.md)
 
 ### Authorization
 

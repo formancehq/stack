@@ -184,6 +184,10 @@ import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
 import { TransactionsResponse } from '../models/TransactionsResponse';
+import { TransferRequest } from '../models/TransferRequest';
+import { TransferResponse } from '../models/TransferResponse';
+import { TransfersResponse } from '../models/TransfersResponse';
+import { TransfersResponseDataInner } from '../models/TransfersResponseDataInner';
 import { UpdateWalletRequest } from '../models/UpdateWalletRequest';
 import { User } from '../models/User';
 import { Volume } from '../models/Volume';
@@ -724,6 +728,17 @@ export class PromisePaymentsApi {
     }
 
     /**
+     * Execute a transfer between two accounts.
+     * Transfer funds between Connector accounts
+     * @param connector The name of the connector.
+     * @param transferRequest 
+     */
+    public connectorsTransfer(connector: Connector, transferRequest: TransferRequest, _options?: Configuration): Promise<TransferResponse> {
+        const result = this.api.connectorsTransfer(connector, transferRequest, _options);
+        return result.toPromise();
+    }
+
+    /**
      * Get a specific task associated to the connector.
      * Read a specific task of the connector
      * @param connector The name of the connector.
@@ -781,6 +796,16 @@ export class PromisePaymentsApi {
      */
     public listConnectorTasks(connector: Connector, pageSize?: number, cursor?: string, _options?: Configuration): Promise<TasksCursor> {
         const result = this.api.listConnectorTasks(connector, pageSize, cursor, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * List transfers
+     * List transfers and their statuses
+     * @param connector The name of the connector.
+     */
+    public listConnectorsTransfers(connector: Connector, _options?: Configuration): Promise<TransfersResponse> {
+        const result = this.api.listConnectorsTransfers(connector, _options);
         return result.toPromise();
     }
 

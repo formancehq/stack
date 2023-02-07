@@ -204,6 +204,10 @@ docs/Model/Transactions.md
 docs/Model/TransactionsCursorResponse.md
 docs/Model/TransactionsCursorResponseCursor.md
 docs/Model/TransactionsResponse.md
+docs/Model/TransferRequest.md
+docs/Model/TransferResponse.md
+docs/Model/TransfersResponse.md
+docs/Model/TransfersResponseDataInner.md
 docs/Model/UpdateWalletRequest.md
 docs/Model/User.md
 docs/Model/Volume.md
@@ -430,6 +434,10 @@ lib/Model/Transactions.php
 lib/Model/TransactionsCursorResponse.php
 lib/Model/TransactionsCursorResponseCursor.php
 lib/Model/TransactionsResponse.php
+lib/Model/TransferRequest.php
+lib/Model/TransferResponse.php
+lib/Model/TransfersResponse.php
+lib/Model/TransfersResponseDataInner.php
 lib/Model/UpdateWalletRequest.php
 lib/Model/User.php
 lib/Model/Volume.php

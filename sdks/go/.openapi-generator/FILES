@@ -220,6 +220,10 @@ docs/TransactionsApi.md
 docs/TransactionsCursorResponse.md
 docs/TransactionsCursorResponseCursor.md
 docs/TransactionsResponse.md
+docs/TransferRequest.md
+docs/TransferResponse.md
+docs/TransfersResponse.md
+docs/TransfersResponseDataInner.md
 docs/UpdateWalletRequest.md
 docs/User.md
 docs/UsersApi.md
@@ -429,6 +433,10 @@ model_transactions.go
 model_transactions_cursor_response.go
 model_transactions_cursor_response_cursor.go
 model_transactions_response.go
+model_transfer_request.go
+model_transfer_response.go
+model_transfers_response.go
+model_transfers_response_data_inner.go
 model_update_wallet_request.go
 model_user.go
 model_volume.go

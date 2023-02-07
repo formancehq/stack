@@ -2076,6 +2076,53 @@ paths:
       summary: Read a specific task of the connector
       tags:
       - Payments
+  /api/payments/connectors/{connector}/transfers:
+    get:
+      description: List transfers
+      operationId: listConnectorsTransfers
+      parameters:
+      - description: The name of the connector.
+        explode: false
+        in: path
+        name: connector
+        required: true
+        schema:
+          $ref: '#/components/schemas/Connector'
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransfersResponse'
+          description: OK
+      summary: List transfers and their statuses
+      tags:
+      - Payments
+    post:
+      description: Execute a transfer between two accounts.
+      operationId: connectorsTransfer
+      parameters:
+      - description: The name of the connector.
+        explode: false
+        in: path
+        name: connector
+        required: true
+        schema:
+          $ref: '#/components/schemas/Connector'
+        style: simple
+      requestBody:
+        $ref: '#/components/requestBodies/Transfer'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+          description: OK
+      summary: Transfer funds between Connector accounts
+      tags:
+      - Payments
   /api/payments/connectors/stripe/transfers:
     post:
       description: Execute a transfer between two Stripe accounts.
@@ -3256,6 +3303,12 @@ components:
           schema:
             $ref: '#/components/schemas/PaymentMetadata'
       required: true
+    Transfer:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferRequest'
+      required: true
   responses:
     NoContent:
       description: No content
@@ -3318,6 +3371,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/StripeTransferResponse'
+      description: OK
+    Transfer:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransferResponse'
+      description: OK
+    Transfers:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TransfersResponse'
       description: OK
     ErrorResponse:
       content:
@@ -4782,6 +4847,38 @@ components:
       required:
       - data
       type: object
+    TransferResponse:
+      example:
+        id: id
+      properties:
+        id:
+          type: string
+      type: object
+    TransfersResponse:
+      example:
+        data:
+        - amount: 0
+          destination: destination
+          currency: currency
+          id: id
+          source: source
+          asset: asset
+          error: error
+          status: status
+        - amount: 0
+          destination: destination
+          currency: currency
+          id: id
+          source: source
+          asset: asset
+          error: error
+          status: status
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/TransfersResponse_data_inner'
+          type: array
+      type: object
     Connector:
       enum:
       - STRIPE
@@ -5117,6 +5214,32 @@ components:
       allOf:
       - $ref: '#/components/schemas/TaskBase'
       - $ref: '#/components/schemas/TaskBankingCircle_allOf'
+    TransferRequest:
+      example:
+        amount: 100
+        destination: acct_1Gqj58KZcSIg2N2q
+        source: acct_1Gqj58KZcSIg2N2q
+        asset: USD
+      properties:
+        amount:
+          example: 100
+          format: int64
+          minimum: 0
+          type: integer
+        asset:
+          example: USD
+          type: string
+        destination:
+          example: acct_1Gqj58KZcSIg2N2q
+          type: string
+        source:
+          example: acct_1Gqj58KZcSIg2N2q
+          type: string
+      required:
+      - amount
+      - asset
+      - destination
+      type: object
     StripeTransferRequest:
       example:
         amount: 100
@@ -8030,6 +8153,36 @@ components:
           $ref: '#/components/schemas/ConnectorsConfigsResponse_data_connector'
       required:
       - connector
+      type: object
+    TransfersResponse_data_inner:
+      example:
+        amount: 0
+        destination: destination
+        currency: currency
+        id: id
+        source: source
+        asset: asset
+        error: error
+        status: status
+      properties:
+        id:
+          type: string
+        amount:
+          format: int64
+          minimum: 0
+          type: integer
+        asset:
+          type: string
+        destination:
+          type: string
+        source:
+          type: string
+        currency:
+          type: string
+        status:
+          type: string
+        error:
+          type: string
       type: object
     TaskStripe_allOf_descriptor:
       properties:

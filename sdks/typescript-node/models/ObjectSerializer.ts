@@ -181,6 +181,10 @@ export * from '../models/Transactions';
 export * from '../models/TransactionsCursorResponse';
 export * from '../models/TransactionsCursorResponseCursor';
 export * from '../models/TransactionsResponse';
+export * from '../models/TransferRequest';
+export * from '../models/TransferResponse';
+export * from '../models/TransfersResponse';
+export * from '../models/TransfersResponseDataInner';
 export * from '../models/UpdateWalletRequest';
 export * from '../models/User';
 export * from '../models/Volume';
@@ -385,6 +389,10 @@ import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
 import { TransactionsResponse } from '../models/TransactionsResponse';
+import { TransferRequest } from '../models/TransferRequest';
+import { TransferResponse } from '../models/TransferResponse';
+import { TransfersResponse } from '../models/TransfersResponse';
+import { TransfersResponseDataInner } from '../models/TransfersResponseDataInner';
 import { UpdateWalletRequest } from '../models/UpdateWalletRequest';
 import { User } from '../models/User';
 import { Volume } from '../models/Volume';
@@ -619,6 +627,10 @@ let typeMap: {[index: string]: any} = {
     "TransactionsCursorResponse": TransactionsCursorResponse,
     "TransactionsCursorResponseCursor": TransactionsCursorResponseCursor,
     "TransactionsResponse": TransactionsResponse,
+    "TransferRequest": TransferRequest,
+    "TransferResponse": TransferResponse,
+    "TransfersResponse": TransfersResponse,
+    "TransfersResponseDataInner": TransfersResponseDataInner,
     "UpdateWalletRequest": UpdateWalletRequest,
     "User": User,
     "Volume": Volume,

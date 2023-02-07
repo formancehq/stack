@@ -203,6 +203,10 @@ docs/TransactionsApi.md
 docs/TransactionsCursorResponse.md
 docs/TransactionsCursorResponseCursor.md
 docs/TransactionsResponse.md
+docs/TransferRequest.md
+docs/TransferResponse.md
+docs/TransfersResponse.md
+docs/TransfersResponseDataInner.md
 docs/UpdateWalletRequest.md
 docs/User.md
 docs/UsersApi.md
@@ -448,6 +452,10 @@ src/main/java/com/formance/formance/model/Transactions.java
 src/main/java/com/formance/formance/model/TransactionsCursorResponse.java
 src/main/java/com/formance/formance/model/TransactionsCursorResponseCursor.java
 src/main/java/com/formance/formance/model/TransactionsResponse.java
+src/main/java/com/formance/formance/model/TransferRequest.java
+src/main/java/com/formance/formance/model/TransferResponse.java
+src/main/java/com/formance/formance/model/TransfersResponse.java
+src/main/java/com/formance/formance/model/TransfersResponseDataInner.java
 src/main/java/com/formance/formance/model/UpdateWalletRequest.java
 src/main/java/com/formance/formance/model/User.java
 src/main/java/com/formance/formance/model/Volume.java

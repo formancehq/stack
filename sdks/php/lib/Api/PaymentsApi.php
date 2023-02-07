@@ -75,6 +75,9 @@ class PaymentsApi
         'connectorsStripeTransfer' => [
             'application/json',
         ],
+        'connectorsTransfer' => [
+            'application/json',
+        ],
         'getConnectorTask' => [
             'application/json',
         ],
@@ -91,6 +94,9 @@ class PaymentsApi
             'application/json',
         ],
         'listConnectorTasks' => [
+            'application/json',
+        ],
+        'listConnectorsTransfers' => [
             'application/json',
         ],
         'listPayments' => [
@@ -394,6 +400,312 @@ class PaymentsApi
                 $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($stripe_transfer_request));
             } else {
                 $httpBody = $stripe_transfer_request;
+            }
+        } elseif (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'POST',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation connectorsTransfer
+     *
+     * Transfer funds between Connector accounts
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  \Formance\Model\TransferRequest $transfer_request transfer_request (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['connectorsTransfer'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Formance\Model\TransferResponse
+     */
+    public function connectorsTransfer($connector, $transfer_request, string $contentType = self::contentTypes['connectorsTransfer'][0])
+    {
+        list($response) = $this->connectorsTransferWithHttpInfo($connector, $transfer_request, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation connectorsTransferWithHttpInfo
+     *
+     * Transfer funds between Connector accounts
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  \Formance\Model\TransferRequest $transfer_request (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['connectorsTransfer'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Formance\Model\TransferResponse, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function connectorsTransferWithHttpInfo($connector, $transfer_request, string $contentType = self::contentTypes['connectorsTransfer'][0])
+    {
+        $request = $this->connectorsTransferRequest($connector, $transfer_request, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            switch($statusCode) {
+                case 200:
+                    if ('\Formance\Model\TransferResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\TransferResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\TransferResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Formance\Model\TransferResponse';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\TransferResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation connectorsTransferAsync
+     *
+     * Transfer funds between Connector accounts
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  \Formance\Model\TransferRequest $transfer_request (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['connectorsTransfer'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function connectorsTransferAsync($connector, $transfer_request, string $contentType = self::contentTypes['connectorsTransfer'][0])
+    {
+        return $this->connectorsTransferAsyncWithHttpInfo($connector, $transfer_request, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation connectorsTransferAsyncWithHttpInfo
+     *
+     * Transfer funds between Connector accounts
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  \Formance\Model\TransferRequest $transfer_request (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['connectorsTransfer'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function connectorsTransferAsyncWithHttpInfo($connector, $transfer_request, string $contentType = self::contentTypes['connectorsTransfer'][0])
+    {
+        $returnType = '\Formance\Model\TransferResponse';
+        $request = $this->connectorsTransferRequest($connector, $transfer_request, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'connectorsTransfer'
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  \Formance\Model\TransferRequest $transfer_request (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['connectorsTransfer'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function connectorsTransferRequest($connector, $transfer_request, string $contentType = self::contentTypes['connectorsTransfer'][0])
+    {
+
+        // verify the required parameter 'connector' is set
+        if ($connector === null || (is_array($connector) && count($connector) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $connector when calling connectorsTransfer'
+            );
+        }
+
+        // verify the required parameter 'transfer_request' is set
+        if ($transfer_request === null || (is_array($transfer_request) && count($transfer_request) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $transfer_request when calling connectorsTransfer'
+            );
+        }
+
+
+        $resourcePath = '/api/payments/connectors/{connector}/transfers';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
+
+
+        // path params
+        if ($connector !== null) {
+            $resourcePath = str_replace(
+                '{' . 'connector' . '}',
+                ObjectSerializer::toPathValue($connector),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (isset($transfer_request)) {
+            if (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the body
+                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($transfer_request));
+            } else {
+                $httpBody = $transfer_request;
             }
         } elseif (count($formParams) > 0) {
             if ($multipart) {
@@ -2079,6 +2391,293 @@ class PaymentsApi
             true, // explode
             false // required
         ) ?? []);
+
+
+        // path params
+        if ($connector !== null) {
+            $resourcePath = str_replace(
+                '{' . 'connector' . '}',
+                ObjectSerializer::toPathValue($connector),
+                $resourcePath
+            );
+        }
+
+
+        $headers = $this->headerSelector->selectHeaders(
+            ['application/json', ],
+            $contentType,
+            $multipart
+        );
+
+        // for model (json/xml)
+        if (count($formParams) > 0) {
+            if ($multipart) {
+                $multipartContents = [];
+                foreach ($formParams as $formParamName => $formParamValue) {
+                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
+                    foreach ($formParamValueItems as $formParamValueItem) {
+                        $multipartContents[] = [
+                            'name' => $formParamName,
+                            'contents' => $formParamValueItem
+                        ];
+                    }
+                }
+                // for HTTP post (form)
+                $httpBody = new MultipartStream($multipartContents);
+
+            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
+                # if Content-Type contains "application/json", json_encode the form parameters
+                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
+            } else {
+                // for HTTP post (form)
+                $httpBody = ObjectSerializer::buildQuery($formParams);
+            }
+        }
+
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
+
+        $defaultHeaders = [];
+        if ($this->config->getUserAgent()) {
+            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
+        }
+
+        $headers = array_merge(
+            $defaultHeaders,
+            $headerParams,
+            $headers
+        );
+
+        $operationHost = $this->config->getHost();
+        $query = ObjectSerializer::buildQuery($queryParams);
+        return new Request(
+            'GET',
+            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
+            $headers,
+            $httpBody
+        );
+    }
+
+    /**
+     * Operation listConnectorsTransfers
+     *
+     * List transfers and their statuses
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorsTransfers'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return \Formance\Model\TransfersResponse
+     */
+    public function listConnectorsTransfers($connector, string $contentType = self::contentTypes['listConnectorsTransfers'][0])
+    {
+        list($response) = $this->listConnectorsTransfersWithHttpInfo($connector, $contentType);
+        return $response;
+    }
+
+    /**
+     * Operation listConnectorsTransfersWithHttpInfo
+     *
+     * List transfers and their statuses
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorsTransfers'] to see the possible values for this operation
+     *
+     * @throws \Formance\ApiException on non-2xx response
+     * @throws \InvalidArgumentException
+     * @return array of \Formance\Model\TransfersResponse, HTTP status code, HTTP response headers (array of strings)
+     */
+    public function listConnectorsTransfersWithHttpInfo($connector, string $contentType = self::contentTypes['listConnectorsTransfers'][0])
+    {
+        $request = $this->listConnectorsTransfersRequest($connector, $contentType);
+
+        try {
+            $options = $this->createHttpClientOption();
+            try {
+                $response = $this->client->send($request, $options);
+            } catch (RequestException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
+                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
+                );
+            } catch (ConnectException $e) {
+                throw new ApiException(
+                    "[{$e->getCode()}] {$e->getMessage()}",
+                    (int) $e->getCode(),
+                    null,
+                    null
+                );
+            }
+
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode < 200 || $statusCode > 299) {
+                throw new ApiException(
+                    sprintf(
+                        '[%d] Error connecting to the API (%s)',
+                        $statusCode,
+                        (string) $request->getUri()
+                    ),
+                    $statusCode,
+                    $response->getHeaders(),
+                    (string) $response->getBody()
+                );
+            }
+
+            switch($statusCode) {
+                case 200:
+                    if ('\Formance\Model\TransfersResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\TransfersResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\TransfersResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = '\Formance\Model\TransfersResponse';
+            if ($returnType === '\SplFileObject') {
+                $content = $response->getBody(); //stream goes to serializer
+            } else {
+                $content = (string) $response->getBody();
+                if ($returnType !== 'string') {
+                    $content = json_decode($content);
+                }
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
+
+        } catch (ApiException $e) {
+            switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\TransfersResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Operation listConnectorsTransfersAsync
+     *
+     * List transfers and their statuses
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorsTransfers'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function listConnectorsTransfersAsync($connector, string $contentType = self::contentTypes['listConnectorsTransfers'][0])
+    {
+        return $this->listConnectorsTransfersAsyncWithHttpInfo($connector, $contentType)
+            ->then(
+                function ($response) {
+                    return $response[0];
+                }
+            );
+    }
+
+    /**
+     * Operation listConnectorsTransfersAsyncWithHttpInfo
+     *
+     * List transfers and their statuses
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorsTransfers'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Promise\PromiseInterface
+     */
+    public function listConnectorsTransfersAsyncWithHttpInfo($connector, string $contentType = self::contentTypes['listConnectorsTransfers'][0])
+    {
+        $returnType = '\Formance\Model\TransfersResponse';
+        $request = $this->listConnectorsTransfersRequest($connector, $contentType);
+
+        return $this->client
+            ->sendAsync($request, $this->createHttpClientOption())
+            ->then(
+                function ($response) use ($returnType) {
+                    if ($returnType === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ($returnType !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+                },
+                function ($exception) {
+                    $response = $exception->getResponse();
+                    $statusCode = $response->getStatusCode();
+                    throw new ApiException(
+                        sprintf(
+                            '[%d] Error connecting to the API (%s)',
+                            $statusCode,
+                            $exception->getRequest()->getUri()
+                        ),
+                        $statusCode,
+                        $response->getHeaders(),
+                        (string) $response->getBody()
+                    );
+                }
+            );
+    }
+
+    /**
+     * Create request for operation 'listConnectorsTransfers'
+     *
+     * @param  Connector $connector The name of the connector. (required)
+     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listConnectorsTransfers'] to see the possible values for this operation
+     *
+     * @throws \InvalidArgumentException
+     * @return \GuzzleHttp\Psr7\Request
+     */
+    public function listConnectorsTransfersRequest($connector, string $contentType = self::contentTypes['listConnectorsTransfers'][0])
+    {
+
+        // verify the required parameter 'connector' is set
+        if ($connector === null || (is_array($connector) && count($connector) === 0)) {
+            throw new \InvalidArgumentException(
+                'Missing the required parameter $connector when calling listConnectorsTransfers'
+            );
+        }
+
+
+        $resourcePath = '/api/payments/connectors/{connector}/transfers';
+        $formParams = [];
+        $queryParams = [];
+        $headerParams = [];
+        $httpBody = '';
+        $multipart = false;
+
 
 
         // path params

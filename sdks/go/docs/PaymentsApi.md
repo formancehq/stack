@@ -5,12 +5,14 @@ All URIs are relative to *http://localhost*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**ConnectorsStripeTransfer**](PaymentsApi.md#ConnectorsStripeTransfer) | **Post** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts
+[**ConnectorsTransfer**](PaymentsApi.md#ConnectorsTransfer) | **Post** /api/payments/connectors/{connector}/transfers | Transfer funds between Connector accounts
 [**GetConnectorTask**](PaymentsApi.md#GetConnectorTask) | **Get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 [**GetPayment**](PaymentsApi.md#GetPayment) | **Get** /api/payments/payments/{paymentId} | Get a payment
 [**InstallConnector**](PaymentsApi.md#InstallConnector) | **Post** /api/payments/connectors/{connector} | Install a connector
 [**ListAllConnectors**](PaymentsApi.md#ListAllConnectors) | **Get** /api/payments/connectors | List all installed connectors
 [**ListConfigsAvailableConnectors**](PaymentsApi.md#ListConfigsAvailableConnectors) | **Get** /api/payments/connectors/configs | List the configs of each available connector
 [**ListConnectorTasks**](PaymentsApi.md#ListConnectorTasks) | **Get** /api/payments/connectors/{connector}/tasks | List tasks from a connector
+[**ListConnectorsTransfers**](PaymentsApi.md#ListConnectorsTransfers) | **Get** /api/payments/connectors/{connector}/transfers | List transfers and their statuses
 [**ListPayments**](PaymentsApi.md#ListPayments) | **Get** /api/payments/payments | List payments
 [**PaymentslistAccounts**](PaymentsApi.md#PaymentslistAccounts) | **Get** /api/payments/accounts | List accounts
 [**ReadConnectorConfig**](PaymentsApi.md#ReadConnectorConfig) | **Get** /api/payments/connectors/{connector}/config | Read the config of a connector
@@ -71,6 +73,78 @@ Name | Type | Description  | Notes
 ### Return type
 
 **map[string]interface{}**
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ConnectorsTransfer
+
+> TransferResponse ConnectorsTransfer(ctx, connector).TransferRequest(transferRequest).Execute()
+
+Transfer funds between Connector accounts
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    connector := client.Connector("STRIPE") // Connector | The name of the connector.
+    transferRequest := *client.NewTransferRequest(int64(100), "USD", "acct_1Gqj58KZcSIg2N2q") // TransferRequest | 
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.PaymentsApi.ConnectorsTransfer(context.Background(), connector).TransferRequest(transferRequest).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ConnectorsTransfer``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `ConnectorsTransfer`: TransferResponse
+    fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.ConnectorsTransfer`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**connector** | [**Connector**](.md) | The name of the connector. | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiConnectorsTransferRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **transferRequest** | [**TransferRequest**](TransferRequest.md) |  | 
+
+### Return type
+
+[**TransferResponse**](TransferResponse.md)
 
 ### Authorization
 
@@ -478,6 +552,76 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**TasksCursor**](TasksCursor.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## ListConnectorsTransfers
+
+> TransfersResponse ListConnectorsTransfers(ctx, connector).Execute()
+
+List transfers and their statuses
+
+
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "./openapi"
+)
+
+func main() {
+    connector := client.Connector("STRIPE") // Connector | The name of the connector.
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.PaymentsApi.ListConnectorsTransfers(context.Background(), connector).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ListConnectorsTransfers``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `ListConnectorsTransfers`: TransfersResponse
+    fmt.Fprintf(os.Stdout, "Response from `PaymentsApi.ListConnectorsTransfers`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**connector** | [**Connector**](.md) | The name of the connector. | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiListConnectorsTransfersRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+[**TransfersResponse**](TransfersResponse.md)
 
 ### Authorization
 

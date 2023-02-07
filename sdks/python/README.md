@@ -228,12 +228,14 @@ Class | Method | HTTP request | Description
 *OrchestrationApi* | [**run_workflow**](docs/apis/tags/OrchestrationApi.md#run_workflow) | **post** /api/orchestration/workflows/{workflowID}/instances | Run workflow
 *OrchestrationApi* | [**send_event**](docs/apis/tags/OrchestrationApi.md#send_event) | **post** /api/orchestration/instances/{instanceID}/events | Send an event to a running workflow
 *PaymentsApi* | [**connectors_stripe_transfer**](docs/apis/tags/PaymentsApi.md#connectors_stripe_transfer) | **post** /api/payments/connectors/stripe/transfers | Transfer funds between Stripe accounts
+*PaymentsApi* | [**connectors_transfer**](docs/apis/tags/PaymentsApi.md#connectors_transfer) | **post** /api/payments/connectors/{connector}/transfers | Transfer funds between Connector accounts
 *PaymentsApi* | [**get_connector_task**](docs/apis/tags/PaymentsApi.md#get_connector_task) | **get** /api/payments/connectors/{connector}/tasks/{taskId} | Read a specific task of the connector
 *PaymentsApi* | [**get_payment**](docs/apis/tags/PaymentsApi.md#get_payment) | **get** /api/payments/payments/{paymentId} | Get a payment
 *PaymentsApi* | [**install_connector**](docs/apis/tags/PaymentsApi.md#install_connector) | **post** /api/payments/connectors/{connector} | Install a connector
 *PaymentsApi* | [**list_all_connectors**](docs/apis/tags/PaymentsApi.md#list_all_connectors) | **get** /api/payments/connectors | List all installed connectors
 *PaymentsApi* | [**list_configs_available_connectors**](docs/apis/tags/PaymentsApi.md#list_configs_available_connectors) | **get** /api/payments/connectors/configs | List the configs of each available connector
 *PaymentsApi* | [**list_connector_tasks**](docs/apis/tags/PaymentsApi.md#list_connector_tasks) | **get** /api/payments/connectors/{connector}/tasks | List tasks from a connector
+*PaymentsApi* | [**list_connectors_transfers**](docs/apis/tags/PaymentsApi.md#list_connectors_transfers) | **get** /api/payments/connectors/{connector}/transfers | List transfers and their statuses
 *PaymentsApi* | [**list_payments**](docs/apis/tags/PaymentsApi.md#list_payments) | **get** /api/payments/payments | List payments
 *PaymentsApi* | [**paymentslist_accounts**](docs/apis/tags/PaymentsApi.md#paymentslist_accounts) | **get** /api/payments/accounts | List accounts
 *PaymentsApi* | [**read_connector_config**](docs/apis/tags/PaymentsApi.md#read_connector_config) | **get** /api/payments/connectors/{connector}/config | Read the config of a connector
@@ -447,6 +449,9 @@ Class | Method | HTTP request | Description
  - [Transactions](docs/models/Transactions.md)
  - [TransactionsCursorResponse](docs/models/TransactionsCursorResponse.md)
  - [TransactionsResponse](docs/models/TransactionsResponse.md)
+ - [TransferRequest](docs/models/TransferRequest.md)
+ - [TransferResponse](docs/models/TransferResponse.md)
+ - [TransfersResponse](docs/models/TransfersResponse.md)
  - [UpdateClientRequest](docs/models/UpdateClientRequest.md)
  - [UpdateClientResponse](docs/models/UpdateClientResponse.md)
  - [UpdateScopeRequest](docs/models/UpdateScopeRequest.md)
