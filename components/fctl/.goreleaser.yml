@@ -59,7 +59,6 @@ changelog:
 
 release:
   prerelease: auto
-  draft: true
   footer: |
     ## What to do next?
     - Read the [documentation](https://docs.formance.com/)
