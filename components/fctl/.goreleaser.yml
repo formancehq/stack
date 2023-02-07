@@ -65,6 +65,18 @@ release:
     - Read the [documentation](https://docs.formance.com/)
     - Join our [Slack server](https://formance.com/slack)
 
+brews:
+  - tap:
+      owner: formancehq
+      name: homebrew-tap
+    name: fctl
+    folder: Formula
+    homepage: https://formance.com
+    skip_upload: 'false'
+    test: |
+      system "#{bin}/fctl version"
+    install: |
+      bin.install "fctl"
 
 dockers:
   - image_templates: ["ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64"]
