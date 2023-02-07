@@ -1,0 +1,8 @@
+node_modules
+yarn-error.log
+dist
+.idea
+.env
+.terraform
+k6
+results
