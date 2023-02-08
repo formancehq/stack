@@ -7,7 +7,6 @@ use (
 	./components/fctl/membershipclient
 	./components/gateway
 	./components/ledger
-	./components/machine
 	./components/operator
 	./components/orchestration
 	./components/payments
