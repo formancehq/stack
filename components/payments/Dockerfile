@@ -9,11 +9,11 @@ ARG TARGETARCH
 ARG APP_SHA
 ARG VERSION
 
-WORKDIR /go/src/github.com/formancehq/payments
+WORKDIR /src
 
 # get deps first so it's cached
 COPY . .
-
+WORKDIR /src/components/payments
 RUN go mod vendor
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH \
@@ -26,7 +26,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH \
 FROM scratch
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=builder /go/src/github.com/formancehq/payments/bin/payments /usr/local/bin/payments
+COPY --from=builder /src/components/payments/bin/payments /usr/local/bin/payments
 
 EXPOSE 8080
 
