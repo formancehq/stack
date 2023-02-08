@@ -1,7 +1,7 @@
 package components
 
 import (
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/testing"
@@ -17,19 +17,19 @@ var _ = Describe("Payments controller", func() {
 		WithNewNamespace(func() {
 			Context("When creating a payments server", func() {
 				var (
-					payments *componentsv1beta2.Payments
+					payments *componentsv1beta3.Payments
 				)
 				BeforeEach(func() {
-					payments = &componentsv1beta2.Payments{
+					payments = &componentsv1beta3.Payments{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "payments",
 						},
-						Spec: componentsv1beta2.PaymentsSpec{
-							Collector: &componentsv1beta2.CollectorConfig{
-								KafkaConfig: NewDumpKafkaConfig(),
-								Topic:       "xxx",
+						Spec: componentsv1beta3.PaymentsSpec{
+							Collector: &componentsv1beta3.CollectorConfig{
+								Broker: NewDumbBrokerConfig(),
+								Topic:  "xxx",
 							},
-							Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
+							Postgres: componentsv1beta3.PostgresConfigCreateDatabase{
 								PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
 									Database:       "payments",
 									PostgresConfig: NewDumpPostgresConfig(),

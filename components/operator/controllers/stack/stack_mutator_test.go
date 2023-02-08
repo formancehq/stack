@@ -2,8 +2,8 @@ package stack
 
 import (
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
-	stackv1beta2 "github.com/formancehq/operator/apis/stack/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
+	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	. "github.com/formancehq/operator/pkg/testing"
 	. "github.com/onsi/ginkgo/v2"
@@ -19,8 +19,8 @@ var _ = Describe("Stack controller (Auth)", func() {
 	mutator := NewMutator(GetClient(), GetScheme(), []string{"*.example.com"})
 	WithMutator(mutator, func() {
 		var (
-			configuration *stackv1beta2.Configuration
-			versions      *stackv1beta2.Versions
+			configuration *stackv1beta3.Configuration
+			versions      *stackv1beta3.Versions
 		)
 		BeforeEach(func() {
 			configuration = NewDumbConfiguration()
@@ -28,12 +28,12 @@ var _ = Describe("Stack controller (Auth)", func() {
 		})
 		When("Creating a stack with no Configuration nor Versions object", func() {
 			var (
-				stack stackv1beta2.Stack
+				stack stackv1beta3.Stack
 			)
 			BeforeEach(func() {
 				name := NewStackName()
 
-				stack = stackv1beta2.NewStack(name, stackv1beta2.StackSpec{
+				stack = stackv1beta3.NewStack(name, stackv1beta3.StackSpec{
 					Seed:     configuration.Name,
 					Versions: versions.Name,
 				})
@@ -59,15 +59,15 @@ var _ = Describe("Stack controller (Auth)", func() {
 			})
 			Context("Then creating a stack", func() {
 				var (
-					stack stackv1beta2.Stack
+					stack stackv1beta3.Stack
 				)
 				BeforeEach(func() {
 					name := NewStackName()
-					stack = stackv1beta2.NewStack(name, stackv1beta2.StackSpec{
+					stack = stackv1beta3.NewStack(name, stackv1beta3.StackSpec{
 						Seed:     configuration.Name,
 						Versions: versions.Name,
-						Auth: stackv1beta2.StackAuthSpec{
-							DelegatedOIDCServer: componentsv1beta2.DelegatedOIDCServerConfiguration{
+						Auth: stackv1beta3.StackAuthSpec{
+							DelegatedOIDCServer: componentsv1beta3.DelegatedOIDCServerConfiguration{
 								Issuer:       "http://example.net",
 								ClientID:     "clientId",
 								ClientSecret: "clientSecret",
@@ -85,11 +85,11 @@ var _ = Describe("Stack controller (Auth)", func() {
 					}, &v1.Namespace{})).To(BeNil())
 				})
 				It("Should create all required services", func() {
-					for _, s := range stackv1beta2.GetServiceList() {
+					for _, s := range stackv1beta3.GetServiceList() {
 						u := unstructured.Unstructured{
 							Object: map[string]interface{}{
 								"kind":       s,
-								"apiVersion": componentsv1beta2.GroupVersion.String(),
+								"apiVersion": componentsv1beta3.GroupVersion.String(),
 							},
 						}
 						Expect(Get(types.NamespacedName{
@@ -105,7 +105,7 @@ var _ = Describe("Stack controller (Auth)", func() {
 					}
 				})
 				It("Should create an ingress for each services", func() {
-					for _, s := range stackv1beta2.GetServiceList() {
+					for _, s := range stackv1beta3.GetServiceList() {
 						ingress := &networkingv1.Ingress{}
 						Expect(Get(types.NamespacedName{
 							Namespace: stack.Name,
@@ -121,7 +121,7 @@ var _ = Describe("Stack controller (Auth)", func() {
 						}, &stack)).To(Succeed())
 						return stack.Status.StaticAuthClients["control"]
 					}).ShouldNot(BeZero())
-					control := &componentsv1beta2.Control{
+					control := &componentsv1beta3.Control{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      stack.SubObjectName("control"),
 							Namespace: stack.Name,

@@ -30,12 +30,12 @@ type PaymentsSpec struct {
 	// +optional
 	Collector *CollectorConfig `json:"collector"`
 	// +optional
-	Postgres PostgresConfigCreateDatabase `json:"postgres"`
+	Postgres      PostgresConfigCreateDatabase `json:"postgres"`
+	EncryptionKey string                       `json:"encryptionKey"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
-//+kubebuilder:storageversion
 
 // Payments is the Schema for the payments API
 type Payments struct {

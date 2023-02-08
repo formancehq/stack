@@ -20,6 +20,8 @@ import (
 	"flag"
 	"os"
 
+	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -27,9 +29,8 @@ import (
 
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
 	benthoscomponentsv1beta2 "github.com/formancehq/operator/apis/benthos.components/v1beta2"
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
-	benthos_components "github.com/formancehq/operator/controllers/benthos.components"
-	components "github.com/formancehq/operator/controllers/components"
+	benthoscomponents "github.com/formancehq/operator/controllers/benthos.components"
+	"github.com/formancehq/operator/controllers/components"
 	"github.com/formancehq/operator/pkg/controllerutils"
 
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -38,6 +39,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	stackv1beta2 "github.com/formancehq/operator/apis/stack/v1beta2"
+	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/controllers/stack"
 	//+kubebuilder:scaffold:imports
 )
@@ -49,11 +51,14 @@ var (
 
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
-	utilruntime.Must(componentsv1beta2.AddToScheme(scheme))
 	utilruntime.Must(authcomponentsv1beta2.AddToScheme(scheme))
 	utilruntime.Must(traefik.AddToScheme(scheme))
 	utilruntime.Must(benthoscomponentsv1beta2.AddToScheme(scheme))
 	utilruntime.Must(stackv1beta2.AddToScheme(scheme))
+	utilruntime.Must(stackv1beta3.AddToScheme(scheme))
+	utilruntime.Must(componentsv1beta2.AddToScheme(scheme))
+	utilruntime.Must(componentsv1beta3.AddToScheme(scheme))
+
 	//+kubebuilder:scaffold:scheme
 }
 
@@ -154,7 +159,7 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "Counterparties")
 		os.Exit(1)
 	}
-	serverMutator := benthos_components.NewServerMutator(mgr.GetClient(), mgr.GetScheme())
+	serverMutator := benthoscomponents.NewServerMutator(mgr.GetClient(), mgr.GetScheme())
 	if err = controllerutils.NewReconciler(mgr.GetClient(), mgr.GetScheme(), serverMutator).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Server")
 		os.Exit(1)
@@ -169,8 +174,8 @@ func main() {
 		setupLog.Error(err, "unable to create webhook", "webhook", "Stack")
 		os.Exit(1)
 	}
-	if err = (&stackv1beta2.Configuration{}).SetupWebhookWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create webhook", "webhook", "Configuration")
+	if err = (&stackv1beta3.Stack{}).SetupWebhookWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create webhook", "webhook", "Stack")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

@@ -24,25 +24,16 @@ const (
 
 	StoragePostgresConnString = "storage-postgres-conn-string"
 
-	KafkaBrokers       = "kafka-brokers"
-	KafkaGroupID       = "kafka-consumer-group"
-	KafkaTopics        = "kafka-topics"
-	KafkaTLSEnabled    = "kafka-tls-enabled"
-	KafkaSASLEnabled   = "kafka-sasl-enabled"
-	KafkaSASLMechanism = "kafka-sasl-mechanism"
-	KafkaUsername      = "kafka-username"
-	KafkaPassword      = "kafka-password"
+	KafkaTopics = "kafka-topics"
 )
 
 const (
 	DefaultBindAddressServer = ":8080"
 	DefaultBindAddressWorker = ":8081"
 
-	DefaultPostgresConnString = "postgresql://webhooks:webhooks@localhost:5432/webhooks?sslmode=disable"
+	DefaultPostgresConnString = "postgresql://webhooks:webhooks@postgres:5432/webhooks?sslmode=disable"
 
-	DefaultKafkaTopic   = "default"
-	DefaultKafkaBroker  = "localhost:9092"
-	DefaultKafkaGroupID = "webhooks"
+	DefaultKafkaTopic = "default"
 )
 
 var (
@@ -62,14 +53,7 @@ func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
 	flagSet.Duration(RetriesCron, DefaultRetriesCron, "worker retries cron")
 	flagSet.String(StoragePostgresConnString, DefaultPostgresConnString, "Postgres connection string")
 
-	flagSet.StringSlice(KafkaBrokers, []string{DefaultKafkaBroker}, "Kafka brokers")
-	flagSet.String(KafkaGroupID, DefaultKafkaGroupID, "Kafka consumer group")
 	flagSet.StringSlice(KafkaTopics, []string{DefaultKafkaTopic}, "Kafka topics")
-	flagSet.Bool(KafkaTLSEnabled, false, "Kafka TLS enabled")
-	flagSet.Bool(KafkaSASLEnabled, false, "Kafka SASL enabled")
-	flagSet.String(KafkaSASLMechanism, "", "Kafka SASL mechanism")
-	flagSet.String(KafkaUsername, "", "Kafka username")
-	flagSet.String(KafkaPassword, "", "Kafka password")
 
 	if err := viper.BindPFlags(flagSet); err != nil {
 		return nil, fmt.Errorf("viper.BinPFlags: %w", err)
@@ -84,7 +68,7 @@ func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
 	}
 	logger.SetLevel(lvl)
 
-	if viper.GetBool(Debug) == true {
+	if viper.GetBool(Debug) {
 		logger.SetLevel(logrus.DebugLevel)
 	}
 

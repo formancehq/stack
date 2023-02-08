@@ -38,7 +38,7 @@ public class Client {
 
   public static final String SERIALIZED_NAME_REDIRECT_URIS = "redirectUris";
   @SerializedName(SERIALIZED_NAME_REDIRECT_URIS)
-  private List<String> redirectUris = null;
+  private List<String> redirectUris = new ArrayList<>();
 
   public static final String SERIALIZED_NAME_DESCRIPTION = "description";
   @SerializedName(SERIALIZED_NAME_DESCRIPTION)
@@ -54,11 +54,11 @@ public class Client {
 
   public static final String SERIALIZED_NAME_POST_LOGOUT_REDIRECT_URIS = "postLogoutRedirectUris";
   @SerializedName(SERIALIZED_NAME_POST_LOGOUT_REDIRECT_URIS)
-  private List<String> postLogoutRedirectUris = null;
+  private List<String> postLogoutRedirectUris = new ArrayList<>();
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = null;
+  private Map<String, Object> metadata = new HashMap<>();
 
   public static final String SERIALIZED_NAME_ID = "id";
   @SerializedName(SERIALIZED_NAME_ID)
@@ -66,11 +66,11 @@ public class Client {
 
   public static final String SERIALIZED_NAME_SCOPES = "scopes";
   @SerializedName(SERIALIZED_NAME_SCOPES)
-  private List<String> scopes = null;
+  private List<String> scopes = new ArrayList<>();
 
   public static final String SERIALIZED_NAME_SECRETS = "secrets";
   @SerializedName(SERIALIZED_NAME_SECRETS)
-  private List<ClientSecret> secrets = null;
+  private List<ClientSecret> secrets = new ArrayList<>();
 
   public Client() {
   }

@@ -40,7 +40,7 @@ public class PostTransaction {
 
   public static final String SERIALIZED_NAME_POSTINGS = "postings";
   @SerializedName(SERIALIZED_NAME_POSTINGS)
-  private List<Posting> postings = null;
+  private List<Posting> postings = new ArrayList<>();
 
   public static final String SERIALIZED_NAME_SCRIPT = "script";
   @SerializedName(SERIALIZED_NAME_SCRIPT)
@@ -161,7 +161,7 @@ public class PostTransaction {
 
   public PostTransaction putMetadataItem(String key, Object metadataItem) {
     if (this.metadata == null) {
-      this.metadata = new HashMap<>();
+      this.metadata = null;
     }
     this.metadata.put(key, metadataItem);
     return this;

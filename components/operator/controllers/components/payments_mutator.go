@@ -19,7 +19,7 @@ package components
 import (
 	"context"
 
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/typeutils"
@@ -49,7 +49,7 @@ type PaymentsMutator struct {
 // +kubebuilder:rbac:groups=components.formance.com,resources=payments/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=components.formance.com,resources=payments/finalizers,verbs=update
 
-func (r *PaymentsMutator) Mutate(ctx context.Context, payments *componentsv1beta2.Payments) (*ctrl.Result, error) {
+func (r *PaymentsMutator) Mutate(ctx context.Context, payments *componentsv1beta3.Payments) (*ctrl.Result, error) {
 
 	apisv1beta2.SetProgressing(payments)
 
@@ -63,12 +63,13 @@ func (r *PaymentsMutator) Mutate(ctx context.Context, payments *componentsv1beta
 	return nil, nil
 }
 
-func (r *PaymentsMutator) reconcileDeployment(ctx context.Context, payments *componentsv1beta2.Payments) (*appsv1.Deployment, controllerutil.OperationResult, error) {
+func (r *PaymentsMutator) reconcileDeployment(ctx context.Context, payments *componentsv1beta3.Payments) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "payments")
 
 	env := payments.Spec.Postgres.Env("")
 	env = append(env,
 		apisv1beta2.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
+		apisv1beta2.Env("CONFIG_ENCRYPTION_KEY", payments.Spec.EncryptionKey),
 	)
 	if payments.Spec.Debug {
 		env = append(env, apisv1beta2.Env("DEBUG", "true"))
@@ -77,7 +78,7 @@ func (r *PaymentsMutator) reconcileDeployment(ctx context.Context, payments *com
 		env = append(env, payments.Spec.Monitoring.Env("")...)
 	}
 	if payments.Spec.Collector != nil {
-		env = append(env, payments.Spec.Collector.Env("")...)
+		env = append(env, payments.Spec.Collector.Env(payments.Name, "")...)
 	}
 
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(payments),
@@ -146,7 +147,7 @@ func (r *PaymentsMutator) SetupWithBuilder(mgr ctrl.Manager, builder *ctrl.Build
 	return nil
 }
 
-func NewPaymentsMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta2.Payments] {
+func NewPaymentsMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta3.Payments] {
 	return &PaymentsMutator{
 		Client: client,
 		Scheme: scheme,

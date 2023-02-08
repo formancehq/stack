@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	benthosv1beta2 "github.com/formancehq/operator/apis/benthos.components/v1beta2"
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/testing"
@@ -36,15 +36,15 @@ var _ = Describe("Search controller", func() {
 		WithNewNamespace(func() {
 			Context("When creating a search server", func() {
 				var (
-					search *componentsv1beta2.Search
+					search *componentsv1beta3.Search
 				)
 				BeforeEach(func() {
-					search = &componentsv1beta2.Search{
+					search = &componentsv1beta3.Search{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "search",
 						},
-						Spec: componentsv1beta2.SearchSpec{
-							ElasticSearch: componentsv1beta2.ElasticSearchConfig{
+						Spec: componentsv1beta3.SearchSpec{
+							ElasticSearch: componentsv1beta3.ElasticSearchConfig{
 								Host:   addr.Hostname(),
 								Scheme: addr.Scheme,
 								Port: func() uint16 {
@@ -55,9 +55,9 @@ var _ = Describe("Search controller", func() {
 									return uint16(port)
 								}(),
 							},
-							KafkaConfig: NewDumpKafkaConfig(),
-							Index:       "documents",
-							PostgresConfigs: componentsv1beta2.SearchPostgresConfigs{
+							Broker: NewDumbBrokerConfig(),
+							Index:  "documents",
+							PostgresConfigs: componentsv1beta3.SearchPostgresConfigs{
 								Ledger: apisv1beta2.PostgresConfigWithDatabase{
 									PostgresConfig: NewDumpPostgresConfig(),
 									Database:       "foo",
@@ -80,7 +80,7 @@ var _ = Describe("Search controller", func() {
 					Expect(deployment.OwnerReferences).To(ContainElement(controllerutils.OwnerReference(search)))
 				})
 				It("Should create a benthos server", func() {
-					Eventually(ConditionStatus(search, componentsv1beta2.ConditionTypeBenthosReady)).Should(Equal(metav1.ConditionTrue))
+					Eventually(ConditionStatus(search, componentsv1beta3.ConditionTypeBenthosReady)).Should(Equal(metav1.ConditionTrue))
 					benthosServer := &benthosv1beta2.Server{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      search.Name + "-benthos",

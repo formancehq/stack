@@ -172,8 +172,11 @@ metadata:
   name: default
 spec:
   control: 59e871d64514ec01c84ea18b34cf0788d17d7f63
-  search: fa29fbcfa983990ef1042274e3d928713865b6a7
+  search: eb3c033d6f5b9c16188f31785051856c75a6e446
   orchestration: 6d3e981b6d05224caca139f3920373a8cee0ba3c
+  ledger: 29e4e9d7af4779437a9e1e81b1dbae4fd65bf52a
+  payments: 29e4e9d7af4779437a9e1e81b1dbae4fd65bf52a
+  webhooks: 29e4e9d7af4779437a9e1e81b1dbae4fd65bf52a
 ---
 apiVersion: stack.formance.com/v1beta2
 kind: Stack

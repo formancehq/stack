@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
 
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/publish"
 )
 
 type Ingester interface {
@@ -23,7 +23,7 @@ type DefaultIngester struct {
 	logger     logging.Logger
 	provider   models.ConnectorProvider
 	descriptor models.TaskDescriptor
-	publisher  publish.Publisher
+	publisher  message.Publisher
 }
 
 type Repository interface {
@@ -40,7 +40,7 @@ func NewDefaultIngester(
 	descriptor models.TaskDescriptor,
 	repo Repository,
 	logger logging.Logger,
-	publisher publish.Publisher,
+	publisher message.Publisher,
 ) *DefaultIngester {
 	return &DefaultIngester{
 		provider:   provider,

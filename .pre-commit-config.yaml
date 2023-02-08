@@ -18,6 +18,7 @@ repos:
     description: "Update Go SDK"
     language: script
     files: swagger.yaml|swagger.yml|openapi.yml|openapi.yaml # TODO: Refine when all specs will be on the same location
+    pass_filenames: false
   - id: gofmt
     name: gofmt
     entry: ./scripts/gofmt.sh

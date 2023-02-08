@@ -1,29 +1,20 @@
 package cmd
 
 import (
-	"strings"
-
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-
 	"github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/internal/app/api"
 	"github.com/formancehq/payments/internal/app/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/pkg/errors"
-	"go.opentelemetry.io/otel"
-
-	"github.com/Shopify/sarama"
-	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
-	"github.com/formancehq/stack/libs/go-libs/publish/publishhttp"
-	"github.com/formancehq/stack/libs/go-libs/publish/publishkafka"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/uptrace/opentelemetry-go-extra/otellogrus"
-	"github.com/xdg-go/scram"
+	"go.opentelemetry.io/otel"
 	"go.uber.org/fx"
 )
 
@@ -33,16 +24,6 @@ const (
 	configEncryptionKeyFlag         = "config-encryption-key"
 	otelTracesFlag                  = "otel-traces"
 	envFlag                         = "env"
-	publisherKafkaEnabledFlag       = "publisher-kafka-enabled"
-	publisherKafkaBrokerFlag        = "publisher-kafka-broker"
-	publisherKafkaSASLEnabled       = "publisher-kafka-sasl-enabled"
-	publisherKafkaSASLUsername      = "publisher-kafka-sasl-username"
-	publisherKafkaSASLPassword      = "publisher-kafka-sasl-password"
-	publisherKafkaSASLMechanism     = "publisher-kafka-sasl-mechanism"
-	publisherKafkaSASLScramSHASize  = "publisher-kafka-sasl-scram-sha-size"
-	publisherKafkaTLSEnabled        = "publisher-kafka-tls-enabled"
-	publisherTopicMappingFlag       = "publisher-topic-mapping"
-	publisherHTTPEnabledFlag        = "publisher-http-enabled"
 	authBasicEnabledFlag            = "auth-basic-enabled"
 	authBasicCredentialsFlag        = "auth-basic-credentials"
 	authBearerEnabledFlag           = "auth-bearer-enabled"
@@ -79,45 +60,10 @@ func runServer(cmd *cobra.Command, args []string) error {
 
 	options = append(options, databaseOptions)
 	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
-
-	options = append(options,
-		fx.Provide(fx.Annotate(func(p message.Publisher) *publish.TopicMapperPublisher {
-			return publish.NewTopicMapperPublisher(p, topicsMapping())
-		}, fx.As(new(publish.Publisher)))))
-
+	options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
 	options = append(options, api.HTTPModule(sharedapi.ServiceInfo{
 		Version: Version,
 	}))
-	options = append(options, publish.Module())
-
-	switch {
-	case viper.GetBool(publisherHTTPEnabledFlag):
-		options = append(options, publishhttp.Module())
-	case viper.GetBool(publisherKafkaEnabledFlag):
-		options = append(options,
-			publishkafka.Module(serviceName, viper.GetStringSlice(publisherKafkaBrokerFlag)...),
-			publishkafka.ProvideSaramaOption(
-				publishkafka.WithConsumerReturnErrors(),
-				publishkafka.WithProducerReturnSuccess(),
-			),
-		)
-
-		if viper.GetBool(publisherKafkaTLSEnabled) {
-			options = append(options, publishkafka.ProvideSaramaOption(publishkafka.WithTLS()))
-		}
-
-		if viper.GetBool(publisherKafkaSASLEnabled) {
-			options = append(options, publishkafka.ProvideSaramaOption(
-				publishkafka.WithSASLEnabled(),
-				publishkafka.WithSASLCredentials(
-					viper.GetString(publisherKafkaSASLUsername),
-					viper.GetString(publisherKafkaSASLPassword),
-				),
-				publishkafka.WithSASLMechanism(sarama.SASLMechanism(viper.GetString(publisherKafkaSASLMechanism))),
-				publishkafka.WithSASLScramClient(setSCRAMClient),
-			))
-		}
-	}
 
 	err = fx.New(options...).Start(cmd.Context())
 	if err != nil {
@@ -164,37 +110,4 @@ func prepareDatabaseOptions() (fx.Option, error) {
 	}
 
 	return storage.Module(postgresURI, configEncryptionKey), nil
-}
-
-func topicsMapping() map[string]string {
-	topics := viper.GetStringSlice(publisherTopicMappingFlag)
-	mapping := make(map[string]string)
-
-	for _, topic := range topics {
-		parts := strings.SplitN(topic, ":", 2)
-		if len(parts) != 2 {
-			panic("invalid topic flag")
-		}
-
-		mapping[parts[0]] = parts[1]
-	}
-
-	return mapping
-}
-
-func setSCRAMClient() sarama.SCRAMClient {
-	var fn scram.HashGeneratorFcn
-
-	switch viper.GetInt(publisherKafkaSASLScramSHASize) {
-	case 512:
-		fn = publishkafka.SHA512
-	case 256:
-		fn = publishkafka.SHA256
-	default:
-		panic("sha size not handled")
-	}
-
-	return &publishkafka.XDGSCRAMClient{
-		HashGeneratorFcn: fn,
-	}
 }

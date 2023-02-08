@@ -9,8 +9,8 @@ import (
 
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
 	benthoscomponentsv1beta2 "github.com/formancehq/operator/apis/benthos.components/v1beta2"
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
-	stackv1beta2 "github.com/formancehq/operator/apis/stack/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
+	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	"github.com/google/uuid"
@@ -62,10 +62,10 @@ func start() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
-	Expect(componentsv1beta2.AddToScheme(scheme.Scheme)).To(Succeed())
+	Expect(componentsv1beta3.AddToScheme(scheme.Scheme)).To(Succeed())
 	Expect(authcomponentsv1beta2.AddToScheme(scheme.Scheme)).To(Succeed())
 	Expect(benthoscomponentsv1beta2.AddToScheme(scheme.Scheme)).To(Succeed())
-	Expect(stackv1beta2.AddToScheme(scheme.Scheme)).To(Succeed())
+	Expect(stackv1beta3.AddToScheme(scheme.Scheme)).To(Succeed())
 	Expect(traefik.AddToScheme(scheme.Scheme)).To(Succeed())
 
 	k8sClient, err = client.New(cfg, client.Options{Scheme: scheme.Scheme})

@@ -31,7 +31,7 @@ import java.util.Map;
 public class UpdateWalletRequest {
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = null;
+  private Map<String, Object> metadata = new HashMap<>();
 
   public UpdateWalletRequest() {
   }

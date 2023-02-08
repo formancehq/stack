@@ -19,7 +19,7 @@ package components
 import (
 	"context"
 
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/typeutils"
@@ -47,7 +47,7 @@ type CounterpartiesMutator struct {
 // +kubebuilder:rbac:groups=components.formance.com,resources=counterparties/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=components.formance.com,resources=counterparties/finalizers,verbs=update
 
-func (r *CounterpartiesMutator) Mutate(ctx context.Context, counterparties *componentsv1beta2.Counterparties) (*ctrl.Result, error) {
+func (r *CounterpartiesMutator) Mutate(ctx context.Context, counterparties *componentsv1beta3.Counterparties) (*ctrl.Result, error) {
 
 	apisv1beta2.SetProgressing(counterparties)
 
@@ -63,7 +63,7 @@ func (r *CounterpartiesMutator) Mutate(ctx context.Context, counterparties *comp
 	return nil, nil
 }
 
-func counterpartiesEnvVars(counterparties *componentsv1beta2.Counterparties) []corev1.EnvVar {
+func counterpartiesEnvVars(counterparties *componentsv1beta3.Counterparties) []corev1.EnvVar {
 	env := counterparties.Spec.Postgres.Env("")
 
 	env = append(env, counterparties.Spec.DevProperties.Env()...)
@@ -73,7 +73,7 @@ func counterpartiesEnvVars(counterparties *componentsv1beta2.Counterparties) []c
 	return env
 }
 
-func (r *CounterpartiesMutator) reconcileDeployment(ctx context.Context, counterparties *componentsv1beta2.Counterparties) (*appsv1.Deployment, controllerutil.OperationResult, error) {
+func (r *CounterpartiesMutator) reconcileDeployment(ctx context.Context, counterparties *componentsv1beta3.Counterparties) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "counterparties")
 
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(counterparties),
@@ -128,7 +128,7 @@ func (r *CounterpartiesMutator) SetupWithBuilder(mgr ctrl.Manager, builder *ctrl
 	return nil
 }
 
-func NewCounterpartiesMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta2.Counterparties] {
+func NewCounterpartiesMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta3.Counterparties] {
 	return &CounterpartiesMutator{
 		Client: client,
 		Scheme: scheme,

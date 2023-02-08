@@ -18,10 +18,8 @@ package components
 
 import (
 	"context"
-	"strconv"
-	"strings"
 
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/typeutils"
@@ -52,7 +50,7 @@ type WebhooksMutator struct {
 // +kubebuilder:rbac:groups=components.formance.com,resources=webhooks/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=components.formance.com,resources=webhooks/finalizers,verbs=update
 
-func (r *WebhooksMutator) Mutate(ctx context.Context, webhooks *componentsv1beta2.Webhooks) (*ctrl.Result, error) {
+func (r *WebhooksMutator) Mutate(ctx context.Context, webhooks *componentsv1beta3.Webhooks) (*ctrl.Result, error) {
 
 	apisv1beta2.SetProgressing(webhooks)
 
@@ -71,24 +69,12 @@ func (r *WebhooksMutator) Mutate(ctx context.Context, webhooks *componentsv1beta
 	return nil, nil
 }
 
-func envVars(webhooks *componentsv1beta2.Webhooks) []corev1.EnvVar {
+func envVars(webhooks *componentsv1beta3.Webhooks) []corev1.EnvVar {
 	env := webhooks.Spec.Postgres.Env("")
 	env = append(env,
 		apisv1beta2.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
-		apisv1beta2.Env("KAFKA_BROKERS", strings.Join(webhooks.Spec.Collector.Brokers, ", ")),
-		apisv1beta2.Env("KAFKA_TOPICS", webhooks.Spec.Collector.Topic),
-		apisv1beta2.Env("KAFKA_TLS_ENABLED", strconv.FormatBool(webhooks.Spec.Collector.TLS)),
 	)
-	if webhooks.Spec.Collector.SASL != nil {
-		env = append(env,
-			apisv1beta2.Env("KAFKA_SASL_ENABLED", "true"),
-			apisv1beta2.Env("KAFKA_SASL_MECHANISM", webhooks.Spec.Collector.SASL.Mechanism),
-			apisv1beta2.Env("KAFKA_USERNAME", webhooks.Spec.Collector.SASL.Username),
-			apisv1beta2.Env("KAFKA_PASSWORD", webhooks.Spec.Collector.SASL.Password),
-			apisv1beta2.Env("KAFKA_CONSUMER_GROUP", webhooks.GetName()),
-		)
-	}
-
+	env = append(env, webhooks.Spec.KafkaConfig.Env(webhooks.Name)...)
 	env = append(env, webhooks.Spec.DevProperties.Env()...)
 	if webhooks.Spec.Monitoring != nil {
 		env = append(env, webhooks.Spec.Monitoring.Env("")...)
@@ -96,7 +82,7 @@ func envVars(webhooks *componentsv1beta2.Webhooks) []corev1.EnvVar {
 	return env
 }
 
-func (r *WebhooksMutator) reconcileDeployment(ctx context.Context, webhooks *componentsv1beta2.Webhooks) (*appsv1.Deployment, controllerutil.OperationResult, error) {
+func (r *WebhooksMutator) reconcileDeployment(ctx context.Context, webhooks *componentsv1beta3.Webhooks) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "webhooks")
 
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(webhooks),
@@ -158,7 +144,7 @@ func (r *WebhooksMutator) reconcileDeployment(ctx context.Context, webhooks *com
 		})
 }
 
-func (r *WebhooksMutator) reconcileWorkersDeployment(ctx context.Context, webhooks *componentsv1beta2.Webhooks) (*appsv1.Deployment, controllerutil.OperationResult, error) {
+func (r *WebhooksMutator) reconcileWorkersDeployment(ctx context.Context, webhooks *componentsv1beta3.Webhooks) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "webhooks-workers")
 
 	return controllerutils.CreateOrUpdate(ctx, r.Client, types.NamespacedName{
@@ -179,7 +165,7 @@ func (r *WebhooksMutator) reconcileWorkersDeployment(ctx context.Context, webhoo
 							Name:            "webhooks-worker",
 							Image:           controllerutils.GetImage("webhooks", webhooks.Spec.Version),
 							ImagePullPolicy: controllerutils.ImagePullPolicy(webhooks.Spec),
-							Command:         []string{"webhooks", "worker"},
+							Command:         []string{"/webhooks", "worker"},
 							Env:             envVars(webhooks),
 							Ports: []corev1.ContainerPort{{
 								Name:          "worker",
@@ -232,7 +218,7 @@ func (r *WebhooksMutator) SetupWithBuilder(mgr ctrl.Manager, builder *ctrl.Build
 	return nil
 }
 
-func NewWebhooksMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta2.Webhooks] {
+func NewWebhooksMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta3.Webhooks] {
 	return &WebhooksMutator{
 		Client: client,
 		Scheme: scheme,

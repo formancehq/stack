@@ -1,7 +1,7 @@
 package components
 
 import (
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/testing"
@@ -17,19 +17,19 @@ var _ = Describe("Webhooks controller", func() {
 		WithNewNamespace(func() {
 			Context("When creating a webhooks server", func() {
 				var (
-					webhooks *componentsv1beta2.Webhooks
+					webhooks *componentsv1beta3.Webhooks
 				)
 				BeforeEach(func() {
-					webhooks = &componentsv1beta2.Webhooks{
+					webhooks = &componentsv1beta3.Webhooks{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "webhooks",
 						},
-						Spec: componentsv1beta2.WebhooksSpec{
-							Collector: &componentsv1beta2.CollectorConfig{
-								KafkaConfig: NewDumpKafkaConfig(),
-								Topic:       "xxx",
+						Spec: componentsv1beta3.WebhooksSpec{
+							KafkaConfig: componentsv1beta3.WebhooksKafkaConfig{
+								Broker: NewDumbBrokerConfig(),
+								Topics: []string{"xxx"},
 							},
-							Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
+							Postgres: componentsv1beta3.PostgresConfigCreateDatabase{
 								PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
 									Database:       "webhooks",
 									PostgresConfig: NewDumpPostgresConfig(),

@@ -31,6 +31,8 @@ import (
 const (
 	openSearchServiceFlag    = "open-search-service"
 	openSearchSchemeFlag     = "open-search-scheme"
+	openSearchUsernameFlag   = "open-search-username"
+	openSearchPasswordFlag   = "open-search-password"
 	esIndicesFlag            = "es-indices"
 	esDisableMappingInitFlag = "mapping-init-disabled"
 	bindFlag                 = "bind"
@@ -114,6 +116,8 @@ func NewServer() *cobra.Command {
 	cmd.Flags().StringSlice(esIndicesFlag, searchengine.DefaultEsIndices, "ES indices to look")
 	cmd.Flags().String(openSearchServiceFlag, "", "Open search service hostname")
 	cmd.Flags().String(openSearchSchemeFlag, "https", "OpenSearch scheme")
+	cmd.Flags().String(openSearchUsernameFlag, "", "OpenSearch username")
+	cmd.Flags().String(openSearchPasswordFlag, "", "OpenSearch password")
 	cmd.Flags().Bool(authBasicEnabledFlag, false, "Enable basic auth")
 	cmd.Flags().StringSlice(authBasicCredentialsFlag, []string{}, "HTTP basic auth credentials (<username>:<password>)")
 	cmd.Flags().Bool(authBearerEnabledFlag, false, "Enable bearer auth")
@@ -141,6 +145,8 @@ func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIn
 			return opensearch.NewClient(opensearch.Config{
 				Addresses:            []string{viper.GetString(openSearchSchemeFlag) + "://" + openSearchServiceHost},
 				Transport:            otelhttp.NewTransport(httpTransport),
+				Username:             viper.GetString(openSearchUsernameFlag),
+				Password:             viper.GetString(openSearchPasswordFlag),
 				UseResponseCheckOnly: true,
 			})
 		}),

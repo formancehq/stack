@@ -8,7 +8,7 @@ fields:
   type: string
 
 mapping: |
-  root = {
+  root = if env("BROKER") == "kafka" {{
     "kafka": {
       "addresses": [ env("KAFKA_ADDRESS") ],
       "topics": [ env("TOPIC_PREFIX") + this.topic ],
@@ -25,4 +25,11 @@ mapping: |
       },
       "extract_tracing_map": "root = meta()"
     }
-  }
+  }} else {{
+    "nats_jetstream": {
+      "urls": [env("NATS_URL")],
+      "queue": this.consumer_group,
+      "subject": env("TOPIC_PREFIX") + this.topic,
+      "durable": this.consumer_group
+    }
+  }}

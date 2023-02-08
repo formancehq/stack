@@ -31,7 +31,6 @@ type WebhooksSpec struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
-//+kubebuilder:storageversion
 
 // Webhooks is the Schema for the Webhooks API
 type Webhooks struct {

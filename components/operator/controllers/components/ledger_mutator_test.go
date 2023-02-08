@@ -1,7 +1,7 @@
 package components
 
 import (
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/testing"
@@ -17,28 +17,24 @@ var _ = Describe("Ledger controller", func() {
 		WithNewNamespace(func() {
 			Context("When creating a ledger server", func() {
 				var (
-					ledger *componentsv1beta2.Ledger
+					ledger *componentsv1beta3.Ledger
 				)
 				BeforeEach(func() {
-					ledger = &componentsv1beta2.Ledger{
+					ledger = &componentsv1beta3.Ledger{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "ledger",
 						},
-						Spec: componentsv1beta2.LedgerSpec{
-							Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
+						Spec: componentsv1beta3.LedgerSpec{
+							Postgres: componentsv1beta3.PostgresConfigCreateDatabase{
 								PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
 									Database:       "ledger",
 									PostgresConfig: NewDumpPostgresConfig(),
 								},
 								CreateDatabase: true,
 							},
-							Collector: &componentsv1beta2.CollectorConfig{
-								KafkaConfig: apisv1beta2.KafkaConfig{
-									Brokers: []string{"http://kafka"},
-									TLS:     false,
-									SASL:    nil,
-								},
-								Topic: "xxx",
+							Collector: &componentsv1beta3.CollectorConfig{
+								Broker: NewDumbBrokerConfig(),
+								Topic:  "xxx",
 							},
 						},
 					}

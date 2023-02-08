@@ -40,9 +40,10 @@ include:
 - vendor
 - main.go
 - go.*
-- Dockerfile
+- garden/garden.Dockerfile
 build:
   targetImage: "${command.params contains 'dev' && command.params.dev contains 'operator' ? 'reloader': 'release' }"
+dockerfile: garden/garden.Dockerfile
 ---
 kind: Module
 description: Update operator version

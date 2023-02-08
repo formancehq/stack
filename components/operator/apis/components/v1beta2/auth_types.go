@@ -90,7 +90,6 @@ type AuthSpec struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:subresource:scale:specpath=.spec.replicas,statuspath=.status.replicas,selectorpath=.status.selector
-//+kubebuilder:storageversion
 
 // Auth is the Schema for the auths API
 type Auth struct {

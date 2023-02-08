@@ -84,6 +84,20 @@ func (in *KafkaConfig) Validate() field.ErrorList {
 	return typeutils.MergeAll(
 		typeutils.Map(in.SASL.Validate(), AddPrefixToFieldError("sasl.")),
 		ValidateRequiredConfigValueOrReference("brokers.",
-			strings.Join(in.Brokers, ","), in.BrokersFrom),
+			strings.Join(in.Brokers, " "), in.BrokersFrom),
 	)
+}
+
+type NatsConfig struct {
+	URL string `json:"url"`
+}
+
+func (c NatsConfig) Env(clientID, prefix string) []corev1.EnvVar {
+	ret := make([]corev1.EnvVar, 0)
+	ret = append(ret,
+		EnvWithPrefix(prefix, "PUBLISHER_NATS_ENABLED", "true"),
+		EnvWithPrefix(prefix, "PUBLISHER_NATS_URL", c.URL),
+		EnvWithPrefix(prefix, "PUBLISHER_NATS_CLIENT_ID", clientID),
+	)
+	return ret
 }

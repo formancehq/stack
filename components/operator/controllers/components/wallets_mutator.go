@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/typeutils"
@@ -49,7 +49,7 @@ type WalletsMutator struct {
 // +kubebuilder:rbac:groups=components.formance.com,resources=wallets/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=components.formance.com,resources=wallets/finalizers,verbs=update
 
-func (r *WalletsMutator) Mutate(ctx context.Context, wallets *componentsv1beta2.Wallets) (*ctrl.Result, error) {
+func (r *WalletsMutator) Mutate(ctx context.Context, wallets *componentsv1beta3.Wallets) (*ctrl.Result, error) {
 
 	apisv1beta2.SetProgressing(wallets)
 
@@ -63,7 +63,7 @@ func (r *WalletsMutator) Mutate(ctx context.Context, wallets *componentsv1beta2.
 	return nil, nil
 }
 
-func walletsEnvVars(wallets *componentsv1beta2.Wallets) []corev1.EnvVar {
+func walletsEnvVars(wallets *componentsv1beta3.Wallets) []corev1.EnvVar {
 	ledgerName := strings.Replace(wallets.GetName(), "-next", "-ledger", -1)
 	env := make([]corev1.EnvVar, 0)
 	env = append(env,
@@ -81,7 +81,7 @@ func walletsEnvVars(wallets *componentsv1beta2.Wallets) []corev1.EnvVar {
 	return env
 }
 
-func (r *WalletsMutator) reconcileDeployment(ctx context.Context, wallets *componentsv1beta2.Wallets) (*appsv1.Deployment, controllerutil.OperationResult, error) {
+func (r *WalletsMutator) reconcileDeployment(ctx context.Context, wallets *componentsv1beta3.Wallets) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "wallets")
 
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(wallets),
@@ -123,7 +123,7 @@ func (r *WalletsMutator) SetupWithBuilder(mgr ctrl.Manager, builder *ctrl.Builde
 	return nil
 }
 
-func NewWalletsMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta2.Wallets] {
+func NewWalletsMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta3.Wallets] {
 	return &WalletsMutator{
 		Client: client,
 		Scheme: scheme,

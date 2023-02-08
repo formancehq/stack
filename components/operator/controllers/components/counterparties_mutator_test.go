@@ -1,7 +1,7 @@
 package components
 
 import (
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/testing"
@@ -17,16 +17,16 @@ var _ = Describe("Counterparties controller", func() {
 		WithNewNamespace(func() {
 			Context("When creating a counterparties server", func() {
 				var (
-					counterparties *componentsv1beta2.Counterparties
+					counterparties *componentsv1beta3.Counterparties
 				)
 				BeforeEach(func() {
-					counterparties = &componentsv1beta2.Counterparties{
+					counterparties = &componentsv1beta3.Counterparties{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "counterparties",
 						},
-						Spec: componentsv1beta2.CounterpartiesSpec{
+						Spec: componentsv1beta3.CounterpartiesSpec{
 							Enabled: true,
-							Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
+							Postgres: componentsv1beta3.PostgresConfigCreateDatabase{
 								PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
 									Database:       "counterparties",
 									PostgresConfig: NewDumpPostgresConfig(),

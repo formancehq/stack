@@ -1,7 +1,7 @@
 package components
 
 import (
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/testing"
@@ -17,15 +17,15 @@ var _ = Describe("Auth controller", func() {
 		WithNewNamespace(func() {
 			Context("When creating a auth server", func() {
 				var (
-					auth *componentsv1beta2.Auth
+					auth *componentsv1beta3.Auth
 				)
 				BeforeEach(func() {
-					auth = &componentsv1beta2.Auth{
+					auth = &componentsv1beta3.Auth{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "auth",
 						},
-						Spec: componentsv1beta2.AuthSpec{
-							Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
+						Spec: componentsv1beta3.AuthSpec{
+							Postgres: componentsv1beta3.PostgresConfigCreateDatabase{
 								PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
 									Database:       "auth",
 									PostgresConfig: NewDumpPostgresConfig(),
@@ -34,7 +34,7 @@ var _ = Describe("Auth controller", func() {
 							},
 							BaseURL:    "http://localhost/auth",
 							SigningKey: "XXXXX",
-							DelegatedOIDCServer: componentsv1beta2.DelegatedOIDCServerConfiguration{
+							DelegatedOIDCServer: componentsv1beta3.DelegatedOIDCServerConfiguration{
 								Issuer:       "http://oidc.server",
 								ClientID:     "foo",
 								ClientSecret: "bar",

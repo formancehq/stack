@@ -1,7 +1,7 @@
 package components
 
 import (
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/testing"
@@ -17,14 +17,14 @@ var _ = Describe("Wallets controller", func() {
 		WithNewNamespace(func() {
 			Context("When creating a wallets server", func() {
 				var (
-					wallets *componentsv1beta2.Wallets
+					wallets *componentsv1beta3.Wallets
 				)
 				BeforeEach(func() {
-					wallets = &componentsv1beta2.Wallets{
+					wallets = &componentsv1beta3.Wallets{
 						ObjectMeta: metav1.ObjectMeta{
 							Name: "wallets",
 						},
-						Spec: componentsv1beta2.WalletsSpec{},
+						Spec: componentsv1beta3.WalletsSpec{},
 					}
 					Expect(Create(wallets)).To(BeNil())
 					Eventually(ConditionStatus(wallets, apisv1beta2.ConditionTypeReady)).Should(Equal(metav1.ConditionTrue))

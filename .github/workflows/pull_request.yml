@@ -126,7 +126,7 @@ jobs:
         with:
           file: ./components/${{ matrix.folder }}/Dockerfile
           context: .
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ghcr.io/formancehq/${{ matrix.folder }}:${{ github.event.pull_request.head.sha }}
           build-args: |
