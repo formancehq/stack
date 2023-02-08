@@ -2,7 +2,6 @@ package fctl
 
 import (
 	"github.com/formancehq/fctl/membershipclient"
-	"github.com/formancehq/go-libs/logging"
 	"github.com/pkg/errors"
 	"github.com/segmentio/analytics-go/v3"
 	"github.com/segmentio/ksuid"
@@ -277,7 +276,6 @@ func NewCommand(use string, opts ...CommandOption) *cobra.Command {
 			if GetBool(cmd, TelemetryFlag) {
 				cfg, err := GetConfig(cmd)
 				if err != nil {
-					logging.Error("Error getting config: %s", err)
 					return
 				}
 
@@ -286,7 +284,6 @@ func NewCommand(use string, opts ...CommandOption) *cobra.Command {
 					cfg.SetUniqueID(uniqueID)
 					err = cfg.Persist()
 					if err != nil {
-						logging.Error("Error saving unique ID: %s", err)
 						return
 					}
 				}
@@ -301,7 +298,6 @@ func NewCommand(use string, opts ...CommandOption) *cobra.Command {
 						Set("args", args),
 				})
 				if err != nil {
-					logging.Error("Error sending telemetry data: %s", err)
 					return
 				}
 			}

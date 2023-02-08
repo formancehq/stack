@@ -7,7 +7,6 @@ require (
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/formancehq/fctl/membershipclient v0.0.0-00010101000000-000000000000
 	github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20230105103853-efecdbdedb04
-	github.com/formancehq/go-libs v1.4.1
 	github.com/iancoleman/strcase v0.2.0
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/pkg/errors v0.9.1
@@ -24,6 +23,7 @@ require (
 	atomicgo.dev/cursor v0.1.1 // indirect
 	atomicgo.dev/keyboard v0.2.8 // indirect
 	github.com/containerd/console v1.0.3 // indirect
+	github.com/formancehq/go-libs v1.4.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gookit/color v1.5.2 // indirect
