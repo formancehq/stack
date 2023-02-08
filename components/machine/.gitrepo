@@ -7,6 +7,6 @@
 	remote = machine
 	branch = main
 	commit = 04c8bd45f32f787ecc87cbaf256fb8e4b4660b56
-	parent = 0ae0805ebfbf7d18849f0d1fa36b768398bda22d
+	parent = 920e593b5aa8e0347c65333d9de8aeeb7094bdb1
 	method = merge
 	cmdver = 0.4.5
