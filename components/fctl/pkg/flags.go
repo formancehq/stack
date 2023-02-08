@@ -15,6 +15,7 @@ const (
 	ProfileFlag       = "profile"
 	DebugFlag         = "debug"
 	InsecureTlsFlag   = "insecure-tls"
+	TelemetryFlag     = "telemetry"
 )
 
 func GetBool(cmd *cobra.Command, flagName string) bool {

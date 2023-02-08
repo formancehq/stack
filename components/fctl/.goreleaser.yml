@@ -11,6 +11,7 @@ builds:
       - -X github.com/numary/fctl/cmd.BuildDate={{ .Date }}
       - -X github.com/numary/fctl/cmd.Version={{ .Version }}
       - -X github.com/numary/fctl/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/numary/fctl/pkg.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
