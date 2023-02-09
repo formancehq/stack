@@ -13,7 +13,7 @@ RUN GOOS=linux go build -o gateway \
 FROM golang:1.18 as builder
 WORKDIR /src
 COPY --from=gateway-builder /src/components/gateway/gateway /gateway
-COPY --from=gateway-builder /src/config/gateway/builder-config.json .
+COPY --from=gateway-builder /src/components/gateway/builder-config.json .
 RUN /gateway build \
     --caddy-builder-config-path builder-config.json \
     --caddy-binary-output-path /usr/bin/caddy
