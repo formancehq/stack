@@ -21,8 +21,8 @@ builds:
       - arm64
 
 archives:
-  - id: {{.ProjectName}}
-    build:
+  - id: "{{.ProjectName}}"
+    builds:
       - gateway
     format: tar.gz
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
@@ -64,7 +64,10 @@ release:
 
 dockers:
   - image_templates: ["ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64"]
-    dockerfile: Dockerfile
+    dockerfile: build.Dockerfile
+    extra_files:
+      - builder-config.json
+      - Caddyfile
     use: buildx
     build_flag_templates:
       - --platform=linux/amd64
@@ -78,7 +81,10 @@ dockers:
       - --label=org.opencontainers.image.licenses=MIT
   - image_templates: [ "ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64" ]
     goarch: arm64
-    dockerfile: Dockerfile
+    dockerfile: build.Dockerfile
+    extra_files:
+      - builder-config.json
+      - Caddyfile
     use: buildx
     build_flag_templates:
       - --platform=linux/arm64/v8
