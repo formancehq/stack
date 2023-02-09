@@ -1,4 +1,4 @@
-package machine
+package core
 
 import (
 	"encoding/json"
@@ -47,7 +47,7 @@ func NewValueFromJSON(typ Type, data json.RawMessage) (*Value, error) {
 	var value Value
 	switch typ {
 	case TypeAccount:
-		var account Account
+		var account AccountAddress
 		if err := json.Unmarshal(data, &account); err != nil {
 			return nil, err
 		}

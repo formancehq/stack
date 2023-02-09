@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/numary/ledger/pkg/machine"
+	"github.com/numary/ledger/pkg/core"
 	"github.com/pkg/errors"
 )
 
 type Program struct {
 	Instructions   []byte
 	Resources      []Resource
-	NeededBalances map[machine.Address]map[machine.Address]struct{}
+	NeededBalances map[core.Address]map[core.Address]struct{}
 }
 
 func (p Program) String() string {
@@ -43,35 +43,35 @@ func (p Program) String() string {
 	return out
 }
 
-func (p *Program) ParseVariables(vars map[string]machine.Value) (map[string]machine.Value, error) {
-	variables := make(map[string]machine.Value)
+func (p *Program) ParseVariables(vars map[string]core.Value) (map[string]core.Value, error) {
+	variables := make(map[string]core.Value)
 	for _, res := range p.Resources {
 		if variable, ok := res.(Variable); ok {
 			if val, ok := vars[variable.Name]; ok && val.GetType() == variable.Typ {
 				variables[variable.Name] = val
 				switch val.GetType() {
-				case machine.TypeAccount:
-					if err := machine.ParseAccount(val.(machine.Account)); err != nil {
+				case core.TypeAccount:
+					if err := core.ParseAccount(val.(core.AccountAddress)); err != nil {
 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-							variable.Name, string(val.(machine.Account)))
+							variable.Name, string(val.(core.AccountAddress)))
 					}
-				case machine.TypeMonetary:
-					if err := machine.ParseMonetary(val.(machine.Monetary)); err != nil {
+				case core.TypeMonetary:
+					if err := core.ParseMonetary(val.(core.Monetary)); err != nil {
 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-							variable.Name, val.(machine.Monetary).String())
+							variable.Name, val.(core.Monetary).String())
 					}
-				case machine.TypePortion:
-					if err := machine.ValidatePortionSpecific(val.(machine.Portion)); err != nil {
+				case core.TypePortion:
+					if err := core.ValidatePortionSpecific(val.(core.Portion)); err != nil {
 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-							variable.Name, val.(machine.Portion).String())
+							variable.Name, val.(core.Portion).String())
 					}
-				case machine.TypeString:
-					if _, ok := val.(machine.String); !ok {
+				case core.TypeString:
+					if _, ok := val.(core.String); !ok {
 						return nil, fmt.Errorf("invalid variable $%s value '%s'",
 							variable.Name, val)
 					}
-				case machine.TypeNumber:
-					if _, ok := val.(machine.Number); !ok {
+				case core.TypeNumber:
+					if _, ok := val.(core.Number); !ok {
 						return nil, fmt.Errorf("invalid variable $%s value '%s'",
 							variable.Name, val)
 					}
@@ -88,15 +88,15 @@ func (p *Program) ParseVariables(vars map[string]machine.Value) (map[string]mach
 	return variables, nil
 }
 
-func (p *Program) ParseVariablesJSON(vars map[string]json.RawMessage) (map[string]machine.Value, error) {
-	variables := make(map[string]machine.Value)
+func (p *Program) ParseVariablesJSON(vars map[string]json.RawMessage) (map[string]core.Value, error) {
+	variables := make(map[string]core.Value)
 	for _, res := range p.Resources {
 		if param, ok := res.(Variable); ok {
 			data, ok := vars[param.Name]
 			if !ok {
 				return nil, fmt.Errorf("missing variable $%s", param.Name)
 			}
-			val, err := machine.NewValueFromJSON(param.Typ, data)
+			val, err := core.NewValueFromJSON(param.Typ, data)
 			if err != nil {
 				return nil, fmt.Errorf(
 					"invalid JSON value for variable $%s of type %v: %w",

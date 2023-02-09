@@ -1,4 +1,4 @@
-package machine
+package core
 
 import (
 	"encoding/json"
@@ -17,7 +17,7 @@ func TestAccountTypedJSON(t *testing.T) {
 	value, err := NewValueFromTypedJSON(j)
 	require.NoError(t, err)
 
-	if !ValueEquals(*value, Account("users:001")) {
+	if !ValueEquals(*value, AccountAddress("users:001")) {
 		t.Fatalf("unexpected value: %v", *value)
 	}
 }
@@ -99,7 +99,7 @@ func TestInvalidTypedJSON(t *testing.T) {
 
 func TestMarshalJSON(t *testing.T) {
 	t.Run("account", func(t *testing.T) {
-		by, err := json.Marshal(Account("platform"))
+		by, err := json.Marshal(AccountAddress("platform"))
 		require.NoError(t, err)
 		assert.Equal(t, `"platform"`, string(by))
 	})

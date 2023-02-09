@@ -16,7 +16,7 @@ import (
 	"math/big"
 
 	"github.com/logrusorgru/aurora"
-	"github.com/numary/ledger/pkg/machine"
+	"github.com/numary/ledger/pkg/core"
 	"github.com/numary/ledger/pkg/machine/vm/program"
 )
 
@@ -30,48 +30,48 @@ const (
 type Machine struct {
 	P                   uint
 	Program             program.Program
-	Vars                map[string]machine.Value
+	Vars                map[string]core.Value
 	UnresolvedResources []program.Resource
-	Resources           []machine.Value // Constants and Variables
+	Resources           []core.Value // Constants and Variables
 	resolveCalled       bool
-	Balances            map[machine.Account]map[machine.Asset]*machine.MonetaryInt // keeps tracks of balances throughout execution
+	Balances            map[core.AccountAddress]map[core.Asset]*core.MonetaryInt // keeps tracks of balances throughout execution
 	setBalanceCalled    bool
-	Stack               []machine.Value
-	Postings            []Posting                                    // accumulates postings throughout execution
-	TxMeta              map[string]machine.Value                     // accumulates transaction meta throughout execution
-	AccountsMeta        map[machine.Account]map[string]machine.Value // accumulates accounts meta throughout execution
-	Printer             func(chan machine.Value)
-	printChan           chan machine.Value
+	Stack               []core.Value
+	Postings            []Posting                                     // accumulates postings throughout execution
+	TxMeta              map[string]core.Value                         // accumulates transaction meta throughout execution
+	AccountsMeta        map[core.AccountAddress]map[string]core.Value // accumulates accounts meta throughout execution
+	Printer             func(chan core.Value)
+	printChan           chan core.Value
 	Debug               bool
 }
 
 type Posting struct {
-	Source      string               `json:"source"`
-	Destination string               `json:"destination"`
-	Amount      *machine.MonetaryInt `json:"amount"`
-	Asset       string               `json:"asset"`
+	Source      string            `json:"source"`
+	Destination string            `json:"destination"`
+	Amount      *core.MonetaryInt `json:"amount"`
+	Asset       string            `json:"asset"`
 }
 
 type Metadata map[string]any
 
 func NewMachine(p program.Program) *Machine {
-	printChan := make(chan machine.Value)
+	printChan := make(chan core.Value)
 
 	m := Machine{
 		Program:             p,
 		UnresolvedResources: p.Resources,
-		Resources:           make([]machine.Value, 0),
+		Resources:           make([]core.Value, 0),
 		printChan:           printChan,
 		Printer:             StdOutPrinter,
 		Postings:            make([]Posting, 0),
-		TxMeta:              map[string]machine.Value{},
-		AccountsMeta:        map[machine.Account]map[string]machine.Value{},
+		TxMeta:              map[string]core.Value{},
+		AccountsMeta:        map[core.AccountAddress]map[string]core.Value{},
 	}
 
 	return &m
 }
 
-func StdOutPrinter(c chan machine.Value) {
+func StdOutPrinter(c chan core.Value) {
 	for v := range c {
 		fmt.Println("OUT:", v)
 	}
@@ -84,7 +84,7 @@ func (m *Machine) GetTxMetaJSON() Metadata {
 		if err != nil {
 			panic(err)
 		}
-		v, err := json.Marshal(machine.ValueJSON{
+		v, err := json.Marshal(core.ValueJSON{
 			Type:  v.GetType().String(),
 			Value: valJSON,
 		})
@@ -107,7 +107,7 @@ func (m *Machine) GetAccountsMetaJSON() Metadata {
 			if err != nil {
 				panic(err)
 			}
-			v, err := json.Marshal(machine.ValueJSON{
+			v, err := json.Marshal(core.ValueJSON{
 				Type:  v.GetType().String(),
 				Value: valJSON,
 			})
@@ -121,7 +121,7 @@ func (m *Machine) GetAccountsMetaJSON() Metadata {
 	return res
 }
 
-func (m *Machine) getResource(addr machine.Address) (*machine.Value, bool) {
+func (m *Machine) getResource(addr core.Address) (*core.Value, bool) {
 	a := int(addr)
 	if a >= len(m.Resources) {
 		return nil, false
@@ -129,18 +129,18 @@ func (m *Machine) getResource(addr machine.Address) (*machine.Value, bool) {
 	return &m.Resources[a], true
 }
 
-func (m *Machine) withdrawAll(account machine.Account, asset machine.Asset, overdraft *machine.MonetaryInt) (*machine.Funding, error) {
+func (m *Machine) withdrawAll(account core.AccountAddress, asset core.Asset, overdraft *core.MonetaryInt) (*core.Funding, error) {
 	if accBalances, ok := m.Balances[account]; ok {
 		if balance, ok := accBalances[asset]; ok {
-			amountTaken := machine.NewMonetaryInt(0)
-			if balance.Add(overdraft).Gt(machine.NewMonetaryInt(0)) {
+			amountTaken := core.NewMonetaryInt(0)
+			if balance.Add(overdraft).Gt(core.NewMonetaryInt(0)) {
 				amountTaken = balance.Add(overdraft)
 				accBalances[asset] = overdraft.Neg()
 			}
 
-			return &machine.Funding{
+			return &core.Funding{
 				Asset: asset,
-				Parts: []machine.FundingPart{{
+				Parts: []core.FundingPart{{
 					Account: account,
 					Amount:  amountTaken,
 				}},
@@ -150,13 +150,13 @@ func (m *Machine) withdrawAll(account machine.Account, asset machine.Asset, over
 	return nil, fmt.Errorf("missing %v balance from %v", asset, account)
 }
 
-func (m *Machine) withdrawAlways(account machine.Account, mon machine.Monetary) (*machine.Funding, error) {
+func (m *Machine) withdrawAlways(account core.AccountAddress, mon core.Monetary) (*core.Funding, error) {
 	if accBalance, ok := m.Balances[account]; ok {
 		if balance, ok := accBalance[mon.Asset]; ok {
 			accBalance[mon.Asset] = balance.Sub(mon.Amount)
-			return &machine.Funding{
+			return &core.Funding{
 				Asset: mon.Asset,
-				Parts: []machine.FundingPart{{
+				Parts: []core.FundingPart{{
 					Account: account,
 					Amount:  mon.Amount,
 				}},
@@ -166,7 +166,7 @@ func (m *Machine) withdrawAlways(account machine.Account, mon machine.Monetary) 
 	return nil, fmt.Errorf("missing %v balance from %v", mon.Asset, account)
 }
 
-func (m *Machine) credit(account machine.Account, funding machine.Funding) {
+func (m *Machine) credit(account core.AccountAddress, funding core.Funding) {
 	if account == "world" {
 		return
 	}
@@ -180,7 +180,7 @@ func (m *Machine) credit(account machine.Account, funding machine.Funding) {
 	}
 }
 
-func (m *Machine) repay(funding machine.Funding) {
+func (m *Machine) repay(funding core.Funding) {
 	for _, part := range funding.Parts {
 		if part.Account == "world" {
 			continue
@@ -203,7 +203,7 @@ func (m *Machine) tick() (bool, byte) {
 	switch op {
 	case program.OP_APUSH:
 		bytes := m.Program.Instructions[m.P+1 : m.P+3]
-		v, ok := m.getResource(machine.Address(binary.LittleEndian.Uint16(bytes)))
+		v, ok := m.getResource(core.Address(binary.LittleEndian.Uint16(bytes)))
 		if !ok {
 			return true, EXIT_FAIL
 		}
@@ -212,12 +212,12 @@ func (m *Machine) tick() (bool, byte) {
 
 	case program.OP_IPUSH:
 		bytes := m.Program.Instructions[m.P+1 : m.P+9]
-		v := machine.Number(big.NewInt(int64(binary.LittleEndian.Uint64(bytes))))
+		v := core.Number(big.NewInt(int64(binary.LittleEndian.Uint64(bytes))))
 		m.Stack = append(m.Stack, v)
 		m.P += 8
 
 	case program.OP_BUMP:
-		n := big.Int(*pop[machine.Number](m))
+		n := big.Int(*pop[core.Number](m))
 		idx := len(m.Stack) - int(n.Uint64()) - 1
 		v := m.Stack[idx]
 		m.Stack = append(m.Stack[:idx], m.Stack[idx+1:]...)
@@ -225,18 +225,18 @@ func (m *Machine) tick() (bool, byte) {
 
 	case program.OP_DELETE:
 		n := m.popValue()
-		if n.GetType() == machine.TypeFunding {
+		if n.GetType() == core.TypeFunding {
 			return true, EXIT_FAIL_INVALID
 		}
 
 	case program.OP_IADD:
-		b := pop[machine.Number](m)
-		a := pop[machine.Number](m)
+		b := pop[core.Number](m)
+		a := pop[core.Number](m)
 		m.pushValue(a.Add(b))
 
 	case program.OP_ISUB:
-		b := pop[machine.Number](m)
-		a := pop[machine.Number](m)
+		b := pop[core.Number](m)
+		a := pop[core.Number](m)
 		m.pushValue(a.Sub(b))
 
 	case program.OP_PRINT:
@@ -249,51 +249,51 @@ func (m *Machine) tick() (bool, byte) {
 	case program.OP_ASSET:
 		v := m.popValue()
 		switch v := v.(type) {
-		case machine.Asset:
+		case core.Asset:
 			m.pushValue(v)
-		case machine.Monetary:
+		case core.Monetary:
 			m.pushValue(v.Asset)
-		case machine.Funding:
+		case core.Funding:
 			m.pushValue(v.Asset)
 		default:
 			return true, EXIT_FAIL_INVALID
 		}
 
 	case program.OP_MONETARY_NEW:
-		amount := pop[machine.Number](m)
-		asset := pop[machine.Asset](m)
-		m.pushValue(machine.Monetary{
+		amount := pop[core.Number](m)
+		asset := pop[core.Asset](m)
+		m.pushValue(core.Monetary{
 			Asset:  asset,
 			Amount: amount,
 		})
 
 	case program.OP_MONETARY_ADD:
-		b := pop[machine.Monetary](m)
-		a := pop[machine.Monetary](m)
+		b := pop[core.Monetary](m)
+		a := pop[core.Monetary](m)
 		if a.Asset != b.Asset {
 			return true, EXIT_FAIL_INVALID
 		}
-		m.pushValue(machine.Monetary{
+		m.pushValue(core.Monetary{
 			Asset:  a.Asset,
 			Amount: a.Amount.Add(b.Amount),
 		})
 
 	case program.OP_MAKE_ALLOTMENT:
-		n := pop[machine.Number](m)
-		portions := make([]machine.Portion, n.Uint64())
+		n := pop[core.Number](m)
+		portions := make([]core.Portion, n.Uint64())
 		for i := uint64(0); i < n.Uint64(); i++ {
-			p := pop[machine.Portion](m)
+			p := pop[core.Portion](m)
 			portions[i] = p
 		}
-		allotment, err := machine.NewAllotment(portions)
+		allotment, err := core.NewAllotment(portions)
 		if err != nil {
 			return true, EXIT_FAIL_INVALID
 		}
 		m.pushValue(*allotment)
 
 	case program.OP_TAKE_ALL:
-		overdraft := pop[machine.Monetary](m)
-		account := pop[machine.Account](m)
+		overdraft := pop[core.Monetary](m)
+		account := pop[core.AccountAddress](m)
 		funding, err := m.withdrawAll(account, overdraft.Asset, overdraft.Amount)
 		if err != nil {
 			return true, EXIT_FAIL_INVALID
@@ -301,8 +301,8 @@ func (m *Machine) tick() (bool, byte) {
 		m.pushValue(*funding)
 
 	case program.OP_TAKE_ALWAYS:
-		mon := pop[machine.Monetary](m)
-		account := pop[machine.Account](m)
+		mon := pop[core.Monetary](m)
+		account := pop[core.AccountAddress](m)
 		funding, err := m.withdrawAlways(account, mon)
 		if err != nil {
 			return true, EXIT_FAIL_INVALID
@@ -310,8 +310,8 @@ func (m *Machine) tick() (bool, byte) {
 		m.pushValue(*funding)
 
 	case program.OP_TAKE:
-		mon := pop[machine.Monetary](m)
-		funding := pop[machine.Funding](m)
+		mon := pop[core.Monetary](m)
+		funding := pop[core.Funding](m)
 		if funding.Asset != mon.Asset {
 			return true, EXIT_FAIL_INVALID
 		}
@@ -323,18 +323,18 @@ func (m *Machine) tick() (bool, byte) {
 		m.pushValue(result)
 
 	case program.OP_TAKE_MAX:
-		mon := pop[machine.Monetary](m)
-		funding := pop[machine.Funding](m)
+		mon := pop[core.Monetary](m)
+		funding := pop[core.Funding](m)
 		if funding.Asset != mon.Asset {
 			return true, EXIT_FAIL_INVALID
 		}
-		missing := machine.NewMonetaryInt(0)
+		missing := core.NewMonetaryInt(0)
 		total := funding.Total()
 		if mon.Amount.Gt(total) {
 			missing = mon.Amount.Sub(total)
 		}
 		result, remainder := funding.TakeMax(mon.Amount)
-		m.pushValue(machine.Monetary{
+		m.pushValue(core.Monetary{
 			Asset:  mon.Asset,
 			Amount: missing,
 		})
@@ -342,19 +342,19 @@ func (m *Machine) tick() (bool, byte) {
 		m.pushValue(result)
 
 	case program.OP_FUNDING_ASSEMBLE:
-		num := pop[machine.Number](m)
+		num := pop[core.Number](m)
 		n := int(num.Uint64())
 		if n == 0 {
 			return true, EXIT_FAIL_INVALID
 		}
-		first := pop[machine.Funding](m)
-		result := machine.Funding{
+		first := pop[core.Funding](m)
+		result := core.Funding{
 			Asset: first.Asset,
 		}
-		fundings_rev := make([]machine.Funding, n)
+		fundings_rev := make([]core.Funding, n)
 		fundings_rev[0] = first
 		for i := 1; i < n; i++ {
-			f := pop[machine.Funding](m)
+			f := pop[core.Funding](m)
 			if f.Asset != result.Asset {
 				return true, EXIT_FAIL_INVALID
 			}
@@ -370,42 +370,42 @@ func (m *Machine) tick() (bool, byte) {
 		m.pushValue(result)
 
 	case program.OP_FUNDING_SUM:
-		funding := pop[machine.Funding](m)
+		funding := pop[core.Funding](m)
 		sum := funding.Total()
 		m.pushValue(funding)
-		m.pushValue(machine.Monetary{
+		m.pushValue(core.Monetary{
 			Asset:  funding.Asset,
 			Amount: sum,
 		})
 
 	case program.OP_FUNDING_REVERSE:
-		funding := pop[machine.Funding](m)
+		funding := pop[core.Funding](m)
 		result := funding.Reverse()
 		m.pushValue(result)
 
 	case program.OP_ALLOC:
-		allotment := pop[machine.Allotment](m)
-		monetary := pop[machine.Monetary](m)
+		allotment := pop[core.Allotment](m)
+		monetary := pop[core.Monetary](m)
 		total := monetary.Amount
 		parts := allotment.Allocate(total)
 		for i := len(parts) - 1; i >= 0; i-- {
-			m.pushValue(machine.Monetary{
+			m.pushValue(core.Monetary{
 				Asset:  monetary.Asset,
 				Amount: parts[i],
 			})
 		}
 
 	case program.OP_REPAY:
-		m.repay(pop[machine.Funding](m))
+		m.repay(pop[core.Funding](m))
 
 	case program.OP_SEND:
-		dest := pop[machine.Account](m)
-		funding := pop[machine.Funding](m)
+		dest := pop[core.AccountAddress](m)
+		funding := pop[core.Funding](m)
 		m.credit(dest, funding)
 		for _, part := range funding.Parts {
 			src := part.Account
 			amt := part.Amount
-			if amt.Eq(machine.NewMonetaryInt(0)) {
+			if amt.Eq(core.NewMonetaryInt(0)) {
 				continue
 			}
 			m.Postings = append(m.Postings, Posting{
@@ -417,16 +417,16 @@ func (m *Machine) tick() (bool, byte) {
 		}
 
 	case program.OP_TX_META:
-		k := pop[machine.String](m)
+		k := pop[core.String](m)
 		v := m.popValue()
 		m.TxMeta[string(k)] = v
 
 	case program.OP_ACCOUNT_META:
-		a := pop[machine.Account](m)
-		k := pop[machine.String](m)
+		a := pop[core.AccountAddress](m)
+		k := pop[core.String](m)
 		v := m.popValue()
 		if m.AccountsMeta[a] == nil {
-			m.AccountsMeta[a] = map[string]machine.Value{}
+			m.AccountsMeta[a] = map[string]core.Value{}
 		}
 		m.AccountsMeta[a][string(k)] = v
 
@@ -468,7 +468,7 @@ func (m *Machine) Execute() (byte, error) {
 type BalanceRequest struct {
 	Account  string
 	Asset    string
-	Response chan *machine.MonetaryInt
+	Response chan *core.MonetaryInt
 	Error    error
 }
 
@@ -483,7 +483,7 @@ func (m *Machine) ResolveBalances() (chan BalanceRequest, error) {
 	resChan := make(chan BalanceRequest)
 	go func() {
 		defer close(resChan)
-		m.Balances = make(map[machine.Account]map[machine.Asset]*machine.MonetaryInt)
+		m.Balances = make(map[core.AccountAddress]map[core.Asset]*core.MonetaryInt)
 		// for every account that we need balances of, check if it's there
 		for addr, neededAssets := range m.Program.NeededBalances {
 			account, ok := m.getResource(addr)
@@ -493,8 +493,8 @@ func (m *Machine) ResolveBalances() (chan BalanceRequest, error) {
 				}
 				return
 			}
-			if account, ok := (*account).(machine.Account); ok {
-				m.Balances[account] = make(map[machine.Asset]*machine.MonetaryInt)
+			if account, ok := (*account).(core.AccountAddress); ok {
+				m.Balances[account] = make(map[core.Asset]*core.MonetaryInt)
 				// for every asset, send request
 				for addr := range neededAssets {
 					mon, ok := m.getResource(addr)
@@ -504,13 +504,13 @@ func (m *Machine) ResolveBalances() (chan BalanceRequest, error) {
 						}
 						return
 					}
-					if ha, ok := (*mon).(machine.HasAsset); ok {
+					if ha, ok := (*mon).(core.HasAsset); ok {
 						asset := ha.GetAsset()
 						if string(account) == "world" {
-							m.Balances[account][asset] = machine.NewMonetaryInt(0)
+							m.Balances[account][asset] = core.NewMonetaryInt(0)
 							continue
 						}
-						respChan := make(chan *machine.MonetaryInt)
+						respChan := make(chan *core.MonetaryInt)
 						resChan <- BalanceRequest{
 							Account:  string(account),
 							Asset:    string(asset),
@@ -547,7 +547,7 @@ type ResourceRequest struct {
 	Account  string
 	Key      string
 	Asset    string
-	Response chan machine.Value
+	Response chan core.Value
 	Error    error
 }
 
@@ -562,7 +562,7 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 		for len(m.Resources) != len(m.UnresolvedResources) {
 			idx := len(m.Resources)
 			res := m.UnresolvedResources[idx]
-			var val machine.Value
+			var val core.Value
 			switch res := res.(type) {
 			case program.Constant:
 				val = res.Inner
@@ -585,7 +585,7 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 					}
 					return
 				}
-				if (*sourceAccount).GetType() != machine.TypeAccount {
+				if (*sourceAccount).GetType() != core.TypeAccount {
 					resChan <- ResourceRequest{
 						Error: fmt.Errorf(
 							"variable '%s': tried to request metadata on wrong entity: %v instead of account",
@@ -593,8 +593,8 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 					}
 					return
 				}
-				account := (*sourceAccount).(machine.Account)
-				resp := make(chan machine.Value)
+				account := (*sourceAccount).(core.AccountAddress)
+				resp := make(chan core.Value)
 				resChan <- ResourceRequest{
 					Account:  string(account),
 					Key:      res.Key,
@@ -625,7 +625,7 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 					}
 					return
 				}
-				if (*sourceAccount).GetType() != machine.TypeAccount {
+				if (*sourceAccount).GetType() != core.TypeAccount {
 					resChan <- ResourceRequest{
 						Error: fmt.Errorf(
 							"variable '%s': tried to request balance on wrong entity: %v instead of account",
@@ -633,8 +633,8 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 					}
 					return
 				}
-				account := (*sourceAccount).(machine.Account)
-				resp := make(chan machine.Value)
+				account := (*sourceAccount).(core.AccountAddress)
+				resp := make(chan core.Value)
 				resChan <- ResourceRequest{
 					Account:  string(account),
 					Asset:    res.Asset,
@@ -648,15 +648,15 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 					}
 					return
 				}
-				if amount.GetType() != machine.TypeNumber {
+				if amount.GetType() != core.TypeNumber {
 					resChan <- ResourceRequest{
 						Error: fmt.Errorf(
 							"variable '%s': tried to request balance: wrong type received: expected %v, got %v",
-							res.Name, machine.TypeNumber, amount.GetType()),
+							res.Name, core.TypeNumber, amount.GetType()),
 					}
 					return
 				}
-				amt := amount.(machine.Number)
+				amt := amount.(core.Number)
 				if amt.Ltz() {
 					resChan <- ResourceRequest{
 						Error: fmt.Errorf(
@@ -665,8 +665,8 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 					}
 					return
 				}
-				val = machine.Monetary{
-					Asset:  machine.Asset(res.Asset),
+				val = core.Monetary{
+					Asset:  core.Asset(res.Asset),
 					Amount: amt,
 				}
 			default:
@@ -678,7 +678,7 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 	return resChan, nil
 }
 
-func (m *Machine) SetVars(vars map[string]machine.Value) error {
+func (m *Machine) SetVars(vars map[string]core.Value) error {
 	v, err := m.Program.ParseVariables(vars)
 	if err != nil {
 		return err

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/numary/ledger/pkg/machine"
+	"github.com/numary/ledger/pkg/core"
 	"github.com/numary/ledger/pkg/machine/script/compiler"
 	"github.com/numary/ledger/pkg/machine/vm"
 )
@@ -32,15 +32,15 @@ func main() {
 	m := vm.NewMachine(*program)
 	m.Debug = true
 
-	if err = m.SetVars(map[string]machine.Value{
-		"dest": machine.Account("charlie"),
+	if err = m.SetVars(map[string]core.Value{
+		"dest": core.AccountAddress("charlie"),
 	}); err != nil {
 		panic(err)
 	}
 
-	initialBalances := map[string]map[string]*machine.MonetaryInt{
-		"alice": {"COIN": machine.NewMonetaryInt(10)},
-		"bob":   {"COIN": machine.NewMonetaryInt(100)},
+	initialBalances := map[string]map[string]*core.MonetaryInt{
+		"alice": {"COIN": core.NewMonetaryInt(10)},
+		"bob":   {"COIN": core.NewMonetaryInt(100)},
 	}
 
 	{

@@ -6,7 +6,7 @@ import (
 	"math/big"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/numary/ledger/pkg/machine"
+	"github.com/numary/ledger/pkg/core"
 	"github.com/numary/ledger/pkg/machine/script/parser"
 	"github.com/numary/ledger/pkg/machine/vm/program"
 )
@@ -19,7 +19,7 @@ func (p *parseVisitor) VisitAllotment(c antlr.ParserRuleContext, portions []pars
 		c := portions[i]
 		switch c := c.(type) {
 		case *parser.AllotmentPortionConstContext:
-			portion, err := machine.ParsePortionSpecific(c.GetText())
+			portion, err := core.ParsePortionSpecific(c.GetText())
 			if err != nil {
 				return LogicError(c, err)
 			}
@@ -35,7 +35,7 @@ func (p *parseVisitor) VisitAllotment(c antlr.ParserRuleContext, portions []pars
 			if err != nil {
 				return err
 			}
-			if ty != machine.TypePortion {
+			if ty != core.TypePortion {
 				return LogicError(c,
 					fmt.Errorf("wrong type: expected type portion for variable: %v", ty),
 				)
@@ -47,7 +47,7 @@ func (p *parseVisitor) VisitAllotment(c antlr.ParserRuleContext, portions []pars
 					errors.New("two uses of `remaining` in the same allocation"),
 				)
 			}
-			addr, err := p.AllocateResource(program.Constant{Inner: machine.NewPortionRemaining()})
+			addr, err := p.AllocateResource(program.Constant{Inner: core.NewPortionRemaining()})
 			if err != nil {
 				return LogicError(c, err)
 			}
@@ -75,7 +75,7 @@ func (p *parseVisitor) VisitAllotment(c antlr.ParserRuleContext, portions []pars
 			errors.New("known portions are already equal to 100%"),
 		)
 	}
-	err := p.PushInteger(machine.NewNumber(int64(len(portions))))
+	err := p.PushInteger(core.NewNumber(int64(len(portions))))
 	if err != nil {
 		return LogicError(c, err)
 	}

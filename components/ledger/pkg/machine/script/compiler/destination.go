@@ -3,7 +3,7 @@ package compiler
 import (
 	"errors"
 
-	"github.com/numary/ledger/pkg/machine"
+	"github.com/numary/ledger/pkg/core"
 	"github.com/numary/ledger/pkg/machine/script/parser"
 	"github.com/numary/ledger/pkg/machine/vm/program"
 )
@@ -26,7 +26,7 @@ func (p *parseVisitor) VisitDestinationRecursive(c parser.IDestinationContext) *
 		if err != nil {
 			return err
 		}
-		if ty != machine.TypeAccount {
+		if ty != core.TypeAccount {
 			return LogicError(c,
 				errors.New("wrong type: expected account as destination"),
 			)
@@ -41,7 +41,7 @@ func (p *parseVisitor) VisitDestinationRecursive(c parser.IDestinationContext) *
 		// initialize the `kept` accumulator
 		p.AppendInstruction(program.OP_FUNDING_SUM)
 		p.AppendInstruction(program.OP_ASSET)
-		err := p.PushInteger(machine.NewNumber(0))
+		err := p.PushInteger(core.NewNumber(0))
 		if err != nil {
 			return LogicError(c, err)
 		}
@@ -57,7 +57,7 @@ func (p *parseVisitor) VisitDestinationRecursive(c parser.IDestinationContext) *
 			if compErr != nil {
 				return compErr
 			}
-			if ty != machine.TypeMonetary {
+			if ty != core.TypeMonetary {
 				return LogicError(c, errors.New("wrong type: expected monetary as max"))
 			}
 			p.AppendInstruction(program.OP_TAKE_MAX)
@@ -84,7 +84,7 @@ func (p *parseVisitor) VisitDestinationRecursive(c parser.IDestinationContext) *
 			if err != nil {
 				return LogicError(c, err)
 			}
-			err = p.PushInteger(machine.NewNumber(2))
+			err = p.PushInteger(core.NewNumber(2))
 			if err != nil {
 				return LogicError(c, err)
 			}
@@ -110,7 +110,7 @@ func (p *parseVisitor) VisitDestinationRecursive(c parser.IDestinationContext) *
 		if err != nil {
 			return LogicError(c, err)
 		}
-		err = p.PushInteger(machine.NewNumber(2))
+		err = p.PushInteger(core.NewNumber(2))
 		if err != nil {
 			return LogicError(c, err)
 		}
@@ -169,7 +169,7 @@ func (p *parseVisitor) VisitAllocDestination(dests []parser.IKeptOrDestinationCo
 		if err != nil {
 			return LogicError(dest, err)
 		}
-		err = p.PushInteger(machine.NewNumber(2))
+		err = p.PushInteger(core.NewNumber(2))
 		if err != nil {
 			return LogicError(dest, err)
 		}

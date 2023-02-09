@@ -1,4 +1,4 @@
-package machine
+package core
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 
 type FundingPart struct {
 	Amount  *MonetaryInt
-	Account Account
+	Account AccountAddress
 }
 
 func (Funding) GetType() Type { return TypeFunding }
