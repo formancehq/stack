@@ -10,8 +10,8 @@ const (
 )
 
 type Account struct {
-	Address  string   `json:"address" example:"users:001"`
-	Metadata Metadata `json:"metadata" swaggertype:"object"`
+	Address  AccountAddress `json:"address" example:"users:001"`
+	Metadata Metadata       `json:"metadata" swaggertype:"object"`
 }
 
 type AccountWithVolumes struct {
@@ -31,7 +31,7 @@ func (a AccountAddress) String() string {
 	return fmt.Sprintf("@%v", string(a))
 }
 
-func ParseAccount(acc AccountAddress) error {
+func ParseAccountAddress(acc AccountAddress) error {
 	// TODO: handle properly in ledger v1.10
 	if acc == "" {
 		return nil

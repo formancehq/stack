@@ -51,7 +51,7 @@ func (p *Program) ParseVariables(vars map[string]core.Value) (map[string]core.Va
 				variables[variable.Name] = val
 				switch val.GetType() {
 				case core.TypeAccount:
-					if err := core.ParseAccount(val.(core.AccountAddress)); err != nil {
+					if err := core.ParseAccountAddress(val.(core.AccountAddress)); err != nil {
 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
 							variable.Name, string(val.(core.AccountAddress)))
 					}
