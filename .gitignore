@@ -6,4 +6,3 @@ dist
 vendor
 .gitpod/_output
 .garden
-tests/loadtesting/results/results.json
