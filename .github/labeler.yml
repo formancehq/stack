@@ -14,8 +14,6 @@ github:
   - components/fctl/*
 'components/ledger':
   - components/ledger/*
-'components/machine':
-  - components/machine/*
 'components/operator':
   - components/operator/*
 'components/orchestration':

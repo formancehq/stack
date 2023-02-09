@@ -67,9 +67,6 @@ includes:
   ledger:
     taskfile: ./components/ledger
     dir: ./components/ledger
-  machine:
-    taskfile: ./components/machine
-    dir: ./components/machine
   orchestration:
     taskfile: ./components/orchestration
     dir: ./components/orchestration
