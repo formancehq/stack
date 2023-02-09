@@ -3,12 +3,15 @@ package fctl
 import (
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/pkg/errors"
+	"github.com/segmentio/analytics-go/v3"
+	"github.com/segmentio/ksuid"
 	"github.com/spf13/cobra"
 )
 
 const (
-	stackFlag        = "stack"
-	organizationFlag = "organization"
+	stackFlag              = "stack"
+	organizationFlag       = "organization"
+	DefaultSegmentWriteKey = ""
 )
 
 var (
@@ -269,9 +272,44 @@ func NewMembershipCommand(use string, opts ...CommandOption) *cobra.Command {
 func NewCommand(use string, opts ...CommandOption) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: use,
+		PersistentPostRun: func(cmd *cobra.Command, args []string) {
+			if GetBool(cmd, TelemetryFlag) {
+				cfg, err := GetConfig(cmd)
+				if err != nil {
+					return
+				}
+
+				if cfg.GetUniqueID() == "" {
+					uniqueID := ksuid.New().String()
+					cfg.SetUniqueID(uniqueID)
+					err = cfg.Persist()
+					if err != nil {
+						return
+					}
+				}
+
+				client := NewAnalyticsClient()
+				defer client.Close()
+				err = client.Enqueue(analytics.Track{
+					UserId: cfg.GetUniqueID(),
+					Event:  "fctl usages",
+					Properties: analytics.NewProperties().
+						Set("command", cmd.Name()).
+						Set("args", args),
+				})
+				if err != nil {
+					return
+				}
+			}
+		},
 	}
 	for _, opt := range opts {
 		opt.apply(cmd)
 	}
 	return cmd
+}
+
+func NewAnalyticsClient() analytics.Client {
+	client := analytics.New(DefaultSegmentWriteKey)
+	return client
 }

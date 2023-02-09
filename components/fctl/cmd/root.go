@@ -58,44 +58,8 @@ func NewRootCommand() *cobra.Command {
 		fctl.WithPersistentStringPFlag(fctl.FileFlag, "c", fmt.Sprintf("%s/.formance/fctl.config", homedir), "Debug mode"),
 		fctl.WithPersistentBoolPFlag(fctl.DebugFlag, "d", false, "Debug mode"),
 		fctl.WithPersistentBoolFlag(fctl.InsecureTlsFlag, false, "Insecure TLS"),
+		fctl.WithPersistentBoolFlag(fctl.TelemetryFlag, true, "Telemetry enabled"),
 	)
-	//cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-	//
-	//	cfg, err := fctl.GetConfig(cmd)
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	profile := fctl.GetCurrentProfile(cmd, cfg)
-	//	httpClient := fctl.GetHttpClient(cmd)
-	//	configuration := membershipclient.NewConfiguration()
-	//	configuration.HTTPClient = httpClient
-	//	configuration.Servers[0].URL = profile.GetMembershipURI()
-	//	client := membershipclient.NewAPIClient(configuration)
-	//	serverInfo, _, err := client.DefaultApi.GetServerInfo(cmd.Context()).Execute()
-	//	if err != nil {
-	//		return err
-	//	}
-	//
-	//	serverVersion, err := semver.NewVersion(serverInfo.Version)
-	//	if err != nil {
-	//		pterm.Warning.Printfln("Server version is not semver, skip version checks: %s\r\n", err)
-	//		return nil
-	//	}
-	//	fctlVersion, err := semver.NewVersion(Version)
-	//	if err != nil {
-	//		pterm.Warning.Printfln("FCTL version is not semver, skip version checks: %s\r\n", err)
-	//		return nil
-	//	}
-	//
-	//	if serverVersion.Major() != fctlVersion.Major() {
-	//		return errors.New("you use an incompatible version of FCTL, please upgrade\r\n")
-	//	}
-	//	if serverVersion.Minor()-fctlVersion.Minor() >= MaxVersionShift {
-	//		return errors.New("")
-	//	}
-	//	return nil
-	//}
 	return cmd
 }
 

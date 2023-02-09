@@ -11,6 +11,8 @@ require (
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/pkg/errors v0.9.1
 	github.com/pterm/pterm v0.12.50
+	github.com/segmentio/analytics-go/v3 v3.2.1
+	github.com/segmentio/ksuid v1.0.4
 	github.com/spf13/cobra v1.6.1
 	github.com/zitadel/oidc v1.8.0
 	golang.org/x/oauth2 v0.3.0
@@ -35,6 +37,7 @@ require (
 	github.com/mattn/go-tty v0.0.4 // indirect
 	github.com/pkg/term v1.2.0-beta.2 // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
+	github.com/segmentio/backo-go v1.0.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/talal/go-bits v0.0.0-20200204154716-071e9f3e66e1 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect

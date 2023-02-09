@@ -10,10 +10,12 @@ import (
 type persistedConfig struct {
 	CurrentProfile string              `json:"currentProfile"`
 	Profiles       map[string]*Profile `json:"profiles"`
+	UniqueID       string              `json:"uniqueID"`
 }
 
 type Config struct {
 	currentProfile string
+	uniqueID       string
 	profiles       map[string]*Profile
 	manager        *ConfigManager
 }
@@ -22,6 +24,7 @@ func (c *Config) MarshalJSON() ([]byte, error) {
 	return json.Marshal(persistedConfig{
 		CurrentProfile: c.currentProfile,
 		Profiles:       c.profiles,
+		UniqueID:       c.uniqueID,
 	})
 }
 
@@ -33,6 +36,7 @@ func (c *Config) UnmarshalJSON(data []byte) error {
 	*c = Config{
 		currentProfile: cfg.CurrentProfile,
 		profiles:       cfg.Profiles,
+		uniqueID:       cfg.UniqueID,
 	}
 	return nil
 }
@@ -79,8 +83,16 @@ func (c *Config) SetCurrentProfile(name string, profile *Profile) {
 	c.currentProfile = name
 }
 
+func (c *Config) SetUniqueID(id string) {
+	c.uniqueID = id
+}
+
 func (c *Config) SetProfile(name string, profile *Profile) {
 	c.profiles[name] = profile
+}
+
+func (c *Config) GetUniqueID() string {
+	return c.uniqueID
 }
 
 func (c *Config) GetProfiles() map[string]*Profile {
