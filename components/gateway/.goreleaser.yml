@@ -1,42 +1,34 @@
-project_name: go-project-template
-env:
-  - GO111MODULE=on
-  - GOPROXY=https://proxy.golang.org
-before:
-  hooks:
-    - go mod download
+project_name: gateway
+
+monorepo:
+  tag_prefix: components/gateway/
+  dir: ./components/gateway
 
 builds:
-  - binary: go-project-template
-    id: go-project-template
+  - binary: gateway
+    id: gateway
     ldflags:
-      - -X github.com/formancehq/go-project-template/cmd.BuildDate={{ .Date }}
-      - -X github.com/formancehq/go-project-template/cmd.Version={{ .Version }}
-      - -X github.com/formancehq/go-project-template/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/stack/components/gateway/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/stack/components/gateway/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/stack/components/gateway/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
     goos:
-      - windows
       - linux
-      - darwin
     goarch:
       - amd64
       - arm64
 
 archives:
-  - id: "go-project-template"
-    builds:
-      - go-project-template
+  - id: {{.ProjectName}}
+    build:
+      - gateway
     format: tar.gz
-    format_overrides:
-      - goos: windows
-        format: zip
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
 
-
 checksum:
-  name_template: 'checksums.txt'
+  name_template: '{{.ProjectName}}_checksums.txt'
 
 snapshot:
   name_template: "{{ .Tag }}"
@@ -66,6 +58,44 @@ changelog:
 release:
   prerelease: auto
   footer: |
-    **Full Changelog**: https://github.com/formancehq/go-project-template/compare/{{ .PreviousTag }}...{{ .Tag }}
     ## What to do next?
-    - Join our [Discord server](https://discord.gg/xyHvcbzk4w)
+    - Read the [documentation](https://docs.formance.com/)
+    - Join our [Slack server](https://formance.com/slack)
+
+dockers:
+  - image_templates: ["ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64"]
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/amd64
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.source=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
+  - image_templates: [ "ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64" ]
+    goarch: arm64
+    dockerfile: Dockerfile
+    use: buildx
+    build_flag_templates:
+      - --platform=linux/arm64/v8
+      - --label=org.opencontainers.image.title={{ .ProjectName }}
+      - --label=org.opencontainers.image.description={{ .ProjectName }}
+      - --label=org.opencontainers.image.url=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.source=https://github.com/formancehq/stack
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=MIT
+docker_manifests:
+  - name_template: ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}
+    image_templates:
+      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64
+      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64
+  - name_template: ghcr.io/formancehq/{{ .ProjectName }}:latest
+    image_templates:
+      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64
+      - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64
