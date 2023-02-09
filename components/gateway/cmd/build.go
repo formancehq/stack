@@ -1,10 +1,9 @@
 package cmd
 
 import (
+	"github.com/formancehq/stack/components/gateway/pkg/builder"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	"github.com/formancehq/stack/components/gateway/pkg/builder"
 )
 
 const (
@@ -29,8 +28,14 @@ var buildCmd = &cobra.Command{
 
 func init() {
 	buildCmd.Flags().String(caddyBuilderConfigPath, "", "Path to the caddy builder's config file")
-	buildCmd.MarkFlagRequired(caddyBuilderConfigPath)
+	if err := buildCmd.MarkFlagRequired(caddyBuilderConfigPath); err != nil {
+		panic(err)
+	}
+
 	buildCmd.Flags().String(caddyBinaryOutputPath, "", "Path to the caddy binary output file")
-	buildCmd.MarkFlagRequired(caddyBinaryOutputPath)
+	if err := buildCmd.MarkFlagRequired(caddyBinaryOutputPath); err != nil {
+		panic(err)
+	}
+
 	rootCmd.AddCommand(buildCmd)
 }

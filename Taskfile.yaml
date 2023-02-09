@@ -59,7 +59,7 @@ includes:
     dir: ./components/fctl
   gateway:
     taskfile: ./components/gateway
-    dit: ./components/gateway
+    dir: ./components/gateway
   ledger:
     taskfile: ./components/ledger
     dir: ./components/ledger
