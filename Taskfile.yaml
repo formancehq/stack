@@ -29,6 +29,7 @@ tasks:
     cmds:
       - task auth:tests
       - task fctl:tests
+      - task gateway:tests
       - task orchestration:tests
       - task payments:tests
       - task search:tests
@@ -39,6 +40,7 @@ tasks:
     cmds:
       - task auth:lint
       - task fctl:lint
+      - task gateway:lint
       - task orchestration:lint
       - task payments:lint
       - task search:lint
@@ -55,6 +57,9 @@ includes:
   fctl:
     taskfile: ./components/fctl
     dir: ./components/fctl
+  gateway:
+    taskfile: ./components/gateway
+    dit: ./components/gateway
   ledger:
     taskfile: ./components/ledger
     dir: ./components/ledger
