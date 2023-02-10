@@ -11,6 +11,26 @@ webhooks:
     service:
       name: webhook-service
       namespace: system
+      path: /mutate-stack-formance-com-v1beta3-configuration
+  failurePolicy: Fail
+  name: mconfiguration.kb.io
+  rules:
+  - apiGroups:
+    - stack.formance.com
+    apiVersions:
+    - v1beta3
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - configurations
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: webhook-service
+      namespace: system
       path: /mutate-stack-formance-com-v1beta3-stack
   failurePolicy: Fail
   name: mstacks.kb.io

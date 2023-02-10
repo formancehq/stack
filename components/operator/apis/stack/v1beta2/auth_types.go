@@ -7,13 +7,11 @@ import (
 
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
 	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
-	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
-	"github.com/formancehq/operator/pkg/typeutils"
-	"k8s.io/apimachinery/pkg/util/validation/field"
+	"github.com/formancehq/operator/internal/collectionutils"
 )
 
 type AuthSpec struct {
-	Postgres apisv1beta2.PostgresConfig `json:"postgres"`
+	Postgres componentsv1beta2.PostgresConfig `json:"postgres"`
 	// +optional
 	Ingress *IngressConfig `json:"ingress"`
 	// +optional
@@ -25,7 +23,7 @@ func (in AuthSpec) NeedAuthMiddleware() bool {
 }
 
 func (in AuthSpec) Spec(stack *Stack, configuration ConfigurationSpec) any {
-	stackStaticClients := typeutils.SliceFromMap(stack.Status.StaticAuthClients)
+	stackStaticClients := collectionutils.SliceFromMap(stack.Status.StaticAuthClients)
 	sort.SliceStable(
 		stackStaticClients,
 		func(i, j int) bool {
@@ -37,7 +35,7 @@ func (in AuthSpec) Spec(stack *Stack, configuration ConfigurationSpec) any {
 	return componentsv1beta2.AuthSpec{
 		Postgres: componentsv1beta2.PostgresConfigCreateDatabase{
 			CreateDatabase: true,
-			PostgresConfigWithDatabase: apisv1beta2.PostgresConfigWithDatabase{
+			PostgresConfigWithDatabase: componentsv1beta2.PostgresConfigWithDatabase{
 				PostgresConfig: configuration.Services.Auth.Postgres,
 				Database:       fmt.Sprintf("%s-auth", stack.Name),
 			},
@@ -46,18 +44,4 @@ func (in AuthSpec) Spec(stack *Stack, configuration ConfigurationSpec) any {
 		DelegatedOIDCServer: stack.Spec.Auth.DelegatedOIDCServer,
 		StaticClients:       staticClients,
 	}
-}
-
-func (in AuthSpec) HTTPPort() int {
-	return 8080
-}
-
-func (in AuthSpec) AuthClientConfiguration(stack *Stack) *authcomponentsv1beta2.ClientConfiguration {
-	return nil
-}
-
-func (in AuthSpec) Validate() field.ErrorList {
-	return typeutils.MergeAll(
-		typeutils.Map(in.Postgres.Validate(), apisv1beta2.AddPrefixToFieldError("postgres.")),
-	)
 }

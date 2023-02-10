@@ -1,0 +1,44 @@
+package handlers
+
+import (
+	"github.com/formancehq/operator/apis/stack/v1beta3"
+	"github.com/formancehq/operator/internal/modules"
+)
+
+func init() {
+	env := func(resolveContext modules.ContainerResolutionContext) modules.ContainerEnv {
+		return modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "payments").
+			Append(
+				modules.Env("POSTGRES_DATABASE_NAME", "$(POSTGRES_DATABASE)"),
+				modules.Env("CONFIG_ENCRYPTION_KEY", resolveContext.Configuration.Spec.Services.Payments.EncryptionKey),
+				modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("payments")),
+			)
+	}
+	modules.Register("payments", modules.Module{
+		Postgres: func(ctx modules.Context) v1beta3.PostgresConfig {
+			return ctx.Configuration.Spec.Services.Payments.Postgres
+		},
+		Services: func(ctx modules.Context) modules.Services {
+			return modules.Services{{
+				Port:                    8080,
+				Path:                    "/api/payments",
+				InjectPostgresVariables: true,
+				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
+					return modules.Container{
+						Env:      env(resolveContext),
+						Image:    modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+						Liveness: modules.LivenessLegacy,
+					}
+				},
+				InitContainer: func(resolveContext modules.ContainerResolutionContext) []modules.Container {
+					return []modules.Container{{
+						Name:    "migrate",
+						Image:   modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+						Env:     env(resolveContext),
+						Command: []string{"payments", "migrate", "up"},
+					}}
+				},
+			}}
+		},
+	})
+}

@@ -107,8 +107,8 @@ spec:
   services:
     auth:
       postgres:
-        host: postgres-postgresql.default.svc.cluster.local
-        port: 5432
+        host: host.k3d.internal
+        port: 30000
         username: formance
         password: formance
       staticClients:
@@ -118,27 +118,23 @@ spec:
         - bar
     ledger:
       postgres:
-        host: postgres-postgresql.default.svc.cluster.local
-        port: 5432
+        host: host.k3d.internal
+        port: 30000
         username: formance
         password: formance
         disableSSLMode: true
-      locking:
-        strategy: redis
-        redis:
-          uri: redis://redis-headless.default.svc.cluster.local:6379
     payments:
       postgres:
-        host: postgres-postgresql.default.svc.cluster.local
-        port: 5432
+        host: host.k3d.internal
+        port: 30000
         username: formance
         password: formance
         disableSSLMode: true
       encryptionKey: ClaptonIsGod
     orchestration:
       postgres:
-        host: postgres-postgresql.default.svc.cluster.local
-        port: 5432
+        host: host.k3d.internal
+        port: 30000
         username: formance
         password: formance
         disableSSLMode: true
@@ -147,22 +143,15 @@ spec:
         host: zinc.default.svc.cluster.local
         port: 4080
         scheme: http
-        pathPrefix: /api
+        pathPrefix: /es
         useZinc: true
         basicAuth:
           username: admin
           password: "Complexpass#123"
     webhooks:
       postgres:
-        host: postgres-postgresql.default.svc.cluster.local
-        port: 5432
-        username: formance
-        password: formance
-        disableSSLMode: true
-    counterparties:
-      postgres:
-        host: postgres-postgresql.default.svc.cluster.local
-        port: 5432
+        host: host.k3d.internal
+        port: 30000
         username: formance
         password: formance
         disableSSLMode: true
@@ -172,17 +161,17 @@ kind: Versions
 metadata:
   name: default
 spec:
-  control: 59e871d64514ec01c84ea18b34cf0788d17d7f63
+  control: b8095a6244484304f9de3e530e5a41a3657fe56f
   search: 58fff24a1e1aa4160f2dbb3a3169ba416e4d255f
   orchestration: 58fff24a1e1aa4160f2dbb3a3169ba416e4d255f
   ledger: 79961782b3e5b0849121739ac61fbcd1f395a2b0
   payments: 79961782b3e5b0849121739ac61fbcd1f395a2b0
-  webhooks: e12a22879f72b5817255dffb6a9b22d1a2fc578e
+  webhooks: v0.6.2
 ---
 apiVersion: stack.formance.com/v1beta3
 kind: Stack
 metadata:
-  name: stack3
+  name: stack1
 spec:
   debug: true
   dev: true

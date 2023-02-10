@@ -17,12 +17,8 @@ limitations under the License.
 package v1beta2
 
 import (
-	"reflect"
 	"time"
 
-	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
-	"github.com/formancehq/operator/pkg/typeutils"
-	"github.com/numary/auth/authclient"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -42,23 +38,9 @@ type TransientScopeStatus struct {
 
 // ScopeStatus defines the observed state of Scope
 type ScopeStatus struct {
-	apisv1beta2.Status `json:",inline"`
-	AuthServerID       string                          `json:"authServerID,omitempty"`
-	Transient          map[string]TransientScopeStatus `json:"transient,omitempty"`
-}
-
-func (in *ScopeStatus) IsDirty(t apisv1beta2.Object) bool {
-	if in.Status.IsDirty(t) {
-		return true
-	}
-	scope := t.(*Scope)
-	if in.AuthServerID != scope.Status.AuthServerID {
-		return true
-	}
-	if !reflect.DeepEqual(in.Transient, scope.Status.Transient) {
-		return true
-	}
-	return false
+	Status       `json:",inline"`
+	AuthServerID string                          `json:"authServerID,omitempty"`
+	Transient    map[string]TransientScopeStatus `json:"transient,omitempty"`
 }
 
 //+kubebuilder:object:root=true
@@ -75,24 +57,8 @@ type Scope struct {
 	Status ScopeStatus `json:"status,omitempty"`
 }
 
-func (s *Scope) GetStatus() apisv1beta2.Dirty {
-	return &s.Status
-}
-
-func (s *Scope) IsDirty(t apisv1beta2.Object) bool {
-	return authServerChanges(t, s, s.Spec.AuthServerReference)
-}
-
-func (in *Scope) GetConditions() *apisv1beta2.Conditions {
-	return &in.Status.Conditions
-}
-
 func (s *Scope) AuthServerReference() string {
 	return s.Spec.AuthServerReference
-}
-
-func (s *Scope) IsInTransient(authScope *authclient.Scope) bool {
-	return typeutils.First(authScope.Transient, typeutils.Equal(s.Status.AuthServerID)) != nil
 }
 
 func (s *Scope) IsCreatedOnAuthServer() bool {

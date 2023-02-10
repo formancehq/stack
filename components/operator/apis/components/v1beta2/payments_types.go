@@ -17,45 +17,32 @@ limitations under the License.
 package v1beta2
 
 import (
-	pkgapisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // PaymentsSpec defines the desired state of Payments
 type PaymentsSpec struct {
-	pkgapisv1beta2.CommonServiceProperties `json:",inline"`
+	CommonServiceProperties `json:",inline"`
 
 	// +optional
-	Monitoring *pkgapisv1beta2.MonitoringSpec `json:"monitoring"`
+	Monitoring *MonitoringSpec `json:"monitoring"`
 	// +optional
 	Collector *CollectorConfig `json:"collector"`
 	// +optional
-	Postgres      PostgresConfigCreateDatabase `json:"postgres"`
-	EncryptionKey string                       `json:"encryptionKey"`
+	Postgres PostgresConfigCreateDatabase `json:"postgres"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:storageversion
 
 // Payments is the Schema for the payments API
 type Payments struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   PaymentsSpec          `json:"spec,omitempty"`
-	Status pkgapisv1beta2.Status `json:"status,omitempty"`
-}
-
-func (in *Payments) GetStatus() pkgapisv1beta2.Dirty {
-	return &in.Status
-}
-
-func (in *Payments) GetConditions() *pkgapisv1beta2.Conditions {
-	return &in.Status.Conditions
-}
-
-func (in *Payments) IsDirty(t pkgapisv1beta2.Object) bool {
-	return false
+	Spec   PaymentsSpec `json:"spec,omitempty"`
+	Status Status       `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true

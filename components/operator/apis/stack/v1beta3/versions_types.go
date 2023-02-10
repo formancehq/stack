@@ -41,8 +41,6 @@ type VersionsSpec struct {
 	Wallets string `json:"wallets"`
 	// +optional
 	Orchestration string `json:"orchestration"`
-	// +optional
-	Counterparties string `json:"counterparties"`
 }
 
 // VersionsStatus defines the observed state of Versions

@@ -2,17 +2,49 @@ package v1beta3
 
 import (
 	"fmt"
-
-	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
-	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
-	"github.com/formancehq/operator/pkg/apis/v1beta2"
-	"github.com/formancehq/operator/pkg/typeutils"
-	"k8s.io/apimachinery/pkg/util/validation/field"
 )
+
+type Batching struct {
+	Count  int    `json:"count"`
+	Period string `json:"period"`
+}
+
+type ElasticSearchTLSConfig struct {
+	// +optional
+	Enabled bool `json:"enabled,omitempty"`
+	// +optional
+	SkipCertVerify bool `json:"skipCertVerify,omitempty"`
+}
+
+type ElasticSearchBasicAuthConfig struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type ElasticSearchConfig struct {
+	// +optional
+	// +kubebuilder:validation:Enum:={http,https}
+	// +kubebuilder:validation:default:=https
+	Scheme string `json:"scheme,omitempty"`
+	Host   string `json:"host,omitempty"`
+	Port   uint16 `json:"port,omitempty"`
+	// +optional
+	TLS ElasticSearchTLSConfig `json:"tls"`
+	// +optional
+	BasicAuth *ElasticSearchBasicAuthConfig `json:"basicAuth"`
+	// +optional
+	PathPrefix string `json:"pathPrefix"`
+	// +optional
+	UseZinc bool `json:"useZinc,omitempty"`
+}
+
+func (in *ElasticSearchConfig) Endpoint() string {
+	return fmt.Sprintf("%s://%s:%d%s", in.Scheme, in.Host, in.Port, in.PathPrefix)
+}
 
 // +kubebuilder:object:generate=true
 type SearchSpec struct {
-	ElasticSearchConfig componentsv1beta3.ElasticSearchConfig `json:"elasticSearch"`
+	ElasticSearchConfig ElasticSearchConfig `json:"elasticSearch"`
 
 	// +optional
 	Scaling ScalingSpec `json:"scaling,omitempty"`
@@ -21,36 +53,5 @@ type SearchSpec struct {
 	Ingress *IngressConfig `json:"ingress"`
 
 	// +optional
-	Batching componentsv1beta3.Batching `json:"batching"`
-}
-
-func (in SearchSpec) NeedAuthMiddleware() bool {
-	return true
-}
-
-func (in SearchSpec) Spec(stack *Stack, configuration ConfigurationSpec) any {
-	return componentsv1beta3.SearchSpec{
-		ElasticSearch: configuration.Services.Search.ElasticSearchConfig,
-		Broker:        configuration.Broker,
-		Index:         stack.Name,
-		Batching:      configuration.Services.Search.Batching,
-		PostgresConfigs: componentsv1beta3.SearchPostgresConfigs{
-			Ledger: v1beta2.PostgresConfigWithDatabase{
-				PostgresConfig: configuration.Services.Ledger.Postgres,
-				Database:       fmt.Sprintf("%s-ledger", stack.Name),
-			},
-		},
-	}
-}
-
-func (in SearchSpec) HTTPPort() int {
-	return 8080
-}
-
-func (in SearchSpec) AuthClientConfiguration(stack *Stack) *authcomponentsv1beta2.ClientConfiguration {
-	return nil
-}
-
-func (in SearchSpec) Validate() field.ErrorList {
-	return typeutils.Map(in.ElasticSearchConfig.Validate(), v1beta2.AddPrefixToFieldError("elasticSearch"))
+	Batching Batching `json:"batching"`
 }

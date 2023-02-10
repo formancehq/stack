@@ -19,7 +19,6 @@ package v1beta1
 import (
 	"encoding/json"
 
-	. "github.com/formancehq/operator/pkg/apis/v1beta2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -33,6 +32,8 @@ type StreamSpec struct {
 	Config json.RawMessage `json:"config"`
 }
 
+type Status struct{}
+
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
@@ -43,18 +44,6 @@ type Stream struct {
 
 	Spec   StreamSpec `json:"spec,omitempty"`
 	Status Status     `json:"status,omitempty"`
-}
-
-func (in *Stream) GetStatus() Dirty {
-	return &in.Status
-}
-
-func (in *Stream) IsDirty(t Object) bool {
-	return false
-}
-
-func (in *Stream) GetConditions() *Conditions {
-	return &in.Status.Conditions
 }
 
 //+kubebuilder:object:root=true

@@ -17,14 +17,15 @@ limitations under the License.
 package v1beta2
 
 import (
-	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type CommonServiceProperties struct{}
+
 // ServerSpec defines the desired state of Server
 type ServerSpec struct {
-	apisv1beta2.CommonServiceProperties `json:",inline"`
+	CommonServiceProperties `json:",inline"`
 	// +optional
 	InitContainers []corev1.Container `json:"containers,omitempty"`
 	// +optional
@@ -41,6 +42,8 @@ type ServerSpec struct {
 	ConfigurationFile string `json:"configurationFile"`
 }
 
+type Status struct{}
+
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:storageversion
@@ -50,20 +53,8 @@ type Server struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   ServerSpec         `json:"spec,omitempty"`
-	Status apisv1beta2.Status `json:"status,omitempty"`
-}
-
-func (in *Server) GetStatus() apisv1beta2.Dirty {
-	return &in.Status
-}
-
-func (in *Server) IsDirty(t apisv1beta2.Object) bool {
-	return false
-}
-
-func (in *Server) GetConditions() *apisv1beta2.Conditions {
-	return &in.Status.Conditions
+	Spec   ServerSpec `json:"spec,omitempty"`
+	Status Status     `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true

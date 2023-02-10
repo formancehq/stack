@@ -19,7 +19,6 @@ package v1beta2
 import (
 	"encoding/json"
 
-	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -42,20 +41,8 @@ type Stream struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   StreamSpec         `json:"spec,omitempty"`
-	Status apisv1beta2.Status `json:"status,omitempty"`
-}
-
-func (in *Stream) GetStatus() apisv1beta2.Dirty {
-	return &in.Status
-}
-
-func (in *Stream) IsDirty(t apisv1beta2.Object) bool {
-	return false
-}
-
-func (in *Stream) GetConditions() *apisv1beta2.Conditions {
-	return &in.Status.Conditions
+	Spec   StreamSpec `json:"spec,omitempty"`
+	Status Status     `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true

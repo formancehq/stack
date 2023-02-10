@@ -23,7 +23,7 @@ package v1beta2
 
 import (
 	auth_componentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
-	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
+	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -145,7 +145,7 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 	in.Kafka.DeepCopyInto(&out.Kafka)
 	if in.Monitoring != nil {
 		in, out := &in.Monitoring, &out.Monitoring
-		*out = new(apisv1beta2.MonitoringSpec)
+		*out = new(componentsv1beta2.MonitoringSpec)
 		(*in).DeepCopyInto(*out)
 	}
 	in.Ingress.DeepCopyInto(&out.Ingress)
@@ -258,7 +258,7 @@ func (in *IngressGlobalConfig) DeepCopyInto(out *IngressGlobalConfig) {
 	in.IngressConfig.DeepCopyInto(&out.IngressConfig)
 	if in.TLS != nil {
 		in, out := &in.TLS, &out.TLS
-		*out = new(apisv1beta2.IngressTLS)
+		*out = new(componentsv1beta2.IngressTLS)
 		**out = **in
 	}
 }

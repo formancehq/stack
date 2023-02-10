@@ -18,33 +18,87 @@ package v1beta3
 
 import (
 	"fmt"
-	"reflect"
+	"sort"
 	"strings"
 
-	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
-	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
-	pkgapisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
+	"github.com/formancehq/operator/internal/collectionutils"
+	"github.com/google/uuid"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 )
+
+// Ugly hack to be able to prevent secrets in testing
+// Need to remove this
+var ClientSecretGenerator = func() string {
+	return uuid.NewString()
+}
 
 type IngressGlobalConfig struct {
 	IngressConfig `json:",inline"`
 	// +optional
-	TLS *pkgapisv1beta2.IngressTLS `json:"tls"`
+	TLS *IngressTLS `json:"tls"`
+}
+
+type DelegatedOIDCServerConfiguration struct {
+	Issuer       string `json:"issuer,omitempty"`
+	ClientID     string `json:"clientID,omitempty"`
+	ClientSecret string `json:"clientSecret,omitempty"`
+}
+
+type ClientConfiguration struct {
+	// +optional
+	Public bool `json:"public"`
+	// +optional
+	Description *string `json:"description,omitempty"`
+	// +optional
+	RedirectUris []string `json:"redirectUris,omitempty" yaml:"redirectUris"`
+	// +optional
+	PostLogoutRedirectUris []string `json:"postLogoutRedirectUris,omitempty" yaml:"PostLogoutRedirectUris"`
+	// +optional
+	Scopes []string `json:"scopes,omitempty"`
+}
+
+func (cfg ClientConfiguration) WithAdditionalScopes(scopes ...string) ClientConfiguration {
+	cfg.Scopes = append(cfg.Scopes, scopes...)
+	return cfg
+}
+
+func (cfg ClientConfiguration) WithRedirectUris(redirectUris ...string) ClientConfiguration {
+	cfg.RedirectUris = append(cfg.RedirectUris, redirectUris...)
+	return cfg
+}
+
+func (cfg ClientConfiguration) WithPostLogoutRedirectUris(redirectUris ...string) ClientConfiguration {
+	cfg.PostLogoutRedirectUris = append(cfg.PostLogoutRedirectUris, redirectUris...)
+	return cfg
+}
+
+func NewClientConfiguration() ClientConfiguration {
+	return ClientConfiguration{
+		Scopes: []string{"openid"}, // Required scope
+	}
+}
+
+type StaticClient struct {
+	ClientConfiguration `json:",inline" yaml:",inline"`
+	ID                  string `json:"id" yaml:"id"`
+	// +optional
+	Secrets []string `json:"secrets" yaml:"secrets"`
 }
 
 type StackAuthSpec struct {
-	DelegatedOIDCServer componentsv1beta3.DelegatedOIDCServerConfiguration `json:"delegatedOIDCServer"`
+	DelegatedOIDCServer DelegatedOIDCServerConfiguration `json:"delegatedOIDCServer"`
 	// +optional
-	StaticClients []authcomponentsv1beta2.StaticClient `json:"staticClients,omitempty"`
+	StaticClients []StaticClient `json:"staticClients,omitempty"`
 }
 
 // StackSpec defines the desired state of Stack
 type StackSpec struct {
-	pkgapisv1beta2.DevProperties `json:",inline"`
-	Seed                         string        `json:"seed"`
-	Host                         string        `json:"host"`
-	Auth                         StackAuthSpec `json:"auth"`
+	DevProperties `json:",inline"`
+	Seed          string `json:"seed"`
+	// +kubebuilder:validation:Required
+	Host string        `json:"host"`
+	Auth StackAuthSpec `json:"auth"`
 
 	// +optional
 	Versions string `json:"versions"`
@@ -59,17 +113,10 @@ type ControlAuthentication struct {
 }
 
 type StackStatus struct {
-	pkgapisv1beta2.Status `json:",inline"`
+	Status `json:",inline"`
 
 	// +optional
-	StaticAuthClients map[string]authcomponentsv1beta2.StaticClient `json:"staticAuthClients,omitempty"`
-}
-
-func (s *StackStatus) IsDirty(reference pkgapisv1beta2.Object) bool {
-	if s.Status.IsDirty(reference) {
-		return true
-	}
-	return !reflect.DeepEqual(reference.(*Stack).Status.StaticAuthClients, s.StaticAuthClients)
+	StaticAuthClients map[string]StaticClient `json:"staticAuthClients,omitempty"`
 }
 
 //+kubebuilder:object:root=true
@@ -111,20 +158,67 @@ func (s *Stack) URL() string {
 	return fmt.Sprintf("%s://%s", s.GetScheme(), s.Spec.Host)
 }
 
-func (s *Stack) GetStatus() pkgapisv1beta2.Dirty {
-	return &s.Status
+func (in *Stack) GetServiceNamespacedName(service string) types.NamespacedName {
+	return types.NamespacedName{
+		Namespace: in.Name,
+		Name:      in.GetServiceName(service),
+	}
 }
 
-func (s *Stack) IsDirty(t pkgapisv1beta2.Object) bool {
-	return false
+func (in *Stack) GetServiceName(service string) string {
+	return fmt.Sprintf("%s-%s", in.Name, service)
 }
 
-func (s *Stack) GetConditions() *pkgapisv1beta2.Conditions {
-	return &s.Status.Conditions
+func (in *Stack) GetOrCreateClient(name string, configuration ClientConfiguration) StaticClient {
+	if in.Status.StaticAuthClients == nil {
+		in.Status.StaticAuthClients = map[string]StaticClient{}
+	}
+	if _, ok := in.Status.StaticAuthClients[name]; !ok {
+		in.Status.StaticAuthClients[name] = StaticClient{
+			ID:                  name,
+			Secrets:             []string{ClientSecretGenerator()},
+			ClientConfiguration: configuration,
+		}
+	}
+	return in.Status.StaticAuthClients[name]
 }
 
-func (s *Stack) SubObjectName(v string) string {
-	return fmt.Sprintf("%s-%s", s.Name, strings.ToLower(v))
+func (in *Stack) SetError(err error) {
+	SetCondition(in, ConditionTypeError, metav1.ConditionTrue, err.Error())
+	SetCondition(in, ConditionTypeReady, metav1.ConditionFalse)
+}
+
+func (in *Stack) SetReady() {
+	RemoveCondition(in, ConditionTypeError)
+	RemoveCondition(in, ConditionTypeProgressing)
+	SetCondition(in, ConditionTypeReady, metav1.ConditionTrue)
+}
+
+func (in *Stack) SetProgressing() {
+	SetCondition(in, ConditionTypeProgressing, metav1.ConditionTrue)
+}
+
+func (s *Stack) IsReady() bool {
+	ret := collectionutils.Filter(s.Status.Conditions, func(t Condition) bool {
+		return t.Type == ConditionTypeReady
+	})
+	if len(ret) == 0 {
+		return false
+	}
+	return ret[0].Status == metav1.ConditionTrue
+}
+
+func (s *Stack) GetStaticClients(configuration *Configuration) []StaticClient {
+	stackStaticClients := collectionutils.SliceFromMap(s.Status.StaticAuthClients)
+	sort.SliceStable(
+		stackStaticClients,
+		func(i, j int) bool {
+			return strings.Compare(stackStaticClients[i].ID, stackStaticClients[j].ID) < 0
+		},
+	)
+	staticClients := append(configuration.Spec.Services.Auth.StaticClients, stackStaticClients...)
+	staticClients = append(staticClients, s.Spec.Auth.StaticClients...)
+	return staticClients
 }
 
 //+kubebuilder:object:root=true
