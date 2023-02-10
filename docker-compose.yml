@@ -27,7 +27,6 @@ services:
       - "443:443"
       - "8091:8081"
       - "8080:8080"
-      - "2019:2019"
 
   auth:
     image: "ghcr.io/formancehq/auth:latest"

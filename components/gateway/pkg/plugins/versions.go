@@ -39,8 +39,8 @@ type Versions struct {
 // Implements the caddy.Module interface.
 func (Versions) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
-		// Note: The ID must start by the namespace admin.api.* in order to be
-		// loaded by the admin API.
+		// Note: The ID must start by the namespace http.handlers.* in order to be
+		// loaded by the global handlers.
 		ID:  "http.handlers.versions",
 		New: func() caddy.Module { return new(Versions) },
 	}
@@ -54,8 +54,6 @@ func (v *Versions) Provision(ctx caddy.Context) error {
 		newHTTPClient(),
 		v.Endpoints,
 	)
-
-	v.logger.Info("versions module provisioned", zap.Any("versions", v.Endpoints))
 
 	return nil
 }

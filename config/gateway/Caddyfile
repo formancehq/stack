@@ -78,7 +78,7 @@
 		# order to pass the verification.
 		# Optional field.
 		# issuer_whitelist localhost
- 
+
 		# AudienceWhitelist defines a list of audiences. A non-empty list turns
 		# on "aud verification": the "aud" claim must exist in the given JWT
 		# payload. The verification will pass as long as one of the "aud" values
@@ -144,7 +144,6 @@
 	order versions after metrics
 
 	# Local env dev config
-    admin 0.0.0.0:2019
 	debug
 }
 
@@ -157,7 +156,6 @@ localhost:80 {
 	import handle_path_route_with_jwt "/api/search" "search:8080"
 	import handle_path_route_with_jwt "/api/webhooks" "webhooks:8080"
 
-
 	handle /versions {
 		versions {
 			auth http://127.0.0.1:8080/_info
@@ -169,6 +167,6 @@ localhost:80 {
 	# handle all other requests
 	handle {
 		reverse_proxy 127.0.0.1:3000
-    	import cors
+		import cors
 	}
 }

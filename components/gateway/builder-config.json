@@ -3,7 +3,7 @@
     "plugins": [
         {
             "module_path": "github.com/formancehq/stack/components/gateway/pkg/plugins",
-            "version": "17f96579"
+            "version": "d61ae1ba"
         },
         {
             "module_path": "github.com/ggicci/caddy-jwt",
