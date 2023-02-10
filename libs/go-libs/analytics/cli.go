@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/coreos/go-semver/semver"
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"

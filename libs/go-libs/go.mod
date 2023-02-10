@@ -1,4 +1,4 @@
-module github.com/formancehq/go-libs
+module github.com/formancehq/stack/libs/go-libs
 
 go 1.19
 
