@@ -8,7 +8,7 @@ import (
 	"time"
 
 	auth "github.com/formancehq/auth/pkg"
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.uber.org/fx"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

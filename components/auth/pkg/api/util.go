@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/formancehq/go-libs/api"
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/otel/trace"
 	"gorm.io/gorm"

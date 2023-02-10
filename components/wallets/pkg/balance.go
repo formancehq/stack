@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/formancehq/go-libs/metadata"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/go-chi/chi/v5"
 )
 

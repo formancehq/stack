@@ -12,7 +12,7 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/storage"
 
-	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )

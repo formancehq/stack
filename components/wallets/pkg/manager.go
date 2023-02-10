@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/go-libs/metadata"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pkg/errors"
 )
 

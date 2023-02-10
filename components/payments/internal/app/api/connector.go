@@ -15,9 +15,9 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/formancehq/go-libs/api"
-	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/integration"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 func handleErrorBadRequest(w http.ResponseWriter, r *http.Request, err error) {

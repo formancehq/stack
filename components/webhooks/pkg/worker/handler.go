@@ -3,7 +3,7 @@ package worker
 import (
 	"net/http"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/go-chi/chi/v5"
 	"github.com/riandyrn/otelchi"
 )

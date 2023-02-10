@@ -8,7 +8,7 @@ import (
 	"github.com/formancehq/payments/internal/app/connectors/modulr/client"
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 func taskFetchAccounts(logger logging.Logger, client *client.Client) task.Task {

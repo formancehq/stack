@@ -1,7 +1,7 @@
 package workflow
 
 import (
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/uptrace/bun"
 	"go.temporal.io/sdk/workflow"
 )

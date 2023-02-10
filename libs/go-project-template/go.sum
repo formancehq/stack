@@ -73,8 +73,8 @@ github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7
 github.com/felixge/httpsnoop v1.0.2/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/felixge/httpsnoop v1.0.3 h1:s/nj+GCswXYzN5v2DpNMuMQYe+0DDwt5WVCU6CWBdXk=
 github.com/felixge/httpsnoop v1.0.3/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
-github.com/formancehq/go-libs v1.4.1 h1:rUKfUyZFq9aid+JUIqKN8Mk80Lx06Bx7AreHj+9vyTo=
-github.com/formancehq/go-libs v1.4.1/go.mod h1:IK1zDIGRPi/o8sSApIc1W0VC1Y0DGdADzxvpbqlD8fk=
+github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dca5dc h1:rUKfUyZFq9aid+JUIqKN8Mk80Lx06Bx7AreHj+9vyTo=
+github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dca5dc/go.mod h1:IK1zDIGRPi/o8sSApIc1W0VC1Y0DGdADzxvpbqlD8fk=
 github.com/frankban/quicktest v1.14.3 h1:FJKSZTDHjyhriyC81FLQ0LY93eSai0ZyR/ZIkd3ZUKE=
 github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4HY=
 github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=

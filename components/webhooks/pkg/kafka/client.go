@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/spf13/viper"
 	"github.com/twmb/franz-go/pkg/kgo"

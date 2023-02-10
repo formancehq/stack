@@ -3,7 +3,7 @@ package formance
 import (
 	"encoding/json"
 
-	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 )
 

@@ -8,9 +8,9 @@ import (
 	"time"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/go-libs/pgtesting"
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/go-chi/chi/v5"
 	flag "github.com/spf13/pflag"
 	"github.com/stretchr/testify/require"

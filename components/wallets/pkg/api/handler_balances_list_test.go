@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	sharedapi "github.com/formancehq/go-libs/api"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"

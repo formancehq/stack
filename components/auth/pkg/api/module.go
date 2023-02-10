@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/formancehq/go-libs/api"
-	"github.com/formancehq/go-libs/health"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 	"go.uber.org/fx"

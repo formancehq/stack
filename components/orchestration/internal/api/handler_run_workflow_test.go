@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/formancehq/go-libs/api/apitesting"
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/api/apitesting"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"

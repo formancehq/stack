@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/formancehq/go-libs/pgtesting"
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/workflow/stages"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/stretchr/testify/require"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/testsuite"

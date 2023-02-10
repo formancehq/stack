@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/server"

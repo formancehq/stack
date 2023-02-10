@@ -6,7 +6,7 @@ require (
 	github.com/aquasecurity/esquery v0.2.0
 	github.com/bombsimon/logrusr/v3 v3.1.0
 	github.com/elastic/go-elasticsearch/v7 v7.17.7
-	github.com/formancehq/go-libs v1.4.1
+	github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	github.com/numary/ledger v1.8.1

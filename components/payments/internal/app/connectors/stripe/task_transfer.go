@@ -8,7 +8,7 @@ import (
 
 	"github.com/stripe/stripe-go/v72/transfer"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v72"

@@ -3,8 +3,8 @@ package server
 import (
 	"os"
 
-	"github.com/formancehq/go-libs/logging"
-	"github.com/formancehq/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/webhooks/pkg/httpserver"
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/spf13/viper"

@@ -3,7 +3,7 @@ module github.com/formancehq/go-project-template
 go 1.18
 
 require (
-	github.com/formancehq/go-libs v1.4.1
+	github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/riandyrn/otelchi v0.5.0
 	github.com/sirupsen/logrus v1.9.0

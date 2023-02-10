@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
 func postEventToWorkflowInstance(m *workflow.Manager) http.HandlerFunc {

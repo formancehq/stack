@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/formancehq/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api"
 
 	"github.com/formancehq/payments/internal/app/connectors/bankingcircle"
 	"github.com/formancehq/payments/internal/app/connectors/configtemplate"

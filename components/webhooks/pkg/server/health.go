@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 func (h *serverHandler) HealthCheckHandle(_ http.ResponseWriter, r *http.Request) {

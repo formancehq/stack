@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/formancehq/go-libs/health"
-	"github.com/formancehq/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/riandyrn/otelchi"

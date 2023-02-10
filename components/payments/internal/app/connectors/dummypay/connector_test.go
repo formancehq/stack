@@ -9,7 +9,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stretchr/testify/assert"
 )
 

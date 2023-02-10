@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	sharedapi "github.com/formancehq/go-libs/api"
-	sharedlogging "github.com/formancehq/go-libs/logging"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	wallet "github.com/formancehq/wallets/pkg"
 )
 

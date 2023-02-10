@@ -6,10 +6,10 @@ import (
 	"net/http"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/go-libs/otlp"
-	"github.com/formancehq/go-libs/otlp/otlptraces"
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/temporal"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"

@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20221227110945-2ed7cd120caa
-	github.com/formancehq/go-libs v1.4.1-0.20221229182026-36654270208c
+	github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/render v1.0.2
 	github.com/google/uuid v1.3.0
@@ -43,6 +43,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
 	go.opentelemetry.io/contrib v1.12.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.37.0 // indirect
 	go.opentelemetry.io/contrib/propagators/b3 v1.12.0 // indirect
 	go.opentelemetry.io/otel v1.11.2 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.11.2 // indirect
@@ -51,6 +52,7 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.11.2 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.11.2 // indirect
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.11.2 // indirect
+	go.opentelemetry.io/otel/metric v0.34.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.11.2 // indirect
 	go.opentelemetry.io/otel/trace v1.11.2 // indirect
 	go.opentelemetry.io/proto/otlp v0.19.0 // indirect

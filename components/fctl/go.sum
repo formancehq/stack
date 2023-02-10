@@ -73,10 +73,10 @@ github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7
 github.com/felixge/httpsnoop v1.0.1/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/formancehq/cobra v0.0.0-20221112160629-60a6d6d55ef9 h1:vix/rzvBgwdc0/4HRnEGFUXmqMJdU1LwIZbdXsm4qT4=
 github.com/formancehq/cobra v0.0.0-20221112160629-60a6d6d55ef9/go.mod h1:IOw/AERYS7UzyrGinqmz6HLUo219MORXGxhbaJUqzrY=
-github.com/formancehq/go-libs v1.4.1 h1:rUKfUyZFq9aid+JUIqKN8Mk80Lx06Bx7AreHj+9vyTo=
-github.com/formancehq/go-libs v1.4.1/go.mod h1:IK1zDIGRPi/o8sSApIc1W0VC1Y0DGdADzxvpbqlD8fk=
 github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c h1:artlSyY/egK+XF+cdSsf/USNwIxUCLasRHbQoLNs9wY=
 github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c/go.mod h1:vcDdyFgHzwPIPgoXO1u1UCJQjv2gJBq832VZx13sWBE=
+github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc h1:J6eZ30iHy6J+HuqTgif1T7onkXXACGRT46e4XUwb2L8=
+github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc/go.mod h1:ZYqrXVK5Xd63d2zOZakTV4jb6YlBKkjKfoFR5Q2eTx4=
 github.com/go-gl/glfw v0.0.0-20190409004039-e6da0acd62b1/go.mod h1:vR7hzQXu2zJy9AVAgeJqvqgH9Q5CA+iKCZ2gyEVpxRU=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20200222043503-6f7a984d4dc4/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=

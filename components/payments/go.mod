@@ -7,7 +7,7 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.1.1
 	github.com/bombsimon/logrusr/v3 v3.1.0
 	github.com/davecgh/go-spew v1.1.1
-	github.com/formancehq/go-libs v1.4.1
+	github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v5 v5.2.0

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/formancehq/go-libs/logging"
-	"github.com/formancehq/go-libs/logging/logginglogrus"
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

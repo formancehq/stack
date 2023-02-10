@@ -3,7 +3,7 @@ package wallet
 import (
 	"net/http"
 
-	"github.com/formancehq/go-libs/metadata"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
 var DefaultDebitDest = NewLedgerAccountSubject("world")

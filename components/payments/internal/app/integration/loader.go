@@ -1,8 +1,8 @@
 package integration
 
 import (
-	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/models"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 type Loader[ConnectorConfig models.ConnectorConfigObject] interface {

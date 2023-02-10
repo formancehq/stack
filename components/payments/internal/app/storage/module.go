@@ -14,7 +14,7 @@ import (
 
 	"github.com/uptrace/bun"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.uber.org/fx"
 )
 

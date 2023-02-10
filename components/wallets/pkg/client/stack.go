@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/go-libs/otlp"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
