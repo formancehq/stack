@@ -41,7 +41,7 @@ var rootCmd = &cobra.Command{
 }
 
 func exitWithCode(code int, v ...any) {
-	fmt.Fprintln(os.Stdout, v...)
+	fmt.Fprintln(os.Stderr, v...)
 	os.Exit(code)
 }
 

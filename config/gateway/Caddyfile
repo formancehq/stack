@@ -141,6 +141,7 @@
 	# ordered.
 	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
 	order jwtauth before basicauth
+	order versions after metrics
 
 	# Local env dev config
     admin 0.0.0.0:2019
@@ -156,11 +157,15 @@ localhost:80 {
 	import handle_path_route_with_jwt "/api/search" "search:8080"
 	import handle_path_route_with_jwt "/api/webhooks" "webhooks:8080"
 
-    handle /versions {
-        reverse_proxy 127.0.0.1:2019
-        import cors
-    }
-	
+
+	handle /versions {
+		versions {
+			auth http://127.0.0.1:8080/_info
+			wallets http://wallets:8080/_info
+			search http://search:8080/_info
+		}
+	}
+
 	# handle all other requests
 	handle {
 		reverse_proxy 127.0.0.1:3000

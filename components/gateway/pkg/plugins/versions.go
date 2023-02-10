@@ -9,48 +9,88 @@ import (
 	"time"
 
 	"github.com/caddyserver/caddy/v2"
+	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
+	"github.com/caddyserver/caddy/v2/caddyconfig/httpcaddyfile"
+	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
 
 func init() {
-	caddy.RegisterModule(version{})
+	caddy.RegisterModule(Versions{})
+	httpcaddyfile.RegisterHandlerDirective("versions", parseCaddyfile)
 }
 
-type endpoint struct {
+type Endpoint struct {
 	Name     string `json:"name,omitempty"`
 	Endpoint string `json:"endpoint,omitempty"`
 }
 
-type version struct {
-	logger     *zap.Logger  `json:"-"`
-	httpClient *http.Client `json:"-"`
+// Versions is a module that serves a /versions endpoint. This endpoint will
+// gather all sub-services versions and return them in a JSON response.
+// This module is configurable by end-users via caddy configuration.
+type Versions struct {
+	logger          *zap.Logger  `json:"-"`
+	versionsHandler http.Handler `json:"-"`
 
-	Endpoints []endpoint `json:"endpoints,omitempty"`
+	Endpoints []Endpoint `json:"endpoints,omitempty"`
 }
 
 // Implements the caddy.Module interface.
-func (version) CaddyModule() caddy.ModuleInfo {
+func (Versions) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		// Note: The ID must start by the namespace admin.api.* in order to be
 		// loaded by the admin API.
-		ID:  "admin.api.versions",
-		New: func() caddy.Module { return new(version) },
+		ID:  "http.handlers.versions",
+		New: func() caddy.Module { return new(Versions) },
 	}
 }
 
 // Implements the caddy.Provisioner interface.
-func (v *version) Provision(ctx caddy.Context) error {
+func (v *Versions) Provision(ctx caddy.Context) error {
 	v.logger = ctx.Logger(v)
-	v.httpClient = newHTTPClient()
+	v.versionsHandler = newVersionsHandler(
+		v.logger,
+		newHTTPClient(),
+		v.Endpoints,
+	)
 
+	v.logger.Info("versions module provisioned", zap.Any("versions", v.Endpoints))
+
+	return nil
+}
+
+func parseCaddyfile(h httpcaddyfile.Helper) (caddyhttp.MiddlewareHandler, error) {
+	var v Versions
+	err := v.UnmarshalCaddyfile(h.Dispenser)
+	return v, err
+}
+
+// UnmarshalCaddyfile sets up the handler from Caddyfile tokens. Syntax:
+//
+//	versions {
+//		<field> <value>
+//	}
+func (m *Versions) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
+	m.Endpoints = make([]Endpoint, 0)
+	for d.Next() {
+		for d.NextBlock(0) {
+			key := d.Val()
+			var endpoint string
+			d.Args(&endpoint)
+			m.Endpoints = append(m.Endpoints, Endpoint{
+				Name:     key,
+				Endpoint: endpoint,
+			})
+		}
+	}
 	return nil
 }
 
 // Implements the caddy.Validator interface.
 // Validate is called after the config initialization is completed and after
 // the module is provisioned.
-func (v *version) Validate() error {
+func (v *Versions) Validate() error {
 	for _, endpoint := range v.Endpoints {
 		if _, err := url.ParseRequestURI(endpoint.Endpoint); err != nil {
 			return fmt.Errorf("invalid endpoint %s: %w", endpoint.Name, err)
@@ -60,14 +100,9 @@ func (v *version) Validate() error {
 	return nil
 }
 
-// Implements the caddy.AdminRouter interface.
-func (v *version) Routes() []caddy.AdminRoute {
-	return []caddy.AdminRoute{
-		{
-			Pattern: "/versions",
-			Handler: caddy.AdminHandlerFunc(v.handleVersions),
-		},
-	}
+func (v Versions) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyhttp.Handler) error {
+	v.versionsHandler.ServeHTTP(w, r)
+	return nil
 }
 
 //------------------------------------------------------------------------------
@@ -81,18 +116,33 @@ type versionsResponse struct {
 	Versions []serviceInfo `json:"versions"`
 }
 
+type versionsHandler struct {
+	logger     *zap.Logger
+	httpClient *http.Client
+
+	endpoints []Endpoint
+}
+
+func newVersionsHandler(logger *zap.Logger, httpClient *http.Client, endpoints []Endpoint) http.Handler {
+	return &versionsHandler{
+		logger:     logger,
+		httpClient: httpClient,
+		endpoints:  endpoints,
+	}
+}
+
 func newHTTPClient() *http.Client {
 	return &http.Client{
 		Timeout: 10 * time.Second,
 	}
 }
 
-func (v *version) handleVersions(w http.ResponseWriter, r *http.Request) error {
+func (v *versionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	eg, ctxGroup := errgroup.WithContext(r.Context())
 
-	versions := make(chan serviceInfo, len(v.Endpoints))
+	versions := make(chan serviceInfo, len(v.endpoints))
 
-	for _, endpoint := range v.Endpoints {
+	for _, endpoint := range v.endpoints {
 		edpt := endpoint
 		eg.Go(func() error {
 			req, err := http.NewRequestWithContext(ctxGroup, http.MethodGet, edpt.Endpoint, http.NoBody)
@@ -111,6 +161,10 @@ func (v *version) handleVersions(w http.ResponseWriter, r *http.Request) error {
 					v.logger.Error("failed to close response body", zap.Error(err))
 				}
 			}()
+
+			if resp.StatusCode != http.StatusOK {
+				return fmt.Errorf("failed to get version for %s: %s", edpt.Name, resp.Status)
+			}
 
 			responseBody, err := io.ReadAll(resp.Body)
 			if err != nil {
@@ -131,30 +185,30 @@ func (v *version) handleVersions(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	if err := eg.Wait(); err != nil {
-		return err
+		v.logger.Error("failed to query versions", zap.Error(err))
+		return
 	}
 
 	close(versions)
 
 	res := versionsResponse{}
-	res.Versions = make([]serviceInfo, 0, len(v.Endpoints))
+	res.Versions = make([]serviceInfo, 0, len(v.endpoints))
 	for version := range versions {
 		res.Versions = append(res.Versions, version)
 	}
 
 	if err := json.NewEncoder(w).Encode(res); err != nil {
-		return fmt.Errorf("failed to encode response: %w", err)
+		v.logger.Error("failed to encode response", zap.Error(err))
 	}
-
-	return nil
 }
 
 //------------------------------------------------------------------------------
 
 // Interface Guards
 var (
-	_ caddy.Provisioner = (*version)(nil)
-	_ caddy.Module      = (*version)(nil)
-	_ caddy.AdminRouter = (*version)(nil)
-	_ caddy.Validator   = (*version)(nil)
+	_ caddy.Provisioner           = (*Versions)(nil)
+	_ caddy.Module                = (*Versions)(nil)
+	_ caddyhttp.MiddlewareHandler = (*Versions)(nil)
+	_ caddyfile.Unmarshaler       = (*Versions)(nil)
+	_ caddy.Validator             = (*Versions)(nil)
 )
