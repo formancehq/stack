@@ -319,6 +319,7 @@ github.com/envoyproxy/protoc-gen-validate v0.1.0 h1:EQciDnbrYxy13PgWoY8AqoxGiPrp
 github.com/exoscale/egoscale v0.90.0 h1:DZBXVU3iHqu5Ju5lQ5jWVlPo0IpI98SUo8Aa1UQVrmo=
 github.com/flowstack/go-jsonschema v0.1.1 h1:dCrjGJRXIlbDsLAgTJZTjhwUJnnxVWl1OgNyYh5nyDc=
 github.com/form3tech-oss/jwt-go v3.2.3+incompatible h1:7ZaBxOI7TMoYBfyA3cQHErNNyAWIKUMIwqxEtgHOs5c=
+github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc/go.mod h1:ZYqrXVK5Xd63d2zOZakTV4jb6YlBKkjKfoFR5Q2eTx4=
 github.com/fvbommel/sortorder v1.0.1 h1:dSnXLt4mJYH25uDDGa3biZNQsozaUWDSWeKJ0qqFfzE=
 github.com/gambol99/go-marathon v0.0.0-20180614232016-99a156b96fb2 h1:df6OFl8WNXk82xxP3R9ZPZ5seOA8XZkwLdbEzZF1/xI=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=

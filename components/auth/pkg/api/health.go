@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/formancehq/go-libs/health"
+	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/zitadel/oidc/pkg/client"
 	"github.com/zitadel/oidc/pkg/client/rp"
 )

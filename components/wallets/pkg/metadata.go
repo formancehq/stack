@@ -1,7 +1,7 @@
 package wallet
 
 import (
-	"github.com/formancehq/go-libs/metadata"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
 const (

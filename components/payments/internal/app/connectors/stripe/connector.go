@@ -10,7 +10,7 @@ import (
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 const Name = models.ConnectorProviderStripe

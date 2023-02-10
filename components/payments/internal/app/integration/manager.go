@@ -6,7 +6,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/messages"
 
-	"github.com/formancehq/go-libs/publish"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 
 	"github.com/formancehq/payments/internal/app/storage"
 
@@ -14,8 +14,8 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/task"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 )
 

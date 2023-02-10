@@ -11,9 +11,9 @@ import (
 	"testing"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	sharedapi "github.com/formancehq/go-libs/api"
-	sharedhealth "github.com/formancehq/go-libs/health"
-	"github.com/formancehq/go-libs/metadata"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	sharedhealth "github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"

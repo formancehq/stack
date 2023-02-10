@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pbnjay/memory"
 	"github.com/segmentio/analytics-go"
 )

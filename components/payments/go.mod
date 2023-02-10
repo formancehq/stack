@@ -7,7 +7,7 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.1.1
 	github.com/bombsimon/logrusr/v3 v3.1.0
 	github.com/davecgh/go-spew v1.1.1
-	github.com/formancehq/go-libs v1.4.1
+	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v5 v5.2.0
@@ -120,3 +120,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs

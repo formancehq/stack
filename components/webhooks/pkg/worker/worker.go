@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/kafka"
 	"github.com/formancehq/webhooks/pkg/storage"

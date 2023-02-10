@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
-	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
 func listInstances(m *workflow.Manager) http.HandlerFunc {

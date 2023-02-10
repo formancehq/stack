@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	sharedapi "github.com/formancehq/go-libs/api"
-	"github.com/formancehq/go-libs/metadata"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"

@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/formancehq/go-libs/pgtesting"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	flag "github.com/spf13/pflag"
 )
 

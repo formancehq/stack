@@ -8,9 +8,9 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/task"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 func taskFetchTransfers(logger logging.Logger, client *client, profileID uint64) task.Task {

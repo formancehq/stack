@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/formancehq/go-libs/logging"
-	"github.com/formancehq/go-libs/otlp"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"go.opentelemetry.io/contrib/propagators/b3"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"

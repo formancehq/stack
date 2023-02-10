@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/esquery"
-	"github.com/formancehq/go-libs/api"
-	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/search/pkg/searchengine"
+	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
 )

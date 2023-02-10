@@ -1,9 +1,9 @@
 package wise
 
 import (
-	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/formancehq/payments/internal/app/models"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 type Loader struct{}

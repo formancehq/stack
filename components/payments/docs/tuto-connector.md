@@ -490,7 +490,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/formancehq/go-libs/sharedlogging"
+	"github.com/formancehq/stack/libs/go-libs/sharedlogging"
 	payments "github.com/formancehq/payments/pkg"
 	"github.com/formancehq/payments/pkg/bridge/ingestion"
 	"github.com/formancehq/payments/pkg/bridge/integration"

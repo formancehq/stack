@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/formancehq/go-libs/api"
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
 func runWorkflow(m *workflow.Manager) http.HandlerFunc {

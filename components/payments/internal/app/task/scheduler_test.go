@@ -12,7 +12,7 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/go-libs/logging/logginglogrus"
+	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )

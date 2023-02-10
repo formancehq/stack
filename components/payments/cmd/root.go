@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	_ "github.com/bombsimon/logrusr/v3"
-	"github.com/formancehq/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

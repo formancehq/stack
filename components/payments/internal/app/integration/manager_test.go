@@ -12,8 +12,8 @@ import (
 
 	"github.com/formancehq/payments/internal/app/task"
 
-	"github.com/formancehq/go-libs/logging"
-	"github.com/formancehq/go-libs/logging/logginglogrus"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )

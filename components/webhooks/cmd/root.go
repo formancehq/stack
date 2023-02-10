@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/formancehq/go-libs/logging"
-	"github.com/formancehq/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/spf13/cobra"
 )

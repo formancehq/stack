@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/formancehq/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 func NewRunner(

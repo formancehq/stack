@@ -12,11 +12,11 @@ import (
 
 	"github.com/formancehq/payments/internal/app/storage"
 
-	"github.com/formancehq/go-libs/logging"
-	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/formancehq/payments/internal/app/task"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 	"go.uber.org/dig"
 	"go.uber.org/fx"
 )

@@ -6,9 +6,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/formancehq/go-libs/logging"
-	"github.com/formancehq/go-libs/publish"
 	"github.com/formancehq/payments/internal/app/models"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 )
 
 type Ingester interface {

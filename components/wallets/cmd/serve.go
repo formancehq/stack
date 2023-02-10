@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	sharedapi "github.com/formancehq/go-libs/api"
-	"github.com/formancehq/go-libs/otlp/otlptraces"
+	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/formancehq/wallets/pkg/api"
 	"github.com/formancehq/wallets/pkg/client"

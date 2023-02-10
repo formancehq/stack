@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/formancehq/go-libs/oauth2/oauth2introspect"
+	"github.com/formancehq/stack/libs/go-libs/oauth2/oauth2introspect"
 	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/assert"
 )

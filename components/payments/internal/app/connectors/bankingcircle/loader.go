@@ -1,10 +1,10 @@
 package bankingcircle
 
 import (
-	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/integration"
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/task"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 const Name = models.ConnectorProviderBankingCircle

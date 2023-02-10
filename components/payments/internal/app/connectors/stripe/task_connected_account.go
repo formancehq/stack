@@ -3,9 +3,9 @@ package stripe
 import (
 	"context"
 
-	"github.com/formancehq/go-libs/logging"
 	"github.com/formancehq/payments/internal/app/ingestion"
 	"github.com/formancehq/payments/internal/app/task"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/stripe/stripe-go/v72"
 )
 

@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/formancehq/formance-sdk-go v0.0.0-00010101000000-000000000000
-	github.com/formancehq/go-libs v0.0.0-00010101000000-000000000000
+	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/google/uuid v1.3.0
@@ -137,6 +137,6 @@ require (
 	modernc.org/token v1.1.0 // indirect
 )
 
-replace github.com/formancehq/go-libs => ../../libs/go-libs
+replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
 replace github.com/formancehq/formance-sdk-go => ../../sdks/go
