@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20221227110945-2ed7cd120caa
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc
+	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/render v1.0.2
 	github.com/google/uuid v1.3.0
@@ -72,3 +72,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs

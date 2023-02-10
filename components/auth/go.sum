@@ -84,8 +84,6 @@ github.com/felixge/httpsnoop v1.0.3 h1:s/nj+GCswXYzN5v2DpNMuMQYe+0DDwt5WVCU6CWBd
 github.com/felixge/httpsnoop v1.0.3/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c h1:artlSyY/egK+XF+cdSsf/USNwIxUCLasRHbQoLNs9wY=
 github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c/go.mod h1:vcDdyFgHzwPIPgoXO1u1UCJQjv2gJBq832VZx13sWBE=
-github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc h1:J6eZ30iHy6J+HuqTgif1T7onkXXACGRT46e4XUwb2L8=
-github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc/go.mod h1:ZYqrXVK5Xd63d2zOZakTV4jb6YlBKkjKfoFR5Q2eTx4=
 github.com/frankban/quicktest v1.14.3 h1:FJKSZTDHjyhriyC81FLQ0LY93eSai0ZyR/ZIkd3ZUKE=
 github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4HY=
 github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=

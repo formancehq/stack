@@ -3,7 +3,7 @@ module github.com/formancehq/auth
 go 1.18
 
 require (
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20230210074302-19c5921ca5dc
+	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
@@ -93,5 +93,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 
 replace github.com/zitadel/oidc => github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c
