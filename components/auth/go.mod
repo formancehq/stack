@@ -25,7 +25,6 @@ require (
 	gorm.io/driver/postgres v1.3.10
 	gorm.io/driver/sqlite v1.3.6
 	gorm.io/gorm v1.23.9
-	gorm.io/plugin/opentelemetry v0.1.0
 )
 
 require (
