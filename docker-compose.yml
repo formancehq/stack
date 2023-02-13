@@ -7,15 +7,31 @@ services:
   otlp-exporter:
     image: "otel/opentelemetry-collector"
 
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - LOG_LEVEL=debug
+
   gateway:
-    image: "traefik:v2.9"
+    image: "formancehq/gateway:latest"
     network_mode: service:auth-dex
+    environment:
+      - OTEL_SERVICE_NAME=gateway
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - OTEL_EXPORTER_OTLP_INSECURE=true
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - GRPC_GO_LOG_VERBOSITY_LEVEL=99
+      - GRPC_GO_LOG_SEVERITY_LEVEL=info
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - "./config/traefik:/etc/traefik:ro"
+      - "./config/gateway/Caddyfile:/etc/caddy/Caddyfile:ro"
 
   auth-dex:
-    image: "ghcr.io/formancehq/auth-dex:v0.3.1"
+    image: "ghcr.io/formancehq/auth-dex:latest"
     restart: always
     volumes:
       - ./config/dex/dex-config.yaml:/etc/dex/config.docker.yaml
@@ -24,22 +40,12 @@ services:
         condition: service_healthy
     ports:
       - "80:80"
+      - "443:443"
       - "8091:8081"
       - "8080:8080"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.dex.rule=Host(`localhost`) && PathPrefix(`/api/auth/dex`)
-      - traefik.http.routers.dex.entrypoints=web
-      - traefik.http.services.dex.loadbalancer.server.port=5556
-      - traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH
-      - traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*
-      - traefik.http.middlewares.cors.headers.accessControlAllowHeaders=content-type
-      - traefik.http.middlewares.cors.headers.accesscontrolmaxage=100
-      - traefik.http.middlewares.cors.headers.addvaryheader=true
-      - traefik.http.middlewares.jwt.plugin.auth.Issuer=http://localhost/api/auth
 
   auth:
-    image: "ghcr.io/formancehq/auth:v0.3.1"
+    image: "ghcr.io/formancehq/auth:latest"
     restart: always
     network_mode: service:auth-dex
     command: serve
@@ -57,16 +63,9 @@ services:
       BASE_URL: http://localhost/api/auth
     volumes:
       - ./config/auth/config.yaml:/config.yaml
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.auth.rule=Host(`localhost`) && PathPrefix(`/api/auth`)
-      - traefik.http.routers.auth.entrypoints=web
-      - traefik.http.services.auth.loadbalancer.server.port=8080
-      - traefik.http.middlewares.auth.stripprefix.prefixes=/api/auth
-      - traefik.http.routers.auth.middlewares=cors@docker,auth@docker
 
   control:
-    image: "ghcr.io/formancehq/control:v1.4.1"
+    image: "ghcr.io/formancehq/control:1195d382ab72c28c8819e200e2ba0e0ea0623f8d"
     restart: always
     network_mode: service:gateway
     environment:
@@ -76,12 +75,6 @@ services:
       CLIENT_SECRET: "mysupersecret"
       ENCRYPTION_KEY: "mysuperencryptionkey"
       ENCRYPTION_IV: "6f0c77c78a624022"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.control.rule=Host(`localhost`)
-      - traefik.http.routers.control.entrypoints=web
-      - traefik.http.services.control.loadbalancer.server.port=3000
-      - traefik.http.routers.control.middlewares=cors@docker
 
   redpanda:
     image: "docker.vectorized.io/vectorized/redpanda:v22.2.7"
@@ -156,7 +149,7 @@ services:
       - ./config/postgres:/docker-entrypoint-initdb.d
 
   ledger:
-    image: "ghcr.io/formancehq/ledger:v1.8.1"
+    image: "ghcr.io/formancehq/ledger:latest"
     restart: always
     depends_on:
       postgres:
@@ -170,16 +163,9 @@ services:
       NUMARY_PUBLISHER_KAFKA_ENABLED: "true"
       NUMARY_PUBLISHER_KAFKA_BROKER: redpanda:29092
       NUMARY_PUBLISHER_TOPIC_MAPPING: "*:ledger"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.ledger.rule=Host(`localhost`) && PathPrefix(`/api/ledger`)
-      - traefik.http.routers.ledger.entrypoints=web
-      - traefik.http.services.ledger.loadbalancer.server.port=3068
-      - traefik.http.routers.ledger.middlewares=jwt@docker,ledger@docker,cors@docker
-      - traefik.http.middlewares.ledger.stripprefix.prefixes=/api/ledger
 
   wallets:
-    image: "ghcr.io/formancehq/wallets:v0.2.0"
+    image: "ghcr.io/formancehq/wallets:latest"
     restart: always
     depends_on:
       postgres:
@@ -189,16 +175,9 @@ services:
       STACK_CLIENT_SECRET: wallets
       STACK_URL: http://localhost
       STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/wallets"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.wallets.rule=Host(`localhost`) && PathPrefix(`/api/wallets`)
-      - traefik.http.routers.wallets.entrypoints=web
-      - traefik.http.services.wallets.loadbalancer.server.port=8080
-      - traefik.http.routers.wallets.middlewares=jwt@docker,wallets@docker,cors@docker
-      - traefik.http.middlewares.wallets.stripprefix.prefixes=/api/wallets
 
   payments:
-    image: "ghcr.io/formancehq/payments:v0.4.3"
+    image: "ghcr.io/formancehq/payments:latest"
     restart: always
     depends_on:
       postgres:
@@ -207,27 +186,19 @@ services:
         condition: service_healthy
     environment:
       POSTGRES_URI: "postgresql://formance:formance@postgres/payments?sslmode=disable"
+      CONFIG_ENCRYPTION_KEY: "mysuperencryptionkey"
       PUBLISHER_KAFKA_ENABLED: "true"
       PUBLISHER_KAFKA_BROKER: redpanda:29092
       PUBLISHER_TOPIC_MAPPING: "*:payments"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.payments.rule=Host(`localhost`) &&  PathPrefix(`/api/payments`)
-      - traefik.http.routers.payments.entrypoints=web
-      - traefik.http.services.payments.loadbalancer.server.port=8080
-      - traefik.http.routers.payments.middlewares=jwt@docker,payments@docker,cors@docker
-      - traefik.http.middlewares.payments.stripprefix.prefixes=/api/payments
 
   payments-migrate:
-    image: "ghcr.io/formancehq/payments:v0.4.3"
+    image: "ghcr.io/formancehq/payments:latest"
     command: migrate up
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       POSTGRES_URI: "postgresql://formance:formance@postgres/payments?sslmode=disable"
-    labels:
-      - traefik.enable=false
 
   opensearch:
     image: "opensearchproject/opensearch:2.2.1"
@@ -255,7 +226,7 @@ services:
       - "5601:5601"
 
   search-ingester:
-    image: "ghcr.io/formancehq/search-ingester:v0.5.1"
+    image: "ghcr.io/formancehq/search-ingester:latest"
     restart: always
     depends_on:
       opensearch:
@@ -276,7 +247,7 @@ services:
       OPENSEARCH_BASIC_AUTH_ENABLED: "false"
 
   search:
-    image: "ghcr.io/formancehq/search:v0.5.2"
+    image: "ghcr.io/formancehq/search:latest"
     restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
@@ -290,16 +261,9 @@ services:
       OPEN_SEARCH_SCHEME: http
       OPEN_SEARCH_SERVICE: "opensearch:9200"
       ES_INDICES: "formance"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.search.rule=Host(`localhost`) &&  PathPrefix(`/api/search`)
-      - traefik.http.routers.search.entrypoints=web
-      - traefik.http.services.search.loadbalancer.server.port=8080
-      - traefik.http.routers.search.middlewares=jwt@docker,search@docker,cors@docker
-      - traefik.http.middlewares.search.stripprefix.prefixes=/api/search
 
   webhooks:
-    image: "ghcr.io/formancehq/webhooks:v0.6.0"
+    image: "ghcr.io/formancehq/webhooks:latest"
     restart: always
     healthcheck:
       test: curl -s -f -k http://127.0.0.1:8080/_healthcheck >/dev/null || exit 1
@@ -313,16 +277,9 @@ services:
         condition: service_healthy
     environment:
       STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/webhooks?sslmode=disable"
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.webhooks.rule=Host(`localhost`) &&  PathPrefix(`/api/webhooks`)
-      - traefik.http.routers.webhooks.entrypoints=web
-      - traefik.http.services.webhooks.loadbalancer.server.port=8080
-      - traefik.http.routers.webhooks.middlewares=jwt@docker,webhooks@docker,cors@docker
-      - traefik.http.middlewares.webhooks.stripprefix.prefixes=/api/webhooks
 
   webhooks-worker:
-    image: "ghcr.io/formancehq/webhooks:v0.6.0"
+    image: "ghcr.io/formancehq/webhooks:latest"
     command: worker
     restart: always
     healthcheck:
@@ -340,5 +297,3 @@ services:
       KAFKA_BROKERS: "redpanda:29092"
       KAFKA_TOPICS: "ledger,payments"
       LOG_LEVEL: "debug"
-    labels:
-      - traefik.enable=false

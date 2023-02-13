@@ -1,0 +1,22 @@
+{
+    "caddy_version": "v2.6.2",
+    "plugins": [
+        {
+            "module_path": "github.com/formancehq/stack/components/gateway/pkg/plugins",
+            "version": "d61ae1ba"
+        },
+        {
+            "module_path": "github.com/ggicci/caddy-jwt",
+            "version": "c8d9423"
+        }
+    ],
+    "replacements": [
+        {
+            "old": "github.com/ggicci/caddy-jwt",
+            "new": "github.com/formancehq/caddy-jwt@c8d9423"
+        }
+    ],
+
+    "os": "linux",
+    "cgo": false
+}

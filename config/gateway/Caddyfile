@@ -1,0 +1,176 @@
+(cors) {
+	header {
+		Access-Control-Allow-Methods "GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH"
+		Access-Control-Allow-Headers content-type
+		Access-Control-Max-Age 100
+		Access-Control-Allow-Origin *
+	}
+}
+
+(handle_route_without_jwt) {
+	# handle does not strips the prefix from the request path
+	handle {args.0}/* {
+		reverse_proxy {args.1}
+
+		import cors
+	}
+}
+
+(handle_path_route_with_jwt) {
+	# handle_path automatically strips the prefix from the request path
+	handle_path {args.0}* {
+		reverse_proxy {args.1}
+
+		import cors
+
+		import jwt
+	}
+}
+
+(handle_path_route_without_jwt) {
+	# handle_path automatically strips the prefix from the request path
+	handle_path {args.0}* {
+		reverse_proxy {args.1}
+
+		import cors
+	}
+}
+
+(jwt) {
+	# Enable the JWT plugin from https://caddyserver.com/docs/modules/http.authentication.providers.jwt
+	jwtauth {
+		# sign_key can be empty since we are using the jwk_url field.
+		# sign_key X
+
+		# Optional field to specify the algorithm used to sign the token. If not
+		# specified, the algorithm will be inferred from either:
+		#   - the "alg" field in the JWT header
+		#   - The "alg" field in the match JWK
+		#   - The value set here
+		sign_alg RS256
+
+		# JWKURL is the URL where a provider publishes their JWKs. The URL must
+		# publish the JWKs in the standard format as described in
+		# https://tools.ietf.org/html/rfc7517
+		jwk_url http://127.0.0.1:8080/keys
+
+		# FromQuery defines a list of names to get tokens from the query
+		# parameters of an HTTP request.
+		#
+		# If multiple keys were given, all the corresponding query values will
+		# be treated as candidate tokens. And we will verify each of them until
+		# we got a valid one.
+		#
+		# Priority: from_query > from_header > from_cookies.
+		# from_query access_token token
+
+		# FromHeader works like FromQuery. But defines a list of names to get
+		# tokens from the HTTP header.
+		from_header Authorization
+
+		# FromCookie works like FromQuery. But defines a list of names to get
+		# tokens from the HTTP cookies.
+		# from_cookies user_session
+
+		# IssuerWhitelist defines a list of issuers. A non-empty list turns on
+		# "iss verification": the "iss" claim must exist in the given JWT
+		# payload. And the value of the "iss" claim must be on the whitelist in
+		# order to pass the verification.
+		# Optional field.
+		# issuer_whitelist localhost
+
+		# AudienceWhitelist defines a list of audiences. A non-empty list turns
+		# on "aud verification": the "aud" claim must exist in the given JWT
+		# payload. The verification will pass as long as one of the "aud" values
+		# is on the whitelist.
+		# Optional field.
+		# audience_whitelist https://api.example.io https://learn.example.com
+
+
+		# UserClaims defines a list of names to find the ID of the authenticated
+		# user.
+		# By default, this config will be set to []string{"sub"}.
+		# If multiple names were given, we will use the first non-empty value of
+		# the key in the JWT payload as the ID of the authenticated user.
+		# i.e. The placeholder {http.auth.user.id} will be set to the ID.
+		# If no non-empty values found, leaves it unauthenticated.
+		# user_claims aud uid user_id username login
+
+		# MetaClaims defines a map to populate {http.auth.user.*} metadata
+		# placeholders. The key is the claim in the JWT payload, the value is
+		# the placeholder name. e.g. {"IsAdmin": "is_admin"} can populate
+		# {http.auth.user.is_admin} with the value of IsAdmin in the JWT payload
+		# if found, otherwise "".
+		# meta_claims "IsAdmin->is_admin"
+
+		# WithRefreshWindow specifies the interval between checks for refreshes.
+		#
+		# If not specified, the default value is 15 minutes.
+		#
+		# You generally do not want to make this value too small, as it can easily
+		# be considered a DoS attack, and there is no backoff mechanism for failed
+		# attempts.
+		refresh_window 10s
+
+		# WithMinRefreshInterval specifies the minimum refresh interval to be used
+		# when using `jwk.Cache`. This value is ONLY used if you did not specify
+		# a user-supplied static refresh interval via `WithRefreshInterval`.
+		#
+		# This value is used as a fallback value when tokens are refreshed.
+		#
+		# When we fetch the key from a remote URL, we first look at the max-age
+		# directive from Cache-Control response header. If this value is present,
+		# we compare the max-age value and the value specified by this option
+		# and take the larger one.
+		#
+		# Next we check for the Expires header, and similarly if the header is
+		# present, we compare it against the value specified by this option,
+		# and take the larger one.
+		#
+		# Finally, if neither of the above headers are present, we use the
+		# value specified by this option as the next refresh timing
+		#
+		# If unspecified, the minimum refresh interval is 1 hour
+		min_refresh_interval 10s
+	}
+}
+
+{
+	# Many directives manipulate the HTTP handler chain and the order in which
+	# those directives are evaluated matters. So the jwtauth directive must be
+	# ordered.
+	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
+	order jwtauth before basicauth
+	order versions after metrics
+
+	# Local env dev config
+	debug
+}
+
+localhost:80 {
+	tracing {
+		span gateway
+	}
+
+	import handle_route_without_jwt "/api/auth/dex" "127.0.0.1:5556"
+	import handle_path_route_without_jwt "/api/auth" "127.0.0.1:8080"
+	import handle_path_route_with_jwt "/api/ledger" "ledger:3068"
+	import handle_path_route_with_jwt "/api/wallets" "wallets:8080"
+	import handle_path_route_with_jwt "/api/payments" "payments:8080"
+	import handle_path_route_with_jwt "/api/search" "search:8080"
+	import handle_path_route_with_jwt "/api/webhooks" "webhooks:8080"
+
+	handle /versions {
+		versions {
+			auth http://127.0.0.1:8080/_info
+			wallets http://wallets:8080/_info
+			search http://search:8080/_info
+		}
+	}
+
+	# handle all other requests
+	handle {
+		reverse_proxy 127.0.0.1:3000
+		import cors
+	}
+}

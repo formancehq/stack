@@ -5,6 +5,7 @@ use (
 	./components/auth
 	./components/fctl
 	./components/fctl/membershipclient
+	./components/gateway
 	./components/ledger
 	./components/machine
 	./components/operator
