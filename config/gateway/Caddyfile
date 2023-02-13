@@ -148,6 +148,10 @@
 }
 
 localhost:80 {
+	tracing {
+		span gateway
+	}
+
 	import handle_route_without_jwt "/api/auth/dex" "127.0.0.1:5556"
 	import handle_path_route_without_jwt "/api/auth" "127.0.0.1:8080"
 	import handle_path_route_with_jwt "/api/ledger" "ledger:3068"
