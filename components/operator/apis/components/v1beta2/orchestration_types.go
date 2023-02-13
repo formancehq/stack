@@ -64,7 +64,6 @@ type OrchestrationSpec struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:subresource:scale:specpath=.spec.replicas,statuspath=.status.replicas,selectorpath=.status.selector
-//+kubebuilder:storageversion
 
 // Orchestration is the Schema for the orchestrations API
 type Orchestration struct {

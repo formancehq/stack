@@ -26,7 +26,7 @@ import (
 	"fmt"
 
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/typeutils"
@@ -59,7 +59,7 @@ type Mutator struct {
 // +kubebuilder:rbac:groups=components.formance.com,resources=auths/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=components.formance.com,resources=auths/finalizers,verbs=update
 
-func (r *Mutator) Mutate(ctx context.Context, auth *componentsv1beta2.Auth) (*ctrl.Result, error) {
+func (r *Mutator) Mutate(ctx context.Context, auth *componentsv1beta3.Auth) (*ctrl.Result, error) {
 
 	apisv1beta2.SetProgressing(auth)
 
@@ -82,7 +82,7 @@ func (r *Mutator) Mutate(ctx context.Context, auth *componentsv1beta2.Auth) (*ct
 	return nil, nil
 }
 
-func (r *Mutator) reconcileDeployment(ctx context.Context, auth *componentsv1beta2.Auth, config *corev1.ConfigMap) (*appsv1.Deployment, error) {
+func (r *Mutator) reconcileDeployment(ctx context.Context, auth *componentsv1beta3.Auth, config *corev1.ConfigMap) (*appsv1.Deployment, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "auth")
 	port := int32(8080)
 
@@ -180,7 +180,7 @@ func (r *Mutator) reconcileDeployment(ctx context.Context, auth *componentsv1bet
 	return ret, err
 }
 
-func (r *Mutator) reconcileConfigFile(ctx context.Context, auth *componentsv1beta2.Auth) (*corev1.ConfigMap, controllerutil.OperationResult, error) {
+func (r *Mutator) reconcileConfigFile(ctx context.Context, auth *componentsv1beta3.Auth) (*corev1.ConfigMap, controllerutil.OperationResult, error) {
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(auth),
 		controllerutils.WithController[*corev1.ConfigMap](auth, r.Scheme),
 		func(configMap *corev1.ConfigMap) error {
@@ -199,7 +199,7 @@ func (r *Mutator) reconcileConfigFile(ctx context.Context, auth *componentsv1bet
 		})
 }
 
-func (r *Mutator) reconcileSigningKeySecret(ctx context.Context, auth *componentsv1beta2.Auth) (*corev1.Secret, controllerutil.OperationResult, error) {
+func (r *Mutator) reconcileSigningKeySecret(ctx context.Context, auth *componentsv1beta3.Auth) (*corev1.Secret, controllerutil.OperationResult, error) {
 	return controllerutils.CreateOrUpdate(ctx, r.Client, types.NamespacedName{
 		Namespace: auth.Namespace,
 		Name:      fmt.Sprintf("%s-signing-key", auth.Name),
@@ -233,7 +233,7 @@ func (r *Mutator) reconcileSigningKeySecret(ctx context.Context, auth *component
 		})
 }
 
-func (r *Mutator) reconcileHPA(ctx context.Context, auth *componentsv1beta2.Auth) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
+func (r *Mutator) reconcileHPA(ctx context.Context, auth *componentsv1beta3.Auth) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(auth),
 		controllerutils.WithController[*autoscallingv2.HorizontalPodAutoscaler](auth, r.Scheme),
 		func(hpa *autoscallingv2.HorizontalPodAutoscaler) error {
@@ -253,7 +253,7 @@ func (r *Mutator) SetupWithBuilder(mgr ctrl.Manager, builder *ctrl.Builder) erro
 	return nil
 }
 
-func NewMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta2.Auth] {
+func NewMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta3.Auth] {
 	return &Mutator{
 		Client: client,
 		Scheme: scheme,

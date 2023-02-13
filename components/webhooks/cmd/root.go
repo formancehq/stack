@@ -7,6 +7,7 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/spf13/cobra"
 )
@@ -20,6 +21,7 @@ func NewRootCommand() *cobra.Command {
 
 	var err error
 	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
+	publish.InitCLIFlags(root)
 	retriesSchedule, err = flag.Init(root.PersistentFlags())
 	cobra.CheckErr(err)
 

@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/typeutils"
@@ -49,7 +49,7 @@ type OrchestrationMutator struct {
 // +kubebuilder:rbac:groups=components.formance.com,resources=orchestrations/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=components.formance.com,resources=orchestrations/finalizers,verbs=update
 
-func (r *OrchestrationMutator) Mutate(ctx context.Context, orchestration *componentsv1beta2.Orchestration) (*ctrl.Result, error) {
+func (r *OrchestrationMutator) Mutate(ctx context.Context, orchestration *componentsv1beta3.Orchestration) (*ctrl.Result, error) {
 
 	apisv1beta2.SetProgressing(orchestration)
 
@@ -68,7 +68,7 @@ func (r *OrchestrationMutator) Mutate(ctx context.Context, orchestration *compon
 	return nil, nil
 }
 
-func orchestrationEnvVars(orchestration *componentsv1beta2.Orchestration) []corev1.EnvVar {
+func orchestrationEnvVars(orchestration *componentsv1beta3.Orchestration) []corev1.EnvVar {
 	ledgerName := strings.Replace(orchestration.GetName(), "-next", "-ledger", -1)
 	env := make([]corev1.EnvVar, 0)
 	env = append(env, orchestration.Spec.Postgres.Env("")...)
@@ -88,13 +88,13 @@ func orchestrationEnvVars(orchestration *componentsv1beta2.Orchestration) []core
 	return env
 }
 
-func orchestrationWorkerEnvVars(orchestration *componentsv1beta2.Orchestration) []corev1.EnvVar {
+func orchestrationWorkerEnvVars(orchestration *componentsv1beta3.Orchestration) []corev1.EnvVar {
 	env := orchestrationEnvVars(orchestration)
 	env = append(env, apisv1beta2.Env("OTEL_SERVICE_NAME", "orchestration-worker"))
 	return env
 }
 
-func (r *OrchestrationMutator) reconcileMainDeployment(ctx context.Context, orchestration *componentsv1beta2.Orchestration) (*appsv1.Deployment, controllerutil.OperationResult, error) {
+func (r *OrchestrationMutator) reconcileMainDeployment(ctx context.Context, orchestration *componentsv1beta3.Orchestration) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "orchestration")
 
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(orchestration),
@@ -130,7 +130,7 @@ func (r *OrchestrationMutator) reconcileMainDeployment(ctx context.Context, orch
 		})
 }
 
-func (r *OrchestrationMutator) reconcileWorkerDeployment(ctx context.Context, orchestration *componentsv1beta2.Orchestration) (*appsv1.Deployment, controllerutil.OperationResult, error) {
+func (r *OrchestrationMutator) reconcileWorkerDeployment(ctx context.Context, orchestration *componentsv1beta3.Orchestration) (*appsv1.Deployment, controllerutil.OperationResult, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "orchestration-worker")
 
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKey{
@@ -171,7 +171,7 @@ func (r *OrchestrationMutator) SetupWithBuilder(mgr ctrl.Manager, builder *ctrl.
 	return nil
 }
 
-func NewOrchestrationMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta2.Orchestration] {
+func NewOrchestrationMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta3.Orchestration] {
 	return &OrchestrationMutator{
 		Client: client,
 		Scheme: scheme,

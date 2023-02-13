@@ -35,7 +35,6 @@ type WalletsSpec struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
-//+kubebuilder:storageversion
 
 // Wallets is the Schema for the Wallets API
 type Wallets struct {

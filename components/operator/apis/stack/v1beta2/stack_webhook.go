@@ -35,14 +35,14 @@ var stacklog = logf.Log.WithName("stack-resource")
 
 //+kubebuilder:webhook:path=/mutate-stack-formance-com-v1beta2-stack,mutating=true,failurePolicy=fail,sideEffects=None,groups=stack.formance.com,resources=stacks,verbs=create;update,versions=v1beta2,name=mstacks.kb.io,admissionReviewVersions=v1
 
-func (r *Stack) SetupWebhookWithManager(mgr ctrl.Manager) error {
+func (stack *Stack) SetupWebhookWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewWebhookManagedBy(mgr).
-		For(r).
+		For(stack).
 		Complete()
 }
 
-func (r *Stack) Default() {
-	if r.Spec.Versions == "" {
-		r.Spec.Versions = DefaultVersions
+func (stack *Stack) Default() {
+	if stack.Spec.Versions == "" {
+		stack.Spec.Versions = DefaultVersions
 	}
 }

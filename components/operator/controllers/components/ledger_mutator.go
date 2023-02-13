@@ -19,7 +19,7 @@ package components
 import (
 	"context"
 
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/typeutils"
@@ -52,7 +52,7 @@ type LedgerMutator struct {
 // +kubebuilder:rbac:groups=components.formance.com,resources=ledgers/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=components.formance.com,resources=ledgers/finalizers,verbs=update
 
-func (r *LedgerMutator) Mutate(ctx context.Context, ledger *componentsv1beta2.Ledger) (*ctrl.Result, error) {
+func (r *LedgerMutator) Mutate(ctx context.Context, ledger *componentsv1beta3.Ledger) (*ctrl.Result, error) {
 
 	apisv1beta2.SetProgressing(ledger)
 
@@ -70,7 +70,7 @@ func (r *LedgerMutator) Mutate(ctx context.Context, ledger *componentsv1beta2.Le
 	return nil, nil
 }
 
-func (r *LedgerMutator) reconcileDeployment(ctx context.Context, ledger *componentsv1beta2.Ledger) (*appsv1.Deployment, error) {
+func (r *LedgerMutator) reconcileDeployment(ctx context.Context, ledger *componentsv1beta3.Ledger) (*appsv1.Deployment, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "ledger")
 
 	env := []corev1.EnvVar{
@@ -85,7 +85,7 @@ func (r *LedgerMutator) reconcileDeployment(ctx context.Context, ledger *compone
 		env = append(env, ledger.Spec.Monitoring.Env("NUMARY_")...)
 	}
 	if ledger.Spec.Collector != nil {
-		env = append(env, ledger.Spec.Collector.Env("NUMARY_")...)
+		env = append(env, ledger.Spec.Collector.Env(ledger.Name, "NUMARY_")...)
 	}
 
 	ret, _, err := controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
@@ -153,7 +153,7 @@ func (r *LedgerMutator) reconcileDeployment(ctx context.Context, ledger *compone
 	return ret, err
 }
 
-func (r *LedgerMutator) reconcileHPA(ctx context.Context, ledger *componentsv1beta2.Ledger) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
+func (r *LedgerMutator) reconcileHPA(ctx context.Context, ledger *componentsv1beta3.Ledger) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(ledger),
 		controllerutils.WithController[*autoscallingv2.HorizontalPodAutoscaler](ledger, r.Scheme),
 		func(hpa *autoscallingv2.HorizontalPodAutoscaler) error {
@@ -172,7 +172,7 @@ func (r *LedgerMutator) SetupWithBuilder(mgr ctrl.Manager, builder *ctrl.Builder
 	return nil
 }
 
-func NewLedgerMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta2.Ledger] {
+func NewLedgerMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta3.Ledger] {
 	return &LedgerMutator{
 		Client: client,
 		Scheme: scheme,

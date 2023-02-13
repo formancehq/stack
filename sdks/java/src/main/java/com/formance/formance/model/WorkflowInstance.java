@@ -49,7 +49,7 @@ public class WorkflowInstance {
 
   public static final String SERIALIZED_NAME_STATUS = "status";
   @SerializedName(SERIALIZED_NAME_STATUS)
-  private List<StageStatus> status = null;
+  private List<StageStatus> status = new ArrayList<>();
 
   public static final String SERIALIZED_NAME_TERMINATED = "terminated";
   @SerializedName(SERIALIZED_NAME_TERMINATED)

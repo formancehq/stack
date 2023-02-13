@@ -115,7 +115,6 @@ type LedgerSpec struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:subresource:scale:specpath=.spec.replicas,statuspath=.status.replicas,selectorpath=.status.selector
-//+kubebuilder:storageversion
 
 // Ledger is the Schema for the ledgers API
 type Ledger struct {

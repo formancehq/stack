@@ -129,7 +129,6 @@ type SearchSpec struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:subresource:scale:specpath=.spec.replicas,statuspath=.status.replicas,selectorpath=.status.selector
-//+kubebuilder:storageversion
 
 // Search is the Schema for the searches API
 type Search struct {

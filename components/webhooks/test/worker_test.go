@@ -12,12 +12,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/webhooks/cmd"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
-	"github.com/formancehq/webhooks/pkg/kafka"
 	"github.com/formancehq/webhooks/pkg/security"
 	"github.com/formancehq/webhooks/pkg/server"
 	"github.com/formancehq/webhooks/pkg/worker"
+	"github.com/formancehq/webhooks/test/kafka"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
@@ -30,7 +31,7 @@ import (
 )
 
 func TestWorkerMessages(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
 	sqldb := sql.OpenDB(
@@ -91,10 +92,14 @@ func TestWorkerMessages(t *testing.T) {
 			fx.Supply(httpServerSuccess.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
+				cmd.ServiceName,
 				viper.GetDuration(flag.RetriesCron),
 				retrySchedule,
 			))
 		require.NoError(t, workerApp.Start(context.Background()))
+		// The subscription to the kafka topics is aynchronous
+		// So add a delay (ugly) before starting
+		<-time.After(5 * time.Second)
 
 		healthCheckWorker(t)
 
@@ -147,6 +152,7 @@ func TestWorkerMessages(t *testing.T) {
 			fx.Supply(httpServerFail.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
+				cmd.ServiceName,
 				viper.GetDuration(flag.RetriesCron),
 				retrySchedule,
 			))
@@ -213,6 +219,7 @@ func TestWorkerMessages(t *testing.T) {
 			fx.Supply(httpServerSuccess.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
+				cmd.ServiceName,
 				viper.GetDuration(flag.RetriesCron),
 				retrySchedule,
 			))
@@ -246,7 +253,7 @@ func TestWorkerMessages(t *testing.T) {
 }
 
 func TestWorkerRetries(t *testing.T) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
 	sqldb := sql.OpenDB(
@@ -298,6 +305,7 @@ func TestWorkerRetries(t *testing.T) {
 			fx.Supply(httpServerSuccess.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
+				cmd.ServiceName,
 				viper.GetDuration(flag.RetriesCron),
 				retrySchedule))
 		require.NoError(t, workerApp.Start(context.Background()))
@@ -367,6 +375,7 @@ func TestWorkerRetries(t *testing.T) {
 			fx.Supply(httpServerFail.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
+				cmd.ServiceName,
 				viper.GetDuration(flag.RetriesCron),
 				retrySchedule))
 		require.NoError(t, workerApp.Start(context.Background()))
@@ -436,13 +445,13 @@ func TestWorkerRetries(t *testing.T) {
 			fx.Supply(httpServerFail.Client()),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
+				cmd.ServiceName,
 				viper.GetDuration(flag.RetriesCron),
 				retrySchedule))
 		require.NoError(t, workerApp.Start(context.Background()))
+		<-time.After(5 * time.Second)
 
 		healthCheckWorker(t)
-
-		time.Sleep(3 * time.Second)
 
 		var results []webhooks.Attempt
 		require.NoError(t, db.NewSelect().Model(&results).Scan(ctx))

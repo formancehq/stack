@@ -17,14 +17,17 @@ limitations under the License.
 package v1beta2
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"strings"
 
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
 	"github.com/formancehq/operator/apis/components/v1beta2"
+	"github.com/formancehq/operator/apis/stack/v1beta3"
 	pkgapisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/conversion"
 )
 
 type IngressGlobalConfig struct {
@@ -78,7 +81,6 @@ func (s *StackStatus) IsDirty(reference pkgapisv1beta2.Object) bool {
 //+kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.progress`
 //+kubebuilder:printcolumn:name="Version",type="string",JSONPath=".spec.versions",description="Stack Version"
 //+kubebuilder:printcolumn:name="Configuration",type="string",JSONPath=".spec.seed",description="Stack Configuration"
-//+kubebuilder:storageversion
 
 // Stack is the Schema for the stacks API
 type Stack struct {
@@ -87,6 +89,39 @@ type Stack struct {
 
 	Spec   StackSpec   `json:"spec,omitempty"`
 	Status StackStatus `json:"status,omitempty"`
+}
+
+func (stack *Stack) ConvertFrom(hubRaw conversion.Hub) error {
+	hub := hubRaw.(*v1beta3.Stack)
+	specAsRaw, err := json.Marshal(hub.Spec)
+	if err != nil {
+		return err
+	}
+	*stack = Stack{
+		ObjectMeta: hub.ObjectMeta,
+		TypeMeta:   hub.TypeMeta,
+	}
+	stack.APIVersion = GroupVersion.String()
+	if err := json.Unmarshal(specAsRaw, &stack.Spec); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (stack *Stack) ConvertTo(hubRaw conversion.Hub) error {
+	hub := hubRaw.(*v1beta3.Stack)
+	specAsRaw, err := json.Marshal(stack.Spec)
+	hub.ObjectMeta = stack.ObjectMeta
+	hub.TypeMeta = stack.TypeMeta
+	hub.TypeMeta.APIVersion = v1beta3.GroupVersion.String()
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(specAsRaw, &hub.Spec); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewStack(name string, spec StackSpec) Stack {
@@ -98,33 +133,31 @@ func NewStack(name string, spec StackSpec) Stack {
 	}
 }
 
-func (*Stack) Hub() {}
-
-func (s *Stack) GetScheme() string {
-	if s.Spec.Scheme != "" {
-		return s.Spec.Scheme
+func (stack *Stack) GetScheme() string {
+	if stack.Spec.Scheme != "" {
+		return stack.Spec.Scheme
 	}
 	return "https"
 }
 
-func (s *Stack) URL() string {
-	return fmt.Sprintf("%s://%s", s.GetScheme(), s.Spec.Host)
+func (stack *Stack) URL() string {
+	return fmt.Sprintf("%s://%s", stack.GetScheme(), stack.Spec.Host)
 }
 
-func (s *Stack) GetStatus() pkgapisv1beta2.Dirty {
-	return &s.Status
+func (stack *Stack) GetStatus() pkgapisv1beta2.Dirty {
+	return &stack.Status
 }
 
-func (s *Stack) IsDirty(t pkgapisv1beta2.Object) bool {
+func (stack *Stack) IsDirty(t pkgapisv1beta2.Object) bool {
 	return false
 }
 
-func (s *Stack) GetConditions() *pkgapisv1beta2.Conditions {
-	return &s.Status.Conditions
+func (stack *Stack) GetConditions() *pkgapisv1beta2.Conditions {
+	return &stack.Status.Conditions
 }
 
-func (s *Stack) SubObjectName(v string) string {
-	return fmt.Sprintf("%s-%s", s.Name, strings.ToLower(v))
+func (stack *Stack) SubObjectName(v string) string {
+	return fmt.Sprintf("%s-%s", stack.Name, strings.ToLower(v))
 }
 
 //+kubebuilder:object:root=true

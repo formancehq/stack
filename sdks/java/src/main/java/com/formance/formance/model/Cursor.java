@@ -52,7 +52,7 @@ public class Cursor {
 
   public static final String SERIALIZED_NAME_DATA = "data";
   @SerializedName(SERIALIZED_NAME_DATA)
-  private List<Object> data = null;
+  private List<Object> data = new ArrayList<>();
 
   public Cursor() {
   }

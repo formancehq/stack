@@ -17,15 +17,18 @@ limitations under the License.
 package v1beta2
 
 import (
+	"encoding/json"
 	"reflect"
 	"strings"
 
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
 	"github.com/formancehq/operator/apis/components/v1beta2"
+	"github.com/formancehq/operator/apis/stack/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/typeutils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/validation/field"
+	"sigs.k8s.io/controller-runtime/pkg/conversion"
 )
 
 // +kubebuilder:object:generate=false
@@ -122,7 +125,6 @@ func (in *ConfigurationSpec) GetServices() map[string]ServiceConfiguration {
 //+kubebuilder:object:root=true
 //+kubebuilder:resource:scope=Cluster
 //+kubebuilder:subresource:status
-//+kubebuilder:storageversion
 
 // Configuration is the Schema for the configurations API
 type Configuration struct {
@@ -133,7 +135,45 @@ type Configuration struct {
 	Status apisv1beta2.Status `json:"status,omitempty"`
 }
 
-func (*Configuration) Hub() {}
+func (config *Configuration) ConvertFrom(hubRaw conversion.Hub) error {
+	hub := hubRaw.(*v1beta3.Configuration)
+	specAsRaw, err := json.Marshal(hub.Spec)
+	if err != nil {
+		return err
+	}
+	*config = Configuration{
+		ObjectMeta: hub.ObjectMeta,
+		TypeMeta:   hub.TypeMeta,
+	}
+	config.APIVersion = GroupVersion.String()
+	if err := json.Unmarshal(specAsRaw, &config.Spec); err != nil {
+		return err
+	}
+
+	if hub.Spec.Broker.Kafka != nil {
+		config.Spec.Kafka = *hub.Spec.Broker.Kafka
+	}
+
+	return nil
+}
+
+func (config *Configuration) ConvertTo(hubRaw conversion.Hub) error {
+	hub := hubRaw.(*v1beta3.Configuration)
+	specAsRaw, err := json.Marshal(config.Spec)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(specAsRaw, &hub.Spec); err != nil {
+		return err
+	}
+	hub.ObjectMeta = config.ObjectMeta
+	hub.TypeMeta = config.TypeMeta
+	hub.APIVersion = v1beta3.GroupVersion.String()
+	hub.Spec.Broker.Kafka = &config.Spec.Kafka
+	hub.Spec.Services.Payments.EncryptionKey = "default-encryption-key"
+
+	return nil
+}
 
 //+kubebuilder:object:root=true
 

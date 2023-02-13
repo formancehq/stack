@@ -51,7 +51,6 @@ type VersionsStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
-//+kubebuilder:storageversion
 //+kubebuilder:resource:scope=Cluster
 
 // Versions is the Schema for the versions API

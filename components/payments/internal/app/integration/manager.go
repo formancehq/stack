@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/internal/app/messages"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -34,7 +35,7 @@ type ConnectorManager[Config models.ConnectorConfigObject] struct {
 	store            Repository
 	schedulerFactory TaskSchedulerFactory
 	scheduler        *task.DefaultTaskScheduler
-	publisher        publish.Publisher
+	publisher        message.Publisher
 }
 
 func (l *ConnectorManager[ConnectorConfig]) Enable(ctx context.Context) error {
@@ -247,8 +248,8 @@ func (l *ConnectorManager[ConnectorConfig]) Reset(ctx context.Context) error {
 		return err
 	}
 
-	err = l.publisher.Publish(ctx, messages.TopicPayments,
-		messages.NewEventResetConnector(l.loader.Name()))
+	err = l.publisher.Publish(messages.TopicPayments,
+		publish.NewMessage(ctx, messages.NewEventResetConnector(l.loader.Name())))
 	if err != nil {
 		l.logger.Errorf("Publishing message: %w", err)
 	}
@@ -292,7 +293,7 @@ func NewConnectorManager[ConnectorConfig models.ConnectorConfigObject](
 	store Repository,
 	loader Loader[ConnectorConfig],
 	schedulerFactory TaskSchedulerFactory,
-	publisher publish.Publisher,
+	publisher message.Publisher,
 ) *ConnectorManager[ConnectorConfig] {
 	return &ConnectorManager[ConnectorConfig]{
 		logger: logger.WithFields(map[string]interface{}{

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/server"
@@ -45,6 +46,8 @@ func TestMain(m *testing.M) {
 
 	viper.Set(flag.KafkaTopics, []string{topic})
 	viper.Set(flag.RetriesCron, time.Second)
+	viper.Set(publish.PublisherKafkaEnabledFlag, true)
+	viper.Set(publish.PublisherKafkaBrokerFlag, []string{"localhost:9092"})
 
 	serverBaseURL = fmt.Sprintf("http://localhost%s",
 		viper.GetString(flag.HttpBindAddressServer))

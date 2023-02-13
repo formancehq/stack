@@ -9,9 +9,10 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - .:/app
+      - ../..:/app
     ports:
       - "8080:8080"
+    working_dir: /app/components/webhooks
     environment:
       OTEL_SERVICE_NAME: webhooks
       OTEL_TRACES: "true"
@@ -28,9 +29,10 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - .:/app
+      - ../..:/app
     ports:
       - "8081:8081"
+    working_dir: /app/components/webhooks
     environment:
       KAFKA_BROKERS: "redpanda:29092"
       OTEL_SERVICE_NAME: webhooks-worker

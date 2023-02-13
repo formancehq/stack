@@ -10,10 +10,14 @@ RUN GOOS=linux go build -o webhooks \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Commit=${APP_SHA}" ./
 
+FROM golang:1.18-alpine as dev
+RUN go install github.com/cespare/reflex@latest
+RUN apk update && apk add curl
+
 FROM ubuntu:jammy
 RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /src/components/webhooks/webhooks /webhooks
 EXPOSE 3068
 ENV OTEL_SERVICE_NAME webhooks
 ENTRYPOINT ["/webhooks"]
-CMD ["serve"]
+CMD ["server"]

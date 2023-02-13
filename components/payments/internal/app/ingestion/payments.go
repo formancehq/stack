@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/messages"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 
 	"github.com/formancehq/payments/internal/app/models"
 )
@@ -65,8 +66,8 @@ func (i *DefaultIngester) IngestPayments(ctx context.Context, batch PaymentBatch
 	}
 
 	for paymentIdx := range allPayments {
-		err = i.publisher.Publish(ctx, messages.TopicPayments,
-			messages.NewEventSavedPayments(allPayments[paymentIdx], i.provider))
+		err = i.publisher.Publish(messages.TopicPayments,
+			publish.NewMessage(ctx, messages.NewEventSavedPayments(allPayments[paymentIdx], i.provider)))
 		if err != nil {
 			i.logger.Errorf("Publishing message: %w", err)
 

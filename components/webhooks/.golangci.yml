@@ -14,6 +14,7 @@ linters:
 
   disable:
     - contextcheck
+    - godox
 
 run:
   timeout: 5m

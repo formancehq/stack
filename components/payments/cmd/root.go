@@ -8,6 +8,7 @@ import (
 
 	_ "github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -49,17 +50,6 @@ func rootCommand() *cobra.Command {
 	server.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
 	server.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 	server.Flags().String(envFlag, "local", "Environment")
-	server.Flags().Bool(publisherKafkaEnabledFlag, false, "Publish write events to kafka")
-	server.Flags().StringSlice(publisherKafkaBrokerFlag, []string{}, "Kafka address is kafka enabled")
-	server.Flags().StringSlice(publisherTopicMappingFlag,
-		[]string{}, "Define mapping between internal event types and topics")
-	server.Flags().Bool(publisherHTTPEnabledFlag, false, "Sent write event to http endpoint")
-	server.Flags().Bool(publisherKafkaSASLEnabled, false, "Enable SASL authentication on kafka publisher")
-	server.Flags().String(publisherKafkaSASLUsername, "", "SASL username")
-	server.Flags().String(publisherKafkaSASLPassword, "", "SASL password")
-	server.Flags().String(publisherKafkaSASLMechanism, "", "SASL authentication mechanism")
-	server.Flags().Int(publisherKafkaSASLScramSHASize, 512, "SASL SCRAM SHA size")
-	server.Flags().Bool(publisherKafkaTLSEnabled, false, "Enable TLS to connect on kafka")
 	server.Flags().Bool(authBasicEnabledFlag, false, "Enable basic auth")
 	server.Flags().StringSlice(authBasicCredentialsFlag, []string{},
 		"HTTP basic auth credentials (<username>:<password>)")
@@ -71,6 +61,7 @@ func rootCommand() *cobra.Command {
 		false, "Use scopes as defined by rfc https://datatracker.ietf.org/doc/html/rfc8693")
 
 	otlptraces.InitOTLPTracesFlags(server.Flags())
+	publish.InitCLIFlags(server)
 
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	viper.AutomaticEnv()

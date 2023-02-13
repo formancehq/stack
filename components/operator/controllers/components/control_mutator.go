@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/typeutils"
@@ -37,7 +37,7 @@ func (m *ControlMutator) SetupWithBuilder(mgr ctrl.Manager, builder *ctrl.Builde
 	return nil
 }
 
-func (m *ControlMutator) Mutate(ctx context.Context, control *componentsv1beta2.Control) (*ctrl.Result, error) {
+func (m *ControlMutator) Mutate(ctx context.Context, control *componentsv1beta3.Control) (*ctrl.Result, error) {
 	apisv1beta2.SetProgressing(control)
 
 	_, err := m.reconcileDeployment(ctx, control)
@@ -54,7 +54,7 @@ func (m *ControlMutator) Mutate(ctx context.Context, control *componentsv1beta2.
 	return nil, nil
 }
 
-func (m *ControlMutator) reconcileDeployment(ctx context.Context, control *componentsv1beta2.Control) (*appsv1.Deployment, error) {
+func (m *ControlMutator) reconcileDeployment(ctx context.Context, control *componentsv1beta3.Control) (*appsv1.Deployment, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "control")
 
 	env := []corev1.EnvVar{
@@ -123,7 +123,7 @@ func (m *ControlMutator) reconcileDeployment(ctx context.Context, control *compo
 	return ret, err
 }
 
-func (m *ControlMutator) reconcileHPA(ctx context.Context, control *componentsv1beta2.Control) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
+func (m *ControlMutator) reconcileHPA(ctx context.Context, control *componentsv1beta3.Control) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
 	return controllerutils.CreateOrUpdate(ctx, m.Client, client.ObjectKeyFromObject(control),
 		controllerutils.WithController[*autoscallingv2.HorizontalPodAutoscaler](control, m.Scheme),
 		func(hpa *autoscallingv2.HorizontalPodAutoscaler) error {
@@ -132,9 +132,9 @@ func (m *ControlMutator) reconcileHPA(ctx context.Context, control *componentsv1
 		})
 }
 
-var _ controllerutils.Mutator[*componentsv1beta2.Control] = &ControlMutator{}
+var _ controllerutils.Mutator[*componentsv1beta3.Control] = &ControlMutator{}
 
-func NewControlMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta2.Control] {
+func NewControlMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta3.Control] {
 	return &ControlMutator{
 		Client: client,
 		Scheme: scheme,

@@ -25,9 +25,11 @@ func RunWorker(cmd *cobra.Command, _ []string) error {
 		syscall.Environ(), viper.AllKeys())
 
 	app := fx.New(
+		// TODO: Use lib
 		otlp.HttpClientModule(),
 		worker.StartModule(
 			viper.GetString(flag.HttpBindAddressWorker),
+			ServiceName,
 			viper.GetDuration(flag.RetriesCron),
 			retriesSchedule))
 

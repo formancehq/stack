@@ -32,7 +32,7 @@ import java.util.List;
 public class ListScopesResponse {
   public static final String SERIALIZED_NAME_DATA = "data";
   @SerializedName(SERIALIZED_NAME_DATA)
-  private List<Scope> data = null;
+  private List<Scope> data = new ArrayList<>();
 
   public ListScopesResponse() {
   }

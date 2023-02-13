@@ -15,7 +15,7 @@ spec:
     singular: auth
   scope: Namespaced
   versions:
-  - name: v1beta1
+  - name: v1beta2
     schema:
       openAPIV3Schema:
         description: Auth is the Schema for the auths API
@@ -37,6 +37,8 @@ spec:
             properties:
               baseURL:
                 type: string
+              debug:
+                type: boolean
               delegatedOIDCServer:
                 properties:
                   clientID:
@@ -166,52 +168,8 @@ spec:
                         x-kubernetes-map-type: atomic
                     type: object
                 type: object
-              devMode:
+              dev:
                 type: boolean
-              image:
-                type: string
-              imagePullSecrets:
-                description: 'ImagePullSecrets is an optional list of references to
-                  secrets in the same namespace to use for pulling any of the images
-                  used by this PodSpec. If specified, these secrets will be passed
-                  to individual puller implementations for them to use. More info:
-                  https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod'
-                items:
-                  description: LocalObjectReference contains enough information to
-                    let you locate the referenced object inside the same namespace.
-                  properties:
-                    name:
-                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-                        TODO: Add other useful fields. apiVersion, kind, uid?'
-                      type: string
-                  type: object
-                  x-kubernetes-map-type: atomic
-                type: array
-              ingress:
-                properties:
-                  annotations:
-                    additionalProperties:
-                      type: string
-                    type: object
-                  host:
-                    type: string
-                  path:
-                    type: string
-                  tls:
-                    properties:
-                      secretName:
-                        description: SecretName is the name of the secret used to
-                          terminate TLS traffic on port 443. Field is left optional
-                          to allow TLS routing based on SNI hostname alone. If the
-                          SNI host in a listener conflicts with the "Host" header
-                          field used by an IngressRule, the SNI host is used for termination
-                          and value of the Host header is used for routing.
-                        type: string
-                    type: object
-                required:
-                - host
-                - path
-                type: object
               maxReplicas:
                 default: 10
                 description: upper limit for the number of pods that can be set by
@@ -1167,10 +1125,12 @@ spec:
                   - id
                   type: object
                 type: array
+              version:
+                default: latest
+                type: string
             required:
             - baseURL
             - delegatedOIDCServer
-            - devMode
             - postgres
             type: object
           status:
@@ -1236,7 +1196,7 @@ spec:
         specReplicasPath: .spec.replicas
         statusReplicasPath: .status.replicas
       status: {}
-  - name: v1beta2
+  - name: v1beta3
     schema:
       openAPIV3Schema:
         description: Auth is the Schema for the auths API

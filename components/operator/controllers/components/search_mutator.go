@@ -24,7 +24,7 @@ import (
 	"strings"
 
 	benthosv1beta2 "github.com/formancehq/operator/apis/benthos.components/v1beta2"
-	componentsv1beta2 "github.com/formancehq/operator/apis/components/v1beta2"
+	componentsv1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
 	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/formancehq/operator/pkg/controllerutils"
 	. "github.com/formancehq/operator/pkg/typeutils"
@@ -55,7 +55,7 @@ type SearchMutator struct {
 // +kubebuilder:rbac:groups=components.formance.com,resources=searches/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=components.formance.com,resources=searches/finalizers,verbs=update
 
-func (r *SearchMutator) Mutate(ctx context.Context, search *componentsv1beta2.Search) (*ctrl.Result, error) {
+func (r *SearchMutator) Mutate(ctx context.Context, search *componentsv1beta3.Search) (*ctrl.Result, error) {
 	_, err := r.reconcileDeployment(ctx, search)
 	if err != nil {
 		return nil, pkgError.Wrap(err, "Reconciling deployment")
@@ -84,7 +84,7 @@ func (r *SearchMutator) Mutate(ctx context.Context, search *componentsv1beta2.Se
 	return nil, nil
 }
 
-func (r *SearchMutator) reconcileDeployment(ctx context.Context, search *componentsv1beta2.Search) (*appsv1.Deployment, error) {
+func (r *SearchMutator) reconcileDeployment(ctx context.Context, search *componentsv1beta3.Search) (*appsv1.Deployment, error) {
 	matchLabels := CreateMap("app.kubernetes.io/name", "search")
 
 	env := []corev1.EnvVar{}
@@ -142,7 +142,7 @@ func (r *SearchMutator) reconcileDeployment(ctx context.Context, search *compone
 	return ret, err
 }
 
-func (r *SearchMutator) reconcileHPA(ctx context.Context, search *componentsv1beta2.Search) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
+func (r *SearchMutator) reconcileHPA(ctx context.Context, search *componentsv1beta3.Search) (*autoscallingv2.HorizontalPodAutoscaler, controllerutil.OperationResult, error) {
 	return controllerutils.CreateOrUpdate(ctx, r.Client, client.ObjectKeyFromObject(search),
 		controllerutils.WithController[*autoscallingv2.HorizontalPodAutoscaler](search, r.Scheme),
 		func(hpa *autoscallingv2.HorizontalPodAutoscaler) error {
@@ -151,7 +151,7 @@ func (r *SearchMutator) reconcileHPA(ctx context.Context, search *componentsv1be
 		})
 }
 
-func (r *SearchMutator) reconcileBenthosStreamServer(ctx context.Context, search *componentsv1beta2.Search) (controllerutil.OperationResult, error) {
+func (r *SearchMutator) reconcileBenthosStreamServer(ctx context.Context, search *componentsv1beta3.Search) (controllerutil.OperationResult, error) {
 
 	log.FromContext(ctx).Info("Mapping created es side")
 
@@ -167,7 +167,6 @@ func (r *SearchMutator) reconcileBenthosStreamServer(ctx context.Context, search
 			server.Spec.ConfigurationFile = "config.yaml"
 			server.Spec.DevProperties = search.Spec.DevProperties
 			server.Spec.Env = []corev1.EnvVar{
-				apisv1beta2.Env("KAFKA_ADDRESS", strings.Join(search.Spec.KafkaConfig.Brokers, ",")),
 				// TODO: Rename search env vars
 				//nolint:staticcheck
 				apisv1beta2.Env("OPENSEARCH_URL", search.Spec.ElasticSearch.Endpoint()),
@@ -175,6 +174,25 @@ func (r *SearchMutator) reconcileBenthosStreamServer(ctx context.Context, search
 				apisv1beta2.Env("OPENSEARCH_BATCHING_COUNT", fmt.Sprint(search.Spec.Batching.Count)),
 				apisv1beta2.Env("OPENSEARCH_BATCHING_PERIOD", search.Spec.Batching.Period),
 				apisv1beta2.Env("TOPIC_PREFIX", search.Namespace+"-"),
+			}
+			if search.Spec.Broker.Kafka != nil {
+				server.Spec.Env = append(server.Spec.Env,
+					apisv1beta2.Env("KAFKA_ADDRESS", strings.Join(search.Spec.Broker.Kafka.Brokers, ",")))
+				if search.Spec.Broker.Kafka.SASL != nil {
+					server.Spec.Env = append(server.Spec.Env,
+						apisv1beta2.Env("KAFKA_SASL_USERNAME", search.Spec.Broker.Kafka.SASL.Username),
+						apisv1beta2.Env("KAFKA_SASL_PASSWORD", search.Spec.Broker.Kafka.SASL.Password),
+						apisv1beta2.Env("KAFKA_SASL_MECHANISM", search.Spec.Broker.Kafka.SASL.Mechanism),
+					)
+				}
+				if search.Spec.Broker.Kafka.TLS {
+					server.Spec.Env = append(server.Spec.Env,
+						apisv1beta2.Env("KAFKA_TLS_ENABLED", "true"),
+					)
+				}
+			} else {
+				server.Spec.Env = append(server.Spec.Env,
+					apisv1beta2.Env("NATS_URL", search.Spec.Broker.Nats.URL))
 			}
 			if search.Spec.Monitoring != nil {
 				server.Spec.Env = append(server.Spec.Env, search.Spec.Monitoring.Env("")...)
@@ -185,18 +203,6 @@ func (r *SearchMutator) reconcileBenthosStreamServer(ctx context.Context, search
 					apisv1beta2.Env("BASIC_AUTH_ENABLED", "true"),
 					apisv1beta2.Env("BASIC_AUTH_USERNAME", search.Spec.ElasticSearch.BasicAuth.Username),
 					apisv1beta2.Env("BASIC_AUTH_PASSWORD", search.Spec.ElasticSearch.BasicAuth.Password),
-				)
-			}
-			if search.Spec.KafkaConfig.SASL != nil {
-				server.Spec.Env = append(server.Spec.Env,
-					apisv1beta2.Env("KAFKA_SASL_USERNAME", search.Spec.KafkaConfig.SASL.Username),
-					apisv1beta2.Env("KAFKA_SASL_PASSWORD", search.Spec.KafkaConfig.SASL.Password),
-					apisv1beta2.Env("KAFKA_SASL_MECHANISM", search.Spec.KafkaConfig.SASL.Mechanism),
-				)
-			}
-			if search.Spec.KafkaConfig.TLS {
-				server.Spec.Env = append(server.Spec.Env,
-					apisv1beta2.Env("KAFKA_TLS_ENABLED", "true"),
 				)
 			}
 
@@ -249,10 +255,10 @@ func (r *SearchMutator) reconcileBenthosStreamServer(ctx context.Context, search
 		})
 	switch {
 	case err != nil:
-		apisv1beta2.SetCondition(search, componentsv1beta2.ConditionTypeBenthosReady, metav1.ConditionFalse, err.Error())
+		apisv1beta2.SetCondition(search, componentsv1beta3.ConditionTypeBenthosReady, metav1.ConditionFalse, err.Error())
 	case operationResult == controllerutil.OperationResultNone:
 	default:
-		apisv1beta2.SetCondition(search, componentsv1beta2.ConditionTypeBenthosReady, metav1.ConditionTrue)
+		apisv1beta2.SetCondition(search, componentsv1beta3.ConditionTypeBenthosReady, metav1.ConditionTrue)
 	}
 	return operationResult, nil
 }
@@ -268,7 +274,7 @@ func (r *SearchMutator) SetupWithBuilder(mgr ctrl.Manager, builder *ctrl.Builder
 	return nil
 }
 
-func NewSearchMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta2.Search] {
+func NewSearchMutator(client client.Client, scheme *runtime.Scheme) controllerutils.Mutator[*componentsv1beta3.Search] {
 	return &SearchMutator{
 		Client: client,
 		Scheme: scheme,

@@ -12,6 +12,15 @@ mapping: |
       "check": "this.type == \"%s\"".format(eventDefinition.label),
       "processors": eventDefinition.processors
     }).append({
-      "processors": [{"bloblang": "root = deleted()"}]
+      "processors": [
+        {
+          "log": {
+            "message": "unable to handle message ${! content() }"
+          }
+        },
+        {
+          "bloblang": "root = deleted()"
+        }
+      ]
     })
   }
