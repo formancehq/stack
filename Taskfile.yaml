@@ -35,6 +35,8 @@ tasks:
       - task search:tests
       - task wallets:tests
       - task webhooks:tests
+      - task ledger:tests
+      - task machine:tests
 
   all:lint:
     cmds:
@@ -46,6 +48,8 @@ tasks:
       - task search:lint
       - task wallets:lint
       - task webhooks:lint
+      - task ledger:lint
+      - task machine:lint
 
 includes:
   openapi:

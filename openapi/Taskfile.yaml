@@ -15,7 +15,7 @@ tasks:
 
   sdk:generate:
     desc: Generate client code
-    workdir: .
+    dir: .
     preconditions:
       - sh: '[ "{{.CLI_ARGS}}" != "" ]'
         msg: Please specify generator as first cli arg (ie "task generate -- go")
