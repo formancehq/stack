@@ -170,6 +170,7 @@ services:
         condition: service_healthy
     environment:
       POSTGRES_URI: "postgresql://formance:formance@postgres/payments?sslmode=disable"
+      CONFIG_ENCRYPTION_KEY: "mysuperencryptionkey"
       PUBLISHER_KAFKA_ENABLED: "true"
       PUBLISHER_KAFKA_BROKER: redpanda:29092
       PUBLISHER_TOPIC_MAPPING: "*:payments"
@@ -182,8 +183,6 @@ services:
         condition: service_healthy
     environment:
       POSTGRES_URI: "postgresql://formance:formance@postgres/payments?sslmode=disable"
-    # labels:
-      # - traefik.enable=false
 
   opensearch:
     image: "opensearchproject/opensearch:2.2.1"
