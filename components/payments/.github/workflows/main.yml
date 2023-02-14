@@ -61,7 +61,7 @@ jobs:
           username: "NumaryBot"
           password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
       - if: github.event.action == 'released'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -71,7 +71,7 @@ jobs:
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
       - if: github.event.action == 'prereleased'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -81,7 +81,7 @@ jobs:
             APP_SHA=${{ github.sha }}
             VERSION=${{ github.event.release.tag_name }}
       - if: github.event.action != 'released' || github.event.action != 'prereleased'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           platforms: linux/amd64,linux/arm64
