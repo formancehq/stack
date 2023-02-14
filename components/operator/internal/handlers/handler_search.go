@@ -70,6 +70,13 @@ func init() {
 								resolveContext.Stack.GetServiceName("ledger"),
 								"LEDGER_",
 							)...)
+
+						if resolveContext.Configuration.Spec.Broker.Kafka != nil {
+							env.Append(modules.Env("BROKER", "kafka"))
+						} else {
+							env.Append(modules.Env("BROKER", "nats"))
+						}
+
 						return modules.Container{
 							Env:   env,
 							Image: benthosImage,
