@@ -1,43 +1,10 @@
 ---
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: cors-all
-spec:
-  headers:
-    accessControlAllowOriginList:
-    - "*"
-    accessControlAllowHeaders:
-    - "Authorization"
-    - "content-type"
-    accessControlAllowMethods:
-    - "*"
-    accessControlAllowCredentials: true
-    accessControlMaxAge: 100
-    addVaryHeader: true
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: stripprefix
-spec:
-  stripPrefix:
-    prefixes:
-    - /api/auth
-    - /api/dex
-    - /api/jaeger
-    - /api/ledger
-    - /api/webhooks
----
 apiVersion: stack.formance.com/v1beta3
 kind: Configuration
 metadata:
   name: stacks
 spec:
   # Define global ingress configuration
-  ingress:
-    annotations:
-      traefik.ingress.kubernetes.io/router.middlewares: default-stripprefix@kubernetescrd, default-cors-all@kubernetescrd
   monitoring:
     traces:
       otlp:

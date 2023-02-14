@@ -38,7 +38,7 @@ spec:
         - /usr/bin/operator
         args:
         - --leader-elect
-        image: controller:latest
+        image: ghcr.io/formancehq/operator:latest
         imagePullPolicy: Always
         name: manager
 #        securityContext:

@@ -1,3 +1,5 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - manager.yaml
 
@@ -8,9 +10,3 @@ configMapGenerator:
 - files:
   - controller_manager_config.yaml
   name: manager-config
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-images:
-- name: controller
-  newName: localhost:30100/formancehq/operator
-  newTag: latest
