@@ -6,13 +6,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/handlers"
 	"github.com/google/go-cmp/cmp"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
 	"gopkg.in/yaml.v3"
 	networkingv1 "k8s.io/api/networking/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -68,7 +68,7 @@ var _ = Describe("When creating a stack", func() {
 				Name:      stack.GetName(),
 			}, stack)).To(BeNil())
 			return stack.IsReady()
-		}).Should(BeTrue())
+		}).WithTimeout(5 * time.Second).Should(BeTrue())
 	})
 
 	if value, ok := os.LookupEnv("UPDATE_TEST_DATA"); ok && (value == "true" || value == "1") {
@@ -218,11 +218,6 @@ func updateTestingData(stack *stackv1beta3.Stack) func() {
 				Group:    networkingv1.GroupName,
 				Version:  "v1",
 				Resource: "ingresses",
-			},
-			{
-				Group:    traefik.GroupName,
-				Version:  "v1alpha1",
-				Resource: "middlewares",
 			},
 		}
 		for _, gvk := range gvks {

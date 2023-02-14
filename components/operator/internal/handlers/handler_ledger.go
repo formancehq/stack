@@ -14,8 +14,8 @@ func init() {
 			return modules.Services{{
 				EnvPrefix:               "NUMARY_",
 				Port:                    8080,
-				Path:                    "/api/ledger",
 				InjectPostgresVariables: true,
+				HasVersionEndpoint:      true,
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 					env := modules.NewEnv().Append(
 						modules.Env("NUMARY_SERVER_HTTP_BIND_ADDRESS", "0.0.0.0:8080"),

@@ -286,6 +286,7 @@ type Service struct {
 	Path                    string
 	EnvPrefix               string
 	InjectPostgresVariables bool
+	HasVersionEndpoint      bool
 	AuthConfiguration       func(resolveContext PrepareContext) stackv1beta3.ClientConfiguration
 	Configs                 func(resolveContext InstallContext) Configs
 	Secrets                 func(resolveContext InstallContext) Secrets
@@ -322,10 +323,7 @@ func (service Service) createIngress(ctx InstallContext, deployer *ComponentDepl
 		} else {
 			annotations = collectionutils.CopyMap(annotations)
 		}
-		if !service.Secured {
-			middlewareAuth := fmt.Sprintf("%s-auth-middleware@kubernetescrd", ctx.Stack.Name)
-			annotations["traefik.ingress.kubernetes.io/router.middlewares"] = fmt.Sprintf("%s, %s", middlewareAuth, annotations["traefik.ingress.kubernetes.io/router.middlewares"])
-		}
+
 		pathType := networkingv1.PathTypePrefix
 		ingress.ObjectMeta.Annotations = annotations
 		ingress.Spec = networkingv1.IngressSpec{

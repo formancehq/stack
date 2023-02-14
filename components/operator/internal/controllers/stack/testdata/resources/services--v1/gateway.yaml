@@ -3,12 +3,12 @@ kind: Service
 metadata:
     labels:
         stack: "true"
-    name: wallets
+    name: gateway
     namespace: stack1
 spec:
-    clusterIP: 10.0.0.201
+    clusterIP: 10.0.0.148
     clusterIPs:
-        - 10.0.0.201
+        - 10.0.0.148
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 8080
     selector:
-        app.kubernetes.io/name: wallets
+        app.kubernetes.io/name: gateway
     sessionAffinity: None
     type: ClusterIP
 status:

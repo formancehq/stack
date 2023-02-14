@@ -27,10 +27,10 @@ func init() {
 			return modules.Services{
 				modules.Service{
 					Port: 8080,
-					Path: "/api/orchestration",
 					AuthConfiguration: func(resolveContext modules.PrepareContext) stackv1beta3.ClientConfiguration {
 						return stackv1beta3.NewClientConfiguration()
 					},
+					HasVersionEndpoint:      true,
 					InjectPostgresVariables: true,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{

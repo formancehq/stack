@@ -21,8 +21,8 @@ func init() {
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{
 				modules.Service{
-					Port: 8080,
-					Path: "/api/search",
+					Port:               8080,
+					HasVersionEndpoint: true,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						env := elasticSearchEnvVars(resolveContext.Stack, resolveContext.Configuration).
 							Append(
