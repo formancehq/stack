@@ -41,6 +41,7 @@ jobs:
           echo "One or more files in the docs folder has changed."
           echo "List all the files that have changed: ${{ steps.result.outputs.folders }}"
 
+
   Find:
     runs-on: ubuntu-latest
     outputs:
@@ -103,6 +104,7 @@ jobs:
           directory: ./components/${{ matrix.folder }}
           fail_ci_if_error: false # optional (default = false)
           verbose: true # optional (default = false)
+          flags: ${{ matrix.folder }}
 
   Docker:
     runs-on: ubuntu-latest
