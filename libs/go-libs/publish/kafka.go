@@ -86,9 +86,9 @@ func ProvideSaramaOption(options ...SaramaOption) fx.Option {
 	return fx.Options(fxOptions...)
 }
 
-type clientId string
+type ClientId string
 
-func newSaramaConfig(clientId clientId, version sarama.KafkaVersion, options ...SaramaOption) *sarama.Config {
+func NewSaramaConfig(clientId ClientId, version sarama.KafkaVersion, options ...SaramaOption) *sarama.Config {
 	config := sarama.NewConfig()
 	config.ClientID = string(clientId)
 	config.Version = version
@@ -100,7 +100,7 @@ func newSaramaConfig(clientId clientId, version sarama.KafkaVersion, options ...
 	return config
 }
 
-func newKafkaPublisher(logger watermill.LoggerAdapter, config *sarama.Config, marshaller kafka.Marshaler, brokers ...string) (*kafka.Publisher, error) {
+func NewKafkaPublisher(logger watermill.LoggerAdapter, config *sarama.Config, marshaller kafka.Marshaler, brokers ...string) (*kafka.Publisher, error) {
 	return kafka.NewPublisher(kafka.PublisherConfig{
 		Brokers:               brokers,
 		Marshaler:             marshaller,
@@ -120,15 +120,15 @@ func newKafkaSubscriber(logger watermill.LoggerAdapter, config *sarama.Config,
 	}, logger)
 }
 
-func kafkaModule(clientId clientId, consumerGroup string, brokers ...string) fx.Option {
+func kafkaModule(clientId ClientId, consumerGroup string, brokers ...string) fx.Option {
 	return fx.Options(
 		fx.Supply(clientId),
 		fx.Supply(sarama.V1_0_0_0),
 		fx.Supply(fx.Annotate(kafka.DefaultMarshaler{}, fx.As(new(kafka.Marshaler)))),
 		fx.Supply(fx.Annotate(kafka.DefaultMarshaler{}, fx.As(new(kafka.Unmarshaler)))),
-		fx.Provide(fx.Annotate(newSaramaConfig, fx.ParamTags(``, ``, `group:"saramaOptions"`))),
+		fx.Provide(fx.Annotate(NewSaramaConfig, fx.ParamTags(``, ``, `group:"saramaOptions"`))),
 		fx.Provide(func(lc fx.Lifecycle, logger watermill.LoggerAdapter, marshaller kafka.Marshaler, config *sarama.Config) (*kafka.Publisher, error) {
-			ret, err := newKafkaPublisher(logger, config, marshaller, brokers...)
+			ret, err := NewKafkaPublisher(logger, config, marshaller, brokers...)
 			if err != nil {
 				return nil, err
 			}

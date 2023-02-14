@@ -84,42 +84,67 @@ func CLIPublisherModule(v *viper.Viper, serviceName string) fx.Option {
 			"sasl-scram":     v.GetInt(PublisherKafkaSASLScramSHASize),
 			"sasl-mechanism": v.GetString(PublisherKafkaSASLMechanism),
 		}).Debug("Enable kafka publisher")
+
+		saramaOptions := BuildSaramaOption(
+			v.GetBool(PublisherKafkaTLSEnabled),
+			v.GetBool(PublisherKafkaSASLEnabled),
+			v.GetString(PublisherKafkaSASLUsername),
+			v.GetString(PublisherKafkaSASLPassword),
+			v.GetString(PublisherKafkaSASLMechanism),
+			v.GetInt(PublisherKafkaSASLScramSHASize),
+		)
 		options = append(options,
-			kafkaModule(clientId(serviceName), serviceName, v.GetStringSlice(PublisherKafkaBrokerFlag)...),
+			kafkaModule(ClientId(serviceName), serviceName, v.GetStringSlice(PublisherKafkaBrokerFlag)...),
 			ProvideSaramaOption(
-				WithConsumerReturnErrors(),
-				WithProducerReturnSuccess(),
+				saramaOptions...,
 			),
 		)
-		if v.GetBool(PublisherKafkaTLSEnabled) {
-			options = append(options, ProvideSaramaOption(WithTLS()))
-		}
-		if v.GetBool(PublisherKafkaSASLEnabled) {
-			options = append(options, ProvideSaramaOption(
-				WithSASLEnabled(),
-				WithSASLCredentials(
-					v.GetString(PublisherKafkaSASLUsername),
-					v.GetString(PublisherKafkaSASLPassword),
-				),
-				WithSASLMechanism(sarama.SASLMechanism(v.GetString(PublisherKafkaSASLMechanism))),
-				WithSASLScramClient(func() sarama.SCRAMClient {
-					var fn scram.HashGeneratorFcn
-					switch v.GetInt(PublisherKafkaSASLScramSHASize) {
-					case 512:
-						fn = SHA512
-					case 256:
-						fn = SHA256
-					default:
-						panic("sha size not handled")
-					}
-					return &XDGSCRAMClient{
-						HashGeneratorFcn: fn,
-					}
-				}),
-			))
-		}
 	default:
 		options = append(options, GoChannelModule())
 	}
 	return fx.Options(options...)
+}
+
+func BuildSaramaOption(
+	PublisherKafkaTLSEnabled bool,
+	PublisherKafkaSASLEnabled bool,
+	PublisherKafkaSASLUsername string,
+	PublisherKafkaSASLPassword string,
+	PublisherKafkaSASLMechanism string,
+	PublisherKafkaSASLScramSHASize int,
+) []SaramaOption {
+	options := []SaramaOption{
+		WithConsumerReturnErrors(),
+		WithProducerReturnSuccess(),
+	}
+
+	if PublisherKafkaTLSEnabled {
+		options = append(options, WithTLS())
+	}
+	if PublisherKafkaSASLEnabled {
+		options = append(options, []SaramaOption{
+			WithSASLEnabled(),
+			WithSASLCredentials(
+				PublisherKafkaSASLUsername,
+				PublisherKafkaSASLPassword,
+			),
+			WithSASLMechanism(sarama.SASLMechanism(PublisherKafkaSASLMechanism)),
+			WithSASLScramClient(func() sarama.SCRAMClient {
+				var fn scram.HashGeneratorFcn
+				switch PublisherKafkaSASLScramSHASize {
+				case 512:
+					fn = SHA512
+				case 256:
+					fn = SHA256
+				default:
+					panic("sha size not handled")
+				}
+				return &XDGSCRAMClient{
+					HashGeneratorFcn: fn,
+				}
+			}),
+		}...)
+	}
+
+	return options
 }

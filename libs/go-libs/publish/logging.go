@@ -12,6 +12,12 @@ type watermillLoggerAdapter struct {
 	logging.Logger
 }
 
+func NewWatermillLoggerAdapter(logger logging.Logger) watermill.LoggerAdapter {
+	return watermillLoggerAdapter{
+		Logger: logger,
+	}
+}
+
 func (w watermillLoggerAdapter) Error(msg string, err error, fields watermill.LogFields) {
 	w.WithFields(fields).WithFields(map[string]any{
 		"err": err,

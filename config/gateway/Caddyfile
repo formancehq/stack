@@ -1,9 +1,15 @@
-(cors) {
+(cors_and_audit) {
 	header {
 		Access-Control-Allow-Methods "GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH"
 		Access-Control-Allow-Headers content-type
 		Access-Control-Max-Age 100
 		Access-Control-Allow-Origin *
+	}
+
+	audit {
+		publisher_kafka_broker "redpanda:29092"
+		publisher_kafka_enabled "true"
+		publisher_kafka_topics "audit"
 	}
 }
 
@@ -12,7 +18,7 @@
 	handle {args.0}/* {
 		reverse_proxy {args.1}
 
-		import cors
+		import cors_and_audit
 	}
 }
 
@@ -21,8 +27,7 @@
 	handle_path {args.0}* {
 		reverse_proxy {args.1}
 
-		import cors
-
+		import cors_and_audit
 		import auth
 	}
 }
@@ -32,15 +37,14 @@
 	handle_path {args.0}* {
 		reverse_proxy {args.1}
 
-		import cors
+		import cors_and_audit
 	}
 }
 
 (auth) {
 	auth {
-		issuer http://localhost/api/auth
-
-		read_key_set_max_retries 10
+		issuer "http://localhost/api/auth"
+		read_key_set_max_retries "10"
 	}
 }
 
@@ -51,6 +55,7 @@
 	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
 	order auth before basicauth
 	order versions after metrics
+	order audit after encode
 
 	# Local env dev config
 	debug
@@ -81,11 +86,13 @@ localhost:80 {
 				webhooks http://webhooks:8080/_info http://webhooks:8080/_healthcheck
 			}
 		}
+
+		import cors_and_audit
 	}
 
 	# handle all other requests
 	handle {
 		reverse_proxy 127.0.0.1:3000
-		import cors
+		import cors_and_audit
 	}
 }

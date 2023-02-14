@@ -26,6 +26,9 @@ services:
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       GRPC_GO_LOG_VERBOSITY_LEVEL: "99"
       GRPC_GO_LOG_SEVERITY_LEVEL: "info"
+      PUBLISHER_KAFKA_ENABLED: "true"
+      PUBLISHER_KAFKA_BROKER: "redpanda:29092"
+      PUBLISHER_KAFKA_TOPICS: "audit"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./config/gateway/Caddyfile:/etc/caddy/Caddyfile:ro"
