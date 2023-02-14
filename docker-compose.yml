@@ -238,7 +238,7 @@ services:
         condition: service_healthy
     environment:
       KAFKA_ADDRESS: "redpanda:29092"
-      KAFKA_TOPIC: "ledger,payments"
+      KAFKA_TOPICS: "ledger payments"
       KAFKA_VERSION: "1.0.0"
       KAFKA_CONSUMER_GROUP: "search-ingester"
       OPENSEARCH_URL: "http://opensearch:9200"
