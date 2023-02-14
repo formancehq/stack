@@ -210,12 +210,6 @@ func (m *Machine) tick() (bool, byte) {
 		m.Stack = append(m.Stack, *v)
 		m.P += 2
 
-	case program.OP_IPUSH:
-		bytes := m.Program.Instructions[m.P+1 : m.P+9]
-		v := core.Number(big.NewInt(int64(binary.LittleEndian.Uint64(bytes))))
-		m.Stack = append(m.Stack, v)
-		m.P += 8
-
 	case program.OP_BUMP:
 		n := big.Int(*pop[core.Number](m))
 		idx := len(m.Stack) - int(n.Uint64()) - 1
