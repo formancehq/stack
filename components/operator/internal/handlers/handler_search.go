@@ -72,9 +72,9 @@ func init() {
 							)...)
 
 						if resolveContext.Configuration.Spec.Broker.Kafka != nil {
-							env.Append(modules.Env("BROKER", "kafka"))
+							env = env.Append(modules.Env("BROKER", "kafka"))
 						} else {
-							env.Append(modules.Env("BROKER", "nats"))
+							env = env.Append(modules.Env("BROKER", "nats"))
 						}
 
 						return modules.Container{
