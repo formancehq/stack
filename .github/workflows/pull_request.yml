@@ -97,6 +97,12 @@ jobs:
         with:
           go-version-file: './go.work'
       - run: task ${{ matrix.folder }}:tests
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: ./components/${{ matrix.folder }}
+          fail_ci_if_error: false # optional (default = false)
+          verbose: true # optional (default = false)
 
   Docker:
     runs-on: ubuntu-latest
