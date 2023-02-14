@@ -17,7 +17,7 @@ services:
       - LOG_LEVEL=debug
 
   gateway:
-    image: "formancehq/gateway:latest"
+    image: "ghcr.io/formancehq/gateway:latest"
     network_mode: service:auth-dex
     environment:
       - OTEL_SERVICE_NAME=gateway

@@ -13,7 +13,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"gorm.io/plugin/opentelemetry/tracing"
 )
 
 const (
@@ -46,9 +45,6 @@ func LoadGorm(d gorm.Dialector, debug bool) (*gorm.DB, error) {
 		Logger: newLogger(debug),
 	})
 	if err != nil {
-		return nil, err
-	}
-	if err := db.Use(tracing.NewPlugin()); err != nil {
 		return nil, err
 	}
 	return db, nil
