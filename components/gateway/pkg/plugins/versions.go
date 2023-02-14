@@ -148,9 +148,16 @@ func (v *versionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				return fmt.Errorf("failed to create version request: %w", err)
 			}
 
+			res := serviceInfo{
+				Name:    edpt.Name,
+				Version: "unknown",
+			}
+
 			resp, err := v.httpClient.Do(req)
 			if err != nil {
-				return fmt.Errorf("failed to get version: %w", err)
+				v.logger.Error("failed to get version", zap.String("name", res.Name), zap.Error(err))
+				versions <- res
+				return nil
 			}
 
 			defer func() {
@@ -161,20 +168,21 @@ func (v *versionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}()
 
 			if resp.StatusCode != http.StatusOK {
-				return fmt.Errorf("failed to get version for %s: %s", edpt.Name, resp.Status)
+				v.logger.Error("failed to get version", zap.String("name", res.Name), zap.String("status", resp.Status))
+				versions <- res
+				return nil
 			}
 
 			responseBody, err := io.ReadAll(resp.Body)
 			if err != nil {
-				return fmt.Errorf("failed to read response body: %w", err)
+				v.logger.Error("failed to read response body", zap.String("name", res.Name), zap.Error(err))
+				versions <- res
+				return nil
 			}
 
-			res := serviceInfo{}
-			if err = json.Unmarshal(responseBody, &res); err != nil {
-				return fmt.Errorf("failed to unmarshal response body: %w", err)
+			if err := json.Unmarshal(responseBody, &res); err != nil {
+				v.logger.Error("failed to unmarshal response body", zap.String("name", res.Name), zap.Error(err))
 			}
-
-			res.Name = edpt.Name
 
 			versions <- res
 
