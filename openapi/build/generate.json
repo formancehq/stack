@@ -7774,12 +7774,14 @@
       "tags": [
         "Clients",
         "Scopes",
-        "Users"
+        "Users",
+        "Auth"
       ]
     },
     {
       "name": "Ledger",
       "tags": [
+        "Ledger",
         "Server",
         "Accounts",
         "Mapping",
@@ -7818,6 +7820,12 @@
       "name": "Webhooks",
       "tags": [
         "Webhooks"
+      ]
+    },
+    {
+      "name": "Orchestration",
+      "tags": [
+        "Orchestration"
       ]
     }
   ]
