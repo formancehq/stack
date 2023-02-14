@@ -2,3 +2,4 @@ ignore:
   - "docs"
   - ".github"
   - ".devcontainer"
+  - "pkg/machine/script/parser"
