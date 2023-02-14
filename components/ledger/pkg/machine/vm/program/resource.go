@@ -3,7 +3,7 @@ package program
 import (
 	"fmt"
 
-	"github.com/formancehq/machine/core"
+	"github.com/numary/ledger/pkg/core"
 )
 
 type Resource interface {

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/formancehq/machine/core"
+	"github.com/numary/ledger/pkg/core"
 	"github.com/pkg/errors"
 )
 
@@ -51,9 +51,9 @@ func (p *Program) ParseVariables(vars map[string]core.Value) (map[string]core.Va
 				variables[variable.Name] = val
 				switch val.GetType() {
 				case core.TypeAccount:
-					if err := core.ParseAccount(val.(core.Account)); err != nil {
+					if err := core.ParseAccountAddress(val.(core.AccountAddress)); err != nil {
 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-							variable.Name, string(val.(core.Account)))
+							variable.Name, string(val.(core.AccountAddress)))
 					}
 				case core.TypeMonetary:
 					if err := core.ParseMonetary(val.(core.Monetary)); err != nil {

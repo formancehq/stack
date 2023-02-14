@@ -1,8 +1,8 @@
 package compiler
 
 import (
-	"github.com/formancehq/machine/core"
-	"github.com/formancehq/machine/vm/program"
+	"github.com/numary/ledger/pkg/core"
+	"github.com/numary/ledger/pkg/machine/vm/program"
 )
 
 func (p *parseVisitor) AppendInstruction(instruction byte) {

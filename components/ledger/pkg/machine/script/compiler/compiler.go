@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/formancehq/machine/core"
-	"github.com/formancehq/machine/script/parser"
-	"github.com/formancehq/machine/vm/program"
+	"github.com/numary/ledger/pkg/core"
+	"github.com/numary/ledger/pkg/machine/script/parser"
+	"github.com/numary/ledger/pkg/machine/vm/program"
 	"github.com/pkg/errors"
 )
 
@@ -52,7 +52,7 @@ func (p *parseVisitor) isWorld(addr core.Address) bool {
 	idx := int(addr)
 	if idx < len(p.resources) {
 		if c, ok := p.resources[idx].(program.Constant); ok {
-			if acc, ok := c.Inner.(core.Account); ok {
+			if acc, ok := c.Inner.(core.AccountAddress); ok {
 				if string(acc) == "world" {
 					return true
 				}
@@ -119,7 +119,7 @@ func (p *parseVisitor) VisitExpr(c parser.IExpressionContext, push bool) (core.T
 func (p *parseVisitor) VisitLit(c parser.ILiteralContext, push bool) (core.Type, *core.Address, *CompileError) {
 	switch c := c.(type) {
 	case *parser.LitAccountContext:
-		account := core.Account(c.GetText()[1:])
+		account := core.AccountAddress(c.GetText()[1:])
 		addr, err := p.AllocateResource(program.Constant{Inner: account})
 		if err != nil {
 			return 0, nil, LogicError(c, err)

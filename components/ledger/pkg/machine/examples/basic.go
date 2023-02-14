@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/formancehq/machine/core"
-	"github.com/formancehq/machine/script/compiler"
-	"github.com/formancehq/machine/vm"
+	"github.com/numary/ledger/pkg/core"
+	"github.com/numary/ledger/pkg/machine/script/compiler"
+	"github.com/numary/ledger/pkg/machine/vm"
 )
 
 func main() {
@@ -29,11 +29,11 @@ func main() {
 	}
 	fmt.Print(program)
 
-	machine := vm.NewMachine(*program)
-	machine.Debug = true
+	m := vm.NewMachine(*program)
+	m.Debug = true
 
-	if err = machine.SetVars(map[string]core.Value{
-		"dest": core.Account("charlie"),
+	if err = m.SetVars(map[string]core.Value{
+		"dest": core.AccountAddress("charlie"),
 	}); err != nil {
 		panic(err)
 	}
@@ -44,7 +44,7 @@ func main() {
 	}
 
 	{
-		ch, err := machine.ResolveResources()
+		ch, err := m.ResolveResources()
 		if err != nil {
 			panic(err)
 		}
@@ -56,7 +56,7 @@ func main() {
 	}
 
 	{
-		ch, err := machine.ResolveBalances()
+		ch, err := m.ResolveBalances()
 		if err != nil {
 			panic(err)
 		}
@@ -69,12 +69,12 @@ func main() {
 		}
 	}
 
-	exitCode, err := machine.Execute()
+	exitCode, err := m.Execute()
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println("Exit code:", exitCode)
-	fmt.Println(machine.Postings)
-	fmt.Println(machine.TxMeta)
+	fmt.Println(m.Postings)
+	fmt.Println(m.TxMeta)
 }

@@ -15,9 +15,9 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/formancehq/machine/core"
-	"github.com/formancehq/machine/vm/program"
 	"github.com/logrusorgru/aurora"
+	"github.com/numary/ledger/pkg/core"
+	"github.com/numary/ledger/pkg/machine/vm/program"
 )
 
 const (
@@ -34,12 +34,12 @@ type Machine struct {
 	UnresolvedResources []program.Resource
 	Resources           []core.Value // Constants and Variables
 	resolveCalled       bool
-	Balances            map[core.Account]map[core.Asset]*core.MonetaryInt // keeps tracks of balances throughout execution
+	Balances            map[core.AccountAddress]map[core.Asset]*core.MonetaryInt // keeps tracks of balances throughout execution
 	setBalanceCalled    bool
 	Stack               []core.Value
-	Postings            []Posting                              // accumulates postings throughout execution
-	TxMeta              map[string]core.Value                  // accumulates transaction meta throughout execution
-	AccountsMeta        map[core.Account]map[string]core.Value // accumulates accounts meta throughout execution
+	Postings            []Posting                                     // accumulates postings throughout execution
+	TxMeta              map[string]core.Value                         // accumulates transaction meta throughout execution
+	AccountsMeta        map[core.AccountAddress]map[string]core.Value // accumulates accounts meta throughout execution
 	Printer             func(chan core.Value)
 	printChan           chan core.Value
 	Debug               bool
@@ -65,7 +65,7 @@ func NewMachine(p program.Program) *Machine {
 		Printer:             StdOutPrinter,
 		Postings:            make([]Posting, 0),
 		TxMeta:              map[string]core.Value{},
-		AccountsMeta:        map[core.Account]map[string]core.Value{},
+		AccountsMeta:        map[core.AccountAddress]map[string]core.Value{},
 	}
 
 	return &m
@@ -129,7 +129,7 @@ func (m *Machine) getResource(addr core.Address) (*core.Value, bool) {
 	return &m.Resources[a], true
 }
 
-func (m *Machine) withdrawAll(account core.Account, asset core.Asset, overdraft *core.MonetaryInt) (*core.Funding, error) {
+func (m *Machine) withdrawAll(account core.AccountAddress, asset core.Asset, overdraft *core.MonetaryInt) (*core.Funding, error) {
 	if accBalances, ok := m.Balances[account]; ok {
 		if balance, ok := accBalances[asset]; ok {
 			amountTaken := core.NewMonetaryInt(0)
@@ -150,7 +150,7 @@ func (m *Machine) withdrawAll(account core.Account, asset core.Asset, overdraft 
 	return nil, fmt.Errorf("missing %v balance from %v", asset, account)
 }
 
-func (m *Machine) withdrawAlways(account core.Account, mon core.Monetary) (*core.Funding, error) {
+func (m *Machine) withdrawAlways(account core.AccountAddress, mon core.Monetary) (*core.Funding, error) {
 	if accBalance, ok := m.Balances[account]; ok {
 		if balance, ok := accBalance[mon.Asset]; ok {
 			accBalance[mon.Asset] = balance.Sub(mon.Amount)
@@ -166,7 +166,7 @@ func (m *Machine) withdrawAlways(account core.Account, mon core.Monetary) (*core
 	return nil, fmt.Errorf("missing %v balance from %v", mon.Asset, account)
 }
 
-func (m *Machine) credit(account core.Account, funding core.Funding) {
+func (m *Machine) credit(account core.AccountAddress, funding core.Funding) {
 	if account == "world" {
 		return
 	}
@@ -293,7 +293,7 @@ func (m *Machine) tick() (bool, byte) {
 
 	case program.OP_TAKE_ALL:
 		overdraft := pop[core.Monetary](m)
-		account := pop[core.Account](m)
+		account := pop[core.AccountAddress](m)
 		funding, err := m.withdrawAll(account, overdraft.Asset, overdraft.Amount)
 		if err != nil {
 			return true, EXIT_FAIL_INVALID
@@ -302,7 +302,7 @@ func (m *Machine) tick() (bool, byte) {
 
 	case program.OP_TAKE_ALWAYS:
 		mon := pop[core.Monetary](m)
-		account := pop[core.Account](m)
+		account := pop[core.AccountAddress](m)
 		funding, err := m.withdrawAlways(account, mon)
 		if err != nil {
 			return true, EXIT_FAIL_INVALID
@@ -399,7 +399,7 @@ func (m *Machine) tick() (bool, byte) {
 		m.repay(pop[core.Funding](m))
 
 	case program.OP_SEND:
-		dest := pop[core.Account](m)
+		dest := pop[core.AccountAddress](m)
 		funding := pop[core.Funding](m)
 		m.credit(dest, funding)
 		for _, part := range funding.Parts {
@@ -422,7 +422,7 @@ func (m *Machine) tick() (bool, byte) {
 		m.TxMeta[string(k)] = v
 
 	case program.OP_ACCOUNT_META:
-		a := pop[core.Account](m)
+		a := pop[core.AccountAddress](m)
 		k := pop[core.String](m)
 		v := m.popValue()
 		if m.AccountsMeta[a] == nil {
@@ -483,7 +483,7 @@ func (m *Machine) ResolveBalances() (chan BalanceRequest, error) {
 	resChan := make(chan BalanceRequest)
 	go func() {
 		defer close(resChan)
-		m.Balances = make(map[core.Account]map[core.Asset]*core.MonetaryInt)
+		m.Balances = make(map[core.AccountAddress]map[core.Asset]*core.MonetaryInt)
 		// for every account that we need balances of, check if it's there
 		for addr, neededAssets := range m.Program.NeededBalances {
 			account, ok := m.getResource(addr)
@@ -493,7 +493,7 @@ func (m *Machine) ResolveBalances() (chan BalanceRequest, error) {
 				}
 				return
 			}
-			if account, ok := (*account).(core.Account); ok {
+			if account, ok := (*account).(core.AccountAddress); ok {
 				m.Balances[account] = make(map[core.Asset]*core.MonetaryInt)
 				// for every asset, send request
 				for addr := range neededAssets {
@@ -593,7 +593,7 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 					}
 					return
 				}
-				account := (*sourceAccount).(core.Account)
+				account := (*sourceAccount).(core.AccountAddress)
 				resp := make(chan core.Value)
 				resChan <- ResourceRequest{
 					Account:  string(account),
@@ -633,7 +633,7 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 					}
 					return
 				}
-				account := (*sourceAccount).(core.Account)
+				account := (*sourceAccount).(core.AccountAddress)
 				resp := make(chan core.Value)
 				resChan <- ResourceRequest{
 					Account:  string(account),

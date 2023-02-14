@@ -47,11 +47,11 @@ func NewValueFromJSON(typ Type, data json.RawMessage) (*Value, error) {
 	var value Value
 	switch typ {
 	case TypeAccount:
-		var account Account
+		var account AccountAddress
 		if err := json.Unmarshal(data, &account); err != nil {
 			return nil, err
 		}
-		if err := ParseAccount(account); err != nil {
+		if err := ParseAccountAddress(account); err != nil {
 			return nil, errors.Wrapf(err, "value %s", string(account))
 		}
 		value = account

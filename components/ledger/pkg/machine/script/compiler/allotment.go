@@ -6,9 +6,9 @@ import (
 	"math/big"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
-	"github.com/formancehq/machine/core"
-	"github.com/formancehq/machine/script/parser"
-	"github.com/formancehq/machine/vm/program"
+	"github.com/numary/ledger/pkg/core"
+	"github.com/numary/ledger/pkg/machine/script/parser"
+	"github.com/numary/ledger/pkg/machine/vm/program"
 )
 
 func (p *parseVisitor) VisitAllotment(c antlr.ParserRuleContext, portions []parser.IAllotmentPortionContext) *CompileError {

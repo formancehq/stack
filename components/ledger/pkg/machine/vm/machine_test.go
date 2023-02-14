@@ -6,9 +6,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/formancehq/machine/core"
-	"github.com/formancehq/machine/script/compiler"
-	"github.com/formancehq/machine/vm/program"
+	"github.com/numary/ledger/pkg/core"
+	"github.com/numary/ledger/pkg/machine/script/compiler"
+	"github.com/numary/ledger/pkg/machine/vm/program"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -126,16 +126,16 @@ func testImpl(t *testing.T, prog *program.Program, expected CaseResult, exec fun
 		t.Fatal("no program")
 	}
 
-	machine := NewMachine(*prog)
-	machine.Debug = DEBUG
-	machine.Printer = func(c chan core.Value) {
+	m := NewMachine(*prog)
+	m.Debug = DEBUG
+	m.Printer = func(c chan core.Value) {
 		for v := range c {
 			printed = append(printed, v)
 		}
 		wg.Done()
 	}
 
-	exitCode, err := exec(machine)
+	exitCode, err := exec(m)
 	require.Equal(t, expected.ExitCode, exitCode)
 	if expected.Error != "" {
 		require.ErrorContains(t, err, expected.Error)
@@ -154,8 +154,8 @@ func testImpl(t *testing.T, prog *program.Program, expected CaseResult, exec fun
 		expected.Metadata = make(map[string]core.Value)
 	}
 
-	assert.Equalf(t, expected.Postings, machine.Postings, "unexpected postings output: %v", machine.Postings)
-	assert.Equalf(t, expected.Metadata, machine.TxMeta, "unexpected metadata output: %v", machine.TxMeta)
+	assert.Equalf(t, expected.Postings, m.Postings, "unexpected postings output: %v", m.Postings)
+	assert.Equalf(t, expected.Metadata, m.TxMeta, "unexpected metadata output: %v", m.TxMeta)
 
 	wg.Wait()
 
@@ -218,8 +218,8 @@ func TestVariables(t *testing.T) {
 		destination=$driver
 	)`)
 	tc.vars = map[string]core.Value{
-		"rider":  core.Account("users:001"),
-		"driver": core.Account("users:002"),
+		"rider":  core.AccountAddress("users:001"),
+		"driver": core.AccountAddress("users:002"),
 	}
 	tc.setBalance("users:001", "EUR/2", 1000)
 	tc.expected = CaseResult{
@@ -611,7 +611,7 @@ func TestMetadata(t *testing.T) {
 	}`)
 	tc.meta = map[string]map[string]core.Value{
 		"sales:042": {
-			"seller": core.Account("users:053"),
+			"seller": core.AccountAddress("users:053"),
 		},
 		"users:053": {
 			"commission": *commission,
@@ -923,7 +923,7 @@ func TestNeededBalances(t *testing.T) {
 	m := NewMachine(*p)
 
 	err = m.SetVars(map[string]core.Value{
-		"a": core.Account("a"),
+		"a": core.AccountAddress("a"),
 	})
 	if err != nil {
 		t.Fatalf("did not expect error on SetVars, got: %v", err)
@@ -1092,7 +1092,7 @@ func TestSetAccountMeta(t *testing.T) {
 		m := NewMachine(*p)
 
 		require.NoError(t, m.SetVars(map[string]core.Value{
-			"acc": core.Account("test"),
+			"acc": core.AccountAddress("test"),
 		}))
 
 		{
@@ -1346,11 +1346,11 @@ func TestVariablesParsing(t *testing.T) {
 		m := NewMachine(*p)
 
 		require.NoError(t, m.SetVars(map[string]core.Value{
-			"acc": core.Account("valid:acc"),
+			"acc": core.AccountAddress("valid:acc"),
 		}))
 
 		require.Error(t, m.SetVars(map[string]core.Value{
-			"acc": core.Account("invalid-acc"),
+			"acc": core.AccountAddress("invalid-acc"),
 		}))
 
 		require.NoError(t, m.SetVarsFromJSON(map[string]json.RawMessage{
@@ -1375,7 +1375,7 @@ func TestVariablesParsing(t *testing.T) {
 		m := NewMachine(*p)
 
 		require.NoError(t, m.SetVars(map[string]core.Value{
-			"acc": core.Account(""),
+			"acc": core.AccountAddress(""),
 		}))
 
 		require.NoError(t, m.SetVarsFromJSON(map[string]json.RawMessage{
