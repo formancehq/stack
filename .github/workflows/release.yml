@@ -67,6 +67,13 @@ jobs:
           cache-dependency-path: 'components/${{ needs.Extract.outputs.service }}/go.sum'
           cache: true
       - run: task ${{ needs.Extract.outputs.service }}:tests
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          directory: 'components/${{ needs.Extract.outputs.service }}'
+          name: '${{ needs.Extract.outputs.service }} ${{ needs.Extract.outputs.version }}'
+          fail_ci_if_error: false # optional (default = false)
+          verbose: true # optional (default = false)
 
   GoReleaser:
     name: GoReleaser
