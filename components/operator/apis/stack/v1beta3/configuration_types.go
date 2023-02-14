@@ -20,103 +20,99 @@ import (
 	"reflect"
 	"strings"
 
-	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
-	v1beta3 "github.com/formancehq/operator/apis/components/v1beta3"
-	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
-	"github.com/formancehq/operator/pkg/typeutils"
+	"github.com/formancehq/operator/apis/components/v1beta2"
+	"github.com/pkg/errors"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-// +kubebuilder:object:generate=false
-type ServiceConfiguration interface {
-	NeedAuthMiddleware() bool
-	Spec(stack *Stack, configuration ConfigurationSpec) any
-	HTTPPort() int
-	AuthClientConfiguration(stack *Stack) *authcomponentsv1beta2.ClientConfiguration
-}
-
-// +kubebuilder:object:generate=false
-type CustomPathServiceConfiguration interface {
-	ServiceConfiguration
-	Path() string
-}
-
+// ConfigurationServicesSpec define all existing services for a stack.
+// Fields order is important.
+// For example, auth must be defined later as other services create static auth clients which must be used by auth.
 type ConfigurationServicesSpec struct {
-	Auth           AuthSpec           `json:"auth,omitempty"`
-	Control        ControlSpec        `json:"control,omitempty"`
-	Ledger         LedgerSpec         `json:"ledger,omitempty"`
-	Payments       PaymentsSpec       `json:"payments,omitempty"`
-	Search         SearchSpec         `json:"search,omitempty"`
-	Webhooks       WebhooksSpec       `json:"webhooks,omitempty"`
-	Wallets        WalletsSpec        `json:"wallets,omitempty"`
-	Orchestration  OrchestrationSpec  `json:"orchestration,omitempty"`
-	Counterparties CounterpartiesSpec `json:"counterparties,omitempty"`
+	Control       ControlSpec       `json:"control,omitempty"`
+	Ledger        LedgerSpec        `json:"ledger,omitempty"`
+	Payments      PaymentsSpec      `json:"payments,omitempty"`
+	Webhooks      WebhooksSpec      `json:"webhooks,omitempty"`
+	Wallets       WalletsSpec       `json:"wallets,omitempty"`
+	Orchestration OrchestrationSpec `json:"orchestration,omitempty"`
+	Search        SearchSpec        `json:"search,omitempty"`
+	Auth          AuthSpec          `json:"auth,omitempty"`
 }
 
-var (
-	_ ServiceConfiguration = AuthSpec{}
-	_ ServiceConfiguration = ControlSpec{}
-	_ ServiceConfiguration = LedgerSpec{}
-	_ ServiceConfiguration = PaymentsSpec{}
-	_ ServiceConfiguration = SearchSpec{}
-	_ ServiceConfiguration = WebhooksSpec{}
-	_ ServiceConfiguration = WalletsSpec{}
-	_ ServiceConfiguration = OrchestrationSpec{}
-	_ ServiceConfiguration = CounterpartiesSpec{}
-)
-
-func (in *ConfigurationServicesSpec) AsServiceConfigurations() map[string]ServiceConfiguration {
+func (in *ConfigurationServicesSpec) List() []string {
 	valueOf := reflect.ValueOf(*in)
-	ret := make(map[string]ServiceConfiguration)
+	ret := make([]string, 0)
 	for i := 0; i < valueOf.Type().NumField(); i++ {
-		ret[strings.ToLower(valueOf.Type().Field(i).Name)] = valueOf.Field(i).Interface().(ServiceConfiguration)
+		ret = append(ret, strings.ToLower(valueOf.Type().Field(i).Name))
 	}
 	return ret
 }
 
-func GetServiceList() []string {
-	typeOf := reflect.TypeOf(ConfigurationServicesSpec{})
-	res := make([]string, 0)
-	for i := 0; i < typeOf.NumField(); i++ {
-		field := typeOf.Field(i)
-		res = append(res, field.Name)
-	}
-	return res
+type TemporalTLSConfig struct {
+	CRT string `json:"crt"`
+	Key string `json:"key"`
 }
 
 type TemporalConfig struct {
-	Address   string                    `json:"address"`
-	Namespace string                    `json:"namespace"`
-	TLS       v1beta3.TemporalTLSConfig `json:"tls"`
+	Address   string            `json:"address"`
+	Namespace string            `json:"namespace"`
+	TLS       TemporalTLSConfig `json:"tls"`
+}
+
+type CollectorConfig struct {
+	Broker `json:",inline"`
+	Topic  string `json:"topic"`
+}
+
+type Broker struct {
+	// +optional
+	Kafka *KafkaConfig `json:"kafka,omitempty"`
+	// +optional
+	Nats *NatsConfig `json:"nats,omitempty"`
+}
+
+type MonitoringSpec struct {
+	// +optional
+	Traces *TracesSpec `json:"traces,omitempty"`
+}
+
+type TracesOtlpSpec struct {
+	// +optional
+	Endpoint string `json:"endpoint,omitempty"`
+	// +optional
+	EndpointFrom *corev1.EnvVarSource `json:"endpointFrom,omitempty"`
+	// +optional
+	Port int32 `json:"port,omitempty"`
+	// +optional
+	PortFrom *corev1.EnvVarSource `json:"portFrom,omitempty"`
+	// +optional
+	Insecure bool `json:"insecure,omitempty"`
+	// +kubebuilder:validation:Enum:={grpc,http}
+	// +kubebuilder:validation:default:=grpc
+	// +optional
+	Mode string `json:"mode,omitempty"`
+	// +optional
+	ResourceAttributes string `json:"resourceAttributes,omitempty"`
+}
+
+type TracesSpec struct {
+	// +optional
+	Otlp *TracesOtlpSpec `json:"otlp,omitempty"`
 }
 
 type ConfigurationSpec struct {
 	Services ConfigurationServicesSpec `json:"services"`
-	Broker   v1beta3.Broker            `json:"broker"`
+	Broker   Broker                    `json:"broker"`
 	// +optional
-	Monitoring *apisv1beta2.MonitoringSpec `json:"monitoring,omitempty"`
+	Monitoring *MonitoringSpec `json:"monitoring,omitempty"`
 	// +optional
 	Ingress  IngressGlobalConfig `json:"ingress,omitempty"`
 	Temporal TemporalConfig      `json:"temporal"`
 }
 
-func (in *ConfigurationSpec) Validate() field.ErrorList {
-	return typeutils.MergeAll(
-		typeutils.Map(in.Services.Ledger.Validate(), apisv1beta2.AddPrefixToFieldError("services.ledger")),
-		typeutils.Map(in.Services.Payments.Validate(), apisv1beta2.AddPrefixToFieldError("services.payments")),
-		typeutils.Map(in.Services.Search.Validate(), apisv1beta2.AddPrefixToFieldError("services.search")),
-		typeutils.Map(in.Services.Webhooks.Validate(), apisv1beta2.AddPrefixToFieldError("services.webhooks")),
-		typeutils.Map(in.Services.Wallets.Validate(), apisv1beta2.AddPrefixToFieldError("services.wallets")),
-		typeutils.Map(in.Services.Counterparties.Validate(), apisv1beta2.AddPrefixToFieldError("services.counterparties")),
-		typeutils.Map(in.Services.Auth.Validate(), apisv1beta2.AddPrefixToFieldError("services.auth")),
-		typeutils.Map(in.Monitoring.Validate(), apisv1beta2.AddPrefixToFieldError("monitoring")),
-		typeutils.Map(in.Broker.Validate(), apisv1beta2.AddPrefixToFieldError("kafka")),
-	)
-}
-
-func (in *ConfigurationSpec) GetServices() map[string]ServiceConfiguration {
-	return in.Services.AsServiceConfigurations()
+func (in *ConfigurationSpec) GetServices() []string {
+	return in.Services.List()
 }
 
 //+kubebuilder:object:root=true
@@ -129,11 +125,18 @@ type Configuration struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   ConfigurationSpec  `json:"spec,omitempty"`
-	Status apisv1beta2.Status `json:"status,omitempty"`
+	Spec   ConfigurationSpec `json:"spec,omitempty"`
+	Status v1beta2.Status    `json:"status,omitempty"`
 }
 
 func (*Configuration) Hub() {}
+
+func (c Configuration) Validate() error {
+	if c.Spec.Broker.Kafka == nil && c.Spec.Broker.Nats == nil {
+		return errors.New("either 'kafka' or 'nats' is required")
+	}
+	return nil
+}
 
 //+kubebuilder:object:root=true
 

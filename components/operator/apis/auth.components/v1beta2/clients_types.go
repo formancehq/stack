@@ -20,7 +20,6 @@ import (
 	"reflect"
 	"sort"
 
-	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	"github.com/numary/auth/authclient"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -80,24 +79,10 @@ type ClientSpec struct {
 
 // ClientStatus defines the observed state of Client
 type ClientStatus struct {
-	apisv1beta2.Status `json:",inline"`
-	AuthServerID       string `json:"authServerID,omitempty"`
+	Status       `json:",inline"`
+	AuthServerID string `json:"authServerID,omitempty"`
 	// +optional
 	Scopes map[string]string `json:"scopes"`
-}
-
-func (in *ClientStatus) IsDirty(t apisv1beta2.Object) bool {
-	if in.Status.IsDirty(t) {
-		return true
-	}
-	client := t.(*Client)
-	if !reflect.DeepEqual(in.Scopes, client.Status.Scopes) {
-		return true
-	}
-	if in.AuthServerID != client.Status.AuthServerID {
-		return true
-	}
-	return false
 }
 
 //+kubebuilder:object:root=true
@@ -112,18 +97,6 @@ type Client struct {
 
 	Spec   ClientSpec   `json:"spec,omitempty"`
 	Status ClientStatus `json:"status,omitempty"`
-}
-
-func (c *Client) IsDirty(t apisv1beta2.Object) bool {
-	return authServerChanges(t, c, c.Spec.AuthServerReference)
-}
-
-func (c *Client) GetStatus() apisv1beta2.Dirty {
-	return &c.Status
-}
-
-func (in *Client) GetConditions() *apisv1beta2.Conditions {
-	return &in.Status.Conditions
 }
 
 func (in *Client) AuthServerReference() string {
@@ -174,81 +147,6 @@ func (in *Client) Match(client *authclient.Client) bool {
 	}
 
 	return true
-}
-
-func (in *Client) SetClientCreated(id string) {
-	in.Status.SetCondition(apisv1beta2.Condition{
-		Type:               ConditionTypeClientCreated,
-		Status:             metav1.ConditionTrue,
-		LastTransitionTime: metav1.Now(),
-		ObservedGeneration: in.Generation,
-	})
-	in.Status.AuthServerID = id
-}
-
-func (in *Client) SetClientUpdated() {
-	in.Status.SetCondition(apisv1beta2.Condition{
-		Type:               ConditionTypeClientUpdated,
-		Status:             metav1.ConditionTrue,
-		LastTransitionTime: metav1.Now(),
-		ObservedGeneration: in.Generation,
-	})
-}
-
-func (in *Client) checkScopesSynchronized() {
-
-	notSynchronized := func() {
-		in.Status.SetCondition(apisv1beta2.Condition{
-			Type:               ConditionTypeScopesSynchronized,
-			Status:             metav1.ConditionFalse,
-			LastTransitionTime: metav1.Now(),
-			ObservedGeneration: in.Generation,
-		})
-	}
-
-	if len(in.Spec.Scopes) != len(in.Status.Scopes) {
-		notSynchronized()
-		return
-	}
-	for _, wantedScope := range in.Spec.Scopes {
-		if _, ok := in.Status.Scopes[wantedScope]; !ok {
-			notSynchronized()
-			return
-		}
-	}
-	// Scopes synchronized
-	in.Status.SetCondition(apisv1beta2.Condition{
-		Type:               ConditionTypeScopesSynchronized,
-		Status:             metav1.ConditionTrue,
-		LastTransitionTime: metav1.Now(),
-		ObservedGeneration: in.Generation,
-	})
-}
-
-func (in *Client) SetScopeSynchronized(scope *Scope) {
-	_, ok := in.Status.Scopes[scope.Name]
-	if ok {
-		return
-	}
-	if in.Status.Scopes == nil {
-		in.Status.Scopes = map[string]string{}
-	}
-	in.Status.Scopes[scope.Name] = scope.Status.AuthServerID
-	in.checkScopesSynchronized()
-}
-
-func (in *Client) SetScopesRemoved(authServerID string) {
-	for name, scopeAuthServerId := range in.Status.Scopes {
-		if scopeAuthServerId == authServerID {
-			delete(in.Status.Scopes, name)
-			return
-		}
-	}
-	in.checkScopesSynchronized()
-}
-
-func (in *Client) AddScopeSpec(scope *Scope) {
-	in.Spec.Scopes = append(in.Spec.Scopes, scope.Name)
 }
 
 func NewClient(name, reference string) *Client {

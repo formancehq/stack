@@ -3,7 +3,6 @@ kind: Simple
 metadata:
   name: formance
 servers: 1
-agents: 2
 ports:
 - port: 80:30080
   nodeFilters:
@@ -14,3 +13,4 @@ ports:
 - port: 9090:30090
   nodeFilters:
   - loadbalancer
+- port: 30000:30000

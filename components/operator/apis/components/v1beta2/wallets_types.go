@@ -14,7 +14,6 @@ limitations under the License.
 package v1beta2
 
 import (
-	pkgapisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -25,36 +24,25 @@ type OAuth2ClientConfiguration struct {
 
 // WalletsSpec defines the desired state of Wallets
 type WalletsSpec struct {
-	pkgapisv1beta2.CommonServiceProperties `json:",inline"`
-	Auth                                   OAuth2ClientConfiguration `json:"auth"`
-	StackURL                               string                    `json:"stackUrl"`
+	CommonServiceProperties `json:",inline"`
+	Auth                    OAuth2ClientConfiguration `json:"auth"`
+	StackURL                string                    `json:"stackUrl"`
 
 	// +optional
-	Monitoring *pkgapisv1beta2.MonitoringSpec `json:"monitoring"`
+	Monitoring *MonitoringSpec `json:"monitoring"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:storageversion
 
 // Wallets is the Schema for the Wallets API
 type Wallets struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   WalletsSpec           `json:"spec,omitempty"`
-	Status pkgapisv1beta2.Status `json:"status,omitempty"`
-}
-
-func (in *Wallets) GetStatus() pkgapisv1beta2.Dirty {
-	return &in.Status
-}
-
-func (in *Wallets) GetConditions() *pkgapisv1beta2.Conditions {
-	return &in.Status.Conditions
-}
-
-func (in *Wallets) IsDirty(t pkgapisv1beta2.Object) bool {
-	return false
+	Spec   WalletsSpec `json:"spec,omitempty"`
+	Status Status      `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true

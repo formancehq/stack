@@ -17,10 +17,11 @@ limitations under the License.
 package v1beta1
 
 import (
-	. "github.com/formancehq/operator/pkg/apis/v1beta2"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
+
+type ImageHolder struct{}
 
 // ServerSpec defines the desired state of Server
 type ServerSpec struct {
@@ -43,14 +44,6 @@ type ServerStatus struct {
 	PodIP  string `json:"podIP,omitempty"`
 }
 
-func (in *ServerStatus) IsDirty(t Object) bool {
-	if in.Status.IsDirty(t) {
-		return true
-	}
-	server := t.(*Server)
-	return in.PodIP != server.Status.PodIP
-}
-
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
@@ -61,18 +54,6 @@ type Server struct {
 
 	Spec   ServerSpec   `json:"spec,omitempty"`
 	Status ServerStatus `json:"status,omitempty"`
-}
-
-func (in *Server) GetStatus() Dirty {
-	return &in.Status
-}
-
-func (in *Server) IsDirty(t Object) bool {
-	return false
-}
-
-func (in *Server) GetConditions() *Conditions {
-	return &in.Status.Conditions
 }
 
 //+kubebuilder:object:root=true

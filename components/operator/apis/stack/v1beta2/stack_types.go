@@ -18,14 +18,10 @@ package v1beta2
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
-	"strings"
 
 	authcomponentsv1beta2 "github.com/formancehq/operator/apis/auth.components/v1beta2"
 	"github.com/formancehq/operator/apis/components/v1beta2"
 	"github.com/formancehq/operator/apis/stack/v1beta3"
-	pkgapisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/conversion"
 )
@@ -33,7 +29,7 @@ import (
 type IngressGlobalConfig struct {
 	IngressConfig `json:",inline"`
 	// +optional
-	TLS *pkgapisv1beta2.IngressTLS `json:"tls"`
+	TLS *v1beta2.IngressTLS `json:"tls"`
 }
 
 type StackAuthSpec struct {
@@ -44,10 +40,10 @@ type StackAuthSpec struct {
 
 // StackSpec defines the desired state of Stack
 type StackSpec struct {
-	pkgapisv1beta2.DevProperties `json:",inline"`
-	Seed                         string        `json:"seed"`
-	Host                         string        `json:"host"`
-	Auth                         StackAuthSpec `json:"auth"`
+	v1beta2.DevProperties `json:",inline"`
+	Seed                  string        `json:"seed"`
+	Host                  string        `json:"host"`
+	Auth                  StackAuthSpec `json:"auth"`
 
 	// +optional
 	Versions string `json:"versions"`
@@ -62,17 +58,10 @@ type ControlAuthentication struct {
 }
 
 type StackStatus struct {
-	pkgapisv1beta2.Status `json:",inline"`
+	v1beta2.Status `json:",inline"`
 
 	// +optional
 	StaticAuthClients map[string]authcomponentsv1beta2.StaticClient `json:"staticAuthClients,omitempty"`
-}
-
-func (s *StackStatus) IsDirty(reference pkgapisv1beta2.Object) bool {
-	if s.Status.IsDirty(reference) {
-		return true
-	}
-	return !reflect.DeepEqual(reference.(*Stack).Status.StaticAuthClients, s.StaticAuthClients)
 }
 
 //+kubebuilder:object:root=true
@@ -122,42 +111,6 @@ func (stack *Stack) ConvertTo(hubRaw conversion.Hub) error {
 	}
 
 	return nil
-}
-
-func NewStack(name string, spec StackSpec) Stack {
-	return Stack{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: name,
-		},
-		Spec: spec,
-	}
-}
-
-func (stack *Stack) GetScheme() string {
-	if stack.Spec.Scheme != "" {
-		return stack.Spec.Scheme
-	}
-	return "https"
-}
-
-func (stack *Stack) URL() string {
-	return fmt.Sprintf("%s://%s", stack.GetScheme(), stack.Spec.Host)
-}
-
-func (stack *Stack) GetStatus() pkgapisv1beta2.Dirty {
-	return &stack.Status
-}
-
-func (stack *Stack) IsDirty(t pkgapisv1beta2.Object) bool {
-	return false
-}
-
-func (stack *Stack) GetConditions() *pkgapisv1beta2.Conditions {
-	return &stack.Status.Conditions
-}
-
-func (stack *Stack) SubObjectName(v string) string {
-	return fmt.Sprintf("%s-%s", stack.Name, strings.ToLower(v))
 }
 
 //+kubebuilder:object:root=true

@@ -3,6 +3,7 @@ package pgtesting
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"sync"
 	"testing"
 	"time"
@@ -28,6 +29,26 @@ type pgServer struct {
 	conn    *pgx.Conn
 	port    string
 	config  config
+}
+
+func (s *pgServer) GetPort() int {
+	v, err := strconv.ParseInt(s.port, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return int(v)
+}
+
+func (s *pgServer) GetHost() string {
+	return "localhost"
+}
+
+func (s *pgServer) GetUsername() string {
+	return s.config.initialUsername
+}
+
+func (s *pgServer) GetPassword() string {
+	return s.config.initialUserPassword
 }
 
 func (s *pgServer) dsn(databaseName string) string {
@@ -69,6 +90,10 @@ func (s *pgServer) Close() error {
 }
 
 var srv *pgServer
+
+func Server() *pgServer {
+	return srv
+}
 
 func NewPostgresDatabase(t *testing.T) *pgDatabase {
 	return srv.NewDatabase(t)

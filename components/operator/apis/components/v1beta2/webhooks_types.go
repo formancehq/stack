@@ -14,43 +14,31 @@ limitations under the License.
 package v1beta2
 
 import (
-	pkgapisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // WebhooksSpec defines the desired state of Webhooks
 type WebhooksSpec struct {
-	pkgapisv1beta2.CommonServiceProperties `json:",inline"`
+	CommonServiceProperties `json:",inline"`
 
 	Collector *CollectorConfig `json:"collector"`
 	// +optional
 	Postgres PostgresConfigCreateDatabase `json:"postgres"`
 	// +optional
-	Monitoring *pkgapisv1beta2.MonitoringSpec `json:"monitoring"`
+	Monitoring *MonitoringSpec `json:"monitoring"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:storageversion
 
 // Webhooks is the Schema for the Webhooks API
 type Webhooks struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   WebhooksSpec          `json:"spec,omitempty"`
-	Status pkgapisv1beta2.Status `json:"status,omitempty"`
-}
-
-func (in *Webhooks) GetStatus() pkgapisv1beta2.Dirty {
-	return &in.Status
-}
-
-func (in *Webhooks) GetConditions() *pkgapisv1beta2.Conditions {
-	return &in.Status.Conditions
-}
-
-func (in *Webhooks) IsDirty(t pkgapisv1beta2.Object) bool {
-	return false
+	Spec   WebhooksSpec `json:"spec,omitempty"`
+	Status Status       `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true

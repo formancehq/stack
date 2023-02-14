@@ -17,12 +17,6 @@ limitations under the License.
 package v1beta1
 
 import (
-	"reflect"
-	"time"
-
-	. "github.com/formancehq/operator/pkg/apis/v1beta2"
-	. "github.com/formancehq/operator/pkg/typeutils"
-	"github.com/numary/auth/authclient"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -47,20 +41,6 @@ type ScopeStatus struct {
 	Transient    map[string]TransientScopeStatus `json:"transient,omitempty"`
 }
 
-func (in *ScopeStatus) IsDirty(t Object) bool {
-	if in.Status.IsDirty(t) {
-		return true
-	}
-	scope := t.(*Scope)
-	if in.AuthServerID != scope.Status.AuthServerID {
-		return true
-	}
-	if !reflect.DeepEqual(in.Transient, scope.Status.Transient) {
-		return true
-	}
-	return false
-}
-
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="Server ID",type="string",JSONPath=".status.authServerID",description="Auth server ID"
@@ -72,58 +52,6 @@ type Scope struct {
 
 	Spec   ScopeSpec   `json:"spec,omitempty"`
 	Status ScopeStatus `json:"status,omitempty"`
-}
-
-func (s *Scope) GetStatus() Dirty {
-	return &s.Status
-}
-
-func (s *Scope) IsDirty(t Object) bool {
-	return authServerChanges(t, s, s.Spec.AuthServerReference)
-}
-
-func (in *Scope) GetConditions() *Conditions {
-	return &in.Status.Conditions
-}
-
-func (s *Scope) AuthServerReference() string {
-	return s.Spec.AuthServerReference
-}
-
-func (s *Scope) IsInTransient(authScope *authclient.Scope) bool {
-	return First(authScope.Transient, Equal(s.Status.AuthServerID)) != nil
-}
-
-func (s *Scope) IsCreatedOnAuthServer() bool {
-	return s.Status.AuthServerID != ""
-}
-
-func (s *Scope) ClearAuthServerID() {
-	s.Status.AuthServerID = ""
-}
-
-func (s *Scope) SetRegisteredTransientScope(transientScope *Scope) {
-	if s.Status.Transient == nil {
-		s.Status.Transient = map[string]TransientScopeStatus{}
-	}
-	s.Status.Transient[transientScope.Name] = TransientScopeStatus{
-		ObservedGeneration: transientScope.Generation,
-		AuthServerID:       transientScope.Status.AuthServerID,
-		Date:               time.Now().Format(time.RFC3339),
-	}
-}
-
-func NewScope(name, label, authReference string, transient ...string) *Scope {
-	return &Scope{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: name,
-		},
-		Spec: ScopeSpec{
-			Label:               label,
-			Transient:           transient,
-			AuthServerReference: authReference,
-		},
-	}
 }
 
 //+kubebuilder:object:root=true

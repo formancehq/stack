@@ -10,6 +10,11 @@ timeout: 3600
 version: 12.1.2
 values:
   architecture: standalone
+  primary:
+    service:
+      type: NodePort
+      nodePorts:
+        postgresql: 30000
   global:
     postgresql:
       auth:

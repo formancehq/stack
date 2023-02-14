@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        stack: "true"
+    name: payments
+    namespace: stack1
+spec:
+    clusterIP: 10.0.0.241
+    clusterIPs:
+        - 10.0.0.241
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+        - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+        - appProtocol: http
+          name: http
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+    selector:
+        app.kubernetes.io/name: payments
+    sessionAffinity: None
+    type: ClusterIP
+status:
+    loadBalancer: {}

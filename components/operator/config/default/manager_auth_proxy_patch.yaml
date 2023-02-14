@@ -37,6 +37,5 @@ spec:
         - "--health-probe-bind-address=:8081"
         - "--metrics-bind-address=127.0.0.1:8080"
         - "--leader-elect"
-        - "--dns-name=*.sandbox.formance.cloud"
         - "--issuer-ref-name=r53-letsencrypt-prod"
         - "--issuer-ref-kind=ClusterIssuer"

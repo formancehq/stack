@@ -17,7 +17,6 @@ limitations under the License.
 package v1beta2
 
 import (
-	apisv1beta2 "github.com/formancehq/operator/pkg/apis/v1beta2"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -36,23 +35,23 @@ type TemporalConfig struct {
 
 func (in *TemporalConfig) Env() []corev1.EnvVar {
 	return []corev1.EnvVar{
-		apisv1beta2.Env("TEMPORAL_ADDRESS", in.Address),
-		apisv1beta2.Env("TEMPORAL_NAMESPACE", in.Namespace),
-		apisv1beta2.Env("TEMPORAL_SSL_CLIENT_KEY", in.TLS.Key),
-		apisv1beta2.Env("TEMPORAL_SSL_CLIENT_CERT", in.TLS.CRT),
-		apisv1beta2.Env("TEMPORAL_TASK_QUEUE", in.TaskQueue),
+		Env("TEMPORAL_ADDRESS", in.Address),
+		Env("TEMPORAL_NAMESPACE", in.Namespace),
+		Env("TEMPORAL_SSL_CLIENT_KEY", in.TLS.Key),
+		Env("TEMPORAL_SSL_CLIENT_CERT", in.TLS.CRT),
+		Env("TEMPORAL_TASK_QUEUE", in.TaskQueue),
 	}
 }
 
 // OrchestrationSpec defines the desired state of Orchestration
 type OrchestrationSpec struct {
-	apisv1beta2.CommonServiceProperties `json:",inline"`
-	apisv1beta2.Scalable                `json:",inline"`
+	CommonServiceProperties `json:",inline"`
+	Scalable                `json:",inline"`
 
 	// +optional
 	Postgres PostgresConfigCreateDatabase `json:"postgres"`
 	// +optional
-	Monitoring *apisv1beta2.MonitoringSpec `json:"monitoring"`
+	Monitoring *MonitoringSpec `json:"monitoring"`
 	// +optional
 	Collector *CollectorConfig `json:"collector"`
 
@@ -64,6 +63,7 @@ type OrchestrationSpec struct {
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 //+kubebuilder:subresource:scale:specpath=.spec.replicas,statuspath=.status.replicas,selectorpath=.status.selector
+//+kubebuilder:storageversion
 
 // Orchestration is the Schema for the orchestrations API
 type Orchestration struct {
@@ -72,19 +72,7 @@ type Orchestration struct {
 
 	Spec OrchestrationSpec `json:"spec"`
 	// +optional
-	Status apisv1beta2.ReplicationStatus `json:"status"`
-}
-
-func (a *Orchestration) GetStatus() apisv1beta2.Dirty {
-	return &a.Status
-}
-
-func (a *Orchestration) IsDirty(t apisv1beta2.Object) bool {
-	return false
-}
-
-func (a *Orchestration) GetConditions() *apisv1beta2.Conditions {
-	return &a.Status.Conditions
+	Status Status `json:"status"`
 }
 
 //+kubebuilder:object:root=true

@@ -16,8 +16,8 @@ RUN apk update && apk add curl
 
 FROM ubuntu:jammy
 RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /src/components/webhooks/webhooks /webhooks
+COPY --from=builder /src/components/webhooks/webhooks /usr/bin/webhooks
 EXPOSE 3068
 ENV OTEL_SERVICE_NAME webhooks
-ENTRYPOINT ["/webhooks"]
+ENTRYPOINT ["/usr/bin/webhooks"]
 CMD ["server"]
