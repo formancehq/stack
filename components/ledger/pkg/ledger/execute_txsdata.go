@@ -7,7 +7,6 @@ import (
 
 	"github.com/numary/ledger/pkg/core"
 	"github.com/numary/ledger/pkg/opentelemetry"
-	"github.com/numary/ledger/pkg/storage"
 	"github.com/pkg/errors"
 )
 
@@ -99,13 +98,6 @@ func (l *Ledger) ExecuteTxsData(ctx context.Context, preview bool, txsData ...co
 		}
 
 		for account, volumes := range txVolumeAggr.PostCommitVolumes {
-			if _, ok := accs[account]; !ok {
-				accs[account], err = l.GetAccount(ctx, account)
-				if err != nil {
-					return []core.ExpandedTransaction{}, NewTransactionCommitError(i,
-						errors.Wrap(err, fmt.Sprintf("get account '%s'", account)))
-				}
-			}
 			for asset, vol := range volumes {
 				accs[account].Volumes[asset] = vol
 			}
@@ -154,13 +146,8 @@ func (l *Ledger) ExecuteTxsData(ctx context.Context, preview bool, txsData ...co
 	}
 
 	if err := l.store.Commit(ctx, txs...); err != nil {
-		switch {
-		case storage.IsErrorCode(err, storage.ConstraintFailed):
-			return []core.ExpandedTransaction{}, NewConflictError()
-		default:
-			return []core.ExpandedTransaction{}, errors.Wrap(err,
-				"committing transactions")
-		}
+		return []core.ExpandedTransaction{}, errors.Wrap(err,
+			"committing transactions")
 	}
 
 	l.monitor.CommittedTransactions(ctx, l.store.Name(), txs...)
