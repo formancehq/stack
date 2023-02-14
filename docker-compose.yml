@@ -13,19 +13,19 @@ services:
       - "16686:16686"
       - "14268:14268"
     environment:
-      - COLLECTOR_OTLP_ENABLED=true
-      - LOG_LEVEL=debug
+      COLLECTOR_OTLP_ENABLED: "true"
+      LOG_LEVEL: "debug"
 
   gateway:
     image: "ghcr.io/formancehq/gateway:latest"
     network_mode: service:auth-dex
     environment:
-      - OTEL_SERVICE_NAME=gateway
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
-      - OTEL_EXPORTER_OTLP_INSECURE=true
-      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
-      - GRPC_GO_LOG_VERBOSITY_LEVEL=99
-      - GRPC_GO_LOG_SEVERITY_LEVEL=info
+      OTEL_SERVICE_NAME: "gateway"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger:4317"
+      OTEL_EXPORTER_OTLP_INSECURE: "true"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      GRPC_GO_LOG_VERBOSITY_LEVEL: "99"
+      GRPC_GO_LOG_SEVERITY_LEVEL: "info"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./config/gateway/Caddyfile:/etc/caddy/Caddyfile:ro"
@@ -53,14 +53,14 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      DEBUG: true
-      CONFIG: ./config.yaml
-      POSTGRES_URI: host=postgres user=formance password=formance dbname=auth port=5432 sslmode=disable
-      CAOS_OIDC_DEV: 1
-      DELEGATED_CLIENT_ID: gateway
-      DELEGATED_CLIENT_SECRET: ZXhhbXBsZS1hcHAtc2VjcmV0
-      DELEGATED_ISSUER: http://localhost/api/auth/dex
-      BASE_URL: http://localhost/api/auth
+      DEBUG: "true"
+      CONFIG: "./config.yaml"
+      POSTGRES_URI: "host=postgres user=formance password=formance dbname=auth port=5432 sslmode=disable"
+      CAOS_OIDC_DEV: "1"
+      DELEGATED_CLIENT_ID: "gateway"
+      DELEGATED_CLIENT_SECRET: "ZXhhbXBsZS1hcHAtc2VjcmV0"
+      DELEGATED_ISSUER: "http://localhost/api/auth/dex"
+      BASE_URL: "http://localhost/api/auth"
     volumes:
       - ./config/auth/config.yaml:/config.yaml
 
@@ -127,7 +127,7 @@ services:
       redpanda:
         condition: service_healthy
     environment:
-      KAFKA_BROKERS: redpanda:29092
+      KAFKA_BROKERS: "redpanda:29092"
 
   postgres:
     image: "postgres:13-alpine"
@@ -142,8 +142,8 @@ services:
     environment:
       POSTGRES_USER: "formance"
       POSTGRES_PASSWORD: "formance"
-      POSTGRES_MULTIPLE_DATABASES: "auth,ledger,webhooks,payments,wallets"
-      PGDATA: /data/postgres
+      POSTGRES_MULTIPLE_DATABASES: "auth,ledger,webhooks,payments"
+      PGDATA: "/data/postgres"
     volumes:
       - postgres_data:/data/postgres
       - ./config/postgres:/docker-entrypoint-initdb.d
@@ -161,7 +161,7 @@ services:
       NUMARY_STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger"
       NUMARY_SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
       NUMARY_PUBLISHER_KAFKA_ENABLED: "true"
-      NUMARY_PUBLISHER_KAFKA_BROKER: redpanda:29092
+      NUMARY_PUBLISHER_KAFKA_BROKER: "redpanda:29092"
       NUMARY_PUBLISHER_TOPIC_MAPPING: "*:ledger"
 
   wallets:
@@ -171,9 +171,9 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      STACK_CLIENT_ID: wallets
-      STACK_CLIENT_SECRET: wallets
-      STACK_URL: http://localhost
+      STACK_CLIENT_ID: "wallets"
+      STACK_CLIENT_SECRET: "wallets"
+      STACK_URL: "http://localhost"
       STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/wallets"
 
   payments:
@@ -188,7 +188,7 @@ services:
       POSTGRES_URI: "postgresql://formance:formance@postgres/payments?sslmode=disable"
       CONFIG_ENCRYPTION_KEY: "mysuperencryptionkey"
       PUBLISHER_KAFKA_ENABLED: "true"
-      PUBLISHER_KAFKA_BROKER: redpanda:29092
+      PUBLISHER_KAFKA_BROKER: "redpanda:29092"
       PUBLISHER_TOPIC_MAPPING: "*:payments"
 
   payments-migrate:
@@ -237,11 +237,11 @@ services:
       search:
         condition: service_healthy
     environment:
-      KAFKA_ADDRESS: redpanda:29092
-      KAFKA_TOPIC: ledger,payments
-      KAFKA_VERSION: 1.0.0
-      KAFKA_CONSUMER_GROUP: search-ingester
-      OPENSEARCH_URL: http://opensearch:9200
+      KAFKA_ADDRESS: "redpanda:29092"
+      KAFKA_TOPICS: "ledger payments"
+      KAFKA_VERSION: "1.0.0"
+      KAFKA_CONSUMER_GROUP: "search-ingester"
+      OPENSEARCH_URL: "http://opensearch:9200"
       OPENSEARCH_INDEX: "formance"
       OPENSEARCH_TLS_ENABLED: "true"
       OPENSEARCH_TLS_SKIP_CERT_VERIFY: "true"
@@ -259,7 +259,7 @@ services:
       opensearch:
         condition: service_healthy
     environment:
-      OPEN_SEARCH_SCHEME: http
+      OPEN_SEARCH_SCHEME: "http"
       OPEN_SEARCH_SERVICE: "opensearch:9200"
       ES_INDICES: "formance"
 
