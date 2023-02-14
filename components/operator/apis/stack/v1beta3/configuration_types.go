@@ -129,6 +129,8 @@ type Configuration struct {
 	Status v1beta2.Status    `json:"status,omitempty"`
 }
 
+func (c *Configuration) Default() {}
+
 func (*Configuration) Hub() {}
 
 func (c Configuration) Validate() error {

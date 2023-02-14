@@ -3,7 +3,10 @@ package v1beta3
 import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
 )
+
+var _ webhook.Defaulter = &Configuration{}
 
 // log is for logging in this package.
 //
