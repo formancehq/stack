@@ -31,7 +31,7 @@ spec:
                     - name: NUMARY_POSTGRES_HOST
                       value: localhost
                     - name: NUMARY_POSTGRES_PORT
-                      value: "32868"
+                      value: "32912"
                     - name: NUMARY_POSTGRES_DATABASE
                       value: stack1-ledger
                     - name: NUMARY_POSTGRES_USERNAME
@@ -56,6 +56,8 @@ spec:
                       value: postgres
                     - name: NUMARY_PUBLISHER_TOPIC_MAPPING
                       value: '*:stack1-ledger'
+                    - name: NUMARY_BROKER
+                      value: kafka
                     - name: NUMARY_PUBLISHER_KAFKA_ENABLED
                       value: "true"
                     - name: NUMARY_PUBLISHER_KAFKA_BROKER

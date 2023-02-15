@@ -34,7 +34,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32868"
+                      value: "32912"
                     - name: POSTGRES_DATABASE
                       value: stack1-webhooks
                     - name: POSTGRES_USERNAME
@@ -53,6 +53,8 @@ spec:
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: webhooks-worker
+                    - name: BROKER
+                      value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER
@@ -64,10 +66,6 @@ spec:
                   image: ghcr.io/formancehq/webhooks:latest
                   imagePullPolicy: Always
                   name: webhooks-worker
-                  ports:
-                    - containerPort: 8081
-                      name: http
-                      protocol: TCP
                   resources: {}
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File

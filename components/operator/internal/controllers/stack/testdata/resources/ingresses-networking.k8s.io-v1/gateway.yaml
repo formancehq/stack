@@ -1,12 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-    annotations:
-        traefik.ingress.kubernetes.io/router.middlewares: 'stack1-auth-middleware@kubernetescrd, '
     generation: 1
     labels:
         stack: "true"
-    name: webhooks
+    name: gateway
     namespace: stack1
 spec:
     rules:
@@ -15,10 +13,10 @@ spec:
             paths:
                 - backend:
                     service:
-                        name: webhooks
+                        name: gateway
                         port:
                             name: http
-                  path: /api/webhooks
+                  path: /
                   pathType: Prefix
 status:
     loadBalancer: {}

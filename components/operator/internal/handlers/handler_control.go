@@ -13,7 +13,6 @@ func init() {
 			return modules.Services{{
 				Secured: true,
 				Port:    3000,
-				Path:    "/",
 				AuthConfiguration: func(resolveContext modules.PrepareContext) stackv1beta3.ClientConfiguration {
 					return stackv1beta3.NewClientConfiguration().
 						WithAdditionalScopes("profile", "email", "offline").

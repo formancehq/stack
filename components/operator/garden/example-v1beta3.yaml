@@ -4,7 +4,6 @@ kind: Configuration
 metadata:
   name: stacks
 spec:
-  # Define global ingress configuration
   monitoring:
     traces:
       otlp:
@@ -134,6 +133,7 @@ spec:
   ledger: 79961782b3e5b0849121739ac61fbcd1f395a2b0
   payments: 79961782b3e5b0849121739ac61fbcd1f395a2b0
   webhooks: v0.6.2
+  gateway: 079d781068e6285b63601f4c3cef9ddb819812c5
 ---
 apiVersion: stack.formance.com/v1beta3
 kind: Stack

@@ -21,8 +21,8 @@ func init() {
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{{
 				Port:                    8080,
-				Path:                    "/api/payments",
 				InjectPostgresVariables: true,
+				HasVersionEndpoint:      true,
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 					return modules.Container{
 						Env:      env(resolveContext),

@@ -21,8 +21,8 @@ func init() {
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{
 				modules.Service{
-					Port: 8080,
-					Path: "/api/search",
+					Port:               8080,
+					HasVersionEndpoint: true,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						env := elasticSearchEnvVars(resolveContext.Stack, resolveContext.Configuration).
 							Append(
@@ -70,6 +70,13 @@ func init() {
 								resolveContext.Stack.GetServiceName("ledger"),
 								"LEDGER_",
 							)...)
+
+						if resolveContext.Configuration.Spec.Broker.Kafka != nil {
+							env = env.Append(modules.Env("BROKER", "kafka"))
+						} else {
+							env = env.Append(modules.Env("BROKER", "nats"))
+						}
+
 						return modules.Container{
 							Env:   env,
 							Image: benthosImage,

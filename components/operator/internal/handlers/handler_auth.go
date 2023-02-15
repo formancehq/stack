@@ -24,11 +24,11 @@ func init() {
 				modules.Service{
 					Secured:                 true,
 					Port:                    8080,
-					Path:                    "/api/auth",
 					Configs:                 resolveAuthConfigs,
 					Secrets:                 resolveAuthSecrets,
 					Container:               resolveAuthContainer,
 					InjectPostgresVariables: true,
+					HasVersionEndpoint:      true,
 				},
 			}
 		},

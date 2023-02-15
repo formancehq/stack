@@ -133,7 +133,6 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&stackv1beta3.Stack{}).
 		Owns(&corev1.Namespace{}).
 		Owns(&corev1.Service{}).
-		Owns(&traefik.Middleware{}).
 		Owns(&networkingv1.Ingress{}).
 		Owns(&corev1.Secret{}).
 		Owns(&corev1.ConfigMap{}).

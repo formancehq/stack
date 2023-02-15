@@ -59,7 +59,7 @@ spec:
                     - name: LEDGER_POSTGRES_HOST
                       value: localhost
                     - name: LEDGER_POSTGRES_PORT
-                      value: "32868"
+                      value: "32912"
                     - name: LEDGER_POSTGRES_DATABASE
                       value: stack1-ledger
                     - name: LEDGER_POSTGRES_USERNAME
@@ -70,6 +70,8 @@ spec:
                       value: postgresql://$(LEDGER_POSTGRES_USERNAME):$(LEDGER_POSTGRES_PASSWORD)@$(LEDGER_POSTGRES_HOST):$(LEDGER_POSTGRES_PORT)
                     - name: LEDGER_POSTGRES_URI
                       value: $(LEDGER_POSTGRES_NO_DATABASE_URI)/$(LEDGER_POSTGRES_DATABASE)?sslmode=disable
+                    - name: BROKER
+                      value: kafka
                   image: jeffail/benthos:4.10.0
                   imagePullPolicy: IfNotPresent
                   name: search-benthos

@@ -15,8 +15,8 @@ func init() {
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{
 				modules.Service{
+					HasVersionEndpoint:      true,
 					Port:                    8080,
-					Path:                    "/api/webhooks",
 					InjectPostgresVariables: true,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
@@ -27,7 +27,6 @@ func init() {
 				},
 				modules.Service{
 					Name:                    "worker",
-					Port:                    8081,
 					InjectPostgresVariables: true,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{

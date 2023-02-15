@@ -15,6 +15,7 @@ func BrokerEnvVarsWithPrefix(broker v1beta3.Broker, serviceName, prefix string) 
 
 	if broker.Kafka != nil {
 		ret = ret.Append(
+			Env(prefix+"BROKER", "kafka"),
 			Env(prefix+"PUBLISHER_KAFKA_ENABLED", "true"),
 			Env(prefix+"PUBLISHER_KAFKA_BROKER", strings.Join(broker.Kafka.Brokers, ",")),
 		)
@@ -34,6 +35,7 @@ func BrokerEnvVarsWithPrefix(broker v1beta3.Broker, serviceName, prefix string) 
 		}
 	} else {
 		ret = ret.Append(
+			Env(prefix+"BROKER", "nats"),
 			Env(prefix+"PUBLISHER_NATS_ENABLED", "true"),
 			Env(prefix+"PUBLISHER_NATS_URL", broker.Nats.URL),
 			Env(prefix+"PUBLISHER_NATS_CLIENT_ID", serviceName),

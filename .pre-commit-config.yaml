@@ -5,6 +5,7 @@ repos:
   rev: v4.4.0
   hooks:
   - id: trailing-whitespace
+    exclude: components/operator/internal/controllers/stack/testdata
   - id: end-of-file-fixer
   - id: check-yaml
     exclude: services/orchestration/examples

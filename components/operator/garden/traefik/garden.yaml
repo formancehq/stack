@@ -21,12 +21,6 @@ values:
       expose: true
   ingressClass:
     enabled: true
-  additionalArguments:
-  - --experimental.plugins.auth.modulename=github.com/formancehq/gateway-plugin-auth
-  - --experimental.plugins.auth.version=v0.1.15
-  experimental:
-    plugins:
-      enabled: true
   tracing:
     jaeger:
       samplingServerURL: http://jaeger:5778/sampling
@@ -38,5 +32,3 @@ values:
       disableAttemptReconnecting: true
       collector:
         endpoint: "http://jaeger:14268/api/traces"
-#        user: ""
-#        password: ""

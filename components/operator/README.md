@@ -13,19 +13,19 @@ Also, we use [Garden](https://docs.garden.io/) for management.
 1. Create the cluster:
 
 ```sh
-garden run workflow create-cluster
+garden create-cluster
 ```
 
 2. Deploy:
 
 ```sh
-garden run workflow deploy
+garden  deploy
 ```
 
 This will automatically install all the stack.
 When developing, use following command to update the operator code :
 ```sh
-garden run workflow update
+go run main.go --disable-webhooks
 ```
 
 3. Create a stack

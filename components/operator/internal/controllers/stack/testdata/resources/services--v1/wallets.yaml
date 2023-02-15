@@ -6,9 +6,9 @@ metadata:
     name: wallets
     namespace: stack1
 spec:
-    clusterIP: 10.0.0.9
+    clusterIP: 10.0.0.149
     clusterIPs:
-        - 10.0.0.9
+        - 10.0.0.149
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
