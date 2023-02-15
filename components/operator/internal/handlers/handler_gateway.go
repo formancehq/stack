@@ -148,14 +148,14 @@ const caddyfile = `(cors) {
 }
 
 {
+	{{ if .Debug }}debug{{ end }}
+
 	# Many directives manipulate the HTTP handler chain and the order in which
 	# those directives are evaluated matters. So the jwtauth directive must be
 	# ordered.
 	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
 	order jwtauth before basicauth
 	order versions after metrics
-
-	{{ if .Debug }}debug{{ end }}
 }
 
 :{{ .Port }} {
