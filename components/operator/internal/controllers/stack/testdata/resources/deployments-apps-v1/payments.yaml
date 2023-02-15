@@ -31,7 +31,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32906"
+                      value: "32907"
                     - name: POSTGRES_DATABASE
                       value: stack1-payments
                     - name: POSTGRES_USERNAME
@@ -91,7 +91,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32906"
+                      value: "32907"
                     - name: POSTGRES_DATABASE
                       value: stack1-payments
                     - name: POSTGRES_USERNAME
