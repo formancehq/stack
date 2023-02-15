@@ -34,7 +34,7 @@ type Machine struct {
 	UnresolvedResources []program.Resource
 	Resources           []core.Value // Constants and Variables
 	resolveCalled       bool
-	Balances            map[core.AccountAddress]map[core.Asset]*core.MonetaryInt // keeps tracks of balances throughout execution
+	Balances            map[core.AccountAddress]map[core.Asset]*core.MonetaryInt // keeps track of balances throughout execution
 	setBalanceCalled    bool
 	Stack               []core.Value
 	Postings            []Posting                                     // accumulates postings throughout execution

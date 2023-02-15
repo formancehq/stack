@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	"github.com/numary/ledger/pkg/api/controllers"
 	"github.com/numary/ledger/pkg/core"
@@ -18,8 +20,8 @@ import (
 )
 
 func Test_ScriptCommands(t *testing.T) {
-	name := uuid.NewString()
-	viper.Set("name", name)
+	ledger := uuid.NewString()
+	viper.Set("name", ledger)
 	_ = NewStorageInit().Execute()
 
 	d1 := []byte(`
@@ -27,11 +29,8 @@ func Test_ScriptCommands(t *testing.T) {
 			source = @world
 			destination = @alice
 		)`)
-	require.NoError(t, os.WriteFile("/tmp/script", d1, 0644))
-
-	cmd := NewScriptCheck()
-	cmd.SetArgs([]string{"/tmp/script"})
-	_ = cmd.Execute()
+	path := os.TempDir() + "/script"
+	require.NoError(t, os.WriteFile(path, d1, 0644))
 
 	httpServer := httptest.NewServer(http.HandlerFunc(scriptSuccessHandler))
 	defer func() {
@@ -39,15 +38,35 @@ func Test_ScriptCommands(t *testing.T) {
 		httpServer.Close()
 	}()
 
-	viper.Set(serverHttpBindAddressFlag, httpServer.URL[7:])
-	cmd = NewScriptExec()
-	cmd.SetArgs([]string{name, "/tmp/script"})
-	_ = cmd.Execute()
+	tests := map[string]struct {
+		args  []string
+		flags map[string]any
+		want  error
+	}{
+		"not enough args": {args: []string{path}, flags: map[string]any{}, want: errors.New("accepts 2 arg(s), received 1")},
+		"success":         {args: []string{ledger, path}, flags: map[string]any{serverHttpBindAddressFlag: httpServer.URL[7:]}, want: nil},
+		"preview":         {args: []string{ledger, path}, flags: map[string]any{previewFlag: true}, want: nil},
+	}
 
-	cmd = NewScriptExec()
-	viper.Set(previewFlag, true)
-	cmd.SetArgs([]string{name, "/tmp/script"})
-	_ = cmd.Execute()
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			for i, f := range tc.flags {
+				viper.Set(i, f)
+			}
+			cmd := NewScriptExec()
+			cmd.SetArgs(tc.args)
+			got := cmd.Execute()
+			if tc.want != nil {
+				if got == nil {
+					t.Fatalf("an error is expected, but got nil")
+				}
+				diff := cmp.Diff(tc.want.Error(), got.Error())
+				if diff != "" {
+					t.Fatalf(diff)
+				}
+			}
+		})
+	}
 }
 
 func scriptSuccessHandler(w http.ResponseWriter, _ *http.Request) {
