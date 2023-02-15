@@ -50,7 +50,7 @@ data:
         }
 
         {
-
+        	
 
         	# Many directives manipulate the HTTP handler chain and the order in which
         	# those directives are evaluated matters. So the jwtauth directive must be
