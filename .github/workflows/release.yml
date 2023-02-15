@@ -39,8 +39,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v3
         with:
-          go-version-file: 'components/${{ needs.Extract.outputs.service }}/go.mod'
-          cache-dependency-path: 'components/${{ needs.Extract.outputs.service }}/go.sum'
+          go-version-file: './go.work'
           cache: true
       - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
       - run: task ${{ needs.Extract.outputs.service }}:lint
@@ -63,8 +62,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v3
         with:
-          go-version-file: 'components/${{ needs.Extract.outputs.service }}/go.mod'
-          cache-dependency-path: 'components/${{ needs.Extract.outputs.service }}/go.sum'
+          go-version-file: './go.work'
           cache: true
       - run: task ${{ needs.Extract.outputs.service }}:tests
       - name: Upload coverage report to Codecov
@@ -88,8 +86,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v3
         with:
-          go-version-file: 'components/${{ needs.Extract.outputs.service }}/go.mod'
-          cache-dependency-path: 'components/${{ needs.Extract.outputs.service }}/go.sum'
+          go-version-file: './go.work'
           cache: true
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
