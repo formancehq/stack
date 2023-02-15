@@ -41,7 +41,7 @@ func init() {
 						Liveness: modules.LivenessDisable,
 						Env: modules.NewEnv().Append(modules.Env(
 							"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
-							"$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)",
+							"$(OTEL_TRACES_OTLP_ENDPOINT)",
 						)),
 					}
 				},
