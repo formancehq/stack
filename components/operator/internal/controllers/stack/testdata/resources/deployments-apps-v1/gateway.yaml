@@ -44,6 +44,8 @@ spec:
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: gateway
+                    - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+                      value: $(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)
                   image: ghcr.io/formancehq/gateway:latest
                   imagePullPolicy: Always
                   name: gateway
