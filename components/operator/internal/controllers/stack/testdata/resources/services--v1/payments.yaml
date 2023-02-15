@@ -6,9 +6,9 @@ metadata:
     name: payments
     namespace: stack1
 spec:
-    clusterIP: 10.0.0.216
+    clusterIP: 10.0.0.136
     clusterIPs:
-        - 10.0.0.216
+        - 10.0.0.136
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -31,7 +31,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32873"
+                      value: "32883"
                     - name: POSTGRES_DATABASE
                       value: stack1-payments
                     - name: POSTGRES_USERNAME
@@ -50,6 +50,8 @@ spec:
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: payments
+                    - name: BROKER
+                      value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER
@@ -89,7 +91,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32873"
+                      value: "32883"
                     - name: POSTGRES_DATABASE
                       value: stack1-payments
                     - name: POSTGRES_USERNAME
@@ -100,6 +102,8 @@ spec:
                       value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: BROKER
+                      value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER

@@ -31,7 +31,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32873"
+                      value: "32883"
                     - name: POSTGRES_DATABASE
                       value: stack1-webhooks
                     - name: POSTGRES_USERNAME
@@ -50,6 +50,8 @@ spec:
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: webhooks
+                    - name: BROKER
+                      value: kafka
                     - name: PUBLISHER_KAFKA_ENABLED
                       value: "true"
                     - name: PUBLISHER_KAFKA_BROKER

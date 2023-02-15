@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"fmt"
+	"sort"
 	"text/template"
 
 	"github.com/formancehq/operator/internal/modules"
@@ -49,21 +50,37 @@ func createCaddyfile(context modules.InstallContext) string {
 	tpl := template.Must(template.New("caddyfile").Parse(caddyfile))
 	buf := bytes.NewBufferString("")
 
-	services := make(map[string]modules.Service)
+	type service struct {
+		Name string
+		modules.Service
+	}
+
+	servicesMap := make(map[string]service, 0)
+	keys := make([]string, 0)
 	for moduleName, module := range context.RegisteredModules {
 		if moduleName == "gateway" {
 			continue
 		}
-		for _, service := range module.Services {
-			if service.Port == 0 {
+		for _, s := range module.Services {
+			if s.Port == 0 {
 				continue
 			}
 			serviceName := moduleName
-			if service.Name != "" {
-				serviceName += "-" + service.Name
+			if s.Name != "" {
+				serviceName += "-" + s.Name
 			}
-			services[serviceName] = service
+			servicesMap[serviceName] = service{
+				Name:    serviceName,
+				Service: s,
+			}
+			keys = append(keys, serviceName)
 		}
+	}
+
+	sort.Strings(keys)
+	services := make([]service, 0)
+	for _, key := range keys {
+		services = append(services, servicesMap[key])
 	}
 
 	if err := tpl.Execute(buf, map[string]any{
@@ -78,8 +95,7 @@ func createCaddyfile(context modules.InstallContext) string {
 	return buf.String()
 }
 
-const caddyfile = `
-(cors) {
+const caddyfile = `(cors) {
 	header {
 		Access-Control-Allow-Methods "GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH"
 		Access-Control-Allow-Headers content-type
@@ -149,21 +165,21 @@ const caddyfile = `
 		{{- end }}
 	}
 
-	{{- range $service, $target := .Services }}
-		{{- if not (eq $service "control") }}
-			{{- if not $target.Secured }}
-	import handle_path_route_with_jwt /api/{{ $service }} {{ $service }}:{{ $target.Port }}
+	{{- range $i, $service := .Services }}
+		{{- if not (eq $service.Name "control") }}
+			{{- if not $service.Secured }}
+	import handle_path_route_with_jwt /api/{{ $service.Name }} {{ $service.Name }}:{{ $service.Port }}
 			{{- else }}
-	import handle_path_route_without_jwt /api/{{ $service }} {{ $service }}:{{ $target.Port }}
+	import handle_path_route_without_jwt /api/{{ $service.Name }} {{ $service.Name }}:{{ $service.Port }}
 			{{- end }}
 		{{- end }}
 	{{- end }}
 
 	handle /versions {
 		versions {
-			{{- range $service, $target := .Services }}
-				{{- if $target.HasVersionEndpoint }}
-			{{ $service }} http://{{ $service }}:{{ $target.Port}}/_info
+			{{- range $i, $service := .Services }}
+				{{- if $service.HasVersionEndpoint }}
+			{{ $service.Name }} http://{{ $service.Name }}:{{ $service.Port}}/_info
 				{{- end }}
 			{{- end }}
 		}
@@ -174,5 +190,4 @@ const caddyfile = `
 		reverse_proxy {{ .Fallback }}
 		import cors
 	}
-}
-`
+}`
