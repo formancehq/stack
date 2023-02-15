@@ -39,7 +39,8 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v3
         with:
-          go-version-file: './go.work'
+          go-version-file: ./components/${{ needs.Extract.outputs.service }}/go.mod
+          cache-dependency-path: ./components/${{ needs.Extract.outputs.service }}/go.sum
           cache: true
       - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
       - run: task ${{ needs.Extract.outputs.service }}:lint
@@ -62,8 +63,8 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v3
         with:
-          go-version-file: './go.work'
-          cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
+          go-version-file: ./components/${{ needs.Extract.outputs.service }}/go.mod
+          cache-dependency-path: ./components/${{ needs.Extract.outputs.service }}/go.sum
           cache: true
       - run: task ${{ needs.Extract.outputs.service }}:tests
       - name: Upload coverage report to Codecov
@@ -91,7 +92,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - uses: actions/setup-go@v3
         with:
-          go-version-file: './go.work'
+          go-version-file: ./components/${{ needs.Extract.outputs.service }}/go.mod
           cache-dependency-path: ./components/${{ needs.Extract.outputs.service }}/go.sum
           cache: true
       - run: go mod vendor
