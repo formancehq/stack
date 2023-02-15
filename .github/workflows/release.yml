@@ -92,7 +92,7 @@ jobs:
       - uses: actions/setup-go@v3
         with:
           go-version-file: './go.work'
-          cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
+          cache-dependency-path: ./components/${{ needs.Extract.outputs.service }}/go.sum
           cache: true
       - run: go mod vendor
       - name: Login to GitHub Container Registry
