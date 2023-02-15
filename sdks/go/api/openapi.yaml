@@ -8447,8 +8447,10 @@ x-tagGroups:
   - Clients
   - Scopes
   - Users
+  - Auth
 - name: Ledger
   tags:
+  - Ledger
   - Server
   - Accounts
   - Mapping
@@ -8475,3 +8477,6 @@ x-tagGroups:
 - name: Webhooks
   tags:
   - Webhooks
+- name: Orchestration
+  tags:
+  - Orchestration
