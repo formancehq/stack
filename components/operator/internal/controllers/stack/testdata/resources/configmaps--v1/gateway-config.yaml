@@ -10,7 +10,7 @@ data:
         	}
         }
 
-        (handle_route_without_jwt) {
+        (handle_route_without_auth) {
         	# handle does not strips the prefix from the request path
         	handle {args.0}/* {
         		reverse_proxy {args.1}
@@ -19,18 +19,18 @@ data:
         	}
         }
 
-        (handle_path_route_with_jwt) {
+        (handle_path_route_with_auth) {
         	# handle_path automatically strips the prefix from the request path
         	handle_path {args.0}* {
         		reverse_proxy {args.1}
 
         		import cors
 
-        		import jwt
+        		import auth
         	}
         }
 
-        (handle_path_route_without_jwt) {
+        (handle_path_route_without_auth) {
         	# handle_path automatically strips the prefix from the request path
         	handle_path {args.0}* {
         		reverse_proxy {args.1}
@@ -39,13 +39,11 @@ data:
         	}
         }
 
-        (jwt) {
-        	jwtauth {
-        		sign_alg RS256
-        		jwk_url http://auth:8080/keys
-        		from_header Authorization
-        		refresh_window 10s
-        		min_refresh_interval 10s
+        (auth) {
+        	auth {
+        		issuer http://example.net/api/auth
+
+        		read_key_set_max_retries 10
         	}
         }
 
@@ -56,7 +54,7 @@ data:
         	# those directives are evaluated matters. So the jwtauth directive must be
         	# ordered.
         	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
-        	order jwtauth before basicauth
+        	order auth before basicauth
         	order versions after metrics
         }
 
@@ -67,14 +65,14 @@ data:
         	log {
         		output stdout
         	}
-        	import handle_path_route_without_jwt /api/auth auth:8080
-        	import handle_path_route_with_jwt /api/ledger ledger:8080
-        	import handle_path_route_with_jwt /api/orchestration orchestration:8080
-        	import handle_path_route_with_jwt /api/payments payments:8080
-        	import handle_path_route_with_jwt /api/search search:8080
-        	import handle_path_route_with_jwt /api/search-benthos search-benthos:4195
-        	import handle_path_route_with_jwt /api/wallets wallets:8080
-        	import handle_path_route_with_jwt /api/webhooks webhooks:8080
+        	import handle_path_route_without_auth /api/auth auth:8080
+        	import handle_path_route_with_auth /api/ledger ledger:8080
+        	import handle_path_route_with_auth /api/orchestration orchestration:8080
+        	import handle_path_route_with_auth /api/payments payments:8080
+        	import handle_path_route_with_auth /api/search search:8080
+        	import handle_path_route_with_auth /api/search-benthos search-benthos:4195
+        	import handle_path_route_with_auth /api/wallets wallets:8080
+        	import handle_path_route_with_auth /api/webhooks webhooks:8080
 
         	handle /versions {
         		versions {

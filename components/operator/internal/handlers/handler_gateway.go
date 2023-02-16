@@ -88,7 +88,7 @@ func createCaddyfile(context modules.InstallContext) string {
 	}
 
 	if err := tpl.Execute(buf, map[string]any{
-		"JWK_URL":  fmt.Sprintf("http://auth:%d/keys", context.RegisteredModules["auth"].Services[0].Port),
+		"Issuer":   fmt.Sprintf("%s/api/auth", context.Stack.URL()),
 		"Services": services,
 		"Debug":    context.Stack.Spec.Debug,
 		"Fallback": fmt.Sprintf("control:%d", context.RegisteredModules["control"].Services[0].Port),
@@ -108,7 +108,7 @@ const caddyfile = `(cors) {
 	}
 }
 
-(handle_route_without_jwt) {
+(handle_route_without_auth) {
 	# handle does not strips the prefix from the request path
 	handle {args.0}/* {
 		reverse_proxy {args.1}
@@ -117,18 +117,18 @@ const caddyfile = `(cors) {
 	}
 }
 
-(handle_path_route_with_jwt) {
+(handle_path_route_with_auth) {
 	# handle_path automatically strips the prefix from the request path
 	handle_path {args.0}* {
 		reverse_proxy {args.1}
 
 		import cors
 
-		import jwt
+		import auth
 	}
 }
 
-(handle_path_route_without_jwt) {
+(handle_path_route_without_auth) {
 	# handle_path automatically strips the prefix from the request path
 	handle_path {args.0}* {
 		reverse_proxy {args.1}
@@ -137,13 +137,11 @@ const caddyfile = `(cors) {
 	}
 }
 
-(jwt) {
-	jwtauth {
-		sign_alg RS256
-		jwk_url {{ .JWK_URL }}
-		from_header Authorization
-		refresh_window 10s
-		min_refresh_interval 10s
+(auth) {
+	auth {
+		issuer {{ .Issuer }}
+
+		read_key_set_max_retries 10
 	}
 }
 
@@ -154,7 +152,7 @@ const caddyfile = `(cors) {
 	# those directives are evaluated matters. So the jwtauth directive must be
 	# ordered.
 	# c.f. https://caddyserver.com/docs/caddyfile/directives#directive-order
-	order jwtauth before basicauth
+	order auth before basicauth
 	order versions after metrics
 }
 
@@ -172,9 +170,9 @@ const caddyfile = `(cors) {
 	{{- range $i, $service := .Services }}
 		{{- if not (eq $service.Name "control") }}
 			{{- if not $service.Secured }}
-	import handle_path_route_with_jwt /api/{{ $service.Name }} {{ $service.Name }}:{{ $service.Port }}
+	import handle_path_route_with_auth /api/{{ $service.Name }} {{ $service.Name }}:{{ $service.Port }}
 			{{- else }}
-	import handle_path_route_without_jwt /api/{{ $service.Name }} {{ $service.Name }}:{{ $service.Port }}
+	import handle_path_route_without_auth /api/{{ $service.Name }} {{ $service.Name }}:{{ $service.Port }}
 			{{- end }}
 		{{- end }}
 	{{- end }}
