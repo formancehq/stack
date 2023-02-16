@@ -21,9 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        folder: ${{ fromJson(needs.FindChanges.outputs.folders )}}
+        folder: ${{ fromJson(needs.Find.outputs.folders )}}
     needs:
-      - FindChanges
+      - Find
     steps:
       - uses: actions/checkout@v3
         with:
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        folder: ${{ fromJson(needs.FindChanges.outputs.folders )}}
+        folder: ${{ fromJson(needs.Find.outputs.folders )}}
     needs:
       - Find
     steps:
