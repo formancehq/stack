@@ -4,16 +4,6 @@
         {
             "module_path": "github.com/formancehq/stack/components/gateway/pkg/plugins",
             "version": "main"
-        },
-        {
-            "module_path": "github.com/ggicci/caddy-jwt",
-            "version": "c8d9423"
-        }
-    ],
-    "replacements": [
-        {
-            "old": "github.com/ggicci/caddy-jwt",
-            "new": "github.com/formancehq/caddy-jwt@1352572"
         }
     ],
 
