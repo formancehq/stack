@@ -21,22 +21,18 @@ func Test_StorageCommands(t *testing.T) {
 
 	cmd := NewStorageUpgrade()
 	cmd.SetArgs([]string{name})
-	_ = cmd.Execute()
+	require.NoError(t, cmd.Execute())
 
 	cmd = NewStorageDelete()
 	cmd.SetArgs([]string{name})
-	_ = cmd.Execute()
+	require.NoError(t, cmd.Execute())
 
 	driver := viper.GetString(storageDriverFlag)
+	require.NoError(t, NewStorageScan().Execute())
 
 	viper.Set(storageDriverFlag, "")
-	_ = NewStorageScan().Execute()
-
-	viper.Set(storageDriverFlag, "sqlite")
-	_ = NewStorageScan().Execute()
-
-	viper.Set(storageDriverFlag, "postgres")
-	_ = NewStorageScan().Execute()
+	require.ErrorContains(t, NewStorageScan().Execute(),
+		"Invalid storage driver:")
 
 	viper.Set(storageDriverFlag, driver)
 }

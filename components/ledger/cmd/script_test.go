@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -22,14 +23,14 @@ import (
 func Test_ScriptCommands(t *testing.T) {
 	ledger := uuid.NewString()
 	viper.Set("name", ledger)
-	_ = NewStorageInit().Execute()
+	require.NoError(t, NewStorageInit().Execute())
 
 	d1 := []byte(`
 		send [EUR 1] (
 			source = @world
 			destination = @alice
 		)`)
-	path := os.TempDir() + "/script"
+	path := filepath.Join(os.TempDir(), "script")
 	require.NoError(t, os.WriteFile(path, d1, 0644))
 
 	httpServer := httptest.NewServer(http.HandlerFunc(scriptSuccessHandler))

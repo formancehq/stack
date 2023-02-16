@@ -99,6 +99,18 @@ func (l *Ledger) ExecuteTxsData(ctx context.Context, preview bool, txsData ...co
 		}
 
 		for account, volumes := range txVolumeAggr.PostCommitVolumes {
+			if _, ok := accs[account]; !ok {
+				accs[account], err = l.GetAccount(ctx, account)
+				if err != nil {
+					return []core.ExpandedTransaction{}, NewTransactionCommitError(i,
+						errors.Wrap(err, fmt.Sprintf("get account '%s'", account)))
+				}
+			}
+			for asset, vol := range volumes {
+				accs[account].Volumes[asset] = vol
+			}
+			accs[account].Balances = accs[account].Volumes.Balances()
+
 			for asset, volume := range volumes {
 				if account == core.WORLD {
 					continue

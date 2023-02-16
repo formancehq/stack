@@ -67,13 +67,6 @@ func (tva *TxVolumeAggregator) Transfer(
 	tva.PostCommitVolumes.AddOutput(from, asset, amount)
 	tva.PostCommitVolumes.AddInput(to, asset, amount)
 
-	for account, volumes := range tva.PostCommitVolumes {
-		for asset, vol := range volumes {
-			accs[account].Volumes[asset] = vol
-		}
-		accs[account].Balances = accs[account].Volumes.Balances()
-	}
-
 	return nil
 }
 
