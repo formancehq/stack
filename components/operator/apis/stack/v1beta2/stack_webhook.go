@@ -33,7 +33,7 @@ var _ webhook.Defaulter = &Stack{}
 //nolint:unused
 var stacklog = logf.Log.WithName("stack-resource")
 
-//+kubebuilder:webhook:path=/mutate-stack-formance-com-v1beta2-stack,mutating=true,failurePolicy=fail,sideEffects=None,groups=stack.formance.com,resources=stacks,verbs=create;update,versions=v1beta2,name=mstacks.kb.io,admissionReviewVersions=v1
+//+kubebuilder:webhook:path=/mutate-stack-formance-com-v1beta2-stack,mutating=true,failurePolicy=fail,sideEffects=None,groups=stack.formance.com,resources=stacks,verbs=create;update,versions=v1beta2,name=mstacks-v1beta2.kb.io,admissionReviewVersions=v1
 
 func (stack *Stack) SetupWebhookWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewWebhookManagedBy(mgr).

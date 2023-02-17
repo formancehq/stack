@@ -40,11 +40,3 @@ func (in *Status) RemoveCondition(v string) {
 		return stack.Type != v
 	})
 }
-
-type ReplicationStatus struct {
-	Status `json:",inline"`
-	// +optional
-	Replicas int32 `json:"replicas"`
-	// +optional
-	Selector string `json:"selector"`
-}
