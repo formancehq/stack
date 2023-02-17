@@ -20,7 +20,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/formancehq/operator/apis/components/v1beta2"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -126,7 +125,7 @@ type Configuration struct {
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	Spec   ConfigurationSpec `json:"spec,omitempty"`
-	Status v1beta2.Status    `json:"status,omitempty"`
+	Status Status            `json:"status,omitempty"`
 }
 
 func (c *Configuration) Default() {}

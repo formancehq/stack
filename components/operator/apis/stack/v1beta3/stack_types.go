@@ -36,7 +36,7 @@ var ClientSecretGenerator = func() string {
 type IngressGlobalConfig struct {
 	IngressConfig `json:",inline"`
 	// +optional
-	TLS *IngressTLS `json:"tls"`
+	TLS *IngressTLS `json:"tls,omitempty"`
 }
 
 type DelegatedOIDCServerConfiguration struct {
