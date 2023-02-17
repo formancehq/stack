@@ -83,7 +83,7 @@ type StaticClient struct {
 	ClientConfiguration `json:",inline" yaml:",inline"`
 	ID                  string `json:"id" yaml:"id"`
 	// +optional
-	Secrets []string `json:"secrets" yaml:"secrets"`
+	Secrets []string `json:"secrets,omitempty" yaml:"secrets"`
 }
 
 type StackAuthSpec struct {

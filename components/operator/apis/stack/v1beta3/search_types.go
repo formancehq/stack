@@ -25,11 +25,10 @@ type ElasticSearchConfig struct {
 	// +optional
 	// +kubebuilder:validation:Enum:={http,https}
 	// +kubebuilder:validation:default:=https
-	Scheme string `json:"scheme,omitempty"`
-	Host   string `json:"host,omitempty"`
-	Port   uint16 `json:"port,omitempty"`
-	// +optional
-	TLS ElasticSearchTLSConfig `json:"tls"`
+	Scheme string                 `json:"scheme,omitempty"`
+	Host   string                 `json:"host,omitempty"`
+	Port   uint16                 `json:"port,omitempty"`
+	TLS    ElasticSearchTLSConfig `json:"tls"`
 	// +optional
 	BasicAuth *ElasticSearchBasicAuthConfig `json:"basicAuth,omitempty"`
 	// +optional

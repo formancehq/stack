@@ -21,7 +21,6 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -80,11 +79,7 @@ type TracesOtlpSpec struct {
 	// +optional
 	Endpoint string `json:"endpoint,omitempty"`
 	// +optional
-	EndpointFrom *corev1.EnvVarSource `json:"endpointFrom,omitempty"`
-	// +optional
 	Port int32 `json:"port,omitempty"`
-	// +optional
-	PortFrom *corev1.EnvVarSource `json:"portFrom,omitempty"`
 	// +optional
 	Insecure bool `json:"insecure,omitempty"`
 	// +kubebuilder:validation:Enum:={grpc,http}
