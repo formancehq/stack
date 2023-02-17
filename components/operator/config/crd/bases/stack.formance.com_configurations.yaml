@@ -4365,8 +4365,6 @@ spec:
                             type: object
                           useZinc:
                             type: boolean
-                        required:
-                        - tls
                         type: object
                     required:
                     - elasticSearch
