@@ -1,11 +1,2 @@
 ignore:
   - "components/ledger/pkg/machine/script/parser"
-
-component_management:
-  paths:
-    - "components/*"
-  individual_components:
-    - component_id: ledger
-      name: ledger
-      paths:
-        - components/ledger/**
