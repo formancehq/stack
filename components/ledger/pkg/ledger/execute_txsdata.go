@@ -110,7 +110,6 @@ func (l *Ledger) ExecuteTxsData(ctx context.Context, preview bool, txsData ...co
 				accs[account].Volumes[asset] = vol
 			}
 			accs[account].Balances = accs[account].Volumes.Balances()
-
 			for asset, volume := range volumes {
 				if account == core.WORLD {
 					continue

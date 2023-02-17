@@ -14,7 +14,6 @@ vars:
   BENCH_CPU_PROFILE: "/tmp/benchmarks/ledger.cpu.prof"
   BENCH_MEM_PROFILE: "/tmp/benchmarks/ledger.mem.prof"
   VERBOSE: "false"
-  DEBUG: "false"
 
 tasks:
   default:
@@ -32,6 +31,7 @@ tasks:
       - golangci-lint run --fix {{if eq .VERBOSE "true"}}-v{{end}}
 
   tests:
+    deps: [postgres]
     cmds:
       - >
         go test {{.TAGS}} {{if eq .VERBOSE "true"}}-v{{end}} -coverpkg {{.PKG}}
