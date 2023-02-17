@@ -113,6 +113,10 @@ func main() {
 	}
 
 	if !disableWebhooks {
+		if err := (&stackv1beta2.Stack{}).SetupWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "unable to install stack webhook", "controller", "Stack")
+			os.Exit(1)
+		}
 		if err := (&stackv1beta3.Stack{}).SetupWebhookWithManager(mgr); err != nil {
 			setupLog.Error(err, "unable to install stack webhook", "controller", "Stack")
 			os.Exit(1)
