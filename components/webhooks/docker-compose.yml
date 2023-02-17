@@ -43,7 +43,7 @@ services:
   postgres:
     image: "postgres:alpine"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ledger"]
+      test: ["CMD-SHELL", "pg_isready -U webhooks"]
       interval: 10s
       timeout: 5s
       retries: 5
