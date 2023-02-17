@@ -67,6 +67,7 @@ type Configuration struct {
 }
 
 func (config *Configuration) ConvertFrom(hubRaw conversion.Hub) error {
+
 	hub := hubRaw.(*v1beta3.Configuration)
 	specAsRaw, err := json.Marshal(hub.Spec)
 	if err != nil {
@@ -98,6 +99,7 @@ func (config *Configuration) ConvertFrom(hubRaw conversion.Hub) error {
 }
 
 func (config *Configuration) ConvertTo(hubRaw conversion.Hub) error {
+
 	hub := hubRaw.(*v1beta3.Configuration)
 	specAsRaw, err := json.Marshal(config.Spec)
 	if err != nil {

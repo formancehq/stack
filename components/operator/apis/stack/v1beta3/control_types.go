@@ -4,6 +4,4 @@ package v1beta3
 type ControlSpec struct {
 	// +optional
 	Scaling ScalingSpec `json:"scaling,omitempty"`
-	// +optional
-	Ingress *IngressConfig `json:"ingress"`
 }

@@ -4436,13 +4436,6 @@ spec:
                     type: object
                   control:
                     properties:
-                      ingress:
-                        properties:
-                          annotations:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
                       scaling:
                         properties:
                           cpuLimit:
@@ -4457,13 +4450,6 @@ spec:
                     type: object
                   ledger:
                     properties:
-                      ingress:
-                        properties:
-                          annotations:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4491,13 +4477,6 @@ spec:
                         type: boolean
                       dev:
                         type: boolean
-                      ingress:
-                        properties:
-                          annotations:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4515,30 +4494,12 @@ spec:
                         - password
                         - port
                         - username
-                        type: object
-                      scaling:
-                        properties:
-                          cpuLimit:
-                            type: integer
-                          enabled:
-                            type: boolean
-                          maxReplica:
-                            type: integer
-                          minReplica:
-                            type: integer
                         type: object
                     type: object
                   payments:
                     properties:
                       encryptionKey:
                         type: string
-                      ingress:
-                        properties:
-                          annotations:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4556,17 +4517,6 @@ spec:
                         - password
                         - port
                         - username
-                        type: object
-                      scaling:
-                        properties:
-                          cpuLimit:
-                            type: integer
-                          enabled:
-                            type: boolean
-                          maxReplica:
-                            type: integer
-                          minReplica:
-                            type: integer
                         type: object
                     required:
                     - encryptionKey
@@ -4616,24 +4566,6 @@ spec:
                           useZinc:
                             type: boolean
                         type: object
-                      ingress:
-                        properties:
-                          annotations:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
-                      scaling:
-                        properties:
-                          cpuLimit:
-                            type: integer
-                          enabled:
-                            type: boolean
-                          maxReplica:
-                            type: integer
-                          minReplica:
-                            type: integer
-                        type: object
                     required:
                     - elasticSearch
                     type: object
@@ -4643,36 +4575,11 @@ spec:
                         type: boolean
                       dev:
                         type: boolean
-                      ingress:
-                        properties:
-                          annotations:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
-                      scaling:
-                        properties:
-                          cpuLimit:
-                            type: integer
-                          enabled:
-                            type: boolean
-                          maxReplica:
-                            type: integer
-                          minReplica:
-                            type: integer
-                        type: object
                     type: object
                   webhooks:
                     properties:
                       debug:
                         type: boolean
-                      ingress:
-                        properties:
-                          annotations:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
                       postgres:
                         properties:
                           disableSSLMode:
@@ -4690,17 +4597,6 @@ spec:
                         - password
                         - port
                         - username
-                        type: object
-                      scaling:
-                        properties:
-                          cpuLimit:
-                            type: integer
-                          enabled:
-                            type: boolean
-                          maxReplica:
-                            type: integer
-                          minReplica:
-                            type: integer
                         type: object
                     type: object
                 type: object

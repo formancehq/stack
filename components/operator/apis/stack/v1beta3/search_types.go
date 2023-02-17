@@ -31,7 +31,7 @@ type ElasticSearchConfig struct {
 	// +optional
 	TLS ElasticSearchTLSConfig `json:"tls"`
 	// +optional
-	BasicAuth *ElasticSearchBasicAuthConfig `json:"basicAuth"`
+	BasicAuth *ElasticSearchBasicAuthConfig `json:"basicAuth,omitempty"`
 	// +optional
 	PathPrefix string `json:"pathPrefix"`
 	// +optional
@@ -45,12 +45,6 @@ func (in *ElasticSearchConfig) Endpoint() string {
 // +kubebuilder:object:generate=true
 type SearchSpec struct {
 	ElasticSearchConfig ElasticSearchConfig `json:"elasticSearch"`
-
-	// +optional
-	Scaling ScalingSpec `json:"scaling,omitempty"`
-
-	//+optional
-	Ingress *IngressConfig `json:"ingress"`
 
 	// +optional
 	Batching Batching `json:"batching"`
