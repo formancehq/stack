@@ -1,6 +1,5 @@
 name: Default - PR
 on:
-  merge_group:
   pull_request:
     types: [ assigned, opened, synchronize, reopened ]
 

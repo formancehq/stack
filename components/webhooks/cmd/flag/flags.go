@@ -31,7 +31,7 @@ const (
 	DefaultBindAddressServer = ":8080"
 	DefaultBindAddressWorker = ":8081"
 
-	DefaultPostgresConnString = "postgresql://webhooks:webhooks@postgres:5432/webhooks?sslmode=disable"
+	DefaultPostgresConnString = "postgresql://webhooks:webhooks@127.0.0.1/webhooks?sslmode=disable"
 
 	DefaultKafkaTopic = "default"
 )
