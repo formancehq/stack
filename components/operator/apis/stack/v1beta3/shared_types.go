@@ -20,5 +20,5 @@ type DatabaseSpec struct {
 
 type IngressConfig struct {
 	// +optional
-	Annotations map[string]string `json:"annotations"`
+	Annotations map[string]string `json:"annotations,omitempty"`
 }
