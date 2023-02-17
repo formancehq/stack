@@ -36,6 +36,9 @@ tasks:
       - >
         go test {{.TAGS}} {{if eq .VERBOSE "true"}}-v{{end}} -coverpkg {{.PKG}}
         -coverprofile coverage.out -covermode atomic {{.PKG}}
+    env:
+      NUMARY_STORAGE_DRIVER: "postgres"
+      NUMARY_STORAGE_POSTGRES_CONN_STRING: "postgresql://ledger:ledger@127.0.0.1/ledger"
 
   tests:local:
     cmds:
