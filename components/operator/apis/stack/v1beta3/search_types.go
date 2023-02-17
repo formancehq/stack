@@ -30,7 +30,8 @@ type ElasticSearchConfig struct {
 	Port   uint16 `json:"port,omitempty"`
 	// +optional
 	TLS ElasticSearchTLSConfig `json:"tls"`
-	// +optional
+	// +kubebuilder:validation:Optional
+	// +nullable
 	BasicAuth *ElasticSearchBasicAuthConfig `json:"basicAuth"`
 	// +optional
 	PathPrefix string `json:"pathPrefix"`
@@ -48,8 +49,8 @@ type SearchSpec struct {
 
 	// +optional
 	Scaling ScalingSpec `json:"scaling,omitempty"`
-
-	//+optional
+	// +kubebuilder:validation:Optional
+	// +nullable
 	Ingress *IngressConfig `json:"ingress"`
 
 	// +optional

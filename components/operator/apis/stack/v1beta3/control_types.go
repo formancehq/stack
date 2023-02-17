@@ -4,6 +4,7 @@ package v1beta3
 type ControlSpec struct {
 	// +optional
 	Scaling ScalingSpec `json:"scaling,omitempty"`
-	// +optional
+	// +kubebuilder:validation:Optional
+	// +nullable
 	Ingress *IngressConfig `json:"ingress"`
 }

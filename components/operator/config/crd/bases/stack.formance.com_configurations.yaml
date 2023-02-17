@@ -4151,6 +4151,7 @@ spec:
                       type: string
                     type: object
                   tls:
+                    nullable: true
                     properties:
                       secretName:
                         description: SecretName is the name of the secret used to
@@ -4378,6 +4379,7 @@ spec:
                   auth:
                     properties:
                       ingress:
+                        nullable: true
                         properties:
                           annotations:
                             additionalProperties:
@@ -4385,6 +4387,7 @@ spec:
                             type: object
                         type: object
                       postgres:
+                        nullable: true
                         properties:
                           disableSSLMode:
                             type: boolean
@@ -4430,6 +4433,7 @@ spec:
                           required:
                           - id
                           type: object
+                        nullable: true
                         type: array
                     required:
                     - postgres
@@ -4437,6 +4441,7 @@ spec:
                   control:
                     properties:
                       ingress:
+                        nullable: true
                         properties:
                           annotations:
                             additionalProperties:
@@ -4458,6 +4463,7 @@ spec:
                   ledger:
                     properties:
                       ingress:
+                        nullable: true
                         properties:
                           annotations:
                             additionalProperties:
@@ -4492,6 +4498,7 @@ spec:
                       dev:
                         type: boolean
                       ingress:
+                        nullable: true
                         properties:
                           annotations:
                             additionalProperties:
@@ -4533,6 +4540,7 @@ spec:
                       encryptionKey:
                         type: string
                       ingress:
+                        nullable: true
                         properties:
                           annotations:
                             additionalProperties:
@@ -4586,6 +4594,7 @@ spec:
                       elasticSearch:
                         properties:
                           basicAuth:
+                            nullable: true
                             properties:
                               password:
                                 type: string
@@ -4617,6 +4626,7 @@ spec:
                             type: boolean
                         type: object
                       ingress:
+                        nullable: true
                         properties:
                           annotations:
                             additionalProperties:
@@ -4644,6 +4654,7 @@ spec:
                       dev:
                         type: boolean
                       ingress:
+                        nullable: true
                         properties:
                           annotations:
                             additionalProperties:
@@ -4667,6 +4678,7 @@ spec:
                       debug:
                         type: boolean
                       ingress:
+                        nullable: true
                         properties:
                           annotations:
                             additionalProperties:

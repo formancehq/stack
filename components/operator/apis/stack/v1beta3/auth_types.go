@@ -1,9 +1,13 @@
 package v1beta3
 
 type AuthSpec struct {
+	// +kubebuilder:validation:Required
+	// +nullable
 	Postgres PostgresConfig `json:"postgres"`
-	// +optional
-	Ingress *IngressConfig `json:"ingress"`
-	// +optional
-	StaticClients []StaticClient `json:"staticClients"`
+	// +kubebuilder:validation:Optional
+	// +nullable
+	Ingress *IngressConfig `json:"ingress,omitempty"`
+	// +kubebuilder:validation:Optional
+	// +nullable
+	StaticClients []StaticClient `json:"staticClients,omitempty"`
 }

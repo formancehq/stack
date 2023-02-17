@@ -35,7 +35,8 @@ var ClientSecretGenerator = func() string {
 
 type IngressGlobalConfig struct {
 	IngressConfig `json:",inline"`
-	// +optional
+	// +kubebuilder:validation:Optional
+	// +nullable
 	TLS *IngressTLS `json:"tls"`
 }
 

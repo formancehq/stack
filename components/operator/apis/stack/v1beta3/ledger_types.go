@@ -19,6 +19,7 @@ type LockingStrategyRedisConfig struct {
 // +kubebuilder:object:generate=true
 type LedgerSpec struct {
 	Postgres PostgresConfig `json:"postgres"`
-	// +optional
+	// +kubebuilder:validation:Optional
+	// +nullable
 	Ingress *IngressConfig `json:"ingress"`
 }

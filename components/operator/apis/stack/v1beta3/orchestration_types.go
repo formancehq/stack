@@ -5,7 +5,8 @@ type OrchestrationSpec struct {
 	DevProperties `json:",inline"`
 	// +optional
 	Scaling ScalingSpec `json:"scaling,omitempty"`
-	// +optional
+	// +kubebuilder:validation:Optional
+	// +nullable
 	Ingress *IngressConfig `json:"ingress"`
 	// +optional
 	Postgres PostgresConfig `json:"postgres"`
