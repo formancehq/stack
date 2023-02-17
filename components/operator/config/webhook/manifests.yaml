@@ -33,7 +33,7 @@ webhooks:
       namespace: system
       path: /mutate-stack-formance-com-v1beta3-stack
   failurePolicy: Fail
-  name: mstacks.kb.io
+  name: mstacks-v1beta3.kb.io
   rules:
   - apiGroups:
     - stack.formance.com
@@ -53,7 +53,7 @@ webhooks:
       namespace: system
       path: /mutate-stack-formance-com-v1beta2-stack
   failurePolicy: Fail
-  name: mstacks.kb.io
+  name: mstacks-v1beta2.kb.io
   rules:
   - apiGroups:
     - stack.formance.com

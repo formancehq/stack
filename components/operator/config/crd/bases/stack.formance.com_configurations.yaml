@@ -4377,13 +4377,6 @@ spec:
                 properties:
                   auth:
                     properties:
-                      ingress:
-                        properties:
-                          annotations:
-                            additionalProperties:
-                              type: string
-                            type: object
-                        type: object
                       postgres:
                         properties:
                           disableSSLMode:
