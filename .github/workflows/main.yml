@@ -5,25 +5,37 @@ on:
       - main
 jobs:
 
-  Find:
+  FindChangesChanges:
     runs-on: ubuntu-latest
     outputs:
-      folders: ${{ steps.find.outputs.folders }}
+      folders: ${{ steps.result.outputs.folders }}
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
         with:
-          node-version: 16
-      - run: echo "folders=$(node .github/actions/find-directory/index.js)" >> $GITHUB_OUTPUT
-        id: find
+          fetch-depth: 0
+      - name: Get changed files in the docs folder
+        id: changed-files-specific
+        uses: tj-actions/changed-files@v35
+        with:
+          dir_names: "true"
+          json: "true"
+          dir_names_max_depth: "2"
+          files: |
+            components/**
+      - run: echo "folders=$(echo ${{ steps.changed-files-specific.outputs.all_modified_files }} | sed 's/components\///g')" >> $GITHUB_OUTPUT
+        id: result
+      - name: Run step if any file(s) in the docs folder change
+        run: |
+          echo "One or more files in the docs folder has changed."
+          echo "List all the files that have changed: ${{ steps.result.outputs.folders }}"
 
   Lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        folder: ${{ fromJson(needs.Find.outputs.folders )}}
+        folder: ${{ fromJson(needs.FindChanges.outputs.folders )}}
     needs:
-      - Find
+      - FindChanges
     steps:
       - uses: actions/checkout@v3
         with:
@@ -48,9 +60,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        folder: ${{ fromJson(needs.Find.outputs.folders )}}
+        folder: ${{ fromJson(needs.FindChanges.outputs.folders )}}
     needs:
-      - Find
+      - FindChanges
     steps:
       - uses: actions/checkout@v3
         with:
@@ -80,47 +92,3 @@ jobs:
           fail_ci_if_error: false # optional (default = false)
           verbose: true # optional (default = false)
           flags: ${{ matrix.folder }}
-#
-#  Docker:
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        folder: ${{ fromJson(needs.Find.outputs.folders )}}
-#    needs:
-#      - Find
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: Install Task
-#        uses: arduino/setup-task@v1
-#        with:
-#          repo-token: ${{ secrets.GITHUB_TOKEN }}
-#      - name: Set up QEMU
-#        uses: docker/setup-qemu-action@v2
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v2
-#      - uses: actions/setup-go@v3
-#        with:
-#          go-version-file: ./components/${{ matrix.folder }}/go.mod
-#          cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
-#          cache: true
-#      - name: go mod vendor
-#        run: |
-#          cd ./components/${{ matrix.folder }}
-#          go mod vendor
-#      - name: Login to GitHub Container Registry
-#        uses: docker/login-action@v2
-#        with:
-#          registry: ghcr.io
-#          username: "NumaryBot"
-#          password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-#      - name: Build and push
-#        uses: docker/build-push-action@v2
-#        with:
-#          file: ./components/${{ matrix.folder }}/Dockerfile
-#          context: .
-#          platforms: linux/amd64,linux/arm64
-#          push: true
-#          tags: ghcr.io/formancehq/${{ matrix.folder }}:main
-#          build-args: |
-#            APP_SHA=${{ github.event.pull_request.head.sha }}
-#            VERSION=main
