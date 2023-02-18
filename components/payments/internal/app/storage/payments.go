@@ -180,10 +180,12 @@ func (s *Storage) UpsertPayments(ctx context.Context, provider models.ConnectorP
 		}
 	}
 
-	err = s.UpdateTransfersFromPayments(ctx, payments)
-	if err != nil {
-		return e("failed to update transfers", err)
-	}
+	// TODO: Not working with dummy pay connector
+	// Need to check with a real connector
+	//err = s.UpdateTransfersFromPayments(ctx, payments)
+	//if err != nil {
+	//	return e("failed to update transfers", err)
+	//}
 
 	return nil
 }

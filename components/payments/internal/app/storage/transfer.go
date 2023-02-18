@@ -3,10 +3,11 @@ package storage
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/pkg/errors"
 
 	"github.com/uptrace/bun"
+
+	"github.com/jackc/pgx/v5"
 
 	"github.com/google/uuid"
 

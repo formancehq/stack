@@ -2,10 +2,8 @@ package cmd
 
 import (
 	"context"
-	"net"
-	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/numary/ledger/pkg/api"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -19,26 +17,7 @@ func NewServerStart() *cobra.Command {
 			app := NewContainer(
 				viper.GetViper(),
 				fx.Invoke(func(lc fx.Lifecycle, h *api.API) {
-					var (
-						err      error
-						listener net.Listener
-					)
-					lc.Append(fx.Hook{
-						OnStart: func(ctx context.Context) error {
-							listener, err = net.Listen("tcp", viper.GetString(serverHttpBindAddressFlag))
-							if err != nil {
-								return err
-							}
-							go func() {
-								httpErr := http.Serve(listener, h)
-								logging.Errorf("http.Serve: %s", httpErr)
-							}()
-							return nil
-						},
-						OnStop: func(ctx context.Context) error {
-							return listener.Close()
-						},
-					})
+					lc.Append(httpserver.NewHook(viper.GetString(serverHttpBindAddressFlag), h))
 				}),
 			)
 			errCh := make(chan error, 1)

@@ -4,7 +4,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	_ "github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -23,20 +22,23 @@ var (
 	Commit    = "-"
 )
 
-func rootCommand() *cobra.Command {
+func NewRootCommand() *cobra.Command {
 	viper.SetDefault("version", Version)
 
 	root := &cobra.Command{
 		Use:               "payments",
 		Short:             "payments",
 		DisableAutoGenTag: true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			return bindFlagsToViper(cmd)
+		},
 	}
 
 	version := newVersion()
 	root.AddCommand(version)
 
 	server := newServer()
-	root.AddCommand(newServer())
+	root.AddCommand(server)
 
 	migrate := newMigrate()
 	root.AddCommand(migrate)
@@ -59,23 +61,17 @@ func rootCommand() *cobra.Command {
 	server.Flags().Bool(authBearerAudiencesWildcardFlag, false, "Don't check audience")
 	server.Flags().Bool(authBearerUseScopesFlag,
 		false, "Use scopes as defined by rfc https://datatracker.ietf.org/doc/html/rfc8693")
+	server.Flags().String(listenFlag, ":8080", "Listen address")
+	server.Flags().Bool(autoMigrateFlag, false, "Auto migrate database")
 
 	otlptraces.InitOTLPTracesFlags(server.Flags())
 	publish.InitCLIFlags(server)
-
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
-	viper.AutomaticEnv()
-
-	err := viper.BindPFlags(root.Flags())
-	if err != nil {
-		panic(err)
-	}
 
 	return root
 }
 
 func Execute() {
-	if err := rootCommand().Execute(); err != nil {
+	if err := NewRootCommand().Execute(); err != nil {
 		if _, err = fmt.Fprintln(os.Stderr, err); err != nil {
 			panic(err)
 		}

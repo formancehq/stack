@@ -32,6 +32,7 @@ linters:
     - nosnakecase
     - nestif
     - goerr113
+    - gomoddirectives
     # Deprecated linters
     - ifshort
     - varcheck

@@ -13,7 +13,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
 	natsServer "github.com/nats-io/nats-server/v2/server"
-	natsStreamingServer "github.com/nats-io/nats-streaming-server/server"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/sirupsen/logrus"
@@ -135,10 +134,6 @@ func TestModule(t *testing.T) {
 		{
 			name: "nats",
 			setup: func(t *testing.T) fx.Option {
-				sOpts := natsStreamingServer.GetDefaultOptions()
-				sOpts.Debug = testing.Verbose()
-				sOpts.EnableLogging = testing.Verbose()
-
 				server, err := natsServer.NewServer(&natsServer.Options{
 					Host:      "0.0.0.0",
 					Port:      4322,
@@ -148,19 +143,10 @@ func TestModule(t *testing.T) {
 
 				server.Start()
 
-				//srv, err := natsStreamingServer.RunServerWithOpts(sOpts, &natsServer.Options{
-				//	Host: "0.0.0.0",
-				//	Port: 4322,
-				//	//Cluster: natsServer.ClusterOpts{
-				//	//	Host: "0.0.0.0",
-				//	//	Port: 4323,
-				//	//},
-				//})
-				//require.NoError(t, err)
 				t.Cleanup(server.Shutdown)
 
 				return fx.Options(
-					natsModule( /*natsStreamingServer.DefaultClusterID, */ "example", "nats://127.0.0.1:4322", "testing"),
+					natsModule("example", "nats://127.0.0.1:4322", "testing"),
 				)
 			},
 			topicMapping: map[string]string{},

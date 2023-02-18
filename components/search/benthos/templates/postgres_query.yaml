@@ -10,7 +10,7 @@ fields:
 mapping: |
   root = {
     "sql_raw": {
-      "dsn": env("POSTGRES_DATABASE_URI_%s".format(this.service.uppercase())),
+      "dsn": env("POSTGRES_URI_%s".format(this.service.uppercase())),
       "driver": "postgres",
       "query": this.query,
       "unsafe_dynamic_query": true

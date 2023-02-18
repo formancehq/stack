@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
@@ -19,45 +20,45 @@ const (
 	stackURLFlag          = "stack-url"
 	ledgerNameFlag        = "ledger"
 	accountPrefixFlag     = "account-prefix"
+	listenFlag            = "listen"
 )
 
-var serveCmd = &cobra.Command{
-	Use: "server",
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		return bindFlagsToViper(cmd)
-	},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		options := []fx.Option{
-			fx.NopLogger,
-			wallet.Module(viper.GetString(ledgerNameFlag), viper.GetString(accountPrefixFlag)),
-			api.Module(sharedapi.ServiceInfo{
-				Version: Version,
-			}),
-			client.NewModule(viper.GetString(stackClientIDFlag), viper.GetString(stackClientSecretFlag),
-				viper.GetString(stackURLFlag), viper.GetBool(debugFlag)),
-			otlptraces.CLITracesModule(viper.GetViper()),
-		}
+func newServeCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "server",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return bindFlagsToViper(cmd)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			options := []fx.Option{
+				fx.NopLogger,
+				wallet.Module(viper.GetString(ledgerNameFlag), viper.GetString(accountPrefixFlag)),
+				api.Module(sharedapi.ServiceInfo{
+					Version: Version,
+				}, viper.GetString(listenFlag)),
+				client.NewModule(viper.GetString(stackClientIDFlag), viper.GetString(stackClientSecretFlag),
+					viper.GetString(stackURLFlag), viper.GetBool(debugFlag)),
+				otlptraces.CLITracesModule(viper.GetViper()),
+			}
 
-		app := fx.New(options...)
-		if err := app.Start(cmd.Context()); err != nil {
-			return fmt.Errorf("fx.App.Start: %w", err)
-		}
+			app := fx.New(options...)
+			if err := app.Start(cmd.Context()); err != nil {
+				return fmt.Errorf("fx.App.Start: %w", err)
+			}
 
-		<-app.Done()
-
-		if err := app.Stop(cmd.Context()); err != nil {
-			return fmt.Errorf("fx.App.Stop: %w", err)
-		}
-
-		return nil
-	},
-}
-
-func init() {
-	serveCmd.Flags().String(stackClientIDFlag, "", "Client ID")
-	serveCmd.Flags().String(stackClientSecretFlag, "", "Client Secret")
-	serveCmd.Flags().String(stackURLFlag, "", "Token URL")
-	serveCmd.Flags().String(ledgerNameFlag, "wallets-002", "Target ledger")
-	serveCmd.Flags().String(accountPrefixFlag, "", "Account prefix flag")
-	rootCmd.AddCommand(serveCmd)
+			select {
+			case <-cmd.Context().Done():
+				return app.Stop(context.Background())
+			case <-app.Done():
+				return app.Err()
+			}
+		},
+	}
+	cmd.Flags().String(stackClientIDFlag, "", "Client ID")
+	cmd.Flags().String(stackClientSecretFlag, "", "Client Secret")
+	cmd.Flags().String(stackURLFlag, "", "Token URL")
+	cmd.Flags().String(ledgerNameFlag, "wallets-002", "Target ledger")
+	cmd.Flags().String(accountPrefixFlag, "", "Account prefix flag")
+	cmd.Flags().String(listenFlag, ":8080", "Listen address")
+	return cmd
 }

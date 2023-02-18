@@ -51,7 +51,11 @@ func (s *pgServer) GetPassword() string {
 	return s.config.initialUserPassword
 }
 
-func (s *pgServer) dsn(databaseName string) string {
+func (s *pgServer) GetDSN() string {
+	return s.GetDatabaseDSN(s.config.initialDatabaseName)
+}
+
+func (s *pgServer) GetDatabaseDSN(databaseName string) string {
 	return fmt.Sprintf("postgresql://%s:%s@localhost:%s/%s?sslmode=disable", s.config.initialUsername,
 		s.config.initialUserPassword, s.port, databaseName)
 }
@@ -72,7 +76,7 @@ func (s *pgServer) NewDatabase(t *testing.T) *pgDatabase {
 	})
 
 	return &pgDatabase{
-		url: s.dsn(databaseName),
+		url: s.GetDatabaseDSN(databaseName),
 	}
 }
 
@@ -210,7 +214,7 @@ func CreatePostgresServer(opts ...option) error {
 
 	try := time.Duration(0)
 	for try*cfg.statusCheckInterval < cfg.maximumWaitingTime {
-		srv.conn, err = pgx.Connect(context.Background(), srv.dsn(cfg.initialDatabaseName))
+		srv.conn, err = pgx.Connect(context.Background(), srv.GetDatabaseDSN(cfg.initialDatabaseName))
 		if err != nil {
 			try++
 			select {

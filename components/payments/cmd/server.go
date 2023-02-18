@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"context"
+
 	"github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/internal/app/api"
 	"github.com/formancehq/payments/internal/app/storage"
@@ -31,6 +33,8 @@ const (
 	authBearerAudienceFlag          = "auth-bearer-audience"
 	authBearerAudiencesWildcardFlag = "auth-bearer-audiences-wildcard"
 	authBearerUseScopesFlag         = "auth-bearer-use-scopes"
+	listenFlag                      = "listen"
+	autoMigrateFlag                 = "auto-migrate"
 
 	serviceName = "Payments"
 )
@@ -46,6 +50,12 @@ func newServer() *cobra.Command {
 
 func runServer(cmd *cobra.Command, args []string) error {
 	setLogger()
+
+	if viper.GetBool(autoMigrateFlag) {
+		if err := runMigrate(cmd, []string{"up"}); err != nil {
+			return err
+		}
+	}
 
 	databaseOptions, err := prepareDatabaseOptions()
 	if err != nil {
@@ -63,16 +73,20 @@ func runServer(cmd *cobra.Command, args []string) error {
 	options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
 	options = append(options, api.HTTPModule(sharedapi.ServiceInfo{
 		Version: Version,
-	}))
+	}, viper.GetString(listenFlag)))
 
-	err = fx.New(options...).Start(cmd.Context())
+	app := fx.New(options...)
+	err = app.Start(cmd.Context())
 	if err != nil {
 		return err
 	}
 
-	<-cmd.Context().Done()
-
-	return nil
+	select {
+	case <-cmd.Context().Done():
+		return app.Stop(context.Background())
+	case <-app.Done():
+		return app.Err()
+	}
 }
 
 func setLogger() {

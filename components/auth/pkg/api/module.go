@@ -1,11 +1,11 @@
 package api
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/gorilla/mux"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 	"go.uber.org/fx"
@@ -37,11 +37,8 @@ func Module(addr string, serviceInfo api.ServiceInfo) fx.Option {
 			finalRouter := mux.NewRouter()
 			finalRouter.Path("/_healthcheck").HandlerFunc(healthController.Check)
 			finalRouter.PathPrefix("/").Handler(r)
-			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					return StartServer(ctx, addr, finalRouter)
-				},
-			})
+
+			lc.Append(httpserver.NewHook(addr, finalRouter))
 		}),
 		fx.Invoke(
 			addInfoRoute,

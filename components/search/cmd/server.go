@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -13,7 +12,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/health"
-	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/oauth2/oauth2introspect"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/gorilla/handlers"
@@ -106,9 +105,12 @@ func NewServer() *cobra.Command {
 				return err
 			}
 
-			<-app.Done()
-
-			return nil
+			select {
+			case <-cmd.Context().Done():
+				return app.Stop(context.Background())
+			case <-app.Done():
+				return app.Err()
+			}
 		},
 	}
 
@@ -212,19 +214,7 @@ func apiModule(serviceName, bind string, serviceInfo api.ServiceInfo, esIndices 
 			return router, nil
 		}, fx.ParamTags(``, `optional:"true"`))),
 		fx.Invoke(func(lc fx.Lifecycle, handler http.Handler) {
-			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					logging.GetLogger(ctx).Infof("Starting http server on %s", bind)
-					go func() {
-						err := http.ListenAndServe(bind, handler)
-						if err != nil {
-							fmt.Fprintln(os.Stderr, err)
-							os.Exit(1)
-						}
-					}()
-					return nil
-				},
-			})
+			lc.Append(httpserver.NewHook(bind, handler))
 		}),
 	)
 }

@@ -7,9 +7,9 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 
 	"github.com/formancehq/payments/internal/app/connectors/bankingcircle"
@@ -42,29 +42,10 @@ const (
 	serviceName = "Payments"
 )
 
-func HTTPModule(serviceInfo api.ServiceInfo) fx.Option {
+func HTTPModule(serviceInfo api.ServiceInfo, bind string) fx.Option {
 	return fx.Options(
 		fx.Invoke(func(m *mux.Router, lc fx.Lifecycle) {
-			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					go func() {
-						//nolint:gomnd // allow timeout values
-						srv := &http.Server{
-							Handler:      m,
-							Addr:         "0.0.0.0:8080",
-							WriteTimeout: 15 * time.Second,
-							ReadTimeout:  15 * time.Second,
-						}
-
-						err := srv.ListenAndServe()
-						if err != nil {
-							panic(err)
-						}
-					}()
-
-					return nil
-				},
-			})
+			lc.Append(httpserver.NewHook(bind, m))
 		}),
 		fx.Supply(serviceInfo),
 		fx.Provide(fx.Annotate(httpRouter, fx.ParamTags(``, ``, `group:"connectorHandlers"`))),

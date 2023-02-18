@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/numary/ledger/pkg/ledger"
 	"github.com/pkg/errors"
 )
