@@ -18,6 +18,9 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	walletsCmd "github.com/formancehq/wallets/cmd"
 	"github.com/google/uuid"
+	"gopkg.in/yaml.v3"
+
+	"github.com/egymgmbh/go-prefix-writer/prefixer"
 	natsServer "github.com/nats-io/nats-server/v2/server"
 	"github.com/numary/ledger/cmd"
 	. "github.com/onsi/ginkgo/v2"
@@ -25,7 +28,6 @@ import (
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -33,7 +35,6 @@ var (
 	actualTestID string
 	ctx          context.Context
 	cancel       func()
-	errCh        = make(chan error, 1)
 	dockerPool   *dockertest.Pool
 	dockerClient *client.Client
 )
@@ -154,7 +155,7 @@ func startLedger() {
 		args = append(args, "--debug")
 	}
 	ledgerCmd.SetArgs(args)
-	ledgerPort, ledgerCancel, ledgerErrCh = runAndWaitPort(ledgerCmd)
+	ledgerPort, ledgerCancel, ledgerErrCh = runAndWaitPort("ledger", ledgerCmd)
 }
 
 func stopLedger() {
@@ -174,10 +175,6 @@ var (
 
 func startSearch() {
 	searchCmd := searchCmd.NewRootCommand()
-	if testing.Verbose() {
-		searchCmd.SetOut(os.Stdout)
-		searchCmd.SetErr(os.Stderr)
-	}
 	args := make([]string, 0)
 	args = append(args,
 		"serve",
@@ -189,7 +186,7 @@ func startSearch() {
 		fmt.Sprintf("--es-indices=%s", actualTestID),
 	)
 	searchCmd.SetArgs(args)
-	searchPort, searchCancel, searchErrCh = runAndWaitPort(searchCmd)
+	searchPort, searchCancel, searchErrCh = runAndWaitPort("search", searchCmd)
 }
 
 func stopSearch() {
@@ -231,7 +228,7 @@ func startPayments() {
 		"--auto-migrate",
 	)
 	paymentsCmd.SetArgs(args)
-	paymentsPort, paymentsCancel, paymentsErrCh = runAndWaitPort(paymentsCmd)
+	paymentsPort, paymentsCancel, paymentsErrCh = runAndWaitPort("payments", paymentsCmd)
 }
 
 func stopPayments() {
@@ -296,7 +293,7 @@ func startAuth() {
 		args = append(args, "--debug")
 	}
 	authCmd.SetArgs(args)
-	authPort, authCancel, authErrCh = runAndWaitPort(authCmd)
+	authPort, authCancel, authErrCh = runAndWaitPort("auth", authCmd)
 }
 
 func stopAuth() {
@@ -333,7 +330,7 @@ func startWallets() {
 		args = append(args, "--debug")
 	}
 	walletCmd.SetArgs(args)
-	walletsPort, walletsCancel, walletsErrCh = runAndWaitPort(walletCmd)
+	walletsPort, walletsCancel, walletsErrCh = runAndWaitPort("wallets", walletCmd)
 }
 
 func stopWallets() {
@@ -345,10 +342,15 @@ func stopWallets() {
 	}
 }
 
-func runAndWaitPort(cmd *cobra.Command) (int, context.CancelFunc, chan error) {
+func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc, chan error) {
+
 	if testing.Verbose() {
-		cmd.SetOut(os.Stdout)
-		cmd.SetErr(os.Stderr)
+		cmd.SetOut(prefixer.New(os.Stdout, func() string {
+			return service
+		}))
+		cmd.SetErr(prefixer.New(os.Stderr, func() string {
+			return service
+		}))
 	}
 	ctx := httpserver.ContextWithServerInfo(TestContext())
 	ctx, cancel := context.WithCancel(ctx)
