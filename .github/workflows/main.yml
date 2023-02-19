@@ -4,38 +4,25 @@ on:
     branches:
       - main
 jobs:
-
-  FindChanges:
+  Find:
     runs-on: ubuntu-latest
     outputs:
-      folders: ${{ steps.result.outputs.folders }}
+      folders: ${{ steps.find.outputs.folders }}
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          fetch-depth: 0
-      - name: Get changed files in the docs folder
-        id: changed-files-specific
-        uses: tj-actions/changed-files@v35
-        with:
-          dir_names: "true"
-          json: "true"
-          dir_names_max_depth: "2"
-          files: |
-            components/**
-      - run: echo "folders=$(echo ${{ steps.changed-files-specific.outputs.all_modified_files }} | sed 's/components\///g')" >> $GITHUB_OUTPUT
-        id: result
-      - name: Run step if any file(s) in the docs folder change
-        run: |
-          echo "One or more files in the docs folder has changed."
-          echo "List all the files that have changed: ${{ steps.result.outputs.folders }}"
+          node-version: 16
+      - run: echo "folders=$(node .github/actions/find-directory/index.js)" >> $GITHUB_OUTPUT
+        id: find
 
   Lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        folder: ${{ fromJson(needs.FindChanges.outputs.folders )}}
+        folder: ${{ fromJson(needs.Find.outputs.folders )}}
     needs:
-      - FindChanges
+      - Find
     steps:
       - uses: actions/checkout@v3
         with:
@@ -60,9 +47,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        folder: ${{ fromJson(needs.FindChanges.outputs.folders )}}
+        folder: ${{ fromJson(needs.Find.outputs.folders )}}
     needs:
-      - FindChanges
+      - Find
     steps:
       - uses: actions/checkout@v3
         with:
