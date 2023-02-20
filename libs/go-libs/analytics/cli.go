@@ -1,7 +1,6 @@
 package analytics
 
 import (
-	"context"
 	"time"
 
 	"github.com/coreos/go-semver/semver"
@@ -40,15 +39,8 @@ func InitAnalyticsFlags(cmd *cobra.Command, defaultWriteKey string, useDeprecate
 	cmd.PersistentFlags().Duration(telemetryHeartbeatIntervalFlag, 4*time.Hour, "telemetry heartbeat interval")
 }
 
-func NewAnalyticsModule(v *viper.Viper, version string, useDeprecatedFlags bool) fx.Option {
+func NewAnalyticsModule(logger logging.Logger, v *viper.Viper, version string, useDeprecatedFlags bool) fx.Option {
 	if v.GetBool(telemetryEnabledFlag) || (useDeprecatedFlags && v.GetBool(segmentEnabledFlag)) {
-
-		/*
-			applicationId := viper.GetString(telemetryApplicationIdFlag)
-			if applicationId == "" && useDeprecatedFlags {
-				applicationId = viper.GetString(segmentApplicationIdFlag)
-			}
-		*/
 
 		writeKey := viper.GetString(telemetryWriteKeyFlag)
 		if writeKey == "" && useDeprecatedFlags {
@@ -59,13 +51,13 @@ func NewAnalyticsModule(v *viper.Viper, version string, useDeprecatedFlags bool)
 			interval = viper.GetDuration(segmentHeartbeatIntervalFlag)
 		}
 		if writeKey == "" {
-			logging.FromContext(context.Background()).Infof("telemetry enabled but no write flagKey provided")
+			logger.Infof("telemetry enabled but no write flagKey provided")
 		} else if interval == 0 {
-			logging.FromContext(context.Background()).Error("telemetry heartbeat interval is 0")
+			logger.Error("telemetry heartbeat interval is 0")
 		} else {
 			_, err := semver.NewVersion(version)
 			if err != nil {
-				logging.FromContext(context.Background()).Infof("telemetry enabled but version '%s' is not semver, skip", version)
+				logger.Infof("telemetry enabled but version '%s' is not semver, skip", version)
 			} else {
 				return NewHeartbeatModule(version, writeKey, interval)
 			}

@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/Shopify/sarama"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/xdg-go/scram"
@@ -64,26 +63,12 @@ func CLIPublisherModule(v *viper.Viper, serviceName string) fx.Option {
 	options = append(options, Module(mapping))
 	switch {
 	case v.GetBool(PublisherHttpEnabledFlag):
-		logging.Debug("Enable http publisher")
 		// Currently don't expose http listener, so pass addr == ""
 		options = append(options, httpModule(""))
 	case v.GetBool(PublisherNatsEnabledFlag):
-		logging.WithFields(map[string]any{
-			"url":       v.GetString(PublisherNatsURLFlag),
-			"client-id": v.GetString(PublisherNatsClientIDFlag),
-		}).Debug("Enable nats publisher")
 		options = append(options, natsModule(
 			v.GetString(PublisherNatsClientIDFlag), v.GetString(PublisherNatsURLFlag), serviceName))
 	case v.GetBool(PublisherKafkaEnabledFlag):
-		logging.WithFields(map[string]any{
-			"brokers":        v.GetStringSlice(PublisherKafkaBrokerFlag),
-			"tls-enabled":    v.GetBool(PublisherKafkaTLSEnabled),
-			"sasl-enabled":   v.GetBool(PublisherKafkaSASLEnabled),
-			"sasl-username":  v.GetString(PublisherKafkaSASLUsername),
-			"sasl-password":  v.GetString(PublisherKafkaSASLPassword),
-			"sasl-scram":     v.GetInt(PublisherKafkaSASLScramSHASize),
-			"sasl-mechanism": v.GetString(PublisherKafkaSASLMechanism),
-		}).Debug("Enable kafka publisher")
 		options = append(options,
 			kafkaModule(clientId(serviceName), serviceName, v.GetStringSlice(PublisherKafkaBrokerFlag)...),
 			ProvideSaramaOption(

@@ -13,7 +13,7 @@ var loggerKey contextKey = "_logger"
 func FromContext(ctx context.Context) Logger {
 	l := ctx.Value(loggerKey)
 	if l == nil {
-		return New(logrus.New())
+		return NewLogrus(logrus.New())
 	}
 	return l.(Logger)
 }

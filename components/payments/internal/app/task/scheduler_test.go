@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 
 	"go.uber.org/dig"
@@ -67,8 +66,6 @@ func TestTaskScheduler(t *testing.T) {
 		l.SetLevel(logrus.DebugLevel)
 	}
 
-	logger := logging.New(l)
-
 	t.Run("Nominal", func(t *testing.T) {
 		t.Parallel()
 
@@ -76,7 +73,7 @@ func TestTaskScheduler(t *testing.T) {
 		provider := models.ConnectorProvider(uuid.New().String())
 		done := make(chan struct{})
 
-		scheduler := NewDefaultScheduler(provider, logger, store,
+		scheduler := NewDefaultScheduler(provider, store,
 			DefaultContainerFactory, ResolverFn(func(descriptor models.TaskDescriptor) Task {
 				return func(ctx context.Context) error {
 					select {
@@ -102,7 +99,7 @@ func TestTaskScheduler(t *testing.T) {
 
 		store := NewInMemoryStore()
 		provider := models.ConnectorProvider(uuid.New().String())
-		scheduler := NewDefaultScheduler(provider, logger, store, DefaultContainerFactory,
+		scheduler := NewDefaultScheduler(provider, store, DefaultContainerFactory,
 			ResolverFn(func(descriptor models.TaskDescriptor) Task {
 				return func(ctx context.Context) error {
 					<-ctx.Done()
@@ -125,7 +122,7 @@ func TestTaskScheduler(t *testing.T) {
 
 		provider := models.ConnectorProvider(uuid.New().String())
 		store := NewInMemoryStore()
-		scheduler := NewDefaultScheduler(provider, logger, store, DefaultContainerFactory,
+		scheduler := NewDefaultScheduler(provider, store, DefaultContainerFactory,
 			ResolverFn(func(descriptor models.TaskDescriptor) Task {
 				return func() error {
 					return errors.New("test")
@@ -150,7 +147,7 @@ func TestTaskScheduler(t *testing.T) {
 		task1Terminated := make(chan struct{})
 		task2Terminated := make(chan struct{})
 
-		scheduler := NewDefaultScheduler(provider, logger, store, DefaultContainerFactory,
+		scheduler := NewDefaultScheduler(provider, store, DefaultContainerFactory,
 			ResolverFn(func(descriptor models.TaskDescriptor) Task {
 				switch string(descriptor) {
 				case string(descriptor1):
@@ -195,7 +192,7 @@ func TestTaskScheduler(t *testing.T) {
 		mainDescriptor := newDescriptor()
 		workerDescriptor := newDescriptor()
 
-		scheduler := NewDefaultScheduler(provider, logger, store, DefaultContainerFactory,
+		scheduler := NewDefaultScheduler(provider, store, DefaultContainerFactory,
 			ResolverFn(func(descriptor models.TaskDescriptor) Task {
 				switch string(descriptor) {
 				case string(mainDescriptor):

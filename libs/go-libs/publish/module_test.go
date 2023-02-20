@@ -10,6 +10,7 @@ import (
 
 	"github.com/Shopify/sarama"
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	natsServer "github.com/nats-io/nats-server/v2/server"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
@@ -156,6 +157,7 @@ func TestModule(t *testing.T) {
 				Module(tc.topicMapping),
 				tc.setup(t),
 				fx.Populate(&publisher, &router),
+				fx.Supply(fx.Annotate(logging.Testing(), fx.As(new(logging.Logger)))),
 				fx.Invoke(func(r *message.Router, subscriber message.Subscriber) {
 					r.AddNoPublisherHandler("testing", tc.topic, subscriber, func(msg *message.Message) error {
 						require.Equal(t, "\"baz\"", string(msg.Payload))

@@ -28,7 +28,7 @@ import (
 
 const ServiceName = "ledger"
 
-func NewContainer(v *viper.Viper, userOptions ...fx.Option) *fx.App {
+func NewContainer(logger logging.Logger, v *viper.Viper, userOptions ...fx.Option) *fx.App {
 
 	options := make([]fx.Option, 0)
 	options = append(options, fx.NopLogger)
@@ -39,6 +39,9 @@ func NewContainer(v *viper.Viper, userOptions ...fx.Option) *fx.App {
 	}
 
 	options = append(options, publish.CLIPublisherModule(v, ServiceName), bus.LedgerMonitorModule())
+	options = append(options, fx.Provide(func() logging.Logger {
+		return logger
+	}))
 
 	// Handle OpenTelemetry
 	options = append(options, otlptraces.CLITracesModule(v))
@@ -89,7 +92,7 @@ func NewContainer(v *viper.Viper, userOptions ...fx.Option) *fx.App {
 		}(),
 	}))
 
-	options = append(options, internal.NewAnalyticsModule(v, Version))
+	options = append(options, internal.NewAnalyticsModule(logger, v, Version))
 
 	options = append(options, fx.Provide(
 		fx.Annotate(func() []ledger.LedgerOption {
@@ -151,6 +154,11 @@ func NewContainer(v *viper.Viper, userOptions ...fx.Option) *fx.App {
 		cc.AddAllowHeaders("authorization")
 
 		res = append(res, cors.New(cc))
+		res = append(res, func(context *gin.Context) {
+			context.Request = context.Request.WithContext(
+				logging.ContextWithLogger(context.Request.Context(), logger),
+			)
+		})
 		res = append(res, func(context *gin.Context) {
 			context.Next()
 			for _, err := range context.Errors {

@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/formancehq/payments/internal/app/models"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
 type Ingester interface {
@@ -20,7 +19,6 @@ type Ingester interface {
 
 type DefaultIngester struct {
 	repo       Repository
-	logger     logging.Logger
 	provider   models.ConnectorProvider
 	descriptor models.TaskDescriptor
 	publisher  message.Publisher
@@ -39,14 +37,12 @@ func NewDefaultIngester(
 	provider models.ConnectorProvider,
 	descriptor models.TaskDescriptor,
 	repo Repository,
-	logger logging.Logger,
 	publisher message.Publisher,
 ) *DefaultIngester {
 	return &DefaultIngester{
 		provider:   provider,
 		descriptor: descriptor,
 		repo:       repo,
-		logger:     logger,
 		publisher:  publisher,
 	}
 }

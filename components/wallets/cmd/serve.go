@@ -6,6 +6,7 @@ import (
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/app"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/formancehq/wallets/pkg/api"
@@ -43,6 +44,9 @@ func newServeCommand() *cobra.Command {
 			}
 
 			ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
+			options = append(options, fx.Provide(func() logging.Logger {
+				return logging.FromContext(cmd.Context())
+			}))
 
 			app := fx.New(options...)
 			if err := app.Start(ctx); err != nil {

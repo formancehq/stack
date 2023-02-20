@@ -2,6 +2,9 @@ package logging
 
 import (
 	"context"
+	"io"
+	"os"
+	"testing"
 
 	"github.com/sirupsen/logrus"
 )
@@ -51,8 +54,18 @@ func (l *logrusLogger) WithFields(fields map[string]any) Logger {
 
 var _ Logger = &logrusLogger{}
 
-func New(logger *logrus.Logger) *logrusLogger {
+func NewLogrus(logger *logrus.Logger) *logrusLogger {
 	return &logrusLogger{
 		entry: logger,
 	}
+}
+
+func Testing() *logrusLogger {
+	logger := logrus.New()
+	logger.SetOutput(io.Discard)
+	if testing.Verbose() {
+		logger.SetOutput(os.Stdout)
+		logger.SetLevel(logrus.DebugLevel)
+	}
+	return NewLogrus(logger)
 }

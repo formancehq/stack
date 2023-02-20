@@ -14,12 +14,13 @@ import (
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	app "github.com/formancehq/stack/libs/go-libs/app"
+	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	zLogging "github.com/zitadel/logging"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
@@ -138,6 +139,7 @@ func newServeCommand() *cobra.Command {
 			}
 
 			ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
+			zLogging.SetOutput(cmd.OutOrStdout())
 
 			options := []fx.Option{
 				otlpHttpClientModule(),
@@ -167,6 +169,9 @@ func newServeCommand() *cobra.Command {
 			}
 
 			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
+			options = append(options, fx.Provide(func() logging.Logger {
+				return logging.FromContext(cmd.Context())
+			}))
 
 			app := fx.New(options...)
 			err = app.Start(ctx)

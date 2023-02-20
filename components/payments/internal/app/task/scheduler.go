@@ -43,7 +43,6 @@ type ContainerCreateFunc func(ctx context.Context, descriptor models.TaskDescrip
 
 type DefaultTaskScheduler struct {
 	provider         models.ConnectorProvider
-	logger           logging.Logger
 	store            Repository
 	containerFactory ContainerCreateFunc
 	tasks            map[string]*taskHolder
@@ -84,14 +83,14 @@ func (s *DefaultTaskScheduler) Schedule(ctx context.Context, descriptor models.T
 	}
 
 	if !restart {
-		_, err := s.ReadTaskByDescriptor(context.TODO(), descriptor)
+		_, err := s.ReadTaskByDescriptor(ctx, descriptor)
 		if err == nil {
 			return nil
 		}
 	}
 
 	if s.maxTasks != 0 && len(s.tasks) >= s.maxTasks || s.stopped {
-		err := s.stackTask(descriptor)
+		err := s.stackTask(ctx, descriptor)
 		if err != nil {
 			return errors.Wrap(err, "stacking task")
 		}
@@ -111,7 +110,7 @@ func (s *DefaultTaskScheduler) Shutdown(ctx context.Context) error {
 	s.stopped = true
 	s.mu.Unlock()
 
-	s.logger.Infof("Stopping scheduler...")
+	s.logger(ctx).Infof("Stopping scheduler...")
 
 	for name, task := range s.tasks {
 		task.logger.Debugf("Stopping task")
@@ -144,7 +143,7 @@ func (s *DefaultTaskScheduler) Restore(ctx context.Context) error {
 	for _, task := range tasks {
 		err = s.startTask(ctx, task.GetDescriptor())
 		if err != nil {
-			s.logger.Errorf("Unable to restore task %s: %s", task.ID, err)
+			s.logger(ctx).Errorf("Unable to restore task %s: %s", task.ID, err)
 		}
 	}
 
@@ -186,7 +185,7 @@ func (s *DefaultTaskScheduler) deleteTask(ctx context.Context, holder *taskHolde
 		return
 	}
 
-	oldestPendingTask, err := s.store.ReadOldestPendingTask(context.TODO(), s.provider)
+	oldestPendingTask, err := s.store.ReadOldestPendingTask(ctx, s.provider)
 	if err != nil {
 		if errors.Is(err, storage.ErrNotFound) {
 			return
@@ -213,13 +212,13 @@ func (s *DefaultTaskScheduler) deleteTask(ctx context.Context, holder *taskHolde
 type StopChan chan chan struct{}
 
 func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.TaskDescriptor) error {
-	task, err := s.store.FindAndUpsertTask(context.TODO(), s.provider, descriptor,
+	task, err := s.store.FindAndUpsertTask(ctx, s.provider, descriptor,
 		models.TaskStatusActive, "")
 	if err != nil {
 		return errors.Wrap(err, "finding task and update")
 	}
 
-	logger := s.logger.WithFields(map[string]interface{}{
+	logger := s.logger(ctx).WithFields(map[string]interface{}{
 		"task-id": task.ID,
 	})
 
@@ -228,7 +227,7 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 		return ErrUnableToResolve
 	}
 
-	ctx, cancel := context.WithCancel(context.TODO())
+	ctx, cancel := context.WithCancel(ctx)
 	ctx, span := otel.Tracer("com.formance.payments").Start(ctx, "Task", trace.WithAttributes(
 		attribute.Stringer("id", task.ID),
 		attribute.Stringer("connector", s.provider),
@@ -273,7 +272,7 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	}
 
 	err = container.Provide(func() logging.Logger {
-		return s.logger
+		return logger
 	})
 	if err != nil {
 		panic(err)
@@ -333,31 +332,32 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 	return nil
 }
 
-func (s *DefaultTaskScheduler) stackTask(descriptor models.TaskDescriptor) error {
-	s.logger.WithFields(map[string]interface{}{
+func (s *DefaultTaskScheduler) stackTask(ctx context.Context, descriptor models.TaskDescriptor) error {
+	s.logger(ctx).WithFields(map[string]interface{}{
 		"descriptor": string(descriptor),
 	}).Infof("Stacking task")
 
-	return s.store.UpdateTaskStatus(
-		context.TODO(), s.provider, descriptor, models.TaskStatusPending, "")
+	return s.store.UpdateTaskStatus(ctx, s.provider, descriptor, models.TaskStatusPending, "")
+}
+
+func (s *DefaultTaskScheduler) logger(ctx context.Context) logging.Logger {
+	return logging.FromContext(ctx).WithFields(map[string]any{
+		"component": "scheduler",
+		"provider":  s.provider,
+	})
 }
 
 var _ Scheduler = &DefaultTaskScheduler{}
 
 func NewDefaultScheduler(
 	provider models.ConnectorProvider,
-	logger logging.Logger,
 	store Repository,
 	containerFactory ContainerCreateFunc,
 	resolver Resolver,
 	maxTasks int,
 ) *DefaultTaskScheduler {
 	return &DefaultTaskScheduler{
-		provider: provider,
-		logger: logger.WithFields(map[string]interface{}{
-			"component": "scheduler",
-			"provider":  provider,
-		}),
+		provider:         provider,
 		store:            store,
 		tasks:            map[string]*taskHolder{},
 		containerFactory: containerFactory,

@@ -1,8 +1,6 @@
 package publish
 
 import (
-	"context"
-
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.uber.org/fx"
@@ -39,7 +37,9 @@ func (w watermillLoggerAdapter) With(fields watermill.LogFields) watermill.Logge
 var _ watermill.LoggerAdapter = &watermillLoggerAdapter{}
 
 func defaultLoggingModule() fx.Option {
-	return fx.Supply(fx.Annotate(watermillLoggerAdapter{
-		logging.FromContext(context.TODO()),
-	}, fx.As(new(watermill.LoggerAdapter))))
+	return fx.Provide(func(logger logging.Logger) watermill.LoggerAdapter {
+		return watermillLoggerAdapter{
+			Logger: logger,
+		}
+	})
 }

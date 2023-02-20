@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/numary/ledger/pkg/storage"
 	"github.com/numary/ledger/pkg/storage/sqlstorage"
 	"github.com/spf13/cobra"
@@ -26,6 +27,7 @@ func NewStorageInit() *cobra.Command {
 		Use: "init",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			app := NewContainer(
+				logging.FromContext(cmd.Context()),
 				viper.GetViper(),
 				fx.Invoke(func(storageDriver storage.Driver[storage.LedgerStore], lc fx.Lifecycle) {
 					lc.Append(fx.Hook{
@@ -70,6 +72,7 @@ func NewStorageList() *cobra.Command {
 		Use: "list",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			app := NewContainer(
+				logging.FromContext(cmd.Context()),
 				viper.GetViper(),
 				fx.Invoke(func(storageDriver storage.Driver[storage.LedgerStore], lc fx.Lifecycle) {
 					lc.Append(fx.Hook{
@@ -103,6 +106,7 @@ func NewStorageUpgrade() *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			app := NewContainer(
+				logging.FromContext(cmd.Context()),
 				viper.GetViper(),
 				fx.Invoke(func(storageDriver storage.Driver[storage.LedgerStore], lc fx.Lifecycle) {
 					lc.Append(fx.Hook{
@@ -235,7 +239,7 @@ func NewStorageScan() *cobra.Command {
 				})
 			}
 
-			app := NewContainer(viper.GetViper(), opt)
+			app := NewContainer(logging.FromContext(cmd.Context()), viper.GetViper(), opt)
 			return app.Start(cmd.Context())
 		},
 	}
@@ -248,6 +252,7 @@ func NewStorageDelete() *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			app := NewContainer(
+				logging.FromContext(cmd.Context()),
 				viper.GetViper(),
 				fx.Invoke(func(storageDriver storage.Driver[storage.LedgerStore], lc fx.Lifecycle) {
 					lc.Append(fx.Hook{

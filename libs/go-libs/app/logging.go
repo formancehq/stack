@@ -25,5 +25,5 @@ func DefaultLoggingContext(cmd *cobra.Command, debug bool) context.Context {
 			logrus.WarnLevel,
 		)))
 	}
-	return logging.ContextWithLogger(cmd.Context(), logging.New(l))
+	return logging.ContextWithLogger(cmd.Context(), logging.NewLogrus(l))
 }

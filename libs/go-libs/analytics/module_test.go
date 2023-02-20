@@ -7,7 +7,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/segmentio/analytics-go"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx"
@@ -28,7 +30,7 @@ func TestAnalyticsModule(t *testing.T) {
 
 	handled := make(chan *analytics.Track, 1)
 
-	module := NewAnalyticsModule(v, "1.0.0", true)
+	module := NewAnalyticsModule(logging.NewLogrus(logrus.New()), v, "1.0.0", true)
 	app := fx.New(
 		module,
 		fx.NopLogger,
@@ -76,7 +78,7 @@ func TestAnalyticsModuleDisabled(t *testing.T) {
 	v := viper.GetViper()
 	v.Set(telemetryEnabledFlag, false)
 
-	module := NewAnalyticsModule(v, "1.0.0", true)
+	module := NewAnalyticsModule(logging.NewLogrus(logrus.New()), v, "1.0.0", true)
 	app := fx.New(module, fx.NopLogger)
 	require.NoError(t, app.Start(context.Background()))
 	require.NoError(t, app.Stop(context.Background()))

@@ -46,14 +46,13 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 		return dig.New(), nil
 	})
 
-	logger := logging.New(l)
 	taskStore := task.NewInMemoryStore()
 	managerStore := NewInMemoryStore()
 	provider := models.ConnectorProvider(uuid.New().String())
 	schedulerFactory := TaskSchedulerFactoryFn(func(resolver task.Resolver,
 		maxTasks int,
 	) *task.DefaultTaskScheduler {
-		return task.NewDefaultScheduler(provider, logger, taskStore,
+		return task.NewDefaultScheduler(provider, taskStore,
 			DefaultContainerFactory, resolver, maxTasks)
 	})
 
@@ -63,8 +62,7 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 		}).
 		WithAllowedTasks(1).
 		Build()
-	manager := NewConnectorManager[ConnectorConfig](logger, managerStore, loader,
-		schedulerFactory, nil)
+	manager := NewConnectorManager[ConnectorConfig](managerStore, loader, schedulerFactory, nil)
 
 	defer func() {
 		_ = manager.Uninstall(context.TODO())

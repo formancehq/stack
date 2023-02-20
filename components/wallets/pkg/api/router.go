@@ -22,7 +22,6 @@ func NewRouter(
 	r.Get("/_info", sharedapi.InfoHandler(serviceInfo))
 	r.Group(func(r chi.Router) {
 		r.Use(otelchi.Middleware("wallets"))
-		r.Use(middleware.Logger)
 		r.Use(middleware.AllowContentType("application/json"))
 		r.Use(func(handler http.Handler) http.Handler {
 			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

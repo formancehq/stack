@@ -80,7 +80,7 @@ var _ = BeforeEach(func() {
 		l.Level = logrus.DebugLevel
 		l.Out = os.Stdout
 	}
-	ctx = logging.ContextWithLogger(ctx, logging.New(l))
+	ctx = logging.ContextWithLogger(ctx, logging.NewLogrus(l))
 
 	startBenthosServer()
 	createDatabases() // TODO: drop databases
@@ -373,6 +373,7 @@ func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc
 	select {
 	case <-httpserver.Started(ctx):
 	case err := <-errCh:
+		By("starting service " + service)
 		Expect(err).To(BeNil())
 	case <-time.After(5 * time.Second):
 		Fail("timeout waiting for service to be properly started")

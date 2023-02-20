@@ -39,7 +39,7 @@ func InitAnalyticsFlags(cmd *cobra.Command, defaultWriteKey string) {
 	cmd.PersistentFlags().Duration(telemetryHeartbeatIntervalFlag, 4*time.Hour, "telemetry heartbeat interval")
 }
 
-func NewAnalyticsModule(v *viper.Viper, version string) fx.Option {
+func NewAnalyticsModule(logging logging.Logger, v *viper.Viper, version string) fx.Option {
 	if v.GetBool(telemetryEnabledFlag) || v.GetBool(segmentEnabledFlag) {
 		applicationId := viper.GetString(telemetryApplicationIdFlag)
 		if applicationId == "" {
@@ -64,13 +64,13 @@ func NewAnalyticsModule(v *viper.Viper, version string) fx.Option {
 			interval = viper.GetDuration(segmentHeartbeatIntervalFlag)
 		}
 		if writeKey == "" {
-			logging.FromContext(context.Background()).Infof("telemetry enabled but no write key provided")
+			logging.Infof("telemetry enabled but no write key provided")
 		} else if interval == 0 {
-			logging.FromContext(context.Background()).Error("telemetry heartbeat interval is 0")
+			logging.Error("telemetry heartbeat interval is 0")
 		} else {
 			_, err := semver.NewVersion(version)
 			if err != nil {
-				logging.FromContext(context.Background()).Infof("telemetry enabled but version '%s' is not semver, skip", version)
+				logging.Infof("telemetry enabled but version '%s' is not semver, skip", version)
 			} else {
 				return fx.Options(
 					appIdProviderModule,

@@ -115,7 +115,10 @@ func (l *ConnectorManager[ConnectorConfig]) Install(ctx context.Context, config 
 		return err
 	}
 
-	err = l.connector.Install(task.NewConnectorContext(context.TODO(), l.scheduler))
+	err = l.connector.Install(task.NewConnectorContext(logging.ContextWithLogger(
+		context.TODO(),
+		logging.FromContext(ctx),
+	), l.scheduler))
 	if err != nil {
 		l.logger(ctx).Errorf("Error starting connector: %s", err)
 
@@ -295,7 +298,6 @@ func (l *ConnectorManager[ConnectorConfig]) ListTransfers(ctx context.Context) (
 }
 
 func NewConnectorManager[ConnectorConfig models.ConnectorConfigObject](
-	logger logging.Logger,
 	store Repository,
 	loader Loader[ConnectorConfig],
 	schedulerFactory TaskSchedulerFactory,

@@ -86,6 +86,9 @@ func NewServer() *cobra.Command {
 					}))
 				}),
 			)
+			options = append(options, fx.Provide(func() logging.Logger {
+				return logging.FromContext(cmd.Context())
+			}))
 
 			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 			options = append(options, apiModule("search", bind, api.ServiceInfo{
