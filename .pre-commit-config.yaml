@@ -13,10 +13,10 @@ repos:
   - id: check-added-large-files
 - repo: local
   hooks:
-  - id: gosdk
-    name: gosdk
-    entry: ./scripts/update-sdk.sh
-    description: "Update Go SDK"
+  - id: update-sdks
+    name: update-sdks
+    entry: ./scripts/update-sdks.sh
+    description: "Update SDKs"
     language: script
     files: swagger.yaml|swagger.yml|openapi.yml|openapi.yaml # TODO: Refine when all specs will be on the same location
     pass_filenames: false

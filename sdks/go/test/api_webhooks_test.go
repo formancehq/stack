@@ -11,11 +11,10 @@ package formance
 
 import (
 	"context"
-	"testing"
-
-	client "./openapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
+	client "github.com/formancehq/formance-sdk-go"
 )
 
 func Test_formance_WebhooksApiService(t *testing.T) {
@@ -25,7 +24,7 @@ func Test_formance_WebhooksApiService(t *testing.T) {
 
 	t.Run("Test WebhooksApiService ActivateConfig", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var id string
 
@@ -39,7 +38,7 @@ func Test_formance_WebhooksApiService(t *testing.T) {
 
 	t.Run("Test WebhooksApiService ChangeConfigSecret", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var id string
 
@@ -53,7 +52,7 @@ func Test_formance_WebhooksApiService(t *testing.T) {
 
 	t.Run("Test WebhooksApiService DeactivateConfig", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var id string
 
@@ -67,21 +66,20 @@ func Test_formance_WebhooksApiService(t *testing.T) {
 
 	t.Run("Test WebhooksApiService DeleteConfig", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var id string
 
-		resp, httpRes, err := apiClient.WebhooksApi.DeleteConfig(context.Background(), id).Execute()
+		httpRes, err := apiClient.WebhooksApi.DeleteConfig(context.Background(), id).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
 	t.Run("Test WebhooksApiService GetManyConfigs", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.WebhooksApi.GetManyConfigs(context.Background()).Execute()
 
@@ -93,7 +91,7 @@ func Test_formance_WebhooksApiService(t *testing.T) {
 
 	t.Run("Test WebhooksApiService InsertConfig", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.WebhooksApi.InsertConfig(context.Background()).Execute()
 
@@ -105,7 +103,7 @@ func Test_formance_WebhooksApiService(t *testing.T) {
 
 	t.Run("Test WebhooksApiService TestConfig", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var id string
 

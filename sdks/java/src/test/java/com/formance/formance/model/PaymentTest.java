@@ -13,15 +13,19 @@
 
 package com.formance.formance.model;
 
+import com.formance.formance.model.Connector;
+import com.formance.formance.model.PaymentAdjustment;
+import com.formance.formance.model.PaymentMetadata;
+import com.formance.formance.model.PaymentStatus;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,11 +46,11 @@ public class PaymentTest {
     }
 
     /**
-     * Test the property 'provider'
+     * Test the property 'id'
      */
     @Test
-    public void providerTest() {
-        // TODO: test provider
+    public void idTest() {
+        // TODO: test id
     }
 
     /**
@@ -58,19 +62,11 @@ public class PaymentTest {
     }
 
     /**
-     * Test the property 'scheme'
+     * Test the property 'accountID'
      */
     @Test
-    public void schemeTest() {
-        // TODO: test scheme
-    }
-
-    /**
-     * Test the property 'status'
-     */
-    @Test
-    public void statusTest() {
-        // TODO: test status
+    public void accountIDTest() {
+        // TODO: test accountID
     }
 
     /**
@@ -82,19 +78,35 @@ public class PaymentTest {
     }
 
     /**
-     * Test the property 'id'
+     * Test the property 'provider'
      */
     @Test
-    public void idTest() {
-        // TODO: test id
+    public void providerTest() {
+        // TODO: test provider
     }
 
     /**
-     * Test the property 'amount'
+     * Test the property 'status'
      */
     @Test
-    public void amountTest() {
-        // TODO: test amount
+    public void statusTest() {
+        // TODO: test status
+    }
+
+    /**
+     * Test the property 'initialAmount'
+     */
+    @Test
+    public void initialAmountTest() {
+        // TODO: test initialAmount
+    }
+
+    /**
+     * Test the property 'scheme'
+     */
+    @Test
+    public void schemeTest() {
+        // TODO: test scheme
     }
 
     /**
@@ -106,11 +118,11 @@ public class PaymentTest {
     }
 
     /**
-     * Test the property 'date'
+     * Test the property 'createdAt'
      */
     @Test
-    public void dateTest() {
-        // TODO: test date
+    public void createdAtTest() {
+        // TODO: test createdAt
     }
 
     /**
@@ -119,6 +131,22 @@ public class PaymentTest {
     @Test
     public void rawTest() {
         // TODO: test raw
+    }
+
+    /**
+     * Test the property 'adjustments'
+     */
+    @Test
+    public void adjustmentsTest() {
+        // TODO: test adjustments
+    }
+
+    /**
+     * Test the property 'metadata'
+     */
+    @Test
+    public void metadataTest() {
+        // TODO: test metadata
     }
 
 }

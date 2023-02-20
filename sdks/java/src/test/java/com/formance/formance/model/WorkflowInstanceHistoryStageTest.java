@@ -13,16 +13,16 @@
 
 package com.formance.formance.model;
 
+import com.formance.formance.model.Bool;
+import com.formance.formance.model.WorkflowInstanceHistoryStageInput;
+import com.formance.formance.model.WorkflowInstanceHistoryStageOutput;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.OffsetDateTime;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -72,6 +72,54 @@ public class WorkflowInstanceHistoryStageTest {
     @Test
     public void errorTest() {
         // TODO: test error
+    }
+
+    /**
+     * Test the property 'terminated'
+     */
+    @Test
+    public void terminatedTest() {
+        // TODO: test terminated
+    }
+
+    /**
+     * Test the property 'startedAt'
+     */
+    @Test
+    public void startedAtTest() {
+        // TODO: test startedAt
+    }
+
+    /**
+     * Test the property 'terminatedAt'
+     */
+    @Test
+    public void terminatedAtTest() {
+        // TODO: test terminatedAt
+    }
+
+    /**
+     * Test the property 'lastFailure'
+     */
+    @Test
+    public void lastFailureTest() {
+        // TODO: test lastFailure
+    }
+
+    /**
+     * Test the property 'attempt'
+     */
+    @Test
+    public void attemptTest() {
+        // TODO: test attempt
+    }
+
+    /**
+     * Test the property 'nextExecution'
+     */
+    @Test
+    public void nextExecutionTest() {
+        // TODO: test nextExecution
     }
 
 }

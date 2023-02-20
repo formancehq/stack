@@ -82,4 +82,28 @@ public class WorkflowInstanceTest {
         // TODO: test status
     }
 
+    /**
+     * Test the property 'terminated'
+     */
+    @Test
+    public void terminatedTest() {
+        // TODO: test terminated
+    }
+
+    /**
+     * Test the property 'terminatedAt'
+     */
+    @Test
+    public void terminatedAtTest() {
+        // TODO: test terminatedAt
+    }
+
+    /**
+     * Test the property 'error'
+     */
+    @Test
+    public void errorTest() {
+        // TODO: test error
+    }
+
 }

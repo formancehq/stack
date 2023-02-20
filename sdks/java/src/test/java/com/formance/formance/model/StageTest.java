@@ -13,16 +13,19 @@
 
 package com.formance.formance.model;
 
-import com.formance.formance.model.OrchestrationMonetary;
+import com.formance.formance.model.Monetary;
+import com.formance.formance.model.StageDelay;
 import com.formance.formance.model.StageSend;
 import com.formance.formance.model.StageSendDestination;
 import com.formance.formance.model.StageSendSource;
+import com.formance.formance.model.StageWaitEvent;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -64,6 +67,30 @@ public class StageTest {
     @Test
     public void sourceTest() {
         // TODO: test source
+    }
+
+    /**
+     * Test the property 'until'
+     */
+    @Test
+    public void untilTest() {
+        // TODO: test until
+    }
+
+    /**
+     * Test the property 'duration'
+     */
+    @Test
+    public void durationTest() {
+        // TODO: test duration
+    }
+
+    /**
+     * Test the property 'event'
+     */
+    @Test
+    public void eventTest() {
+        // TODO: test event
     }
 
 }

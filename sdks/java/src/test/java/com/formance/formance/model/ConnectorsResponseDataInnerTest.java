@@ -19,8 +19,6 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -55,14 +53,6 @@ public class ConnectorsResponseDataInnerTest {
     @Test
     public void enabledTest() {
         // TODO: test enabled
-    }
-
-    /**
-     * Test the property 'disabled'
-     */
-    @Test
-    public void disabledTest() {
-        // TODO: test disabled
     }
 
 }

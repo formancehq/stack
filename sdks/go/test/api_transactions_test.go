@@ -11,11 +11,10 @@ package formance
 
 import (
 	"context"
-	"testing"
-
-	client "./openapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
+	client "github.com/formancehq/formance-sdk-go"
 )
 
 func Test_formance_TransactionsApiService(t *testing.T) {
@@ -25,36 +24,34 @@ func Test_formance_TransactionsApiService(t *testing.T) {
 
 	t.Run("Test TransactionsApiService AddMetadataOnTransaction", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 		var txid int64
 
-		resp, httpRes, err := apiClient.TransactionsApi.AddMetadataOnTransaction(context.Background(), ledger, txid).Execute()
+		httpRes, err := apiClient.TransactionsApi.AddMetadataOnTransaction(context.Background(), ledger, txid).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
 	t.Run("Test TransactionsApiService CountTransactions", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 
-		resp, httpRes, err := apiClient.TransactionsApi.CountTransactions(context.Background(), ledger).Execute()
+		httpRes, err := apiClient.TransactionsApi.CountTransactions(context.Background(), ledger).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
 	t.Run("Test TransactionsApiService CreateTransaction", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 
@@ -68,7 +65,7 @@ func Test_formance_TransactionsApiService(t *testing.T) {
 
 	t.Run("Test TransactionsApiService CreateTransactions", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 
@@ -82,7 +79,7 @@ func Test_formance_TransactionsApiService(t *testing.T) {
 
 	t.Run("Test TransactionsApiService GetTransaction", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 		var txid int64
@@ -97,7 +94,7 @@ func Test_formance_TransactionsApiService(t *testing.T) {
 
 	t.Run("Test TransactionsApiService ListTransactions", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 
@@ -111,7 +108,7 @@ func Test_formance_TransactionsApiService(t *testing.T) {
 
 	t.Run("Test TransactionsApiService RevertTransaction", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 		var txid int64

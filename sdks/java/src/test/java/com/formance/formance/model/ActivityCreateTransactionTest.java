@@ -13,7 +13,7 @@
 
 package com.formance.formance.model;
 
-import com.formance.formance.model.OrchestrationPostTransaction;
+import com.formance.formance.model.PostTransaction;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;

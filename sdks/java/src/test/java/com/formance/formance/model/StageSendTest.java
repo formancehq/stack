@@ -13,7 +13,7 @@
 
 package com.formance.formance.model;
 
-import com.formance.formance.model.OrchestrationMonetary;
+import com.formance.formance.model.Monetary;
 import com.formance.formance.model.StageSendDestination;
 import com.formance.formance.model.StageSendSource;
 import com.google.gson.TypeAdapter;
