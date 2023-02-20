@@ -9,7 +9,7 @@ import (
 )
 
 type Transfer struct {
-	bun.BaseModel `bun:"payments.transfer"`
+	bun.BaseModel `bun:"payments.transfers"`
 
 	ID          uuid.UUID `bun:",pk,nullzero"`
 	ConnectorID uuid.UUID `bun:",nullzero"`
