@@ -15,6 +15,12 @@ linters:
   disable:
     - contextcheck
     - godox
+    - varcheck
+    - scopelint
+    - deadcode
+    - structcheck
+    - rowserrcheck
+    - sqlclosecheck
 
 run:
   timeout: 5m

@@ -3,12 +3,8 @@ FROM golang:1.18-alpine as builder
 WORKDIR /workspace
 ENV CGO_ENABLED=0
 ENV GOOS=linux
-COPY components/operator/go.mod .
-COPY components/operator/go.sum .
-RUN go mod download
-RUN go install -v -installsuffix cgo -a std
-COPY components/operator .
-RUN go mod vendor
+COPY . .
+WORKDIR /workspace/components/operator
 RUN go build -v -a -o manager main.go
 
 FROM golang:1.18-alpine as reloader
@@ -19,6 +15,6 @@ RUN go install github.com/cosmtrek/air@latest
 FROM gcr.io/distroless/static:nonroot as release
 LABEL org.opencontainers.image.source=https://github.com/formancehq/operator
 WORKDIR /
-COPY --from=builder /workspace/manager /usr/bin/operator
+COPY --from=builder /workspace/components/operator/manager /usr/bin/operator
 USER 65532:65532
 ENTRYPOINT ["/usr/bin/operator"]

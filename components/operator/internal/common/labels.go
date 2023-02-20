@@ -2,7 +2,7 @@ package common
 
 import (
 	"github.com/formancehq/operator/internal/collectionutils"
-	"k8s.io/api/apps/v1"
+	v1 "k8s.io/api/apps/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
