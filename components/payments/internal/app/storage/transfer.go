@@ -3,11 +3,10 @@ package storage
 import (
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/pkg/errors"
 
 	"github.com/uptrace/bun"
-
-	"github.com/jackc/pgx/v5"
 
 	"github.com/google/uuid"
 
@@ -103,6 +102,10 @@ func (s *Storage) UpdateTransfersFromPayments(ctx context.Context, payments []*m
 		}
 
 		return e("failed to get transfer", err)
+	}
+
+	if len(transfers) == 0 {
+		return nil
 	}
 
 	for transferIdx := range transfers {
