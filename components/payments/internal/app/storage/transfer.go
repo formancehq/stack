@@ -84,7 +84,11 @@ func (s *Storage) UpdateTransferStatus(ctx context.Context, transferID uuid.UUID
 func (s *Storage) UpdateTransfersFromPayments(ctx context.Context, payments []*models.Payment) error {
 	var transfers []models.Transfer
 
-	paymentReferences := make([]string, 0, len(payments))
+	if len(payments) == 0 {
+		return nil
+	}
+
+	paymentReferences := make([]string, len(payments))
 	for paymentIdx := range payments {
 		paymentReferences[paymentIdx] = payments[paymentIdx].Reference
 	}
