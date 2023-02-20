@@ -15,7 +15,6 @@ import (
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/app"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -138,12 +137,11 @@ func newServeCommand() *cobra.Command {
 				return errors.Wrap(err, "unmarshal viper config")
 			}
 
-			ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
 			zLogging.SetOutput(cmd.OutOrStdout())
 
 			options := []fx.Option{
 				otlpHttpClientModule(),
-				fx.Supply(fx.Annotate(ctx, fx.As(new(context.Context)))),
+				fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
 				fx.Supply(delegatedauth.Config{
 					Issuer:       delegatedIssuer,
 					ClientID:     delegatedClientID,
@@ -157,34 +155,16 @@ func newServeCommand() *cobra.Command {
 				oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
 				authorization.Module(),
 				delegatedauth.Module(),
-				fx.Invoke(func() {
-					logging.FromContext(ctx).Errorf("App started.")
-				}),
-				fx.NopLogger,
 			}
-			if viper.GetBool(debugFlag) {
+			if viper.GetBool(app.DebugFlag) {
 				options = append(options, fx.Replace(&gorm.Config{
 					Logger: sqlstorage.NewLogger(cmd.OutOrStdout()),
 				}))
 			}
 
 			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
-			options = append(options, fx.Provide(func() logging.Logger {
-				return logging.FromContext(cmd.Context())
-			}))
 
-			app := fx.New(options...)
-			err = app.Start(ctx)
-			if err != nil {
-				return err
-			}
-
-			select {
-			case <-ctx.Done():
-				return app.Stop(context.Background())
-			case <-app.Done():
-				return app.Err()
-			}
+			return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},
 	}
 

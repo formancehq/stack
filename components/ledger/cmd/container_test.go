@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/numary/ledger/pkg/api/middlewares"
@@ -246,7 +245,7 @@ func TestContainers(t *testing.T) {
 			v.Set(cacheMaxNumKeys, 100)
 			//v.Set(storageSQLiteDBNameFlag, uuid.New())
 			tc.init(v)
-			app := NewContainer(logging.FromContext(context.Background()), v, options...)
+			app := NewContainer(v, options...)
 
 			require.NoError(t, app.Start(context.Background()))
 			defer func(app *fx.App, ctx context.Context) {

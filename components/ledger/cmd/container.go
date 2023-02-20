@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/oauth2/oauth2introspect"
@@ -28,20 +29,16 @@ import (
 
 const ServiceName = "ledger"
 
-func NewContainer(logger logging.Logger, v *viper.Viper, userOptions ...fx.Option) *fx.App {
+func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 
 	options := make([]fx.Option, 0)
-	options = append(options, fx.NopLogger)
 
-	debug := viper.GetBool(debugFlag)
+	debug := viper.GetBool(app.DebugFlag)
 	if debug {
 		sqlstorage.InstrumentalizeSQLDrivers()
 	}
 
 	options = append(options, publish.CLIPublisherModule(v, ServiceName), bus.LedgerMonitorModule())
-	options = append(options, fx.Provide(func() logging.Logger {
-		return logger
-	}))
 
 	// Handle OpenTelemetry
 	options = append(options, otlptraces.CLITracesModule(v))
@@ -92,7 +89,7 @@ func NewContainer(logger logging.Logger, v *viper.Viper, userOptions ...fx.Optio
 		}(),
 	}))
 
-	options = append(options, internal.NewAnalyticsModule(logger, v, Version))
+	options = append(options, internal.NewAnalyticsModule(v, Version))
 
 	options = append(options, fx.Provide(
 		fx.Annotate(func() []ledger.LedgerOption {
@@ -145,7 +142,7 @@ func NewContainer(logger logging.Logger, v *viper.Viper, userOptions ...fx.Optio
 		return res
 	}, fx.ParamTags(`optional:"true"`)))
 
-	options = append(options, routes.ProvideMiddlewares(func(tp trace.TracerProvider) []gin.HandlerFunc {
+	options = append(options, routes.ProvideMiddlewares(func(tp trace.TracerProvider, logger logging.Logger) []gin.HandlerFunc {
 		res := make([]gin.HandlerFunc, 0)
 
 		cc := cors.DefaultConfig()
@@ -177,5 +174,9 @@ func NewContainer(logger logging.Logger, v *viper.Viper, userOptions ...fx.Optio
 		return res
 	}, fx.ParamTags(`optional:"true"`)))
 
-	return fx.New(append(options, userOptions...)...)
+	return append(options, userOptions...)
+}
+
+func NewContainer(v *viper.Viper, userOptions ...fx.Option) *fx.App {
+	return fx.New(resolveOptions(v, userOptions...)...)
 }

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	_ "github.com/bombsimon/logrusr/v3"
+	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -19,10 +20,6 @@ var (
 	Version   = "develop"
 	BuildDate = "-"
 	Commit    = "-"
-)
-
-const (
-	debugFlag = "debug"
 )
 
 func NewRootCommand() *cobra.Command {
@@ -39,7 +36,7 @@ func NewRootCommand() *cobra.Command {
 	server := NewServer()
 	root.AddCommand(server)
 
-	root.Flags().Bool(debugFlag, false, "debug mode")
+	root.Flags().Bool(app.DebugFlag, false, "debug mode")
 	err := viper.BindPFlags(root.Flags())
 	if err != nil {
 		panic(err)

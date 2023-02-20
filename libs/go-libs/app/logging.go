@@ -2,18 +2,18 @@ package app
 
 import (
 	"context"
+	"io"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/uptrace/opentelemetry-go-extra/otellogrus"
 )
 
-func DefaultLoggingContext(cmd *cobra.Command, debug bool) context.Context {
+func defaultLoggingContext(parent context.Context, w io.Writer, debug bool) context.Context {
 	l := logrus.New()
-	l.SetOutput(cmd.OutOrStdout())
+	l.SetOutput(w)
 	if debug {
 		l.Level = logrus.DebugLevel
 	}
@@ -25,5 +25,5 @@ func DefaultLoggingContext(cmd *cobra.Command, debug bool) context.Context {
 			logrus.WarnLevel,
 		)))
 	}
-	return logging.ContextWithLogger(cmd.Context(), logging.NewLogrus(l))
+	return logging.ContextWithLogger(parent, logging.NewLogrus(l))
 }

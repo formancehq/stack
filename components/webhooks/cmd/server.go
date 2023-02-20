@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"syscall"
 
 	"github.com/formancehq/stack/libs/go-libs/app"
@@ -11,7 +10,6 @@ import (
 	"github.com/formancehq/webhooks/pkg/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"go.uber.org/fx"
 )
 
 var serverCmd = &cobra.Command{
@@ -25,22 +23,8 @@ func RunServer(cmd *cobra.Command, _ []string) error {
 		"starting webhooks server module: env variables: %+v viper keys: %+v",
 		syscall.Environ(), viper.AllKeys())
 
-	ctx := app.DefaultLoggingContext(cmd, viper.GetBool(flag.Debug))
-
-	app := fx.New(
+	return app.New(cmd.OutOrStdout(),
 		otlp.HttpClientModule(),
-		server.StartModule(
-			viper.GetString(flag.HttpBindAddressServer)))
-
-	if err := app.Start(ctx); err != nil {
-		return fmt.Errorf("fx.App.Start: %w", err)
-	}
-
-	<-app.Done()
-
-	if err := app.Stop(ctx); err != nil {
-		return fmt.Errorf("fx.App.Stop: %w", err)
-	}
-
-	return nil
+		server.StartModule(viper.GetString(flag.HttpBindAddressServer)),
+	).Run(cmd.Context())
 }

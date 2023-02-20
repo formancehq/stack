@@ -1,11 +1,8 @@
 package cmd
 
 import (
-	"context"
-
 	app "github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/numary/ledger/pkg/api"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -16,31 +13,12 @@ func NewServerStart() *cobra.Command {
 	return &cobra.Command{
 		Use: "start",
 		RunE: func(cmd *cobra.Command, args []string) error {
-
-			ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
-
-			app := NewContainer(
-				logging.FromContext(cmd.Context()),
+			return app.New(cmd.OutOrStdout(), resolveOptions(
 				viper.GetViper(),
 				fx.Invoke(func(lc fx.Lifecycle, h *api.API) {
 					lc.Append(httpserver.NewHook(viper.GetString(serverHttpBindAddressFlag), h))
 				}),
-			)
-			errCh := make(chan error, 1)
-			go func() {
-				err := app.Start(ctx)
-				if err != nil {
-					errCh <- err
-				}
-			}()
-			select {
-			case err := <-errCh:
-				return err
-			case <-ctx.Done():
-				return app.Stop(context.Background())
-			case <-app.Done():
-				return app.Err()
-			}
+			)...).Run(cmd.Context())
 		},
 	}
 }

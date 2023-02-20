@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/spf13/cobra"
 )
 
@@ -13,10 +14,6 @@ var (
 	Commit    = "-"
 )
 
-const (
-	debugFlag = "debug"
-)
-
 func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
@@ -24,7 +21,7 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	cmd.PersistentFlags().BoolP(debugFlag, "d", false, "Debug mode")
+	cmd.PersistentFlags().BoolP(app.DebugFlag, "d", false, "Debug mode")
 	cmd.AddCommand(newServeCommand(), newVersionCommand())
 
 	return cmd

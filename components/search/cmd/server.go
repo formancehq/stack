@@ -57,11 +57,10 @@ func NewServer() *cobra.Command {
 			return viper.BindPFlags(cmd.Flags())
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
 
 			openSearchServiceHost := viper.GetString(openSearchServiceFlag)
 			if openSearchServiceHost == "" {
-				exitWithError(ctx, "missing open search service host")
+				exitWithError(cmd.Context(), "missing open search service host")
 			}
 
 			esIndices := viper.GetStringSlice(esIndicesFlag)
@@ -77,7 +76,6 @@ func NewServer() *cobra.Command {
 			options := make([]fx.Option, 0)
 			options = append(options, opensearchClientModule(openSearchServiceHost, !viper.GetBool(esDisableMappingInitFlag), esIndices...))
 			options = append(options,
-				fx.NopLogger,
 				health.Module(),
 				health.ProvideHealthCheck(func(client *opensearch.Client) health.NamedCheck {
 					return health.NewNamedCheck("elasticsearch connection", health.CheckFn(func(ctx context.Context) error {
@@ -86,28 +84,13 @@ func NewServer() *cobra.Command {
 					}))
 				}),
 			)
-			options = append(options, fx.Provide(func() logging.Logger {
-				return logging.FromContext(cmd.Context())
-			}))
 
 			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 			options = append(options, apiModule("search", bind, api.ServiceInfo{
 				Version: Version,
 			}, esIndices...))
 
-			app := fx.New(options...)
-
-			err := app.Start(ctx)
-			if err != nil {
-				return err
-			}
-
-			select {
-			case <-ctx.Done():
-				return app.Stop(context.Background())
-			case <-app.Done():
-				return app.Err()
-			}
+			return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},
 	}
 

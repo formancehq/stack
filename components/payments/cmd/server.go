@@ -1,14 +1,11 @@
 package cmd
 
 import (
-	"context"
-
 	"github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/internal/app/api"
 	"github.com/formancehq/payments/internal/app/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/app"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/pkg/errors"
@@ -47,7 +44,7 @@ func newServer() *cobra.Command {
 }
 
 func runServer(cmd *cobra.Command, args []string) error {
-	setLogger(cmd)
+	setLogger()
 
 	if viper.GetBool(autoMigrateFlag) {
 		if err := runMigrate(cmd, []string{"up"}); err != nil {
@@ -62,39 +59,17 @@ func runServer(cmd *cobra.Command, args []string) error {
 
 	options := make([]fx.Option, 0)
 
-	if !viper.GetBool(debugFlag) {
-		options = append(options, fx.NopLogger)
-	}
-
 	options = append(options, databaseOptions)
 	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 	options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
-	options = append(options, fx.Provide(func() logging.Logger {
-		return logging.FromContext(cmd.Context())
-	}))
 	options = append(options, api.HTTPModule(sharedapi.ServiceInfo{
 		Version: Version,
 	}, viper.GetString(listenFlag)))
 
-	ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
-	app := fx.New(options...)
-
-	err = app.Start(ctx)
-	if err != nil {
-		return err
-	}
-
-	select {
-	case <-ctx.Done():
-		return app.Stop(context.Background())
-	case <-app.Done():
-		return app.Err()
-	}
+	return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 }
 
-func setLogger(cmd *cobra.Command) {
-	app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
-
+func setLogger() {
 	// Add a dedicated logger for opentelemetry in case of error
 	otel.SetLogger(logrusr.New(logrus.New().WithField("component", "otlp")))
 }

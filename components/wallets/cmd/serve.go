@@ -1,12 +1,8 @@
 package cmd
 
 import (
-	"context"
-	"fmt"
-
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/app"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/formancehq/wallets/pkg/api"
@@ -33,32 +29,16 @@ func newServeCommand() *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := []fx.Option{
-				fx.NopLogger,
 				wallet.Module(viper.GetString(ledgerNameFlag), viper.GetString(accountPrefixFlag)),
 				api.Module(sharedapi.ServiceInfo{
 					Version: Version,
 				}, viper.GetString(listenFlag)),
 				client.NewModule(viper.GetString(stackClientIDFlag), viper.GetString(stackClientSecretFlag),
-					viper.GetString(stackURLFlag), viper.GetBool(debugFlag)),
+					viper.GetString(stackURLFlag), viper.GetBool(app.DebugFlag)),
 				otlptraces.CLITracesModule(viper.GetViper()),
 			}
 
-			ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
-			options = append(options, fx.Provide(func() logging.Logger {
-				return logging.FromContext(cmd.Context())
-			}))
-
-			app := fx.New(options...)
-			if err := app.Start(ctx); err != nil {
-				return fmt.Errorf("fx.App.Start: %w", err)
-			}
-
-			select {
-			case <-ctx.Done():
-				return app.Stop(context.Background())
-			case <-app.Done():
-				return app.Err()
-			}
+			return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},
 	}
 	cmd.Flags().String(stackClientIDFlag, "", "Client ID")

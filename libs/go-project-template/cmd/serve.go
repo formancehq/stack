@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	app "github.com/formancehq/stack/libs/go-libs/app"
+	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/go-chi/chi/v5"
@@ -69,21 +69,12 @@ var serveCmd = &cobra.Command{
 		options := []fx.Option{
 			healthCheckModule(),
 			apiModule(),
-			fx.NopLogger,
 			// This will set up the telemetry stack
 			// You have to add a middleware on your router to traces http requests
 			otlptraces.CLITracesModule(viper.GetViper()),
 		}
 
-		ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
-
-		app := fx.New(options...)
-		err := app.Start(ctx)
-		if err != nil {
-			return err
-		}
-		<-app.Done()
-		return app.Err()
+		return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 	},
 }
 

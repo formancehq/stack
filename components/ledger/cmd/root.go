@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 
+	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/numary/ledger/cmd/internal"
@@ -16,7 +17,6 @@ import (
 )
 
 const (
-	debugFlag                           = "debug"
 	storageDirFlag                      = "storage.dir"
 	storageDriverFlag                   = "storage.driver"
 	storageSQLiteDBNameFlag             = "storage.sqlite.db_name"
@@ -100,7 +100,7 @@ func NewRootCommand() *cobra.Command {
 		home = "/root"
 	}
 
-	root.PersistentFlags().Bool(debugFlag, false, "Debug mode")
+	root.PersistentFlags().Bool(app.DebugFlag, false, "Debug mode")
 	root.PersistentFlags().String(storageDriverFlag, "sqlite", "Storage driver")
 	root.PersistentFlags().String(storageDirFlag, path.Join(home, ".numary/data"), "Storage directory (for sqlite)")
 	root.PersistentFlags().String(storageSQLiteDBNameFlag, "numary", "SQLite database name")

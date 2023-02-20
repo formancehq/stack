@@ -8,12 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/numary/ledger/pkg/ledger"
 	"github.com/numary/ledger/pkg/storage"
 	"github.com/numary/ledger/pkg/storage/sqlstorage"
 	"github.com/pborman/uuid"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
@@ -123,7 +121,7 @@ func TestAnalyticsModule(t *testing.T) {
 
 	handled := make(chan struct{})
 
-	module := NewAnalyticsModule(logging.NewLogrus(logrus.New()), v, "1.0.0")
+	module := NewAnalyticsModule(v, "1.0.0")
 	app := fx.New(
 		module,
 		fx.Provide(func(lc fx.Lifecycle) (storage.Driver[ledger.Store], error) {
@@ -165,7 +163,7 @@ func TestAnalyticsModuleDisabled(t *testing.T) {
 	v := viper.GetViper()
 	v.Set(telemetryEnabledFlag, false)
 
-	module := NewAnalyticsModule(logging.NewLogrus(logrus.New()), v, "1.0.0")
+	module := NewAnalyticsModule(v, "1.0.0")
 	app := fx.New(module)
 	require.NoError(t, app.Start(context.Background()))
 	require.NoError(t, app.Stop(context.Background()))

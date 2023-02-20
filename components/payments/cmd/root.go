@@ -6,14 +6,11 @@ import (
 	"os"
 
 	_ "github.com/bombsimon/logrusr/v3"
+	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-)
-
-const (
-	debugFlag = "debug"
 )
 
 var (
@@ -43,7 +40,7 @@ func NewRootCommand() *cobra.Command {
 	migrate := newMigrate()
 	root.AddCommand(migrate)
 
-	root.PersistentFlags().Bool(debugFlag, false, "Debug mode")
+	root.PersistentFlags().Bool(app.DebugFlag, false, "Debug mode")
 
 	migrate.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
 	migrate.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
