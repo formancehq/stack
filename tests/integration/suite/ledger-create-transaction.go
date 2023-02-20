@@ -27,7 +27,7 @@ var _ = Given("some empty environment", func() {
 		var (
 			msgs               chan *nats.Msg
 			cancelSubscription func()
-			timestamp          = time.Now()
+			timestamp          = time.Now().Round(time.Second).UTC()
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
@@ -58,19 +58,52 @@ var _ = Given("some empty environment", func() {
 			Expect(json.Unmarshal(msg.Data, event)).To(BeNil())
 		})
 		It("should pop a transaction on search service", func() {
-			Eventually(func(g Gomega) []any {
+			Eventually(func(g Gomega) bool {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("TRANSACTION"),
 				}).Execute()
 				g.Expect(err).To(BeNil())
-				return res.Cursor.Data
-			}).Should(HaveLen(1)) // TODO: Check other fields
+				g.Expect(res.Cursor.Data).To(HaveLen(1))
+				g.Expect(res.Cursor.Data[0]).To(Equal(map[string]any{
+					"reference": "",
+					"metadata":  map[string]any{},
+					"postings": []any{
+						map[string]any{
+							"source":      "world",
+							"asset":       "USD",
+							"amount":      float64(100),
+							"destination": "alice",
+						},
+					},
+					"txid":      float64(0),
+					"timestamp": timestamp.Format(time.RFC3339),
+					"ledger":    "default",
+				}))
+
+				return true
+			}).Should(BeTrue())
+
 			Eventually(func(g Gomega) []any {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("TRANSACTION"),
 					Terms:  []string{"alice"},
 				}).Execute()
 				g.Expect(err).To(BeNil())
+				g.Expect(res.Cursor.Data[0]).To(Equal(map[string]any{
+					"reference": "",
+					"metadata":  map[string]any{},
+					"postings": []any{
+						map[string]any{
+							"source":      "world",
+							"asset":       "USD",
+							"amount":      float64(100),
+							"destination": "alice",
+						},
+					},
+					"txid":      float64(0),
+					"timestamp": timestamp.Format(time.RFC3339),
+					"ledger":    "default",
+				}))
 				return res.Cursor.Data
 			}).Should(HaveLen(1)) // TODO: Check other fields
 		})
