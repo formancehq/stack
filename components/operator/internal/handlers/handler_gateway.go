@@ -182,7 +182,7 @@ const caddyfile = `(cors) {
 
 	handle /versions {
 		versions {
-			region {{ .Region }}
+			region "{{ .Region }}"
 			endpoints {
 				{{- range $i, $service := .Services }}
 					{{- if $service.HasVersionEndpoint }}
