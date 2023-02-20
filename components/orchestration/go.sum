@@ -758,6 +758,10 @@ github.com/uptrace/bun/driver/sqliteshim v1.1.12 h1:GMbSa7Pjjk4kjF8XURz5uMLe2PbN
 github.com/uptrace/bun/driver/sqliteshim v1.1.12/go.mod h1:u67g2ewzoMDCCAqjliHAM/BJjEXfoExXlFXhx3TnXRs=
 github.com/uptrace/bun/extra/bundebug v1.1.12 h1:y8nrHvo7TUCR91kXngWuF7Bk0E1nCTsWzYL1CDEriTo=
 github.com/uptrace/bun/extra/bundebug v1.1.12/go.mod h1:psjCrCMf5JaAyivW/A8MDBW5MwIy/jZFBCkIaBgabtM=
+github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 h1:OXsouNDvuET5o1A4uvoCnAXuuNke8JlfZWceciyUlC8=
+github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21/go.mod h1:Xm3wlRGm5xzdAGPOvqydXPiGj0Da1q0OlUNm7Utoda4=
+github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21 h1:HCqo51kNF8wxDMDhxcN5S6DlfZXigMtptRpkvjBCeVc=
+github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21/go.mod h1:2MNqrUmDrt5E0glMuoJI/9FyGVpBKo1FqjSH60UOZFg=
 github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
 github.com/vishvananda/netlink v1.1.0/go.mod h1:cTgwzPIzzgDAYoQrMm0EdrjRUBkTqKYppBueQtXaqoE=
 github.com/vishvananda/netns v0.0.0-20191106174202-0a2b9b5464df/go.mod h1:JP3t17pCcGlemwknint6hfoeCVQrEMVwxRLRjXpq+BU=

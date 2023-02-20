@@ -4,11 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -28,14 +24,6 @@ func NewRootCommand() *cobra.Command {
 			if err := bindFlagsToViper(cmd); err != nil {
 				return err
 			}
-
-			logrusLogger := logrus.New()
-			if viper.GetBool(debugFlag) {
-				logrusLogger.SetLevel(logrus.DebugLevel)
-				logrusLogger.Infof("Debug mode enabled.")
-			}
-			logger := logginglogrus.New(logrusLogger)
-			sharedlogging.SetFactory(sharedlogging.StaticLoggerFactory(logger))
 
 			return nil
 		},

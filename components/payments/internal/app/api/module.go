@@ -113,7 +113,7 @@ func sharedAuthMethods() []auth.Method {
 
 func handleServerError(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
-	logging.GetLogger(r.Context()).Error(err)
+	logging.FromContext(r.Context()).Error(err)
 	// TODO: Opentracing
 	err = json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    "INTERNAL",
@@ -126,7 +126,7 @@ func handleServerError(w http.ResponseWriter, r *http.Request, err error) {
 
 func handleValidationError(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusBadRequest)
-	logging.GetLogger(r.Context()).Error(err)
+	logging.FromContext(r.Context()).Error(err)
 	// TODO: Opentracing
 	err = json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    "VALIDATION",

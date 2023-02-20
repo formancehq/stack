@@ -43,7 +43,7 @@ func ingest(
 			return errors.Wrap(err, "failed to transform task descriptor")
 		}
 
-		err = scheduler.Schedule(descriptor, true)
+		err = scheduler.Schedule(ctx, descriptor, true)
 		if err != nil && !errors.Is(err, task.ErrAlreadyScheduled) {
 			return errors.Wrap(err, "scheduling connected account")
 		}

@@ -17,7 +17,7 @@ func validationError(w http.ResponseWriter, r *http.Request, err error) {
 		ErrorCode:    "VALIDATION",
 		ErrorMessage: err.Error(),
 	}); err != nil {
-		logging.GetLogger(r.Context()).Info("Error validating request: %s", err)
+		logging.FromContext(r.Context()).Info("Error validating request: %s", err)
 	}
 }
 

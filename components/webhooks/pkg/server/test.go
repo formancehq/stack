@@ -17,29 +17,29 @@ func (h *serverHandler) testOneConfigHandle(w http.ResponseWriter, r *http.Reque
 	cfgs, err := h.store.FindManyConfigs(r.Context(), map[string]any{"id": id})
 	if err == nil {
 		if len(cfgs) == 0 {
-			logging.GetLogger(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, storage.ErrConfigNotFound)
+			logging.FromContext(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, storage.ErrConfigNotFound)
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
-		logging.GetLogger(r.Context()).Infof("GET %s/%s%s", PathConfigs, id, PathTest)
+		logging.FromContext(r.Context()).Infof("GET %s/%s%s", PathConfigs, id, PathTest)
 		attempt, err := webhooks.MakeAttempt(r.Context(), h.httpClient, nil, uuid.NewString(),
 			uuid.NewString(), 0, cfgs[0], []byte(`{"data":"test"}`), true)
 		if err != nil {
-			logging.GetLogger(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, err)
+			logging.FromContext(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		} else {
-			logging.GetLogger(r.Context()).Infof("GET %s/%s%s", PathConfigs, id, PathTest)
+			logging.FromContext(r.Context()).Infof("GET %s/%s%s", PathConfigs, id, PathTest)
 			resp := api.BaseResponse[webhooks.Attempt]{
 				Data: &attempt,
 			}
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				logging.GetLogger(r.Context()).Errorf("json.Encoder.Encode: %s", err)
+				logging.FromContext(r.Context()).Errorf("json.Encoder.Encode: %s", err)
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				return
 			}
 		}
 	} else {
-		logging.GetLogger(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, err)
+		logging.FromContext(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }

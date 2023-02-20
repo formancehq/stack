@@ -31,7 +31,7 @@ func BadRequest(w http.ResponseWriter, code string, err error) {
 }
 
 func InternalServerError(w http.ResponseWriter, r *http.Request, err error) {
-	logging.GetLogger(r.Context()).Error(err)
+	logging.FromContext(r.Context()).Error(err)
 
 	w.WriteHeader(http.StatusInternalServerError)
 	if err := json.NewEncoder(w).Encode(ErrorResponse{

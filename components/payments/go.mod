@@ -24,7 +24,6 @@ require (
 	github.com/uptrace/bun/dialect/pgdialect v1.1.11
 	github.com/uptrace/bun/extra/bundebug v1.1.11
 	github.com/uptrace/bun/extra/bunotel v1.1.11
-	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21
 	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.37.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.39.0
 	go.opentelemetry.io/otel v1.13.0
@@ -92,6 +91,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
+	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelsql v0.1.21 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect

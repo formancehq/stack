@@ -5,11 +5,7 @@ import (
 	"os"
 
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -34,20 +30,7 @@ const (
 
 var rootCmd = &cobra.Command{
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-
-		if err := bindFlagsToViper(cmd); err != nil {
-			return err
-		}
-
-		logrusLogger := logrus.New()
-		if viper.GetBool(debugFlag) {
-			logrusLogger.SetLevel(logrus.DebugLevel)
-			logrusLogger.Infof("Debug mode enabled.")
-		}
-		logger := logginglogrus.New(logrusLogger)
-		logging.SetFactory(logging.StaticLoggerFactory(logger))
-
-		return nil
+		return bindFlagsToViper(cmd)
 	},
 }
 

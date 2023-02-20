@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/temporal"
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/go-chi/chi/v5"
@@ -91,8 +92,10 @@ var serveCmd = &cobra.Command{
 			}),
 		}
 
+		ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
+
 		app := fx.New(options...)
-		err := app.Start(cmd.Context())
+		err := app.Start(ctx)
 		if err != nil {
 			return err
 		}

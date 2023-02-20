@@ -4,11 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -24,19 +20,7 @@ const (
 func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := bindFlagsToViper(cmd); err != nil {
-				return err
-			}
-
-			logrusLogger := logrus.New()
-			if viper.GetBool(debugFlag) {
-				logrusLogger.SetLevel(logrus.DebugLevel)
-				logrusLogger.Infof("Debug mode enabled.")
-			}
-			logger := logginglogrus.New(logrusLogger)
-			logging.SetFactory(logging.StaticLoggerFactory(logger))
-
-			return nil
+			return bindFlagsToViper(cmd)
 		},
 	}
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")

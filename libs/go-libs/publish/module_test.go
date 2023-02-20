@@ -10,12 +10,9 @@ import (
 
 	"github.com/Shopify/sarama"
 	"github.com/ThreeDotsLabs/watermill/message"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
 	natsServer "github.com/nats-io/nats-server/v2/server"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
@@ -29,7 +26,6 @@ func createRedpandaServer(t *testing.T) string {
 	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
 		Repository: "docker.redpanda.com/vectorized/redpanda",
 		Tag:        "v22.3.11",
-		Entrypoint: nil,
 		Tty:        true,
 		Cmd: []string{
 			"redpanda", "start",
@@ -81,12 +77,6 @@ func createRedpandaServer(t *testing.T) string {
 
 func TestModule(t *testing.T) {
 	t.Parallel()
-
-	if testing.Verbose() {
-		logger := logrus.New()
-		logger.SetLevel(logrus.DebugLevel)
-		logging.SetFactory(logging.StaticLoggerFactory(logginglogrus.New(logger)))
-	}
 
 	type moduleTestCase struct {
 		name         string

@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	app "github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/pkg/errors"
@@ -21,6 +22,7 @@ import (
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 )
 
 const (
@@ -135,17 +137,18 @@ func newServeCommand() *cobra.Command {
 				return errors.Wrap(err, "unmarshal viper config")
 			}
 
+			ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
+
 			options := []fx.Option{
 				otlpHttpClientModule(),
-				fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
+				fx.Supply(fx.Annotate(ctx, fx.As(new(context.Context)))),
 				fx.Supply(delegatedauth.Config{
 					Issuer:       delegatedIssuer,
 					ClientID:     delegatedClientID,
 					ClientSecret: delegatedClientSecret,
 					RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
 				}),
-				sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag),
-					viper.GetBool(debugFlag), key, o.Clients...),
+				sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag), key, o.Clients...),
 				api.Module(viper.GetString(listenFlag), sharedapi.ServiceInfo{
 					Version: Version,
 				}),
@@ -153,21 +156,26 @@ func newServeCommand() *cobra.Command {
 				authorization.Module(),
 				delegatedauth.Module(),
 				fx.Invoke(func() {
-					logging.Infof("App started.")
+					logging.FromContext(ctx).Errorf("App started.")
 				}),
 				fx.NopLogger,
+			}
+			if viper.GetBool(debugFlag) {
+				options = append(options, fx.Replace(&gorm.Config{
+					Logger: sqlstorage.NewLogger(cmd.OutOrStdout()),
+				}))
 			}
 
 			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 
 			app := fx.New(options...)
-			err = app.Start(cmd.Context())
+			err = app.Start(ctx)
 			if err != nil {
 				return err
 			}
 
 			select {
-			case <-cmd.Context().Done():
+			case <-ctx.Done():
 				return app.Stop(context.Background())
 			case <-app.Done():
 				return app.Err()

@@ -24,7 +24,7 @@ func TestTimelineTrigger(t *testing.T) {
 
 	ingestedTx := make([]*stripe.BalanceTransaction, 0)
 	trigger := NewTimelineTrigger(
-		logging.GetLogger(context.TODO()),
+		logging.FromContext(context.TODO()),
 		IngesterFn(func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
 			ingestedTx = append(ingestedTx, batch...)
 
@@ -73,7 +73,7 @@ func TestCancelTimelineTrigger(t *testing.T) {
 
 	waiting := make(chan struct{})
 	trigger := NewTimelineTrigger(
-		logging.GetLogger(context.TODO()),
+		logging.FromContext(context.TODO()),
 		IngesterFn(func(ctx context.Context, batch []*stripe.BalanceTransaction, commitState TimelineState, tail bool) error {
 			close(waiting) // Instruct the test the trigger is in fetching state
 			<-ctx.Done()

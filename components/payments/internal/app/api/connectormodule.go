@@ -31,7 +31,7 @@ func addConnector[ConnectorConfig models.ConnectorConfigObject](loader integrati
 		fx.Provide(func(store *storage.Storage,
 			publisher message.Publisher,
 		) *integration.ConnectorManager[ConnectorConfig] {
-			logger := logging.GetLogger(context.TODO())
+			logger := logging.FromContext(context.TODO())
 
 			schedulerFactory := integration.TaskSchedulerFactoryFn(func(
 				resolver task.Resolver, maxTasks int,

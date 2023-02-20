@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"syscall"
 
+	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/otlp"
@@ -20,22 +21,24 @@ var serverCmd = &cobra.Command{
 }
 
 func RunServer(cmd *cobra.Command, _ []string) error {
-	logging.GetLogger(cmd.Context()).Debugf(
+	logging.FromContext(cmd.Context()).Debugf(
 		"starting webhooks server module: env variables: %+v viper keys: %+v",
 		syscall.Environ(), viper.AllKeys())
+
+	ctx := app.DefaultLoggingContext(cmd, viper.GetBool(flag.Debug))
 
 	app := fx.New(
 		otlp.HttpClientModule(),
 		server.StartModule(
 			viper.GetString(flag.HttpBindAddressServer)))
 
-	if err := app.Start(cmd.Context()); err != nil {
+	if err := app.Start(ctx); err != nil {
 		return fmt.Errorf("fx.App.Start: %w", err)
 	}
 
 	<-app.Done()
 
-	if err := app.Stop(cmd.Context()); err != nil {
+	if err := app.Stop(ctx); err != nil {
 		return fmt.Errorf("fx.App.Stop: %w", err)
 	}
 

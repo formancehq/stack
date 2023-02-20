@@ -10,15 +10,16 @@ import (
 	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/formancehq/search/pkg/searchhttp"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	app "github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/oauth2/oauth2introspect"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/opensearch-project/opensearch-go"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
@@ -56,19 +57,11 @@ func NewServer() *cobra.Command {
 			return viper.BindPFlags(cmd.Flags())
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			debug := viper.GetBool(debugFlag)
-
-			logger := logrus.New()
-			logger.SetFormatter(&logrus.JSONFormatter{})
-			if debug {
-				logger.SetLevel(logrus.DebugLevel)
-				logger.Debugln("Debug mode enabled")
-			}
-			logger.Debugf("Starting with config: %s", viper.AllSettings())
+			ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
 
 			openSearchServiceHost := viper.GetString(openSearchServiceFlag)
 			if openSearchServiceHost == "" {
-				exitWithError(logger, "missing open search service host")
+				exitWithError(ctx, "missing open search service host")
 			}
 
 			esIndices := viper.GetStringSlice(esIndicesFlag)
@@ -84,6 +77,7 @@ func NewServer() *cobra.Command {
 			options := make([]fx.Option, 0)
 			options = append(options, opensearchClientModule(openSearchServiceHost, !viper.GetBool(esDisableMappingInitFlag), esIndices...))
 			options = append(options,
+				fx.NopLogger,
 				health.Module(),
 				health.ProvideHealthCheck(func(client *opensearch.Client) health.NamedCheck {
 					return health.NewNamedCheck("elasticsearch connection", health.CheckFn(func(ctx context.Context) error {
@@ -100,13 +94,13 @@ func NewServer() *cobra.Command {
 
 			app := fx.New(options...)
 
-			err := app.Start(cmd.Context())
+			err := app.Start(ctx)
 			if err != nil {
 				return err
 			}
 
 			select {
-			case <-cmd.Context().Done():
+			case <-ctx.Done():
 				return app.Stop(context.Background())
 			case <-app.Done():
 				return app.Err()
@@ -131,8 +125,8 @@ func NewServer() *cobra.Command {
 	return cmd
 }
 
-func exitWithError(logger *logrus.Logger, msg string) {
-	logger.Error(msg)
+func exitWithError(ctx context.Context, msg string) {
+	logging.FromContext(ctx).Error(msg)
 	os.Exit(1)
 }
 

@@ -23,7 +23,7 @@ import (
 func handleErrorBadRequest(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusBadRequest)
 
-	logging.GetLogger(r.Context()).Error(err)
+	logging.FromContext(r.Context()).Error(err)
 	// TODO: Opentracing
 	err = json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    http.StatusText(http.StatusBadRequest),
@@ -37,7 +37,7 @@ func handleErrorBadRequest(w http.ResponseWriter, r *http.Request, err error) {
 func handleError(w http.ResponseWriter, r *http.Request, err error) {
 	w.WriteHeader(http.StatusInternalServerError)
 
-	logging.GetLogger(r.Context()).Error(err)
+	logging.FromContext(r.Context()).Error(err)
 	// TODO: Opentracing
 	err = json.NewEncoder(w).Encode(api.ErrorResponse{
 		ErrorCode:    "INTERNAL",

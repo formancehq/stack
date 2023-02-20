@@ -1,15 +1,19 @@
 package logging
 
-import "context"
+import (
+	"context"
+
+	"github.com/sirupsen/logrus"
+)
 
 type contextKey string
 
 var loggerKey contextKey = "_logger"
 
-func LoggerFromContext(ctx context.Context) Logger {
+func FromContext(ctx context.Context) Logger {
 	l := ctx.Value(loggerKey)
 	if l == nil {
-		return &noOpLogger{}
+		return New(logrus.New())
 	}
 	return l.(Logger)
 }

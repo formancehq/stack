@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -16,8 +17,10 @@ import (
 	paymentsCmd "github.com/formancehq/payments/cmd"
 	searchCmd "github.com/formancehq/search/cmd"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	walletsCmd "github.com/formancehq/wallets/cmd"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 
 	"github.com/egymgmbh/go-prefix-writer/prefixer"
@@ -71,6 +74,13 @@ func runDockerResource(options *dockertest.RunOptions) *dockertest.Resource {
 var _ = BeforeEach(func() {
 	actualTestID = uuid.NewString()
 	ctx, cancel = context.WithCancel(context.TODO())
+	l := logrus.New()
+	l.Out = io.Discard
+	if testing.Verbose() {
+		l.Level = logrus.DebugLevel
+		l.Out = os.Stdout
+	}
+	ctx = logging.ContextWithLogger(ctx, logging.New(l))
 
 	startBenthosServer()
 	createDatabases() // TODO: drop databases
@@ -344,12 +354,14 @@ func stopWallets() {
 
 func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc, chan error) {
 
+	cmd.SetOut(io.Discard)
+	cmd.SetErr(io.Discard)
 	if testing.Verbose() {
 		cmd.SetOut(prefixer.New(os.Stdout, func() string {
-			return service
+			return service + " | "
 		}))
 		cmd.SetErr(prefixer.New(os.Stderr, func() string {
-			return service
+			return service + " | "
 		}))
 	}
 	ctx := httpserver.ContextWithServerInfo(TestContext())

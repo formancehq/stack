@@ -29,7 +29,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(descriptor, false)
+	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, false)
 }
 
 func (c *Connector) Uninstall(ctx context.Context) error {
@@ -62,7 +62,7 @@ func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(descriptor, false)
+	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, false)
 }
 
 var _ integration.Connector = &Connector{}

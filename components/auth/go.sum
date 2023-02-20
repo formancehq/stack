@@ -340,6 +340,10 @@ github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKs
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/subosito/gotenv v1.4.2 h1:X1TuBLAMDFbaTAChgCBLu3DU3UPyELpnF2jjJ2cz/S8=
 github.com/subosito/gotenv v1.4.2/go.mod h1:ayKnFf/c6rvx/2iiLrJUk1e6plDbT3edrFNGqEflhK0=
+github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 h1:OXsouNDvuET5o1A4uvoCnAXuuNke8JlfZWceciyUlC8=
+github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21/go.mod h1:Xm3wlRGm5xzdAGPOvqydXPiGj0Da1q0OlUNm7Utoda4=
+github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21 h1:HCqo51kNF8wxDMDhxcN5S6DlfZXigMtptRpkvjBCeVc=
+github.com/uptrace/opentelemetry-go-extra/otelutil v0.1.21/go.mod h1:2MNqrUmDrt5E0glMuoJI/9FyGVpBKo1FqjSH60UOZFg=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

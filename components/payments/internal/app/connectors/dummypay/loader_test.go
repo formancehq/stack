@@ -15,7 +15,7 @@ func TestLoader(t *testing.T) {
 	t.Parallel()
 
 	config := Config{}
-	logger := logging.GetLogger(context.TODO())
+	logger := logging.FromContext(context.TODO())
 
 	loader := NewLoader()
 

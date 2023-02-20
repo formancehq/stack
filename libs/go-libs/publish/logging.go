@@ -40,6 +40,6 @@ var _ watermill.LoggerAdapter = &watermillLoggerAdapter{}
 
 func defaultLoggingModule() fx.Option {
 	return fx.Supply(fx.Annotate(watermillLoggerAdapter{
-		logging.GetLogger(context.TODO()),
+		logging.FromContext(context.TODO()),
 	}, fx.As(new(watermill.LoggerAdapter))))
 }

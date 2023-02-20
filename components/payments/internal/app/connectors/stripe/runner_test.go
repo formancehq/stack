@@ -28,7 +28,7 @@ func TestStopTailing(t *testing.T) {
 		MoreRecentID: "tx2",
 	})
 
-	logger := logging.GetLogger(context.TODO())
+	logger := logging.FromContext(context.TODO())
 	trigger := NewTimelineTrigger(logger, NoOpIngester, timeline)
 	r := NewRunner(logger, trigger, time.Second)
 

@@ -29,6 +29,7 @@ import (
 	"github.com/zitadel/oidc/pkg/op"
 	"golang.org/x/oauth2/clientcredentials"
 	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -77,7 +78,7 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	require.NoError(t, err)
 
 	// Construct our storage
-	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"), testing.Verbose())
+	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"), &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 

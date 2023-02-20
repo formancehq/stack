@@ -33,7 +33,7 @@ func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(descriptor, true)
+	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, true)
 }
 
 func (c *Connector) Install(ctx task.ConnectorContext) error {
@@ -45,7 +45,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(descriptor, true)
+	return ctx.Scheduler().Schedule(ctx.Context(), descriptor, true)
 }
 
 func (c *Connector) Uninstall(ctx context.Context) error {

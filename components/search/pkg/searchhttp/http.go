@@ -272,7 +272,7 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				logging.GetLogger(r.Context()).Errorf("error encoding json response: %s", err)
+				logging.FromContext(r.Context()).Errorf("error encoding json response: %s", err)
 			}
 
 		case *searchengine.MultiDocTypeSearch:
@@ -286,7 +286,7 @@ func Handler(engine searchengine.Engine) http.HandlerFunc {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			if err := json.NewEncoder(w).Encode(resp); err != nil {
-				logging.GetLogger(r.Context()).Errorf("error encoding json response: %s", err)
+				logging.FromContext(r.Context()).Errorf("error encoding json response: %s", err)
 			}
 		}
 	}

@@ -46,7 +46,7 @@ func Module(uri, configEncryptionKey string) fx.Option {
 		fx.Invoke(func(lc fx.Lifecycle, repo *Storage) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					logging.Debug("Ping database...")
+					logging.FromContext(ctx).Debug("Ping database...")
 
 					// TODO: Check migrations state and panic if migrations are not applied
 

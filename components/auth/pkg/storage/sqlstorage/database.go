@@ -4,7 +4,6 @@ import (
 	"context"
 	"io"
 	"log"
-	"os"
 	"time"
 
 	auth "github.com/formancehq/auth/pkg"
@@ -20,11 +19,7 @@ const (
 )
 
 // TODO: Replace by logging
-func newLogger(debug bool) logger.Interface {
-	out := io.Discard
-	if debug {
-		out = os.Stdout
-	}
+func NewLogger(out io.Writer) logger.Interface {
 	return logger.New(
 		log.New(out, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
@@ -40,10 +35,8 @@ func OpenPostgresDatabase(uri string) gorm.Dialector {
 	return postgres.Open(uri)
 }
 
-func LoadGorm(d gorm.Dialector, debug bool) (*gorm.DB, error) {
-	db, err := gorm.Open(d, &gorm.Config{
-		Logger: newLogger(debug),
-	})
+func LoadGorm(d gorm.Dialector, gormConfig *gorm.Config) (*gorm.DB, error) {
+	db, err := gorm.Open(d, gormConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -72,15 +65,14 @@ func init() {
 	registerDriverConstructor(KindPostgres, OpenPostgresDatabase)
 }
 
-func gormModule(kind, uri string, debug bool) fx.Option {
+func gormModule(kind, uri string) fx.Option {
 	return fx.Options(
-		fx.Provide(func(d gorm.Dialector) (*gorm.DB, error) {
-			return LoadGorm(d, debug)
-		}),
+		fx.Provide(LoadGorm),
+		fx.Supply(&gorm.Config{}),
 		fx.Invoke(func(lc fx.Lifecycle, db *gorm.DB) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					logging.Info("Migrate tables")
+					logging.FromContext(ctx).Info("Migrate tables")
 					return MigrateTables(ctx, db)
 				},
 			})

@@ -12,20 +12,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
-	"github.com/sirupsen/logrus"
 	"github.com/stripe/stripe-go/v72"
 )
 
 func TestMain(m *testing.M) {
 	flag.Parse()
-
-	if testing.Verbose() {
-		l := logrus.New()
-		l.Level = logrus.DebugLevel
-		logging.SetFactory(logging.StaticLoggerFactory(logginglogrus.New(l)))
-	}
 
 	os.Exit(m.Run())
 }

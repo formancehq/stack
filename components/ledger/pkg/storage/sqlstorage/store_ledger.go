@@ -43,7 +43,7 @@ func (s *Store) Delete(ctx context.Context) error {
 }
 
 func (s *Store) Initialize(ctx context.Context) (bool, error) {
-	logging.GetLogger(ctx).Debug("Initialize store")
+	logging.FromContext(ctx).Debug("Initialize store")
 
 	migrations, err := CollectMigrationFiles(MigrationsFS)
 	if err != nil {

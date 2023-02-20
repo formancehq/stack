@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/formancehq/wallets/pkg/api"
@@ -41,13 +42,15 @@ func newServeCommand() *cobra.Command {
 				otlptraces.CLITracesModule(viper.GetViper()),
 			}
 
+			ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
+
 			app := fx.New(options...)
-			if err := app.Start(cmd.Context()); err != nil {
+			if err := app.Start(ctx); err != nil {
 				return fmt.Errorf("fx.App.Start: %w", err)
 			}
 
 			select {
-			case <-cmd.Context().Done():
+			case <-ctx.Done():
 				return app.Stop(context.Background())
 			case <-app.Done():
 				return app.Err()

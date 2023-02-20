@@ -29,7 +29,7 @@ var (
 )
 
 type Scheduler interface {
-	Schedule(p models.TaskDescriptor, restart bool) error
+	Schedule(ctx context.Context, p models.TaskDescriptor, restart bool) error
 }
 
 type taskHolder struct {
@@ -70,7 +70,7 @@ func (s *DefaultTaskScheduler) ReadTaskByDescriptor(ctx context.Context, descrip
 	return s.store.GetTaskByDescriptor(ctx, s.provider, taskDescriptor)
 }
 
-func (s *DefaultTaskScheduler) Schedule(descriptor models.TaskDescriptor, restart bool) error {
+func (s *DefaultTaskScheduler) Schedule(ctx context.Context, descriptor models.TaskDescriptor, restart bool) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -99,7 +99,7 @@ func (s *DefaultTaskScheduler) Schedule(descriptor models.TaskDescriptor, restar
 		return nil
 	}
 
-	if err := s.startTask(descriptor); err != nil {
+	if err := s.startTask(ctx, descriptor); err != nil {
 		return errors.Wrap(err, "starting task")
 	}
 
@@ -142,7 +142,7 @@ func (s *DefaultTaskScheduler) Restore(ctx context.Context) error {
 	}
 
 	for _, task := range tasks {
-		err = s.startTask(task.GetDescriptor())
+		err = s.startTask(ctx, task.GetDescriptor())
 		if err != nil {
 			s.logger.Errorf("Unable to restore task %s: %s", task.ID, err)
 		}
@@ -169,7 +169,7 @@ func (s *DefaultTaskScheduler) registerTaskError(ctx context.Context, holder *ta
 	}
 }
 
-func (s *DefaultTaskScheduler) deleteTask(holder *taskHolder) {
+func (s *DefaultTaskScheduler) deleteTask(ctx context.Context, holder *taskHolder) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -192,27 +192,27 @@ func (s *DefaultTaskScheduler) deleteTask(holder *taskHolder) {
 			return
 		}
 
-		logging.Error(err)
+		logging.FromContext(ctx).Error(err)
 
 		return
 	}
 
 	p := s.resolver.Resolve(oldestPendingTask.GetDescriptor())
 	if p == nil {
-		logging.Errorf("unable to resolve task")
+		logging.FromContext(ctx).Errorf("unable to resolve task")
 
 		return
 	}
 
-	err = s.startTask(oldestPendingTask.GetDescriptor())
+	err = s.startTask(ctx, oldestPendingTask.GetDescriptor())
 	if err != nil {
-		logging.Error(err)
+		logging.FromContext(ctx).Error(err)
 	}
 }
 
 type StopChan chan chan struct{}
 
-func (s *DefaultTaskScheduler) startTask(descriptor models.TaskDescriptor) error {
+func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.TaskDescriptor) error {
 	task, err := s.store.FindAndUpsertTask(context.TODO(), s.provider, descriptor,
 		models.TaskStatusActive, "")
 	if err != nil {
@@ -304,7 +304,7 @@ func (s *DefaultTaskScheduler) startTask(descriptor models.TaskDescriptor) error
 
 		defer func() {
 			defer span.End()
-			defer s.deleteTask(holder)
+			defer s.deleteTask(ctx, holder)
 
 			if e := recover(); e != nil {
 				s.registerTaskError(ctx, holder, e)

@@ -8,7 +8,6 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
 	"github.com/formancehq/stack/libs/go-libs/oauth2/oauth2introspect"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -19,13 +18,10 @@ import (
 	"github.com/numary/ledger/pkg/api/middlewares"
 	"github.com/numary/ledger/pkg/api/routes"
 	"github.com/numary/ledger/pkg/bus"
-	"github.com/numary/ledger/pkg/contextlogger"
 	"github.com/numary/ledger/pkg/ledger"
 	"github.com/numary/ledger/pkg/redis"
 	"github.com/numary/ledger/pkg/storage/sqlstorage"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"github.com/uptrace/opentelemetry-go-extra/otellogrus"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
 )
@@ -35,27 +31,9 @@ const ServiceName = "ledger"
 func NewContainer(v *viper.Viper, userOptions ...fx.Option) *fx.App {
 
 	options := make([]fx.Option, 0)
-	if !v.GetBool(debugFlag) {
-		options = append(options, fx.NopLogger)
-	}
+	options = append(options, fx.NopLogger)
 
 	debug := viper.GetBool(debugFlag)
-
-	l := logrus.New()
-	if debug {
-		l.Level = logrus.DebugLevel
-	}
-	if viper.GetBool(otlptraces.OtelTracesFlag) {
-		l.AddHook(otellogrus.NewHook(otellogrus.WithLevels(
-			logrus.PanicLevel,
-			logrus.FatalLevel,
-			logrus.ErrorLevel,
-			logrus.WarnLevel,
-		)))
-	}
-	logging.SetFactory(contextlogger.NewFactory(
-		logging.StaticLoggerFactory(logginglogrus.New(l)),
-	))
 	if debug {
 		sqlstorage.InstrumentalizeSQLDrivers()
 	}
@@ -176,7 +154,7 @@ func NewContainer(v *viper.Viper, userOptions ...fx.Option) *fx.App {
 		res = append(res, func(context *gin.Context) {
 			context.Next()
 			for _, err := range context.Errors {
-				logging.GetLogger(context.Request.Context()).Error(err)
+				logging.FromContext(context.Request.Context()).Error(err)
 			}
 		})
 		res = append(res, middlewares.Log())

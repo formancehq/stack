@@ -14,7 +14,7 @@ func Middleware(methods ...Method) func(handler http.Handler) http.Handler {
 				if m.IsMatching(r) {
 					agent, err := m.Check(r)
 					if err != nil {
-						logging.GetLogger(r.Context()).WithFields(map[string]any{
+						logging.FromContext(r.Context()).WithFields(map[string]any{
 							"err": err,
 						}).Infof("Access denied")
 						w.WriteHeader(http.StatusForbidden)

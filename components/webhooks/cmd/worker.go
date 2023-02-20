@@ -20,7 +20,7 @@ var workerCmd = &cobra.Command{
 }
 
 func RunWorker(cmd *cobra.Command, _ []string) error {
-	logging.GetLogger(cmd.Context()).Debugf(
+	logging.FromContext(cmd.Context()).Debugf(
 		"starting webhooks worker module: env variables: %+v viper keys: %+v",
 		syscall.Environ(), viper.AllKeys())
 

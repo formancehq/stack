@@ -75,6 +75,7 @@ func runMigrate(cmd *cobra.Command, args []string) error {
 
 	command := args[0]
 
+	goose.SetLogger(log.New(cmd.OutOrStdout(), "", log.LstdFlags))
 	if err = goose.Run(command, database, ".", args[1:]...); err != nil {
 		log.Printf("migrate %v: %v", command, err)
 	}

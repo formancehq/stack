@@ -33,7 +33,7 @@ func badRequest(w http.ResponseWriter, code string, err error) {
 }
 
 func internalError(w http.ResponseWriter, r *http.Request, err error) {
-	sharedlogging.GetLogger(r.Context()).Error(err)
+	sharedlogging.FromContext(r.Context()).Error(err)
 
 	w.WriteHeader(http.StatusInternalServerError)
 	if err := json.NewEncoder(w).Encode(sharedapi.ErrorResponse{

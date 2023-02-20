@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/docker/docker/api/types"
+	"github.com/egymgmbh/go-prefix-writer/prefixer"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/ory/dockertest/v3"
@@ -36,6 +37,7 @@ func startBenthosServer() {
 		Mounts: []string{
 			fmt.Sprintf("%s/../../../components/search/benthos:/config", wd),
 		},
+		Tty:        true,
 		Entrypoint: entrypoint,
 		Env: []string{
 			"OPENSEARCH_URL=http://host.docker.internal:9200", // TODO: Make configurable
@@ -48,18 +50,23 @@ func startBenthosServer() {
 		},
 	})
 
-	go func() {
-		defer GinkgoRecover()
-		reader, err := dockerClient.ContainerLogs(TestContext(), benthosResource.Container.ID, types.ContainerLogsOptions{
-			ShowStdout: true,
-			ShowStderr: true,
-			Follow:     true,
-			Details:    false,
-		})
-		Expect(err).To(BeNil())
+	if testing.Verbose() {
+		go func() {
+			defer GinkgoRecover()
+			reader, err := dockerClient.ContainerLogs(TestContext(), benthosResource.Container.ID, types.ContainerLogsOptions{
+				ShowStdout: true,
+				ShowStderr: true,
+				Follow:     true,
+				Details:    false,
+			})
+			Expect(err).To(BeNil())
 
-		io.Copy(os.Stdout, reader)
-	}()
+			io.Copy(prefixer.New(os.Stdout, func() string {
+				return "benthos | "
+			}), reader)
+		}()
+	}
+
 }
 
 func stopBenthosServer() {

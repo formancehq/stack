@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	app "github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/go-chi/chi/v5"
@@ -74,8 +75,10 @@ var serveCmd = &cobra.Command{
 			otlptraces.CLITracesModule(viper.GetViper()),
 		}
 
+		ctx := app.DefaultLoggingContext(cmd, viper.GetBool(debugFlag))
+
 		app := fx.New(options...)
-		err := app.Start(cmd.Context())
+		err := app.Start(ctx)
 		if err != nil {
 			return err
 		}
