@@ -252,6 +252,7 @@ func (h ConfigHandle) GetMountPath() string {
 
 type Context struct {
 	context.Context
+	Region        string
 	Stack         *stackv1beta3.Stack
 	Configuration *stackv1beta3.Configuration
 	Versions      *stackv1beta3.Versions

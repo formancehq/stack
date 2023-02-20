@@ -64,6 +64,7 @@ func init() {
 
 func main() {
 	var (
+		region               string
 		metricsAddr          string
 		enableLeaderElection bool
 		probeAddr            string
@@ -71,6 +72,7 @@ func main() {
 		issuerRefKind        string
 		disableWebhooks      bool
 	)
+	flag.StringVar(&region, "region", "eu-west-1", "The cloud region in use for the operator")
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
 	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
@@ -127,7 +129,7 @@ func main() {
 		}
 	}
 
-	stackReconciler := stack.NewReconciler(mgr.GetClient(), mgr.GetScheme())
+	stackReconciler := stack.NewReconciler(mgr.GetClient(), mgr.GetScheme(), region)
 	if err = stackReconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Stack")
 		os.Exit(1)

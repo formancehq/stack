@@ -39,10 +39,12 @@ func init() {
 						},
 						Image:    modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
 						Liveness: modules.LivenessDisable,
-						Env: modules.NewEnv().Append(modules.Env(
-							"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
-							"http://$(OTEL_TRACES_OTLP_ENDPOINT)",
-						)),
+						Env: modules.NewEnv().Append(
+							modules.Env(
+								"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+								"http://$(OTEL_TRACES_OTLP_ENDPOINT)",
+							),
+						),
 					}
 				},
 			}}
@@ -88,6 +90,7 @@ func createCaddyfile(context modules.InstallContext) string {
 	}
 
 	if err := tpl.Execute(buf, map[string]any{
+		"Region":   context.Region,
 		"Issuer":   fmt.Sprintf("%s/api/auth", context.Stack.URL()),
 		"Services": services,
 		"Debug":    context.Stack.Spec.Debug,
@@ -179,11 +182,14 @@ const caddyfile = `(cors) {
 
 	handle /versions {
 		versions {
-			{{- range $i, $service := .Services }}
-				{{- if $service.HasVersionEndpoint }}
-			{{ $service.Name }} http://{{ $service.Name }}:{{ $service.Port}}/_info
+			region "{{ .Region }}"
+			endpoints {
+				{{- range $i, $service := .Services }}
+					{{- if $service.HasVersionEndpoint }}
+				{{ $service.Name }} http://{{ $service.Name }}:{{ $service.Port}}/_info http://{{ $service.Name }}:{{ $service.Port }}/_healthcheck
+					{{- end }}
 				{{- end }}
-			{{- end }}
+			}
 		}
 	}
 

@@ -76,13 +76,16 @@ data:
 
         	handle /versions {
         		versions {
-        			auth http://auth:8080/_info
-        			ledger http://ledger:8080/_info
-        			orchestration http://orchestration:8080/_info
-        			payments http://payments:8080/_info
-        			search http://search:8080/_info
-        			wallets http://wallets:8080/_info
-        			webhooks http://webhooks:8080/_info
+        			region "us-west-1"
+        			endpoints {
+        				auth http://auth:8080/_info http://auth:8080/_healthcheck
+        				ledger http://ledger:8080/_info http://ledger:8080/_healthcheck
+        				orchestration http://orchestration:8080/_info http://orchestration:8080/_healthcheck
+        				payments http://payments:8080/_info http://payments:8080/_healthcheck
+        				search http://search:8080/_info http://search:8080/_healthcheck
+        				wallets http://wallets:8080/_info http://wallets:8080/_healthcheck
+        				webhooks http://webhooks:8080/_info http://webhooks:8080/_healthcheck
+        			}
         		}
         	}
 

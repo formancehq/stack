@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -22,8 +23,9 @@ func init() {
 }
 
 type Endpoint struct {
-	Name     string `json:"name,omitempty"`
-	Endpoint string `json:"endpoint,omitempty"`
+	Name            string `json:"name,omitempty"`
+	VersionEndpoint string `json:"endpoint,omitempty"`
+	HealthEndpoint  string `json:"health,omitempty"`
 }
 
 // Versions is a module that serves a /versions endpoint. This endpoint will
@@ -33,6 +35,7 @@ type Versions struct {
 	logger          *zap.Logger  `json:"-"`
 	versionsHandler http.Handler `json:"-"`
 
+	Region    string     `json:"region,omitempty"`
 	Endpoints []Endpoint `json:"endpoints,omitempty"`
 }
 
@@ -52,6 +55,7 @@ func (v *Versions) Provision(ctx caddy.Context) error {
 	v.versionsHandler = newVersionsHandler(
 		v.logger,
 		newHTTPClient(),
+		v.Region,
 		v.Endpoints,
 	)
 
@@ -74,12 +78,29 @@ func (m *Versions) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	for d.Next() {
 		for d.NextBlock(0) {
 			key := d.Val()
-			var endpoint string
-			d.Args(&endpoint)
-			m.Endpoints = append(m.Endpoints, Endpoint{
-				Name:     key,
-				Endpoint: endpoint,
-			})
+			switch key {
+			case "endpoints":
+				for d.Next() {
+					for d.NextBlock(0) {
+						name := d.Val()
+						var versionEndpoint string
+						var healthEndpoint string
+						fmt.Println("remaining args for endpoints", d.CountRemainingArgs())
+						if !d.AllArgs(&versionEndpoint, &healthEndpoint) {
+							return d.Errf("invalid number of endpoints' arguments: want <name> <version_endpoint> <health_endpoint>")
+						}
+						m.Endpoints = append(m.Endpoints, Endpoint{
+							Name:            name,
+							VersionEndpoint: versionEndpoint,
+							HealthEndpoint:  healthEndpoint,
+						})
+					}
+				}
+			case "region":
+				if !d.AllArgs(&m.Region) {
+					return d.Errf("invalid number of region's arguments: want <region>")
+				}
+			}
 		}
 	}
 	return nil
@@ -90,8 +111,12 @@ func (m *Versions) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 // the module is provisioned.
 func (v *Versions) Validate() error {
 	for _, endpoint := range v.Endpoints {
-		if _, err := url.ParseRequestURI(endpoint.Endpoint); err != nil {
-			return fmt.Errorf("invalid endpoint %s: %w", endpoint.Name, err)
+		if _, err := url.ParseRequestURI(endpoint.VersionEndpoint); err != nil {
+			return fmt.Errorf("invalid version endpoint %s: %w", endpoint.Name, err)
+		}
+
+		if _, err := url.ParseRequestURI(endpoint.HealthEndpoint); err != nil {
+			return fmt.Errorf("invalid health endpoint %s: %w", endpoint.Name, err)
 		}
 	}
 
@@ -108,23 +133,27 @@ func (v Versions) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyht
 type serviceInfo struct {
 	Name    string `json:"name,omitempty"`
 	Version string `json:"version,omitempty"`
+	Health  bool   `json:"health,omitempty"`
 }
 
 type versionsResponse struct {
-	Versions []serviceInfo `json:"versions"`
+	Region   string         `json:"region"`
+	Versions []*serviceInfo `json:"versions"`
 }
 
 type versionsHandler struct {
 	logger     *zap.Logger
 	httpClient *http.Client
 
+	region    string
 	endpoints []Endpoint
 }
 
-func newVersionsHandler(logger *zap.Logger, httpClient *http.Client, endpoints []Endpoint) http.Handler {
+func newVersionsHandler(logger *zap.Logger, httpClient *http.Client, region string, endpoints []Endpoint) http.Handler {
 	return &versionsHandler{
 		logger:     logger,
 		httpClient: httpClient,
+		region:     region,
 		endpoints:  endpoints,
 	}
 }
@@ -138,50 +167,33 @@ func newHTTPClient() *http.Client {
 func (v *versionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	eg, ctxGroup := errgroup.WithContext(r.Context())
 
-	versions := make(chan serviceInfo, len(v.endpoints))
+	versions := make(chan *serviceInfo, len(v.endpoints))
 
 	for _, endpoint := range v.endpoints {
 		edpt := endpoint
 		eg.Go(func() error {
-			req, err := http.NewRequestWithContext(ctxGroup, http.MethodGet, edpt.Endpoint, http.NoBody)
+			res := &serviceInfo{
+				Name: edpt.Name,
+			}
+
+			version, err := serviceVersion(ctxGroup, v.httpClient, edpt.VersionEndpoint)
 			if err != nil {
-				return fmt.Errorf("failed to create version request: %w", err)
+				// Log and Discard the error if there is any, and provide an
+				// "unknown" version.
+				v.logger.Error("failed to query version", zap.Error(err))
+				res.Version = "unknown"
+			} else {
+				res.Version = version
 			}
 
-			res := serviceInfo{
-				Name:    edpt.Name,
-				Version: "unknown",
-			}
-
-			resp, err := v.httpClient.Do(req)
+			health, err := serviceHealth(ctxGroup, v.httpClient, edpt.HealthEndpoint)
 			if err != nil {
-				v.logger.Error("failed to get version", zap.String("name", res.Name), zap.Error(err))
-				versions <- res
-				return nil
-			}
-
-			defer func() {
-				err = resp.Body.Close()
-				if err != nil {
-					v.logger.Error("failed to close response body", zap.Error(err))
-				}
-			}()
-
-			if resp.StatusCode != http.StatusOK {
-				v.logger.Error("failed to get version", zap.String("name", res.Name), zap.String("status", resp.Status))
-				versions <- res
-				return nil
-			}
-
-			responseBody, err := io.ReadAll(resp.Body)
-			if err != nil {
-				v.logger.Error("failed to read response body", zap.String("name", res.Name), zap.Error(err))
-				versions <- res
-				return nil
-			}
-
-			if err := json.Unmarshal(responseBody, &res); err != nil {
-				v.logger.Error("failed to unmarshal response body", zap.String("name", res.Name), zap.Error(err))
+				// Log and Discard the error if there is any, and provide a
+				// "false" health.
+				v.logger.Error("failed to query health", zap.Error(err))
+				res.Health = false
+			} else {
+				res.Health = health
 			}
 
 			versions <- res
@@ -197,8 +209,10 @@ func (v *versionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	close(versions)
 
-	res := versionsResponse{}
-	res.Versions = make([]serviceInfo, 0, len(v.endpoints))
+	res := versionsResponse{
+		Region: v.region,
+	}
+	res.Versions = make([]*serviceInfo, 0, len(v.endpoints))
 	for version := range versions {
 		res.Versions = append(res.Versions, version)
 	}
@@ -206,6 +220,71 @@ func (v *versionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		v.logger.Error("failed to encode response", zap.Error(err))
 	}
+}
+
+func serviceVersion(
+	ctx context.Context,
+	httpClient *http.Client,
+	versionEndpoint string,
+) (string, error) {
+	sInfo := &serviceInfo{}
+
+	resp, err := serviceCall(ctx, httpClient, versionEndpoint)
+	if err != nil {
+		return "", fmt.Errorf("failed to get version for %s: %w", versionEndpoint, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("failed to get version for %s: %s", versionEndpoint, resp.Status)
+	}
+
+	responseBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response body for %s: %w", versionEndpoint, err)
+	}
+
+	if err := json.Unmarshal(responseBody, &sInfo); err != nil {
+		return "", fmt.Errorf("failed to unmarshal response body for %s: %w", versionEndpoint, err)
+	}
+
+	return sInfo.Version, nil
+}
+
+func serviceHealth(
+	ctx context.Context,
+	httpClient *http.Client,
+	healthEndpoint string,
+) (bool, error) {
+	resp, err := serviceCall(ctx, httpClient, healthEndpoint)
+	if err != nil {
+		return false, fmt.Errorf("failed to get health for %s: %w", healthEndpoint, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return false, fmt.Errorf("wrong status code for health endpoint %s: %d", healthEndpoint, resp.StatusCode)
+	}
+
+	return true, nil
+}
+
+func serviceCall(
+	ctx context.Context,
+	httpClient *http.Client,
+	endpoint string,
+) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create version request: %w", err)
+	}
+
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get version for %s: %w", endpoint, err)
+	}
+
+	return resp, nil
 }
 
 //------------------------------------------------------------------------------
