@@ -14,7 +14,7 @@ package formance
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -160,31 +160,31 @@ func (a *LogsApiService) ListLogsExecute(r ApiListLogsRequest) (*LogsCursorRespo
 	localVarFormParams := url.Values{}
 
 	if r.pageSize != nil {
-		parameterAddToQuery(localVarQueryParams, "pageSize", r.pageSize, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.pageSize2 != nil {
-		parameterAddToQuery(localVarQueryParams, "page_size", r.pageSize2, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "page_size", r.pageSize2, "")
 	}
 	if r.after != nil {
-		parameterAddToQuery(localVarQueryParams, "after", r.after, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "")
 	}
 	if r.startTime != nil {
-		parameterAddToQuery(localVarQueryParams, "startTime", r.startTime, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "startTime", r.startTime, "")
 	}
 	if r.startTime2 != nil {
-		parameterAddToQuery(localVarQueryParams, "start_time", r.startTime2, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "start_time", r.startTime2, "")
 	}
 	if r.endTime != nil {
-		parameterAddToQuery(localVarQueryParams, "endTime", r.endTime, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "endTime", r.endTime, "")
 	}
 	if r.endTime2 != nil {
-		parameterAddToQuery(localVarQueryParams, "end_time", r.endTime2, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "end_time", r.endTime2, "")
 	}
 	if r.cursor != nil {
-		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	if r.paginationToken != nil {
-		parameterAddToQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -213,9 +213,9 @@ func (a *LogsApiService) ListLogsExecute(r ApiListLogsRequest) (*LogsCursorRespo
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHTTPResponse, err
 	}

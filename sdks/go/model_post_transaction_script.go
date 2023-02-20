@@ -68,7 +68,7 @@ func (o *PostTransactionScript) SetPlain(v string) {
 
 // GetVars returns the Vars field value if set, zero value otherwise.
 func (o *PostTransactionScript) GetVars() map[string]interface{} {
-	if o == nil || isNil(o.Vars) {
+	if o == nil || IsNil(o.Vars) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -78,7 +78,7 @@ func (o *PostTransactionScript) GetVars() map[string]interface{} {
 // GetVarsOk returns a tuple with the Vars field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *PostTransactionScript) GetVarsOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Vars) {
+	if o == nil || IsNil(o.Vars) {
 		return map[string]interface{}{}, false
 	}
 	return o.Vars, true
@@ -86,7 +86,7 @@ func (o *PostTransactionScript) GetVarsOk() (map[string]interface{}, bool) {
 
 // HasVars returns a boolean if a field has been set.
 func (o *PostTransactionScript) HasVars() bool {
-	if o != nil && !isNil(o.Vars) {
+	if o != nil && !IsNil(o.Vars) {
 		return true
 	}
 
@@ -109,7 +109,7 @@ func (o PostTransactionScript) MarshalJSON() ([]byte, error) {
 func (o PostTransactionScript) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["plain"] = o.Plain
-	if !isNil(o.Vars) {
+	if !IsNil(o.Vars) {
 		toSerialize["vars"] = o.Vars
 	}
 	return toSerialize, nil

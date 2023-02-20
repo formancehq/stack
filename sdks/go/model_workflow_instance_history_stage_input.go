@@ -51,7 +51,7 @@ func NewWorkflowInstanceHistoryStageInputWithDefaults() *WorkflowInstanceHistory
 
 // GetGetAccount returns the GetAccount field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageInput) GetGetAccount() ActivityGetAccount {
-	if o == nil || isNil(o.GetAccount) {
+	if o == nil || IsNil(o.GetAccount) {
 		var ret ActivityGetAccount
 		return ret
 	}
@@ -61,7 +61,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetGetAccount() ActivityGetAccount {
 // GetGetAccountOk returns a tuple with the GetAccount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageInput) GetGetAccountOk() (*ActivityGetAccount, bool) {
-	if o == nil || isNil(o.GetAccount) {
+	if o == nil || IsNil(o.GetAccount) {
 		return nil, false
 	}
 	return o.GetAccount, true
@@ -69,7 +69,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetGetAccountOk() (*ActivityGetAccou
 
 // HasGetAccount returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageInput) HasGetAccount() bool {
-	if o != nil && !isNil(o.GetAccount) {
+	if o != nil && !IsNil(o.GetAccount) {
 		return true
 	}
 
@@ -83,7 +83,7 @@ func (o *WorkflowInstanceHistoryStageInput) SetGetAccount(v ActivityGetAccount) 
 
 // GetCreateTransaction returns the CreateTransaction field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageInput) GetCreateTransaction() ActivityCreateTransaction {
-	if o == nil || isNil(o.CreateTransaction) {
+	if o == nil || IsNil(o.CreateTransaction) {
 		var ret ActivityCreateTransaction
 		return ret
 	}
@@ -93,7 +93,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetCreateTransaction() ActivityCreat
 // GetCreateTransactionOk returns a tuple with the CreateTransaction field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageInput) GetCreateTransactionOk() (*ActivityCreateTransaction, bool) {
-	if o == nil || isNil(o.CreateTransaction) {
+	if o == nil || IsNil(o.CreateTransaction) {
 		return nil, false
 	}
 	return o.CreateTransaction, true
@@ -101,7 +101,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetCreateTransactionOk() (*ActivityC
 
 // HasCreateTransaction returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageInput) HasCreateTransaction() bool {
-	if o != nil && !isNil(o.CreateTransaction) {
+	if o != nil && !IsNil(o.CreateTransaction) {
 		return true
 	}
 
@@ -115,7 +115,7 @@ func (o *WorkflowInstanceHistoryStageInput) SetCreateTransaction(v ActivityCreat
 
 // GetRevertTransaction returns the RevertTransaction field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageInput) GetRevertTransaction() ActivityRevertTransaction {
-	if o == nil || isNil(o.RevertTransaction) {
+	if o == nil || IsNil(o.RevertTransaction) {
 		var ret ActivityRevertTransaction
 		return ret
 	}
@@ -125,7 +125,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetRevertTransaction() ActivityRever
 // GetRevertTransactionOk returns a tuple with the RevertTransaction field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageInput) GetRevertTransactionOk() (*ActivityRevertTransaction, bool) {
-	if o == nil || isNil(o.RevertTransaction) {
+	if o == nil || IsNil(o.RevertTransaction) {
 		return nil, false
 	}
 	return o.RevertTransaction, true
@@ -133,7 +133,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetRevertTransactionOk() (*ActivityR
 
 // HasRevertTransaction returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageInput) HasRevertTransaction() bool {
-	if o != nil && !isNil(o.RevertTransaction) {
+	if o != nil && !IsNil(o.RevertTransaction) {
 		return true
 	}
 
@@ -147,7 +147,7 @@ func (o *WorkflowInstanceHistoryStageInput) SetRevertTransaction(v ActivityRever
 
 // GetStripeTransfer returns the StripeTransfer field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageInput) GetStripeTransfer() StripeTransferRequest {
-	if o == nil || isNil(o.StripeTransfer) {
+	if o == nil || IsNil(o.StripeTransfer) {
 		var ret StripeTransferRequest
 		return ret
 	}
@@ -157,7 +157,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetStripeTransfer() StripeTransferRe
 // GetStripeTransferOk returns a tuple with the StripeTransfer field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageInput) GetStripeTransferOk() (*StripeTransferRequest, bool) {
-	if o == nil || isNil(o.StripeTransfer) {
+	if o == nil || IsNil(o.StripeTransfer) {
 		return nil, false
 	}
 	return o.StripeTransfer, true
@@ -165,7 +165,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetStripeTransferOk() (*StripeTransf
 
 // HasStripeTransfer returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageInput) HasStripeTransfer() bool {
-	if o != nil && !isNil(o.StripeTransfer) {
+	if o != nil && !IsNil(o.StripeTransfer) {
 		return true
 	}
 
@@ -179,7 +179,7 @@ func (o *WorkflowInstanceHistoryStageInput) SetStripeTransfer(v StripeTransferRe
 
 // GetGetPayment returns the GetPayment field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageInput) GetGetPayment() ActivityGetPayment {
-	if o == nil || isNil(o.GetPayment) {
+	if o == nil || IsNil(o.GetPayment) {
 		var ret ActivityGetPayment
 		return ret
 	}
@@ -189,7 +189,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetGetPayment() ActivityGetPayment {
 // GetGetPaymentOk returns a tuple with the GetPayment field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageInput) GetGetPaymentOk() (*ActivityGetPayment, bool) {
-	if o == nil || isNil(o.GetPayment) {
+	if o == nil || IsNil(o.GetPayment) {
 		return nil, false
 	}
 	return o.GetPayment, true
@@ -197,7 +197,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetGetPaymentOk() (*ActivityGetPayme
 
 // HasGetPayment returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageInput) HasGetPayment() bool {
-	if o != nil && !isNil(o.GetPayment) {
+	if o != nil && !IsNil(o.GetPayment) {
 		return true
 	}
 
@@ -211,7 +211,7 @@ func (o *WorkflowInstanceHistoryStageInput) SetGetPayment(v ActivityGetPayment) 
 
 // GetConfirmHold returns the ConfirmHold field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageInput) GetConfirmHold() ActivityConfirmHold {
-	if o == nil || isNil(o.ConfirmHold) {
+	if o == nil || IsNil(o.ConfirmHold) {
 		var ret ActivityConfirmHold
 		return ret
 	}
@@ -221,7 +221,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetConfirmHold() ActivityConfirmHold
 // GetConfirmHoldOk returns a tuple with the ConfirmHold field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageInput) GetConfirmHoldOk() (*ActivityConfirmHold, bool) {
-	if o == nil || isNil(o.ConfirmHold) {
+	if o == nil || IsNil(o.ConfirmHold) {
 		return nil, false
 	}
 	return o.ConfirmHold, true
@@ -229,7 +229,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetConfirmHoldOk() (*ActivityConfirm
 
 // HasConfirmHold returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageInput) HasConfirmHold() bool {
-	if o != nil && !isNil(o.ConfirmHold) {
+	if o != nil && !IsNil(o.ConfirmHold) {
 		return true
 	}
 
@@ -243,7 +243,7 @@ func (o *WorkflowInstanceHistoryStageInput) SetConfirmHold(v ActivityConfirmHold
 
 // GetCreditWallet returns the CreditWallet field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageInput) GetCreditWallet() ActivityCreditWallet {
-	if o == nil || isNil(o.CreditWallet) {
+	if o == nil || IsNil(o.CreditWallet) {
 		var ret ActivityCreditWallet
 		return ret
 	}
@@ -253,7 +253,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetCreditWallet() ActivityCreditWall
 // GetCreditWalletOk returns a tuple with the CreditWallet field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageInput) GetCreditWalletOk() (*ActivityCreditWallet, bool) {
-	if o == nil || isNil(o.CreditWallet) {
+	if o == nil || IsNil(o.CreditWallet) {
 		return nil, false
 	}
 	return o.CreditWallet, true
@@ -261,7 +261,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetCreditWalletOk() (*ActivityCredit
 
 // HasCreditWallet returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageInput) HasCreditWallet() bool {
-	if o != nil && !isNil(o.CreditWallet) {
+	if o != nil && !IsNil(o.CreditWallet) {
 		return true
 	}
 
@@ -275,7 +275,7 @@ func (o *WorkflowInstanceHistoryStageInput) SetCreditWallet(v ActivityCreditWall
 
 // GetDebitWallet returns the DebitWallet field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageInput) GetDebitWallet() ActivityDebitWallet {
-	if o == nil || isNil(o.DebitWallet) {
+	if o == nil || IsNil(o.DebitWallet) {
 		var ret ActivityDebitWallet
 		return ret
 	}
@@ -285,7 +285,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetDebitWallet() ActivityDebitWallet
 // GetDebitWalletOk returns a tuple with the DebitWallet field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageInput) GetDebitWalletOk() (*ActivityDebitWallet, bool) {
-	if o == nil || isNil(o.DebitWallet) {
+	if o == nil || IsNil(o.DebitWallet) {
 		return nil, false
 	}
 	return o.DebitWallet, true
@@ -293,7 +293,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetDebitWalletOk() (*ActivityDebitWa
 
 // HasDebitWallet returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageInput) HasDebitWallet() bool {
-	if o != nil && !isNil(o.DebitWallet) {
+	if o != nil && !IsNil(o.DebitWallet) {
 		return true
 	}
 
@@ -307,7 +307,7 @@ func (o *WorkflowInstanceHistoryStageInput) SetDebitWallet(v ActivityDebitWallet
 
 // GetGetWallet returns the GetWallet field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageInput) GetGetWallet() ActivityGetWallet {
-	if o == nil || isNil(o.GetWallet) {
+	if o == nil || IsNil(o.GetWallet) {
 		var ret ActivityGetWallet
 		return ret
 	}
@@ -317,7 +317,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetGetWallet() ActivityGetWallet {
 // GetGetWalletOk returns a tuple with the GetWallet field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageInput) GetGetWalletOk() (*ActivityGetWallet, bool) {
-	if o == nil || isNil(o.GetWallet) {
+	if o == nil || IsNil(o.GetWallet) {
 		return nil, false
 	}
 	return o.GetWallet, true
@@ -325,7 +325,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetGetWalletOk() (*ActivityGetWallet
 
 // HasGetWallet returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageInput) HasGetWallet() bool {
-	if o != nil && !isNil(o.GetWallet) {
+	if o != nil && !IsNil(o.GetWallet) {
 		return true
 	}
 
@@ -339,7 +339,7 @@ func (o *WorkflowInstanceHistoryStageInput) SetGetWallet(v ActivityGetWallet) {
 
 // GetVoidHold returns the VoidHold field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageInput) GetVoidHold() ActivityVoidHold {
-	if o == nil || isNil(o.VoidHold) {
+	if o == nil || IsNil(o.VoidHold) {
 		var ret ActivityVoidHold
 		return ret
 	}
@@ -349,7 +349,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetVoidHold() ActivityVoidHold {
 // GetVoidHoldOk returns a tuple with the VoidHold field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageInput) GetVoidHoldOk() (*ActivityVoidHold, bool) {
-	if o == nil || isNil(o.VoidHold) {
+	if o == nil || IsNil(o.VoidHold) {
 		return nil, false
 	}
 	return o.VoidHold, true
@@ -357,7 +357,7 @@ func (o *WorkflowInstanceHistoryStageInput) GetVoidHoldOk() (*ActivityVoidHold, 
 
 // HasVoidHold returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageInput) HasVoidHold() bool {
-	if o != nil && !isNil(o.VoidHold) {
+	if o != nil && !IsNil(o.VoidHold) {
 		return true
 	}
 
@@ -379,34 +379,34 @@ func (o WorkflowInstanceHistoryStageInput) MarshalJSON() ([]byte, error) {
 
 func (o WorkflowInstanceHistoryStageInput) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.GetAccount) {
+	if !IsNil(o.GetAccount) {
 		toSerialize["GetAccount"] = o.GetAccount
 	}
-	if !isNil(o.CreateTransaction) {
+	if !IsNil(o.CreateTransaction) {
 		toSerialize["CreateTransaction"] = o.CreateTransaction
 	}
-	if !isNil(o.RevertTransaction) {
+	if !IsNil(o.RevertTransaction) {
 		toSerialize["RevertTransaction"] = o.RevertTransaction
 	}
-	if !isNil(o.StripeTransfer) {
+	if !IsNil(o.StripeTransfer) {
 		toSerialize["StripeTransfer"] = o.StripeTransfer
 	}
-	if !isNil(o.GetPayment) {
+	if !IsNil(o.GetPayment) {
 		toSerialize["GetPayment"] = o.GetPayment
 	}
-	if !isNil(o.ConfirmHold) {
+	if !IsNil(o.ConfirmHold) {
 		toSerialize["ConfirmHold"] = o.ConfirmHold
 	}
-	if !isNil(o.CreditWallet) {
+	if !IsNil(o.CreditWallet) {
 		toSerialize["CreditWallet"] = o.CreditWallet
 	}
-	if !isNil(o.DebitWallet) {
+	if !IsNil(o.DebitWallet) {
 		toSerialize["DebitWallet"] = o.DebitWallet
 	}
-	if !isNil(o.GetWallet) {
+	if !IsNil(o.GetWallet) {
 		toSerialize["GetWallet"] = o.GetWallet
 	}
-	if !isNil(o.VoidHold) {
+	if !IsNil(o.VoidHold) {
 		toSerialize["VoidHold"] = o.VoidHold
 	}
 	return toSerialize, nil

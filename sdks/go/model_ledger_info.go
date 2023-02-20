@@ -43,7 +43,7 @@ func NewLedgerInfoWithDefaults() *LedgerInfo {
 
 // GetName returns the Name field value if set, zero value otherwise.
 func (o *LedgerInfo) GetName() string {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
 	}
@@ -53,7 +53,7 @@ func (o *LedgerInfo) GetName() string {
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *LedgerInfo) GetNameOk() (*string, bool) {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
 	return o.Name, true
@@ -61,7 +61,7 @@ func (o *LedgerInfo) GetNameOk() (*string, bool) {
 
 // HasName returns a boolean if a field has been set.
 func (o *LedgerInfo) HasName() bool {
-	if o != nil && !isNil(o.Name) {
+	if o != nil && !IsNil(o.Name) {
 		return true
 	}
 
@@ -75,7 +75,7 @@ func (o *LedgerInfo) SetName(v string) {
 
 // GetStorage returns the Storage field value if set, zero value otherwise.
 func (o *LedgerInfo) GetStorage() LedgerInfoStorage {
-	if o == nil || isNil(o.Storage) {
+	if o == nil || IsNil(o.Storage) {
 		var ret LedgerInfoStorage
 		return ret
 	}
@@ -85,7 +85,7 @@ func (o *LedgerInfo) GetStorage() LedgerInfoStorage {
 // GetStorageOk returns a tuple with the Storage field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *LedgerInfo) GetStorageOk() (*LedgerInfoStorage, bool) {
-	if o == nil || isNil(o.Storage) {
+	if o == nil || IsNil(o.Storage) {
 		return nil, false
 	}
 	return o.Storage, true
@@ -93,7 +93,7 @@ func (o *LedgerInfo) GetStorageOk() (*LedgerInfoStorage, bool) {
 
 // HasStorage returns a boolean if a field has been set.
 func (o *LedgerInfo) HasStorage() bool {
-	if o != nil && !isNil(o.Storage) {
+	if o != nil && !IsNil(o.Storage) {
 		return true
 	}
 
@@ -115,10 +115,10 @@ func (o LedgerInfo) MarshalJSON() ([]byte, error) {
 
 func (o LedgerInfo) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Name) {
+	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !isNil(o.Storage) {
+	if !IsNil(o.Storage) {
 		toSerialize["storage"] = o.Storage
 	}
 	return toSerialize, nil

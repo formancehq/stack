@@ -53,7 +53,7 @@ func NewClientWithDefaults() *Client {
 
 // GetPublic returns the Public field value if set, zero value otherwise.
 func (o *Client) GetPublic() bool {
-	if o == nil || isNil(o.Public) {
+	if o == nil || IsNil(o.Public) {
 		var ret bool
 		return ret
 	}
@@ -63,7 +63,7 @@ func (o *Client) GetPublic() bool {
 // GetPublicOk returns a tuple with the Public field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Client) GetPublicOk() (*bool, bool) {
-	if o == nil || isNil(o.Public) {
+	if o == nil || IsNil(o.Public) {
 		return nil, false
 	}
 	return o.Public, true
@@ -71,7 +71,7 @@ func (o *Client) GetPublicOk() (*bool, bool) {
 
 // HasPublic returns a boolean if a field has been set.
 func (o *Client) HasPublic() bool {
-	if o != nil && !isNil(o.Public) {
+	if o != nil && !IsNil(o.Public) {
 		return true
 	}
 
@@ -85,7 +85,7 @@ func (o *Client) SetPublic(v bool) {
 
 // GetRedirectUris returns the RedirectUris field value if set, zero value otherwise.
 func (o *Client) GetRedirectUris() []string {
-	if o == nil || isNil(o.RedirectUris) {
+	if o == nil || IsNil(o.RedirectUris) {
 		var ret []string
 		return ret
 	}
@@ -95,7 +95,7 @@ func (o *Client) GetRedirectUris() []string {
 // GetRedirectUrisOk returns a tuple with the RedirectUris field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Client) GetRedirectUrisOk() ([]string, bool) {
-	if o == nil || isNil(o.RedirectUris) {
+	if o == nil || IsNil(o.RedirectUris) {
 		return nil, false
 	}
 	return o.RedirectUris, true
@@ -103,7 +103,7 @@ func (o *Client) GetRedirectUrisOk() ([]string, bool) {
 
 // HasRedirectUris returns a boolean if a field has been set.
 func (o *Client) HasRedirectUris() bool {
-	if o != nil && !isNil(o.RedirectUris) {
+	if o != nil && !IsNil(o.RedirectUris) {
 		return true
 	}
 
@@ -117,7 +117,7 @@ func (o *Client) SetRedirectUris(v []string) {
 
 // GetDescription returns the Description field value if set, zero value otherwise.
 func (o *Client) GetDescription() string {
-	if o == nil || isNil(o.Description) {
+	if o == nil || IsNil(o.Description) {
 		var ret string
 		return ret
 	}
@@ -127,7 +127,7 @@ func (o *Client) GetDescription() string {
 // GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Client) GetDescriptionOk() (*string, bool) {
-	if o == nil || isNil(o.Description) {
+	if o == nil || IsNil(o.Description) {
 		return nil, false
 	}
 	return o.Description, true
@@ -135,7 +135,7 @@ func (o *Client) GetDescriptionOk() (*string, bool) {
 
 // HasDescription returns a boolean if a field has been set.
 func (o *Client) HasDescription() bool {
-	if o != nil && !isNil(o.Description) {
+	if o != nil && !IsNil(o.Description) {
 		return true
 	}
 
@@ -173,7 +173,7 @@ func (o *Client) SetName(v string) {
 
 // GetTrusted returns the Trusted field value if set, zero value otherwise.
 func (o *Client) GetTrusted() bool {
-	if o == nil || isNil(o.Trusted) {
+	if o == nil || IsNil(o.Trusted) {
 		var ret bool
 		return ret
 	}
@@ -183,7 +183,7 @@ func (o *Client) GetTrusted() bool {
 // GetTrustedOk returns a tuple with the Trusted field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Client) GetTrustedOk() (*bool, bool) {
-	if o == nil || isNil(o.Trusted) {
+	if o == nil || IsNil(o.Trusted) {
 		return nil, false
 	}
 	return o.Trusted, true
@@ -191,7 +191,7 @@ func (o *Client) GetTrustedOk() (*bool, bool) {
 
 // HasTrusted returns a boolean if a field has been set.
 func (o *Client) HasTrusted() bool {
-	if o != nil && !isNil(o.Trusted) {
+	if o != nil && !IsNil(o.Trusted) {
 		return true
 	}
 
@@ -205,7 +205,7 @@ func (o *Client) SetTrusted(v bool) {
 
 // GetPostLogoutRedirectUris returns the PostLogoutRedirectUris field value if set, zero value otherwise.
 func (o *Client) GetPostLogoutRedirectUris() []string {
-	if o == nil || isNil(o.PostLogoutRedirectUris) {
+	if o == nil || IsNil(o.PostLogoutRedirectUris) {
 		var ret []string
 		return ret
 	}
@@ -215,7 +215,7 @@ func (o *Client) GetPostLogoutRedirectUris() []string {
 // GetPostLogoutRedirectUrisOk returns a tuple with the PostLogoutRedirectUris field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Client) GetPostLogoutRedirectUrisOk() ([]string, bool) {
-	if o == nil || isNil(o.PostLogoutRedirectUris) {
+	if o == nil || IsNil(o.PostLogoutRedirectUris) {
 		return nil, false
 	}
 	return o.PostLogoutRedirectUris, true
@@ -223,7 +223,7 @@ func (o *Client) GetPostLogoutRedirectUrisOk() ([]string, bool) {
 
 // HasPostLogoutRedirectUris returns a boolean if a field has been set.
 func (o *Client) HasPostLogoutRedirectUris() bool {
-	if o != nil && !isNil(o.PostLogoutRedirectUris) {
+	if o != nil && !IsNil(o.PostLogoutRedirectUris) {
 		return true
 	}
 
@@ -237,7 +237,7 @@ func (o *Client) SetPostLogoutRedirectUris(v []string) {
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *Client) GetMetadata() map[string]interface{} {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -247,7 +247,7 @@ func (o *Client) GetMetadata() map[string]interface{} {
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Client) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -255,7 +255,7 @@ func (o *Client) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *Client) HasMetadata() bool {
-	if o != nil && !isNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
@@ -293,7 +293,7 @@ func (o *Client) SetId(v string) {
 
 // GetScopes returns the Scopes field value if set, zero value otherwise.
 func (o *Client) GetScopes() []string {
-	if o == nil || isNil(o.Scopes) {
+	if o == nil || IsNil(o.Scopes) {
 		var ret []string
 		return ret
 	}
@@ -303,7 +303,7 @@ func (o *Client) GetScopes() []string {
 // GetScopesOk returns a tuple with the Scopes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Client) GetScopesOk() ([]string, bool) {
-	if o == nil || isNil(o.Scopes) {
+	if o == nil || IsNil(o.Scopes) {
 		return nil, false
 	}
 	return o.Scopes, true
@@ -311,7 +311,7 @@ func (o *Client) GetScopesOk() ([]string, bool) {
 
 // HasScopes returns a boolean if a field has been set.
 func (o *Client) HasScopes() bool {
-	if o != nil && !isNil(o.Scopes) {
+	if o != nil && !IsNil(o.Scopes) {
 		return true
 	}
 
@@ -325,7 +325,7 @@ func (o *Client) SetScopes(v []string) {
 
 // GetSecrets returns the Secrets field value if set, zero value otherwise.
 func (o *Client) GetSecrets() []ClientSecret {
-	if o == nil || isNil(o.Secrets) {
+	if o == nil || IsNil(o.Secrets) {
 		var ret []ClientSecret
 		return ret
 	}
@@ -335,7 +335,7 @@ func (o *Client) GetSecrets() []ClientSecret {
 // GetSecretsOk returns a tuple with the Secrets field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Client) GetSecretsOk() ([]ClientSecret, bool) {
-	if o == nil || isNil(o.Secrets) {
+	if o == nil || IsNil(o.Secrets) {
 		return nil, false
 	}
 	return o.Secrets, true
@@ -343,7 +343,7 @@ func (o *Client) GetSecretsOk() ([]ClientSecret, bool) {
 
 // HasSecrets returns a boolean if a field has been set.
 func (o *Client) HasSecrets() bool {
-	if o != nil && !isNil(o.Secrets) {
+	if o != nil && !IsNil(o.Secrets) {
 		return true
 	}
 
@@ -365,30 +365,30 @@ func (o Client) MarshalJSON() ([]byte, error) {
 
 func (o Client) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Public) {
+	if !IsNil(o.Public) {
 		toSerialize["public"] = o.Public
 	}
-	if !isNil(o.RedirectUris) {
+	if !IsNil(o.RedirectUris) {
 		toSerialize["redirectUris"] = o.RedirectUris
 	}
-	if !isNil(o.Description) {
+	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}
 	toSerialize["name"] = o.Name
-	if !isNil(o.Trusted) {
+	if !IsNil(o.Trusted) {
 		toSerialize["trusted"] = o.Trusted
 	}
-	if !isNil(o.PostLogoutRedirectUris) {
+	if !IsNil(o.PostLogoutRedirectUris) {
 		toSerialize["postLogoutRedirectUris"] = o.PostLogoutRedirectUris
 	}
-	if !isNil(o.Metadata) {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	toSerialize["id"] = o.Id
-	if !isNil(o.Scopes) {
+	if !IsNil(o.Scopes) {
 		toSerialize["scopes"] = o.Scopes
 	}
-	if !isNil(o.Secrets) {
+	if !IsNil(o.Secrets) {
 		toSerialize["secrets"] = o.Secrets
 	}
 	return toSerialize, nil

@@ -42,7 +42,7 @@ func NewPaymentMetadataWithDefaults() *PaymentMetadata {
 
 // GetKey returns the Key field value if set, zero value otherwise.
 func (o *PaymentMetadata) GetKey() string {
-	if o == nil || isNil(o.Key) {
+	if o == nil || IsNil(o.Key) {
 		var ret string
 		return ret
 	}
@@ -52,7 +52,7 @@ func (o *PaymentMetadata) GetKey() string {
 // GetKeyOk returns a tuple with the Key field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *PaymentMetadata) GetKeyOk() (*string, bool) {
-	if o == nil || isNil(o.Key) {
+	if o == nil || IsNil(o.Key) {
 		return nil, false
 	}
 	return o.Key, true
@@ -60,7 +60,7 @@ func (o *PaymentMetadata) GetKeyOk() (*string, bool) {
 
 // HasKey returns a boolean if a field has been set.
 func (o *PaymentMetadata) HasKey() bool {
-	if o != nil && !isNil(o.Key) {
+	if o != nil && !IsNil(o.Key) {
 		return true
 	}
 
@@ -82,7 +82,7 @@ func (o PaymentMetadata) MarshalJSON() ([]byte, error) {
 
 func (o PaymentMetadata) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Key) {
+	if !IsNil(o.Key) {
 		toSerialize["key"] = o.Key
 	}
 	return toSerialize, nil

@@ -44,7 +44,7 @@ func NewStageDelayWithDefaults() *StageDelay {
 
 // GetUntil returns the Until field value if set, zero value otherwise.
 func (o *StageDelay) GetUntil() time.Time {
-	if o == nil || isNil(o.Until) {
+	if o == nil || IsNil(o.Until) {
 		var ret time.Time
 		return ret
 	}
@@ -54,7 +54,7 @@ func (o *StageDelay) GetUntil() time.Time {
 // GetUntilOk returns a tuple with the Until field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageDelay) GetUntilOk() (*time.Time, bool) {
-	if o == nil || isNil(o.Until) {
+	if o == nil || IsNil(o.Until) {
 		return nil, false
 	}
 	return o.Until, true
@@ -62,7 +62,7 @@ func (o *StageDelay) GetUntilOk() (*time.Time, bool) {
 
 // HasUntil returns a boolean if a field has been set.
 func (o *StageDelay) HasUntil() bool {
-	if o != nil && !isNil(o.Until) {
+	if o != nil && !IsNil(o.Until) {
 		return true
 	}
 
@@ -76,7 +76,7 @@ func (o *StageDelay) SetUntil(v time.Time) {
 
 // GetDuration returns the Duration field value if set, zero value otherwise.
 func (o *StageDelay) GetDuration() string {
-	if o == nil || isNil(o.Duration) {
+	if o == nil || IsNil(o.Duration) {
 		var ret string
 		return ret
 	}
@@ -86,7 +86,7 @@ func (o *StageDelay) GetDuration() string {
 // GetDurationOk returns a tuple with the Duration field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageDelay) GetDurationOk() (*string, bool) {
-	if o == nil || isNil(o.Duration) {
+	if o == nil || IsNil(o.Duration) {
 		return nil, false
 	}
 	return o.Duration, true
@@ -94,7 +94,7 @@ func (o *StageDelay) GetDurationOk() (*string, bool) {
 
 // HasDuration returns a boolean if a field has been set.
 func (o *StageDelay) HasDuration() bool {
-	if o != nil && !isNil(o.Duration) {
+	if o != nil && !IsNil(o.Duration) {
 		return true
 	}
 
@@ -116,10 +116,10 @@ func (o StageDelay) MarshalJSON() ([]byte, error) {
 
 func (o StageDelay) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Until) {
+	if !IsNil(o.Until) {
 		toSerialize["until"] = o.Until
 	}
-	if !isNil(o.Duration) {
+	if !IsNil(o.Duration) {
 		toSerialize["duration"] = o.Duration
 	}
 	return toSerialize, nil

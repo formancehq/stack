@@ -69,7 +69,7 @@ func (o *ClientAllOf) SetId(v string) {
 
 // GetScopes returns the Scopes field value if set, zero value otherwise.
 func (o *ClientAllOf) GetScopes() []string {
-	if o == nil || isNil(o.Scopes) {
+	if o == nil || IsNil(o.Scopes) {
 		var ret []string
 		return ret
 	}
@@ -79,7 +79,7 @@ func (o *ClientAllOf) GetScopes() []string {
 // GetScopesOk returns a tuple with the Scopes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ClientAllOf) GetScopesOk() ([]string, bool) {
-	if o == nil || isNil(o.Scopes) {
+	if o == nil || IsNil(o.Scopes) {
 		return nil, false
 	}
 	return o.Scopes, true
@@ -87,7 +87,7 @@ func (o *ClientAllOf) GetScopesOk() ([]string, bool) {
 
 // HasScopes returns a boolean if a field has been set.
 func (o *ClientAllOf) HasScopes() bool {
-	if o != nil && !isNil(o.Scopes) {
+	if o != nil && !IsNil(o.Scopes) {
 		return true
 	}
 
@@ -101,7 +101,7 @@ func (o *ClientAllOf) SetScopes(v []string) {
 
 // GetSecrets returns the Secrets field value if set, zero value otherwise.
 func (o *ClientAllOf) GetSecrets() []ClientSecret {
-	if o == nil || isNil(o.Secrets) {
+	if o == nil || IsNil(o.Secrets) {
 		var ret []ClientSecret
 		return ret
 	}
@@ -111,7 +111,7 @@ func (o *ClientAllOf) GetSecrets() []ClientSecret {
 // GetSecretsOk returns a tuple with the Secrets field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ClientAllOf) GetSecretsOk() ([]ClientSecret, bool) {
-	if o == nil || isNil(o.Secrets) {
+	if o == nil || IsNil(o.Secrets) {
 		return nil, false
 	}
 	return o.Secrets, true
@@ -119,7 +119,7 @@ func (o *ClientAllOf) GetSecretsOk() ([]ClientSecret, bool) {
 
 // HasSecrets returns a boolean if a field has been set.
 func (o *ClientAllOf) HasSecrets() bool {
-	if o != nil && !isNil(o.Secrets) {
+	if o != nil && !IsNil(o.Secrets) {
 		return true
 	}
 
@@ -142,10 +142,10 @@ func (o ClientAllOf) MarshalJSON() ([]byte, error) {
 func (o ClientAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
-	if !isNil(o.Scopes) {
+	if !IsNil(o.Scopes) {
 		toSerialize["scopes"] = o.Scopes
 	}
-	if !isNil(o.Secrets) {
+	if !IsNil(o.Secrets) {
 		toSerialize["secrets"] = o.Secrets
 	}
 	return toSerialize, nil

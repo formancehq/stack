@@ -55,7 +55,7 @@ func NewDummyPayConfigWithDefaults() *DummyPayConfig {
 
 // GetFilePollingPeriod returns the FilePollingPeriod field value if set, zero value otherwise.
 func (o *DummyPayConfig) GetFilePollingPeriod() string {
-	if o == nil || isNil(o.FilePollingPeriod) {
+	if o == nil || IsNil(o.FilePollingPeriod) {
 		var ret string
 		return ret
 	}
@@ -65,7 +65,7 @@ func (o *DummyPayConfig) GetFilePollingPeriod() string {
 // GetFilePollingPeriodOk returns a tuple with the FilePollingPeriod field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *DummyPayConfig) GetFilePollingPeriodOk() (*string, bool) {
-	if o == nil || isNil(o.FilePollingPeriod) {
+	if o == nil || IsNil(o.FilePollingPeriod) {
 		return nil, false
 	}
 	return o.FilePollingPeriod, true
@@ -73,7 +73,7 @@ func (o *DummyPayConfig) GetFilePollingPeriodOk() (*string, bool) {
 
 // HasFilePollingPeriod returns a boolean if a field has been set.
 func (o *DummyPayConfig) HasFilePollingPeriod() bool {
-	if o != nil && !isNil(o.FilePollingPeriod) {
+	if o != nil && !IsNil(o.FilePollingPeriod) {
 		return true
 	}
 
@@ -87,7 +87,7 @@ func (o *DummyPayConfig) SetFilePollingPeriod(v string) {
 
 // GetFileGenerationPeriod returns the FileGenerationPeriod field value if set, zero value otherwise.
 func (o *DummyPayConfig) GetFileGenerationPeriod() string {
-	if o == nil || isNil(o.FileGenerationPeriod) {
+	if o == nil || IsNil(o.FileGenerationPeriod) {
 		var ret string
 		return ret
 	}
@@ -97,7 +97,7 @@ func (o *DummyPayConfig) GetFileGenerationPeriod() string {
 // GetFileGenerationPeriodOk returns a tuple with the FileGenerationPeriod field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *DummyPayConfig) GetFileGenerationPeriodOk() (*string, bool) {
-	if o == nil || isNil(o.FileGenerationPeriod) {
+	if o == nil || IsNil(o.FileGenerationPeriod) {
 		return nil, false
 	}
 	return o.FileGenerationPeriod, true
@@ -105,7 +105,7 @@ func (o *DummyPayConfig) GetFileGenerationPeriodOk() (*string, bool) {
 
 // HasFileGenerationPeriod returns a boolean if a field has been set.
 func (o *DummyPayConfig) HasFileGenerationPeriod() bool {
-	if o != nil && !isNil(o.FileGenerationPeriod) {
+	if o != nil && !IsNil(o.FileGenerationPeriod) {
 		return true
 	}
 
@@ -151,10 +151,10 @@ func (o DummyPayConfig) MarshalJSON() ([]byte, error) {
 
 func (o DummyPayConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.FilePollingPeriod) {
+	if !IsNil(o.FilePollingPeriod) {
 		toSerialize["filePollingPeriod"] = o.FilePollingPeriod
 	}
-	if !isNil(o.FileGenerationPeriod) {
+	if !IsNil(o.FileGenerationPeriod) {
 		toSerialize["fileGenerationPeriod"] = o.FileGenerationPeriod
 	}
 	toSerialize["directory"] = o.Directory

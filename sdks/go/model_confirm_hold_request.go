@@ -45,7 +45,7 @@ func NewConfirmHoldRequestWithDefaults() *ConfirmHoldRequest {
 
 // GetAmount returns the Amount field value if set, zero value otherwise.
 func (o *ConfirmHoldRequest) GetAmount() int64 {
-	if o == nil || isNil(o.Amount) {
+	if o == nil || IsNil(o.Amount) {
 		var ret int64
 		return ret
 	}
@@ -55,7 +55,7 @@ func (o *ConfirmHoldRequest) GetAmount() int64 {
 // GetAmountOk returns a tuple with the Amount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ConfirmHoldRequest) GetAmountOk() (*int64, bool) {
-	if o == nil || isNil(o.Amount) {
+	if o == nil || IsNil(o.Amount) {
 		return nil, false
 	}
 	return o.Amount, true
@@ -63,7 +63,7 @@ func (o *ConfirmHoldRequest) GetAmountOk() (*int64, bool) {
 
 // HasAmount returns a boolean if a field has been set.
 func (o *ConfirmHoldRequest) HasAmount() bool {
-	if o != nil && !isNil(o.Amount) {
+	if o != nil && !IsNil(o.Amount) {
 		return true
 	}
 
@@ -77,7 +77,7 @@ func (o *ConfirmHoldRequest) SetAmount(v int64) {
 
 // GetFinal returns the Final field value if set, zero value otherwise.
 func (o *ConfirmHoldRequest) GetFinal() bool {
-	if o == nil || isNil(o.Final) {
+	if o == nil || IsNil(o.Final) {
 		var ret bool
 		return ret
 	}
@@ -87,7 +87,7 @@ func (o *ConfirmHoldRequest) GetFinal() bool {
 // GetFinalOk returns a tuple with the Final field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ConfirmHoldRequest) GetFinalOk() (*bool, bool) {
-	if o == nil || isNil(o.Final) {
+	if o == nil || IsNil(o.Final) {
 		return nil, false
 	}
 	return o.Final, true
@@ -95,7 +95,7 @@ func (o *ConfirmHoldRequest) GetFinalOk() (*bool, bool) {
 
 // HasFinal returns a boolean if a field has been set.
 func (o *ConfirmHoldRequest) HasFinal() bool {
-	if o != nil && !isNil(o.Final) {
+	if o != nil && !IsNil(o.Final) {
 		return true
 	}
 
@@ -117,10 +117,10 @@ func (o ConfirmHoldRequest) MarshalJSON() ([]byte, error) {
 
 func (o ConfirmHoldRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Amount) {
+	if !IsNil(o.Amount) {
 		toSerialize["amount"] = o.Amount
 	}
-	if !isNil(o.Final) {
+	if !IsNil(o.Final) {
 		toSerialize["final"] = o.Final
 	}
 	return toSerialize, nil

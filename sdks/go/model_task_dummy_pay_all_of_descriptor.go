@@ -44,7 +44,7 @@ func NewTaskDummyPayAllOfDescriptorWithDefaults() *TaskDummyPayAllOfDescriptor {
 
 // GetName returns the Name field value if set, zero value otherwise.
 func (o *TaskDummyPayAllOfDescriptor) GetName() string {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
 	}
@@ -54,7 +54,7 @@ func (o *TaskDummyPayAllOfDescriptor) GetName() string {
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskDummyPayAllOfDescriptor) GetNameOk() (*string, bool) {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
 	return o.Name, true
@@ -62,7 +62,7 @@ func (o *TaskDummyPayAllOfDescriptor) GetNameOk() (*string, bool) {
 
 // HasName returns a boolean if a field has been set.
 func (o *TaskDummyPayAllOfDescriptor) HasName() bool {
-	if o != nil && !isNil(o.Name) {
+	if o != nil && !IsNil(o.Name) {
 		return true
 	}
 
@@ -76,7 +76,7 @@ func (o *TaskDummyPayAllOfDescriptor) SetName(v string) {
 
 // GetKey returns the Key field value if set, zero value otherwise.
 func (o *TaskDummyPayAllOfDescriptor) GetKey() string {
-	if o == nil || isNil(o.Key) {
+	if o == nil || IsNil(o.Key) {
 		var ret string
 		return ret
 	}
@@ -86,7 +86,7 @@ func (o *TaskDummyPayAllOfDescriptor) GetKey() string {
 // GetKeyOk returns a tuple with the Key field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskDummyPayAllOfDescriptor) GetKeyOk() (*string, bool) {
-	if o == nil || isNil(o.Key) {
+	if o == nil || IsNil(o.Key) {
 		return nil, false
 	}
 	return o.Key, true
@@ -94,7 +94,7 @@ func (o *TaskDummyPayAllOfDescriptor) GetKeyOk() (*string, bool) {
 
 // HasKey returns a boolean if a field has been set.
 func (o *TaskDummyPayAllOfDescriptor) HasKey() bool {
-	if o != nil && !isNil(o.Key) {
+	if o != nil && !IsNil(o.Key) {
 		return true
 	}
 
@@ -108,7 +108,7 @@ func (o *TaskDummyPayAllOfDescriptor) SetKey(v string) {
 
 // GetFileName returns the FileName field value if set, zero value otherwise.
 func (o *TaskDummyPayAllOfDescriptor) GetFileName() string {
-	if o == nil || isNil(o.FileName) {
+	if o == nil || IsNil(o.FileName) {
 		var ret string
 		return ret
 	}
@@ -118,7 +118,7 @@ func (o *TaskDummyPayAllOfDescriptor) GetFileName() string {
 // GetFileNameOk returns a tuple with the FileName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskDummyPayAllOfDescriptor) GetFileNameOk() (*string, bool) {
-	if o == nil || isNil(o.FileName) {
+	if o == nil || IsNil(o.FileName) {
 		return nil, false
 	}
 	return o.FileName, true
@@ -126,7 +126,7 @@ func (o *TaskDummyPayAllOfDescriptor) GetFileNameOk() (*string, bool) {
 
 // HasFileName returns a boolean if a field has been set.
 func (o *TaskDummyPayAllOfDescriptor) HasFileName() bool {
-	if o != nil && !isNil(o.FileName) {
+	if o != nil && !IsNil(o.FileName) {
 		return true
 	}
 
@@ -148,13 +148,13 @@ func (o TaskDummyPayAllOfDescriptor) MarshalJSON() ([]byte, error) {
 
 func (o TaskDummyPayAllOfDescriptor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Name) {
+	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !isNil(o.Key) {
+	if !IsNil(o.Key) {
 		toSerialize["key"] = o.Key
 	}
-	if !isNil(o.FileName) {
+	if !IsNil(o.FileName) {
 		toSerialize["fileName"] = o.FileName
 	}
 	return toSerialize, nil

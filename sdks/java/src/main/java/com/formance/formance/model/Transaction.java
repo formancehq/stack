@@ -48,7 +48,7 @@ public class Transaction {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = null;
+  private Map<String, Object> metadata;
 
   public static final String SERIALIZED_NAME_TXID = "txid";
   @SerializedName(SERIALIZED_NAME_TXID)
@@ -143,9 +143,6 @@ public class Transaction {
   }
 
   public Transaction putMetadataItem(String key, Object metadataItem) {
-    if (this.metadata == null) {
-      this.metadata = null;
-    }
     this.metadata.put(key, metadataItem);
     return this;
   }

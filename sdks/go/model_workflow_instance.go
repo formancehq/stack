@@ -151,7 +151,7 @@ func (o *WorkflowInstance) SetUpdatedAt(v time.Time) {
 
 // GetStatus returns the Status field value if set, zero value otherwise.
 func (o *WorkflowInstance) GetStatus() []StageStatus {
-	if o == nil || isNil(o.Status) {
+	if o == nil || IsNil(o.Status) {
 		var ret []StageStatus
 		return ret
 	}
@@ -161,7 +161,7 @@ func (o *WorkflowInstance) GetStatus() []StageStatus {
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstance) GetStatusOk() ([]StageStatus, bool) {
-	if o == nil || isNil(o.Status) {
+	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
 	return o.Status, true
@@ -169,7 +169,7 @@ func (o *WorkflowInstance) GetStatusOk() ([]StageStatus, bool) {
 
 // HasStatus returns a boolean if a field has been set.
 func (o *WorkflowInstance) HasStatus() bool {
-	if o != nil && !isNil(o.Status) {
+	if o != nil && !IsNil(o.Status) {
 		return true
 	}
 
@@ -207,7 +207,7 @@ func (o *WorkflowInstance) SetTerminated(v bool) {
 
 // GetTerminatedAt returns the TerminatedAt field value if set, zero value otherwise.
 func (o *WorkflowInstance) GetTerminatedAt() time.Time {
-	if o == nil || isNil(o.TerminatedAt) {
+	if o == nil || IsNil(o.TerminatedAt) {
 		var ret time.Time
 		return ret
 	}
@@ -217,7 +217,7 @@ func (o *WorkflowInstance) GetTerminatedAt() time.Time {
 // GetTerminatedAtOk returns a tuple with the TerminatedAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstance) GetTerminatedAtOk() (*time.Time, bool) {
-	if o == nil || isNil(o.TerminatedAt) {
+	if o == nil || IsNil(o.TerminatedAt) {
 		return nil, false
 	}
 	return o.TerminatedAt, true
@@ -225,7 +225,7 @@ func (o *WorkflowInstance) GetTerminatedAtOk() (*time.Time, bool) {
 
 // HasTerminatedAt returns a boolean if a field has been set.
 func (o *WorkflowInstance) HasTerminatedAt() bool {
-	if o != nil && !isNil(o.TerminatedAt) {
+	if o != nil && !IsNil(o.TerminatedAt) {
 		return true
 	}
 
@@ -239,7 +239,7 @@ func (o *WorkflowInstance) SetTerminatedAt(v time.Time) {
 
 // GetError returns the Error field value if set, zero value otherwise.
 func (o *WorkflowInstance) GetError() string {
-	if o == nil || isNil(o.Error) {
+	if o == nil || IsNil(o.Error) {
 		var ret string
 		return ret
 	}
@@ -249,7 +249,7 @@ func (o *WorkflowInstance) GetError() string {
 // GetErrorOk returns a tuple with the Error field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstance) GetErrorOk() (*string, bool) {
-	if o == nil || isNil(o.Error) {
+	if o == nil || IsNil(o.Error) {
 		return nil, false
 	}
 	return o.Error, true
@@ -257,7 +257,7 @@ func (o *WorkflowInstance) GetErrorOk() (*string, bool) {
 
 // HasError returns a boolean if a field has been set.
 func (o *WorkflowInstance) HasError() bool {
-	if o != nil && !isNil(o.Error) {
+	if o != nil && !IsNil(o.Error) {
 		return true
 	}
 
@@ -283,14 +283,14 @@ func (o WorkflowInstance) ToMap() (map[string]interface{}, error) {
 	toSerialize["id"] = o.Id
 	toSerialize["createdAt"] = o.CreatedAt
 	toSerialize["updatedAt"] = o.UpdatedAt
-	if !isNil(o.Status) {
+	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status
 	}
 	toSerialize["terminated"] = o.Terminated
-	if !isNil(o.TerminatedAt) {
+	if !IsNil(o.TerminatedAt) {
 		toSerialize["terminatedAt"] = o.TerminatedAt
 	}
-	if !isNil(o.Error) {
+	if !IsNil(o.Error) {
 		toSerialize["error"] = o.Error
 	}
 	return toSerialize, nil

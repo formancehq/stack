@@ -155,7 +155,7 @@ func (o *ExpandedDebitHold) SetDescription(v string) {
 
 // GetDestination returns the Destination field value if set, zero value otherwise.
 func (o *ExpandedDebitHold) GetDestination() Subject {
-	if o == nil || isNil(o.Destination) {
+	if o == nil || IsNil(o.Destination) {
 		var ret Subject
 		return ret
 	}
@@ -165,7 +165,7 @@ func (o *ExpandedDebitHold) GetDestination() Subject {
 // GetDestinationOk returns a tuple with the Destination field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ExpandedDebitHold) GetDestinationOk() (*Subject, bool) {
-	if o == nil || isNil(o.Destination) {
+	if o == nil || IsNil(o.Destination) {
 		return nil, false
 	}
 	return o.Destination, true
@@ -173,7 +173,7 @@ func (o *ExpandedDebitHold) GetDestinationOk() (*Subject, bool) {
 
 // HasDestination returns a boolean if a field has been set.
 func (o *ExpandedDebitHold) HasDestination() bool {
-	if o != nil && !isNil(o.Destination) {
+	if o != nil && !IsNil(o.Destination) {
 		return true
 	}
 
@@ -247,7 +247,7 @@ func (o ExpandedDebitHold) ToMap() (map[string]interface{}, error) {
 	toSerialize["walletID"] = o.WalletID
 	toSerialize["metadata"] = o.Metadata
 	toSerialize["description"] = o.Description
-	if !isNil(o.Destination) {
+	if !IsNil(o.Destination) {
 		toSerialize["destination"] = o.Destination
 	}
 	toSerialize["remaining"] = o.Remaining

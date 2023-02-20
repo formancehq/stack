@@ -47,7 +47,7 @@ func NewWorkflowInstanceHistoryStageOutputWithDefaults() *WorkflowInstanceHistor
 
 // GetGetAccount returns the GetAccount field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageOutput) GetGetAccount() AccountResponse {
-	if o == nil || isNil(o.GetAccount) {
+	if o == nil || IsNil(o.GetAccount) {
 		var ret AccountResponse
 		return ret
 	}
@@ -57,7 +57,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetGetAccount() AccountResponse {
 // GetGetAccountOk returns a tuple with the GetAccount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageOutput) GetGetAccountOk() (*AccountResponse, bool) {
-	if o == nil || isNil(o.GetAccount) {
+	if o == nil || IsNil(o.GetAccount) {
 		return nil, false
 	}
 	return o.GetAccount, true
@@ -65,7 +65,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetGetAccountOk() (*AccountResponse
 
 // HasGetAccount returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageOutput) HasGetAccount() bool {
-	if o != nil && !isNil(o.GetAccount) {
+	if o != nil && !IsNil(o.GetAccount) {
 		return true
 	}
 
@@ -79,7 +79,7 @@ func (o *WorkflowInstanceHistoryStageOutput) SetGetAccount(v AccountResponse) {
 
 // GetCreateTransaction returns the CreateTransaction field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() TransactionsResponse {
-	if o == nil || isNil(o.CreateTransaction) {
+	if o == nil || IsNil(o.CreateTransaction) {
 		var ret TransactionsResponse
 		return ret
 	}
@@ -89,7 +89,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() Transactions
 // GetCreateTransactionOk returns a tuple with the CreateTransaction field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransactionOk() (*TransactionsResponse, bool) {
-	if o == nil || isNil(o.CreateTransaction) {
+	if o == nil || IsNil(o.CreateTransaction) {
 		return nil, false
 	}
 	return o.CreateTransaction, true
@@ -97,7 +97,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransactionOk() (*Transact
 
 // HasCreateTransaction returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageOutput) HasCreateTransaction() bool {
-	if o != nil && !isNil(o.CreateTransaction) {
+	if o != nil && !IsNil(o.CreateTransaction) {
 		return true
 	}
 
@@ -111,7 +111,7 @@ func (o *WorkflowInstanceHistoryStageOutput) SetCreateTransaction(v Transactions
 
 // GetRevertTransaction returns the RevertTransaction field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageOutput) GetRevertTransaction() TransactionResponse {
-	if o == nil || isNil(o.RevertTransaction) {
+	if o == nil || IsNil(o.RevertTransaction) {
 		var ret TransactionResponse
 		return ret
 	}
@@ -121,7 +121,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetRevertTransaction() TransactionR
 // GetRevertTransactionOk returns a tuple with the RevertTransaction field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageOutput) GetRevertTransactionOk() (*TransactionResponse, bool) {
-	if o == nil || isNil(o.RevertTransaction) {
+	if o == nil || IsNil(o.RevertTransaction) {
 		return nil, false
 	}
 	return o.RevertTransaction, true
@@ -129,7 +129,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetRevertTransactionOk() (*Transact
 
 // HasRevertTransaction returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageOutput) HasRevertTransaction() bool {
-	if o != nil && !isNil(o.RevertTransaction) {
+	if o != nil && !IsNil(o.RevertTransaction) {
 		return true
 	}
 
@@ -143,7 +143,7 @@ func (o *WorkflowInstanceHistoryStageOutput) SetRevertTransaction(v TransactionR
 
 // GetGetPayment returns the GetPayment field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageOutput) GetGetPayment() PaymentResponse {
-	if o == nil || isNil(o.GetPayment) {
+	if o == nil || IsNil(o.GetPayment) {
 		var ret PaymentResponse
 		return ret
 	}
@@ -153,7 +153,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetGetPayment() PaymentResponse {
 // GetGetPaymentOk returns a tuple with the GetPayment field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageOutput) GetGetPaymentOk() (*PaymentResponse, bool) {
-	if o == nil || isNil(o.GetPayment) {
+	if o == nil || IsNil(o.GetPayment) {
 		return nil, false
 	}
 	return o.GetPayment, true
@@ -161,7 +161,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetGetPaymentOk() (*PaymentResponse
 
 // HasGetPayment returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageOutput) HasGetPayment() bool {
-	if o != nil && !isNil(o.GetPayment) {
+	if o != nil && !IsNil(o.GetPayment) {
 		return true
 	}
 
@@ -175,7 +175,7 @@ func (o *WorkflowInstanceHistoryStageOutput) SetGetPayment(v PaymentResponse) {
 
 // GetDebitWallet returns the DebitWallet field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageOutput) GetDebitWallet() DebitWalletResponse {
-	if o == nil || isNil(o.DebitWallet) {
+	if o == nil || IsNil(o.DebitWallet) {
 		var ret DebitWalletResponse
 		return ret
 	}
@@ -185,7 +185,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetDebitWallet() DebitWalletRespons
 // GetDebitWalletOk returns a tuple with the DebitWallet field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageOutput) GetDebitWalletOk() (*DebitWalletResponse, bool) {
-	if o == nil || isNil(o.DebitWallet) {
+	if o == nil || IsNil(o.DebitWallet) {
 		return nil, false
 	}
 	return o.DebitWallet, true
@@ -193,7 +193,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetDebitWalletOk() (*DebitWalletRes
 
 // HasDebitWallet returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageOutput) HasDebitWallet() bool {
-	if o != nil && !isNil(o.DebitWallet) {
+	if o != nil && !IsNil(o.DebitWallet) {
 		return true
 	}
 
@@ -207,7 +207,7 @@ func (o *WorkflowInstanceHistoryStageOutput) SetDebitWallet(v DebitWalletRespons
 
 // GetGetWallet returns the GetWallet field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistoryStageOutput) GetGetWallet() GetWalletResponse {
-	if o == nil || isNil(o.GetWallet) {
+	if o == nil || IsNil(o.GetWallet) {
 		var ret GetWalletResponse
 		return ret
 	}
@@ -217,7 +217,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetGetWallet() GetWalletResponse {
 // GetGetWalletOk returns a tuple with the GetWallet field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistoryStageOutput) GetGetWalletOk() (*GetWalletResponse, bool) {
-	if o == nil || isNil(o.GetWallet) {
+	if o == nil || IsNil(o.GetWallet) {
 		return nil, false
 	}
 	return o.GetWallet, true
@@ -225,7 +225,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetGetWalletOk() (*GetWalletRespons
 
 // HasGetWallet returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistoryStageOutput) HasGetWallet() bool {
-	if o != nil && !isNil(o.GetWallet) {
+	if o != nil && !IsNil(o.GetWallet) {
 		return true
 	}
 
@@ -247,22 +247,22 @@ func (o WorkflowInstanceHistoryStageOutput) MarshalJSON() ([]byte, error) {
 
 func (o WorkflowInstanceHistoryStageOutput) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.GetAccount) {
+	if !IsNil(o.GetAccount) {
 		toSerialize["GetAccount"] = o.GetAccount
 	}
-	if !isNil(o.CreateTransaction) {
+	if !IsNil(o.CreateTransaction) {
 		toSerialize["CreateTransaction"] = o.CreateTransaction
 	}
-	if !isNil(o.RevertTransaction) {
+	if !IsNil(o.RevertTransaction) {
 		toSerialize["RevertTransaction"] = o.RevertTransaction
 	}
-	if !isNil(o.GetPayment) {
+	if !IsNil(o.GetPayment) {
 		toSerialize["GetPayment"] = o.GetPayment
 	}
-	if !isNil(o.DebitWallet) {
+	if !IsNil(o.DebitWallet) {
 		toSerialize["DebitWallet"] = o.DebitWallet
 	}
-	if !isNil(o.GetWallet) {
+	if !IsNil(o.GetWallet) {
 		toSerialize["GetWallet"] = o.GetWallet
 	}
 	return toSerialize, nil

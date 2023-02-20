@@ -43,7 +43,7 @@ func NewTotalWithDefaults() *Total {
 
 // GetValue returns the Value field value if set, zero value otherwise.
 func (o *Total) GetValue() int64 {
-	if o == nil || isNil(o.Value) {
+	if o == nil || IsNil(o.Value) {
 		var ret int64
 		return ret
 	}
@@ -53,7 +53,7 @@ func (o *Total) GetValue() int64 {
 // GetValueOk returns a tuple with the Value field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Total) GetValueOk() (*int64, bool) {
-	if o == nil || isNil(o.Value) {
+	if o == nil || IsNil(o.Value) {
 		return nil, false
 	}
 	return o.Value, true
@@ -61,7 +61,7 @@ func (o *Total) GetValueOk() (*int64, bool) {
 
 // HasValue returns a boolean if a field has been set.
 func (o *Total) HasValue() bool {
-	if o != nil && !isNil(o.Value) {
+	if o != nil && !IsNil(o.Value) {
 		return true
 	}
 
@@ -75,7 +75,7 @@ func (o *Total) SetValue(v int64) {
 
 // GetRelation returns the Relation field value if set, zero value otherwise.
 func (o *Total) GetRelation() string {
-	if o == nil || isNil(o.Relation) {
+	if o == nil || IsNil(o.Relation) {
 		var ret string
 		return ret
 	}
@@ -85,7 +85,7 @@ func (o *Total) GetRelation() string {
 // GetRelationOk returns a tuple with the Relation field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Total) GetRelationOk() (*string, bool) {
-	if o == nil || isNil(o.Relation) {
+	if o == nil || IsNil(o.Relation) {
 		return nil, false
 	}
 	return o.Relation, true
@@ -93,7 +93,7 @@ func (o *Total) GetRelationOk() (*string, bool) {
 
 // HasRelation returns a boolean if a field has been set.
 func (o *Total) HasRelation() bool {
-	if o != nil && !isNil(o.Relation) {
+	if o != nil && !IsNil(o.Relation) {
 		return true
 	}
 
@@ -115,10 +115,10 @@ func (o Total) MarshalJSON() ([]byte, error) {
 
 func (o Total) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Value) {
+	if !IsNil(o.Value) {
 		toSerialize["value"] = o.Value
 	}
-	if !isNil(o.Relation) {
+	if !IsNil(o.Relation) {
 		toSerialize["relation"] = o.Relation
 	}
 	return toSerialize, nil

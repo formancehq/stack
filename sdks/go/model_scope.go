@@ -71,7 +71,7 @@ func (o *Scope) SetLabel(v string) {
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *Scope) GetMetadata() map[string]interface{} {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -81,7 +81,7 @@ func (o *Scope) GetMetadata() map[string]interface{} {
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Scope) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -89,7 +89,7 @@ func (o *Scope) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *Scope) HasMetadata() bool {
-	if o != nil && !isNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
@@ -127,7 +127,7 @@ func (o *Scope) SetId(v string) {
 
 // GetTransient returns the Transient field value if set, zero value otherwise.
 func (o *Scope) GetTransient() []string {
-	if o == nil || isNil(o.Transient) {
+	if o == nil || IsNil(o.Transient) {
 		var ret []string
 		return ret
 	}
@@ -137,7 +137,7 @@ func (o *Scope) GetTransient() []string {
 // GetTransientOk returns a tuple with the Transient field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Scope) GetTransientOk() ([]string, bool) {
-	if o == nil || isNil(o.Transient) {
+	if o == nil || IsNil(o.Transient) {
 		return nil, false
 	}
 	return o.Transient, true
@@ -145,7 +145,7 @@ func (o *Scope) GetTransientOk() ([]string, bool) {
 
 // HasTransient returns a boolean if a field has been set.
 func (o *Scope) HasTransient() bool {
-	if o != nil && !isNil(o.Transient) {
+	if o != nil && !IsNil(o.Transient) {
 		return true
 	}
 
@@ -168,11 +168,11 @@ func (o Scope) MarshalJSON() ([]byte, error) {
 func (o Scope) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["label"] = o.Label
-	if !isNil(o.Metadata) {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	toSerialize["id"] = o.Id
-	if !isNil(o.Transient) {
+	if !IsNil(o.Transient) {
 		toSerialize["transient"] = o.Transient
 	}
 	return toSerialize, nil

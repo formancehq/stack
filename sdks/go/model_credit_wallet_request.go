@@ -74,7 +74,7 @@ func (o *CreditWalletRequest) SetAmount(v Monetary) {
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *CreditWalletRequest) GetMetadata() map[string]interface{} {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -84,7 +84,7 @@ func (o *CreditWalletRequest) GetMetadata() map[string]interface{} {
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -92,7 +92,7 @@ func (o *CreditWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *CreditWalletRequest) HasMetadata() bool {
-	if o != nil && !isNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
@@ -106,7 +106,7 @@ func (o *CreditWalletRequest) SetMetadata(v map[string]interface{}) {
 
 // GetReference returns the Reference field value if set, zero value otherwise.
 func (o *CreditWalletRequest) GetReference() string {
-	if o == nil || isNil(o.Reference) {
+	if o == nil || IsNil(o.Reference) {
 		var ret string
 		return ret
 	}
@@ -116,7 +116,7 @@ func (o *CreditWalletRequest) GetReference() string {
 // GetReferenceOk returns a tuple with the Reference field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetReferenceOk() (*string, bool) {
-	if o == nil || isNil(o.Reference) {
+	if o == nil || IsNil(o.Reference) {
 		return nil, false
 	}
 	return o.Reference, true
@@ -124,7 +124,7 @@ func (o *CreditWalletRequest) GetReferenceOk() (*string, bool) {
 
 // HasReference returns a boolean if a field has been set.
 func (o *CreditWalletRequest) HasReference() bool {
-	if o != nil && !isNil(o.Reference) {
+	if o != nil && !IsNil(o.Reference) {
 		return true
 	}
 
@@ -162,7 +162,7 @@ func (o *CreditWalletRequest) SetSources(v []Subject) {
 
 // GetBalance returns the Balance field value if set, zero value otherwise.
 func (o *CreditWalletRequest) GetBalance() string {
-	if o == nil || isNil(o.Balance) {
+	if o == nil || IsNil(o.Balance) {
 		var ret string
 		return ret
 	}
@@ -172,7 +172,7 @@ func (o *CreditWalletRequest) GetBalance() string {
 // GetBalanceOk returns a tuple with the Balance field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *CreditWalletRequest) GetBalanceOk() (*string, bool) {
-	if o == nil || isNil(o.Balance) {
+	if o == nil || IsNil(o.Balance) {
 		return nil, false
 	}
 	return o.Balance, true
@@ -180,7 +180,7 @@ func (o *CreditWalletRequest) GetBalanceOk() (*string, bool) {
 
 // HasBalance returns a boolean if a field has been set.
 func (o *CreditWalletRequest) HasBalance() bool {
-	if o != nil && !isNil(o.Balance) {
+	if o != nil && !IsNil(o.Balance) {
 		return true
 	}
 
@@ -203,14 +203,14 @@ func (o CreditWalletRequest) MarshalJSON() ([]byte, error) {
 func (o CreditWalletRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["amount"] = o.Amount
-	if !isNil(o.Metadata) {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	if !isNil(o.Reference) {
+	if !IsNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
 	toSerialize["sources"] = o.Sources
-	if !isNil(o.Balance) {
+	if !IsNil(o.Balance) {
 		toSerialize["balance"] = o.Balance
 	}
 	return toSerialize, nil

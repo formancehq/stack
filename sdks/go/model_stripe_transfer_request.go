@@ -46,7 +46,7 @@ func NewStripeTransferRequestWithDefaults() *StripeTransferRequest {
 
 // GetAmount returns the Amount field value if set, zero value otherwise.
 func (o *StripeTransferRequest) GetAmount() int64 {
-	if o == nil || isNil(o.Amount) {
+	if o == nil || IsNil(o.Amount) {
 		var ret int64
 		return ret
 	}
@@ -56,7 +56,7 @@ func (o *StripeTransferRequest) GetAmount() int64 {
 // GetAmountOk returns a tuple with the Amount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetAmountOk() (*int64, bool) {
-	if o == nil || isNil(o.Amount) {
+	if o == nil || IsNil(o.Amount) {
 		return nil, false
 	}
 	return o.Amount, true
@@ -64,7 +64,7 @@ func (o *StripeTransferRequest) GetAmountOk() (*int64, bool) {
 
 // HasAmount returns a boolean if a field has been set.
 func (o *StripeTransferRequest) HasAmount() bool {
-	if o != nil && !isNil(o.Amount) {
+	if o != nil && !IsNil(o.Amount) {
 		return true
 	}
 
@@ -78,7 +78,7 @@ func (o *StripeTransferRequest) SetAmount(v int64) {
 
 // GetAsset returns the Asset field value if set, zero value otherwise.
 func (o *StripeTransferRequest) GetAsset() string {
-	if o == nil || isNil(o.Asset) {
+	if o == nil || IsNil(o.Asset) {
 		var ret string
 		return ret
 	}
@@ -88,7 +88,7 @@ func (o *StripeTransferRequest) GetAsset() string {
 // GetAssetOk returns a tuple with the Asset field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetAssetOk() (*string, bool) {
-	if o == nil || isNil(o.Asset) {
+	if o == nil || IsNil(o.Asset) {
 		return nil, false
 	}
 	return o.Asset, true
@@ -96,7 +96,7 @@ func (o *StripeTransferRequest) GetAssetOk() (*string, bool) {
 
 // HasAsset returns a boolean if a field has been set.
 func (o *StripeTransferRequest) HasAsset() bool {
-	if o != nil && !isNil(o.Asset) {
+	if o != nil && !IsNil(o.Asset) {
 		return true
 	}
 
@@ -110,7 +110,7 @@ func (o *StripeTransferRequest) SetAsset(v string) {
 
 // GetDestination returns the Destination field value if set, zero value otherwise.
 func (o *StripeTransferRequest) GetDestination() string {
-	if o == nil || isNil(o.Destination) {
+	if o == nil || IsNil(o.Destination) {
 		var ret string
 		return ret
 	}
@@ -120,7 +120,7 @@ func (o *StripeTransferRequest) GetDestination() string {
 // GetDestinationOk returns a tuple with the Destination field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetDestinationOk() (*string, bool) {
-	if o == nil || isNil(o.Destination) {
+	if o == nil || IsNil(o.Destination) {
 		return nil, false
 	}
 	return o.Destination, true
@@ -128,7 +128,7 @@ func (o *StripeTransferRequest) GetDestinationOk() (*string, bool) {
 
 // HasDestination returns a boolean if a field has been set.
 func (o *StripeTransferRequest) HasDestination() bool {
-	if o != nil && !isNil(o.Destination) {
+	if o != nil && !IsNil(o.Destination) {
 		return true
 	}
 
@@ -142,7 +142,7 @@ func (o *StripeTransferRequest) SetDestination(v string) {
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *StripeTransferRequest) GetMetadata() map[string]interface{} {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -152,7 +152,7 @@ func (o *StripeTransferRequest) GetMetadata() map[string]interface{} {
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StripeTransferRequest) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -160,7 +160,7 @@ func (o *StripeTransferRequest) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *StripeTransferRequest) HasMetadata() bool {
-	if o != nil && !isNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
@@ -182,16 +182,16 @@ func (o StripeTransferRequest) MarshalJSON() ([]byte, error) {
 
 func (o StripeTransferRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Amount) {
+	if !IsNil(o.Amount) {
 		toSerialize["amount"] = o.Amount
 	}
-	if !isNil(o.Asset) {
+	if !IsNil(o.Asset) {
 		toSerialize["asset"] = o.Asset
 	}
-	if !isNil(o.Destination) {
+	if !IsNil(o.Destination) {
 		toSerialize["destination"] = o.Destination
 	}
-	if !isNil(o.Metadata) {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	return toSerialize, nil

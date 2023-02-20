@@ -68,7 +68,7 @@ func (o *StageSendSourceAccount) SetId(v string) {
 
 // GetLedger returns the Ledger field value if set, zero value otherwise.
 func (o *StageSendSourceAccount) GetLedger() string {
-	if o == nil || isNil(o.Ledger) {
+	if o == nil || IsNil(o.Ledger) {
 		var ret string
 		return ret
 	}
@@ -78,7 +78,7 @@ func (o *StageSendSourceAccount) GetLedger() string {
 // GetLedgerOk returns a tuple with the Ledger field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageSendSourceAccount) GetLedgerOk() (*string, bool) {
-	if o == nil || isNil(o.Ledger) {
+	if o == nil || IsNil(o.Ledger) {
 		return nil, false
 	}
 	return o.Ledger, true
@@ -86,7 +86,7 @@ func (o *StageSendSourceAccount) GetLedgerOk() (*string, bool) {
 
 // HasLedger returns a boolean if a field has been set.
 func (o *StageSendSourceAccount) HasLedger() bool {
-	if o != nil && !isNil(o.Ledger) {
+	if o != nil && !IsNil(o.Ledger) {
 		return true
 	}
 
@@ -109,7 +109,7 @@ func (o StageSendSourceAccount) MarshalJSON() ([]byte, error) {
 func (o StageSendSourceAccount) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
-	if !isNil(o.Ledger) {
+	if !IsNil(o.Ledger) {
 		toSerialize["ledger"] = o.Ledger
 	}
 	return toSerialize, nil

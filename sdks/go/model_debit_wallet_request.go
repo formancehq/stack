@@ -74,7 +74,7 @@ func (o *DebitWalletRequest) SetAmount(v Monetary) {
 
 // GetPending returns the Pending field value if set, zero value otherwise.
 func (o *DebitWalletRequest) GetPending() bool {
-	if o == nil || isNil(o.Pending) {
+	if o == nil || IsNil(o.Pending) {
 		var ret bool
 		return ret
 	}
@@ -84,7 +84,7 @@ func (o *DebitWalletRequest) GetPending() bool {
 // GetPendingOk returns a tuple with the Pending field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetPendingOk() (*bool, bool) {
-	if o == nil || isNil(o.Pending) {
+	if o == nil || IsNil(o.Pending) {
 		return nil, false
 	}
 	return o.Pending, true
@@ -92,7 +92,7 @@ func (o *DebitWalletRequest) GetPendingOk() (*bool, bool) {
 
 // HasPending returns a boolean if a field has been set.
 func (o *DebitWalletRequest) HasPending() bool {
-	if o != nil && !isNil(o.Pending) {
+	if o != nil && !IsNil(o.Pending) {
 		return true
 	}
 
@@ -106,7 +106,7 @@ func (o *DebitWalletRequest) SetPending(v bool) {
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *DebitWalletRequest) GetMetadata() map[string]interface{} {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -116,7 +116,7 @@ func (o *DebitWalletRequest) GetMetadata() map[string]interface{} {
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -124,7 +124,7 @@ func (o *DebitWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *DebitWalletRequest) HasMetadata() bool {
-	if o != nil && !isNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
@@ -138,7 +138,7 @@ func (o *DebitWalletRequest) SetMetadata(v map[string]interface{}) {
 
 // GetDescription returns the Description field value if set, zero value otherwise.
 func (o *DebitWalletRequest) GetDescription() string {
-	if o == nil || isNil(o.Description) {
+	if o == nil || IsNil(o.Description) {
 		var ret string
 		return ret
 	}
@@ -148,7 +148,7 @@ func (o *DebitWalletRequest) GetDescription() string {
 // GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetDescriptionOk() (*string, bool) {
-	if o == nil || isNil(o.Description) {
+	if o == nil || IsNil(o.Description) {
 		return nil, false
 	}
 	return o.Description, true
@@ -156,7 +156,7 @@ func (o *DebitWalletRequest) GetDescriptionOk() (*string, bool) {
 
 // HasDescription returns a boolean if a field has been set.
 func (o *DebitWalletRequest) HasDescription() bool {
-	if o != nil && !isNil(o.Description) {
+	if o != nil && !IsNil(o.Description) {
 		return true
 	}
 
@@ -170,7 +170,7 @@ func (o *DebitWalletRequest) SetDescription(v string) {
 
 // GetDestination returns the Destination field value if set, zero value otherwise.
 func (o *DebitWalletRequest) GetDestination() Subject {
-	if o == nil || isNil(o.Destination) {
+	if o == nil || IsNil(o.Destination) {
 		var ret Subject
 		return ret
 	}
@@ -180,7 +180,7 @@ func (o *DebitWalletRequest) GetDestination() Subject {
 // GetDestinationOk returns a tuple with the Destination field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetDestinationOk() (*Subject, bool) {
-	if o == nil || isNil(o.Destination) {
+	if o == nil || IsNil(o.Destination) {
 		return nil, false
 	}
 	return o.Destination, true
@@ -188,7 +188,7 @@ func (o *DebitWalletRequest) GetDestinationOk() (*Subject, bool) {
 
 // HasDestination returns a boolean if a field has been set.
 func (o *DebitWalletRequest) HasDestination() bool {
-	if o != nil && !isNil(o.Destination) {
+	if o != nil && !IsNil(o.Destination) {
 		return true
 	}
 
@@ -202,7 +202,7 @@ func (o *DebitWalletRequest) SetDestination(v Subject) {
 
 // GetBalances returns the Balances field value if set, zero value otherwise.
 func (o *DebitWalletRequest) GetBalances() []string {
-	if o == nil || isNil(o.Balances) {
+	if o == nil || IsNil(o.Balances) {
 		var ret []string
 		return ret
 	}
@@ -212,7 +212,7 @@ func (o *DebitWalletRequest) GetBalances() []string {
 // GetBalancesOk returns a tuple with the Balances field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *DebitWalletRequest) GetBalancesOk() ([]string, bool) {
-	if o == nil || isNil(o.Balances) {
+	if o == nil || IsNil(o.Balances) {
 		return nil, false
 	}
 	return o.Balances, true
@@ -220,7 +220,7 @@ func (o *DebitWalletRequest) GetBalancesOk() ([]string, bool) {
 
 // HasBalances returns a boolean if a field has been set.
 func (o *DebitWalletRequest) HasBalances() bool {
-	if o != nil && !isNil(o.Balances) {
+	if o != nil && !IsNil(o.Balances) {
 		return true
 	}
 
@@ -243,19 +243,19 @@ func (o DebitWalletRequest) MarshalJSON() ([]byte, error) {
 func (o DebitWalletRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["amount"] = o.Amount
-	if !isNil(o.Pending) {
+	if !IsNil(o.Pending) {
 		toSerialize["pending"] = o.Pending
 	}
-	if !isNil(o.Metadata) {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	if !isNil(o.Description) {
+	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}
-	if !isNil(o.Destination) {
+	if !IsNil(o.Destination) {
 		toSerialize["destination"] = o.Destination
 	}
-	if !isNil(o.Balances) {
+	if !IsNil(o.Balances) {
 		toSerialize["balances"] = o.Balances
 	}
 	return toSerialize, nil

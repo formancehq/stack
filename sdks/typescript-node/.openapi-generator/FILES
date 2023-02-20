@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 AccountsApi.md
 BalancesApi.md
 ClientsApi.md

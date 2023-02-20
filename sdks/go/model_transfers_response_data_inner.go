@@ -49,7 +49,7 @@ func NewTransfersResponseDataInnerWithDefaults() *TransfersResponseDataInner {
 
 // GetId returns the Id field value if set, zero value otherwise.
 func (o *TransfersResponseDataInner) GetId() string {
-	if o == nil || isNil(o.Id) {
+	if o == nil || IsNil(o.Id) {
 		var ret string
 		return ret
 	}
@@ -59,7 +59,7 @@ func (o *TransfersResponseDataInner) GetId() string {
 // GetIdOk returns a tuple with the Id field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TransfersResponseDataInner) GetIdOk() (*string, bool) {
-	if o == nil || isNil(o.Id) {
+	if o == nil || IsNil(o.Id) {
 		return nil, false
 	}
 	return o.Id, true
@@ -67,7 +67,7 @@ func (o *TransfersResponseDataInner) GetIdOk() (*string, bool) {
 
 // HasId returns a boolean if a field has been set.
 func (o *TransfersResponseDataInner) HasId() bool {
-	if o != nil && !isNil(o.Id) {
+	if o != nil && !IsNil(o.Id) {
 		return true
 	}
 
@@ -81,7 +81,7 @@ func (o *TransfersResponseDataInner) SetId(v string) {
 
 // GetAmount returns the Amount field value if set, zero value otherwise.
 func (o *TransfersResponseDataInner) GetAmount() int64 {
-	if o == nil || isNil(o.Amount) {
+	if o == nil || IsNil(o.Amount) {
 		var ret int64
 		return ret
 	}
@@ -91,7 +91,7 @@ func (o *TransfersResponseDataInner) GetAmount() int64 {
 // GetAmountOk returns a tuple with the Amount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TransfersResponseDataInner) GetAmountOk() (*int64, bool) {
-	if o == nil || isNil(o.Amount) {
+	if o == nil || IsNil(o.Amount) {
 		return nil, false
 	}
 	return o.Amount, true
@@ -99,7 +99,7 @@ func (o *TransfersResponseDataInner) GetAmountOk() (*int64, bool) {
 
 // HasAmount returns a boolean if a field has been set.
 func (o *TransfersResponseDataInner) HasAmount() bool {
-	if o != nil && !isNil(o.Amount) {
+	if o != nil && !IsNil(o.Amount) {
 		return true
 	}
 
@@ -113,7 +113,7 @@ func (o *TransfersResponseDataInner) SetAmount(v int64) {
 
 // GetAsset returns the Asset field value if set, zero value otherwise.
 func (o *TransfersResponseDataInner) GetAsset() string {
-	if o == nil || isNil(o.Asset) {
+	if o == nil || IsNil(o.Asset) {
 		var ret string
 		return ret
 	}
@@ -123,7 +123,7 @@ func (o *TransfersResponseDataInner) GetAsset() string {
 // GetAssetOk returns a tuple with the Asset field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TransfersResponseDataInner) GetAssetOk() (*string, bool) {
-	if o == nil || isNil(o.Asset) {
+	if o == nil || IsNil(o.Asset) {
 		return nil, false
 	}
 	return o.Asset, true
@@ -131,7 +131,7 @@ func (o *TransfersResponseDataInner) GetAssetOk() (*string, bool) {
 
 // HasAsset returns a boolean if a field has been set.
 func (o *TransfersResponseDataInner) HasAsset() bool {
-	if o != nil && !isNil(o.Asset) {
+	if o != nil && !IsNil(o.Asset) {
 		return true
 	}
 
@@ -145,7 +145,7 @@ func (o *TransfersResponseDataInner) SetAsset(v string) {
 
 // GetDestination returns the Destination field value if set, zero value otherwise.
 func (o *TransfersResponseDataInner) GetDestination() string {
-	if o == nil || isNil(o.Destination) {
+	if o == nil || IsNil(o.Destination) {
 		var ret string
 		return ret
 	}
@@ -155,7 +155,7 @@ func (o *TransfersResponseDataInner) GetDestination() string {
 // GetDestinationOk returns a tuple with the Destination field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TransfersResponseDataInner) GetDestinationOk() (*string, bool) {
-	if o == nil || isNil(o.Destination) {
+	if o == nil || IsNil(o.Destination) {
 		return nil, false
 	}
 	return o.Destination, true
@@ -163,7 +163,7 @@ func (o *TransfersResponseDataInner) GetDestinationOk() (*string, bool) {
 
 // HasDestination returns a boolean if a field has been set.
 func (o *TransfersResponseDataInner) HasDestination() bool {
-	if o != nil && !isNil(o.Destination) {
+	if o != nil && !IsNil(o.Destination) {
 		return true
 	}
 
@@ -177,7 +177,7 @@ func (o *TransfersResponseDataInner) SetDestination(v string) {
 
 // GetSource returns the Source field value if set, zero value otherwise.
 func (o *TransfersResponseDataInner) GetSource() string {
-	if o == nil || isNil(o.Source) {
+	if o == nil || IsNil(o.Source) {
 		var ret string
 		return ret
 	}
@@ -187,7 +187,7 @@ func (o *TransfersResponseDataInner) GetSource() string {
 // GetSourceOk returns a tuple with the Source field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TransfersResponseDataInner) GetSourceOk() (*string, bool) {
-	if o == nil || isNil(o.Source) {
+	if o == nil || IsNil(o.Source) {
 		return nil, false
 	}
 	return o.Source, true
@@ -195,7 +195,7 @@ func (o *TransfersResponseDataInner) GetSourceOk() (*string, bool) {
 
 // HasSource returns a boolean if a field has been set.
 func (o *TransfersResponseDataInner) HasSource() bool {
-	if o != nil && !isNil(o.Source) {
+	if o != nil && !IsNil(o.Source) {
 		return true
 	}
 
@@ -209,7 +209,7 @@ func (o *TransfersResponseDataInner) SetSource(v string) {
 
 // GetCurrency returns the Currency field value if set, zero value otherwise.
 func (o *TransfersResponseDataInner) GetCurrency() string {
-	if o == nil || isNil(o.Currency) {
+	if o == nil || IsNil(o.Currency) {
 		var ret string
 		return ret
 	}
@@ -219,7 +219,7 @@ func (o *TransfersResponseDataInner) GetCurrency() string {
 // GetCurrencyOk returns a tuple with the Currency field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TransfersResponseDataInner) GetCurrencyOk() (*string, bool) {
-	if o == nil || isNil(o.Currency) {
+	if o == nil || IsNil(o.Currency) {
 		return nil, false
 	}
 	return o.Currency, true
@@ -227,7 +227,7 @@ func (o *TransfersResponseDataInner) GetCurrencyOk() (*string, bool) {
 
 // HasCurrency returns a boolean if a field has been set.
 func (o *TransfersResponseDataInner) HasCurrency() bool {
-	if o != nil && !isNil(o.Currency) {
+	if o != nil && !IsNil(o.Currency) {
 		return true
 	}
 
@@ -241,7 +241,7 @@ func (o *TransfersResponseDataInner) SetCurrency(v string) {
 
 // GetStatus returns the Status field value if set, zero value otherwise.
 func (o *TransfersResponseDataInner) GetStatus() string {
-	if o == nil || isNil(o.Status) {
+	if o == nil || IsNil(o.Status) {
 		var ret string
 		return ret
 	}
@@ -251,7 +251,7 @@ func (o *TransfersResponseDataInner) GetStatus() string {
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TransfersResponseDataInner) GetStatusOk() (*string, bool) {
-	if o == nil || isNil(o.Status) {
+	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
 	return o.Status, true
@@ -259,7 +259,7 @@ func (o *TransfersResponseDataInner) GetStatusOk() (*string, bool) {
 
 // HasStatus returns a boolean if a field has been set.
 func (o *TransfersResponseDataInner) HasStatus() bool {
-	if o != nil && !isNil(o.Status) {
+	if o != nil && !IsNil(o.Status) {
 		return true
 	}
 
@@ -273,7 +273,7 @@ func (o *TransfersResponseDataInner) SetStatus(v string) {
 
 // GetError returns the Error field value if set, zero value otherwise.
 func (o *TransfersResponseDataInner) GetError() string {
-	if o == nil || isNil(o.Error) {
+	if o == nil || IsNil(o.Error) {
 		var ret string
 		return ret
 	}
@@ -283,7 +283,7 @@ func (o *TransfersResponseDataInner) GetError() string {
 // GetErrorOk returns a tuple with the Error field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TransfersResponseDataInner) GetErrorOk() (*string, bool) {
-	if o == nil || isNil(o.Error) {
+	if o == nil || IsNil(o.Error) {
 		return nil, false
 	}
 	return o.Error, true
@@ -291,7 +291,7 @@ func (o *TransfersResponseDataInner) GetErrorOk() (*string, bool) {
 
 // HasError returns a boolean if a field has been set.
 func (o *TransfersResponseDataInner) HasError() bool {
-	if o != nil && !isNil(o.Error) {
+	if o != nil && !IsNil(o.Error) {
 		return true
 	}
 
@@ -313,28 +313,28 @@ func (o TransfersResponseDataInner) MarshalJSON() ([]byte, error) {
 
 func (o TransfersResponseDataInner) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Id) {
+	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
-	if !isNil(o.Amount) {
+	if !IsNil(o.Amount) {
 		toSerialize["amount"] = o.Amount
 	}
-	if !isNil(o.Asset) {
+	if !IsNil(o.Asset) {
 		toSerialize["asset"] = o.Asset
 	}
-	if !isNil(o.Destination) {
+	if !IsNil(o.Destination) {
 		toSerialize["destination"] = o.Destination
 	}
-	if !isNil(o.Source) {
+	if !IsNil(o.Source) {
 		toSerialize["source"] = o.Source
 	}
-	if !isNil(o.Currency) {
+	if !IsNil(o.Currency) {
 		toSerialize["currency"] = o.Currency
 	}
-	if !isNil(o.Status) {
+	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status
 	}
-	if !isNil(o.Error) {
+	if !IsNil(o.Error) {
 		toSerialize["error"] = o.Error
 	}
 	return toSerialize, nil

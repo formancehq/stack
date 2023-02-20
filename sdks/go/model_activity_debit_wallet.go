@@ -43,7 +43,7 @@ func NewActivityDebitWalletWithDefaults() *ActivityDebitWallet {
 
 // GetId returns the Id field value if set, zero value otherwise.
 func (o *ActivityDebitWallet) GetId() string {
-	if o == nil || isNil(o.Id) {
+	if o == nil || IsNil(o.Id) {
 		var ret string
 		return ret
 	}
@@ -53,7 +53,7 @@ func (o *ActivityDebitWallet) GetId() string {
 // GetIdOk returns a tuple with the Id field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ActivityDebitWallet) GetIdOk() (*string, bool) {
-	if o == nil || isNil(o.Id) {
+	if o == nil || IsNil(o.Id) {
 		return nil, false
 	}
 	return o.Id, true
@@ -61,7 +61,7 @@ func (o *ActivityDebitWallet) GetIdOk() (*string, bool) {
 
 // HasId returns a boolean if a field has been set.
 func (o *ActivityDebitWallet) HasId() bool {
-	if o != nil && !isNil(o.Id) {
+	if o != nil && !IsNil(o.Id) {
 		return true
 	}
 
@@ -75,7 +75,7 @@ func (o *ActivityDebitWallet) SetId(v string) {
 
 // GetData returns the Data field value if set, zero value otherwise.
 func (o *ActivityDebitWallet) GetData() DebitWalletRequest {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		var ret DebitWalletRequest
 		return ret
 	}
@@ -85,7 +85,7 @@ func (o *ActivityDebitWallet) GetData() DebitWalletRequest {
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ActivityDebitWallet) GetDataOk() (*DebitWalletRequest, bool) {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
 	return o.Data, true
@@ -93,7 +93,7 @@ func (o *ActivityDebitWallet) GetDataOk() (*DebitWalletRequest, bool) {
 
 // HasData returns a boolean if a field has been set.
 func (o *ActivityDebitWallet) HasData() bool {
-	if o != nil && !isNil(o.Data) {
+	if o != nil && !IsNil(o.Data) {
 		return true
 	}
 
@@ -115,10 +115,10 @@ func (o ActivityDebitWallet) MarshalJSON() ([]byte, error) {
 
 func (o ActivityDebitWallet) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Id) {
+	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
-	if !isNil(o.Data) {
+	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
 	return toSerialize, nil

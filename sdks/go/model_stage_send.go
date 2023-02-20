@@ -44,7 +44,7 @@ func NewStageSendWithDefaults() *StageSend {
 
 // GetAmount returns the Amount field value if set, zero value otherwise.
 func (o *StageSend) GetAmount() Monetary {
-	if o == nil || isNil(o.Amount) {
+	if o == nil || IsNil(o.Amount) {
 		var ret Monetary
 		return ret
 	}
@@ -54,7 +54,7 @@ func (o *StageSend) GetAmount() Monetary {
 // GetAmountOk returns a tuple with the Amount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageSend) GetAmountOk() (*Monetary, bool) {
-	if o == nil || isNil(o.Amount) {
+	if o == nil || IsNil(o.Amount) {
 		return nil, false
 	}
 	return o.Amount, true
@@ -62,7 +62,7 @@ func (o *StageSend) GetAmountOk() (*Monetary, bool) {
 
 // HasAmount returns a boolean if a field has been set.
 func (o *StageSend) HasAmount() bool {
-	if o != nil && !isNil(o.Amount) {
+	if o != nil && !IsNil(o.Amount) {
 		return true
 	}
 
@@ -76,7 +76,7 @@ func (o *StageSend) SetAmount(v Monetary) {
 
 // GetDestination returns the Destination field value if set, zero value otherwise.
 func (o *StageSend) GetDestination() StageSendDestination {
-	if o == nil || isNil(o.Destination) {
+	if o == nil || IsNil(o.Destination) {
 		var ret StageSendDestination
 		return ret
 	}
@@ -86,7 +86,7 @@ func (o *StageSend) GetDestination() StageSendDestination {
 // GetDestinationOk returns a tuple with the Destination field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageSend) GetDestinationOk() (*StageSendDestination, bool) {
-	if o == nil || isNil(o.Destination) {
+	if o == nil || IsNil(o.Destination) {
 		return nil, false
 	}
 	return o.Destination, true
@@ -94,7 +94,7 @@ func (o *StageSend) GetDestinationOk() (*StageSendDestination, bool) {
 
 // HasDestination returns a boolean if a field has been set.
 func (o *StageSend) HasDestination() bool {
-	if o != nil && !isNil(o.Destination) {
+	if o != nil && !IsNil(o.Destination) {
 		return true
 	}
 
@@ -108,7 +108,7 @@ func (o *StageSend) SetDestination(v StageSendDestination) {
 
 // GetSource returns the Source field value if set, zero value otherwise.
 func (o *StageSend) GetSource() StageSendSource {
-	if o == nil || isNil(o.Source) {
+	if o == nil || IsNil(o.Source) {
 		var ret StageSendSource
 		return ret
 	}
@@ -118,7 +118,7 @@ func (o *StageSend) GetSource() StageSendSource {
 // GetSourceOk returns a tuple with the Source field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageSend) GetSourceOk() (*StageSendSource, bool) {
-	if o == nil || isNil(o.Source) {
+	if o == nil || IsNil(o.Source) {
 		return nil, false
 	}
 	return o.Source, true
@@ -126,7 +126,7 @@ func (o *StageSend) GetSourceOk() (*StageSendSource, bool) {
 
 // HasSource returns a boolean if a field has been set.
 func (o *StageSend) HasSource() bool {
-	if o != nil && !isNil(o.Source) {
+	if o != nil && !IsNil(o.Source) {
 		return true
 	}
 
@@ -148,13 +148,13 @@ func (o StageSend) MarshalJSON() ([]byte, error) {
 
 func (o StageSend) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Amount) {
+	if !IsNil(o.Amount) {
 		toSerialize["amount"] = o.Amount
 	}
-	if !isNil(o.Destination) {
+	if !IsNil(o.Destination) {
 		toSerialize["destination"] = o.Destination
 	}
-	if !isNil(o.Source) {
+	if !IsNil(o.Source) {
 		toSerialize["source"] = o.Source
 	}
 	return toSerialize, nil
