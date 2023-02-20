@@ -13,6 +13,7 @@ issues:
 linters:
   enable-all: true
   disable:
+    - gomoddirectives
     - wrapcheck
     - varnamelen
     - nlreturn
