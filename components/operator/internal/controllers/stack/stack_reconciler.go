@@ -53,6 +53,7 @@ const (
 
 // Reconciler reconciles a Stack object
 type Reconciler struct {
+	region string
 	client client.Client
 	scheme *runtime.Scheme
 }
@@ -204,6 +205,7 @@ func (r *Reconciler) reconcileStack(ctx context.Context, stack *stackv1beta3.Sta
 	deployer := modules.NewDeployer(r.client, r.scheme, stack, configuration)
 	resolveContext := modules.Context{
 		Context:       ctx,
+		Region:        r.region,
 		Stack:         stack,
 		Configuration: configuration,
 		Versions:      versions,
@@ -212,8 +214,9 @@ func (r *Reconciler) reconcileStack(ctx context.Context, stack *stackv1beta3.Sta
 	return modules.HandleStack(resolveContext, deployer)
 }
 
-func NewReconciler(client client.Client, scheme *runtime.Scheme) *Reconciler {
+func NewReconciler(client client.Client, scheme *runtime.Scheme, region string) *Reconciler {
 	return &Reconciler{
+		region: region,
 		client: client,
 		scheme: scheme,
 	}

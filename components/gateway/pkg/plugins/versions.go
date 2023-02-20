@@ -35,6 +35,7 @@ type Versions struct {
 	logger          *zap.Logger  `json:"-"`
 	versionsHandler http.Handler `json:"-"`
 
+	Region    string     `json:"region,omitempty"`
 	Endpoints []Endpoint `json:"endpoints,omitempty"`
 }
 
@@ -54,6 +55,7 @@ func (v *Versions) Provision(ctx caddy.Context) error {
 	v.versionsHandler = newVersionsHandler(
 		v.logger,
 		newHTTPClient(),
+		v.Region,
 		v.Endpoints,
 	)
 
@@ -76,16 +78,29 @@ func (m *Versions) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	for d.Next() {
 		for d.NextBlock(0) {
 			key := d.Val()
-			var versionEndpoint string
-			var healthEndpoint string
-			if !d.AllArgs(&versionEndpoint, &healthEndpoint) {
-				return d.Errf("invalid number of endpoints' arguments: want <name> <version_endpoint> <health_endpoint>")
+			switch key {
+			case "endpoints":
+				for d.Next() {
+					for d.NextBlock(0) {
+						name := d.Val()
+						var versionEndpoint string
+						var healthEndpoint string
+						fmt.Println("remaining args for endpoints", d.CountRemainingArgs())
+						if !d.AllArgs(&versionEndpoint, &healthEndpoint) {
+							return d.Errf("invalid number of endpoints' arguments: want <name> <version_endpoint> <health_endpoint>")
+						}
+						m.Endpoints = append(m.Endpoints, Endpoint{
+							Name:            name,
+							VersionEndpoint: versionEndpoint,
+							HealthEndpoint:  healthEndpoint,
+						})
+					}
+				}
+			case "region":
+				if !d.AllArgs(&m.Region) {
+					return d.Errf("invalid number of region's arguments: want <region>")
+				}
 			}
-			m.Endpoints = append(m.Endpoints, Endpoint{
-				Name:            key,
-				VersionEndpoint: versionEndpoint,
-				HealthEndpoint:  healthEndpoint,
-			})
 		}
 	}
 	return nil
@@ -122,6 +137,7 @@ type serviceInfo struct {
 }
 
 type versionsResponse struct {
+	Region   string         `json:"region"`
 	Versions []*serviceInfo `json:"versions"`
 }
 
@@ -129,13 +145,15 @@ type versionsHandler struct {
 	logger     *zap.Logger
 	httpClient *http.Client
 
+	region    string
 	endpoints []Endpoint
 }
 
-func newVersionsHandler(logger *zap.Logger, httpClient *http.Client, endpoints []Endpoint) http.Handler {
+func newVersionsHandler(logger *zap.Logger, httpClient *http.Client, region string, endpoints []Endpoint) http.Handler {
 	return &versionsHandler{
 		logger:     logger,
 		httpClient: httpClient,
+		region:     region,
 		endpoints:  endpoints,
 	}
 }
@@ -191,7 +209,9 @@ func (v *versionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	close(versions)
 
-	res := versionsResponse{}
+	res := versionsResponse{
+		Region: v.region,
+	}
 	res.Versions = make([]*serviceInfo, 0, len(v.endpoints))
 	for version := range versions {
 		res.Versions = append(res.Versions, version)

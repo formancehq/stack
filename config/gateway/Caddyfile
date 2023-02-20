@@ -71,12 +71,15 @@ localhost:80 {
 
 	handle /versions {
 		versions {
-			auth http://127.0.0.1:8080/_info http://127.0.0.1:8080/_healthcheck
-			ledger http://ledger:3068/_info http://ledger:3068/_healthcheck
-			wallets http://wallets:8080/_info http://wallets:8080/_healthcheck
-			payments http://payments:8080/_info http://payments:8080/_healthcheck
-			search http://search:8080/_info http://search:8080/_healthcheck
-			webhooks http://webhooks:8080/_info http://webhooks:8080/_healthcheck
+			region "us-east-1"
+			endpoints {
+				auth http://127.0.0.1:8080/_info http://127.0.0.1:8080/_healthcheck
+				ledger http://ledger:3068/_info http://ledger:3068/_healthcheck
+				wallets http://wallets:8080/_info http://wallets:8080/_healthcheck
+				payments http://payments:8080/_info http://payments:8080/_healthcheck
+				search http://search:8080/_info http://search:8080/_healthcheck
+				webhooks http://webhooks:8080/_info http://webhooks:8080/_healthcheck
+			}
 		}
 	}
 
