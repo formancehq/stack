@@ -181,7 +181,7 @@ const caddyfile = `(cors) {
 		versions {
 			{{- range $i, $service := .Services }}
 				{{- if $service.HasVersionEndpoint }}
-			{{ $service.Name }} http://{{ $service.Name }}:{{ $service.Port}}/_info
+			{{ $service.Name }} http://{{ $service.Name }}:{{ $service.Port}}/_info http://{{ $service.Name }}:{{ $service.Port }}/_healthcheck
 				{{- end }}
 			{{- end }}
 		}
