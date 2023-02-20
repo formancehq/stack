@@ -78,8 +78,8 @@ func Execute() {
 		case errors.Is(err, fctl.ErrMissingApproval):
 			pterm.Error.WithWriter(os.Stderr).Printfln("Command aborted as you didn't approve.")
 			os.Exit(1)
-		case formance.ExtractOpenAPIErrorMessage(err) != nil:
-			pterm.Error.WithWriter(os.Stderr).Printfln(formance.ExtractOpenAPIErrorMessage(err).Error())
+		case errors.Is(err, formance.GenericOpenAPIError{}):
+			pterm.Error.WithWriter(os.Stderr).Printfln(err.(formance.GenericOpenAPIError).Error())
 			os.Exit(2)
 		default:
 			pterm.Error.WithWriter(os.Stderr).Printfln(err.Error())

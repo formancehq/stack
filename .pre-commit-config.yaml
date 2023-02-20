@@ -14,7 +14,7 @@ repos:
 - repo: local
   hooks:
   - id: update-sdks
-    name: update-sdks
+    name: update SDKs
     entry: ./scripts/update-sdks.sh
     description: "Update SDKs"
     language: script
