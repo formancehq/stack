@@ -3,7 +3,7 @@ module github.com/formancehq/operator
 go 1.18
 
 require (
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20230210142808-d03bd2a88369
+	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0
 	github.com/iancoleman/strcase v0.2.0
@@ -84,7 +84,7 @@ require (
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.37.0 // indirect
-	github.com/prometheus/procfs v0.8.0 // indirect
+	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/rogpeppe/go-internal v1.8.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
@@ -121,5 +121,6 @@ require (
 
 replace (
 	github.com/abbot/go-http-auth => github.com/containous/go-http-auth v0.4.1-0.20200324110947-a37a7636d23e
+	github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 	github.com/go-check/check => github.com/containous/check v0.0.0-20170915194414-ca0bf163426a
 )
