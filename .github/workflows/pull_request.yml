@@ -106,7 +106,7 @@ jobs:
           flags: ${{ matrix.folder }}
   Docker:
     runs-on:
-      group: runners
+      group: organization/runners
       labels: formance-ubuntu-latest-8-cores
     strategy:
       matrix:
