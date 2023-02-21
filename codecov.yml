@@ -1,0 +1,2 @@
+ignore:
+  - "components/ledger/pkg/machine/script/parser"
