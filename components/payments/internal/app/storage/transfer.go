@@ -3,11 +3,10 @@ package storage
 import (
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/pkg/errors"
 
 	"github.com/uptrace/bun"
-
-	"github.com/jackc/pgx/v5"
 
 	"github.com/google/uuid"
 
@@ -84,7 +83,11 @@ func (s *Storage) UpdateTransferStatus(ctx context.Context, transferID uuid.UUID
 func (s *Storage) UpdateTransfersFromPayments(ctx context.Context, payments []*models.Payment) error {
 	var transfers []models.Transfer
 
-	paymentReferences := make([]string, 0, len(payments))
+	if len(payments) == 0 {
+		return nil
+	}
+
+	paymentReferences := make([]string, len(payments))
 	for paymentIdx := range payments {
 		paymentReferences[paymentIdx] = payments[paymentIdx].Reference
 	}
@@ -99,6 +102,10 @@ func (s *Storage) UpdateTransfersFromPayments(ctx context.Context, payments []*m
 		}
 
 		return e("failed to get transfer", err)
+	}
+
+	if len(transfers) == 0 {
+		return nil
 	}
 
 	for transferIdx := range transfers {
