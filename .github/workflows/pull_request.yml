@@ -107,7 +107,7 @@ jobs:
   Docker:
     runs-on:
       group: runners
-      labels: ubuntu-latest-8-cores
+      labels: formance-ubuntu-latest-8-cores
     strategy:
       matrix:
         folder: ${{ fromJson(needs.Find.outputs.folders )}}
