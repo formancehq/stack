@@ -6,6 +6,7 @@ templateDir: openapi/templates/typescript
 #     destinationFilename: .github/workflows/release.yml
 additionalProperties:
   enumUnknownDefaultCase: true
+  useObjectParameters: true
   platform: node
   npmName: '@formancehq/formance'
   moduleName: formance
