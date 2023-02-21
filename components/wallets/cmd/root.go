@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/formancehq/stack/libs/go-libs/app"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,7 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	cmd.PersistentFlags().BoolP(app.DebugFlag, "d", false, "Debug mode")
+	cmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
 	cmd.AddCommand(newServeCommand())
 	return cmd
 }

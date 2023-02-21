@@ -5,9 +5,9 @@ import (
 	"os"
 	"path"
 
-	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/numary/ledger/cmd/internal"
 	"github.com/numary/ledger/pkg/redis"
 	_ "github.com/numary/ledger/pkg/storage/sqlstorage/migrates/9-add-pre-post-volumes"
@@ -100,7 +100,7 @@ func NewRootCommand() *cobra.Command {
 		home = "/root"
 	}
 
-	root.PersistentFlags().Bool(app.DebugFlag, false, "Debug mode")
+	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")
 	root.PersistentFlags().String(storageDriverFlag, "sqlite", "Storage driver")
 	root.PersistentFlags().String(storageDirFlag, path.Join(home, ".numary/data"), "Storage directory (for sqlite)")
 	root.PersistentFlags().String(storageSQLiteDBNameFlag, "numary", "SQLite database name")

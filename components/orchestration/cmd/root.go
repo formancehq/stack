@@ -5,7 +5,7 @@ import (
 	"os"
 
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
-	"github.com/formancehq/stack/libs/go-libs/app"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 )
 
@@ -47,7 +47,7 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.PersistentFlags().BoolP(app.DebugFlag, "d", false, "Debug mode")
+	rootCmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
 	rootCmd.PersistentFlags().String(stackURLFlag, "", "Stack url")
 	rootCmd.PersistentFlags().String(stackClientIDFlag, "", "Stack client ID")
 	rootCmd.PersistentFlags().String(stackClientSecretFlag, "", "Stack client secret")

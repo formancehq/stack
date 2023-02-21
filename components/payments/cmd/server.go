@@ -5,9 +5,9 @@ import (
 	"github.com/formancehq/payments/internal/app/api"
 	"github.com/formancehq/payments/internal/app/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -66,7 +66,7 @@ func runServer(cmd *cobra.Command, args []string) error {
 		Version: Version,
 	}, viper.GetString(listenFlag)))
 
-	return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+	return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 }
 
 func setLogger() {

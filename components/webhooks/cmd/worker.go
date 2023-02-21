@@ -3,8 +3,8 @@ package cmd
 import (
 	"syscall"
 
-	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/otlp"
 	"github.com/formancehq/webhooks/pkg/worker"
@@ -23,7 +23,7 @@ func RunWorker(cmd *cobra.Command, _ []string) error {
 		"starting webhooks worker module: env variables: %+v viper keys: %+v",
 		syscall.Environ(), viper.AllKeys())
 
-	return app.New(
+	return service.New(
 		cmd.OutOrStdout(),
 		otlp.HttpClientModule(),
 		worker.StartModule(

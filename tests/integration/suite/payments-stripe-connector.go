@@ -13,18 +13,17 @@ import (
 )
 
 var _ = Given("some empty environment", func() {
-
-	apiKey := os.Getenv("STRIPE_API_KEY")
-	if apiKey == "" {
-		Skip("No stripe api key provided")
-	}
-
 	When("configuring stripe connector", func() {
 		var (
 			msgs               chan *nats.Msg
 			cancelSubscription func()
 		)
 		BeforeEach(func() {
+			apiKey := os.Getenv("STRIPE_API_KEY")
+			if apiKey == "" {
+				Skip("No stripe api key provided")
+			}
+
 			cancelSubscription, msgs = SubscribePayments()
 
 			_, err := Client().PaymentsApi.

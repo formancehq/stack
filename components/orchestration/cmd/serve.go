@@ -8,9 +8,9 @@ import (
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/temporal"
 	"github.com/formancehq/orchestration/internal/workflow"
-	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/riandyrn/otelchi"
 	"github.com/spf13/cobra"
@@ -80,18 +80,18 @@ var serveCmd = &cobra.Command{
 				viper.GetString(temporalSSLClientCertFlag),
 				viper.GetString(temporalSSLClientKeyFlag),
 			),
-			storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(app.DebugFlag)),
+			storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag)),
 			workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 			fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
 				lifecycle.Append(fx.Hook{
 					OnStart: func(ctx context.Context) error {
-						return storage.Migrate(db, viper.GetBool(app.DebugFlag))
+						return storage.Migrate(db, viper.GetBool(service.DebugFlag))
 					},
 				})
 			}),
 		}
 
-		return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 	},
 }
 

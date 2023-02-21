@@ -2,8 +2,8 @@ package cmd
 
 import (
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/formancehq/wallets/pkg/api"
 	"github.com/formancehq/wallets/pkg/client"
@@ -34,11 +34,11 @@ func newServeCommand() *cobra.Command {
 					Version: Version,
 				}, viper.GetString(listenFlag)),
 				client.NewModule(viper.GetString(stackClientIDFlag), viper.GetString(stackClientSecretFlag),
-					viper.GetString(stackURLFlag), viper.GetBool(app.DebugFlag)),
+					viper.GetString(stackURLFlag), viper.GetBool(service.DebugFlag)),
 				otlptraces.CLITracesModule(viper.GetViper()),
 			}
 
-			return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},
 	}
 	cmd.Flags().String(stackClientIDFlag, "", "Client ID")

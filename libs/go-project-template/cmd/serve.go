@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/app"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/riandyrn/otelchi"
@@ -74,7 +74,7 @@ var serveCmd = &cobra.Command{
 			otlptraces.CLITracesModule(viper.GetViper()),
 		}
 
-		return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 	},
 }
 
