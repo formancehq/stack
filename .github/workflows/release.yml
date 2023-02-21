@@ -77,7 +77,9 @@ jobs:
 
   GoReleaser:
     name: GoReleaser
-    runs-on: ubuntu-latest
+    runs-on:
+      group: enterprise/runners
+      labels: formance-ubuntu-latest-8-cores
     needs:
       - Extract
       - Tests
