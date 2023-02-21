@@ -33,7 +33,7 @@ func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 
 	options := make([]fx.Option, 0)
 
-	debug := viper.GetBool(service.DebugFlag)
+	debug := v.GetBool(service.DebugFlag)
 	if debug {
 		sqlstorage.InstrumentalizeSQLDrivers()
 	}
@@ -64,7 +64,7 @@ func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 	options = append(options, api.Module(api.Config{
 		StorageDriver: v.GetString(storageDriverFlag),
 		Version:       Version,
-		UseScopes:     viper.GetBool(authBearerUseScopesFlag),
+		UseScopes:     v.GetBool(authBearerUseScopesFlag),
 	}))
 
 	// Handle storage driver
