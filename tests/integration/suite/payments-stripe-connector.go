@@ -3,20 +3,23 @@ package suite
 import (
 	"encoding/json"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
 	. "github.com/formancehq/stack/tests/integration/internal"
-	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
-	"github.com/numary/ledger/pkg/bus"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Given("some empty environment", func() {
-	When("configuring dummy pay connector", func() {
+
+	apiKey := os.Getenv("STRIPE_API_KEY")
+	if apiKey == "" {
+		Skip("No stripe api key provided")
+	}
+
+	When("configuring stripe connector", func() {
 		var (
 			msgs               chan *nats.Msg
 			cancelSubscription func()
@@ -24,15 +27,11 @@ var _ = Given("some empty environment", func() {
 		BeforeEach(func() {
 			cancelSubscription, msgs = SubscribePayments()
 
-			paymentsDir := filepath.Join(os.TempDir(), uuid.NewString())
-			Expect(os.MkdirAll(paymentsDir, 0777)).To(BeNil())
 			_, err := Client().PaymentsApi.
-				InstallConnector(TestContext(), formance.DUMMY_PAY).
+				InstallConnector(TestContext(), formance.STRIPE).
 				ConnectorConfig(formance.ConnectorConfig{
-					DummyPayConfig: &formance.DummyPayConfig{
-						FilePollingPeriod:    formance.PtrString("1s"),
-						Directory:            paymentsDir,
-						FileGenerationPeriod: formance.PtrString("1s"),
+					StripeConfig: &formance.StripeConfig{
+						ApiKey: apiKey,
 					},
 				}).
 				Execute()
@@ -43,8 +42,8 @@ var _ = Given("some empty environment", func() {
 		})
 		It("should trigger some events", func() {
 			msg := waitOnChanWithTimeout(msgs, 5*time.Second)
-			event := &bus.EventMessage{}
-			Expect(json.Unmarshal(msg.Data, event)).To(BeNil())
+			event := make(map[string]any)
+			Expect(json.Unmarshal(msg.Data, &event)).To(BeNil())
 		})
 		It("should generate some payments", func() {
 			Eventually(func(g Gomega) []formance.Payment {
@@ -54,6 +53,17 @@ var _ = Given("some empty environment", func() {
 				g.Expect(err).To(BeNil())
 				return res.Cursor.Data
 			}).ShouldNot(BeEmpty()) // TODO: Check other fields
+		})
+		It("should be ingested on search", func() {
+			Eventually(func(g Gomega) bool {
+				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
+					Target: formance.PtrString("PAYMENT"),
+				}).Execute()
+				g.Expect(err).To(BeNil())
+				g.Expect(res.Cursor.Data).NotTo(BeEmpty())
+
+				return true
+			}).Should(BeTrue())
 		})
 	})
 })

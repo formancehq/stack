@@ -121,7 +121,13 @@ func (s *Storage) UpdateTransfersFromPayments(ctx context.Context, payments []*m
 		}
 	}
 
-	_, err = s.db.NewUpdate().Model(&transfers).Exec(ctx)
+	if len(transfers) == 0 {
+		return nil
+	}
+
+	_, err = s.db.NewUpdate().
+		Model(&transfers).
+		Exec(ctx)
 	if err != nil {
 		return e("failed to update transfers", err)
 	}
