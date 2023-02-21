@@ -1,6 +1,6 @@
 module github.com/formancehq/operator
 
-go 1.18
+go 1.19
 
 require (
 	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000

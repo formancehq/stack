@@ -48,7 +48,7 @@ services:
 
   search:
     command: go run main.go serve
-    image: golang:1.18-alpine
+    image: golang:1.19-alpine
     ports:
     - 8080:8080/tcp
     depends_on:

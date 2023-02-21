@@ -1,4 +1,4 @@
-FROM golang:1.18 AS builder
+FROM golang:1.19 AS builder
 ARG APP_SHA
 ARG VERSION
 WORKDIR /src
@@ -10,7 +10,7 @@ RUN GOOS=linux go build -o webhooks \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Commit=${APP_SHA}" ./
 
-FROM golang:1.18-alpine as dev
+FROM golang:1.19-alpine as dev
 RUN go install github.com/cespare/reflex@latest
 RUN apk update && apk add curl
 
