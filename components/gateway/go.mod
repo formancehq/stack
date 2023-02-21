@@ -1,6 +1,6 @@
 module github.com/formancehq/stack/components/gateway
 
-go 1.18
+go 1.19
 
 require (
 	github.com/caddyserver/caddy/v2 v2.6.3

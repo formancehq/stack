@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM golang:1.18 AS builder
+FROM --platform=$BUILDPLATFORM golang:1.19 AS builder
 # 1. Precompile the entire go standard library into the first Docker cache layer: useful for other projects too!
 ARG APP_SHA
 ARG VERSION

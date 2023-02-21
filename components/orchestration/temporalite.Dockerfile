@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/golang:1.18 AS builder
+FROM public.ecr.aws/docker/library/golang:1.19 AS builder
 
 RUN mkdir -p ${GOPATH:-/go}/src/temporalite && \
     git clone https://github.com/temporalio/temporalite.git ${GOPATH:-/go}/src/temporalite && \
