@@ -58,7 +58,7 @@ func NewRootCommand() *cobra.Command {
 		fctl.WithPersistentStringPFlag(fctl.FileFlag, "c", fmt.Sprintf("%s/.formance/fctl.config", homedir), "Debug mode"),
 		fctl.WithPersistentBoolPFlag(fctl.DebugFlag, "d", false, "Debug mode"),
 		fctl.WithPersistentBoolFlag(fctl.InsecureTlsFlag, false, "Insecure TLS"),
-		fctl.WithPersistentBoolFlag(fctl.TelemetryFlag, true, "Telemetry enabled"),
+		fctl.WithPersistentBoolFlag(fctl.TelemetryFlag, false, "Telemetry enabled"),
 	)
 	return cmd
 }
