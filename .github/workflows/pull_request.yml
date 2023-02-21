@@ -105,7 +105,9 @@ jobs:
           verbose: true # optional (default = false)
           flags: ${{ matrix.folder }}
   Docker:
-    runs-on: ubuntu-latest-8-cores
+    runs-on:
+      group: runners
+      labels: ubuntu-latest-8-cores
     strategy:
       matrix:
         folder: ${{ fromJson(needs.Find.outputs.folders )}}
