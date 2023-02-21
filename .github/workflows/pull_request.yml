@@ -16,7 +16,6 @@ jobs:
           preset: conventional-changelog-angular@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   FindChanges:
     runs-on: ubuntu-latest
     outputs:
@@ -40,7 +39,6 @@ jobs:
         run: |
           echo "One or more files in the docs folder has changed."
           echo "List all the files that have changed: ${{ steps.result.outputs.folders }}"
-
   Find:
     runs-on: ubuntu-latest
     outputs:
@@ -52,7 +50,6 @@ jobs:
           node-version: 16
       - run: echo "folders=$(node .github/actions/find-directory/index.js)" >> $GITHUB_OUTPUT
         id: find
-
   Lint:
     runs-on: ubuntu-latest
     strategy:
@@ -70,12 +67,11 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v3
         with:
-          go-version-file: './go.mod'
+          go-version-file: ./components/${{ matrix.folder }}/go.mod
           cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
           cache: true
       - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
       - run: task ${{ matrix.folder }}:lint
-
   Tests:
     runs-on: ubuntu-latest
     strategy:
@@ -97,7 +93,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v3
         with:
-          go-version-file: './go.mod'
+          go-version-file: ./components/${{ matrix.folder }}/go.mod
           cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
           cache: true
       - run: task ${{ matrix.folder }}:tests
@@ -108,7 +104,6 @@ jobs:
           fail_ci_if_error: false # optional (default = false)
           verbose: true # optional (default = false)
           flags: ${{ matrix.folder }}
-
   Docker:
     runs-on: ubuntu-latest
     strategy:
@@ -128,7 +123,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - uses: actions/setup-go@v3
         with:
-          go-version-file: './go.mod'
+          go-version-file: ./components/${{ matrix.folder }}/go.mod
           cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
           cache: true
       - run: go mod vendor
