@@ -74,7 +74,7 @@ func (o *Secret) SetName(v string) {
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *Secret) GetMetadata() map[string]interface{} {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -84,7 +84,7 @@ func (o *Secret) GetMetadata() map[string]interface{} {
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Secret) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -92,7 +92,7 @@ func (o *Secret) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *Secret) HasMetadata() bool {
-	if o != nil && !isNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
@@ -187,7 +187,7 @@ func (o Secret) MarshalJSON() ([]byte, error) {
 func (o Secret) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
-	if !isNil(o.Metadata) {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	toSerialize["id"] = o.Id

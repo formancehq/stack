@@ -39,7 +39,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -105,7 +105,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -177,7 +177,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -248,7 +248,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -318,7 +318,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -327,7 +327,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.PaymentsApi.InstallConnector(context.Background(), connector).ConnectorConfig(connectorConfig).Execute()
+    r, err := apiClient.PaymentsApi.InstallConnector(context.Background(), connector).ConnectorConfig(connectorConfig).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.InstallConnector``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -388,7 +388,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -449,7 +449,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -510,7 +510,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -584,7 +584,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -652,7 +652,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -720,7 +720,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -790,7 +790,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -860,7 +860,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -868,7 +868,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.PaymentsApi.ResetConnector(context.Background(), connector).Execute()
+    r, err := apiClient.PaymentsApi.ResetConnector(context.Background(), connector).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.ResetConnector``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -928,7 +928,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -936,7 +936,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.PaymentsApi.UninstallConnector(context.Background(), connector).Execute()
+    r, err := apiClient.PaymentsApi.UninstallConnector(context.Background(), connector).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.UninstallConnector``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -994,7 +994,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -1003,7 +1003,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.PaymentsApi.UpdateMetadata(context.Background(), paymentId).PaymentMetadata(paymentMetadata).Execute()
+    r, err := apiClient.PaymentsApi.UpdateMetadata(context.Background(), paymentId).PaymentMetadata(paymentMetadata).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `PaymentsApi.UpdateMetadata``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)

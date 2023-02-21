@@ -43,7 +43,7 @@ func NewActivityCreateTransactionWithDefaults() *ActivityCreateTransaction {
 
 // GetLedger returns the Ledger field value if set, zero value otherwise.
 func (o *ActivityCreateTransaction) GetLedger() string {
-	if o == nil || isNil(o.Ledger) {
+	if o == nil || IsNil(o.Ledger) {
 		var ret string
 		return ret
 	}
@@ -53,7 +53,7 @@ func (o *ActivityCreateTransaction) GetLedger() string {
 // GetLedgerOk returns a tuple with the Ledger field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ActivityCreateTransaction) GetLedgerOk() (*string, bool) {
-	if o == nil || isNil(o.Ledger) {
+	if o == nil || IsNil(o.Ledger) {
 		return nil, false
 	}
 	return o.Ledger, true
@@ -61,7 +61,7 @@ func (o *ActivityCreateTransaction) GetLedgerOk() (*string, bool) {
 
 // HasLedger returns a boolean if a field has been set.
 func (o *ActivityCreateTransaction) HasLedger() bool {
-	if o != nil && !isNil(o.Ledger) {
+	if o != nil && !IsNil(o.Ledger) {
 		return true
 	}
 
@@ -75,7 +75,7 @@ func (o *ActivityCreateTransaction) SetLedger(v string) {
 
 // GetData returns the Data field value if set, zero value otherwise.
 func (o *ActivityCreateTransaction) GetData() PostTransaction {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		var ret PostTransaction
 		return ret
 	}
@@ -85,7 +85,7 @@ func (o *ActivityCreateTransaction) GetData() PostTransaction {
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ActivityCreateTransaction) GetDataOk() (*PostTransaction, bool) {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
 	return o.Data, true
@@ -93,7 +93,7 @@ func (o *ActivityCreateTransaction) GetDataOk() (*PostTransaction, bool) {
 
 // HasData returns a boolean if a field has been set.
 func (o *ActivityCreateTransaction) HasData() bool {
-	if o != nil && !isNil(o.Data) {
+	if o != nil && !IsNil(o.Data) {
 		return true
 	}
 
@@ -115,10 +115,10 @@ func (o ActivityCreateTransaction) MarshalJSON() ([]byte, error) {
 
 func (o ActivityCreateTransaction) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Ledger) {
+	if !IsNil(o.Ledger) {
 		toSerialize["ledger"] = o.Ledger
 	}
-	if !isNil(o.Data) {
+	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
 	return toSerialize, nil

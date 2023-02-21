@@ -68,7 +68,7 @@ func (o *ScopeOptions) SetLabel(v string) {
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *ScopeOptions) GetMetadata() map[string]interface{} {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -78,7 +78,7 @@ func (o *ScopeOptions) GetMetadata() map[string]interface{} {
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ScopeOptions) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -86,7 +86,7 @@ func (o *ScopeOptions) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *ScopeOptions) HasMetadata() bool {
-	if o != nil && !isNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
@@ -109,7 +109,7 @@ func (o ScopeOptions) MarshalJSON() ([]byte, error) {
 func (o ScopeOptions) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["label"] = o.Label
-	if !isNil(o.Metadata) {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	return toSerialize, nil

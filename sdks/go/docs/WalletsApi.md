@@ -37,7 +37,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -46,7 +46,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.WalletsApi.ConfirmHold(context.Background(), holdId).ConfirmHoldRequest(confirmHoldRequest).Execute()
+    r, err := apiClient.WalletsApi.ConfirmHold(context.Background(), holdId).ConfirmHoldRequest(confirmHoldRequest).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `WalletsApi.ConfirmHold``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -105,7 +105,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -175,7 +175,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -239,7 +239,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -248,7 +248,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.WalletsApi.CreditWallet(context.Background(), id).CreditWalletRequest(creditWalletRequest).Execute()
+    r, err := apiClient.WalletsApi.CreditWallet(context.Background(), id).CreditWalletRequest(creditWalletRequest).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `WalletsApi.CreditWallet``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -307,7 +307,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -377,7 +377,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -448,7 +448,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -516,7 +516,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -586,7 +586,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -654,7 +654,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -722,7 +722,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -790,7 +790,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -860,7 +860,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -869,7 +869,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.WalletsApi.UpdateWallet(context.Background(), id).UpdateWalletRequest(updateWalletRequest).Execute()
+    r, err := apiClient.WalletsApi.UpdateWallet(context.Background(), id).UpdateWalletRequest(updateWalletRequest).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `WalletsApi.UpdateWallet``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -928,7 +928,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -936,7 +936,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.WalletsApi.VoidHold(context.Background(), holdId).Execute()
+    r, err := apiClient.WalletsApi.VoidHold(context.Background(), holdId).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `WalletsApi.VoidHold``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -994,7 +994,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {

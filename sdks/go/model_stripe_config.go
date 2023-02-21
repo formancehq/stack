@@ -55,7 +55,7 @@ func NewStripeConfigWithDefaults() *StripeConfig {
 
 // GetPollingPeriod returns the PollingPeriod field value if set, zero value otherwise.
 func (o *StripeConfig) GetPollingPeriod() string {
-	if o == nil || isNil(o.PollingPeriod) {
+	if o == nil || IsNil(o.PollingPeriod) {
 		var ret string
 		return ret
 	}
@@ -65,7 +65,7 @@ func (o *StripeConfig) GetPollingPeriod() string {
 // GetPollingPeriodOk returns a tuple with the PollingPeriod field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StripeConfig) GetPollingPeriodOk() (*string, bool) {
-	if o == nil || isNil(o.PollingPeriod) {
+	if o == nil || IsNil(o.PollingPeriod) {
 		return nil, false
 	}
 	return o.PollingPeriod, true
@@ -73,7 +73,7 @@ func (o *StripeConfig) GetPollingPeriodOk() (*string, bool) {
 
 // HasPollingPeriod returns a boolean if a field has been set.
 func (o *StripeConfig) HasPollingPeriod() bool {
-	if o != nil && !isNil(o.PollingPeriod) {
+	if o != nil && !IsNil(o.PollingPeriod) {
 		return true
 	}
 
@@ -111,7 +111,7 @@ func (o *StripeConfig) SetApiKey(v string) {
 
 // GetPageSize returns the PageSize field value if set, zero value otherwise.
 func (o *StripeConfig) GetPageSize() int64 {
-	if o == nil || isNil(o.PageSize) {
+	if o == nil || IsNil(o.PageSize) {
 		var ret int64
 		return ret
 	}
@@ -121,7 +121,7 @@ func (o *StripeConfig) GetPageSize() int64 {
 // GetPageSizeOk returns a tuple with the PageSize field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StripeConfig) GetPageSizeOk() (*int64, bool) {
-	if o == nil || isNil(o.PageSize) {
+	if o == nil || IsNil(o.PageSize) {
 		return nil, false
 	}
 	return o.PageSize, true
@@ -129,7 +129,7 @@ func (o *StripeConfig) GetPageSizeOk() (*int64, bool) {
 
 // HasPageSize returns a boolean if a field has been set.
 func (o *StripeConfig) HasPageSize() bool {
-	if o != nil && !isNil(o.PageSize) {
+	if o != nil && !IsNil(o.PageSize) {
 		return true
 	}
 
@@ -151,11 +151,11 @@ func (o StripeConfig) MarshalJSON() ([]byte, error) {
 
 func (o StripeConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.PollingPeriod) {
+	if !IsNil(o.PollingPeriod) {
 		toSerialize["pollingPeriod"] = o.PollingPeriod
 	}
 	toSerialize["apiKey"] = o.ApiKey
-	if !isNil(o.PageSize) {
+	if !IsNil(o.PageSize) {
 		toSerialize["pageSize"] = o.PageSize
 	}
 	return toSerialize, nil

@@ -43,7 +43,7 @@ func NewTaskBankingCircleAllOfDescriptorWithDefaults() *TaskBankingCircleAllOfDe
 
 // GetName returns the Name field value if set, zero value otherwise.
 func (o *TaskBankingCircleAllOfDescriptor) GetName() string {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
 	}
@@ -53,7 +53,7 @@ func (o *TaskBankingCircleAllOfDescriptor) GetName() string {
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskBankingCircleAllOfDescriptor) GetNameOk() (*string, bool) {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
 	return o.Name, true
@@ -61,7 +61,7 @@ func (o *TaskBankingCircleAllOfDescriptor) GetNameOk() (*string, bool) {
 
 // HasName returns a boolean if a field has been set.
 func (o *TaskBankingCircleAllOfDescriptor) HasName() bool {
-	if o != nil && !isNil(o.Name) {
+	if o != nil && !IsNil(o.Name) {
 		return true
 	}
 
@@ -75,7 +75,7 @@ func (o *TaskBankingCircleAllOfDescriptor) SetName(v string) {
 
 // GetKey returns the Key field value if set, zero value otherwise.
 func (o *TaskBankingCircleAllOfDescriptor) GetKey() string {
-	if o == nil || isNil(o.Key) {
+	if o == nil || IsNil(o.Key) {
 		var ret string
 		return ret
 	}
@@ -85,7 +85,7 @@ func (o *TaskBankingCircleAllOfDescriptor) GetKey() string {
 // GetKeyOk returns a tuple with the Key field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskBankingCircleAllOfDescriptor) GetKeyOk() (*string, bool) {
-	if o == nil || isNil(o.Key) {
+	if o == nil || IsNil(o.Key) {
 		return nil, false
 	}
 	return o.Key, true
@@ -93,7 +93,7 @@ func (o *TaskBankingCircleAllOfDescriptor) GetKeyOk() (*string, bool) {
 
 // HasKey returns a boolean if a field has been set.
 func (o *TaskBankingCircleAllOfDescriptor) HasKey() bool {
-	if o != nil && !isNil(o.Key) {
+	if o != nil && !IsNil(o.Key) {
 		return true
 	}
 
@@ -115,10 +115,10 @@ func (o TaskBankingCircleAllOfDescriptor) MarshalJSON() ([]byte, error) {
 
 func (o TaskBankingCircleAllOfDescriptor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Name) {
+	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !isNil(o.Key) {
+	if !IsNil(o.Key) {
 		toSerialize["key"] = o.Key
 	}
 	return toSerialize, nil

@@ -22,7 +22,6 @@ import com.formance.formance.model.ActivityGetPayment;
 import com.formance.formance.model.ActivityGetWallet;
 import com.formance.formance.model.ActivityRevertTransaction;
 import com.formance.formance.model.ActivityVoidHold;
-import com.formance.formance.model.DebitWalletRequest;
 import com.formance.formance.model.StripeTransferRequest;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
@@ -50,59 +49,83 @@ public class WorkflowInstanceHistoryStageInputTest {
     }
 
     /**
-     * Test the property 'id'
+     * Test the property 'getAccount'
      */
     @Test
-    public void idTest() {
-        // TODO: test id
+    public void getAccountTest() {
+        // TODO: test getAccount
     }
 
     /**
-     * Test the property 'ledger'
+     * Test the property 'createTransaction'
      */
     @Test
-    public void ledgerTest() {
-        // TODO: test ledger
+    public void createTransactionTest() {
+        // TODO: test createTransaction
     }
 
     /**
-     * Test the property 'data'
+     * Test the property 'revertTransaction'
      */
     @Test
-    public void dataTest() {
-        // TODO: test data
+    public void revertTransactionTest() {
+        // TODO: test revertTransaction
     }
 
     /**
-     * Test the property 'amount'
+     * Test the property 'stripeTransfer'
      */
     @Test
-    public void amountTest() {
-        // TODO: test amount
+    public void stripeTransferTest() {
+        // TODO: test stripeTransfer
     }
 
     /**
-     * Test the property 'asset'
+     * Test the property 'getPayment'
      */
     @Test
-    public void assetTest() {
-        // TODO: test asset
+    public void getPaymentTest() {
+        // TODO: test getPayment
     }
 
     /**
-     * Test the property 'destination'
+     * Test the property 'confirmHold'
      */
     @Test
-    public void destinationTest() {
-        // TODO: test destination
+    public void confirmHoldTest() {
+        // TODO: test confirmHold
     }
 
     /**
-     * Test the property 'metadata'
+     * Test the property 'creditWallet'
      */
     @Test
-    public void metadataTest() {
-        // TODO: test metadata
+    public void creditWalletTest() {
+        // TODO: test creditWallet
+    }
+
+    /**
+     * Test the property 'debitWallet'
+     */
+    @Test
+    public void debitWalletTest() {
+        // TODO: test debitWallet
+    }
+
+    /**
+     * Test the property 'getWallet'
+     */
+    @Test
+    public void getWalletTest() {
+        // TODO: test getWallet
+    }
+
+    /**
+     * Test the property 'voidHold'
+     */
+    @Test
+    public void voidHoldTest() {
+        // TODO: test voidHold
     }
 
 }

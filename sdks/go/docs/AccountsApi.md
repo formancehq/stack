@@ -26,7 +26,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.AccountsApi.AddMetadataToAccount(context.Background(), ledger, address).RequestBody(requestBody).Execute()
+    r, err := apiClient.AccountsApi.AddMetadataToAccount(context.Background(), ledger, address).RequestBody(requestBody).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `AccountsApi.AddMetadataToAccount``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -97,7 +97,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -107,7 +107,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.AccountsApi.CountAccounts(context.Background(), ledger).Address(address).Metadata(metadata).Execute()
+    r, err := apiClient.AccountsApi.CountAccounts(context.Background(), ledger).Address(address).Metadata(metadata).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `AccountsApi.CountAccounts``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -167,7 +167,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -240,7 +240,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {

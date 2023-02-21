@@ -43,7 +43,7 @@ public class TransactionData {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = null;
+  private Map<String, Object> metadata;
 
   public static final String SERIALIZED_NAME_TIMESTAMP = "timestamp";
   @SerializedName(SERIALIZED_NAME_TIMESTAMP)
@@ -108,9 +108,6 @@ public class TransactionData {
   }
 
   public TransactionData putMetadataItem(String key, Object metadataItem) {
-    if (this.metadata == null) {
-      this.metadata = null;
-    }
     this.metadata.put(key, metadataItem);
     return this;
   }

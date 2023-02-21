@@ -68,7 +68,7 @@ func (o *ScopeAllOf) SetId(v string) {
 
 // GetTransient returns the Transient field value if set, zero value otherwise.
 func (o *ScopeAllOf) GetTransient() []string {
-	if o == nil || isNil(o.Transient) {
+	if o == nil || IsNil(o.Transient) {
 		var ret []string
 		return ret
 	}
@@ -78,7 +78,7 @@ func (o *ScopeAllOf) GetTransient() []string {
 // GetTransientOk returns a tuple with the Transient field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ScopeAllOf) GetTransientOk() ([]string, bool) {
-	if o == nil || isNil(o.Transient) {
+	if o == nil || IsNil(o.Transient) {
 		return nil, false
 	}
 	return o.Transient, true
@@ -86,7 +86,7 @@ func (o *ScopeAllOf) GetTransientOk() ([]string, bool) {
 
 // HasTransient returns a boolean if a field has been set.
 func (o *ScopeAllOf) HasTransient() bool {
-	if o != nil && !isNil(o.Transient) {
+	if o != nil && !IsNil(o.Transient) {
 		return true
 	}
 
@@ -109,7 +109,7 @@ func (o ScopeAllOf) MarshalJSON() ([]byte, error) {
 func (o ScopeAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
-	if !isNil(o.Transient) {
+	if !IsNil(o.Transient) {
 		toSerialize["transient"] = o.Transient
 	}
 	return toSerialize, nil

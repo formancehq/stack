@@ -71,7 +71,7 @@ func (o *AccountWithVolumesAndBalances) SetAddress(v string) {
 
 // GetType returns the Type field value if set, zero value otherwise.
 func (o *AccountWithVolumesAndBalances) GetType() string {
-	if o == nil || isNil(o.Type) {
+	if o == nil || IsNil(o.Type) {
 		var ret string
 		return ret
 	}
@@ -81,7 +81,7 @@ func (o *AccountWithVolumesAndBalances) GetType() string {
 // GetTypeOk returns a tuple with the Type field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *AccountWithVolumesAndBalances) GetTypeOk() (*string, bool) {
-	if o == nil || isNil(o.Type) {
+	if o == nil || IsNil(o.Type) {
 		return nil, false
 	}
 	return o.Type, true
@@ -89,7 +89,7 @@ func (o *AccountWithVolumesAndBalances) GetTypeOk() (*string, bool) {
 
 // HasType returns a boolean if a field has been set.
 func (o *AccountWithVolumesAndBalances) HasType() bool {
-	if o != nil && !isNil(o.Type) {
+	if o != nil && !IsNil(o.Type) {
 		return true
 	}
 
@@ -103,7 +103,7 @@ func (o *AccountWithVolumesAndBalances) SetType(v string) {
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *AccountWithVolumesAndBalances) GetMetadata() map[string]interface{} {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -113,7 +113,7 @@ func (o *AccountWithVolumesAndBalances) GetMetadata() map[string]interface{} {
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *AccountWithVolumesAndBalances) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -121,7 +121,7 @@ func (o *AccountWithVolumesAndBalances) GetMetadataOk() (map[string]interface{},
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *AccountWithVolumesAndBalances) HasMetadata() bool {
-	if o != nil && !isNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
@@ -135,7 +135,7 @@ func (o *AccountWithVolumesAndBalances) SetMetadata(v map[string]interface{}) {
 
 // GetVolumes returns the Volumes field value if set, zero value otherwise.
 func (o *AccountWithVolumesAndBalances) GetVolumes() map[string]map[string]int64 {
-	if o == nil || isNil(o.Volumes) {
+	if o == nil || IsNil(o.Volumes) {
 		var ret map[string]map[string]int64
 		return ret
 	}
@@ -145,7 +145,7 @@ func (o *AccountWithVolumesAndBalances) GetVolumes() map[string]map[string]int64
 // GetVolumesOk returns a tuple with the Volumes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *AccountWithVolumesAndBalances) GetVolumesOk() (*map[string]map[string]int64, bool) {
-	if o == nil || isNil(o.Volumes) {
+	if o == nil || IsNil(o.Volumes) {
 		return nil, false
 	}
 	return o.Volumes, true
@@ -153,7 +153,7 @@ func (o *AccountWithVolumesAndBalances) GetVolumesOk() (*map[string]map[string]i
 
 // HasVolumes returns a boolean if a field has been set.
 func (o *AccountWithVolumesAndBalances) HasVolumes() bool {
-	if o != nil && !isNil(o.Volumes) {
+	if o != nil && !IsNil(o.Volumes) {
 		return true
 	}
 
@@ -167,7 +167,7 @@ func (o *AccountWithVolumesAndBalances) SetVolumes(v map[string]map[string]int64
 
 // GetBalances returns the Balances field value if set, zero value otherwise.
 func (o *AccountWithVolumesAndBalances) GetBalances() map[string]int64 {
-	if o == nil || isNil(o.Balances) {
+	if o == nil || IsNil(o.Balances) {
 		var ret map[string]int64
 		return ret
 	}
@@ -177,7 +177,7 @@ func (o *AccountWithVolumesAndBalances) GetBalances() map[string]int64 {
 // GetBalancesOk returns a tuple with the Balances field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *AccountWithVolumesAndBalances) GetBalancesOk() (*map[string]int64, bool) {
-	if o == nil || isNil(o.Balances) {
+	if o == nil || IsNil(o.Balances) {
 		return nil, false
 	}
 	return o.Balances, true
@@ -185,7 +185,7 @@ func (o *AccountWithVolumesAndBalances) GetBalancesOk() (*map[string]int64, bool
 
 // HasBalances returns a boolean if a field has been set.
 func (o *AccountWithVolumesAndBalances) HasBalances() bool {
-	if o != nil && !isNil(o.Balances) {
+	if o != nil && !IsNil(o.Balances) {
 		return true
 	}
 
@@ -208,16 +208,16 @@ func (o AccountWithVolumesAndBalances) MarshalJSON() ([]byte, error) {
 func (o AccountWithVolumesAndBalances) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["address"] = o.Address
-	if !isNil(o.Type) {
+	if !IsNil(o.Type) {
 		toSerialize["type"] = o.Type
 	}
-	if !isNil(o.Metadata) {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
-	if !isNil(o.Volumes) {
+	if !IsNil(o.Volumes) {
 		toSerialize["volumes"] = o.Volumes
 	}
-	if !isNil(o.Balances) {
+	if !IsNil(o.Balances) {
 		toSerialize["balances"] = o.Balances
 	}
 	return toSerialize, nil

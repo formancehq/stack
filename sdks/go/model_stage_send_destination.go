@@ -44,7 +44,7 @@ func NewStageSendDestinationWithDefaults() *StageSendDestination {
 
 // GetWallet returns the Wallet field value if set, zero value otherwise.
 func (o *StageSendDestination) GetWallet() StageSendSourceWallet {
-	if o == nil || isNil(o.Wallet) {
+	if o == nil || IsNil(o.Wallet) {
 		var ret StageSendSourceWallet
 		return ret
 	}
@@ -54,7 +54,7 @@ func (o *StageSendDestination) GetWallet() StageSendSourceWallet {
 // GetWalletOk returns a tuple with the Wallet field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageSendDestination) GetWalletOk() (*StageSendSourceWallet, bool) {
-	if o == nil || isNil(o.Wallet) {
+	if o == nil || IsNil(o.Wallet) {
 		return nil, false
 	}
 	return o.Wallet, true
@@ -62,7 +62,7 @@ func (o *StageSendDestination) GetWalletOk() (*StageSendSourceWallet, bool) {
 
 // HasWallet returns a boolean if a field has been set.
 func (o *StageSendDestination) HasWallet() bool {
-	if o != nil && !isNil(o.Wallet) {
+	if o != nil && !IsNil(o.Wallet) {
 		return true
 	}
 
@@ -76,7 +76,7 @@ func (o *StageSendDestination) SetWallet(v StageSendSourceWallet) {
 
 // GetAccount returns the Account field value if set, zero value otherwise.
 func (o *StageSendDestination) GetAccount() StageSendSourceAccount {
-	if o == nil || isNil(o.Account) {
+	if o == nil || IsNil(o.Account) {
 		var ret StageSendSourceAccount
 		return ret
 	}
@@ -86,7 +86,7 @@ func (o *StageSendDestination) GetAccount() StageSendSourceAccount {
 // GetAccountOk returns a tuple with the Account field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageSendDestination) GetAccountOk() (*StageSendSourceAccount, bool) {
-	if o == nil || isNil(o.Account) {
+	if o == nil || IsNil(o.Account) {
 		return nil, false
 	}
 	return o.Account, true
@@ -94,7 +94,7 @@ func (o *StageSendDestination) GetAccountOk() (*StageSendSourceAccount, bool) {
 
 // HasAccount returns a boolean if a field has been set.
 func (o *StageSendDestination) HasAccount() bool {
-	if o != nil && !isNil(o.Account) {
+	if o != nil && !IsNil(o.Account) {
 		return true
 	}
 
@@ -108,7 +108,7 @@ func (o *StageSendDestination) SetAccount(v StageSendSourceAccount) {
 
 // GetPayment returns the Payment field value if set, zero value otherwise.
 func (o *StageSendDestination) GetPayment() StageSendDestinationPayment {
-	if o == nil || isNil(o.Payment) {
+	if o == nil || IsNil(o.Payment) {
 		var ret StageSendDestinationPayment
 		return ret
 	}
@@ -118,7 +118,7 @@ func (o *StageSendDestination) GetPayment() StageSendDestinationPayment {
 // GetPaymentOk returns a tuple with the Payment field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageSendDestination) GetPaymentOk() (*StageSendDestinationPayment, bool) {
-	if o == nil || isNil(o.Payment) {
+	if o == nil || IsNil(o.Payment) {
 		return nil, false
 	}
 	return o.Payment, true
@@ -126,7 +126,7 @@ func (o *StageSendDestination) GetPaymentOk() (*StageSendDestinationPayment, boo
 
 // HasPayment returns a boolean if a field has been set.
 func (o *StageSendDestination) HasPayment() bool {
-	if o != nil && !isNil(o.Payment) {
+	if o != nil && !IsNil(o.Payment) {
 		return true
 	}
 
@@ -148,13 +148,13 @@ func (o StageSendDestination) MarshalJSON() ([]byte, error) {
 
 func (o StageSendDestination) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Wallet) {
+	if !IsNil(o.Wallet) {
 		toSerialize["wallet"] = o.Wallet
 	}
-	if !isNil(o.Account) {
+	if !IsNil(o.Account) {
 		toSerialize["account"] = o.Account
 	}
-	if !isNil(o.Payment) {
+	if !IsNil(o.Payment) {
 		toSerialize["payment"] = o.Payment
 	}
 	return toSerialize, nil

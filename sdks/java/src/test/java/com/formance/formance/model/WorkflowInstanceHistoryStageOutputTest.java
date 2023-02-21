@@ -19,7 +19,6 @@ import com.formance.formance.model.GetWalletResponse;
 import com.formance.formance.model.PaymentResponse;
 import com.formance.formance.model.TransactionResponse;
 import com.formance.formance.model.TransactionsResponse;
-import com.formance.formance.model.WalletWithBalances;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -46,11 +45,51 @@ public class WorkflowInstanceHistoryStageOutputTest {
     }
 
     /**
-     * Test the property 'data'
+     * Test the property 'getAccount'
      */
     @Test
-    public void dataTest() {
-        // TODO: test data
+    public void getAccountTest() {
+        // TODO: test getAccount
+    }
+
+    /**
+     * Test the property 'createTransaction'
+     */
+    @Test
+    public void createTransactionTest() {
+        // TODO: test createTransaction
+    }
+
+    /**
+     * Test the property 'revertTransaction'
+     */
+    @Test
+    public void revertTransactionTest() {
+        // TODO: test revertTransaction
+    }
+
+    /**
+     * Test the property 'getPayment'
+     */
+    @Test
+    public void getPaymentTest() {
+        // TODO: test getPayment
+    }
+
+    /**
+     * Test the property 'debitWallet'
+     */
+    @Test
+    public void debitWalletTest() {
+        // TODO: test debitWallet
+    }
+
+    /**
+     * Test the property 'getWallet'
+     */
+    @Test
+    public void getWalletTest() {
+        // TODO: test getWallet
     }
 
 }

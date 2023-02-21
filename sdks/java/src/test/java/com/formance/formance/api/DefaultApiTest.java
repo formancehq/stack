@@ -41,6 +41,17 @@ public class DefaultApiTest {
      * 
      */
     @Test
+    public void paymentsgetServerInfoTest() {
+        // ServerInfo response = api.paymentsgetServerInfo();
+
+        // TODO: test validations
+    }
+    /**
+     * Get server info
+     *
+     * 
+     */
+    @Test
     public void searchgetServerInfoTest() {
         // ServerInfo response = api.searchgetServerInfo();
 

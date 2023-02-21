@@ -14,7 +14,7 @@ package formance
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -130,16 +130,16 @@ func (a *BalancesApiService) GetBalancesExecute(r ApiGetBalancesRequest) (*Balan
 	localVarFormParams := url.Values{}
 
 	if r.address != nil {
-		parameterAddToQuery(localVarQueryParams, "address", r.address, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "address", r.address, "")
 	}
 	if r.after != nil {
-		parameterAddToQuery(localVarQueryParams, "after", r.after, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "")
 	}
 	if r.cursor != nil {
-		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	if r.paginationToken != nil {
-		parameterAddToQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -168,9 +168,9 @@ func (a *BalancesApiService) GetBalancesExecute(r ApiGetBalancesRequest) (*Balan
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
@@ -258,7 +258,7 @@ func (a *BalancesApiService) GetBalancesAggregatedExecute(r ApiGetBalancesAggreg
 	localVarFormParams := url.Values{}
 
 	if r.address != nil {
-		parameterAddToQuery(localVarQueryParams, "address", r.address, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "address", r.address, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -287,9 +287,9 @@ func (a *BalancesApiService) GetBalancesAggregatedExecute(r ApiGetBalancesAggreg
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHTTPResponse, err
 	}

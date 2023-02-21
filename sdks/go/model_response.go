@@ -44,7 +44,7 @@ func NewResponseWithDefaults() *Response {
 
 // GetData returns the Data field value if set, zero value otherwise.
 func (o *Response) GetData() map[string]interface{} {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -54,7 +54,7 @@ func (o *Response) GetData() map[string]interface{} {
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Response) GetDataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		return map[string]interface{}{}, false
 	}
 	return o.Data, true
@@ -62,7 +62,7 @@ func (o *Response) GetDataOk() (map[string]interface{}, bool) {
 
 // HasData returns a boolean if a field has been set.
 func (o *Response) HasData() bool {
-	if o != nil && !isNil(o.Data) {
+	if o != nil && !IsNil(o.Data) {
 		return true
 	}
 
@@ -76,7 +76,7 @@ func (o *Response) SetData(v map[string]interface{}) {
 
 // GetCursor returns the Cursor field value if set, zero value otherwise.
 func (o *Response) GetCursor() Cursor {
-	if o == nil || isNil(o.Cursor) {
+	if o == nil || IsNil(o.Cursor) {
 		var ret Cursor
 		return ret
 	}
@@ -86,7 +86,7 @@ func (o *Response) GetCursor() Cursor {
 // GetCursorOk returns a tuple with the Cursor field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Response) GetCursorOk() (*Cursor, bool) {
-	if o == nil || isNil(o.Cursor) {
+	if o == nil || IsNil(o.Cursor) {
 		return nil, false
 	}
 	return o.Cursor, true
@@ -94,7 +94,7 @@ func (o *Response) GetCursorOk() (*Cursor, bool) {
 
 // HasCursor returns a boolean if a field has been set.
 func (o *Response) HasCursor() bool {
-	if o != nil && !isNil(o.Cursor) {
+	if o != nil && !IsNil(o.Cursor) {
 		return true
 	}
 
@@ -116,10 +116,10 @@ func (o Response) MarshalJSON() ([]byte, error) {
 
 func (o Response) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Data) {
+	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
-	if !isNil(o.Cursor) {
+	if !IsNil(o.Cursor) {
 		toSerialize["cursor"] = o.Cursor
 	}
 	return toSerialize, nil

@@ -52,7 +52,7 @@ func NewAttemptWithDefaults() *Attempt {
 
 // GetId returns the Id field value if set, zero value otherwise.
 func (o *Attempt) GetId() string {
-	if o == nil || isNil(o.Id) {
+	if o == nil || IsNil(o.Id) {
 		var ret string
 		return ret
 	}
@@ -62,7 +62,7 @@ func (o *Attempt) GetId() string {
 // GetIdOk returns a tuple with the Id field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetIdOk() (*string, bool) {
-	if o == nil || isNil(o.Id) {
+	if o == nil || IsNil(o.Id) {
 		return nil, false
 	}
 	return o.Id, true
@@ -70,7 +70,7 @@ func (o *Attempt) GetIdOk() (*string, bool) {
 
 // HasId returns a boolean if a field has been set.
 func (o *Attempt) HasId() bool {
-	if o != nil && !isNil(o.Id) {
+	if o != nil && !IsNil(o.Id) {
 		return true
 	}
 
@@ -84,7 +84,7 @@ func (o *Attempt) SetId(v string) {
 
 // GetWebhookID returns the WebhookID field value if set, zero value otherwise.
 func (o *Attempt) GetWebhookID() string {
-	if o == nil || isNil(o.WebhookID) {
+	if o == nil || IsNil(o.WebhookID) {
 		var ret string
 		return ret
 	}
@@ -94,7 +94,7 @@ func (o *Attempt) GetWebhookID() string {
 // GetWebhookIDOk returns a tuple with the WebhookID field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetWebhookIDOk() (*string, bool) {
-	if o == nil || isNil(o.WebhookID) {
+	if o == nil || IsNil(o.WebhookID) {
 		return nil, false
 	}
 	return o.WebhookID, true
@@ -102,7 +102,7 @@ func (o *Attempt) GetWebhookIDOk() (*string, bool) {
 
 // HasWebhookID returns a boolean if a field has been set.
 func (o *Attempt) HasWebhookID() bool {
-	if o != nil && !isNil(o.WebhookID) {
+	if o != nil && !IsNil(o.WebhookID) {
 		return true
 	}
 
@@ -116,7 +116,7 @@ func (o *Attempt) SetWebhookID(v string) {
 
 // GetCreatedAt returns the CreatedAt field value if set, zero value otherwise.
 func (o *Attempt) GetCreatedAt() time.Time {
-	if o == nil || isNil(o.CreatedAt) {
+	if o == nil || IsNil(o.CreatedAt) {
 		var ret time.Time
 		return ret
 	}
@@ -126,7 +126,7 @@ func (o *Attempt) GetCreatedAt() time.Time {
 // GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetCreatedAtOk() (*time.Time, bool) {
-	if o == nil || isNil(o.CreatedAt) {
+	if o == nil || IsNil(o.CreatedAt) {
 		return nil, false
 	}
 	return o.CreatedAt, true
@@ -134,7 +134,7 @@ func (o *Attempt) GetCreatedAtOk() (*time.Time, bool) {
 
 // HasCreatedAt returns a boolean if a field has been set.
 func (o *Attempt) HasCreatedAt() bool {
-	if o != nil && !isNil(o.CreatedAt) {
+	if o != nil && !IsNil(o.CreatedAt) {
 		return true
 	}
 
@@ -148,7 +148,7 @@ func (o *Attempt) SetCreatedAt(v time.Time) {
 
 // GetUpdatedAt returns the UpdatedAt field value if set, zero value otherwise.
 func (o *Attempt) GetUpdatedAt() time.Time {
-	if o == nil || isNil(o.UpdatedAt) {
+	if o == nil || IsNil(o.UpdatedAt) {
 		var ret time.Time
 		return ret
 	}
@@ -158,7 +158,7 @@ func (o *Attempt) GetUpdatedAt() time.Time {
 // GetUpdatedAtOk returns a tuple with the UpdatedAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetUpdatedAtOk() (*time.Time, bool) {
-	if o == nil || isNil(o.UpdatedAt) {
+	if o == nil || IsNil(o.UpdatedAt) {
 		return nil, false
 	}
 	return o.UpdatedAt, true
@@ -166,7 +166,7 @@ func (o *Attempt) GetUpdatedAtOk() (*time.Time, bool) {
 
 // HasUpdatedAt returns a boolean if a field has been set.
 func (o *Attempt) HasUpdatedAt() bool {
-	if o != nil && !isNil(o.UpdatedAt) {
+	if o != nil && !IsNil(o.UpdatedAt) {
 		return true
 	}
 
@@ -180,7 +180,7 @@ func (o *Attempt) SetUpdatedAt(v time.Time) {
 
 // GetConfig returns the Config field value if set, zero value otherwise.
 func (o *Attempt) GetConfig() WebhooksConfig {
-	if o == nil || isNil(o.Config) {
+	if o == nil || IsNil(o.Config) {
 		var ret WebhooksConfig
 		return ret
 	}
@@ -190,7 +190,7 @@ func (o *Attempt) GetConfig() WebhooksConfig {
 // GetConfigOk returns a tuple with the Config field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetConfigOk() (*WebhooksConfig, bool) {
-	if o == nil || isNil(o.Config) {
+	if o == nil || IsNil(o.Config) {
 		return nil, false
 	}
 	return o.Config, true
@@ -198,7 +198,7 @@ func (o *Attempt) GetConfigOk() (*WebhooksConfig, bool) {
 
 // HasConfig returns a boolean if a field has been set.
 func (o *Attempt) HasConfig() bool {
-	if o != nil && !isNil(o.Config) {
+	if o != nil && !IsNil(o.Config) {
 		return true
 	}
 
@@ -212,7 +212,7 @@ func (o *Attempt) SetConfig(v WebhooksConfig) {
 
 // GetPayload returns the Payload field value if set, zero value otherwise.
 func (o *Attempt) GetPayload() string {
-	if o == nil || isNil(o.Payload) {
+	if o == nil || IsNil(o.Payload) {
 		var ret string
 		return ret
 	}
@@ -222,7 +222,7 @@ func (o *Attempt) GetPayload() string {
 // GetPayloadOk returns a tuple with the Payload field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetPayloadOk() (*string, bool) {
-	if o == nil || isNil(o.Payload) {
+	if o == nil || IsNil(o.Payload) {
 		return nil, false
 	}
 	return o.Payload, true
@@ -230,7 +230,7 @@ func (o *Attempt) GetPayloadOk() (*string, bool) {
 
 // HasPayload returns a boolean if a field has been set.
 func (o *Attempt) HasPayload() bool {
-	if o != nil && !isNil(o.Payload) {
+	if o != nil && !IsNil(o.Payload) {
 		return true
 	}
 
@@ -244,7 +244,7 @@ func (o *Attempt) SetPayload(v string) {
 
 // GetStatusCode returns the StatusCode field value if set, zero value otherwise.
 func (o *Attempt) GetStatusCode() int32 {
-	if o == nil || isNil(o.StatusCode) {
+	if o == nil || IsNil(o.StatusCode) {
 		var ret int32
 		return ret
 	}
@@ -254,7 +254,7 @@ func (o *Attempt) GetStatusCode() int32 {
 // GetStatusCodeOk returns a tuple with the StatusCode field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetStatusCodeOk() (*int32, bool) {
-	if o == nil || isNil(o.StatusCode) {
+	if o == nil || IsNil(o.StatusCode) {
 		return nil, false
 	}
 	return o.StatusCode, true
@@ -262,7 +262,7 @@ func (o *Attempt) GetStatusCodeOk() (*int32, bool) {
 
 // HasStatusCode returns a boolean if a field has been set.
 func (o *Attempt) HasStatusCode() bool {
-	if o != nil && !isNil(o.StatusCode) {
+	if o != nil && !IsNil(o.StatusCode) {
 		return true
 	}
 
@@ -276,7 +276,7 @@ func (o *Attempt) SetStatusCode(v int32) {
 
 // GetRetryAttempt returns the RetryAttempt field value if set, zero value otherwise.
 func (o *Attempt) GetRetryAttempt() int32 {
-	if o == nil || isNil(o.RetryAttempt) {
+	if o == nil || IsNil(o.RetryAttempt) {
 		var ret int32
 		return ret
 	}
@@ -286,7 +286,7 @@ func (o *Attempt) GetRetryAttempt() int32 {
 // GetRetryAttemptOk returns a tuple with the RetryAttempt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetRetryAttemptOk() (*int32, bool) {
-	if o == nil || isNil(o.RetryAttempt) {
+	if o == nil || IsNil(o.RetryAttempt) {
 		return nil, false
 	}
 	return o.RetryAttempt, true
@@ -294,7 +294,7 @@ func (o *Attempt) GetRetryAttemptOk() (*int32, bool) {
 
 // HasRetryAttempt returns a boolean if a field has been set.
 func (o *Attempt) HasRetryAttempt() bool {
-	if o != nil && !isNil(o.RetryAttempt) {
+	if o != nil && !IsNil(o.RetryAttempt) {
 		return true
 	}
 
@@ -308,7 +308,7 @@ func (o *Attempt) SetRetryAttempt(v int32) {
 
 // GetStatus returns the Status field value if set, zero value otherwise.
 func (o *Attempt) GetStatus() string {
-	if o == nil || isNil(o.Status) {
+	if o == nil || IsNil(o.Status) {
 		var ret string
 		return ret
 	}
@@ -318,7 +318,7 @@ func (o *Attempt) GetStatus() string {
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetStatusOk() (*string, bool) {
-	if o == nil || isNil(o.Status) {
+	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
 	return o.Status, true
@@ -326,7 +326,7 @@ func (o *Attempt) GetStatusOk() (*string, bool) {
 
 // HasStatus returns a boolean if a field has been set.
 func (o *Attempt) HasStatus() bool {
-	if o != nil && !isNil(o.Status) {
+	if o != nil && !IsNil(o.Status) {
 		return true
 	}
 
@@ -340,7 +340,7 @@ func (o *Attempt) SetStatus(v string) {
 
 // GetNextRetryAfter returns the NextRetryAfter field value if set, zero value otherwise.
 func (o *Attempt) GetNextRetryAfter() time.Time {
-	if o == nil || isNil(o.NextRetryAfter) {
+	if o == nil || IsNil(o.NextRetryAfter) {
 		var ret time.Time
 		return ret
 	}
@@ -350,7 +350,7 @@ func (o *Attempt) GetNextRetryAfter() time.Time {
 // GetNextRetryAfterOk returns a tuple with the NextRetryAfter field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Attempt) GetNextRetryAfterOk() (*time.Time, bool) {
-	if o == nil || isNil(o.NextRetryAfter) {
+	if o == nil || IsNil(o.NextRetryAfter) {
 		return nil, false
 	}
 	return o.NextRetryAfter, true
@@ -358,7 +358,7 @@ func (o *Attempt) GetNextRetryAfterOk() (*time.Time, bool) {
 
 // HasNextRetryAfter returns a boolean if a field has been set.
 func (o *Attempt) HasNextRetryAfter() bool {
-	if o != nil && !isNil(o.NextRetryAfter) {
+	if o != nil && !IsNil(o.NextRetryAfter) {
 		return true
 	}
 
@@ -380,34 +380,34 @@ func (o Attempt) MarshalJSON() ([]byte, error) {
 
 func (o Attempt) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Id) {
+	if !IsNil(o.Id) {
 		toSerialize["id"] = o.Id
 	}
-	if !isNil(o.WebhookID) {
+	if !IsNil(o.WebhookID) {
 		toSerialize["webhookID"] = o.WebhookID
 	}
-	if !isNil(o.CreatedAt) {
+	if !IsNil(o.CreatedAt) {
 		toSerialize["createdAt"] = o.CreatedAt
 	}
-	if !isNil(o.UpdatedAt) {
+	if !IsNil(o.UpdatedAt) {
 		toSerialize["updatedAt"] = o.UpdatedAt
 	}
-	if !isNil(o.Config) {
+	if !IsNil(o.Config) {
 		toSerialize["config"] = o.Config
 	}
-	if !isNil(o.Payload) {
+	if !IsNil(o.Payload) {
 		toSerialize["payload"] = o.Payload
 	}
-	if !isNil(o.StatusCode) {
+	if !IsNil(o.StatusCode) {
 		toSerialize["statusCode"] = o.StatusCode
 	}
-	if !isNil(o.RetryAttempt) {
+	if !IsNil(o.RetryAttempt) {
 		toSerialize["retryAttempt"] = o.RetryAttempt
 	}
-	if !isNil(o.Status) {
+	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status
 	}
-	if !isNil(o.NextRetryAfter) {
+	if !IsNil(o.NextRetryAfter) {
 		toSerialize["nextRetryAfter"] = o.NextRetryAfter
 	}
 	return toSerialize, nil

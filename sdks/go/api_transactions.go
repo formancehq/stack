@@ -14,7 +14,7 @@ package formance
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -210,9 +210,9 @@ func (a *TransactionsApiService) AddMetadataOnTransactionExecute(r ApiAddMetadat
 		return localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarHTTPResponse, err
 	}
@@ -347,31 +347,31 @@ func (a *TransactionsApiService) CountTransactionsExecute(r ApiCountTransactions
 	localVarFormParams := url.Values{}
 
 	if r.reference != nil {
-		parameterAddToQuery(localVarQueryParams, "reference", r.reference, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "reference", r.reference, "")
 	}
 	if r.account != nil {
-		parameterAddToQuery(localVarQueryParams, "account", r.account, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "account", r.account, "")
 	}
 	if r.source != nil {
-		parameterAddToQuery(localVarQueryParams, "source", r.source, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "source", r.source, "")
 	}
 	if r.destination != nil {
-		parameterAddToQuery(localVarQueryParams, "destination", r.destination, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "destination", r.destination, "")
 	}
 	if r.startTime != nil {
-		parameterAddToQuery(localVarQueryParams, "startTime", r.startTime, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "startTime", r.startTime, "")
 	}
 	if r.startTime2 != nil {
-		parameterAddToQuery(localVarQueryParams, "start_time", r.startTime2, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "start_time", r.startTime2, "")
 	}
 	if r.endTime != nil {
-		parameterAddToQuery(localVarQueryParams, "endTime", r.endTime, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "endTime", r.endTime, "")
 	}
 	if r.endTime2 != nil {
-		parameterAddToQuery(localVarQueryParams, "end_time", r.endTime2, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "end_time", r.endTime2, "")
 	}
 	if r.metadata != nil {
-		parameterAddToQuery(localVarQueryParams, "metadata", r.metadata, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "metadata", r.metadata, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -400,9 +400,9 @@ func (a *TransactionsApiService) CountTransactionsExecute(r ApiCountTransactions
 		return localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarHTTPResponse, err
 	}
@@ -491,7 +491,7 @@ func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransaction
 	}
 
 	if r.preview != nil {
-		parameterAddToQuery(localVarQueryParams, "preview", r.preview, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "preview", r.preview, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
@@ -522,9 +522,9 @@ func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransaction
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
@@ -642,9 +642,9 @@ func (a *TransactionsApiService) CreateTransactionsExecute(r ApiCreateTransactio
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
@@ -758,9 +758,9 @@ func (a *TransactionsApiService) GetTransactionExecute(r ApiGetTransactionReques
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
@@ -945,46 +945,46 @@ func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRe
 	localVarFormParams := url.Values{}
 
 	if r.pageSize != nil {
-		parameterAddToQuery(localVarQueryParams, "pageSize", r.pageSize, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.pageSize2 != nil {
-		parameterAddToQuery(localVarQueryParams, "page_size", r.pageSize2, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "page_size", r.pageSize2, "")
 	}
 	if r.after != nil {
-		parameterAddToQuery(localVarQueryParams, "after", r.after, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "")
 	}
 	if r.reference != nil {
-		parameterAddToQuery(localVarQueryParams, "reference", r.reference, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "reference", r.reference, "")
 	}
 	if r.account != nil {
-		parameterAddToQuery(localVarQueryParams, "account", r.account, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "account", r.account, "")
 	}
 	if r.source != nil {
-		parameterAddToQuery(localVarQueryParams, "source", r.source, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "source", r.source, "")
 	}
 	if r.destination != nil {
-		parameterAddToQuery(localVarQueryParams, "destination", r.destination, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "destination", r.destination, "")
 	}
 	if r.startTime != nil {
-		parameterAddToQuery(localVarQueryParams, "startTime", r.startTime, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "startTime", r.startTime, "")
 	}
 	if r.startTime2 != nil {
-		parameterAddToQuery(localVarQueryParams, "start_time", r.startTime2, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "start_time", r.startTime2, "")
 	}
 	if r.endTime != nil {
-		parameterAddToQuery(localVarQueryParams, "endTime", r.endTime, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "endTime", r.endTime, "")
 	}
 	if r.endTime2 != nil {
-		parameterAddToQuery(localVarQueryParams, "end_time", r.endTime2, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "end_time", r.endTime2, "")
 	}
 	if r.cursor != nil {
-		parameterAddToQuery(localVarQueryParams, "cursor", r.cursor, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "cursor", r.cursor, "")
 	}
 	if r.paginationToken != nil {
-		parameterAddToQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
 	}
 	if r.metadata != nil {
-		parameterAddToQuery(localVarQueryParams, "metadata", r.metadata, "")
+		parameterAddToHeaderOrQuery(localVarQueryParams, "metadata", r.metadata, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -1013,9 +1013,9 @@ func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRe
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
@@ -1129,9 +1129,9 @@ func (a *TransactionsApiService) RevertTransactionExecute(r ApiRevertTransaction
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
-	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
 		return localVarReturnValue, localVarHTTPResponse, err
 	}

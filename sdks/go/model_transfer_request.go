@@ -120,7 +120,7 @@ func (o *TransferRequest) SetDestination(v string) {
 
 // GetSource returns the Source field value if set, zero value otherwise.
 func (o *TransferRequest) GetSource() string {
-	if o == nil || isNil(o.Source) {
+	if o == nil || IsNil(o.Source) {
 		var ret string
 		return ret
 	}
@@ -130,7 +130,7 @@ func (o *TransferRequest) GetSource() string {
 // GetSourceOk returns a tuple with the Source field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TransferRequest) GetSourceOk() (*string, bool) {
-	if o == nil || isNil(o.Source) {
+	if o == nil || IsNil(o.Source) {
 		return nil, false
 	}
 	return o.Source, true
@@ -138,7 +138,7 @@ func (o *TransferRequest) GetSourceOk() (*string, bool) {
 
 // HasSource returns a boolean if a field has been set.
 func (o *TransferRequest) HasSource() bool {
-	if o != nil && !isNil(o.Source) {
+	if o != nil && !IsNil(o.Source) {
 		return true
 	}
 
@@ -163,7 +163,7 @@ func (o TransferRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize["amount"] = o.Amount
 	toSerialize["asset"] = o.Asset
 	toSerialize["destination"] = o.Destination
-	if !isNil(o.Source) {
+	if !IsNil(o.Source) {
 		toSerialize["source"] = o.Source
 	}
 	return toSerialize, nil

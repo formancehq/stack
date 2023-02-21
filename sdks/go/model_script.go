@@ -71,7 +71,7 @@ func (o *Script) SetPlain(v string) {
 
 // GetVars returns the Vars field value if set, zero value otherwise.
 func (o *Script) GetVars() map[string]interface{} {
-	if o == nil || isNil(o.Vars) {
+	if o == nil || IsNil(o.Vars) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -81,7 +81,7 @@ func (o *Script) GetVars() map[string]interface{} {
 // GetVarsOk returns a tuple with the Vars field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Script) GetVarsOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Vars) {
+	if o == nil || IsNil(o.Vars) {
 		return map[string]interface{}{}, false
 	}
 	return o.Vars, true
@@ -89,7 +89,7 @@ func (o *Script) GetVarsOk() (map[string]interface{}, bool) {
 
 // HasVars returns a boolean if a field has been set.
 func (o *Script) HasVars() bool {
-	if o != nil && !isNil(o.Vars) {
+	if o != nil && !IsNil(o.Vars) {
 		return true
 	}
 
@@ -103,7 +103,7 @@ func (o *Script) SetVars(v map[string]interface{}) {
 
 // GetReference returns the Reference field value if set, zero value otherwise.
 func (o *Script) GetReference() string {
-	if o == nil || isNil(o.Reference) {
+	if o == nil || IsNil(o.Reference) {
 		var ret string
 		return ret
 	}
@@ -113,7 +113,7 @@ func (o *Script) GetReference() string {
 // GetReferenceOk returns a tuple with the Reference field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Script) GetReferenceOk() (*string, bool) {
-	if o == nil || isNil(o.Reference) {
+	if o == nil || IsNil(o.Reference) {
 		return nil, false
 	}
 	return o.Reference, true
@@ -121,7 +121,7 @@ func (o *Script) GetReferenceOk() (*string, bool) {
 
 // HasReference returns a boolean if a field has been set.
 func (o *Script) HasReference() bool {
-	if o != nil && !isNil(o.Reference) {
+	if o != nil && !IsNil(o.Reference) {
 		return true
 	}
 
@@ -146,7 +146,7 @@ func (o *Script) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *Script) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -154,7 +154,7 @@ func (o *Script) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *Script) HasMetadata() bool {
-	if o != nil && isNil(o.Metadata) {
+	if o != nil && IsNil(o.Metadata) {
 		return true
 	}
 
@@ -177,10 +177,10 @@ func (o Script) MarshalJSON() ([]byte, error) {
 func (o Script) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["plain"] = o.Plain
-	if !isNil(o.Vars) {
+	if !IsNil(o.Vars) {
 		toSerialize["vars"] = o.Vars
 	}
-	if !isNil(o.Reference) {
+	if !IsNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
 	if o.Metadata != nil {

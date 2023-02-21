@@ -70,7 +70,7 @@ func (o *TaskStripeAllOfDescriptor) SetName(v string) {
 
 // GetMain returns the Main field value if set, zero value otherwise.
 func (o *TaskStripeAllOfDescriptor) GetMain() bool {
-	if o == nil || isNil(o.Main) {
+	if o == nil || IsNil(o.Main) {
 		var ret bool
 		return ret
 	}
@@ -80,7 +80,7 @@ func (o *TaskStripeAllOfDescriptor) GetMain() bool {
 // GetMainOk returns a tuple with the Main field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskStripeAllOfDescriptor) GetMainOk() (*bool, bool) {
-	if o == nil || isNil(o.Main) {
+	if o == nil || IsNil(o.Main) {
 		return nil, false
 	}
 	return o.Main, true
@@ -88,7 +88,7 @@ func (o *TaskStripeAllOfDescriptor) GetMainOk() (*bool, bool) {
 
 // HasMain returns a boolean if a field has been set.
 func (o *TaskStripeAllOfDescriptor) HasMain() bool {
-	if o != nil && !isNil(o.Main) {
+	if o != nil && !IsNil(o.Main) {
 		return true
 	}
 
@@ -135,7 +135,7 @@ func (o TaskStripeAllOfDescriptor) MarshalJSON() ([]byte, error) {
 func (o TaskStripeAllOfDescriptor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
-	if !isNil(o.Main) {
+	if !IsNil(o.Main) {
 		toSerialize["main"] = o.Main
 	}
 	toSerialize["account"] = o.Account

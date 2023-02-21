@@ -98,7 +98,7 @@ func (o *CurrencyCloudConfig) SetLoginID(v string) {
 
 // GetPollingPeriod returns the PollingPeriod field value if set, zero value otherwise.
 func (o *CurrencyCloudConfig) GetPollingPeriod() string {
-	if o == nil || isNil(o.PollingPeriod) {
+	if o == nil || IsNil(o.PollingPeriod) {
 		var ret string
 		return ret
 	}
@@ -108,7 +108,7 @@ func (o *CurrencyCloudConfig) GetPollingPeriod() string {
 // GetPollingPeriodOk returns a tuple with the PollingPeriod field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *CurrencyCloudConfig) GetPollingPeriodOk() (*string, bool) {
-	if o == nil || isNil(o.PollingPeriod) {
+	if o == nil || IsNil(o.PollingPeriod) {
 		return nil, false
 	}
 	return o.PollingPeriod, true
@@ -116,7 +116,7 @@ func (o *CurrencyCloudConfig) GetPollingPeriodOk() (*string, bool) {
 
 // HasPollingPeriod returns a boolean if a field has been set.
 func (o *CurrencyCloudConfig) HasPollingPeriod() bool {
-	if o != nil && !isNil(o.PollingPeriod) {
+	if o != nil && !IsNil(o.PollingPeriod) {
 		return true
 	}
 
@@ -130,7 +130,7 @@ func (o *CurrencyCloudConfig) SetPollingPeriod(v string) {
 
 // GetEndpoint returns the Endpoint field value if set, zero value otherwise.
 func (o *CurrencyCloudConfig) GetEndpoint() string {
-	if o == nil || isNil(o.Endpoint) {
+	if o == nil || IsNil(o.Endpoint) {
 		var ret string
 		return ret
 	}
@@ -140,7 +140,7 @@ func (o *CurrencyCloudConfig) GetEndpoint() string {
 // GetEndpointOk returns a tuple with the Endpoint field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *CurrencyCloudConfig) GetEndpointOk() (*string, bool) {
-	if o == nil || isNil(o.Endpoint) {
+	if o == nil || IsNil(o.Endpoint) {
 		return nil, false
 	}
 	return o.Endpoint, true
@@ -148,7 +148,7 @@ func (o *CurrencyCloudConfig) GetEndpointOk() (*string, bool) {
 
 // HasEndpoint returns a boolean if a field has been set.
 func (o *CurrencyCloudConfig) HasEndpoint() bool {
-	if o != nil && !isNil(o.Endpoint) {
+	if o != nil && !IsNil(o.Endpoint) {
 		return true
 	}
 
@@ -172,10 +172,10 @@ func (o CurrencyCloudConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["apiKey"] = o.ApiKey
 	toSerialize["loginID"] = o.LoginID
-	if !isNil(o.PollingPeriod) {
+	if !IsNil(o.PollingPeriod) {
 		toSerialize["pollingPeriod"] = o.PollingPeriod
 	}
-	if !isNil(o.Endpoint) {
+	if !IsNil(o.Endpoint) {
 		toSerialize["endpoint"] = o.Endpoint
 	}
 	return toSerialize, nil

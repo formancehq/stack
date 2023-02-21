@@ -42,7 +42,7 @@ func NewLedgerInfoStorageWithDefaults() *LedgerInfoStorage {
 
 // GetMigrations returns the Migrations field value if set, zero value otherwise.
 func (o *LedgerInfoStorage) GetMigrations() []MigrationInfo {
-	if o == nil || isNil(o.Migrations) {
+	if o == nil || IsNil(o.Migrations) {
 		var ret []MigrationInfo
 		return ret
 	}
@@ -52,7 +52,7 @@ func (o *LedgerInfoStorage) GetMigrations() []MigrationInfo {
 // GetMigrationsOk returns a tuple with the Migrations field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *LedgerInfoStorage) GetMigrationsOk() ([]MigrationInfo, bool) {
-	if o == nil || isNil(o.Migrations) {
+	if o == nil || IsNil(o.Migrations) {
 		return nil, false
 	}
 	return o.Migrations, true
@@ -60,7 +60,7 @@ func (o *LedgerInfoStorage) GetMigrationsOk() ([]MigrationInfo, bool) {
 
 // HasMigrations returns a boolean if a field has been set.
 func (o *LedgerInfoStorage) HasMigrations() bool {
-	if o != nil && !isNil(o.Migrations) {
+	if o != nil && !IsNil(o.Migrations) {
 		return true
 	}
 
@@ -82,7 +82,7 @@ func (o LedgerInfoStorage) MarshalJSON() ([]byte, error) {
 
 func (o LedgerInfoStorage) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Migrations) {
+	if !IsNil(o.Migrations) {
 		toSerialize["migrations"] = o.Migrations
 	}
 	return toSerialize, nil

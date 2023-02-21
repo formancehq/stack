@@ -43,7 +43,7 @@ func NewConnectorsResponseDataInnerWithDefaults() *ConnectorsResponseDataInner {
 
 // GetProvider returns the Provider field value if set, zero value otherwise.
 func (o *ConnectorsResponseDataInner) GetProvider() Connector {
-	if o == nil || isNil(o.Provider) {
+	if o == nil || IsNil(o.Provider) {
 		var ret Connector
 		return ret
 	}
@@ -53,7 +53,7 @@ func (o *ConnectorsResponseDataInner) GetProvider() Connector {
 // GetProviderOk returns a tuple with the Provider field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ConnectorsResponseDataInner) GetProviderOk() (*Connector, bool) {
-	if o == nil || isNil(o.Provider) {
+	if o == nil || IsNil(o.Provider) {
 		return nil, false
 	}
 	return o.Provider, true
@@ -61,7 +61,7 @@ func (o *ConnectorsResponseDataInner) GetProviderOk() (*Connector, bool) {
 
 // HasProvider returns a boolean if a field has been set.
 func (o *ConnectorsResponseDataInner) HasProvider() bool {
-	if o != nil && !isNil(o.Provider) {
+	if o != nil && !IsNil(o.Provider) {
 		return true
 	}
 
@@ -75,7 +75,7 @@ func (o *ConnectorsResponseDataInner) SetProvider(v Connector) {
 
 // GetEnabled returns the Enabled field value if set, zero value otherwise.
 func (o *ConnectorsResponseDataInner) GetEnabled() bool {
-	if o == nil || isNil(o.Enabled) {
+	if o == nil || IsNil(o.Enabled) {
 		var ret bool
 		return ret
 	}
@@ -85,7 +85,7 @@ func (o *ConnectorsResponseDataInner) GetEnabled() bool {
 // GetEnabledOk returns a tuple with the Enabled field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ConnectorsResponseDataInner) GetEnabledOk() (*bool, bool) {
-	if o == nil || isNil(o.Enabled) {
+	if o == nil || IsNil(o.Enabled) {
 		return nil, false
 	}
 	return o.Enabled, true
@@ -93,7 +93,7 @@ func (o *ConnectorsResponseDataInner) GetEnabledOk() (*bool, bool) {
 
 // HasEnabled returns a boolean if a field has been set.
 func (o *ConnectorsResponseDataInner) HasEnabled() bool {
-	if o != nil && !isNil(o.Enabled) {
+	if o != nil && !IsNil(o.Enabled) {
 		return true
 	}
 
@@ -115,10 +115,10 @@ func (o ConnectorsResponseDataInner) MarshalJSON() ([]byte, error) {
 
 func (o ConnectorsResponseDataInner) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Provider) {
+	if !IsNil(o.Provider) {
 		toSerialize["provider"] = o.Provider
 	}
-	if !isNil(o.Enabled) {
+	if !IsNil(o.Enabled) {
 		toSerialize["enabled"] = o.Enabled
 	}
 	return toSerialize, nil

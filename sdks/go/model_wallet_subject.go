@@ -94,7 +94,7 @@ func (o *WalletSubject) SetIdentifier(v string) {
 
 // GetBalance returns the Balance field value if set, zero value otherwise.
 func (o *WalletSubject) GetBalance() string {
-	if o == nil || isNil(o.Balance) {
+	if o == nil || IsNil(o.Balance) {
 		var ret string
 		return ret
 	}
@@ -104,7 +104,7 @@ func (o *WalletSubject) GetBalance() string {
 // GetBalanceOk returns a tuple with the Balance field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WalletSubject) GetBalanceOk() (*string, bool) {
-	if o == nil || isNil(o.Balance) {
+	if o == nil || IsNil(o.Balance) {
 		return nil, false
 	}
 	return o.Balance, true
@@ -112,7 +112,7 @@ func (o *WalletSubject) GetBalanceOk() (*string, bool) {
 
 // HasBalance returns a boolean if a field has been set.
 func (o *WalletSubject) HasBalance() bool {
-	if o != nil && !isNil(o.Balance) {
+	if o != nil && !IsNil(o.Balance) {
 		return true
 	}
 
@@ -136,7 +136,7 @@ func (o WalletSubject) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["type"] = o.Type
 	toSerialize["identifier"] = o.Identifier
-	if !isNil(o.Balance) {
+	if !IsNil(o.Balance) {
 		toSerialize["balance"] = o.Balance
 	}
 	return toSerialize, nil

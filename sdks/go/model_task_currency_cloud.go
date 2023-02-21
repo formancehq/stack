@@ -201,7 +201,7 @@ func (o *TaskCurrencyCloud) SetState(v map[string]interface{}) {
 
 // GetError returns the Error field value if set, zero value otherwise.
 func (o *TaskCurrencyCloud) GetError() string {
-	if o == nil || isNil(o.Error) {
+	if o == nil || IsNil(o.Error) {
 		var ret string
 		return ret
 	}
@@ -211,7 +211,7 @@ func (o *TaskCurrencyCloud) GetError() string {
 // GetErrorOk returns a tuple with the Error field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskCurrencyCloud) GetErrorOk() (*string, bool) {
-	if o == nil || isNil(o.Error) {
+	if o == nil || IsNil(o.Error) {
 		return nil, false
 	}
 	return o.Error, true
@@ -219,7 +219,7 @@ func (o *TaskCurrencyCloud) GetErrorOk() (*string, bool) {
 
 // HasError returns a boolean if a field has been set.
 func (o *TaskCurrencyCloud) HasError() bool {
-	if o != nil && !isNil(o.Error) {
+	if o != nil && !IsNil(o.Error) {
 		return true
 	}
 
@@ -271,7 +271,7 @@ func (o TaskCurrencyCloud) ToMap() (map[string]interface{}, error) {
 	toSerialize["updatedAt"] = o.UpdatedAt
 	toSerialize["status"] = o.Status
 	toSerialize["state"] = o.State
-	if !isNil(o.Error) {
+	if !IsNil(o.Error) {
 		toSerialize["error"] = o.Error
 	}
 	toSerialize["descriptor"] = o.Descriptor

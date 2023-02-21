@@ -122,7 +122,7 @@ func (o *StageStatus) SetStartedAt(v time.Time) {
 
 // GetTerminatedAt returns the TerminatedAt field value if set, zero value otherwise.
 func (o *StageStatus) GetTerminatedAt() time.Time {
-	if o == nil || isNil(o.TerminatedAt) {
+	if o == nil || IsNil(o.TerminatedAt) {
 		var ret time.Time
 		return ret
 	}
@@ -132,7 +132,7 @@ func (o *StageStatus) GetTerminatedAt() time.Time {
 // GetTerminatedAtOk returns a tuple with the TerminatedAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageStatus) GetTerminatedAtOk() (*time.Time, bool) {
-	if o == nil || isNil(o.TerminatedAt) {
+	if o == nil || IsNil(o.TerminatedAt) {
 		return nil, false
 	}
 	return o.TerminatedAt, true
@@ -140,7 +140,7 @@ func (o *StageStatus) GetTerminatedAtOk() (*time.Time, bool) {
 
 // HasTerminatedAt returns a boolean if a field has been set.
 func (o *StageStatus) HasTerminatedAt() bool {
-	if o != nil && !isNil(o.TerminatedAt) {
+	if o != nil && !IsNil(o.TerminatedAt) {
 		return true
 	}
 
@@ -154,7 +154,7 @@ func (o *StageStatus) SetTerminatedAt(v time.Time) {
 
 // GetError returns the Error field value if set, zero value otherwise.
 func (o *StageStatus) GetError() string {
-	if o == nil || isNil(o.Error) {
+	if o == nil || IsNil(o.Error) {
 		var ret string
 		return ret
 	}
@@ -164,7 +164,7 @@ func (o *StageStatus) GetError() string {
 // GetErrorOk returns a tuple with the Error field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StageStatus) GetErrorOk() (*string, bool) {
-	if o == nil || isNil(o.Error) {
+	if o == nil || IsNil(o.Error) {
 		return nil, false
 	}
 	return o.Error, true
@@ -172,7 +172,7 @@ func (o *StageStatus) GetErrorOk() (*string, bool) {
 
 // HasError returns a boolean if a field has been set.
 func (o *StageStatus) HasError() bool {
-	if o != nil && !isNil(o.Error) {
+	if o != nil && !IsNil(o.Error) {
 		return true
 	}
 
@@ -197,10 +197,10 @@ func (o StageStatus) ToMap() (map[string]interface{}, error) {
 	toSerialize["stage"] = o.Stage
 	toSerialize["instanceID"] = o.InstanceID
 	toSerialize["startedAt"] = o.StartedAt
-	if !isNil(o.TerminatedAt) {
+	if !IsNil(o.TerminatedAt) {
 		toSerialize["terminatedAt"] = o.TerminatedAt
 	}
-	if !isNil(o.Error) {
+	if !IsNil(o.Error) {
 		toSerialize["error"] = o.Error
 	}
 	return toSerialize, nil

@@ -100,7 +100,7 @@ func (o *WorkflowInstanceHistory) SetInput(v Stage) {
 
 // GetError returns the Error field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistory) GetError() string {
-	if o == nil || isNil(o.Error) {
+	if o == nil || IsNil(o.Error) {
 		var ret string
 		return ret
 	}
@@ -110,7 +110,7 @@ func (o *WorkflowInstanceHistory) GetError() string {
 // GetErrorOk returns a tuple with the Error field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistory) GetErrorOk() (*string, bool) {
-	if o == nil || isNil(o.Error) {
+	if o == nil || IsNil(o.Error) {
 		return nil, false
 	}
 	return o.Error, true
@@ -118,7 +118,7 @@ func (o *WorkflowInstanceHistory) GetErrorOk() (*string, bool) {
 
 // HasError returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistory) HasError() bool {
-	if o != nil && !isNil(o.Error) {
+	if o != nil && !IsNil(o.Error) {
 		return true
 	}
 
@@ -180,7 +180,7 @@ func (o *WorkflowInstanceHistory) SetStartedAt(v time.Time) {
 
 // GetTerminatedAt returns the TerminatedAt field value if set, zero value otherwise.
 func (o *WorkflowInstanceHistory) GetTerminatedAt() time.Time {
-	if o == nil || isNil(o.TerminatedAt) {
+	if o == nil || IsNil(o.TerminatedAt) {
 		var ret time.Time
 		return ret
 	}
@@ -190,7 +190,7 @@ func (o *WorkflowInstanceHistory) GetTerminatedAt() time.Time {
 // GetTerminatedAtOk returns a tuple with the TerminatedAt field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WorkflowInstanceHistory) GetTerminatedAtOk() (*time.Time, bool) {
-	if o == nil || isNil(o.TerminatedAt) {
+	if o == nil || IsNil(o.TerminatedAt) {
 		return nil, false
 	}
 	return o.TerminatedAt, true
@@ -198,7 +198,7 @@ func (o *WorkflowInstanceHistory) GetTerminatedAtOk() (*time.Time, bool) {
 
 // HasTerminatedAt returns a boolean if a field has been set.
 func (o *WorkflowInstanceHistory) HasTerminatedAt() bool {
-	if o != nil && !isNil(o.TerminatedAt) {
+	if o != nil && !IsNil(o.TerminatedAt) {
 		return true
 	}
 
@@ -222,12 +222,12 @@ func (o WorkflowInstanceHistory) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
 	toSerialize["input"] = o.Input
-	if !isNil(o.Error) {
+	if !IsNil(o.Error) {
 		toSerialize["error"] = o.Error
 	}
 	toSerialize["terminated"] = o.Terminated
 	toSerialize["startedAt"] = o.StartedAt
-	if !isNil(o.TerminatedAt) {
+	if !IsNil(o.TerminatedAt) {
 		toSerialize["terminatedAt"] = o.TerminatedAt
 	}
 	return toSerialize, nil

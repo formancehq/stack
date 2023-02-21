@@ -26,7 +26,7 @@ import (
     "fmt"
     "os"
     "time"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {

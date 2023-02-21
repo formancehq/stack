@@ -42,7 +42,7 @@ func NewMappingResponseWithDefaults() *MappingResponse {
 
 // GetData returns the Data field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *MappingResponse) GetData() Mapping {
-	if o == nil || isNil(o.Data.Get()) {
+	if o == nil || IsNil(o.Data.Get()) {
 		var ret Mapping
 		return ret
 	}

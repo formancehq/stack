@@ -120,7 +120,7 @@ func (o *ClientSecret) SetId(v string) {
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *ClientSecret) GetMetadata() map[string]interface{} {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -130,7 +130,7 @@ func (o *ClientSecret) GetMetadata() map[string]interface{} {
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ClientSecret) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -138,7 +138,7 @@ func (o *ClientSecret) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *ClientSecret) HasMetadata() bool {
-	if o != nil && !isNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
@@ -163,7 +163,7 @@ func (o ClientSecret) ToMap() (map[string]interface{}, error) {
 	toSerialize["lastDigits"] = o.LastDigits
 	toSerialize["name"] = o.Name
 	toSerialize["id"] = o.Id
-	if !isNil(o.Metadata) {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	return toSerialize, nil

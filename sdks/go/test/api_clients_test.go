@@ -11,11 +11,10 @@ package formance
 
 import (
 	"context"
-	"testing"
-
-	client "./openapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
+	client "github.com/formancehq/formance-sdk-go"
 )
 
 func Test_formance_ClientsApiService(t *testing.T) {
@@ -25,22 +24,21 @@ func Test_formance_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService AddScopeToClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var clientId string
 		var scopeId string
 
-		resp, httpRes, err := apiClient.ClientsApi.AddScopeToClient(context.Background(), clientId, scopeId).Execute()
+		httpRes, err := apiClient.ClientsApi.AddScopeToClient(context.Background(), clientId, scopeId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
 	t.Run("Test ClientsApiService CreateClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.ClientsApi.CreateClient(context.Background()).Execute()
 
@@ -52,7 +50,7 @@ func Test_formance_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService CreateSecret", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var clientId string
 
@@ -66,51 +64,48 @@ func Test_formance_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService DeleteClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var clientId string
 
-		resp, httpRes, err := apiClient.ClientsApi.DeleteClient(context.Background(), clientId).Execute()
+		httpRes, err := apiClient.ClientsApi.DeleteClient(context.Background(), clientId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
 	t.Run("Test ClientsApiService DeleteScopeFromClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var clientId string
 		var scopeId string
 
-		resp, httpRes, err := apiClient.ClientsApi.DeleteScopeFromClient(context.Background(), clientId, scopeId).Execute()
+		httpRes, err := apiClient.ClientsApi.DeleteScopeFromClient(context.Background(), clientId, scopeId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
 	t.Run("Test ClientsApiService DeleteSecret", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var clientId string
 		var secretId string
 
-		resp, httpRes, err := apiClient.ClientsApi.DeleteSecret(context.Background(), clientId, secretId).Execute()
+		httpRes, err := apiClient.ClientsApi.DeleteSecret(context.Background(), clientId, secretId).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
 	t.Run("Test ClientsApiService ListClients", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.ClientsApi.ListClients(context.Background()).Execute()
 
@@ -122,7 +117,7 @@ func Test_formance_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService ReadClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var clientId string
 
@@ -136,7 +131,7 @@ func Test_formance_ClientsApiService(t *testing.T) {
 
 	t.Run("Test ClientsApiService UpdateClient", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var clientId string
 

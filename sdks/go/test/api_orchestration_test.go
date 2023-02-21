@@ -10,109 +10,161 @@ Testing OrchestrationApiService
 package formance
 
 import (
-    "context"
-    "github.com/stretchr/testify/assert"
-    "github.com/stretchr/testify/require"
-    "testing"
-    client "./openapi"
+	"context"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"testing"
+	client "github.com/formancehq/formance-sdk-go"
 )
 
 func Test_formance_OrchestrationApiService(t *testing.T) {
 
-    configuration := client.NewConfiguration()
-    apiClient := client.NewAPIClient(configuration)
+	configuration := client.NewConfiguration()
+	apiClient := client.NewAPIClient(configuration)
 
-    t.Run("Test OrchestrationApiService CreateWorkflow", func(t *testing.T) {
+	t.Run("Test OrchestrationApiService CancelEvent", func(t *testing.T) {
 
-        t.Skip("skip test")  // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-        resp, httpRes, err := apiClient.OrchestrationApi.CreateWorkflow(context.Background()).Execute()
+		var instanceID string
 
-        require.Nil(t, err)
-        require.NotNil(t, resp)
-        assert.Equal(t, 200, httpRes.StatusCode)
+		httpRes, err := apiClient.OrchestrationApi.CancelEvent(context.Background(), instanceID).Execute()
 
-    })
+		require.Nil(t, err)
+		assert.Equal(t, 200, httpRes.StatusCode)
 
-    t.Run("Test OrchestrationApiService GetFlow", func(t *testing.T) {
+	})
 
-        t.Skip("skip test")  // remove to run test
+	t.Run("Test OrchestrationApiService CreateWorkflow", func(t *testing.T) {
 
-        var flowId string
+		t.Skip("skip test")  // remove to run test
 
-        resp, httpRes, err := apiClient.OrchestrationApi.GetFlow(context.Background(), flowId).Execute()
+		resp, httpRes, err := apiClient.OrchestrationApi.CreateWorkflow(context.Background()).Execute()
 
-        require.Nil(t, err)
-        require.NotNil(t, resp)
-        assert.Equal(t, 200, httpRes.StatusCode)
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
 
-    })
+	})
 
-    t.Run("Test OrchestrationApiService GetWorkflowOccurrence", func(t *testing.T) {
+	t.Run("Test OrchestrationApiService GetInstance", func(t *testing.T) {
 
-        t.Skip("skip test")  // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-        var flowId string
-        var runId string
+		var instanceID string
 
-        resp, httpRes, err := apiClient.OrchestrationApi.GetWorkflowOccurrence(context.Background(), flowId, runId).Execute()
+		resp, httpRes, err := apiClient.OrchestrationApi.GetInstance(context.Background(), instanceID).Execute()
 
-        require.Nil(t, err)
-        require.NotNil(t, resp)
-        assert.Equal(t, 200, httpRes.StatusCode)
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
 
-    })
+	})
 
-    t.Run("Test OrchestrationApiService ListFlows", func(t *testing.T) {
+	t.Run("Test OrchestrationApiService GetInstanceHistory", func(t *testing.T) {
 
-        t.Skip("skip test")  // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-        resp, httpRes, err := apiClient.OrchestrationApi.ListFlows(context.Background()).Execute()
+		var instanceID string
 
-        require.Nil(t, err)
-        require.NotNil(t, resp)
-        assert.Equal(t, 200, httpRes.StatusCode)
+		resp, httpRes, err := apiClient.OrchestrationApi.GetInstanceHistory(context.Background(), instanceID).Execute()
 
-    })
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
 
-    t.Run("Test OrchestrationApiService ListRuns", func(t *testing.T) {
+	})
 
-        t.Skip("skip test")  // remove to run test
+	t.Run("Test OrchestrationApiService GetInstanceStageHistory", func(t *testing.T) {
 
-        var flowId string
+		t.Skip("skip test")  // remove to run test
 
-        resp, httpRes, err := apiClient.OrchestrationApi.ListRuns(context.Background(), flowId).Execute()
+		var instanceID string
+		var number int32
 
-        require.Nil(t, err)
-        require.NotNil(t, resp)
-        assert.Equal(t, 200, httpRes.StatusCode)
+		resp, httpRes, err := apiClient.OrchestrationApi.GetInstanceStageHistory(context.Background(), instanceID, number).Execute()
 
-    })
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
 
-    t.Run("Test OrchestrationApiService OrchestrationgetServerInfo", func(t *testing.T) {
+	})
 
-        t.Skip("skip test")  // remove to run test
+	t.Run("Test OrchestrationApiService GetWorkflow", func(t *testing.T) {
 
-        resp, httpRes, err := apiClient.OrchestrationApi.OrchestrationgetServerInfo(context.Background()).Execute()
+		t.Skip("skip test")  // remove to run test
 
-        require.Nil(t, err)
-        require.NotNil(t, resp)
-        assert.Equal(t, 200, httpRes.StatusCode)
+		var flowId string
 
-    })
+		resp, httpRes, err := apiClient.OrchestrationApi.GetWorkflow(context.Background(), flowId).Execute()
 
-    t.Run("Test OrchestrationApiService RunWorkflow", func(t *testing.T) {
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
 
-        t.Skip("skip test")  // remove to run test
+	})
 
-        var flowId string
+	t.Run("Test OrchestrationApiService ListInstances", func(t *testing.T) {
 
-        resp, httpRes, err := apiClient.OrchestrationApi.RunWorkflow(context.Background(), flowId).Execute()
+		t.Skip("skip test")  // remove to run test
 
-        require.Nil(t, err)
-        require.NotNil(t, resp)
-        assert.Equal(t, 200, httpRes.StatusCode)
+		resp, httpRes, err := apiClient.OrchestrationApi.ListInstances(context.Background()).Execute()
 
-    })
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test OrchestrationApiService ListWorkflows", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.OrchestrationApi.ListWorkflows(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test OrchestrationApiService OrchestrationgetServerInfo", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.OrchestrationApi.OrchestrationgetServerInfo(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test OrchestrationApiService RunWorkflow", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var workflowID string
+
+		resp, httpRes, err := apiClient.OrchestrationApi.RunWorkflow(context.Background(), workflowID).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test OrchestrationApiService SendEvent", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var instanceID string
+
+		httpRes, err := apiClient.OrchestrationApi.SendEvent(context.Background(), instanceID).Execute()
+
+		require.Nil(t, err)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
 
 }

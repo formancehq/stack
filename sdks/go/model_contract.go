@@ -44,7 +44,7 @@ func NewContractWithDefaults() *Contract {
 
 // GetAccount returns the Account field value if set, zero value otherwise.
 func (o *Contract) GetAccount() string {
-	if o == nil || isNil(o.Account) {
+	if o == nil || IsNil(o.Account) {
 		var ret string
 		return ret
 	}
@@ -54,7 +54,7 @@ func (o *Contract) GetAccount() string {
 // GetAccountOk returns a tuple with the Account field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Contract) GetAccountOk() (*string, bool) {
-	if o == nil || isNil(o.Account) {
+	if o == nil || IsNil(o.Account) {
 		return nil, false
 	}
 	return o.Account, true
@@ -62,7 +62,7 @@ func (o *Contract) GetAccountOk() (*string, bool) {
 
 // HasAccount returns a boolean if a field has been set.
 func (o *Contract) HasAccount() bool {
-	if o != nil && !isNil(o.Account) {
+	if o != nil && !IsNil(o.Account) {
 		return true
 	}
 
@@ -108,7 +108,7 @@ func (o Contract) MarshalJSON() ([]byte, error) {
 
 func (o Contract) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Account) {
+	if !IsNil(o.Account) {
 		toSerialize["account"] = o.Account
 	}
 	toSerialize["expr"] = o.Expr

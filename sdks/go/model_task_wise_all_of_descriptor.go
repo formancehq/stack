@@ -44,7 +44,7 @@ func NewTaskWiseAllOfDescriptorWithDefaults() *TaskWiseAllOfDescriptor {
 
 // GetName returns the Name field value if set, zero value otherwise.
 func (o *TaskWiseAllOfDescriptor) GetName() string {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
 	}
@@ -54,7 +54,7 @@ func (o *TaskWiseAllOfDescriptor) GetName() string {
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskWiseAllOfDescriptor) GetNameOk() (*string, bool) {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
 	return o.Name, true
@@ -62,7 +62,7 @@ func (o *TaskWiseAllOfDescriptor) GetNameOk() (*string, bool) {
 
 // HasName returns a boolean if a field has been set.
 func (o *TaskWiseAllOfDescriptor) HasName() bool {
-	if o != nil && !isNil(o.Name) {
+	if o != nil && !IsNil(o.Name) {
 		return true
 	}
 
@@ -76,7 +76,7 @@ func (o *TaskWiseAllOfDescriptor) SetName(v string) {
 
 // GetKey returns the Key field value if set, zero value otherwise.
 func (o *TaskWiseAllOfDescriptor) GetKey() string {
-	if o == nil || isNil(o.Key) {
+	if o == nil || IsNil(o.Key) {
 		var ret string
 		return ret
 	}
@@ -86,7 +86,7 @@ func (o *TaskWiseAllOfDescriptor) GetKey() string {
 // GetKeyOk returns a tuple with the Key field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskWiseAllOfDescriptor) GetKeyOk() (*string, bool) {
-	if o == nil || isNil(o.Key) {
+	if o == nil || IsNil(o.Key) {
 		return nil, false
 	}
 	return o.Key, true
@@ -94,7 +94,7 @@ func (o *TaskWiseAllOfDescriptor) GetKeyOk() (*string, bool) {
 
 // HasKey returns a boolean if a field has been set.
 func (o *TaskWiseAllOfDescriptor) HasKey() bool {
-	if o != nil && !isNil(o.Key) {
+	if o != nil && !IsNil(o.Key) {
 		return true
 	}
 
@@ -108,7 +108,7 @@ func (o *TaskWiseAllOfDescriptor) SetKey(v string) {
 
 // GetProfileID returns the ProfileID field value if set, zero value otherwise.
 func (o *TaskWiseAllOfDescriptor) GetProfileID() int64 {
-	if o == nil || isNil(o.ProfileID) {
+	if o == nil || IsNil(o.ProfileID) {
 		var ret int64
 		return ret
 	}
@@ -118,7 +118,7 @@ func (o *TaskWiseAllOfDescriptor) GetProfileID() int64 {
 // GetProfileIDOk returns a tuple with the ProfileID field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskWiseAllOfDescriptor) GetProfileIDOk() (*int64, bool) {
-	if o == nil || isNil(o.ProfileID) {
+	if o == nil || IsNil(o.ProfileID) {
 		return nil, false
 	}
 	return o.ProfileID, true
@@ -126,7 +126,7 @@ func (o *TaskWiseAllOfDescriptor) GetProfileIDOk() (*int64, bool) {
 
 // HasProfileID returns a boolean if a field has been set.
 func (o *TaskWiseAllOfDescriptor) HasProfileID() bool {
-	if o != nil && !isNil(o.ProfileID) {
+	if o != nil && !IsNil(o.ProfileID) {
 		return true
 	}
 
@@ -148,13 +148,13 @@ func (o TaskWiseAllOfDescriptor) MarshalJSON() ([]byte, error) {
 
 func (o TaskWiseAllOfDescriptor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Name) {
+	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !isNil(o.Key) {
+	if !IsNil(o.Key) {
 		toSerialize["key"] = o.Key
 	}
-	if !isNil(o.ProfileID) {
+	if !IsNil(o.ProfileID) {
 		toSerialize["profileID"] = o.ProfileID
 	}
 	return toSerialize, nil

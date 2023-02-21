@@ -50,7 +50,7 @@ func NewQueryWithDefaults() *Query {
 
 // GetLedgers returns the Ledgers field value if set, zero value otherwise.
 func (o *Query) GetLedgers() []string {
-	if o == nil || isNil(o.Ledgers) {
+	if o == nil || IsNil(o.Ledgers) {
 		var ret []string
 		return ret
 	}
@@ -60,7 +60,7 @@ func (o *Query) GetLedgers() []string {
 // GetLedgersOk returns a tuple with the Ledgers field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Query) GetLedgersOk() ([]string, bool) {
-	if o == nil || isNil(o.Ledgers) {
+	if o == nil || IsNil(o.Ledgers) {
 		return nil, false
 	}
 	return o.Ledgers, true
@@ -68,7 +68,7 @@ func (o *Query) GetLedgersOk() ([]string, bool) {
 
 // HasLedgers returns a boolean if a field has been set.
 func (o *Query) HasLedgers() bool {
-	if o != nil && !isNil(o.Ledgers) {
+	if o != nil && !IsNil(o.Ledgers) {
 		return true
 	}
 
@@ -82,7 +82,7 @@ func (o *Query) SetLedgers(v []string) {
 
 // GetAfter returns the After field value if set, zero value otherwise.
 func (o *Query) GetAfter() []string {
-	if o == nil || isNil(o.After) {
+	if o == nil || IsNil(o.After) {
 		var ret []string
 		return ret
 	}
@@ -92,7 +92,7 @@ func (o *Query) GetAfter() []string {
 // GetAfterOk returns a tuple with the After field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Query) GetAfterOk() ([]string, bool) {
-	if o == nil || isNil(o.After) {
+	if o == nil || IsNil(o.After) {
 		return nil, false
 	}
 	return o.After, true
@@ -100,7 +100,7 @@ func (o *Query) GetAfterOk() ([]string, bool) {
 
 // HasAfter returns a boolean if a field has been set.
 func (o *Query) HasAfter() bool {
-	if o != nil && !isNil(o.After) {
+	if o != nil && !IsNil(o.After) {
 		return true
 	}
 
@@ -114,7 +114,7 @@ func (o *Query) SetAfter(v []string) {
 
 // GetPageSize returns the PageSize field value if set, zero value otherwise.
 func (o *Query) GetPageSize() int64 {
-	if o == nil || isNil(o.PageSize) {
+	if o == nil || IsNil(o.PageSize) {
 		var ret int64
 		return ret
 	}
@@ -124,7 +124,7 @@ func (o *Query) GetPageSize() int64 {
 // GetPageSizeOk returns a tuple with the PageSize field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Query) GetPageSizeOk() (*int64, bool) {
-	if o == nil || isNil(o.PageSize) {
+	if o == nil || IsNil(o.PageSize) {
 		return nil, false
 	}
 	return o.PageSize, true
@@ -132,7 +132,7 @@ func (o *Query) GetPageSizeOk() (*int64, bool) {
 
 // HasPageSize returns a boolean if a field has been set.
 func (o *Query) HasPageSize() bool {
-	if o != nil && !isNil(o.PageSize) {
+	if o != nil && !IsNil(o.PageSize) {
 		return true
 	}
 
@@ -146,7 +146,7 @@ func (o *Query) SetPageSize(v int64) {
 
 // GetTerms returns the Terms field value if set, zero value otherwise.
 func (o *Query) GetTerms() []string {
-	if o == nil || isNil(o.Terms) {
+	if o == nil || IsNil(o.Terms) {
 		var ret []string
 		return ret
 	}
@@ -156,7 +156,7 @@ func (o *Query) GetTerms() []string {
 // GetTermsOk returns a tuple with the Terms field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Query) GetTermsOk() ([]string, bool) {
-	if o == nil || isNil(o.Terms) {
+	if o == nil || IsNil(o.Terms) {
 		return nil, false
 	}
 	return o.Terms, true
@@ -164,7 +164,7 @@ func (o *Query) GetTermsOk() ([]string, bool) {
 
 // HasTerms returns a boolean if a field has been set.
 func (o *Query) HasTerms() bool {
-	if o != nil && !isNil(o.Terms) {
+	if o != nil && !IsNil(o.Terms) {
 		return true
 	}
 
@@ -178,7 +178,7 @@ func (o *Query) SetTerms(v []string) {
 
 // GetSort returns the Sort field value if set, zero value otherwise.
 func (o *Query) GetSort() string {
-	if o == nil || isNil(o.Sort) {
+	if o == nil || IsNil(o.Sort) {
 		var ret string
 		return ret
 	}
@@ -188,7 +188,7 @@ func (o *Query) GetSort() string {
 // GetSortOk returns a tuple with the Sort field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Query) GetSortOk() (*string, bool) {
-	if o == nil || isNil(o.Sort) {
+	if o == nil || IsNil(o.Sort) {
 		return nil, false
 	}
 	return o.Sort, true
@@ -196,7 +196,7 @@ func (o *Query) GetSortOk() (*string, bool) {
 
 // HasSort returns a boolean if a field has been set.
 func (o *Query) HasSort() bool {
-	if o != nil && !isNil(o.Sort) {
+	if o != nil && !IsNil(o.Sort) {
 		return true
 	}
 
@@ -210,7 +210,7 @@ func (o *Query) SetSort(v string) {
 
 // GetPolicy returns the Policy field value if set, zero value otherwise.
 func (o *Query) GetPolicy() string {
-	if o == nil || isNil(o.Policy) {
+	if o == nil || IsNil(o.Policy) {
 		var ret string
 		return ret
 	}
@@ -220,7 +220,7 @@ func (o *Query) GetPolicy() string {
 // GetPolicyOk returns a tuple with the Policy field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Query) GetPolicyOk() (*string, bool) {
-	if o == nil || isNil(o.Policy) {
+	if o == nil || IsNil(o.Policy) {
 		return nil, false
 	}
 	return o.Policy, true
@@ -228,7 +228,7 @@ func (o *Query) GetPolicyOk() (*string, bool) {
 
 // HasPolicy returns a boolean if a field has been set.
 func (o *Query) HasPolicy() bool {
-	if o != nil && !isNil(o.Policy) {
+	if o != nil && !IsNil(o.Policy) {
 		return true
 	}
 
@@ -242,7 +242,7 @@ func (o *Query) SetPolicy(v string) {
 
 // GetTarget returns the Target field value if set, zero value otherwise.
 func (o *Query) GetTarget() string {
-	if o == nil || isNil(o.Target) {
+	if o == nil || IsNil(o.Target) {
 		var ret string
 		return ret
 	}
@@ -252,7 +252,7 @@ func (o *Query) GetTarget() string {
 // GetTargetOk returns a tuple with the Target field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Query) GetTargetOk() (*string, bool) {
-	if o == nil || isNil(o.Target) {
+	if o == nil || IsNil(o.Target) {
 		return nil, false
 	}
 	return o.Target, true
@@ -260,7 +260,7 @@ func (o *Query) GetTargetOk() (*string, bool) {
 
 // HasTarget returns a boolean if a field has been set.
 func (o *Query) HasTarget() bool {
-	if o != nil && !isNil(o.Target) {
+	if o != nil && !IsNil(o.Target) {
 		return true
 	}
 
@@ -274,7 +274,7 @@ func (o *Query) SetTarget(v string) {
 
 // GetCursor returns the Cursor field value if set, zero value otherwise.
 func (o *Query) GetCursor() string {
-	if o == nil || isNil(o.Cursor) {
+	if o == nil || IsNil(o.Cursor) {
 		var ret string
 		return ret
 	}
@@ -284,7 +284,7 @@ func (o *Query) GetCursor() string {
 // GetCursorOk returns a tuple with the Cursor field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Query) GetCursorOk() (*string, bool) {
-	if o == nil || isNil(o.Cursor) {
+	if o == nil || IsNil(o.Cursor) {
 		return nil, false
 	}
 	return o.Cursor, true
@@ -292,7 +292,7 @@ func (o *Query) GetCursorOk() (*string, bool) {
 
 // HasCursor returns a boolean if a field has been set.
 func (o *Query) HasCursor() bool {
-	if o != nil && !isNil(o.Cursor) {
+	if o != nil && !IsNil(o.Cursor) {
 		return true
 	}
 
@@ -306,7 +306,7 @@ func (o *Query) SetCursor(v string) {
 
 // GetRaw returns the Raw field value if set, zero value otherwise.
 func (o *Query) GetRaw() map[string]interface{} {
-	if o == nil || isNil(o.Raw) {
+	if o == nil || IsNil(o.Raw) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -316,7 +316,7 @@ func (o *Query) GetRaw() map[string]interface{} {
 // GetRawOk returns a tuple with the Raw field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Query) GetRawOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Raw) {
+	if o == nil || IsNil(o.Raw) {
 		return map[string]interface{}{}, false
 	}
 	return o.Raw, true
@@ -324,7 +324,7 @@ func (o *Query) GetRawOk() (map[string]interface{}, bool) {
 
 // HasRaw returns a boolean if a field has been set.
 func (o *Query) HasRaw() bool {
-	if o != nil && !isNil(o.Raw) {
+	if o != nil && !IsNil(o.Raw) {
 		return true
 	}
 
@@ -346,31 +346,31 @@ func (o Query) MarshalJSON() ([]byte, error) {
 
 func (o Query) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Ledgers) {
+	if !IsNil(o.Ledgers) {
 		toSerialize["ledgers"] = o.Ledgers
 	}
-	if !isNil(o.After) {
+	if !IsNil(o.After) {
 		toSerialize["after"] = o.After
 	}
-	if !isNil(o.PageSize) {
+	if !IsNil(o.PageSize) {
 		toSerialize["pageSize"] = o.PageSize
 	}
-	if !isNil(o.Terms) {
+	if !IsNil(o.Terms) {
 		toSerialize["terms"] = o.Terms
 	}
-	if !isNil(o.Sort) {
+	if !IsNil(o.Sort) {
 		toSerialize["sort"] = o.Sort
 	}
-	if !isNil(o.Policy) {
+	if !IsNil(o.Policy) {
 		toSerialize["policy"] = o.Policy
 	}
-	if !isNil(o.Target) {
+	if !IsNil(o.Target) {
 		toSerialize["target"] = o.Target
 	}
-	if !isNil(o.Cursor) {
+	if !IsNil(o.Cursor) {
 		toSerialize["cursor"] = o.Cursor
 	}
-	if !isNil(o.Raw) {
+	if !IsNil(o.Raw) {
 		toSerialize["raw"] = o.Raw
 	}
 	return toSerialize, nil

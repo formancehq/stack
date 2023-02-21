@@ -11,11 +11,10 @@ package formance
 
 import (
 	"context"
-	"testing"
-
-	client "./openapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
+	client "github.com/formancehq/formance-sdk-go"
 )
 
 func Test_formance_DefaultApiService(t *testing.T) {
@@ -25,7 +24,7 @@ func Test_formance_DefaultApiService(t *testing.T) {
 
 	t.Run("Test DefaultApiService GetServerInfo", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.DefaultApi.GetServerInfo(context.Background()).Execute()
 
@@ -35,9 +34,21 @@ func Test_formance_DefaultApiService(t *testing.T) {
 
 	})
 
+	t.Run("Test DefaultApiService PaymentsgetServerInfo", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.DefaultApi.PaymentsgetServerInfo(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test DefaultApiService SearchgetServerInfo", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.DefaultApi.SearchgetServerInfo(context.Background()).Execute()
 

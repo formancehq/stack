@@ -70,7 +70,7 @@ func (o *WalletsCursor) SetPageSize(v int64) {
 
 // GetHasMore returns the HasMore field value if set, zero value otherwise.
 func (o *WalletsCursor) GetHasMore() bool {
-	if o == nil || isNil(o.HasMore) {
+	if o == nil || IsNil(o.HasMore) {
 		var ret bool
 		return ret
 	}
@@ -80,7 +80,7 @@ func (o *WalletsCursor) GetHasMore() bool {
 // GetHasMoreOk returns a tuple with the HasMore field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WalletsCursor) GetHasMoreOk() (*bool, bool) {
-	if o == nil || isNil(o.HasMore) {
+	if o == nil || IsNil(o.HasMore) {
 		return nil, false
 	}
 	return o.HasMore, true
@@ -88,7 +88,7 @@ func (o *WalletsCursor) GetHasMoreOk() (*bool, bool) {
 
 // HasHasMore returns a boolean if a field has been set.
 func (o *WalletsCursor) HasHasMore() bool {
-	if o != nil && !isNil(o.HasMore) {
+	if o != nil && !IsNil(o.HasMore) {
 		return true
 	}
 
@@ -102,7 +102,7 @@ func (o *WalletsCursor) SetHasMore(v bool) {
 
 // GetPrevious returns the Previous field value if set, zero value otherwise.
 func (o *WalletsCursor) GetPrevious() string {
-	if o == nil || isNil(o.Previous) {
+	if o == nil || IsNil(o.Previous) {
 		var ret string
 		return ret
 	}
@@ -112,7 +112,7 @@ func (o *WalletsCursor) GetPrevious() string {
 // GetPreviousOk returns a tuple with the Previous field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WalletsCursor) GetPreviousOk() (*string, bool) {
-	if o == nil || isNil(o.Previous) {
+	if o == nil || IsNil(o.Previous) {
 		return nil, false
 	}
 	return o.Previous, true
@@ -120,7 +120,7 @@ func (o *WalletsCursor) GetPreviousOk() (*string, bool) {
 
 // HasPrevious returns a boolean if a field has been set.
 func (o *WalletsCursor) HasPrevious() bool {
-	if o != nil && !isNil(o.Previous) {
+	if o != nil && !IsNil(o.Previous) {
 		return true
 	}
 
@@ -134,7 +134,7 @@ func (o *WalletsCursor) SetPrevious(v string) {
 
 // GetNext returns the Next field value if set, zero value otherwise.
 func (o *WalletsCursor) GetNext() string {
-	if o == nil || isNil(o.Next) {
+	if o == nil || IsNil(o.Next) {
 		var ret string
 		return ret
 	}
@@ -144,7 +144,7 @@ func (o *WalletsCursor) GetNext() string {
 // GetNextOk returns a tuple with the Next field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WalletsCursor) GetNextOk() (*string, bool) {
-	if o == nil || isNil(o.Next) {
+	if o == nil || IsNil(o.Next) {
 		return nil, false
 	}
 	return o.Next, true
@@ -152,7 +152,7 @@ func (o *WalletsCursor) GetNextOk() (*string, bool) {
 
 // HasNext returns a boolean if a field has been set.
 func (o *WalletsCursor) HasNext() bool {
-	if o != nil && !isNil(o.Next) {
+	if o != nil && !IsNil(o.Next) {
 		return true
 	}
 
@@ -175,13 +175,13 @@ func (o WalletsCursor) MarshalJSON() ([]byte, error) {
 func (o WalletsCursor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["pageSize"] = o.PageSize
-	if !isNil(o.HasMore) {
+	if !IsNil(o.HasMore) {
 		toSerialize["hasMore"] = o.HasMore
 	}
-	if !isNil(o.Previous) {
+	if !IsNil(o.Previous) {
 		toSerialize["previous"] = o.Previous
 	}
-	if !isNil(o.Next) {
+	if !IsNil(o.Next) {
 		toSerialize["next"] = o.Next
 	}
 	return toSerialize, nil

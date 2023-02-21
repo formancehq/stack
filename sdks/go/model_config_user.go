@@ -70,7 +70,7 @@ func (o *ConfigUser) SetEndpoint(v string) {
 
 // GetSecret returns the Secret field value if set, zero value otherwise.
 func (o *ConfigUser) GetSecret() string {
-	if o == nil || isNil(o.Secret) {
+	if o == nil || IsNil(o.Secret) {
 		var ret string
 		return ret
 	}
@@ -80,7 +80,7 @@ func (o *ConfigUser) GetSecret() string {
 // GetSecretOk returns a tuple with the Secret field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ConfigUser) GetSecretOk() (*string, bool) {
-	if o == nil || isNil(o.Secret) {
+	if o == nil || IsNil(o.Secret) {
 		return nil, false
 	}
 	return o.Secret, true
@@ -88,7 +88,7 @@ func (o *ConfigUser) GetSecretOk() (*string, bool) {
 
 // HasSecret returns a boolean if a field has been set.
 func (o *ConfigUser) HasSecret() bool {
-	if o != nil && !isNil(o.Secret) {
+	if o != nil && !IsNil(o.Secret) {
 		return true
 	}
 
@@ -135,7 +135,7 @@ func (o ConfigUser) MarshalJSON() ([]byte, error) {
 func (o ConfigUser) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["endpoint"] = o.Endpoint
-	if !isNil(o.Secret) {
+	if !IsNil(o.Secret) {
 		toSerialize["secret"] = o.Secret
 	}
 	toSerialize["eventTypes"] = o.EventTypes

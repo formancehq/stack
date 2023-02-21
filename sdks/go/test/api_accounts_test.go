@@ -11,11 +11,10 @@ package formance
 
 import (
 	"context"
-	"testing"
-
-	client "./openapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
+	client "github.com/formancehq/formance-sdk-go"
 )
 
 func Test_formance_AccountsApiService(t *testing.T) {
@@ -25,36 +24,34 @@ func Test_formance_AccountsApiService(t *testing.T) {
 
 	t.Run("Test AccountsApiService AddMetadataToAccount", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 		var address string
 
-		resp, httpRes, err := apiClient.AccountsApi.AddMetadataToAccount(context.Background(), ledger, address).Execute()
+		httpRes, err := apiClient.AccountsApi.AddMetadataToAccount(context.Background(), ledger, address).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
 	t.Run("Test AccountsApiService CountAccounts", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 
-		resp, httpRes, err := apiClient.AccountsApi.CountAccounts(context.Background(), ledger).Execute()
+		httpRes, err := apiClient.AccountsApi.CountAccounts(context.Background(), ledger).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
 	t.Run("Test AccountsApiService GetAccount", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 		var address string
@@ -69,7 +66,7 @@ func Test_formance_AccountsApiService(t *testing.T) {
 
 	t.Run("Test AccountsApiService ListAccounts", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 

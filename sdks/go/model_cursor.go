@@ -47,7 +47,7 @@ func NewCursorWithDefaults() *Cursor {
 
 // GetPageSize returns the PageSize field value if set, zero value otherwise.
 func (o *Cursor) GetPageSize() int64 {
-	if o == nil || isNil(o.PageSize) {
+	if o == nil || IsNil(o.PageSize) {
 		var ret int64
 		return ret
 	}
@@ -57,7 +57,7 @@ func (o *Cursor) GetPageSize() int64 {
 // GetPageSizeOk returns a tuple with the PageSize field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetPageSizeOk() (*int64, bool) {
-	if o == nil || isNil(o.PageSize) {
+	if o == nil || IsNil(o.PageSize) {
 		return nil, false
 	}
 	return o.PageSize, true
@@ -65,7 +65,7 @@ func (o *Cursor) GetPageSizeOk() (*int64, bool) {
 
 // HasPageSize returns a boolean if a field has been set.
 func (o *Cursor) HasPageSize() bool {
-	if o != nil && !isNil(o.PageSize) {
+	if o != nil && !IsNil(o.PageSize) {
 		return true
 	}
 
@@ -79,7 +79,7 @@ func (o *Cursor) SetPageSize(v int64) {
 
 // GetHasMore returns the HasMore field value if set, zero value otherwise.
 func (o *Cursor) GetHasMore() bool {
-	if o == nil || isNil(o.HasMore) {
+	if o == nil || IsNil(o.HasMore) {
 		var ret bool
 		return ret
 	}
@@ -89,7 +89,7 @@ func (o *Cursor) GetHasMore() bool {
 // GetHasMoreOk returns a tuple with the HasMore field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetHasMoreOk() (*bool, bool) {
-	if o == nil || isNil(o.HasMore) {
+	if o == nil || IsNil(o.HasMore) {
 		return nil, false
 	}
 	return o.HasMore, true
@@ -97,7 +97,7 @@ func (o *Cursor) GetHasMoreOk() (*bool, bool) {
 
 // HasHasMore returns a boolean if a field has been set.
 func (o *Cursor) HasHasMore() bool {
-	if o != nil && !isNil(o.HasMore) {
+	if o != nil && !IsNil(o.HasMore) {
 		return true
 	}
 
@@ -111,7 +111,7 @@ func (o *Cursor) SetHasMore(v bool) {
 
 // GetTotal returns the Total field value if set, zero value otherwise.
 func (o *Cursor) GetTotal() Total {
-	if o == nil || isNil(o.Total) {
+	if o == nil || IsNil(o.Total) {
 		var ret Total
 		return ret
 	}
@@ -121,7 +121,7 @@ func (o *Cursor) GetTotal() Total {
 // GetTotalOk returns a tuple with the Total field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetTotalOk() (*Total, bool) {
-	if o == nil || isNil(o.Total) {
+	if o == nil || IsNil(o.Total) {
 		return nil, false
 	}
 	return o.Total, true
@@ -129,7 +129,7 @@ func (o *Cursor) GetTotalOk() (*Total, bool) {
 
 // HasTotal returns a boolean if a field has been set.
 func (o *Cursor) HasTotal() bool {
-	if o != nil && !isNil(o.Total) {
+	if o != nil && !IsNil(o.Total) {
 		return true
 	}
 
@@ -143,7 +143,7 @@ func (o *Cursor) SetTotal(v Total) {
 
 // GetNext returns the Next field value if set, zero value otherwise.
 func (o *Cursor) GetNext() string {
-	if o == nil || isNil(o.Next) {
+	if o == nil || IsNil(o.Next) {
 		var ret string
 		return ret
 	}
@@ -153,7 +153,7 @@ func (o *Cursor) GetNext() string {
 // GetNextOk returns a tuple with the Next field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetNextOk() (*string, bool) {
-	if o == nil || isNil(o.Next) {
+	if o == nil || IsNil(o.Next) {
 		return nil, false
 	}
 	return o.Next, true
@@ -161,7 +161,7 @@ func (o *Cursor) GetNextOk() (*string, bool) {
 
 // HasNext returns a boolean if a field has been set.
 func (o *Cursor) HasNext() bool {
-	if o != nil && !isNil(o.Next) {
+	if o != nil && !IsNil(o.Next) {
 		return true
 	}
 
@@ -175,7 +175,7 @@ func (o *Cursor) SetNext(v string) {
 
 // GetPrevious returns the Previous field value if set, zero value otherwise.
 func (o *Cursor) GetPrevious() string {
-	if o == nil || isNil(o.Previous) {
+	if o == nil || IsNil(o.Previous) {
 		var ret string
 		return ret
 	}
@@ -185,7 +185,7 @@ func (o *Cursor) GetPrevious() string {
 // GetPreviousOk returns a tuple with the Previous field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetPreviousOk() (*string, bool) {
-	if o == nil || isNil(o.Previous) {
+	if o == nil || IsNil(o.Previous) {
 		return nil, false
 	}
 	return o.Previous, true
@@ -193,7 +193,7 @@ func (o *Cursor) GetPreviousOk() (*string, bool) {
 
 // HasPrevious returns a boolean if a field has been set.
 func (o *Cursor) HasPrevious() bool {
-	if o != nil && !isNil(o.Previous) {
+	if o != nil && !IsNil(o.Previous) {
 		return true
 	}
 
@@ -207,7 +207,7 @@ func (o *Cursor) SetPrevious(v string) {
 
 // GetData returns the Data field value if set, zero value otherwise.
 func (o *Cursor) GetData() []interface{} {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		var ret []interface{}
 		return ret
 	}
@@ -217,7 +217,7 @@ func (o *Cursor) GetData() []interface{} {
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Cursor) GetDataOk() ([]interface{}, bool) {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
 	return o.Data, true
@@ -225,7 +225,7 @@ func (o *Cursor) GetDataOk() ([]interface{}, bool) {
 
 // HasData returns a boolean if a field has been set.
 func (o *Cursor) HasData() bool {
-	if o != nil && !isNil(o.Data) {
+	if o != nil && !IsNil(o.Data) {
 		return true
 	}
 
@@ -247,22 +247,22 @@ func (o Cursor) MarshalJSON() ([]byte, error) {
 
 func (o Cursor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.PageSize) {
+	if !IsNil(o.PageSize) {
 		toSerialize["pageSize"] = o.PageSize
 	}
-	if !isNil(o.HasMore) {
+	if !IsNil(o.HasMore) {
 		toSerialize["hasMore"] = o.HasMore
 	}
-	if !isNil(o.Total) {
+	if !IsNil(o.Total) {
 		toSerialize["total"] = o.Total
 	}
-	if !isNil(o.Next) {
+	if !IsNil(o.Next) {
 		toSerialize["next"] = o.Next
 	}
-	if !isNil(o.Previous) {
+	if !IsNil(o.Previous) {
 		toSerialize["previous"] = o.Previous
 	}
-	if !isNil(o.Data) {
+	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
 	return toSerialize, nil

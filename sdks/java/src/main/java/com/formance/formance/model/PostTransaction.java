@@ -52,7 +52,7 @@ public class PostTransaction {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = null;
+  private Map<String, Object> metadata;
 
   public PostTransaction() {
   }
@@ -160,9 +160,6 @@ public class PostTransaction {
   }
 
   public PostTransaction putMetadataItem(String key, Object metadataItem) {
-    if (this.metadata == null) {
-      this.metadata = null;
-    }
     this.metadata.put(key, metadataItem);
     return this;
   }

@@ -97,7 +97,7 @@ func (o *PaymentsCursorCursor) SetHasMore(v bool) {
 
 // GetPrevious returns the Previous field value if set, zero value otherwise.
 func (o *PaymentsCursorCursor) GetPrevious() string {
-	if o == nil || isNil(o.Previous) {
+	if o == nil || IsNil(o.Previous) {
 		var ret string
 		return ret
 	}
@@ -107,7 +107,7 @@ func (o *PaymentsCursorCursor) GetPrevious() string {
 // GetPreviousOk returns a tuple with the Previous field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *PaymentsCursorCursor) GetPreviousOk() (*string, bool) {
-	if o == nil || isNil(o.Previous) {
+	if o == nil || IsNil(o.Previous) {
 		return nil, false
 	}
 	return o.Previous, true
@@ -115,7 +115,7 @@ func (o *PaymentsCursorCursor) GetPreviousOk() (*string, bool) {
 
 // HasPrevious returns a boolean if a field has been set.
 func (o *PaymentsCursorCursor) HasPrevious() bool {
-	if o != nil && !isNil(o.Previous) {
+	if o != nil && !IsNil(o.Previous) {
 		return true
 	}
 
@@ -129,7 +129,7 @@ func (o *PaymentsCursorCursor) SetPrevious(v string) {
 
 // GetNext returns the Next field value if set, zero value otherwise.
 func (o *PaymentsCursorCursor) GetNext() string {
-	if o == nil || isNil(o.Next) {
+	if o == nil || IsNil(o.Next) {
 		var ret string
 		return ret
 	}
@@ -139,7 +139,7 @@ func (o *PaymentsCursorCursor) GetNext() string {
 // GetNextOk returns a tuple with the Next field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *PaymentsCursorCursor) GetNextOk() (*string, bool) {
-	if o == nil || isNil(o.Next) {
+	if o == nil || IsNil(o.Next) {
 		return nil, false
 	}
 	return o.Next, true
@@ -147,7 +147,7 @@ func (o *PaymentsCursorCursor) GetNextOk() (*string, bool) {
 
 // HasNext returns a boolean if a field has been set.
 func (o *PaymentsCursorCursor) HasNext() bool {
-	if o != nil && !isNil(o.Next) {
+	if o != nil && !IsNil(o.Next) {
 		return true
 	}
 
@@ -195,10 +195,10 @@ func (o PaymentsCursorCursor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["pageSize"] = o.PageSize
 	toSerialize["hasMore"] = o.HasMore
-	if !isNil(o.Previous) {
+	if !IsNil(o.Previous) {
 		toSerialize["previous"] = o.Previous
 	}
-	if !isNil(o.Next) {
+	if !IsNil(o.Next) {
 		toSerialize["next"] = o.Next
 	}
 	toSerialize["data"] = o.Data

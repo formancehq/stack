@@ -31,7 +31,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -101,7 +101,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -173,7 +173,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -243,7 +243,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -251,7 +251,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.WebhooksApi.DeleteConfig(context.Background(), id).Execute()
+    r, err := apiClient.WebhooksApi.DeleteConfig(context.Background(), id).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `WebhooksApi.DeleteConfig``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -311,7 +311,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -379,7 +379,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -445,7 +445,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {

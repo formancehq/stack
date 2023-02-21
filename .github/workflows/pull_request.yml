@@ -74,7 +74,7 @@ jobs:
           go-version-file: './go.mod'
           cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
           cache: true
-      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
+      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
       - run: task ${{ matrix.folder }}:lint
 
   Tests:

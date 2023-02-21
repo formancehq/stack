@@ -42,7 +42,7 @@ func NewConfigChangeSecretWithDefaults() *ConfigChangeSecret {
 
 // GetSecret returns the Secret field value if set, zero value otherwise.
 func (o *ConfigChangeSecret) GetSecret() string {
-	if o == nil || isNil(o.Secret) {
+	if o == nil || IsNil(o.Secret) {
 		var ret string
 		return ret
 	}
@@ -52,7 +52,7 @@ func (o *ConfigChangeSecret) GetSecret() string {
 // GetSecretOk returns a tuple with the Secret field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ConfigChangeSecret) GetSecretOk() (*string, bool) {
-	if o == nil || isNil(o.Secret) {
+	if o == nil || IsNil(o.Secret) {
 		return nil, false
 	}
 	return o.Secret, true
@@ -60,7 +60,7 @@ func (o *ConfigChangeSecret) GetSecretOk() (*string, bool) {
 
 // HasSecret returns a boolean if a field has been set.
 func (o *ConfigChangeSecret) HasSecret() bool {
-	if o != nil && !isNil(o.Secret) {
+	if o != nil && !IsNil(o.Secret) {
 		return true
 	}
 
@@ -82,7 +82,7 @@ func (o ConfigChangeSecret) MarshalJSON() ([]byte, error) {
 
 func (o ConfigChangeSecret) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Secret) {
+	if !IsNil(o.Secret) {
 		toSerialize["secret"] = o.Secret
 	}
 	return toSerialize, nil

@@ -44,7 +44,7 @@ func NewTaskModulrAllOfDescriptorWithDefaults() *TaskModulrAllOfDescriptor {
 
 // GetName returns the Name field value if set, zero value otherwise.
 func (o *TaskModulrAllOfDescriptor) GetName() string {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
 	}
@@ -54,7 +54,7 @@ func (o *TaskModulrAllOfDescriptor) GetName() string {
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskModulrAllOfDescriptor) GetNameOk() (*string, bool) {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
 	return o.Name, true
@@ -62,7 +62,7 @@ func (o *TaskModulrAllOfDescriptor) GetNameOk() (*string, bool) {
 
 // HasName returns a boolean if a field has been set.
 func (o *TaskModulrAllOfDescriptor) HasName() bool {
-	if o != nil && !isNil(o.Name) {
+	if o != nil && !IsNil(o.Name) {
 		return true
 	}
 
@@ -76,7 +76,7 @@ func (o *TaskModulrAllOfDescriptor) SetName(v string) {
 
 // GetKey returns the Key field value if set, zero value otherwise.
 func (o *TaskModulrAllOfDescriptor) GetKey() string {
-	if o == nil || isNil(o.Key) {
+	if o == nil || IsNil(o.Key) {
 		var ret string
 		return ret
 	}
@@ -86,7 +86,7 @@ func (o *TaskModulrAllOfDescriptor) GetKey() string {
 // GetKeyOk returns a tuple with the Key field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskModulrAllOfDescriptor) GetKeyOk() (*string, bool) {
-	if o == nil || isNil(o.Key) {
+	if o == nil || IsNil(o.Key) {
 		return nil, false
 	}
 	return o.Key, true
@@ -94,7 +94,7 @@ func (o *TaskModulrAllOfDescriptor) GetKeyOk() (*string, bool) {
 
 // HasKey returns a boolean if a field has been set.
 func (o *TaskModulrAllOfDescriptor) HasKey() bool {
-	if o != nil && !isNil(o.Key) {
+	if o != nil && !IsNil(o.Key) {
 		return true
 	}
 
@@ -108,7 +108,7 @@ func (o *TaskModulrAllOfDescriptor) SetKey(v string) {
 
 // GetAccountID returns the AccountID field value if set, zero value otherwise.
 func (o *TaskModulrAllOfDescriptor) GetAccountID() string {
-	if o == nil || isNil(o.AccountID) {
+	if o == nil || IsNil(o.AccountID) {
 		var ret string
 		return ret
 	}
@@ -118,7 +118,7 @@ func (o *TaskModulrAllOfDescriptor) GetAccountID() string {
 // GetAccountIDOk returns a tuple with the AccountID field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TaskModulrAllOfDescriptor) GetAccountIDOk() (*string, bool) {
-	if o == nil || isNil(o.AccountID) {
+	if o == nil || IsNil(o.AccountID) {
 		return nil, false
 	}
 	return o.AccountID, true
@@ -126,7 +126,7 @@ func (o *TaskModulrAllOfDescriptor) GetAccountIDOk() (*string, bool) {
 
 // HasAccountID returns a boolean if a field has been set.
 func (o *TaskModulrAllOfDescriptor) HasAccountID() bool {
-	if o != nil && !isNil(o.AccountID) {
+	if o != nil && !IsNil(o.AccountID) {
 		return true
 	}
 
@@ -148,13 +148,13 @@ func (o TaskModulrAllOfDescriptor) MarshalJSON() ([]byte, error) {
 
 func (o TaskModulrAllOfDescriptor) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Name) {
+	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	if !isNil(o.Key) {
+	if !IsNil(o.Key) {
 		toSerialize["key"] = o.Key
 	}
-	if !isNil(o.AccountID) {
+	if !IsNil(o.AccountID) {
 		toSerialize["accountID"] = o.AccountID
 	}
 	return toSerialize, nil

@@ -14,14 +14,12 @@
 package com.formance.formance.model;
 
 import com.formance.formance.model.PaymentStatus;
-import com.formance.formance.model.TaskBankingCircleDescriptor;
+import com.formance.formance.model.TaskBankingCircleAllOfDescriptor;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -53,11 +51,11 @@ public class TaskBankingCircleTest {
     }
 
     /**
-     * Test the property 'connectorID'
+     * Test the property 'connectorId'
      */
     @Test
-    public void connectorIDTest() {
-        // TODO: test connectorID
+    public void connectorIdTest() {
+        // TODO: test connectorId
     }
 
     /**
@@ -74,14 +72,6 @@ public class TaskBankingCircleTest {
     @Test
     public void updatedAtTest() {
         // TODO: test updatedAt
-    }
-
-    /**
-     * Test the property 'descriptor'
-     */
-    @Test
-    public void descriptorTest() {
-        // TODO: test descriptor
     }
 
     /**
@@ -106,6 +96,14 @@ public class TaskBankingCircleTest {
     @Test
     public void errorTest() {
         // TODO: test error
+    }
+
+    /**
+     * Test the property 'descriptor'
+     */
+    @Test
+    public void descriptorTest() {
+        // TODO: test descriptor
     }
 
 }

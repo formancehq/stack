@@ -24,7 +24,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {
@@ -100,7 +100,7 @@ import (
     "context"
     "fmt"
     "os"
-    client "./openapi"
+    client "github.com/formancehq/formance-sdk-go"
 )
 
 func main() {

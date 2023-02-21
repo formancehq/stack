@@ -11,11 +11,10 @@ package formance
 
 import (
 	"context"
-	"testing"
-
-	client "./openapi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
+	client "github.com/formancehq/formance-sdk-go"
 )
 
 func Test_formance_PaymentsApiService(t *testing.T) {
@@ -25,7 +24,7 @@ func Test_formance_PaymentsApiService(t *testing.T) {
 
 	t.Run("Test PaymentsApiService ConnectorsStripeTransfer", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.PaymentsApi.ConnectorsStripeTransfer(context.Background()).Execute()
 
@@ -35,23 +34,13 @@ func Test_formance_PaymentsApiService(t *testing.T) {
 
 	})
 
-	t.Run("Test PaymentsApiService GetAllConnectors", func(t *testing.T) {
+	t.Run("Test PaymentsApiService ConnectorsTransfer", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.PaymentsApi.GetAllConnectors(context.Background()).Execute()
+		var connector Connector
 
-		require.Nil(t, err)
-		require.NotNil(t, resp)
-		assert.Equal(t, 200, httpRes.StatusCode)
-
-	})
-
-	t.Run("Test PaymentsApiService GetAllConnectorsConfigs", func(t *testing.T) {
-
-		t.Skip("skip test") // remove to run test
-
-		resp, httpRes, err := apiClient.PaymentsApi.GetAllConnectorsConfigs(context.Background()).Execute()
+		resp, httpRes, err := apiClient.PaymentsApi.ConnectorsTransfer(context.Background(), connector).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -61,9 +50,9 @@ func Test_formance_PaymentsApiService(t *testing.T) {
 
 	t.Run("Test PaymentsApiService GetConnectorTask", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var connector Connectors
+		var connector Connector
 		var taskId string
 
 		resp, httpRes, err := apiClient.PaymentsApi.GetConnectorTask(context.Background(), connector, taskId).Execute()
@@ -76,7 +65,7 @@ func Test_formance_PaymentsApiService(t *testing.T) {
 
 	t.Run("Test PaymentsApiService GetPayment", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var paymentId string
 
@@ -90,11 +79,34 @@ func Test_formance_PaymentsApiService(t *testing.T) {
 
 	t.Run("Test PaymentsApiService InstallConnector", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var connector Connectors
+		var connector Connector
 
-		resp, httpRes, err := apiClient.PaymentsApi.InstallConnector(context.Background(), connector).Execute()
+		httpRes, err := apiClient.PaymentsApi.InstallConnector(context.Background(), connector).Execute()
+
+		require.Nil(t, err)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test PaymentsApiService ListAllConnectors", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.PaymentsApi.ListAllConnectors(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test PaymentsApiService ListConfigsAvailableConnectors", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.PaymentsApi.ListConfigsAvailableConnectors(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -104,9 +116,9 @@ func Test_formance_PaymentsApiService(t *testing.T) {
 
 	t.Run("Test PaymentsApiService ListConnectorTasks", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var connector Connectors
+		var connector Connector
 
 		resp, httpRes, err := apiClient.PaymentsApi.ListConnectorTasks(context.Background(), connector).Execute()
 
@@ -116,9 +128,23 @@ func Test_formance_PaymentsApiService(t *testing.T) {
 
 	})
 
+	t.Run("Test PaymentsApiService ListConnectorsTransfers", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var connector Connector
+
+		resp, httpRes, err := apiClient.PaymentsApi.ListConnectorsTransfers(context.Background(), connector).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
 	t.Run("Test PaymentsApiService ListPayments", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.PaymentsApi.ListPayments(context.Background()).Execute()
 
@@ -130,7 +156,7 @@ func Test_formance_PaymentsApiService(t *testing.T) {
 
 	t.Run("Test PaymentsApiService PaymentslistAccounts", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.PaymentsApi.PaymentslistAccounts(context.Background()).Execute()
 
@@ -142,9 +168,9 @@ func Test_formance_PaymentsApiService(t *testing.T) {
 
 	t.Run("Test PaymentsApiService ReadConnectorConfig", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var connector Connectors
+		var connector Connector
 
 		resp, httpRes, err := apiClient.PaymentsApi.ReadConnectorConfig(context.Background(), connector).Execute()
 
@@ -156,28 +182,39 @@ func Test_formance_PaymentsApiService(t *testing.T) {
 
 	t.Run("Test PaymentsApiService ResetConnector", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var connector Connectors
+		var connector Connector
 
-		resp, httpRes, err := apiClient.PaymentsApi.ResetConnector(context.Background(), connector).Execute()
+		httpRes, err := apiClient.PaymentsApi.ResetConnector(context.Background(), connector).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})
 
 	t.Run("Test PaymentsApiService UninstallConnector", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
-		var connector Connectors
+		var connector Connector
 
-		resp, httpRes, err := apiClient.PaymentsApi.UninstallConnector(context.Background(), connector).Execute()
+		httpRes, err := apiClient.PaymentsApi.UninstallConnector(context.Background(), connector).Execute()
 
 		require.Nil(t, err)
-		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test PaymentsApiService UpdateMetadata", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		var paymentId string
+
+		httpRes, err := apiClient.PaymentsApi.UpdateMetadata(context.Background(), paymentId).Execute()
+
+		require.Nil(t, err)
 		assert.Equal(t, 200, httpRes.StatusCode)
 
 	})

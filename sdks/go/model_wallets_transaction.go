@@ -54,7 +54,7 @@ func NewWalletsTransactionWithDefaults() *WalletsTransaction {
 
 // GetLedger returns the Ledger field value if set, zero value otherwise.
 func (o *WalletsTransaction) GetLedger() string {
-	if o == nil || isNil(o.Ledger) {
+	if o == nil || IsNil(o.Ledger) {
 		var ret string
 		return ret
 	}
@@ -64,7 +64,7 @@ func (o *WalletsTransaction) GetLedger() string {
 // GetLedgerOk returns a tuple with the Ledger field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetLedgerOk() (*string, bool) {
-	if o == nil || isNil(o.Ledger) {
+	if o == nil || IsNil(o.Ledger) {
 		return nil, false
 	}
 	return o.Ledger, true
@@ -72,7 +72,7 @@ func (o *WalletsTransaction) GetLedgerOk() (*string, bool) {
 
 // HasLedger returns a boolean if a field has been set.
 func (o *WalletsTransaction) HasLedger() bool {
-	if o != nil && !isNil(o.Ledger) {
+	if o != nil && !IsNil(o.Ledger) {
 		return true
 	}
 
@@ -134,7 +134,7 @@ func (o *WalletsTransaction) SetPostings(v []Posting) {
 
 // GetReference returns the Reference field value if set, zero value otherwise.
 func (o *WalletsTransaction) GetReference() string {
-	if o == nil || isNil(o.Reference) {
+	if o == nil || IsNil(o.Reference) {
 		var ret string
 		return ret
 	}
@@ -144,7 +144,7 @@ func (o *WalletsTransaction) GetReference() string {
 // GetReferenceOk returns a tuple with the Reference field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetReferenceOk() (*string, bool) {
-	if o == nil || isNil(o.Reference) {
+	if o == nil || IsNil(o.Reference) {
 		return nil, false
 	}
 	return o.Reference, true
@@ -152,7 +152,7 @@ func (o *WalletsTransaction) GetReferenceOk() (*string, bool) {
 
 // HasReference returns a boolean if a field has been set.
 func (o *WalletsTransaction) HasReference() bool {
-	if o != nil && !isNil(o.Reference) {
+	if o != nil && !IsNil(o.Reference) {
 		return true
 	}
 
@@ -166,7 +166,7 @@ func (o *WalletsTransaction) SetReference(v string) {
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
 func (o *WalletsTransaction) GetMetadata() map[string]interface{} {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]interface{}
 		return ret
 	}
@@ -176,7 +176,7 @@ func (o *WalletsTransaction) GetMetadata() map[string]interface{} {
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return map[string]interface{}{}, false
 	}
 	return o.Metadata, true
@@ -184,7 +184,7 @@ func (o *WalletsTransaction) GetMetadataOk() (map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *WalletsTransaction) HasMetadata() bool {
-	if o != nil && !isNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
@@ -222,7 +222,7 @@ func (o *WalletsTransaction) SetTxid(v int64) {
 
 // GetPreCommitVolumes returns the PreCommitVolumes field value if set, zero value otherwise.
 func (o *WalletsTransaction) GetPreCommitVolumes() map[string]map[string]WalletsVolume {
-	if o == nil || isNil(o.PreCommitVolumes) {
+	if o == nil || IsNil(o.PreCommitVolumes) {
 		var ret map[string]map[string]WalletsVolume
 		return ret
 	}
@@ -232,7 +232,7 @@ func (o *WalletsTransaction) GetPreCommitVolumes() map[string]map[string]Wallets
 // GetPreCommitVolumesOk returns a tuple with the PreCommitVolumes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetPreCommitVolumesOk() (*map[string]map[string]WalletsVolume, bool) {
-	if o == nil || isNil(o.PreCommitVolumes) {
+	if o == nil || IsNil(o.PreCommitVolumes) {
 		return nil, false
 	}
 	return o.PreCommitVolumes, true
@@ -240,7 +240,7 @@ func (o *WalletsTransaction) GetPreCommitVolumesOk() (*map[string]map[string]Wal
 
 // HasPreCommitVolumes returns a boolean if a field has been set.
 func (o *WalletsTransaction) HasPreCommitVolumes() bool {
-	if o != nil && !isNil(o.PreCommitVolumes) {
+	if o != nil && !IsNil(o.PreCommitVolumes) {
 		return true
 	}
 
@@ -254,7 +254,7 @@ func (o *WalletsTransaction) SetPreCommitVolumes(v map[string]map[string]Wallets
 
 // GetPostCommitVolumes returns the PostCommitVolumes field value if set, zero value otherwise.
 func (o *WalletsTransaction) GetPostCommitVolumes() map[string]map[string]WalletsVolume {
-	if o == nil || isNil(o.PostCommitVolumes) {
+	if o == nil || IsNil(o.PostCommitVolumes) {
 		var ret map[string]map[string]WalletsVolume
 		return ret
 	}
@@ -264,7 +264,7 @@ func (o *WalletsTransaction) GetPostCommitVolumes() map[string]map[string]Wallet
 // GetPostCommitVolumesOk returns a tuple with the PostCommitVolumes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *WalletsTransaction) GetPostCommitVolumesOk() (*map[string]map[string]WalletsVolume, bool) {
-	if o == nil || isNil(o.PostCommitVolumes) {
+	if o == nil || IsNil(o.PostCommitVolumes) {
 		return nil, false
 	}
 	return o.PostCommitVolumes, true
@@ -272,7 +272,7 @@ func (o *WalletsTransaction) GetPostCommitVolumesOk() (*map[string]map[string]Wa
 
 // HasPostCommitVolumes returns a boolean if a field has been set.
 func (o *WalletsTransaction) HasPostCommitVolumes() bool {
-	if o != nil && !isNil(o.PostCommitVolumes) {
+	if o != nil && !IsNil(o.PostCommitVolumes) {
 		return true
 	}
 
@@ -294,22 +294,22 @@ func (o WalletsTransaction) MarshalJSON() ([]byte, error) {
 
 func (o WalletsTransaction) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Ledger) {
+	if !IsNil(o.Ledger) {
 		toSerialize["ledger"] = o.Ledger
 	}
 	toSerialize["timestamp"] = o.Timestamp
 	toSerialize["postings"] = o.Postings
-	if !isNil(o.Reference) {
+	if !IsNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
-	if !isNil(o.Metadata) {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	toSerialize["txid"] = o.Txid
-	if !isNil(o.PreCommitVolumes) {
+	if !IsNil(o.PreCommitVolumes) {
 		toSerialize["preCommitVolumes"] = o.PreCommitVolumes
 	}
-	if !isNil(o.PostCommitVolumes) {
+	if !IsNil(o.PostCommitVolumes) {
 		toSerialize["postCommitVolumes"] = o.PostCommitVolumes
 	}
 	return toSerialize, nil
