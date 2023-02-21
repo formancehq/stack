@@ -124,3 +124,5 @@ replace (
 	github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 	github.com/go-check/check => github.com/containous/check v0.0.0-20170915194414-ca0bf163426a
 )
+
+replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
