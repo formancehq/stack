@@ -42,7 +42,7 @@ jobs:
           go-version-file: ./components/${{ needs.Extract.outputs.service }}/go.mod
           cache-dependency-path: ./components/${{ needs.Extract.outputs.service }}/go.sum
           cache: true
-      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
+      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
       - run: task ${{ needs.Extract.outputs.service }}:lint
 
   Tests:
