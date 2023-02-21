@@ -1,0 +1,32 @@
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task: tests
+
+  tests:
+    deps: [run]
+    cmds:
+      - ginkgo run ./suite
+
+  install:
+    - go install github.com/onsi/ginkgo/v2/ginkgo
+
+  run:
+    cmds:
+      - docker compose up -d --remove-orphans
+
+  stop:
+    cmds:
+      - docker compose stop
+
+  ps:
+    cmds:
+      - docker compose ps
+
+  rm:
+    deps: [stop]
+    cmds:
+      - docker compose rm -f
+      - docker volume prune -f

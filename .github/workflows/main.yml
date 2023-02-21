@@ -120,3 +120,15 @@ jobs:
           build-args: |
             APP_SHA=${{ github.sha }}
             VERSION=main
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Install Task
+      uses: arduino/setup-task@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - run: task integration:tests
