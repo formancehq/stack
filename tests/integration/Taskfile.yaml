@@ -11,7 +11,8 @@ tasks:
       - ginkgo -p run ./suite
 
   install:
-    - go install github.com/onsi/ginkgo/v2/ginkgo@v2.8.1
+    # TOneverDO: Change version (see https://onsi.github.io/ginkgo/#installing-ginkgo)
+    - go install github.com/onsi/ginkgo/v2/ginkgo
 
   run:
     cmds:
