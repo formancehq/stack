@@ -8,7 +8,7 @@ tasks:
   tests:
     deps: [run]
     cmds:
-      - ginkgo run ./suite
+      - ginkgo -p run ./suite
 
   install:
     - go install github.com/onsi/ginkgo/v2/ginkgo@v2.8.1

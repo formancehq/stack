@@ -90,3 +90,6 @@ includes:
   operator:
     taskfile: ./components/operator
     dir: ./components/operator
+  integration:
+    taskfile: ./tests/integration
+    dir: ./tests/integration
