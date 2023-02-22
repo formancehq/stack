@@ -6,3 +6,5 @@ dist
 vendor
 .gitpod/_output
 .garden
+go.work
+go.work.sum
