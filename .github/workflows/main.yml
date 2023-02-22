@@ -116,7 +116,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/formancehq/${{ matrix.folder }}:${{ github.event.push.head_commit.id }}
+          tags: ghcr.io/formancehq/${{ matrix.folder }}:${{ github.sha }}
           build-args: |
-            APP_SHA=${{ github.event.push.head_commit.id }}
+            APP_SHA=${{ github.sha }}
             VERSION=main
