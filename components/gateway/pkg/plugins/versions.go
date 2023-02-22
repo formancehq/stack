@@ -133,7 +133,8 @@ func (v Versions) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyht
 type serviceInfo struct {
 	Name    string `json:"name,omitempty"`
 	Version string `json:"version,omitempty"`
-	Health  bool   `json:"health,omitempty"`
+	// We do not want to omit empty values in the json response
+	Health bool `json:"health"`
 }
 
 type versionsResponse struct {
