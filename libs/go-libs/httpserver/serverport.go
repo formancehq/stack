@@ -85,10 +85,7 @@ func StartServer(ctx context.Context, bind string, handler http.Handler, options
 	}()
 
 	return func(ctx context.Context) error {
-		if err := srv.Shutdown(ctx); err != nil {
-			return err
-		}
-		return listener.Close()
+		return srv.Shutdown(ctx)
 	}, nil
 }
 
@@ -102,6 +99,11 @@ func NewHook(addr string, handler http.Handler, options ...func(server *http.Ser
 			close, err = StartServer(ctx, addr, handler, options...)
 			return err
 		},
-		OnStop: close,
+		OnStop: func(ctx context.Context) error {
+			if close == nil {
+				return nil
+			}
+			return close(ctx)
+		},
 	}
 }

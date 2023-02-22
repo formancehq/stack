@@ -50,6 +50,7 @@ func TestStore(t *testing.T) {
 			done := make(chan struct{})
 			app := fx.New(
 				ledgertesting.ProvideStorageDriver(),
+				fx.NopLogger,
 				fx.Invoke(func(driver *sqlstorage.Driver, lc fx.Lifecycle) {
 					lc.Append(fx.Hook{
 						OnStart: func(ctx context.Context) error {
