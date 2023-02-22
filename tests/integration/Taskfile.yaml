@@ -6,28 +6,14 @@ tasks:
       - task: tests
 
   tests:
-    deps: [run]
+    deps: [run-docker-compose]
     cmds:
-      - ginkgo -p run ./suite
+      - ginkgo -v -p ./suite
 
-  install:
-    # TOneverDO: Change version (see https://onsi.github.io/ginkgo/#installing-ginkgo)
-    - go install github.com/onsi/ginkgo/v2/ginkgo
-
-  run:
+  run-docker-compose:
     cmds:
       - docker compose up -d --remove-orphans
 
-  stop:
+  cleanup:
     cmds:
-      - docker compose stop
-
-  ps:
-    cmds:
-      - docker compose ps
-
-  rm:
-    deps: [stop]
-    cmds:
-      - docker compose rm -f
-      - docker volume prune -f
+      - docker compose down -v

@@ -9,7 +9,7 @@ import (
 
 	"github.com/aquasecurity/esquery"
 	"github.com/numary/ledger/pkg/core"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func testEngine(t *testing.T) {
@@ -35,8 +35,8 @@ func testEngine(t *testing.T) {
 	q.WithLedgers(ledger)
 	q.WithTerms("central:bank")
 	response, err := q.Do(context.Background(), engine)
-	assert.NoError(t, err)
-	assert.Len(t, response.Items, 1)
+	require.NoError(t, err)
+	require.Len(t, response.Items, 1)
 }
 
 func testMatchingAllFields(t *testing.T) {
@@ -62,15 +62,15 @@ func testMatchingAllFields(t *testing.T) {
 	q.WithTerms("USD")
 
 	response, err := q.Do(context.Background(), engine)
-	assert.NoError(t, err)
-	assert.Len(t, response["TRANSACTION"], 1)
+	require.NoError(t, err)
+	require.Len(t, response["TRANSACTION"], 1)
 
 	q = NewMultiDocTypeSearch()
 	q.WithLedgers("quickstart")
 	q.WithTerms("US")
 	response, err = q.Do(context.Background(), engine)
-	assert.NoError(t, err)
-	assert.Len(t, response["TRANSACTION"], 1)
+	require.NoError(t, err)
+	require.Len(t, response["TRANSACTION"], 1)
 }
 
 func testSort(t *testing.T) {
@@ -88,11 +88,11 @@ func testSort(t *testing.T) {
 	q.WithSort("txid", esquery.OrderAsc)
 
 	_, err := openSearchClient.Indices.GetMapping()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	response, err := q.Do(context.Background(), engine)
-	assert.NoError(t, err)
-	assert.Len(t, response.Items, count)
+	require.NoError(t, err)
+	require.Len(t, response.Items, count)
 }
 
 func testPagination(t *testing.T) {
@@ -118,25 +118,25 @@ func testPagination(t *testing.T) {
 		q.WithSearchAfter(searchAfter)
 
 		_, err := openSearchClient.Indices.GetMapping()
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		response, err := q.Do(context.Background(), engine)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		tx := core.Transaction{}
-		assert.NoError(t, json.Unmarshal(response.Items[0], &tx))
+		require.NoError(t, json.Unmarshal(response.Items[0], &tx))
 
 		if i < 3 {
-			assert.Len(t, response.Items, 5)
-			assert.Equal(t, tx.Timestamp, now.Add(19*time.Minute).Add(-time.Duration(i)*5*time.Minute).UTC())
+			require.Len(t, response.Items, 5)
+			require.Equal(t, tx.Timestamp, now.Add(19*time.Minute).Add(-time.Duration(i)*5*time.Minute).UTC())
 		} else {
-			assert.Len(t, response.Items, 5)
-			assert.Equal(t, tx.Timestamp, now.Add(19*time.Minute).Add(-time.Duration(i)*5*time.Minute).UTC())
+			require.Len(t, response.Items, 5)
+			require.Equal(t, tx.Timestamp, now.Add(19*time.Minute).Add(-time.Duration(i)*5*time.Minute).UTC())
 			break
 		}
 
 		lastTx := core.Transaction{}
-		assert.NoError(t, json.Unmarshal(response.Items[4], &lastTx))
+		require.NoError(t, json.Unmarshal(response.Items[4], &lastTx))
 
 		searchAfter = []interface{}{lastTx.Timestamp}
 	}
@@ -232,8 +232,8 @@ func testMatchingSpecificField(t *testing.T) {
 			q.WithTerms(tc.term)
 
 			response, err := q.Do(context.Background(), engine)
-			assert.NoError(t, err)
-			assert.Len(t, response["TRANSACTION"], tc.expectedCount)
+			require.NoError(t, err)
+			require.Len(t, response["TRANSACTION"], tc.expectedCount)
 		})
 	}
 }
@@ -286,8 +286,8 @@ func testUsingOrPolicy(t *testing.T) {
 	q.WithPolicy(TermPolicyOR)
 
 	response, err := q.Do(context.Background(), engine)
-	assert.NoError(t, err)
-	assert.Len(t, response.Items, 2)
+	require.NoError(t, err)
+	require.Len(t, response.Items, 2)
 }
 
 func testAssetDecimals(t *testing.T) {
@@ -341,8 +341,8 @@ func testAssetDecimals(t *testing.T) {
 			q.WithLedgers("quickstart")
 
 			response, err := q.Do(context.Background(), engine)
-			assert.NoError(t, err)
-			assert.Len(t, response["TRANSACTION"], tc.expectedCount)
+			require.NoError(t, err)
+			require.Len(t, response["TRANSACTION"], tc.expectedCount)
 		})
 	}
 
@@ -366,12 +366,12 @@ func testSearchInTransactionMetadata(t *testing.T) {
 	q := NewMultiDocTypeSearch()
 	q.WithTerms("John")
 	response, err := q.Do(context.Background(), engine)
-	assert.NoError(t, err)
-	assert.Len(t, response["TRANSACTION"], 1)
+	require.NoError(t, err)
+	require.Len(t, response["TRANSACTION"], 1)
 
 	tx := core.Transaction{}
-	assert.NoError(t, json.Unmarshal(response["TRANSACTION"][0], &tx))
-	assert.Equal(t, metadata, tx.Metadata)
+	require.NoError(t, json.Unmarshal(response["TRANSACTION"][0], &tx))
+	require.Equal(t, metadata, tx.Metadata)
 }
 
 func testKeepOnlyLastDocument(t *testing.T) {
@@ -394,7 +394,7 @@ func testKeepOnlyLastDocument(t *testing.T) {
 	q.WithPageSize(5)
 
 	response, err := q.Do(context.Background(), engine)
-	assert.NoError(t, err)
-	assert.Len(t, response["TRANSACTION"], 5)
-	assert.Len(t, response["ACCOUNT"], 5)
+	require.NoError(t, err)
+	require.Len(t, response["TRANSACTION"], 5)
+	require.Len(t, response["ACCOUNT"], 5)
 }

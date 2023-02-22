@@ -59,7 +59,7 @@ spec:
                     - name: LEDGER_POSTGRES_HOST
                       value: localhost
                     - name: LEDGER_POSTGRES_PORT
-                      value: "32912"
+                      value: "33394"
                     - name: LEDGER_POSTGRES_DATABASE
                       value: stack1-ledger
                     - name: LEDGER_POSTGRES_USERNAME
@@ -99,7 +99,7 @@ spec:
             initContainers:
                 - args:
                     - -c
-                    - 'curl -H ''Content-Type: application/json'' -X PUT -v -d ''{"mappings":{"dynamic_templates":[{"strings":{"mapping":{"type":"keyword"},"match_mapping_type":"string"}}],"properties":{"data":{"type":"object","enabled":false},"indexed":{"type":"object","properties":{"account":{"type":"keyword"},"address":{"type":"keyword"},"amount":{"type":"keyword"},"asset":{"type":"keyword"},"createdAt":{"type":"date"},"destination":{"type":"keyword"},"id":{"type":"keyword"},"initialAmount":{"type":"long"},"ledger":{"type":"keyword"},"name":{"type":"keyword"},"provider":{"type":"keyword"},"reference":{"type":"keyword"},"scheme":{"type":"keyword"},"source":{"type":"keyword"},"status":{"type":"keyword"},"timestamp":{"type":"date"},"txid":{"type":"long"},"type":{"type":"keyword"}}},"kind":{"type":"keyword"},"ledger":{"type":"keyword"},"when":{"type":"date"}}}}'' ${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/stack1'
+                    - 'curl -H ''Content-Type: application/json'' -X PUT -v -d ''{"mappings":{"properties":{"data":{"type":"object","enabled":false},"indexed":{"properties":{"account":{"type":"keyword"},"address":{"type":"keyword"},"amount":{"type":"float"},"asset":{"type":"keyword"},"createdAt":{"type":"date"},"destination":{"type":"keyword"},"id":{"type":"keyword"},"initialAmount":{"type":"long"},"ledger":{"type":"keyword"},"name":{"type":"keyword"},"provider":{"type":"keyword"},"reference":{"type":"keyword"},"scheme":{"type":"keyword"},"source":{"type":"keyword"},"status":{"type":"keyword"},"timestamp":{"type":"date"},"txid":{"type":"long"},"type":{"type":"keyword"}},"type":"object"},"kind":{"type":"keyword"},"ledger":{"type":"keyword"},"when":{"type":"date"}}}}'' ${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/stack1'
                   command:
                     - sh
                   env:

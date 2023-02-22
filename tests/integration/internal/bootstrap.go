@@ -3,7 +3,7 @@ package internal
 import (
 	"context"
 	"fmt"
-	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -16,10 +16,13 @@ import (
 	auth "github.com/formancehq/auth/pkg"
 	paymentsCmd "github.com/formancehq/payments/cmd"
 	searchCmd "github.com/formancehq/search/cmd"
+	"github.com/formancehq/search/pkg/searchengine"
+	"github.com/formancehq/stack/libs/go-libs/httpclient"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	walletsCmd "github.com/formancehq/wallets/cmd"
 	"github.com/google/uuid"
+	"github.com/opensearch-project/opensearch-go"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 
@@ -48,13 +51,14 @@ func TestContext() context.Context {
 
 var _ = BeforeSuite(func() {
 	// Some defaults
-	SetDefaultEventuallyTimeout(5 * time.Second)
+	SetDefaultEventuallyTimeout(10 * time.Second)
+	SetDefaultEventuallyPollingInterval(500 * time.Millisecond)
 
 	var err error
 	dockerPool, err = dockertest.NewPool("")
 	Expect(err).To(BeNil())
 
-	dockerClient, err = client.NewClientWithOpts(client.FromEnv)
+	dockerClient, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	Expect(err).To(BeNil())
 
 	// uses pool to try to connect to Docker
@@ -75,23 +79,29 @@ var _ = BeforeEach(func() {
 	actualTestID = uuid.NewString()
 	ctx, cancel = context.WithCancel(context.TODO())
 	l := logrus.New()
-	l.Out = io.Discard
-	if testing.Verbose() {
-		l.Level = logrus.DebugLevel
-		l.Out = os.Stdout
-	}
+	l.Out = GinkgoWriter
+	l.Level = logrus.DebugLevel
 	ctx = logging.ContextWithLogger(ctx, logging.NewLogrus(l))
 
-	startBenthosServer()
+	openSearchClient, err := opensearch.NewClient(opensearch.Config{
+		Addresses: []string{"http://" + getOpenSearchUrl()},
+		Transport: httpclient.NewDebugHTTPTransport(http.DefaultTransport),
+	})
+	Expect(err).To(BeNil())
+	Expect(searchengine.CreateIndex(ctx, openSearchClient, actualTestID)).To(BeNil())
+
 	createDatabases() // TODO: drop databases
 
 	startFakeGateway()
 
-	startLedger()
 	startSearch()
+	startLedger()
 	startAuth()
 	startWallets()
 	startPayments()
+
+	// TODO: Wait search has properly configured mapping before trying to ingest any data
+	startBenthosServer()
 
 	// Start the gateway
 	ledgerUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", ledgerPort))
@@ -194,6 +204,7 @@ func startSearch() {
 		"--open-search-password=admin",
 		"--bind=0.0.0.0:0",
 		fmt.Sprintf("--es-indices=%s", actualTestID),
+		"--mapping-init-disabled",
 	)
 	searchCmd.SetArgs(args)
 	searchPort, searchCancel, searchErrCh = runAndWaitPort("search", searchCmd)
@@ -354,16 +365,12 @@ func stopWallets() {
 
 func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc, chan error) {
 
-	cmd.SetOut(io.Discard)
-	cmd.SetErr(io.Discard)
-	if testing.Verbose() {
-		cmd.SetOut(prefixer.New(os.Stdout, func() string {
-			return service + " | "
-		}))
-		cmd.SetErr(prefixer.New(os.Stderr, func() string {
-			return service + " | "
-		}))
-	}
+	writer := prefixer.New(GinkgoWriter, func() string {
+		return service + " | "
+	})
+	cmd.SetOut(writer)
+	cmd.SetErr(writer)
+
 	ctx := httpserver.ContextWithServerInfo(TestContext())
 	ctx, cancel := context.WithCancel(ctx)
 	errCh := make(chan error, 1)

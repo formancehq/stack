@@ -70,7 +70,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-go@v3
         with:
-          go-version-file: './go.mod'
+          go-version-file: ./components/${{ matrix.folder }}/go.mod
           cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
           cache: true
       - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
@@ -111,8 +111,6 @@ jobs:
 
   TestsIntegration:
     runs-on: ubuntu-latest
-    needs:
-      - Tests
     steps:
       - uses: actions/checkout@v3
         with:
@@ -126,10 +124,16 @@ jobs:
         uses: arduino/setup-task@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: task integration:install
+      # TOneverDO: Try to use a fixed Ginkgo version, Ginkgo infer it from the go.mod project (see https://onsi.github.io/ginkgo/#installing-ginkgo)
+      - run: |
+          go install github.com/onsi/ginkgo/v2/ginkgo &&
+          sudo ln -s $(go env GOPATH)/bin/ginkgo /usr/bin/ginkgo
+        working-directory: tests/integration
       - run: task integration:tests
         env:
           STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY_FOR_TEST }}
+          # TODO: Discover dynamically
+          DOCKER_HOSTNAME: 172.17.0.1
 
   Docker:
     runs-on:

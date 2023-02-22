@@ -6,9 +6,9 @@ metadata:
     name: ledger
     namespace: stack1
 spec:
-    clusterIP: 10.0.0.196
+    clusterIP: 10.0.0.205
     clusterIPs:
-        - 10.0.0.196
+        - 10.0.0.205
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

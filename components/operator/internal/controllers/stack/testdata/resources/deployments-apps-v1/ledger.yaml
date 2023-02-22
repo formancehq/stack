@@ -31,7 +31,7 @@ spec:
                     - name: NUMARY_POSTGRES_HOST
                       value: localhost
                     - name: NUMARY_POSTGRES_PORT
-                      value: "32912"
+                      value: "33394"
                     - name: NUMARY_POSTGRES_DATABASE
                       value: stack1-ledger
                     - name: NUMARY_POSTGRES_USERNAME

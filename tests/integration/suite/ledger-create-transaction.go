@@ -105,7 +105,7 @@ var _ = Given("some empty environment", func() {
 					"ledger":    "default",
 				}))
 				return res.Cursor.Data
-			}).Should(HaveLen(1)) // TODO: Check other fields
+			}).Should(HaveLen(1))
 		})
 	})
 })

@@ -5,7 +5,7 @@ import (
 
 	"github.com/aquasecurity/esquery"
 	"github.com/formancehq/search/pkg/searchengine"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNextToken(t *testing.T) {
@@ -24,10 +24,6 @@ func TestNextToken(t *testing.T) {
 	}
 	tok := EncodeCursorToken(nti)
 	decoded := cursorTokenInfo{}
-	if !assert.NoError(t, DecodeCursorToken(tok, &decoded)) {
-		return
-	}
-	if !assert.EqualValues(t, nti, decoded) {
-		return
-	}
+	require.NoError(t, DecodeCursorToken(tok, &decoded))
+	require.EqualValues(t, nti, decoded)
 }

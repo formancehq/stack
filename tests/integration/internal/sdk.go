@@ -3,7 +3,6 @@ package internal
 import (
 	"net/http"
 	"net/url"
-	"testing"
 
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/httpclient"
@@ -19,10 +18,8 @@ func configureSDK() {
 
 	configuration := formance.NewConfiguration()
 	configuration.Host = gatewayUrl.Host
-	if testing.Verbose() {
-		configuration.HTTPClient = &http.Client{
-			Transport: httpclient.NewDebugHTTPTransport(http.DefaultTransport),
-		}
+	configuration.HTTPClient = &http.Client{
+		Transport: httpclient.NewDebugHTTPTransport(http.DefaultTransport),
 	}
 	sdkClient = formance.NewAPIClient(configuration)
 }

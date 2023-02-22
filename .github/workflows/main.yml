@@ -138,7 +138,13 @@ jobs:
       uses: arduino/setup-task@v1
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-    - run: task integration:install
+    # TOneverDO: Try to use a fixed Ginkgo version, Ginkgo infer it from the go.mod project (see https://onsi.github.io/ginkgo/#installing-ginkgo)
+    - run: |
+        go install github.com/onsi/ginkgo/v2/ginkgo &&
+        sudo ln -s $(go env GOPATH)/bin/ginkgo /usr/bin/ginkgo
+      working-directory: tests/integration
     - run: task integration:tests
       env:
         STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY_FOR_TEST }}
+        # TODO: Discover dynamically
+        DOCKER_HOSTNAME: 172.17.0.1
