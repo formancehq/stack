@@ -150,7 +150,7 @@ func printStage(cmd *cobra.Command, i int, client *formance.APIClient, id string
 					historyStage.Input.CreateTransaction.Data.Postings[0].Destination,
 					*historyStage.Input.CreateTransaction.Ledger,
 				))
-				if historyStage.Error == nil {
+				if historyStage.Error == nil && historyStage.LastFailure == nil && historyStage.Terminated {
 					listItems = append(listItems, historyItemDetails("Created transaction: %d", historyStage.Output.CreateTransaction.Data[0].Txid))
 					if historyStage.Input.CreateTransaction.Data.Reference != nil {
 						listItems = append(listItems, historyItemDetails("Reference: %s", *historyStage.Output.CreateTransaction.Data[0].Reference))
@@ -169,7 +169,7 @@ func printStage(cmd *cobra.Command, i int, client *formance.APIClient, id string
 					historyStage.Input.CreditWallet.Data.Amount.Asset,
 					subjectName(historyStage.Input.CreditWallet.Data.Sources[0]),
 				))
-				if historyStage.Error == nil {
+				if historyStage.Error == nil && historyStage.LastFailure == nil && historyStage.Terminated {
 					if len(historyStage.Input.CreditWallet.Data.Metadata) > 0 {
 						listItems = append(listItems, printMetadata(historyStage.Input.CreditWallet.Data.Metadata)...)
 					}
@@ -187,7 +187,7 @@ func printStage(cmd *cobra.Command, i int, client *formance.APIClient, id string
 					historyStage.Input.DebitWallet.Data.Amount.Asset,
 					destination,
 				))
-				if historyStage.Error == nil {
+				if historyStage.Error == nil && historyStage.LastFailure == nil && historyStage.Terminated {
 					if len(historyStage.Input.DebitWallet.Data.Metadata) > 0 {
 						listItems = append(listItems, printMetadata(historyStage.Input.DebitWallet.Data.Metadata)...)
 					}
