@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
+	"github.com/formancehq/payments/pkg/events"
 )
 
 type accountMessagePayload struct {
@@ -14,7 +15,7 @@ type accountMessagePayload struct {
 	Type      models.AccountType `json:"type"`
 }
 
-func NewEventSavedAccounts(accounts []models.Account) EventMessage {
+func NewEventSavedAccounts(accounts []models.Account) events.EventMessage {
 	payload := make([]accountMessagePayload, len(accounts))
 
 	for accountIdx, account := range accounts {
@@ -27,11 +28,11 @@ func NewEventSavedAccounts(accounts []models.Account) EventMessage {
 		}
 	}
 
-	return EventMessage{
+	return events.EventMessage{
 		Date:    time.Now().UTC(),
-		App:     EventApp,
-		Version: EventVersion,
-		Type:    EventTypeSavedAccounts,
+		App:     events.EventApp,
+		Version: events.EventVersion,
+		Type:    events.EventTypeSavedAccounts,
 		Payload: payload,
 	}
 }

@@ -1,10 +1,10 @@
 package suite
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/stack/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	"github.com/numary/ledger/pkg/bus"
@@ -40,8 +40,7 @@ var _ = Given("some empty environment", func() {
 			// Wait for created transaction event
 			// TODO: Check events content against schema
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			event := &bus.EventMessage{}
-			Expect(json.Unmarshal(msg.Data, event)).To(BeNil())
+			Expect(events.Check(msg.Data, "ledger", bus.EventTypeSavedMetadata)).Should(BeNil())
 		})
 		It("should pop an account with the correct metadata on search service", func() {
 			Eventually(func(g Gomega) bool {

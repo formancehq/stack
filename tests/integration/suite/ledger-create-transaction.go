@@ -1,10 +1,10 @@
 package suite
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/stack/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	"github.com/numary/ledger/pkg/bus"
@@ -44,10 +44,8 @@ var _ = Given("some empty environment", func() {
 
 		It("should trigger a new event", func() {
 			// Wait for created transaction event
-			// TODO: Check events content against schema
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			event := &bus.EventMessage{}
-			Expect(json.Unmarshal(msg.Data, event)).To(BeNil())
+			Expect(events.Check(msg.Data, "ledger", bus.EventTypeCommittedTransactions)).Should(BeNil())
 		})
 		It("should pop a transaction, two accounts and two assets entries on search service", func() {
 			expectedTx := map[string]any{

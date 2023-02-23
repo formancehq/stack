@@ -6,6 +6,7 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/formancehq/payments/internal/app/messages"
+	"github.com/formancehq/payments/pkg/events"
 
 	"github.com/formancehq/stack/libs/go-libs/publish"
 
@@ -257,7 +258,7 @@ func (l *ConnectorManager[ConnectorConfig]) Reset(ctx context.Context) error {
 		return err
 	}
 
-	err = l.publisher.Publish(messages.TopicPayments,
+	err = l.publisher.Publish(events.TopicPayments,
 		publish.NewMessage(ctx, messages.NewEventResetConnector(l.loader.Name())))
 	if err != nil {
 		l.logger(ctx).Errorf("Publishing message: %w", err)

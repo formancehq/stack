@@ -1,0 +1,261 @@
+type: object
+properties:
+  ledger:
+    type: string
+  transactions:
+    type: array
+    items:
+      type: object
+      properties:
+        postings:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              destination:
+                type: string
+              amount:
+                type: number
+              asset:
+                type: string
+            required:
+            - source
+            - destination
+            - amount
+            - asset
+        reference:
+          type: string
+        metadata:
+          type: object
+          properties: {}
+          required: []
+        txid:
+          type: number
+        preCommitVolumes:
+          type: object
+          properties:
+            alice:
+              type: object
+              properties:
+                USD:
+                  type: object
+                  properties:
+                    input:
+                      type: number
+                    output:
+                      type: number
+                    balance:
+                      type: number
+                  required:
+                  - input
+                  - output
+                  - balance
+              required:
+              - USD
+            world:
+              type: object
+              properties:
+                USD:
+                  type: object
+                  properties:
+                    input:
+                      type: number
+                    output:
+                      type: number
+                    balance:
+                      type: number
+                  required:
+                  - input
+                  - output
+                  - balance
+              required:
+              - USD
+          required:
+          - alice
+          - world
+        postCommitVolumes:
+          type: object
+          properties:
+            alice:
+              type: object
+              properties:
+                USD:
+                  type: object
+                  properties:
+                    input:
+                      type: number
+                    output:
+                      type: number
+                    balance:
+                      type: number
+                  required:
+                  - input
+                  - output
+                  - balance
+              required:
+              - USD
+            world:
+              type: object
+              properties:
+                USD:
+                  type: object
+                  properties:
+                    input:
+                      type: number
+                    output:
+                      type: number
+                    balance:
+                      type: number
+                  required:
+                  - input
+                  - output
+                  - balance
+              required:
+              - USD
+          required:
+          - alice
+          - world
+        timestamp:
+          type: string
+      required:
+      - postings
+      - reference
+      - metadata
+      - txid
+      - preCommitVolumes
+      - postCommitVolumes
+      - timestamp
+  volumes:
+    type: object
+    properties:
+      alice:
+        type: object
+        properties:
+          USD:
+            type: object
+            properties:
+              input:
+                type: number
+              output:
+                type: number
+              balance:
+                type: number
+            required:
+            - input
+            - output
+            - balance
+        required:
+        - USD
+      world:
+        type: object
+        properties:
+          USD:
+            type: object
+            properties:
+              input:
+                type: number
+              output:
+                type: number
+              balance:
+                type: number
+            required:
+            - input
+            - output
+            - balance
+        required:
+        - USD
+    required:
+    - alice
+    - world
+  postCommitVolumes:
+    type: object
+    properties:
+      alice:
+        type: object
+        properties:
+          USD:
+            type: object
+            properties:
+              input:
+                type: number
+              output:
+                type: number
+              balance:
+                type: number
+            required:
+            - input
+            - output
+            - balance
+        required:
+        - USD
+      world:
+        type: object
+        properties:
+          USD:
+            type: object
+            properties:
+              input:
+                type: number
+              output:
+                type: number
+              balance:
+                type: number
+            required:
+            - input
+            - output
+            - balance
+        required:
+        - USD
+    required:
+    - alice
+    - world
+  preCommitVolumes:
+    type: object
+    properties:
+      alice:
+        type: object
+        properties:
+          USD:
+            type: object
+            properties:
+              input:
+                type: number
+              output:
+                type: number
+              balance:
+                type: number
+            required:
+            - input
+            - output
+            - balance
+        required:
+        - USD
+      world:
+        type: object
+        properties:
+          USD:
+            type: object
+            properties:
+              input:
+                type: number
+              output:
+                type: number
+              balance:
+                type: number
+            required:
+            - input
+            - output
+            - balance
+        required:
+        - USD
+    required:
+    - alice
+    - world
+required:
+- ledger
+- transactions
+- volumes
+- postCommitVolumes
+- preCommitVolumes

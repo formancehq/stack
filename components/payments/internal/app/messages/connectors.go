@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
+	"github.com/formancehq/payments/pkg/events"
 )
 
 type connectorMessagePayload struct {
@@ -11,12 +12,12 @@ type connectorMessagePayload struct {
 	Connector models.ConnectorProvider `json:"connector"`
 }
 
-func NewEventResetConnector(connector models.ConnectorProvider) EventMessage {
-	return EventMessage{
+func NewEventResetConnector(connector models.ConnectorProvider) events.EventMessage {
+	return events.EventMessage{
 		Date:    time.Now().UTC(),
-		App:     EventApp,
-		Version: EventVersion,
-		Type:    EventTypeConnectorReset,
+		App:     events.EventApp,
+		Version: events.EventVersion,
+		Type:    events.EventTypeConnectorReset,
 		Payload: connectorMessagePayload{
 			CreatedAt: time.Now().UTC(),
 			Connector: connector,
