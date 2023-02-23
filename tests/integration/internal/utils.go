@@ -11,7 +11,7 @@ func WaitOnChanWithTimeout[T any](ch chan T, timeout time.Duration) T {
 	case t := <-ch:
 		return t
 	case <-time.After(timeout):
-		ginkgo.Fail("should have received a created transaction event")
+		ginkgo.Fail("should have received an event")
 	}
 	panic("cannot happen")
 }
