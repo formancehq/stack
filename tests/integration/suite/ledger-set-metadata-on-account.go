@@ -25,7 +25,6 @@ var _ = Given("some empty environment", func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 
-			// Create a transaction
 			_, err := Client().AccountsApi.
 				AddMetadataToAccount(TestContext(), "default", "foo").
 				RequestBody(metadata).
@@ -37,8 +36,6 @@ var _ = Given("some empty environment", func() {
 		})
 
 		It("should trigger a new event", func() {
-			// Wait for created transaction event
-			// TODO: Check events content against schema
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
 			Expect(events.Check(msg.Data, "ledger", bus.EventTypeSavedMetadata)).Should(BeNil())
 		})
