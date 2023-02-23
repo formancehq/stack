@@ -82,13 +82,13 @@ var _ = BeforeEach(func() {
 	l.Out = GinkgoWriter
 	l.Level = logrus.DebugLevel
 	ctx = logging.ContextWithLogger(ctx, logging.NewLogrus(l))
-
 	openSearchClient, err := opensearch.NewClient(opensearch.Config{
 		Addresses: []string{"http://" + getOpenSearchUrl()},
 		Transport: httpclient.NewDebugHTTPTransport(http.DefaultTransport),
 	})
-	Expect(err).To(BeNil())
-	Expect(searchengine.CreateIndex(ctx, openSearchClient, actualTestID)).To(BeNil())
+	Eventually(func() error {
+		return searchengine.CreateIndex(ctx, openSearchClient, actualTestID)
+	}).Should(BeNil())
 
 	createDatabases() // TODO: drop databases
 
