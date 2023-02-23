@@ -88,6 +88,7 @@ linters:
     - misspell # Disabled by design
     - ireturn # Disabled by design
     - wsl # Disabled by design
+    - musttag
     - gocritic # TODO: FIX. Seems to have issues with generics
     - gocognit # TODO: FIX
     - goerr113 # TODO: FIX
