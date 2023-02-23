@@ -15,5 +15,7 @@
 
 * `SUCCEEDED` (value: `"SUCCEEDED"`)
 
+* `CANCELLED` (value: `"CANCELLED"`)
+
 
 
