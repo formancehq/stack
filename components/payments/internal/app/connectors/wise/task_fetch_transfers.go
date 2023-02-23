@@ -114,7 +114,7 @@ func taskFetchTransfers(logger logging.Logger, client *client, profileID uint64)
 			return err
 		}
 
-		return scheduler.Schedule(descriptor, true)
+		return scheduler.Schedule(ctx, descriptor, true)
 	}
 }
 

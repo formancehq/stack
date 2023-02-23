@@ -36,7 +36,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		return fmt.Errorf("failed to create read files task descriptor: %w", err)
 	}
 
-	if err = ctx.Scheduler().Schedule(readFilesDescriptor, true); err != nil {
+	if err = ctx.Scheduler().Schedule(ctx.Context(), readFilesDescriptor, true); err != nil {
 		return fmt.Errorf("failed to schedule task to read files: %w", err)
 	}
 
@@ -45,7 +45,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		return fmt.Errorf("failed to create generate files task descriptor: %w", err)
 	}
 
-	if err = ctx.Scheduler().Schedule(generateFilesDescriptor, true); err != nil {
+	if err = ctx.Scheduler().Schedule(ctx.Context(), generateFilesDescriptor, true); err != nil {
 		return fmt.Errorf("failed to schedule task to generate files: %w", err)
 	}
 

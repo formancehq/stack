@@ -20,6 +20,7 @@ import (
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
 	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -41,7 +42,7 @@ func TestVerifyAccessToken(t *testing.T) {
 	serverURL := fmt.Sprintf("http://%s", l.Addr().String())
 
 	// Construct our storage
-	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"), testing.Verbose())
+	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"), &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 	storage := sqlstorage.New(db)

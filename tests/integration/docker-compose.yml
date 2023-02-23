@@ -1,0 +1,28 @@
+---
+version: '3.9'
+
+services:
+  postgres:
+    image: "postgres:13-alpine"
+    ports:
+    - "5432:5432"
+    environment:
+      POSTGRES_USER: "formance"
+      POSTGRES_PASSWORD: "formance"
+
+  opensearch:
+    image: "opensearchproject/opensearch:2.2.1"
+    restart: always
+    environment:
+      discovery.type: single-node
+      plugins.security.disabled: "true"
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+    ports:
+    - "9200:9200"
+
+  nats:
+    image: nats
+    ports:
+    - "4222:4222"
+    command:
+    - -js

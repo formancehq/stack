@@ -35,7 +35,7 @@ Docs: [https://docs.bankingcircleconnect.com/](https://docs.bankingcircleconnect
 {
     "username": "username",
     "password": "password",
-    "endpoint": " https://www.bankingcircleconnect.com/",
+    "endpoint": "https://www.bankingcircleconnect.com/",
     "authorizationEndpoint": "https://authorization.bankingcircleconnect.com"
 }
 ```

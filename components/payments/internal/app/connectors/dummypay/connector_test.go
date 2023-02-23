@@ -25,7 +25,7 @@ func (mcc *mockConnectorContext) Context() context.Context {
 	return mcc.ctx
 }
 
-func (mcc mockScheduler) Schedule(p models.TaskDescriptor, restart bool) error {
+func (mcc mockScheduler) Schedule(ctx context.Context, p models.TaskDescriptor, restart bool) error {
 	return nil
 }
 
@@ -37,7 +37,7 @@ func TestConnector(t *testing.T) {
 	t.Parallel()
 
 	config := Config{}
-	logger := logging.GetLogger(context.TODO())
+	logger := logging.FromContext(context.TODO())
 
 	fileSystem := newTestFS()
 

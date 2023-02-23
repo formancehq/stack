@@ -1,0 +1,19 @@
+version: "3"
+
+tasks:
+  default:
+    cmds:
+      - task: tests
+
+  tests:
+    deps: [run-docker-compose]
+    cmds:
+      - ginkgo -v -p ./suite
+
+  run-docker-compose:
+    cmds:
+      - docker compose up -d --remove-orphans
+
+  cleanup:
+    cmds:
+      - docker compose down -v

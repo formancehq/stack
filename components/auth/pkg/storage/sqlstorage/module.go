@@ -10,9 +10,9 @@ import (
 	"go.uber.org/fx"
 )
 
-func Module(kind, uri string, debug bool, key *rsa.PrivateKey, staticClients ...auth.StaticClient) fx.Option {
+func Module(kind, uri string, key *rsa.PrivateKey, staticClients ...auth.StaticClient) fx.Option {
 	return fx.Options(
-		gormModule(kind, uri, debug),
+		gormModule(kind, uri),
 		fx.Supply(key),
 		fx.Supply(staticClients),
 		fx.Provide(fx.Annotate(New,

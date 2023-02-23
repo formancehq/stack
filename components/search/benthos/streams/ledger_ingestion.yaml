@@ -1,3 +1,4 @@
+---
 input:
   event_bus:
     topic: ledger

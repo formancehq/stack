@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/messages"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 
 	"github.com/formancehq/payments/internal/app/models"
@@ -30,7 +31,7 @@ func (fn IngesterFn) IngestPayments(ctx context.Context, batch PaymentBatch, com
 func (i *DefaultIngester) IngestPayments(ctx context.Context, batch PaymentBatch, commitState any) error {
 	startingAt := time.Now()
 
-	i.logger.WithFields(map[string]interface{}{
+	logging.FromContext(ctx).WithFields(map[string]interface{}{
 		"size":       len(batch),
 		"startingAt": startingAt,
 	}).Debugf("Ingest batch")
@@ -69,7 +70,7 @@ func (i *DefaultIngester) IngestPayments(ctx context.Context, batch PaymentBatch
 		err = i.publisher.Publish(messages.TopicPayments,
 			publish.NewMessage(ctx, messages.NewEventSavedPayments(allPayments[paymentIdx], i.provider)))
 		if err != nil {
-			i.logger.Errorf("Publishing message: %w", err)
+			logging.FromContext(ctx).Errorf("Publishing message: %w", err)
 
 			continue
 		}
@@ -77,7 +78,7 @@ func (i *DefaultIngester) IngestPayments(ctx context.Context, batch PaymentBatch
 
 	endedAt := time.Now()
 
-	i.logger.WithFields(map[string]interface{}{
+	logging.FromContext(ctx).WithFields(map[string]interface{}{
 		"size":    len(batch),
 		"endedAt": endedAt,
 		"latency": endedAt.Sub(startingAt).String(),

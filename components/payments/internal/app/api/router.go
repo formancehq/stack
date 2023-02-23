@@ -8,12 +8,13 @@ import (
 	"github.com/formancehq/payments/internal/app/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
 )
 
-func httpRouter(store *storage.Storage, serviceInfo api.ServiceInfo, connectorHandlers []connectorHandler) (*mux.Router, error) {
+func httpRouter(logger logging.Logger, store *storage.Storage, serviceInfo api.ServiceInfo, connectorHandlers []connectorHandler) (*mux.Router, error) {
 	rootMux := mux.NewRouter()
 
 	if viper.GetBool(otelTracesFlag) {
@@ -23,6 +24,11 @@ func httpRouter(store *storage.Storage, serviceInfo api.ServiceInfo, connectorHa
 	rootMux.Use(recoveryHandler(httpRecoveryFunc))
 	rootMux.Use(httpCorsHandler())
 	rootMux.Use(httpServeFunc)
+	rootMux.Use(func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			handler.ServeHTTP(w, r.WithContext(logging.ContextWithLogger(r.Context(), logger)))
+		})
+	})
 
 	rootMux.Path("/_health").Handler(healthHandler(store))
 	rootMux.Path("/_live").Handler(liveHandler())

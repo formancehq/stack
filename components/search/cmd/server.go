@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -13,13 +12,15 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/oauth2/oauth2introspect"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	app "github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/opensearch-project/opensearch-go"
-	"github.com/sirupsen/logrus"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux"
@@ -57,24 +58,15 @@ func NewServer() *cobra.Command {
 			return viper.BindPFlags(cmd.Flags())
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			debug := viper.GetBool(debugFlag)
-
-			logger := logrus.New()
-			logger.SetFormatter(&logrus.JSONFormatter{})
-			if debug {
-				logger.SetLevel(logrus.DebugLevel)
-				logger.Debugln("Debug mode enabled")
-			}
-			logger.Debugf("Starting with config: %s", viper.AllSettings())
 
 			openSearchServiceHost := viper.GetString(openSearchServiceFlag)
 			if openSearchServiceHost == "" {
-				exitWithError(logger, "missing open search service host")
+				exitWithError(cmd.Context(), "missing open search service host")
 			}
 
-			esIndices := viper.GetStringSlice(esIndicesFlag)
-			if len(esIndices) == 0 {
-				esIndices = searchengine.DefaultEsIndices
+			esIndex := viper.GetString(esIndicesFlag)
+			if esIndex == "" {
+				return errors.New("es index not defined")
 			}
 
 			bind := viper.GetString(bindFlag)
@@ -83,7 +75,7 @@ func NewServer() *cobra.Command {
 			}
 
 			options := make([]fx.Option, 0)
-			options = append(options, opensearchClientModule(openSearchServiceHost, !viper.GetBool(esDisableMappingInitFlag), esIndices...))
+			options = append(options, opensearchClientModule(openSearchServiceHost, !viper.GetBool(esDisableMappingInitFlag), esIndex))
 			options = append(options,
 				health.Module(),
 				health.ProvideHealthCheck(func(client *opensearch.Client) health.NamedCheck {
@@ -97,23 +89,14 @@ func NewServer() *cobra.Command {
 			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 			options = append(options, apiModule("search", bind, api.ServiceInfo{
 				Version: Version,
-			}, esIndices...))
+			}, esIndex))
 
-			app := fx.New(options...)
-
-			err := app.Start(cmd.Context())
-			if err != nil {
-				return err
-			}
-
-			<-app.Done()
-
-			return nil
+			return app.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 		},
 	}
 
 	cmd.Flags().String(bindFlag, defaultBind, "http server address")
-	cmd.Flags().StringSlice(esIndicesFlag, searchengine.DefaultEsIndices, "ES indices to look")
+	cmd.Flags().String(esIndicesFlag, "", "ES index to look")
 	cmd.Flags().String(openSearchServiceFlag, "", "Open search service hostname")
 	cmd.Flags().String(openSearchSchemeFlag, "https", "OpenSearch scheme")
 	cmd.Flags().String(openSearchUsernameFlag, "", "OpenSearch username")
@@ -129,12 +112,12 @@ func NewServer() *cobra.Command {
 	return cmd
 }
 
-func exitWithError(logger *logrus.Logger, msg string) {
-	logger.Error(msg)
+func exitWithError(ctx context.Context, msg string) {
+	logging.FromContext(ctx).Error(msg)
 	os.Exit(1)
 }
 
-func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIndices ...string) fx.Option {
+func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIndex string) fx.Option {
 	options := []fx.Option{
 		fx.Provide(func() (*opensearch.Client, error) {
 			httpTransport := http.DefaultTransport
@@ -155,7 +138,7 @@ func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIn
 		options = append(options, fx.Invoke(func(lc fx.Lifecycle, client *opensearch.Client) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					return searchengine.LoadDefaultMapping(context.TODO(), client, esIndices...)
+					return searchengine.CreateIndex(ctx, client, esIndex)
 				},
 			})
 		}))
@@ -163,7 +146,7 @@ func opensearchClientModule(openSearchServiceHost string, loadMapping bool, esIn
 	return fx.Options(options...)
 }
 
-func apiModule(serviceName, bind string, serviceInfo api.ServiceInfo, esIndices ...string) fx.Option {
+func apiModule(serviceName, bind string, serviceInfo api.ServiceInfo, esIndex string) fx.Option {
 	return fx.Options(
 		fx.Provide(fx.Annotate(func(openSearchClient *opensearch.Client, tp trace.TracerProvider, healthController *health.HealthController) (http.Handler, error) {
 			router := mux.NewRouter()
@@ -206,25 +189,13 @@ func apiModule(serviceName, bind string, serviceInfo api.ServiceInfo, esIndices 
 			}
 			routerWithTraces.PathPrefix("/").Handler(searchhttp.Handler(searchengine.NewDefaultEngine(
 				openSearchClient,
-				searchengine.WithESIndices(esIndices...),
+				searchengine.WithESIndex(esIndex),
 			)))
 
 			return router, nil
 		}, fx.ParamTags(``, `optional:"true"`))),
 		fx.Invoke(func(lc fx.Lifecycle, handler http.Handler) {
-			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					logging.GetLogger(ctx).Infof("Starting http server on %s", bind)
-					go func() {
-						err := http.ListenAndServe(bind, handler)
-						if err != nil {
-							fmt.Fprintln(os.Stderr, err)
-							os.Exit(1)
-						}
-					}()
-					return nil
-				},
-			})
+			lc.Append(httpserver.NewHook(bind, handler))
 		}),
 	)
 }

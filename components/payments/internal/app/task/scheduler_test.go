@@ -12,7 +12,6 @@ import (
 
 	"github.com/formancehq/payments/internal/app/models"
 
-	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
@@ -67,8 +66,6 @@ func TestTaskScheduler(t *testing.T) {
 		l.SetLevel(logrus.DebugLevel)
 	}
 
-	logger := logginglogrus.New(l)
-
 	t.Run("Nominal", func(t *testing.T) {
 		t.Parallel()
 
@@ -76,7 +73,7 @@ func TestTaskScheduler(t *testing.T) {
 		provider := models.ConnectorProvider(uuid.New().String())
 		done := make(chan struct{})
 
-		scheduler := NewDefaultScheduler(provider, logger, store,
+		scheduler := NewDefaultScheduler(provider, store,
 			DefaultContainerFactory, ResolverFn(func(descriptor models.TaskDescriptor) Task {
 				return func(ctx context.Context) error {
 					select {
@@ -89,7 +86,7 @@ func TestTaskScheduler(t *testing.T) {
 			}), 1)
 
 		descriptor := newDescriptor()
-		err := scheduler.Schedule(descriptor, false)
+		err := scheduler.Schedule(context.TODO(), descriptor, false)
 		require.NoError(t, err)
 
 		require.Eventually(t, TaskActive(store, provider, descriptor), time.Second, 100*time.Millisecond)
@@ -102,7 +99,7 @@ func TestTaskScheduler(t *testing.T) {
 
 		store := NewInMemoryStore()
 		provider := models.ConnectorProvider(uuid.New().String())
-		scheduler := NewDefaultScheduler(provider, logger, store, DefaultContainerFactory,
+		scheduler := NewDefaultScheduler(provider, store, DefaultContainerFactory,
 			ResolverFn(func(descriptor models.TaskDescriptor) Task {
 				return func(ctx context.Context) error {
 					<-ctx.Done()
@@ -112,11 +109,11 @@ func TestTaskScheduler(t *testing.T) {
 			}), 1)
 
 		descriptor := newDescriptor()
-		err := scheduler.Schedule(descriptor, false)
+		err := scheduler.Schedule(context.TODO(), descriptor, false)
 		require.NoError(t, err)
 		require.Eventually(t, TaskActive(store, provider, descriptor), time.Second, 100*time.Millisecond)
 
-		err = scheduler.Schedule(descriptor, false)
+		err = scheduler.Schedule(context.TODO(), descriptor, false)
 		require.Equal(t, ErrAlreadyScheduled, err)
 	})
 
@@ -125,7 +122,7 @@ func TestTaskScheduler(t *testing.T) {
 
 		provider := models.ConnectorProvider(uuid.New().String())
 		store := NewInMemoryStore()
-		scheduler := NewDefaultScheduler(provider, logger, store, DefaultContainerFactory,
+		scheduler := NewDefaultScheduler(provider, store, DefaultContainerFactory,
 			ResolverFn(func(descriptor models.TaskDescriptor) Task {
 				return func() error {
 					return errors.New("test")
@@ -133,7 +130,7 @@ func TestTaskScheduler(t *testing.T) {
 			}), 1)
 
 		descriptor := newDescriptor()
-		err := scheduler.Schedule(descriptor, false)
+		err := scheduler.Schedule(context.TODO(), descriptor, false)
 		require.NoError(t, err)
 		require.Eventually(t, TaskFailed(store, provider, descriptor, "test"), time.Second,
 			100*time.Millisecond)
@@ -150,7 +147,7 @@ func TestTaskScheduler(t *testing.T) {
 		task1Terminated := make(chan struct{})
 		task2Terminated := make(chan struct{})
 
-		scheduler := NewDefaultScheduler(provider, logger, store, DefaultContainerFactory,
+		scheduler := NewDefaultScheduler(provider, store, DefaultContainerFactory,
 			ResolverFn(func(descriptor models.TaskDescriptor) Task {
 				switch string(descriptor) {
 				case string(descriptor1):
@@ -176,8 +173,8 @@ func TestTaskScheduler(t *testing.T) {
 				panic("unknown descriptor")
 			}), 1)
 
-		require.NoError(t, scheduler.Schedule(descriptor1, false))
-		require.NoError(t, scheduler.Schedule(descriptor2, false))
+		require.NoError(t, scheduler.Schedule(context.TODO(), descriptor1, false))
+		require.NoError(t, scheduler.Schedule(context.TODO(), descriptor2, false))
 		require.Eventually(t, TaskActive(store, provider, descriptor1), time.Second, 100*time.Millisecond)
 		require.Eventually(t, TaskPending(store, provider, descriptor2), time.Second, 100*time.Millisecond)
 		close(task1Terminated)
@@ -195,20 +192,20 @@ func TestTaskScheduler(t *testing.T) {
 		mainDescriptor := newDescriptor()
 		workerDescriptor := newDescriptor()
 
-		scheduler := NewDefaultScheduler(provider, logger, store, DefaultContainerFactory,
+		scheduler := NewDefaultScheduler(provider, store, DefaultContainerFactory,
 			ResolverFn(func(descriptor models.TaskDescriptor) Task {
 				switch string(descriptor) {
 				case string(mainDescriptor):
 					return func(ctx context.Context, scheduler Scheduler) {
 						<-ctx.Done()
-						require.NoError(t, scheduler.Schedule(workerDescriptor, false))
+						require.NoError(t, scheduler.Schedule(ctx, workerDescriptor, false))
 					}
 				default:
 					panic("should not be called")
 				}
 			}), 1)
 
-		require.NoError(t, scheduler.Schedule(mainDescriptor, false))
+		require.NoError(t, scheduler.Schedule(context.TODO(), mainDescriptor, false))
 		require.Eventually(t, TaskActive(store, provider, mainDescriptor), time.Second, 100*time.Millisecond)
 		require.NoError(t, scheduler.Shutdown(context.TODO()))
 		require.Eventually(t, TaskTerminated(store, provider, mainDescriptor), time.Second, 100*time.Millisecond)

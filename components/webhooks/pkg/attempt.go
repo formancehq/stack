@@ -76,7 +76,7 @@ func MakeAttempt(ctx context.Context, httpClient *http.Client, schedule []time.D
 
 	defer func() {
 		if err := resp.Body.Close(); err != nil {
-			logging.GetLogger(ctx).Error(
+			logging.FromContext(ctx).Error(
 				errors.Wrap(err, "http.Response.Body.Close"))
 		}
 	}()
@@ -85,7 +85,7 @@ func MakeAttempt(ctx context.Context, httpClient *http.Client, schedule []time.D
 	if err != nil {
 		return Attempt{}, errors.Wrap(err, "io.ReadAll")
 	}
-	logging.GetLogger(ctx).Debugf("webhooks.MakeAttempt: server response body: %s", string(body))
+	logging.FromContext(ctx).Debugf("webhooks.MakeAttempt: server response body: %s", string(body))
 
 	attempt := Attempt{
 		ID:           id,

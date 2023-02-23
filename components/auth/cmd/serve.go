@@ -14,13 +14,15 @@ import (
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	zLogging "github.com/zitadel/logging"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 )
 
 const (
@@ -79,108 +81,104 @@ func otlpHttpClientModule() fx.Option {
 	})
 }
 
-var serveCmd = &cobra.Command{
-	Use: "serve",
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		return bindFlagsToViper(cmd)
-	},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if viper.GetString(baseUrlFlag) == "" {
-			return errors.New("base url must be defined")
-		}
-
-		delegatedClientID := viper.GetString(delegatedClientIDFlag)
-		if delegatedClientID == "" {
-			return errors.New("delegated client id must be defined")
-		}
-
-		delegatedClientSecret := viper.GetString(delegatedClientSecretFlag)
-		if delegatedClientSecret == "" {
-			return errors.New("delegated client secret must be defined")
-		}
-
-		delegatedIssuer := viper.GetString(delegatedIssuerFlag)
-		if delegatedIssuer == "" {
-			return errors.New("delegated issuer must be defined")
-		}
-
-		signingKey := viper.GetString(signingKeyFlag)
-		if signingKey == "" {
-			return errors.New("signing key must be defined")
-		}
-
-		block, _ := pem.Decode([]byte(signingKey))
-		if block == nil {
-			return errors.New("invalid signing key, cannot parse as PEM")
-		}
-
-		key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
-		if err != nil {
-			return err
-		}
-
-		if viper.GetString(configFlag) != "" {
-			viper.SetConfigFile(viper.GetString(configFlag))
-			if err := viper.ReadInConfig(); err != nil {
-				return errors.Wrap(err, "reading viper config file")
+func newServeCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use: "serve",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return bindFlagsToViper(cmd)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if viper.GetString(baseUrlFlag) == "" {
+				return errors.New("base url must be defined")
 			}
-		}
 
-		type configuration struct {
-			Clients []auth.StaticClient `json:"clients" yaml:"clients"`
-		}
-		o := configuration{}
-		if err := viper.Unmarshal(&o); err != nil {
-			return errors.Wrap(err, "unmarshal viper config")
-		}
+			delegatedClientID := viper.GetString(delegatedClientIDFlag)
+			if delegatedClientID == "" {
+				return errors.New("delegated client id must be defined")
+			}
 
-		options := []fx.Option{
-			otlpHttpClientModule(),
-			fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
-			fx.Supply(delegatedauth.Config{
-				Issuer:       delegatedIssuer,
-				ClientID:     delegatedClientID,
-				ClientSecret: delegatedClientSecret,
-				RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
-			}),
-			api.Module(viper.GetString(listenFlag), sharedapi.ServiceInfo{
-				Version: Version,
-			}),
-			oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
-			authorization.Module(),
-			sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag),
-				viper.GetBool(debugFlag), key, o.Clients...),
-			delegatedauth.Module(),
-			fx.Invoke(func() {
-				logging.Infof("App started.")
-			}),
-			fx.NopLogger,
-		}
+			delegatedClientSecret := viper.GetString(delegatedClientSecretFlag)
+			if delegatedClientSecret == "" {
+				return errors.New("delegated client secret must be defined")
+			}
 
-		options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
+			delegatedIssuer := viper.GetString(delegatedIssuerFlag)
+			if delegatedIssuer == "" {
+				return errors.New("delegated issuer must be defined")
+			}
 
-		app := fx.New(options...)
-		err = app.Start(cmd.Context())
-		if err != nil {
-			return err
-		}
-		<-app.Done()
+			signingKey := viper.GetString(signingKeyFlag)
+			if signingKey == "" {
+				return errors.New("signing key must be defined")
+			}
 
-		return app.Err()
-	},
-}
+			block, _ := pem.Decode([]byte(signingKey))
+			if block == nil {
+				return errors.New("invalid signing key, cannot parse as PEM")
+			}
 
-func init() {
-	rootCmd.AddCommand(serveCmd)
-	serveCmd.Flags().String(postgresUriFlag, "", "Postgres uri")
-	serveCmd.Flags().String(delegatedIssuerFlag, "", "Delegated OIDC issuer")
-	serveCmd.Flags().String(delegatedClientIDFlag, "", "Delegated OIDC client id")
-	serveCmd.Flags().String(delegatedClientSecretFlag, "", "Delegated OIDC client secret")
-	serveCmd.Flags().String(baseUrlFlag, "http://localhost:8080", "Base service url")
-	serveCmd.Flags().String(signingKeyFlag, defaultSigningKey, "Signing key")
-	serveCmd.Flags().String(listenFlag, ":8080", "Listening address")
+			key, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+			if err != nil {
+				return err
+			}
 
-	serveCmd.Flags().String(configFlag, "config", "Config file name without extension")
+			if viper.GetString(configFlag) != "" {
+				viper.SetConfigFile(viper.GetString(configFlag))
+				if err := viper.ReadInConfig(); err != nil {
+					return errors.Wrap(err, "reading viper config file")
+				}
+			}
 
-	otlptraces.InitOTLPTracesFlags(serveCmd.Flags())
+			type configuration struct {
+				Clients []auth.StaticClient `json:"clients" yaml:"clients"`
+			}
+			o := configuration{}
+			if err := viper.Unmarshal(&o); err != nil {
+				return errors.Wrap(err, "unmarshal viper config")
+			}
+
+			zLogging.SetOutput(cmd.OutOrStdout())
+
+			options := []fx.Option{
+				otlpHttpClientModule(),
+				fx.Supply(fx.Annotate(cmd.Context(), fx.As(new(context.Context)))),
+				fx.Supply(delegatedauth.Config{
+					Issuer:       delegatedIssuer,
+					ClientID:     delegatedClientID,
+					ClientSecret: delegatedClientSecret,
+					RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
+				}),
+				sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag), key, o.Clients...),
+				api.Module(viper.GetString(listenFlag), sharedapi.ServiceInfo{
+					Version: Version,
+				}),
+				oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
+				authorization.Module(),
+				delegatedauth.Module(),
+			}
+			if viper.GetBool(service.DebugFlag) {
+				options = append(options, fx.Replace(&gorm.Config{
+					Logger: sqlstorage.NewLogger(cmd.OutOrStdout()),
+				}))
+			}
+
+			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
+
+			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+		},
+	}
+
+	cmd.Flags().String(postgresUriFlag, "", "Postgres uri")
+	cmd.Flags().String(delegatedIssuerFlag, "", "Delegated OIDC issuer")
+	cmd.Flags().String(delegatedClientIDFlag, "", "Delegated OIDC client id")
+	cmd.Flags().String(delegatedClientSecretFlag, "", "Delegated OIDC client secret")
+	cmd.Flags().String(baseUrlFlag, "http://localhost:8080", "Base service url")
+	cmd.Flags().String(signingKeyFlag, defaultSigningKey, "Signing key")
+	cmd.Flags().String(listenFlag, ":8080", "Listening address")
+
+	cmd.Flags().String(configFlag, "", "Config file name without extension")
+
+	otlptraces.InitOTLPTracesFlags(cmd.Flags())
+
+	return cmd
 }

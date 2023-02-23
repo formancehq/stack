@@ -20,7 +20,7 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 
 	cfgs, err := h.store.FindManyConfigs(r.Context(), filter)
 	if err != nil {
-		logging.GetLogger(r.Context()).Errorf("storage.store.FindManyConfigs: %s", err)
+		logging.FromContext(r.Context()).Errorf("storage.store.FindManyConfigs: %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -32,12 +32,12 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 	}
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		logging.GetLogger(r.Context()).Errorf("json.Encoder.Encode: %s", err)
+		logging.FromContext(r.Context()).Errorf("json.Encoder.Encode: %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	logging.GetLogger(r.Context()).Infof("GET /configs: %d results", len(resp.Cursor.Data))
+	logging.FromContext(r.Context()).Infof("GET /configs: %d results", len(resp.Cursor.Data))
 }
 
 var ErrInvalidParams = errors.New("invalid params: only 'id' and 'endpoint' with a valid URL are accepted")

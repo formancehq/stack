@@ -21,6 +21,7 @@ linters:
     - structcheck
     - rowserrcheck
     - sqlclosecheck
+    - wrapcheck
 
 run:
   timeout: 5m

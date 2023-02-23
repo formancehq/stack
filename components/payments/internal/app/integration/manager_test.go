@@ -13,7 +13,6 @@ import (
 	"github.com/formancehq/payments/internal/app/task"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/require"
 )
@@ -47,14 +46,13 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 		return dig.New(), nil
 	})
 
-	logger := logginglogrus.New(l)
 	taskStore := task.NewInMemoryStore()
 	managerStore := NewInMemoryStore()
 	provider := models.ConnectorProvider(uuid.New().String())
 	schedulerFactory := TaskSchedulerFactoryFn(func(resolver task.Resolver,
 		maxTasks int,
 	) *task.DefaultTaskScheduler {
-		return task.NewDefaultScheduler(provider, logger, taskStore,
+		return task.NewDefaultScheduler(provider, taskStore,
 			DefaultContainerFactory, resolver, maxTasks)
 	})
 
@@ -64,8 +62,7 @@ func withManager[ConnectorConfig models.ConnectorConfigObject](builder *Connecto
 		}).
 		WithAllowedTasks(1).
 		Build()
-	manager := NewConnectorManager[ConnectorConfig](logger, managerStore, loader,
-		schedulerFactory, nil)
+	manager := NewConnectorManager[ConnectorConfig](managerStore, loader, schedulerFactory, nil)
 
 	defer func() {
 		_ = manager.Uninstall(context.TODO())
@@ -119,7 +116,7 @@ func TestUninstallConnector(t *testing.T) {
 			}
 		}).
 		WithInstall(func(ctx task.ConnectorContext) error {
-			return ctx.Scheduler().Schedule([]byte(uuid.New().String()), false)
+			return ctx.Scheduler().Schedule(ctx.Context(), []byte(uuid.New().String()), false)
 		}).
 		WithUninstall(func(ctx context.Context) error {
 			close(uninstalled)

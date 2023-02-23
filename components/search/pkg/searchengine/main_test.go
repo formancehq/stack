@@ -13,11 +13,12 @@ import (
 	"time"
 
 	"github.com/elastic/go-elasticsearch/v7/esapi"
+	"github.com/formancehq/stack/libs/go-libs/httpclient"
 	"github.com/numary/ledger/pkg/core"
 	goOpensearch "github.com/opensearch-project/opensearch-go"
 	"github.com/ory/dockertest/v3"
 	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var (
@@ -75,7 +76,7 @@ func indexName(t *testing.T) string {
 
 func insertESDocument(t *testing.T, id string, pipeline string, doc map[string]interface{}) {
 	data, err := json.Marshal(doc)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	index := indexName(t)
 	req := esapi.IndexRequest{
@@ -86,11 +87,11 @@ func insertESDocument(t *testing.T, id string, pipeline string, doc map[string]i
 		Pipeline:   pipeline,
 	}
 	res, err := req.Do(context.Background(), openSearchClient)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer res.Body.Close()
 
 	if res.IsError() {
-		assert.FailNowf(t, "error inserting es", "Error inserting es index: %s [%d]", res.Status(), res.String())
+		require.FailNowf(t, "error inserting es", "Error inserting es index: %s [%d]", res.Status(), res.String())
 	}
 }
 
@@ -120,57 +121,56 @@ func TestSearchEngine(t *testing.T) {
 	logrus.Debugln("starting opensearch container")
 
 	pool, err := dockertest.NewPool("")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	resource, err := pool.Run("opensearchproject/opensearch", "1.2.3", []string{
 		"discovery.type=single-node",
 		"DISABLE_SECURITY_PLUGIN=true",
 		"DISABLE_INSTALL_DEMO_CONFIG=true",
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	defer func() {
 		err := pool.Purge(resource)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	}()
 
 	esAddress := "http://localhost:" + resource.GetPort("9200/tcp")
 	openSearchClient, err = goOpensearch.NewClient(goOpensearch.Config{
 		Addresses: []string{esAddress},
-		Transport: &http.Transport{
+		Transport: httpclient.NewDebugHTTPTransport(&http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
 			},
-		},
+		}),
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	err = pool.Retry(func() error {
 		_, err = openSearchClient.Ping()
 		return err
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	pipelineDir := "../../tests/pipelines"
 	dir, err := os.ReadDir(pipelineDir)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	for _, pipelineFile := range dir {
 		filename := pipelineFile.Name()
 		objectType := strings.TrimSuffix(filename, ".json")
 		data, err := os.ReadFile(path.Join(pipelineDir, filename))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		rsp, err := openSearchClient.Ingest.PutPipeline(objectType, bytes.NewBuffer(data))
-		assert.NoError(t, err)
-		assert.False(t, rsp.IsError())
+		require.NoError(t, err)
+		require.False(t, rsp.IsError())
 	}
-
-	assert.NoError(t, LoadDefaultMapping(context.TODO(), openSearchClient, "*"))
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			engine = NewDefaultEngine(openSearchClient, WithESIndices(test.name))
+			require.NoError(t, CreateIndex(context.TODO(), openSearchClient, test.name))
+			engine = NewDefaultEngine(openSearchClient, WithESIndex(test.name))
 			test.fn(t)
 		})
 	}

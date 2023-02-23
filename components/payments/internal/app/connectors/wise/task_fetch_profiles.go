@@ -33,7 +33,7 @@ func taskFetchProfiles(logger logging.Logger, client *client) task.Task {
 				return err
 			}
 
-			err = scheduler.Schedule(descriptor, true)
+			err = scheduler.Schedule(ctx, descriptor, true)
 			if err != nil {
 				return err
 			}

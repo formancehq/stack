@@ -110,7 +110,7 @@ func (c *Client) GetScopes() []string {
 }
 
 type StaticClient struct {
-	ClientOptions `mapstructure:",squash"`
+	ClientOptions `mapstructure:",squash" yaml:",inline"`
 	Secrets       []string `json:"secrets" yaml:"secrets"`
 	Scopes        []string `json:"scopes" yaml:"scopes"`
 }

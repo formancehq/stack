@@ -43,11 +43,11 @@ func (w *Retrier) Run(ctx context.Context) error {
 	for {
 		select {
 		case ch := <-w.stopChan:
-			logging.GetLogger(ctx).Debug("worker: received from stopChan")
+			logging.FromContext(ctx).Debug("worker: received from stopChan")
 			close(ch)
 			return nil
 		case <-ctx.Done():
-			logging.GetLogger(ctx).Debugf("worker: context done: %s", ctx.Err())
+			logging.FromContext(ctx).Debugf("worker: context done: %s", ctx.Err())
 			return nil
 		case err := <-errChan:
 			return errors.Wrap(err, "kafka.Retrier")
@@ -59,18 +59,18 @@ func (w *Retrier) Stop(ctx context.Context) {
 	ch := make(chan struct{})
 	select {
 	case <-ctx.Done():
-		logging.GetLogger(ctx).Debugf("worker stopped: context done: %s", ctx.Err())
+		logging.FromContext(ctx).Debugf("worker stopped: context done: %s", ctx.Err())
 		return
 	case w.stopChan <- ch:
 		select {
 		case <-ctx.Done():
-			logging.GetLogger(ctx).Debugf("worker stopped via stopChan: context done: %s", ctx.Err())
+			logging.FromContext(ctx).Debugf("worker stopped via stopChan: context done: %s", ctx.Err())
 			return
 		case <-ch:
-			logging.GetLogger(ctx).Debug("worker stopped via stopChan")
+			logging.FromContext(ctx).Debug("worker stopped via stopChan")
 		}
 	default:
-		logging.GetLogger(ctx).Debug("trying to stop worker: no communication")
+		logging.FromContext(ctx).Debug("trying to stop worker: no communication")
 	}
 }
 
@@ -88,7 +88,7 @@ func (w *Retrier) attemptRetries(ctx context.Context, errChan chan error) {
 				errChan <- errors.Wrap(err, "storage.Store.FindWebhookIDsToRetry")
 				continue
 			} else {
-				logging.GetLogger(ctx).Debugf(
+				logging.FromContext(ctx).Debugf(
 					"found %d distinct webhookIDs to retry: %+v", len(webhookIDs), webhookIDs)
 			}
 

@@ -8,7 +8,6 @@ import (
 
 	"github.com/formancehq/search/pkg/es"
 	"github.com/opensearch-project/opensearch-go"
-	"github.com/opensearch-project/opensearch-go/opensearchapi"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -38,30 +37,19 @@ func (fn DefaultEngineOptionFn) apply(engine *DefaultEngine) {
 	fn(engine)
 }
 
-func WithESIndices(esIndices ...string) DefaultEngineOptionFn {
+func WithESIndex(esIndices ...string) DefaultEngineOptionFn {
 	return func(engine *DefaultEngine) {
 		engine.indices = esIndices
 	}
 }
 
-func WithRequestOption(opt func(req *opensearchapi.SearchRequest)) DefaultEngineOptionFn {
-	return func(engine *DefaultEngine) {
-		engine.requestOptions = append(engine.requestOptions, opt)
-	}
-}
-
-var DefaultEsIndices = []string{"ledger"}
-
-var DefaultEngineOptions = []DefaultEngineOption{
-	WithESIndices(DefaultEsIndices...),
-}
+var DefaultEngineOptions = []DefaultEngineOption{}
 
 type Response map[string][]interface{}
 
 type DefaultEngine struct {
 	openSearchClient *opensearch.Client
 	indices          []string
-	requestOptions   []func(req *opensearchapi.SearchRequest)
 }
 
 func (e *DefaultEngine) doRequest(ctx context.Context, m map[string]interface{}) (*es.Response, error) {

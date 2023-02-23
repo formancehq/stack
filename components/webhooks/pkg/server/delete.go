@@ -13,12 +13,12 @@ func (h *serverHandler) deleteOneConfigHandle(w http.ResponseWriter, r *http.Req
 	id := chi.URLParam(r, PathParamId)
 	err := h.store.DeleteOneConfig(r.Context(), id)
 	if err == nil {
-		logging.GetLogger(r.Context()).Infof("DELETE %s/%s", PathConfigs, id)
+		logging.FromContext(r.Context()).Infof("DELETE %s/%s", PathConfigs, id)
 	} else if errors.Is(err, storage.ErrConfigNotFound) {
-		logging.GetLogger(r.Context()).Infof("DELETE %s/%s: %s", PathConfigs, id, storage.ErrConfigNotFound)
+		logging.FromContext(r.Context()).Infof("DELETE %s/%s: %s", PathConfigs, id, storage.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	} else {
-		logging.GetLogger(r.Context()).Errorf("DELETE %s/%s: %s", PathConfigs, id, err)
+		logging.FromContext(r.Context()).Errorf("DELETE %s/%s: %s", PathConfigs, id, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }

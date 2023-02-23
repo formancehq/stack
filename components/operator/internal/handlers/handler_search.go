@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/fs"
 	"path/filepath"
@@ -10,6 +9,7 @@ import (
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/controllerutils"
 	"github.com/formancehq/operator/internal/modules"
+	"github.com/formancehq/search/pkg/searchengine"
 )
 
 const (
@@ -116,15 +116,13 @@ func init() {
 							credentialsStr = "-u ${OPEN_SEARCH_USERNAME}:${OPEN_SEARCH_PASSWORD} "
 						}
 
+						mapping, err := searchengine.GetIndexDefinition()
+						if err != nil {
+							panic(err)
+						}
+
 						var args []string
 						if resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.UseZinc {
-							mapping, err := json.Marshal(struct {
-								Mappings any    `json:"mappings"`
-								Name     string `json:"name"`
-							}{
-								Mappings: getMapping(),
-								Name:     resolveContext.Stack.Name,
-							})
 							if err != nil {
 								panic(err)
 							}
@@ -135,14 +133,6 @@ func init() {
 									"${OPEN_SEARCH_SCHEME}://${OPEN_SEARCH_SERVICE}/index", string(mapping)),
 							}
 						} else {
-							mapping, err := json.Marshal(struct {
-								Mappings any `json:"mappings"`
-							}{
-								Mappings: getMapping(),
-							})
-							if err != nil {
-								panic(err)
-							}
 							args = []string{
 								"-c", fmt.Sprintf("curl -H 'Content-Type: application/json' "+
 									"-X PUT -v -d '%s' "+

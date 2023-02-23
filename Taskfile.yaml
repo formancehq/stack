@@ -9,6 +9,11 @@ vars:
   COMPOSE_FILE: -f docker-compose.yml
 
 tasks:
+  default:
+    cmds:
+      - task: all:lint
+      - task: all:tests
+
   run:
     cmds:
       - docker-compose {{.COMPOSE_FILE}} up -d --remove-orphans
@@ -36,6 +41,7 @@ tasks:
       - task wallets:tests
       - task webhooks:tests
       - task ledger:tests
+      - task integration:tests
 
   all:lint:
     cmds:
@@ -83,3 +89,6 @@ includes:
   operator:
     taskfile: ./components/operator
     dir: ./components/operator
+  integration:
+    taskfile: ./tests/integration
+    dir: ./tests/integration

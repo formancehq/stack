@@ -57,16 +57,16 @@ func StartModule(addr, serviceName string, retriesCron time.Duration, retriesSch
 func run(lc fx.Lifecycle, w *Retrier) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			logging.GetLogger(ctx).Debugf("starting worker...")
+			logging.FromContext(ctx).Debugf("starting worker...")
 			go func() {
 				if err := w.Run(context.Background()); err != nil {
-					logging.GetLogger(ctx).Errorf("kafka.Retrier.Run: %s", err)
+					logging.FromContext(ctx).Errorf("kafka.Retrier.Run: %s", err)
 				}
 			}()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			logging.GetLogger(ctx).Debugf("stopping worker...")
+			logging.FromContext(ctx).Debugf("stopping worker...")
 			w.Stop(ctx)
 
 			if err := w.store.Close(ctx); err != nil {
@@ -105,14 +105,14 @@ func processMessages(store storage.Store, httpClient *http.Client, retriesSchedu
 			"event_types": ev.Type,
 			"active":      true,
 		}
-		logging.GetLogger(msg.Context()).Debugf("searching configs with filter: %+v", filter)
+		logging.FromContext(msg.Context()).Debugf("searching configs with filter: %+v", filter)
 		cfgs, err := store.FindManyConfigs(msg.Context(), filter)
 		if err != nil {
 			return errors.Wrap(err, "storage.store.FindManyConfigs")
 		}
 
 		for _, cfg := range cfgs {
-			logging.GetLogger(msg.Context()).Debugf("found one config: %+v", cfg)
+			logging.FromContext(msg.Context()).Debugf("found one config: %+v", cfg)
 			data, err := json.Marshal(ev)
 			if err != nil {
 				return errors.Wrap(err, "json.Marshal event message")
@@ -125,7 +125,7 @@ func processMessages(store storage.Store, httpClient *http.Client, retriesSchedu
 			}
 
 			if attempt.Status == webhooks.StatusAttemptSuccess {
-				logging.GetLogger(msg.Context()).Infof(
+				logging.FromContext(msg.Context()).Infof(
 					"webhook sent with ID %s to %s of type %s",
 					attempt.WebhookID, cfg.Endpoint, ev.Type)
 			}

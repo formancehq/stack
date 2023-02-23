@@ -174,7 +174,6 @@ services:
       STACK_CLIENT_ID: "wallets"
       STACK_CLIENT_SECRET: "wallets"
       STACK_URL: "http://localhost"
-      STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/wallets"
 
   payments:
     image: "ghcr.io/formancehq/payments:latest"

@@ -15,6 +15,7 @@ import (
 	"github.com/uptrace/bun"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/uptrace/bun/extra/bundebug"
 	"go.uber.org/fx"
 )
 
@@ -39,6 +40,7 @@ func Module(uri, configEncryptionKey string) fx.Option {
 			db := bun.NewDB(client, pgdialect.New())
 
 			db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(dbName)))
+			db.AddQueryHook(bundebug.NewQueryHook())
 
 			return newStorage(db, configEncryptionKey)
 		}),
@@ -46,7 +48,7 @@ func Module(uri, configEncryptionKey string) fx.Option {
 		fx.Invoke(func(lc fx.Lifecycle, repo *Storage) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					logging.Debug("Ping database...")
+					logging.FromContext(ctx).Debug("Ping database...")
 
 					// TODO: Check migrations state and panic if migrations are not applied
 

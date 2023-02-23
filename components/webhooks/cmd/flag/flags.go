@@ -5,8 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
@@ -87,10 +85,6 @@ func Init(flagSet *pflag.FlagSet) (retriesSchedule []time.Duration, err error) {
 			return nil, ErrScheduleInvalid
 		}
 	}
-
-	logging.SetFactory(
-		logging.StaticLoggerFactory(
-			logginglogrus.New(logger)))
 
 	return retriesSchedule, nil
 }

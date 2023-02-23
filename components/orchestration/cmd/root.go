@@ -5,11 +5,8 @@ import (
 	"os"
 
 	_ "github.com/formancehq/orchestration/internal/workflow/stages/all"
-	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/logging/logginglogrus"
-	"github.com/sirupsen/logrus"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -20,7 +17,6 @@ var (
 )
 
 const (
-	debugFlag                 = "debug"
 	stackURLFlag              = "stack-url"
 	stackClientIDFlag         = "stack-client-id"
 	stackClientSecretFlag     = "stack-client-secret"
@@ -34,20 +30,7 @@ const (
 
 var rootCmd = &cobra.Command{
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-
-		if err := bindFlagsToViper(cmd); err != nil {
-			return err
-		}
-
-		logrusLogger := logrus.New()
-		if viper.GetBool(debugFlag) {
-			logrusLogger.SetLevel(logrus.DebugLevel)
-			logrusLogger.Infof("Debug mode enabled.")
-		}
-		logger := logginglogrus.New(logrusLogger)
-		logging.SetFactory(logging.StaticLoggerFactory(logger))
-
-		return nil
+		return bindFlagsToViper(cmd)
 	},
 }
 
@@ -64,7 +47,7 @@ func Execute() {
 
 func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	rootCmd.PersistentFlags().BoolP(debugFlag, "d", false, "Debug mode")
+	rootCmd.PersistentFlags().BoolP(service.DebugFlag, "d", false, "Debug mode")
 	rootCmd.PersistentFlags().String(stackURLFlag, "", "Stack url")
 	rootCmd.PersistentFlags().String(stackClientIDFlag, "", "Stack client ID")
 	rootCmd.PersistentFlags().String(stackClientSecretFlag, "", "Stack client secret")

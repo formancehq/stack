@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/riandyrn/otelchi"
 	"github.com/spf13/cobra"
@@ -69,7 +70,6 @@ var serveCmd = &cobra.Command{
 		options := []fx.Option{
 			healthCheckModule(),
 			httpServerModule(),
-			fx.NopLogger,
 			// This will set up the telemetry stack
 			// You have to add a middleware on your router to traces http requests
 			otlptraces.CLITracesModule(viper.GetViper()),
@@ -80,24 +80,18 @@ var serveCmd = &cobra.Command{
 				viper.GetString(temporalSSLClientCertFlag),
 				viper.GetString(temporalSSLClientKeyFlag),
 			),
-			storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(debugFlag)),
+			storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag)),
 			workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 			fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
 				lifecycle.Append(fx.Hook{
 					OnStart: func(ctx context.Context) error {
-						return storage.Migrate(db, viper.GetBool(debugFlag))
+						return storage.Migrate(db, viper.GetBool(service.DebugFlag))
 					},
 				})
 			}),
 		}
 
-		app := fx.New(options...)
-		err := app.Start(cmd.Context())
-		if err != nil {
-			return err
-		}
-		<-app.Done()
-		return nil
+		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 	},
 }
 

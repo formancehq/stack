@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/webhooks/cmd"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
@@ -90,6 +91,9 @@ func TestWorkerMessages(t *testing.T) {
 
 		workerApp := fxtest.New(t,
 			fx.Supply(httpServerSuccess.Client()),
+			fx.Provide(func() logging.Logger {
+				return logging.FromContext(context.Background())
+			}),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
 				cmd.ServiceName,
@@ -97,7 +101,7 @@ func TestWorkerMessages(t *testing.T) {
 				retrySchedule,
 			))
 		require.NoError(t, workerApp.Start(context.Background()))
-		// The subscription to the kafka topics is aynchronous
+		// The subscription to the kafka topics is asynchronous
 		// So add a delay (ugly) before starting
 		<-time.After(5 * time.Second)
 
@@ -150,6 +154,9 @@ func TestWorkerMessages(t *testing.T) {
 
 		workerApp := fxtest.New(t,
 			fx.Supply(httpServerFail.Client()),
+			fx.Provide(func() logging.Logger {
+				return logging.FromContext(context.Background())
+			}),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
 				cmd.ServiceName,
@@ -217,6 +224,9 @@ func TestWorkerMessages(t *testing.T) {
 
 		workerApp := fxtest.New(t,
 			fx.Supply(httpServerSuccess.Client()),
+			fx.Provide(func() logging.Logger {
+				return logging.FromContext(context.Background())
+			}),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
 				cmd.ServiceName,
@@ -303,6 +313,9 @@ func TestWorkerRetries(t *testing.T) {
 
 		workerApp := fxtest.New(t,
 			fx.Supply(httpServerSuccess.Client()),
+			fx.Provide(func() logging.Logger {
+				return logging.FromContext(context.Background())
+			}),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
 				cmd.ServiceName,
@@ -373,6 +386,9 @@ func TestWorkerRetries(t *testing.T) {
 
 		workerApp := fxtest.New(t,
 			fx.Supply(httpServerFail.Client()),
+			fx.Provide(func() logging.Logger {
+				return logging.FromContext(context.Background())
+			}),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
 				cmd.ServiceName,
@@ -443,6 +459,9 @@ func TestWorkerRetries(t *testing.T) {
 
 		workerApp := fxtest.New(t,
 			fx.Supply(httpServerFail.Client()),
+			fx.Provide(func() logging.Logger {
+				return logging.FromContext(context.Background())
+			}),
 			worker.StartModule(
 				viper.GetString(flag.HttpBindAddressWorker),
 				cmd.ServiceName,

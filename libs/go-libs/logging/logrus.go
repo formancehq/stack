@@ -1,9 +1,11 @@
-package logginglogrus
+package logging
 
 import (
 	"context"
+	"io"
+	"os"
+	"testing"
 
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/sirupsen/logrus"
 )
 
@@ -20,7 +22,7 @@ type logrusLogger struct {
 	}
 }
 
-func (l *logrusLogger) WithContext(ctx context.Context) logging.Logger {
+func (l *logrusLogger) WithContext(ctx context.Context) Logger {
 	return &logrusLogger{
 		l.entry.WithContext(ctx),
 	}
@@ -44,20 +46,26 @@ func (l *logrusLogger) Errorf(fmt string, args ...any) {
 func (l *logrusLogger) Error(args ...any) {
 	l.entry.Error(args...)
 }
-func (l *logrusLogger) WithFields(fields map[string]any) logging.Logger {
+func (l *logrusLogger) WithFields(fields map[string]any) Logger {
 	return &logrusLogger{
 		entry: l.entry.WithFields(fields),
 	}
 }
 
-var _ logging.Logger = &logrusLogger{}
+var _ Logger = &logrusLogger{}
 
-func New(logger *logrus.Logger) *logrusLogger {
+func NewLogrus(logger *logrus.Logger) *logrusLogger {
 	return &logrusLogger{
 		entry: logger,
 	}
 }
 
-func init() {
-	logging.SetFactory(logging.StaticLoggerFactory(New(logrus.StandardLogger())))
+func Testing() *logrusLogger {
+	logger := logrus.New()
+	logger.SetOutput(io.Discard)
+	if testing.Verbose() {
+		logger.SetOutput(os.Stdout)
+		logger.SetLevel(logrus.DebugLevel)
+	}
+	return NewLogrus(logger)
 }

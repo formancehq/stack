@@ -7,5 +7,5 @@ import (
 )
 
 func (h *serverHandler) HealthCheckHandle(_ http.ResponseWriter, r *http.Request) {
-	logging.GetLogger(r.Context()).Infof("health check OK")
+	logging.FromContext(r.Context()).Infof("health check OK")
 }

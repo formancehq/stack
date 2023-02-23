@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/orchestration/internal/temporal"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
@@ -24,14 +25,14 @@ func stackClientModule() fx.Option {
 			configuration.Servers = []sdk.ServerConfiguration{{
 				URL: viper.GetString(stackURLFlag),
 			}}
-			configuration.Debug = viper.GetBool(debugFlag)
+			configuration.Debug = viper.GetBool(service.DebugFlag)
 			oauthConfig := clientcredentials.Config{
 				ClientID:     viper.GetString(stackClientIDFlag),
 				ClientSecret: viper.GetString(stackClientSecretFlag),
 				TokenURL:     fmt.Sprintf("%s/api/auth/oauth/token", viper.GetString(stackURLFlag)),
 			}
 			underlyingHTTPClient := &http.Client{
-				Transport: otlp.NewRoundTripper(viper.GetBool(debugFlag)),
+				Transport: otlp.NewRoundTripper(viper.GetBool(service.DebugFlag)),
 			}
 			configuration.HTTPClient = oauthConfig.Client(context.WithValue(context.Background(),
 				oauth2.HTTPClient, underlyingHTTPClient))
@@ -47,9 +48,8 @@ var workerCommand = &cobra.Command{
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		options := []fx.Option{
-			fx.NopLogger,
 			otlptraces.CLITracesModule(viper.GetViper()),
-			storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(debugFlag)),
+			storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag)),
 			stackClientModule(),
 			temporal.NewClientModule(
 				viper.GetString(temporalAddressFlag),
@@ -60,13 +60,7 @@ var workerCommand = &cobra.Command{
 			temporal.NewWorkerModule(viper.GetString(temporalTaskQueueFlag)),
 		}
 
-		app := fx.New(options...)
-		err := app.Start(cmd.Context())
-		if err != nil {
-			return err
-		}
-		<-app.Done()
-		return app.Err()
+		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
 	},
 }
 

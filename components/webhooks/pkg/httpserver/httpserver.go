@@ -28,17 +28,17 @@ func RegisterHandler(mux *http.ServeMux, h http.Handler) {
 func Run(lc fx.Lifecycle, server *http.Server, addr string) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
-			logging.GetLogger(ctx).Infof(fmt.Sprintf("starting HTTP listening on %s", addr))
+			logging.FromContext(ctx).Infof(fmt.Sprintf("starting HTTP listening on %s", addr))
 			go func() {
 				if err := server.ListenAndServe(); err != nil &&
 					!errors.Is(err, http.ErrServerClosed) {
-					logging.GetLogger(ctx).Errorf("http.Server.ListenAndServe: %s", err)
+					logging.FromContext(ctx).Errorf("http.Server.ListenAndServe: %s", err)
 				}
 			}()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			logging.GetLogger(ctx).Infof("stopping HTTP listening")
+			logging.FromContext(ctx).Infof("stopping HTTP listening")
 			if err := server.Shutdown(ctx); err != nil {
 				return fmt.Errorf("http.Server.Shutdown: %w", err)
 			}

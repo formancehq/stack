@@ -28,7 +28,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 		return err
 	}
 
-	return ctx.Scheduler().Schedule(taskDescriptor, true)
+	return ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, true)
 }
 
 func (c *Connector) Uninstall(ctx context.Context) error {

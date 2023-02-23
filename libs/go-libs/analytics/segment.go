@@ -53,7 +53,7 @@ func (m *heartbeat) Run(ctx context.Context) error {
 	enqueue := func() {
 		err := m.enqueue(ctx)
 		if err != nil {
-			logging.GetLogger(ctx).WithFields(map[string]interface{}{
+			logging.FromContext(ctx).WithFields(map[string]interface{}{
 				"error": err,
 			}).Error("enqueuing analytics")
 		}
@@ -103,7 +103,7 @@ func (m *heartbeat) enqueue(ctx context.Context) error {
 
 	for _, enricher := range m.enrichers {
 		if err := enricher.Enrich(ctx, properties); err != nil {
-			logging.GetLogger(ctx).Errorf("Enricher return error: %s", err)
+			logging.FromContext(ctx).Errorf("Enricher return error: %s", err)
 		}
 	}
 

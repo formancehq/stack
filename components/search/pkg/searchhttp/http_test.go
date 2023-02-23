@@ -15,14 +15,14 @@ import (
 	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/numary/ledger/pkg/core"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type queryChecker func(*testing.T, map[string]interface{})
 
 func hasPageSize(pageSize int) queryChecker {
 	return func(t *testing.T, m map[string]interface{}) {
-		assert.EqualValues(t, pageSize, m["size"])
+		require.EqualValues(t, pageSize, m["size"])
 	}
 }
 
@@ -36,13 +36,13 @@ func hasSort(sorts ...searchengine.Sort) queryChecker {
 		})
 	}
 	return func(t *testing.T, m map[string]interface{}) {
-		assert.EqualValues(t, expected, m["sort"])
+		require.EqualValues(t, expected, m["sort"])
 	}
 }
 
 func hasSearchAfter(searchAfter ...interface{}) queryChecker {
 	return func(t *testing.T, m map[string]interface{}) {
-		assert.EqualValues(t, searchAfter, m["search_after"])
+		require.EqualValues(t, searchAfter, m["search_after"])
 	}
 }
 
@@ -149,7 +149,7 @@ func TestMultiSearch(t *testing.T) {
 									ret := make([]es.ResponseHit, 0)
 									for _, source := range sources {
 										sourceData, err := json.Marshal(source)
-										assert.NoError(t, err)
+										require.NoError(t, err)
 
 										data, err := json.Marshal(search.Source{
 											Kind:   key,
@@ -157,7 +157,7 @@ func TestMultiSearch(t *testing.T) {
 											When:   time.Time{},
 											Data:   sourceData,
 										})
-										assert.NoError(t, err)
+										require.NoError(t, err)
 										ret = append(ret, es.ResponseHit{
 											Source: data,
 										})
@@ -179,18 +179,18 @@ func TestMultiSearch(t *testing.T) {
 
 			query := map[string]interface{}{}
 			data, err := json.Marshal(query)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			rec := httptest.NewRecorder()
 			req := httptest.NewRequest("POST", "/", bytes.NewBuffer(data))
 			r.ServeHTTP(rec, req)
-			assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
+			require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 
 			response := api.BaseResponse[map[string]interface{}]{}
 			err = json.NewDecoder(rec.Body).Decode(&response)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
-			assert.EqualValues(t, tc.expected, response)
+			require.EqualValues(t, tc.expected, response)
 		})
 	}
 
@@ -400,7 +400,7 @@ func TestSingleDocTypeSearch(t *testing.T) {
 
 			for _, source := range tc.results {
 				sourceData, err := json.Marshal(source)
-				assert.NoError(t, err)
+				require.NoError(t, err)
 
 				data, err := json.Marshal(search.Source{
 					Kind:   tc.kind,
@@ -408,7 +408,7 @@ func TestSingleDocTypeSearch(t *testing.T) {
 					When:   now,
 					Data:   sourceData,
 				})
-				assert.NoError(t, err)
+				require.NoError(t, err)
 				esResponse.Hits.Hits = append(esResponse.Hits.Hits, es.ResponseHit{
 					Source: data,
 				})
@@ -426,17 +426,17 @@ func TestSingleDocTypeSearch(t *testing.T) {
 
 			tc.query["target"] = tc.kind
 			data, err := json.Marshal(tc.query)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 
 			rec := httptest.NewRecorder()
 			req := httptest.NewRequest("POST", "/", bytes.NewBuffer(data))
 			r.ServeHTTP(rec, req)
-			assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
+			require.Equal(t, http.StatusOK, rec.Result().StatusCode)
 
 			response := api.BaseResponse[map[string]interface{}]{}
 			err = json.NewDecoder(rec.Body).Decode(&response)
-			assert.NoError(t, err)
-			assert.EqualValues(t, tc.expected, response)
+			require.NoError(t, err)
+			require.EqualValues(t, tc.expected, response)
 		})
 	}
 }

@@ -29,7 +29,6 @@ var (
 )
 
 type ConnectorManager[Config models.ConnectorConfigObject] struct {
-	logger           logging.Logger
 	loader           Loader[Config]
 	connector        Connector
 	store            Repository
@@ -38,8 +37,15 @@ type ConnectorManager[Config models.ConnectorConfigObject] struct {
 	publisher        message.Publisher
 }
 
+func (l *ConnectorManager[ConnectorConfig]) logger(ctx context.Context) logging.Logger {
+	return logging.FromContext(ctx).WithFields(map[string]interface{}{
+		"component": "connector-manager",
+		"provider":  l.loader.Name(),
+	})
+}
+
 func (l *ConnectorManager[ConnectorConfig]) Enable(ctx context.Context) error {
-	l.logger.Info("Enabling connector")
+	l.logger(ctx).Info("Enabling connector")
 
 	err := l.store.Enable(ctx, l.loader.Name())
 	if err != nil {
@@ -68,25 +74,25 @@ func (l *ConnectorManager[ConnectorConfig]) ReadConfig(ctx context.Context,
 	return &config, nil
 }
 
-func (l *ConnectorManager[ConnectorConfig]) load(config ConnectorConfig) {
-	l.connector = l.loader.Load(l.logger, config)
+func (l *ConnectorManager[ConnectorConfig]) load(ctx context.Context, config ConnectorConfig) {
+	l.connector = l.loader.Load(l.logger(ctx), config)
 	l.scheduler = l.schedulerFactory.Make(l.connector, l.loader.AllowTasks())
 }
 
 func (l *ConnectorManager[ConnectorConfig]) Install(ctx context.Context, config ConnectorConfig) error {
-	l.logger.WithFields(map[string]interface{}{
+	l.logger(ctx).WithFields(map[string]interface{}{
 		"config": config,
 	}).Infof("Install connector %s", l.loader.Name())
 
 	isInstalled, err := l.store.IsInstalled(ctx, l.loader.Name())
 	if err != nil {
-		l.logger.Errorf("Error checking if connector is installed: %s", err)
+		l.logger(ctx).Errorf("Error checking if connector is installed: %s", err)
 
 		return err
 	}
 
 	if isInstalled {
-		l.logger.Errorf("Connector already installed")
+		l.logger(ctx).Errorf("Connector already installed")
 
 		return ErrAlreadyInstalled
 	}
@@ -97,7 +103,7 @@ func (l *ConnectorManager[ConnectorConfig]) Install(ctx context.Context, config 
 		return err
 	}
 
-	l.load(config)
+	l.load(ctx, config)
 
 	cfg, err := config.Marshal()
 	if err != nil {
@@ -109,30 +115,33 @@ func (l *ConnectorManager[ConnectorConfig]) Install(ctx context.Context, config 
 		return err
 	}
 
-	err = l.connector.Install(task.NewConnectorContext(context.TODO(), l.scheduler))
+	err = l.connector.Install(task.NewConnectorContext(logging.ContextWithLogger(
+		context.TODO(),
+		logging.FromContext(ctx),
+	), l.scheduler))
 	if err != nil {
-		l.logger.Errorf("Error starting connector: %s", err)
+		l.logger(ctx).Errorf("Error starting connector: %s", err)
 
 		return err
 	}
 
-	l.logger.Infof("Connector installed")
+	l.logger(ctx).Infof("Connector installed")
 
 	return nil
 }
 
 func (l *ConnectorManager[ConnectorConfig]) Uninstall(ctx context.Context) error {
-	l.logger.Infof("Uninstalling connector")
+	l.logger(ctx).Infof("Uninstalling connector")
 
 	isInstalled, err := l.IsInstalled(ctx)
 	if err != nil {
-		l.logger.Errorf("Error checking if connector is installed: %s", err)
+		l.logger(ctx).Errorf("Error checking if connector is installed: %s", err)
 
 		return err
 	}
 
 	if !isInstalled {
-		l.logger.Errorf("Connector not installed")
+		l.logger(ctx).Errorf("Connector not installed")
 
 		return ErrNotInstalled
 	}
@@ -152,13 +161,13 @@ func (l *ConnectorManager[ConnectorConfig]) Uninstall(ctx context.Context) error
 		return err
 	}
 
-	l.logger.Info("Connector uninstalled")
+	l.logger(ctx).Info("Connector uninstalled")
 
 	return nil
 }
 
 func (l *ConnectorManager[ConnectorConfig]) Restore(ctx context.Context) error {
-	l.logger.Info("Restoring state")
+	l.logger(ctx).Info("Restoring state")
 
 	installed, err := l.IsInstalled(ctx)
 	if err != nil {
@@ -166,7 +175,7 @@ func (l *ConnectorManager[ConnectorConfig]) Restore(ctx context.Context) error {
 	}
 
 	if !installed {
-		l.logger.Info("Not installed, skip")
+		l.logger(ctx).Info("Not installed, skip")
 
 		return ErrNotInstalled
 	}
@@ -177,7 +186,7 @@ func (l *ConnectorManager[ConnectorConfig]) Restore(ctx context.Context) error {
 	}
 
 	if !enabled {
-		l.logger.Info("Not enabled, skip")
+		l.logger(ctx).Info("Not enabled, skip")
 
 		return ErrNotEnabled
 	}
@@ -191,22 +200,22 @@ func (l *ConnectorManager[ConnectorConfig]) Restore(ctx context.Context) error {
 		return err
 	}
 
-	l.load(*config)
+	l.load(ctx, *config)
 
 	err = l.scheduler.Restore(ctx)
 	if err != nil {
-		l.logger.Errorf("Unable to restore scheduler: %s", err)
+		l.logger(ctx).Errorf("Unable to restore scheduler: %s", err)
 
 		return err
 	}
 
-	l.logger.Info("State restored")
+	l.logger(ctx).Info("State restored")
 
 	return nil
 }
 
 func (l *ConnectorManager[ConnectorConfig]) Disable(ctx context.Context) error {
-	l.logger.Info("Disabling connector")
+	l.logger(ctx).Info("Disabling connector")
 
 	return l.store.Disable(ctx, l.loader.Name())
 }
@@ -251,7 +260,7 @@ func (l *ConnectorManager[ConnectorConfig]) Reset(ctx context.Context) error {
 	err = l.publisher.Publish(messages.TopicPayments,
 		publish.NewMessage(ctx, messages.NewEventResetConnector(l.loader.Name())))
 	if err != nil {
-		l.logger.Errorf("Publishing message: %w", err)
+		l.logger(ctx).Errorf("Publishing message: %w", err)
 	}
 
 	return nil
@@ -289,17 +298,12 @@ func (l *ConnectorManager[ConnectorConfig]) ListTransfers(ctx context.Context) (
 }
 
 func NewConnectorManager[ConnectorConfig models.ConnectorConfigObject](
-	logger logging.Logger,
 	store Repository,
 	loader Loader[ConnectorConfig],
 	schedulerFactory TaskSchedulerFactory,
 	publisher message.Publisher,
 ) *ConnectorManager[ConnectorConfig] {
 	return &ConnectorManager[ConnectorConfig]{
-		logger: logger.WithFields(map[string]interface{}{
-			"component": "connector-manager",
-			"provider":  loader.Name(),
-		}),
 		store:            store,
 		loader:           loader,
 		schedulerFactory: schedulerFactory,
