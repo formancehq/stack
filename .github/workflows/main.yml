@@ -119,7 +119,7 @@ jobs:
           tags: ghcr.io/formancehq/${{ matrix.folder }}:${{ github.sha }}
           build-args: |
             APP_SHA=${{ github.sha }}
-            VERSION=main
+            VERSION=${{ github.sha }}
 
   TestsIntegration:
     runs-on: ubuntu-latest
