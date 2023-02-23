@@ -42,7 +42,7 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription()
 		})
 		It("should trigger some events", func() {
-			msg := waitOnChanWithTimeout(msgs, 10*time.Second)
+			msg := WaitOnChanWithTimeout(msgs, 10*time.Second)
 			event := &bus.EventMessage{}
 			Expect(json.Unmarshal(msg.Data, event)).To(BeNil())
 		})

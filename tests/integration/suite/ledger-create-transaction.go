@@ -12,16 +12,6 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func waitOnChanWithTimeout[T any](ch chan T, timeout time.Duration) T {
-	select {
-	case t := <-ch:
-		return t
-	case <-time.After(timeout):
-		Fail("should have received a created transaction event")
-	}
-	panic("cannot happen")
-}
-
 var _ = Given("some empty environment", func() {
 	When("creating a transaction on a ledger", func() {
 		var (
@@ -51,34 +41,37 @@ var _ = Given("some empty environment", func() {
 		AfterEach(func() {
 			cancelSubscription()
 		})
+
 		It("should trigger a new event", func() {
 			// Wait for created transaction event
-			msg := waitOnChanWithTimeout(msgs, 5*time.Second)
+			// TODO: Check events content against schema
+			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
 			event := &bus.EventMessage{}
 			Expect(json.Unmarshal(msg.Data, event)).To(BeNil())
 		})
-		It("should pop a transaction on search service", func() {
+		It("should pop a transaction, two accounts and two assets entries on search service", func() {
+			expectedTx := map[string]any{
+				"reference": "",
+				"metadata":  map[string]any{},
+				"postings": []any{
+					map[string]any{
+						"source":      "world",
+						"asset":       "USD",
+						"amount":      float64(100),
+						"destination": "alice",
+					},
+				},
+				"txid":      float64(0),
+				"timestamp": timestamp.Format(time.RFC3339),
+				"ledger":    "default",
+			}
 			Eventually(func(g Gomega) bool {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("TRANSACTION"),
 				}).Execute()
 				g.Expect(err).To(BeNil())
 				g.Expect(res.Cursor.Data).To(HaveLen(1))
-				g.Expect(res.Cursor.Data[0]).To(Equal(map[string]any{
-					"reference": "",
-					"metadata":  map[string]any{},
-					"postings": []any{
-						map[string]any{
-							"source":      "world",
-							"asset":       "USD",
-							"amount":      float64(100),
-							"destination": "alice",
-						},
-					},
-					"txid":      float64(0),
-					"timestamp": timestamp.Format(time.RFC3339),
-					"ledger":    "default",
-				}))
+				g.Expect(res.Cursor.Data[0]).To(Equal(expectedTx))
 
 				return true
 			}).Should(BeTrue())
@@ -89,23 +82,53 @@ var _ = Given("some empty environment", func() {
 					Terms:  []string{"alice"},
 				}).Execute()
 				g.Expect(err).To(BeNil())
-				g.Expect(res.Cursor.Data[0]).To(Equal(map[string]any{
-					"reference": "",
-					"metadata":  map[string]any{},
-					"postings": []any{
-						map[string]any{
-							"source":      "world",
-							"asset":       "USD",
-							"amount":      float64(100),
-							"destination": "alice",
-						},
-					},
-					"txid":      float64(0),
-					"timestamp": timestamp.Format(time.RFC3339),
-					"ledger":    "default",
-				}))
+				g.Expect(res.Cursor.Data[0]).To(Equal(expectedTx))
 				return res.Cursor.Data
 			}).Should(HaveLen(1))
+
+			Eventually(func(g Gomega) bool {
+				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
+					Target: formance.PtrString("ACCOUNT"),
+				}).Execute()
+				g.Expect(err).To(BeNil())
+				g.Expect(res.Cursor.Data).To(HaveLen(2))
+				g.Expect(res.Cursor.Data).To(ContainElements(
+					map[string]any{
+						"address": "world",
+						"ledger":  "default",
+					},
+					map[string]any{
+						"address": "alice",
+						"ledger":  "default",
+					},
+				))
+				return true
+			}).Should(BeTrue())
+
+			Eventually(func(g Gomega) bool {
+				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
+					Target: formance.PtrString("ASSET"),
+				}).Execute()
+				g.Expect(err).To(BeNil())
+				g.Expect(res.Cursor.Data).To(HaveLen(2))
+				g.Expect(res.Cursor.Data).To(ContainElements(
+					map[string]any{
+						"account": "world",
+						"ledger":  "default",
+						"output":  float64(100),
+						"input":   float64(0),
+						"name":    "USD",
+					},
+					map[string]any{
+						"account": "alice",
+						"ledger":  "default",
+						"output":  float64(0),
+						"input":   float64(100),
+						"name":    "USD",
+					},
+				))
+				return true
+			}).Should(BeTrue())
 		})
 	})
 })
