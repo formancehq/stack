@@ -29,13 +29,13 @@ Method | HTTP request | Description
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiConfirmHoldRequest = {
+let body:formance.WalletsApiConfirmHoldRequest = {
   // string
   holdId: "hold_id_example",
   // ConfirmHoldRequest (optional)
@@ -89,13 +89,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiCreateBalanceRequest = {
+let body:formance.WalletsApiCreateBalanceRequest = {
   // string
   id: "id_example",
   // Balance (optional)
@@ -148,13 +148,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiCreateWalletRequest = {
+let body:formance.WalletsApiCreateWalletRequest = {
   // CreateWalletRequest (optional)
   createWalletRequest: {
     metadata: {
@@ -207,13 +207,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiCreditWalletRequest = {
+let body:formance.WalletsApiCreditWalletRequest = {
   // string
   id: "id_example",
   // CreditWalletRequest (optional)
@@ -277,13 +277,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiDebitWalletRequest = {
+let body:formance.WalletsApiDebitWalletRequest = {
   // string
   id: "id_example",
   // DebitWalletRequest (optional)
@@ -349,13 +349,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiGetBalanceRequest = {
+let body:formance.WalletsApiGetBalanceRequest = {
   // string
   id: "id_example",
   // string
@@ -406,13 +406,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiGetHoldRequest = {
+let body:formance.WalletsApiGetHoldRequest = {
   // string | The hold ID
   holdID: "holdID_example",
 };
@@ -460,13 +460,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiGetHoldsRequest = {
+let body:formance.WalletsApiGetHoldsRequest = {
   // number | The maximum number of results to return per page (optional)
   pageSize: 100,
   // string | The wallet to filter on (optional)
@@ -523,13 +523,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiGetTransactionsRequest = {
+let body:formance.WalletsApiGetTransactionsRequest = {
   // number | The maximum number of results to return per page (optional)
   pageSize: 100,
   // string | A wallet ID to filter on (optional)
@@ -583,13 +583,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiGetWalletRequest = {
+let body:formance.WalletsApiGetWalletRequest = {
   // string
   id: "id_example",
 };
@@ -638,13 +638,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiListBalancesRequest = {
+let body:formance.WalletsApiListBalancesRequest = {
   // string
   id: "id_example",
 };
@@ -691,13 +691,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiListWalletsRequest = {
+let body:formance.WalletsApiListWalletsRequest = {
   // string | Filter on wallet name (optional)
   name: "wallet1",
   // any | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
@@ -753,13 +753,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiUpdateWalletRequest = {
+let body:formance.WalletsApiUpdateWalletRequest = {
   // string
   id: "id_example",
   // UpdateWalletRequest (optional)
@@ -814,13 +814,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
-let body:WalletsApiVoidHoldRequest = {
+let body:formance.WalletsApiVoidHoldRequest = {
   // string
   holdId: "hold_id_example",
 };
@@ -868,11 +868,11 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WalletsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WalletsApi(configuration);
 
 let body:any = {};
 
@@ -907,4 +907,5 @@ This endpoint does not need any parameter.
 **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

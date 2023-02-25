@@ -1,9 +1,3 @@
-templateDir: openapi/templates/typescript
-# files:
-#   Taskfile.yml.mustache:
-#     destinationFilename: Taskfile.yml
-#   .github/workflows/release.yml.mustache:
-#     destinationFilename: .github/workflows/release.yml
 additionalProperties:
   enumUnknownDefaultCase: true
   useObjectParameters: true

@@ -1,6 +1,2 @@
-# templateDir: templates/php
-# files:
-#   Taskfile.yml.mustache:
-#     destinationFilename: Taskfile.yml
 additionalProperties:
   invokerPackage: Formance

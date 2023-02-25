@@ -16,13 +16,13 @@ This route is deprecated, and has been merged into `POST /{ledger}/transactions`
 
 
 ```typescript
-import { ScriptApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ScriptApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ScriptApi(configuration);
 
-let body:ScriptApiRunScriptRequest = {
+let body:formance.ScriptApiRunScriptRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
   // Script
@@ -80,4 +80,5 @@ Name | Type | Description  | Notes
 **200** | On success, it will return a 200 status code, and the resulting transaction under the &#x60;transaction&#x60; field.  On failure, it will also return a 200 status code, and the following fields:   - &#x60;details&#x60;: contains a URL. When there is an error parsing Numscript, the result can be difficult to read—the provided URL will render the error in an easy-to-read format.   - &#x60;errorCode&#x60; and &#x60;error_code&#x60; (deprecated): contains the string code of the error   - &#x60;errorMessage&#x60; and &#x60;error_message&#x60; (deprecated): contains a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.  |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

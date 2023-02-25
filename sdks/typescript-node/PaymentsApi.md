@@ -30,13 +30,13 @@ Execute a transfer between two Stripe accounts.
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiConnectorsStripeTransferRequest = {
+let body:formance.PaymentsApiConnectorsStripeTransferRequest = {
   // StripeTransferRequest
   stripeTransferRequest: {
     amount: 100,
@@ -89,13 +89,13 @@ Execute a transfer between two accounts.
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiConnectorsTransferRequest = {
+let body:formance.PaymentsApiConnectorsTransferRequest = {
   // Connector | The name of the connector.
   connector: "STRIPE",
   // TransferRequest
@@ -151,13 +151,13 @@ Get a specific task associated to the connector.
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiGetConnectorTaskRequest = {
+let body:formance.PaymentsApiGetConnectorTaskRequest = {
   // Connector | The name of the connector.
   connector: "STRIPE",
   // string | The task ID.
@@ -207,13 +207,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiGetPaymentRequest = {
+let body:formance.PaymentsApiGetPaymentRequest = {
   // string | The payment ID.
   paymentId: "XXX",
 };
@@ -261,13 +261,13 @@ Install a connector by its name and config.
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiInstallConnectorRequest = {
+let body:formance.PaymentsApiInstallConnectorRequest = {
   // Connector | The name of the connector.
   connector: "STRIPE",
   // ConnectorConfig
@@ -318,11 +318,11 @@ List all installed connectors.
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
 let body:any = {};
 
@@ -366,11 +366,11 @@ List the configs of each available connector.
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
 let body:any = {};
 
@@ -414,13 +414,13 @@ List all tasks associated with this connector.
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiListConnectorTasksRequest = {
+let body:formance.PaymentsApiListConnectorTasksRequest = {
   // Connector | The name of the connector.
   connector: "STRIPE",
   // number | The maximum number of results to return per page.  (optional)
@@ -474,13 +474,13 @@ List transfers
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiListConnectorsTransfersRequest = {
+let body:formance.PaymentsApiListConnectorsTransfersRequest = {
   // Connector | The name of the connector.
   connector: "STRIPE",
 };
@@ -527,13 +527,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiListPaymentsRequest = {
+let body:formance.PaymentsApiListPaymentsRequest = {
   // number | The maximum number of results to return per page.  (optional)
   pageSize: 100,
   // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
@@ -588,13 +588,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiPaymentslistAccountsRequest = {
+let body:formance.PaymentsApiPaymentslistAccountsRequest = {
   // number | The maximum number of results to return per page.  (optional)
   pageSize: 100,
   // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
@@ -650,13 +650,13 @@ Read connector config
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiReadConnectorConfigRequest = {
+let body:formance.PaymentsApiReadConnectorConfigRequest = {
   // Connector | The name of the connector.
   connector: "STRIPE",
 };
@@ -704,13 +704,13 @@ Reset a connector by its name. It will remove the connector and ALL PAYMENTS gen
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiResetConnectorRequest = {
+let body:formance.PaymentsApiResetConnectorRequest = {
   // Connector | The name of the connector.
   connector: "STRIPE",
 };
@@ -758,13 +758,13 @@ Uninstall a connector by its name.
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiUninstallConnectorRequest = {
+let body:formance.PaymentsApiUninstallConnectorRequest = {
   // Connector | The name of the connector.
   connector: "STRIPE",
 };
@@ -811,13 +811,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { PaymentsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new PaymentsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.PaymentsApi(configuration);
 
-let body:PaymentsApiUpdateMetadataRequest = {
+let body:formance.PaymentsApiUpdateMetadataRequest = {
   // string | The payment ID.
   paymentId: "XXX",
   // PaymentMetadata
@@ -860,4 +860,5 @@ Name | Type | Description  | Notes
 **204** | No content |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 
