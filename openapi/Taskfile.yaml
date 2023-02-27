@@ -2,7 +2,7 @@
 version: "3"
 
 vars:
-  version: 1.0.0-{{now | date "20060102"}}
+  version: 1.0.{{now | date "20060102"}}
   openapiGeneratorVersion: v6.4.0
 
 tasks:
@@ -98,6 +98,26 @@ tasks:
     - task: sdk:test
       vars:
         target: go
+
+  sdk:publish:go:
+    cmds:
+    - echo "Nothing to do"
+
+  sdk:publish:java:
+    cmds:
+    - mvn deploy
+
+  sdk:publish:php:
+    cmds:
+    - echo "Nothing to do"
+
+  sdk:publish:python:
+    cmds:
+    - echo "Push on PyPi"
+
+  sdk:publish:typescript-node:
+    cmds:
+    - echo "Push on npmjs"
 
   sdk:generate:all:
     desc: Generate all client code

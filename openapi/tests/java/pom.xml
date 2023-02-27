@@ -36,9 +36,8 @@
     <dependency>
       <groupId>com.formance</groupId>
       <artifactId>formance</artifactId>
-      <!--<scope>compile</scope>-->
-      <!-- <version>[1.0,2.0)</version> -->
       <scope>system</scope>
+      <!-- TODO: PASS version from env var -->
       <systemPath>${basedir}/../../../sdks/java/target/formance-1.0.0-20230225.jar</systemPath>
       <version>1.0.0-20230225</version>
     </dependency>
