@@ -35,88 +35,30 @@ properties:
           type: number
         preCommitVolumes:
           type: object
-          properties:
-            alice:
+          additionalProperties:
+            type: object
+            additionalProperties:
               type: object
               properties:
-                USD:
-                  type: object
-                  properties:
-                    input:
-                      type: number
-                    output:
-                      type: number
-                    balance:
-                      type: number
-                  required:
-                  - input
-                  - output
-                  - balance
-              required:
-              - USD
-            world:
-              type: object
-              properties:
-                USD:
-                  type: object
-                  properties:
-                    input:
-                      type: number
-                    output:
-                      type: number
-                    balance:
-                      type: number
-                  required:
-                  - input
-                  - output
-                  - balance
-              required:
-              - USD
-          required:
-          - alice
-          - world
+                input:
+                  type: number
+                output:
+                  type: number
+                balance:
+                  type: number
         postCommitVolumes:
           type: object
-          properties:
-            alice:
+          additionalProperties:
+            type: object
+            additionalProperties:
               type: object
               properties:
-                USD:
-                  type: object
-                  properties:
-                    input:
-                      type: number
-                    output:
-                      type: number
-                    balance:
-                      type: number
-                  required:
-                  - input
-                  - output
-                  - balance
-              required:
-              - USD
-            world:
-              type: object
-              properties:
-                USD:
-                  type: object
-                  properties:
-                    input:
-                      type: number
-                    output:
-                      type: number
-                    balance:
-                      type: number
-                  required:
-                  - input
-                  - output
-                  - balance
-              required:
-              - USD
-          required:
-          - alice
-          - world
+                input:
+                  type: number
+                output:
+                  type: number
+                balance:
+                  type: number
         timestamp:
           type: string
       required:
@@ -129,130 +71,41 @@ properties:
       - timestamp
   volumes:
     type: object
-    properties:
-      alice:
-        type: object
-        properties:
-          USD:
-            type: object
-            properties:
-              input:
-                type: number
-              output:
-                type: number
-              balance:
-                type: number
-            required:
-            - input
-            - output
-            - balance
-        required:
-        - USD
-      world:
-        type: object
-        properties:
-          USD:
-            type: object
-            properties:
-              input:
-                type: number
-              output:
-                type: number
-              balance:
-                type: number
-            required:
-            - input
-            - output
-            - balance
-        required:
-        - USD
-    required:
-    - alice
-    - world
+    additionalProperties:
+      type: object
+      properties:
+        input:
+          type: number
+        output:
+          type: number
+        balance:
+          type: number
   postCommitVolumes:
     type: object
-    properties:
-      alice:
+    additionalProperties:
+      type: object
+      additionalProperties:
         type: object
         properties:
-          USD:
-            type: object
-            properties:
-              input:
-                type: number
-              output:
-                type: number
-              balance:
-                type: number
-            required:
-            - input
-            - output
-            - balance
-        required:
-        - USD
-      world:
-        type: object
-        properties:
-          USD:
-            type: object
-            properties:
-              input:
-                type: number
-              output:
-                type: number
-              balance:
-                type: number
-            required:
-            - input
-            - output
-            - balance
-        required:
-        - USD
-    required:
-    - alice
-    - world
+          input:
+            type: number
+          output:
+            type: number
+          balance:
+            type: number
   preCommitVolumes:
     type: object
-    properties:
-      alice:
+    additionalProperties:
+      type: object
+      additionalProperties:
         type: object
         properties:
-          USD:
-            type: object
-            properties:
-              input:
-                type: number
-              output:
-                type: number
-              balance:
-                type: number
-            required:
-            - input
-            - output
-            - balance
-        required:
-        - USD
-      world:
-        type: object
-        properties:
-          USD:
-            type: object
-            properties:
-              input:
-                type: number
-              output:
-                type: number
-              balance:
-                type: number
-            required:
-            - input
-            - output
-            - balance
-        required:
-        - USD
-    required:
-    - alice
-    - world
+          input:
+            type: number
+          output:
+            type: number
+          balance:
+            type: number
 required:
 - ledger
 - transactions
