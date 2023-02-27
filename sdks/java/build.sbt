@@ -2,7 +2,7 @@ lazy val root = (project in file(".")).
   settings(
     organization := "com.formance",
     name := "formance",
-    version := "develop",
+    version := "1.0.0-20230225",
     scalaVersion := "2.11.4",
     scalacOptions ++= Seq("-feature"),
     javacOptions in compile ++= Seq("-Xlint:deprecation"),

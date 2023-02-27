@@ -45,11 +45,59 @@ tasks:
         cd ../sdks/typescript-node && npm i --save-dev @types/node && \
         npm run build
 
+  sdk:generate:php:
+    cmds:
+    - task: sdk:generate
+      vars:
+        target: php
+
+  sdk:generate:java:
+    cmds:
+    - task: sdk:generate
+      vars:
+        target: java
+
+  sdk:generate:python:
+    cmds:
+    - task: sdk:generate
+      vars:
+        target: python
+
+  sdk:generate:go:
+    cmds:
+    - task: sdk:generate
+      vars:
+        target: go
+
   sdk:test:typescript-node:
     cmds:
     - task: sdk:test
       vars:
         target: typescript-node
+
+  sdk:test:php:
+    cmds:
+    - task: sdk:test
+      vars:
+        target: php
+
+  sdk:test:java:
+    cmds:
+    - task: sdk:test
+      vars:
+        target: java
+
+  sdk:test:python:
+    cmds:
+    - task: sdk:test
+      vars:
+        target: python
+
+  sdk:test:go:
+    cmds:
+    - task: sdk:test
+      vars:
+        target: go
 
   sdk:generate:all:
     desc: Generate all client code
