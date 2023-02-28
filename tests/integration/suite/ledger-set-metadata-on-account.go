@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/stack/events"
+	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	"github.com/numary/ledger/pkg/bus"

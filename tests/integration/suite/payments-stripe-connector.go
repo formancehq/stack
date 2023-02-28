@@ -6,7 +6,7 @@ import (
 
 	"github.com/formancehq/formance-sdk-go"
 	paymentEvents "github.com/formancehq/payments/pkg/events"
-	"github.com/formancehq/stack/events"
+	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
