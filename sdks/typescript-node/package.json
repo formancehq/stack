@@ -1,6 +1,6 @@
 {
   "name": "@formancehq/formance",
-  "version": "1.0.20230227",
+  "version": "v1.0.20230228",
   "description": "OpenAPI client for @formancehq/formance",
   "author": "OpenAPI-Generator Contributors",
   "repository": {
@@ -25,15 +25,15 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "@types/node-fetch": "^2.5.7",
-    "es6-promise": "^4.2.4",
-    "form-data": "^2.5.0",
     "node-fetch": "^2.6.0",
+    "@types/node-fetch": "^2.5.7",
+    "@types/node": "*",
+    "form-data": "^2.5.0",
+    "es6-promise": "^4.2.4",
     "url-parse": "^1.4.3"
   },
   "devDependencies": {
-    "@types/node": "^18.14.2",
-    "@types/url-parse": "1.4.4",
-    "typescript": "^4.0"
+    "typescript": "^4.0",
+    "@types/url-parse": "1.4.4"
   }
 }

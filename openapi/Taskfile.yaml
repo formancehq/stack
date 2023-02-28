@@ -18,7 +18,7 @@ tasks:
     cmds:
       - rm -rf ../sdks/{{.target}}
       - >
-        docker run --rm -w /local -v ${PWD}/..:/local openapitools/openapi-generator-cli:{{.openapiGeneratorVersion}} generate
+        docker run --rm -w /local -v $(pwd)/..:/local openapitools/openapi-generator-cli:{{.openapiGeneratorVersion}} generate
         -i ./openapi/build/generate.json
         -g {{ (split "-" .target)._0 }}
         -c ./openapi/configs/{{.target}}.yaml
@@ -97,24 +97,35 @@ tasks:
         target: go
 
   sdk:publish:go:
+    dir: ../sdks/go
     cmds:
     - echo "Nothing to do"
 
   sdk:publish:java:
+    dir: ../sdks/java
     cmds:
-    - mvn deploy
+    - mvn -q clean deploy -DaltDeploymentRepository=ossrh::default::https://s01.oss.sonatype.org/content/repositories/releases -DskipTests
 
   sdk:publish:php:
+    dir: ../sdks/php
     cmds:
     - echo "Nothing to do"
 
   sdk:publish:python:
+    dir: ../sdks/python
     cmds:
-    - echo "Push on PyPi"
+    - python3 -m pip install twine
+    - python3 setup.py sdist bdist_wheel
+    - twine check dist/*
+#    - twine upload dist/*
 
   sdk:publish:typescript-node:
+    dir: ../sdks/typescript-node
     cmds:
-    - echo "Push on npmjs"
+    - npm install
+    - touch .npmignore # Override .gitignore which ignore dist/ directory
+    - npm ci
+#    - npm publish
 
   sdk:generate:all:
     desc: Generate all client code
@@ -124,3 +135,21 @@ tasks:
     - task: sdk:generate:java
     - task: sdk:generate:php
     - task: sdk:generate:go
+
+  sdk:test:all:
+    desc: Test all clients
+    deps:
+    - task: sdk:test:typescript-node
+    - task: sdk:test:python
+    - task: sdk:test:java
+    - task: sdk:test:php
+    - task: sdk:test:go
+
+  sdk:publish:all:
+    desc: Publish all SDKS
+    deps:
+    - task: sdk:publish:typescript-node
+    - task: sdk:publish:python
+    - task: sdk:publish:java
+    - task: sdk:publish:php
+    - task: sdk:publish:go

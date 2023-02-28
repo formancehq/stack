@@ -9,3 +9,4 @@ vendor
 go.work
 go.work.sum
 node_modules
+worktrees

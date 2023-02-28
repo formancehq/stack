@@ -17,7 +17,7 @@ info:
     and standard method from web, mobile and desktop applications.
     <SecurityDefinitions />
   title: Formance Stack API
-  version: 1.0.20230227
+  version: v1.0.20230228
   x-logo:
     url: https://avatars.githubusercontent.com/u/84325077?s=200&v=4
     altText: Formance

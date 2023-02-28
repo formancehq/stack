@@ -2,22 +2,25 @@ name: Default - Release
 on:
   push:
     tags:
-      - 'components/sdks/v*.*.*'
+      - 'sdks/v*.*.*'
+  workflow_call:
+    secrets:
+      NUMARY_GITHUB_TOKEN:
+        required: true
+        description: GitHub token with access to the repo
+#      PYPI_SECRET:
+#        required: true
+#      NPM_TOKEN:
+#        required: true
 
 jobs:
   Sdk:
     name: 'Generate and publish sdks'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        sdk: [ go, php, python, typescript-node, java ]
     steps:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-#      with:
-#        token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-#        ref: ${{ inputs.VERSION }}
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: Set up Docker Buildx
@@ -26,49 +29,97 @@ jobs:
       uses: arduino/setup-task@v1
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Build final openapi spec
-      run: task openapi:sdk:build
-    - name: Detect update on api
-      id: detect-spec-updates
-      uses: tj-actions/changed-files@v35
-      with:
-        files: openapi/build/**
-    - name: Check spec validity
-      if: steps.detect-spec-updates.outputs.any_changed == 'true'
+    - name: Update SDKS
       run: |
-        echo "Final openapi specification build give changes, please generate sdks locally before pushing them" && exit 1
-    - name: Generate code
-      run: task openapi:sdk:generate:${{ matrix.sdk }}
-    - name: Get changed files in the sdks folder
-      id: generate-sdks
-      uses: tj-actions/changed-files@v35
-      with:
-        files: sdks/**
-    - name: Check SDKS
-      if: steps.generate-sdks.outputs.any_changed == 'true'
-      run: |
-        echo "SDK generation give changes, please generate sdks locally before pushing them" && exit 1
-    - name: Run tests
-      run: task openapi:sdk:tests:${{ matrix.sdk }}
-    - name: Extract version from tag
-      id: version-from-tag
-      run: echo "version=$(node .github/actions/extract-in-tag/version.js ${{ github.ref_name }})" >> $GITHUB_OUTPUT
-    - name: Extract version from spec
-      run: echo "version=$(jq .info.version ./openapi/build/generate.json)"
-      id: version-from-generated-spec
-    - if: ${{ needs.version-from-tag.outputs.version }} != ${{ needs.version-from-generated-spec.outputs.version }}
-      run: |
-        echo "Mismatch between version from spec and tag" && exit 1
-    - name: Push to new branch
-      working-directory: ./sdks/${{ matrix.sdk }}
-      run: |
-        git init;
-        git remote add origin https://github.com/formancehq/formance-sdk-${{ matrix.sdk }};
-        git checkout -b release/${{ needs.version-from-tag.outputs.version }};
-        git add -A;
-        git commit -m "feat: Upgrade to version ${{ needs.version-from-tag.outputs.version }}";
-        git push origin release/${{ needs.version-from-tag.outputs.version }};
-        git tag ${{ needs.version-from-tag.outputs.version }};
-        git push origin ${{ needs.version-from-tag.outputs.version }};
-    - name: Publish sdks
-      run: task openapi:sdk:publish:${{ matrix.sdk }}
+        set -x;
+
+        echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token;
+
+        #task openapi:sdk:build;
+        #[ "$(git diff)" == "" ] || {
+        #  echo "OpenAPI spec computation give changes, please update SDKS before push code";
+        #  git diff;
+        #  exit 1;
+        #}
+
+        #task openapi:sdk:generate:all;
+        #[ "$(git diff)" == "" ] || {
+        #  echo "OpenAPI code generation give changes, please update SDKS before push code";
+        #  git diff;
+        #  exit 1;
+        #}
+
+        versionFromSpec=$(jq -r '.info.version' ./openapi/build/generate.json);
+        versionFromTag=$(echo $GITHUB_REF_NAME | cut -d / -f 2);
+        [ "$versionFromSpec" == "$versionFromTag" ] || {
+          echo "Versions from spec and tag mismatch, please update SDKS before push code";
+          exit 1;
+        }
+        #task openapi:sdk:test:all;
+        
+        export TWINE_USERNAME=__token__
+        export TWINE_PASSWORD=${{ secrets.PYPI_SECRET }}
+        
+        #         gpg_private_key: ${{ secrets.GPG_SIGNING_KEY }}
+        #  gpg_passphrase: ${{ secrets.GPG_PASSPHRASE }}
+        
+        echo secret: ${{ secrets.GPG_SIGNING_KEY }}
+        echo ${{ secrets.GPG_SIGNING_KEY }} > /tmp/gpg_signing_key
+        cat /tmp/gpg_signing_key
+        gpg --import --batch /tmp/gpg_signing_key
+        
+        mkdir ~/.m2
+        cat <<EOF > ~/.m2/settings.xml
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <!-- Maven settings for CI -->
+        <settings
+        xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd"
+        >
+        <profiles>
+        <!-- GPG settings -->
+        <profile>
+        <id>gpg</id>
+        <activation>
+        <activeByDefault>true</activeByDefault>
+        </activation>
+        <properties>
+        <gpg.executable>gpg</gpg.executable>
+        <!-- Load passphrase from env variable -->
+        <gpg.passphrase>${{ secrets.GPG_PASSPHRASE }}</gpg.passphrase>
+        </properties>
+        </profile>
+        </profiles>
+        
+        <servers>
+        <!-- Sonatype OSSRH credentials -->
+        <server>
+        <id>ossrh</id>
+        <!-- Load credentials from env variables -->
+        <username>${{ secrets.OSSRH_USERNAME }}</username>
+        <password>${{ secrets.OSSRH_PASSWORD }}</password>
+        </server>
+        </servers>
+        </settings>
+        EOF
+        
+        cat ~/.m2/settings.xml
+
+        for sdk in $(ls sdks); do
+          pushd sdks/$sdk;
+          sudo chown -Rf runner:runner .
+          git init;
+          git remote add origin https://${{ secrets.NUMARY_GITHUB_TOKEN }}:${{ secrets.NUMARY_GITHUB_TOKEN }}@github.com/formancehq/formance-sdk-$sdk.git
+          git config --global user.email "maxence@formance.com"
+          git config --global user.name "Maxence Maireaux"
+          git checkout -b release/$versionFromSpec;
+          git add -A;
+          git commit -m "feat: Upgrade to version $versionFromSpec";
+          git push -f origin release/$versionFromSpec;
+          git tag $versionFromSpec;
+          git push -f origin $versionFromSpec;
+          popd;
+        done
+
+        task openapi:sdk:publish:all
