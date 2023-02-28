@@ -2,7 +2,7 @@
 version: "3"
 
 vars:
-  version: 1.0.{{now | date "20060102"}}
+  version: v1.0.{{now | date "20060102"}}
   openapiGeneratorVersion: v6.4.0
 
 tasks:
@@ -34,16 +34,13 @@ tasks:
       testingImage:
         sh: docker build -q -f tests/{{.target}}/Dockerfile ..
     cmds:
-    - docker run --rm {{.testingImage}}
+    - docker run --rm -e SDK_VERSION={{.version}} {{.testingImage}}
 
   sdk:generate:typescript-node:
     cmds:
     - task: sdk:generate
       vars:
         target: typescript-node
-    - cmd: |
-        cd ../sdks/typescript-node && npm i --save-dev @types/node && \
-        npm run build
 
   sdk:generate:php:
     cmds:
@@ -123,17 +120,7 @@ tasks:
     desc: Generate all client code
     deps:
     - task: sdk:generate:typescript-node
-#    - task: sdk:generate:python
-#    - task: sdk:generate:java
-#    - task: sdk:generate:php
-#    - task: sdk:generate:go
-#      - task: sdk:generate
-#        vars: {CLI_ARGS: "go", version: "{{.version}}"}
-#      - task: sdk:generate
-#        vars: {CLI_ARGS: "java", version: "{{.version}}"}
-#      - task: sdk:generate
-#        vars: {CLI_ARGS: "php", version: "{{.version}}"}
-#      - task: sdk:generate
-#        vars: {CLI_ARGS: "python", version: "{{.version}}"}
-#      - task: sdk:generate
-#        vars: {CLI_ARGS: "typescript-node", version: "{{.version}}"}
+    - task: sdk:generate:python
+    - task: sdk:generate:java
+    - task: sdk:generate:php
+    - task: sdk:generate:go

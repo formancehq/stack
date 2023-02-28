@@ -38,8 +38,8 @@
       <artifactId>formance</artifactId>
       <scope>system</scope>
       <!-- TODO: PASS version from env var -->
-      <systemPath>${basedir}/../../../sdks/java/target/formance-1.0.0-20230225.jar</systemPath>
-      <version>1.0.0-20230225</version>
+      <systemPath>${basedir}/../../../sdks/java/target/formance-${env.SDK_VERSION}.jar</systemPath>
+      <version>${env.SDK_VERSION}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.retrofit2</groupId>

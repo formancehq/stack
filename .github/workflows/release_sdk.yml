@@ -1,0 +1,74 @@
+name: Default - Release
+on:
+  push:
+    tags:
+      - 'components/sdks/v*.*.*'
+
+jobs:
+  Sdk:
+    name: 'Generate and publish sdks'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sdk: [ go, php, python, typescript-node, java ]
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+#      with:
+#        token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+#        ref: ${{ inputs.VERSION }}
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Install Task
+      uses: arduino/setup-task@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build final openapi spec
+      run: task openapi:sdk:build
+    - name: Detect update on api
+      id: detect-spec-updates
+      uses: tj-actions/changed-files@v35
+      with:
+        files: openapi/build/**
+    - name: Check spec validity
+      if: steps.detect-spec-updates.outputs.any_changed == 'true'
+      run: |
+        echo "Final openapi specification build give changes, please generate sdks locally before pushing them" && exit 1
+    - name: Generate code
+      run: task openapi:sdk:generate:${{ matrix.sdk }}
+    - name: Get changed files in the sdks folder
+      id: generate-sdks
+      uses: tj-actions/changed-files@v35
+      with:
+        files: sdks/**
+    - name: Check SDKS
+      if: steps.generate-sdks.outputs.any_changed == 'true'
+      run: |
+        echo "SDK generation give changes, please generate sdks locally before pushing them" && exit 1
+    - name: Run tests
+      run: task openapi:sdk:tests:${{ matrix.sdk }}
+    - name: Extract version from tag
+      id: version-from-tag
+      run: echo "version=$(node .github/actions/extract-in-tag/version.js ${{ github.ref_name }})" >> $GITHUB_OUTPUT
+    - name: Extract version from spec
+      run: echo "version=$(jq .info.version ./openapi/build/generate.json)"
+      id: version-from-generated-spec
+    - if: ${{ needs.version-from-tag.outputs.version }} != ${{ needs.version-from-generated-spec.outputs.version }}
+      run: |
+        echo "Mismatch between version from spec and tag" && exit 1
+    - name: Push to new branch
+      working-directory: ./sdks/${{ matrix.sdk }}
+      run: |
+        git init;
+        git remote add origin https://github.com/formancehq/formance-sdk-${{ matrix.sdk }};
+        git checkout -b release/${{ needs.version-from-tag.outputs.version }};
+        git add -A;
+        git commit -m "feat: Upgrade to version ${{ needs.version-from-tag.outputs.version }}";
+        git push origin release/${{ needs.version-from-tag.outputs.version }};
+        git tag ${{ needs.version-from-tag.outputs.version }};
+        git push origin ${{ needs.version-from-tag.outputs.version }};
+    - name: Publish sdks
+      run: task openapi:sdk:publish:${{ matrix.sdk }}
