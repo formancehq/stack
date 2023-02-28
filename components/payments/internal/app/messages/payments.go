@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
+	"github.com/formancehq/payments/pkg/events"
 )
 
 type paymentMessagePayload struct {
@@ -21,7 +22,7 @@ type paymentMessagePayload struct {
 	Amount        int64 `json:"amount"`
 }
 
-func NewEventSavedPayments(payment *models.Payment, provider models.ConnectorProvider) EventMessage {
+func NewEventSavedPayments(payment *models.Payment, provider models.ConnectorProvider) events.EventMessage {
 	payload := paymentMessagePayload{
 		ID:            payment.ID.String(),
 		Reference:     payment.Reference,
@@ -35,11 +36,11 @@ func NewEventSavedPayments(payment *models.Payment, provider models.ConnectorPro
 		Provider:      provider.String(),
 	}
 
-	return EventMessage{
+	return events.EventMessage{
 		Date:    time.Now().UTC(),
-		App:     EventApp,
-		Version: EventVersion,
-		Type:    EventTypeSavedPayments,
+		App:     events.EventApp,
+		Version: events.EventVersion,
+		Type:    events.EventTypeSavedPayments,
 		Payload: payload,
 	}
 }

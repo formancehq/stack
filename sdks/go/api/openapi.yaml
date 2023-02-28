@@ -5276,6 +5276,7 @@ components:
       - TERMINATED
       - FAILED
       - SUCCEEDED
+      - CANCELLED
       type: string
     Query:
       example:

@@ -964,6 +964,7 @@ components:
         - TERMINATED
         - FAILED
         - SUCCEEDED
+        - CANCELLED
     ServerInfo:
       type: object
       required:

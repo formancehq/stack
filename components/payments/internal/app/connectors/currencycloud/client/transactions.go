@@ -48,7 +48,7 @@ func (c *Client) GetTransactions(ctx context.Context, page int) ([]Transaction, 
 		Transactions []Transaction `json:"transactions"`
 		Pagination   struct {
 			NextPage int `json:"next_page"`
-		}
+		} `json:"pagination"`
 	}
 
 	var res response

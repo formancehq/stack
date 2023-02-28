@@ -1,0 +1,23 @@
+---
+type: object
+properties:
+  app:
+    type: string
+  version:
+    type: string
+  date:
+    type: string
+    format: date-time
+  type:
+    type: string
+  ledger:
+    type: string
+  payload:
+    type: object
+    additionalProperties: true
+required:
+- date
+- app
+- version
+- type
+- payload

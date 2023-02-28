@@ -26,6 +26,7 @@ const (
 	TERMINATED PaymentStatus = "TERMINATED"
 	FAILED PaymentStatus = "FAILED"
 	SUCCEEDED PaymentStatus = "SUCCEEDED"
+	CANCELLED PaymentStatus = "CANCELLED"
 )
 
 // All allowed values of PaymentStatus enum
@@ -35,6 +36,7 @@ var AllowedPaymentStatusEnumValues = []PaymentStatus{
 	"TERMINATED",
 	"FAILED",
 	"SUCCEEDED",
+	"CANCELLED",
 }
 
 func (v *PaymentStatus) UnmarshalJSON(src []byte) error {

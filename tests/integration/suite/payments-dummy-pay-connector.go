@@ -1,16 +1,16 @@
 package suite
 
 import (
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
+	paymentEvents "github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
-	"github.com/numary/ledger/pkg/bus"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -42,9 +42,8 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription()
 		})
 		It("should trigger some events", func() {
-			msg := waitOnChanWithTimeout(msgs, 10*time.Second)
-			event := &bus.EventMessage{}
-			Expect(json.Unmarshal(msg.Data, event)).To(BeNil())
+			msg := WaitOnChanWithTimeout(msgs, 10*time.Second)
+			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeSavedPayments)).Should(BeNil())
 		})
 		It("should generate some payments", func() {
 			Eventually(func(g Gomega) []formance.Payment {
