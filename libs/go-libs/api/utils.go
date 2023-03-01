@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,6 +10,13 @@ import (
 )
 
 const defaultLimit = 15
+
+func writeJSON(w http.ResponseWriter, v any) {
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(v); err != nil {
+		panic(err)
+	}
+}
 
 func NotFound(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
@@ -22,24 +28,20 @@ func NoContent(w http.ResponseWriter) {
 
 func BadRequest(w http.ResponseWriter, code string, err error) {
 	w.WriteHeader(http.StatusBadRequest)
-	if err := json.NewEncoder(w).Encode(ErrorResponse{
+	writeJSON(w, ErrorResponse{
 		ErrorCode:    code,
 		ErrorMessage: err.Error(),
-	}); err != nil {
-		panic(err)
-	}
+	})
 }
 
 func InternalServerError(w http.ResponseWriter, r *http.Request, err error) {
 	logging.FromContext(r.Context()).Error(err)
 
 	w.WriteHeader(http.StatusInternalServerError)
-	if err := json.NewEncoder(w).Encode(ErrorResponse{
+	writeJSON(w, ErrorResponse{
 		ErrorCode:    "INTERNAL_ERROR",
 		ErrorMessage: err.Error(),
-	}); err != nil {
-		panic(err)
-	}
+	})
 }
 
 func Created(w http.ResponseWriter, v any) {
@@ -47,27 +49,23 @@ func Created(w http.ResponseWriter, v any) {
 	Ok(w, v)
 }
 
-func RawOk(w io.Writer, v any) {
-	if err := json.NewEncoder(w).Encode(v); err != nil {
-		panic(err)
-	}
+func RawOk(w http.ResponseWriter, v any) {
+	writeJSON(w, v)
 }
 
-func Ok(w io.Writer, v any) {
+func Ok(w http.ResponseWriter, v any) {
 	RawOk(w, BaseResponse[any]{
 		Data: &v,
 	})
 }
 
-func RenderCursor[T any](w io.Writer, v Cursor[T]) {
-	if err := json.NewEncoder(w).Encode(BaseResponse[T]{
+func RenderCursor[T any](w http.ResponseWriter, v Cursor[T]) {
+	writeJSON(w, BaseResponse[T]{
 		Cursor: &v,
-	}); err != nil {
-		panic(err)
-	}
+	})
 }
 
-func CursorFromListResponse[T any, V any](w io.Writer, query ListQuery[V], response *ListResponse[T]) {
+func CursorFromListResponse[T any, V any](w http.ResponseWriter, query ListQuery[V], response *ListResponse[T]) {
 	RenderCursor(w, Cursor[T]{
 		PageSize: query.Limit,
 		HasMore:  response.HasMore,
