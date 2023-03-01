@@ -47,12 +47,16 @@ func Created(w http.ResponseWriter, v any) {
 	Ok(w, v)
 }
 
-func Ok(w io.Writer, v any) {
-	if err := json.NewEncoder(w).Encode(BaseResponse[any]{
-		Data: &v,
-	}); err != nil {
+func RawOk(w io.Writer, v any) {
+	if err := json.NewEncoder(w).Encode(v); err != nil {
 		panic(err)
 	}
+}
+
+func Ok(w io.Writer, v any) {
+	RawOk(w, BaseResponse[any]{
+		Data: &v,
+	})
 }
 
 func RenderCursor[T any](w io.Writer, v Cursor[T]) {
@@ -104,8 +108,8 @@ func ReadPaginatedRequest[T any](r *http.Request, f func(r *http.Request) T) Lis
 	}
 }
 
-func GetQueryMap(m map[string][]string, key string) map[string]any {
-	dicts := make(map[string]any)
+func GetQueryMap(m map[string][]string, key string) map[string]string {
+	dicts := make(map[string]string)
 	for k, v := range m {
 		if i := strings.IndexByte(k, '['); i >= 1 && k[0:i] == key {
 			if j := strings.IndexByte(k[i+1:], ']'); j >= 1 {

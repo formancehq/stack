@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/formancehq/stack/libs/go-libs/auth"
-	"github.com/numary/ledger/pkg/api/routes"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -27,7 +26,6 @@ func HTTPBasicAuthMethod(v *viper.Viper) auth.Method {
 			parts := strings.SplitN(kv, ":", 2)
 			credentials[parts[0]] = auth.Credential{
 				Password: parts[1],
-				Scopes:   routes.AllScopes,
 			}
 		}
 		return auth.NewHTTPBasicMethod(credentials)
