@@ -4,12 +4,10 @@ import (
 	"crypto/tls"
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/stack/libs/go-libs/service"
-	"github.com/gin-gonic/gin"
 	"github.com/go-chi/cors"
 	"github.com/numary/ledger/cmd/internal"
 	"github.com/numary/ledger/pkg/api"
@@ -20,7 +18,6 @@ import (
 	"github.com/numary/ledger/pkg/redis"
 	"github.com/numary/ledger/pkg/storage/sqlstorage"
 	"github.com/spf13/viper"
-	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/fx"
 )
 
@@ -89,7 +86,7 @@ func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 
 	options = append(options, fx.Provide(
 		fx.Annotate(func() []ledger.LedgerOption {
-			ledgerOptions := []ledger.LedgerOption{}
+			ledgerOptions := make([]ledger.LedgerOption, 0)
 
 			if v.GetString(commitPolicyFlag) == "allow-past-timestamps" {
 				ledgerOptions = append(ledgerOptions, ledger.WithPastTimestamps)
@@ -104,32 +101,14 @@ func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 		v.GetInt64(cacheCapacityBytes), v.GetInt64(cacheMaxNumKeys)))
 
 	// Api middlewares
-	options = append(options, routes.ProvidePerLedgerMiddleware(func(tp trace.TracerProvider) []gin.HandlerFunc {
-		res := make([]gin.HandlerFunc, 0)
-
-		methods := make([]auth.Method, 0)
-		if httpBasicMethod := internal.HTTPBasicAuthMethod(v); httpBasicMethod != nil {
-			methods = append(methods, httpBasicMethod)
+	options = append(options, routes.ProvidePerLedgerMiddleware(func() []func(handler http.Handler) http.Handler {
+		if basic := internal.HTTPBasicAuthMethod(v); basic != nil {
+			return []func(handler http.Handler) http.Handler{basic}
 		}
-		if len(methods) > 0 {
-			res = append(res, func(c *gin.Context) {
-				handled := false
-				auth.Middleware(methods...)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					handled = true
-					// The middleware replace the context of the request to include the agent
-					// We have to forward it to gin
-					c.Request = r
-					c.Next()
-				})).ServeHTTP(c.Writer, c.Request)
-				if !handled {
-					c.Abort()
-				}
-			})
-		}
-		return res
-	}, fx.ParamTags(`optional:"true"`)))
+		return []func(handler http.Handler) http.Handler{}
+	}))
 
-	options = append(options, routes.ProvideMiddlewares(func(tp trace.TracerProvider, logger logging.Logger) []func(handler http.Handler) http.Handler {
+	options = append(options, routes.ProvideMiddlewares(func(logger logging.Logger) []func(handler http.Handler) http.Handler {
 		res := make([]func(handler http.Handler) http.Handler, 0)
 		res = append(res, cors.New(cors.Options{
 			AllowOriginFunc: func(r *http.Request, origin string) bool {
@@ -146,7 +125,7 @@ func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 		})
 		res = append(res, middlewares.Log())
 		return res
-	}, fx.ParamTags(`optional:"true"`)))
+	}))
 
 	return append(options, userOptions...)
 }

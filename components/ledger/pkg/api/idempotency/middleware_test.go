@@ -8,15 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gin-gonic/gin"
 	"github.com/go-chi/chi/v5"
 	"github.com/numary/ledger/pkg/storage"
 	"github.com/stretchr/testify/require"
 )
-
-func init() {
-	gin.SetMode(gin.ReleaseMode)
-}
 
 func TestIdempotency(t *testing.T) {
 

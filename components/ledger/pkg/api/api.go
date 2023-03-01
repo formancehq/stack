@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/health"
-	"github.com/gin-gonic/gin"
 	"github.com/go-chi/chi/v5"
 	"github.com/numary/ledger/pkg/api/controllers"
 	"github.com/numary/ledger/pkg/api/middlewares"
@@ -22,7 +21,6 @@ func (a *API) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func NewAPI(routes *routes.Routes) *API {
-	gin.SetMode(gin.ReleaseMode)
 	h := &API{
 		handler: routes.Engine(),
 	}

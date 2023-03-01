@@ -10,7 +10,6 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/gin-gonic/gin"
 	"github.com/numary/ledger/pkg/ledger"
 	"github.com/numary/ledger/pkg/storage"
 	"github.com/pkg/errors"
@@ -81,7 +80,7 @@ func EncodeLink(errStr string) string {
 	}
 
 	errStr = strings.ReplaceAll(errStr, "\n", "\r\n")
-	payload, err := json.Marshal(gin.H{
+	payload, err := json.Marshal(map[string]string{
 		"error": errStr,
 	})
 	if err != nil {
