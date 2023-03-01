@@ -1,4 +1,4 @@
-# Formance.model.stage_send_source_payment.StageSendSourcePayment
+# FormanceHQ.model.stage_send_source_payment.StageSendSourcePayment
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.stripe_config.StripeConfig
+# FormanceHQ.model.stripe_config.StripeConfig
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

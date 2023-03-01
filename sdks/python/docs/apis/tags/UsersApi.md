@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.users_api.UsersApi
+# FormanceHQ.apis.tags.users_api.UsersApi
 
 All URIs are relative to *http://localhost*
 
@@ -20,13 +20,13 @@ List users
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import users_api
-from Formance.model.list_users_response import ListUsersResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import users_api
+from FormanceHQ.model.list_users_response import ListUsersResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -36,12 +36,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = users_api.UsersApi(api_client)
 
@@ -50,7 +50,7 @@ with Formance.ApiClient(configuration) as api_client:
         # List users
         api_response = api_instance.list_users()
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling UsersApi->list_users: %s\n" % e)
 ```
 ### Parameters
@@ -94,13 +94,13 @@ Read user
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import users_api
-from Formance.model.read_user_response import ReadUserResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import users_api
+from FormanceHQ.model.read_user_response import ReadUserResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -110,12 +110,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = users_api.UsersApi(api_client)
 
@@ -129,7 +129,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling UsersApi->read_user: %s\n" % e)
 ```
 ### Parameters

@@ -1,4 +1,4 @@
-# Formance.model.config_info_response.ConfigInfoResponse
+# FormanceHQ.model.config_info_response.ConfigInfoResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

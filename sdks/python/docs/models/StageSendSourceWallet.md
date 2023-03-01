@@ -1,4 +1,4 @@
-# Formance.model.stage_send_source_wallet.StageSendSourceWallet
+# FormanceHQ.model.stage_send_source_wallet.StageSendSourceWallet
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

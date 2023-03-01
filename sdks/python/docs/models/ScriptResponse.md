@@ -1,4 +1,4 @@
-# Formance.model.script_response.ScriptResponse
+# FormanceHQ.model.script_response.ScriptResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

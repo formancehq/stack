@@ -1,4 +1,4 @@
-# Formance.model.list_balances_response.ListBalancesResponse
+# FormanceHQ.model.list_balances_response.ListBalancesResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

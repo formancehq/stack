@@ -1,4 +1,4 @@
-# Formance.model.wallets_aggregated_volumes.WalletsAggregatedVolumes
+# FormanceHQ.model.wallets_aggregated_volumes.WalletsAggregatedVolumes
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

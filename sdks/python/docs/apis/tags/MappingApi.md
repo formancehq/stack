@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.mapping_api.MappingApi
+# FormanceHQ.apis.tags.mapping_api.MappingApi
 
 All URIs are relative to *http://localhost*
 
@@ -18,14 +18,14 @@ Get the mapping of a ledger
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import mapping_api
-from Formance.model.error_response import ErrorResponse
-from Formance.model.mapping_response import MappingResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import mapping_api
+from FormanceHQ.model.mapping_response import MappingResponse
+from FormanceHQ.model.error_response import ErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -35,12 +35,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = mapping_api.MappingApi(api_client)
 
@@ -54,7 +54,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling MappingApi->get_mapping: %s\n" % e)
 ```
 ### Parameters
@@ -131,15 +131,15 @@ Update the mapping of a ledger
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import mapping_api
-from Formance.model.mapping import Mapping
-from Formance.model.error_response import ErrorResponse
-from Formance.model.mapping_response import MappingResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import mapping_api
+from FormanceHQ.model.mapping import Mapping
+from FormanceHQ.model.mapping_response import MappingResponse
+from FormanceHQ.model.error_response import ErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -149,12 +149,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = mapping_api.MappingApi(api_client)
 
@@ -177,7 +177,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling MappingApi->update_mapping: %s\n" % e)
 ```
 ### Parameters

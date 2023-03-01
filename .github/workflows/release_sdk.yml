@@ -1,0 +1,81 @@
+name: Default - Release
+on:
+  push:
+    tags:
+      - 'sdks/v*.*.*'
+  workflow_call:
+    secrets:
+      NUMARY_GITHUB_TOKEN:
+        required: true
+        description: GitHub token with access to the repo
+
+jobs:
+  Sdk:
+    name: 'Generate and publish sdks'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Install Task
+      uses: arduino/setup-task@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+        registry-url: 'https://registry.npmjs.org'
+    - name: Update SDKS
+      run: |
+        set -x;
+
+        task openapi:sdk:build;
+        [ "$(git diff)" == "" ] || {
+          echo "OpenAPI spec computation give changes, please update SDKS before push code";
+          git diff;
+          exit 1;
+        }
+
+        task openapi:sdk:generate:all;
+        [ "$(git diff)" == "" ] || {
+          echo "OpenAPI code generation give changes, please update SDKS before push code";
+          git diff;
+          exit 1;
+        }
+
+        versionFromSpec=$(jq -r '.info.version' ./openapi/build/generate.json);
+        versionFromTag=$(echo $GITHUB_REF_NAME | cut -d / -f 2);
+        [ "$versionFromSpec" == "$versionFromTag" ] || {
+          echo "Versions from spec and tag mismatch, please update SDKS before push code";
+          exit 1;
+        }
+        task openapi:sdk:test:all;
+
+        # Python authentication
+        export TWINE_USERNAME=__token__
+        export TWINE_PASSWORD=${{ secrets.PYPI_SECRET }}
+
+        # NpmJS authentication
+        export NODE_AUTH_TOKEN=${{ secrets.NPM_TOKEN }}
+
+        for sdk in $(ls sdks); do
+          pushd sdks/$sdk;
+          sudo chown -Rf runner:runner .
+          git init;
+          git remote add origin https://${{ secrets.NUMARY_GITHUB_TOKEN }}:${{ secrets.NUMARY_GITHUB_TOKEN }}@github.com/formancehq/formance-sdk-$sdk.git
+          git config --global user.email "maxence@formance.com"
+          git config --global user.name "Maxence Maireaux"
+          git checkout -b release/$versionFromSpec;
+          git add -A;
+          git commit -m "feat: Upgrade to version $versionFromSpec";
+          git push -f origin release/$versionFromSpec;
+          git tag $versionFromSpec;
+          git push -f origin $versionFromSpec;
+          popd;
+        done
+
+        task openapi:sdk:publish:all

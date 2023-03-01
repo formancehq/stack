@@ -1,4 +1,4 @@
-# Formance.model.user.User
+# FormanceHQ.model.user.User
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

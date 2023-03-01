@@ -1,4 +1,4 @@
-# Formance.model.account_response.AccountResponse
+# FormanceHQ.model.account_response.AccountResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

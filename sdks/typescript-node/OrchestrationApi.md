@@ -26,13 +26,13 @@ Cancel a running workflow
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
-let body:OrchestrationApiCancelEventRequest = {
+let body:formance.OrchestrationApiCancelEventRequest = {
   // string | The instance id
   instanceID: "xxx",
 };
@@ -81,13 +81,13 @@ Create a workflow
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
-let body:OrchestrationApiCreateWorkflowRequest = {
+let body:formance.OrchestrationApiCreateWorkflowRequest = {
   // WorkflowConfig (optional)
   body: {
     name: "name_example",
@@ -143,13 +143,13 @@ Get a workflow instance by id
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
-let body:OrchestrationApiGetInstanceRequest = {
+let body:formance.OrchestrationApiGetInstanceRequest = {
   // string | The instance id
   instanceID: "xxx",
 };
@@ -198,13 +198,13 @@ Get a workflow instance history by id
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
-let body:OrchestrationApiGetInstanceHistoryRequest = {
+let body:formance.OrchestrationApiGetInstanceHistoryRequest = {
   // string | The instance id
   instanceID: "xxx",
 };
@@ -253,13 +253,13 @@ Get a workflow instance stage history
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
-let body:OrchestrationApiGetInstanceStageHistoryRequest = {
+let body:formance.OrchestrationApiGetInstanceStageHistoryRequest = {
   // string | The instance id
   instanceID: "xxx",
   // number | The stage number
@@ -311,13 +311,13 @@ Get a flow by id
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
-let body:OrchestrationApiGetWorkflowRequest = {
+let body:formance.OrchestrationApiGetWorkflowRequest = {
   // string | The flow id
   flowId: "xxx",
 };
@@ -366,13 +366,13 @@ List instances of a workflow
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
-let body:OrchestrationApiListInstancesRequest = {
+let body:formance.OrchestrationApiListInstancesRequest = {
   // string | A workflow id (optional)
   workflowID: "xxx",
   // boolean | Filter running instances (optional)
@@ -424,11 +424,11 @@ List registered workflows
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
 let body:any = {};
 
@@ -472,11 +472,11 @@ This endpoint does not need any parameter.
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
 let body:any = {};
 
@@ -521,13 +521,13 @@ Run workflow
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
-let body:OrchestrationApiRunWorkflowRequest = {
+let body:formance.OrchestrationApiRunWorkflowRequest = {
   // string | The flow id
   workflowID: "xxx",
   // boolean | Wait end of the workflow before return (optional)
@@ -584,13 +584,13 @@ Send an event to a running workflow
 
 
 ```typescript
-import { OrchestrationApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new OrchestrationApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.OrchestrationApi(configuration);
 
-let body:OrchestrationApiSendEventRequest = {
+let body:formance.OrchestrationApiSendEventRequest = {
   // string | The instance id
   instanceID: "xxx",
   // SendEventRequest (optional)
@@ -634,4 +634,5 @@ Name | Type | Description  | Notes
 **0** | General error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

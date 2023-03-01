@@ -1,4 +1,4 @@
-# Formance.model.workflow_instance_history_stage_output.WorkflowInstanceHistoryStageOutput
+# FormanceHQ.model.workflow_instance_history_stage_output.WorkflowInstanceHistoryStageOutput
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

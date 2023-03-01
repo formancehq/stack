@@ -16,13 +16,13 @@ ElasticSearch query engine
 
 
 ```typescript
-import { SearchApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new SearchApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.SearchApi(configuration);
 
-let body:SearchApiSearchRequest = {
+let body:formance.SearchApiSearchRequest = {
   // Query
   query: {
     ledgers: [
@@ -77,4 +77,5 @@ Name | Type | Description  | Notes
 **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

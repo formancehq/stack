@@ -1,7 +1,3 @@
-# templateDir: templates/java
-# files:
-#   Taskfile.yml.mustache:
-#     destinationFilename: Taskfile.yml
 additionalProperties:
   invokerPackage: com.formance.formance
   apiPackage: com.formance.formance.api

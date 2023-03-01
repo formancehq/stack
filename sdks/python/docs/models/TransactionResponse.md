@@ -1,4 +1,4 @@
-# Formance.model.transaction_response.TransactionResponse
+# FormanceHQ.model.transaction_response.TransactionResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

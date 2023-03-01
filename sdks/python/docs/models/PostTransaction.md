@@ -1,4 +1,4 @@
-# Formance.model.post_transaction.PostTransaction
+# FormanceHQ.model.post_transaction.PostTransaction
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

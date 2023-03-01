@@ -1,4 +1,4 @@
-# Formance.model.accounts_cursor_response.AccountsCursorResponse
+# FormanceHQ.model.accounts_cursor_response.AccountsCursorResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.stats.Stats
+# FormanceHQ.model.stats.Stats
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

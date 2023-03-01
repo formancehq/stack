@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.script_api.ScriptApi
+# FormanceHQ.apis.tags.script_api.ScriptApi
 
 All URIs are relative to *http://localhost*
 
@@ -19,14 +19,14 @@ This route is deprecated, and has been merged into `POST /{ledger}/transactions`
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import script_api
-from Formance.model.script import Script
-from Formance.model.script_response import ScriptResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import script_api
+from FormanceHQ.model.script_response import ScriptResponse
+from FormanceHQ.model.script import Script
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -36,12 +36,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = script_api.ScriptApi(api_client)
 
@@ -67,7 +67,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ScriptApi->run_script: %s\n" % e)
 
     # example passing only optional values
@@ -93,7 +93,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ScriptApi->run_script: %s\n" % e)
 ```
 ### Parameters

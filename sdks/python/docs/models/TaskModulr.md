@@ -1,4 +1,4 @@
-# Formance.model.task_modulr.TaskModulr
+# FormanceHQ.model.task_modulr.TaskModulr
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

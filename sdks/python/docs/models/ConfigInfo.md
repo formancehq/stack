@@ -1,4 +1,4 @@
-# Formance.model.config_info.ConfigInfo
+# FormanceHQ.model.config_info.ConfigInfo
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

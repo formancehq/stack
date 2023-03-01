@@ -1,4 +1,4 @@
-# Formance.model.config_user.ConfigUser
+# FormanceHQ.model.config_user.ConfigUser
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

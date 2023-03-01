@@ -1,4 +1,4 @@
-# Formance.model.task_dummy_pay.TaskDummyPay
+# FormanceHQ.model.task_dummy_pay.TaskDummyPay
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

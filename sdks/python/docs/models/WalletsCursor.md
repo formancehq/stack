@@ -1,4 +1,4 @@
-# Formance.model.wallets_cursor.WalletsCursor
+# FormanceHQ.model.wallets_cursor.WalletsCursor
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

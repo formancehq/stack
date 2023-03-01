@@ -10,7 +10,7 @@
 |**name** | **String** |  |  |
 |**input** | [**Stage**](Stage.md) |  |  |
 |**error** | **String** |  |  [optional] |
-|**terminated** | **Bool** |  |  |
+|**terminated** | **Boolean** |  |  |
 |**startedAt** | **OffsetDateTime** |  |  |
 |**terminatedAt** | **OffsetDateTime** |  |  [optional] |
 

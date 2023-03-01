@@ -1,4 +1,4 @@
-# Formance.model.mapping.Mapping
+# FormanceHQ.model.mapping.Mapping
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

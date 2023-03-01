@@ -1,4 +1,4 @@
-# Formance.model.activity_debit_wallet.ActivityDebitWallet
+# FormanceHQ.model.activity_debit_wallet.ActivityDebitWallet
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

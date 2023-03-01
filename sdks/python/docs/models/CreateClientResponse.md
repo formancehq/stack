@@ -1,4 +1,4 @@
-# Formance.model.create_client_response.CreateClientResponse
+# FormanceHQ.model.create_client_response.CreateClientResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

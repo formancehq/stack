@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.logs_api.LogsApi
+# FormanceHQ.apis.tags.logs_api.LogsApi
 
 All URIs are relative to *http://localhost*
 
@@ -19,14 +19,14 @@ List the logs from a ledger, sorted by ID in descending order.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import logs_api
-from Formance.model.error_response import ErrorResponse
-from Formance.model.logs_cursor_response import LogsCursorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import logs_api
+from FormanceHQ.model.logs_cursor_response import LogsCursorResponse
+from FormanceHQ.model.error_response import ErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -36,12 +36,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = logs_api.LogsApi(api_client)
 
@@ -58,7 +58,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling LogsApi->list_logs: %s\n" % e)
 
     # example passing only optional values
@@ -83,7 +83,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling LogsApi->list_logs: %s\n" % e)
 ```
 ### Parameters

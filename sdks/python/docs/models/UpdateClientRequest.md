@@ -1,4 +1,4 @@
-# Formance.model.update_client_request.UpdateClientRequest
+# FormanceHQ.model.update_client_request.UpdateClientRequest
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

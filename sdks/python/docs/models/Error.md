@@ -1,4 +1,4 @@
-# Formance.model.error.Error
+# FormanceHQ.model.error.Error
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

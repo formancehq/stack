@@ -22,13 +22,13 @@ Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
 
 
 ```typescript
-import { WebhooksApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WebhooksApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WebhooksApi(configuration);
 
-let body:WebhooksApiActivateConfigRequest = {
+let body:formance.WebhooksApiActivateConfigRequest = {
   // string | Config ID
   id: "4997257d-dfb6-445b-929c-cbe2ab182818",
 };
@@ -77,13 +77,13 @@ Change the signing secret of the endpoint of a webhooks config.  If not passed o
 
 
 ```typescript
-import { WebhooksApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WebhooksApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WebhooksApi(configuration);
 
-let body:WebhooksApiChangeConfigSecretRequest = {
+let body:formance.WebhooksApiChangeConfigSecretRequest = {
   // string | Config ID
   id: "4997257d-dfb6-445b-929c-cbe2ab182818",
   // ConfigChangeSecret (optional)
@@ -136,13 +136,13 @@ Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
 
 
 ```typescript
-import { WebhooksApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WebhooksApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WebhooksApi(configuration);
 
-let body:WebhooksApiDeactivateConfigRequest = {
+let body:formance.WebhooksApiDeactivateConfigRequest = {
   // string | Config ID
   id: "4997257d-dfb6-445b-929c-cbe2ab182818",
 };
@@ -191,13 +191,13 @@ Delete a webhooks config by ID.
 
 
 ```typescript
-import { WebhooksApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WebhooksApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WebhooksApi(configuration);
 
-let body:WebhooksApiDeleteConfigRequest = {
+let body:formance.WebhooksApiDeleteConfigRequest = {
   // string | Config ID
   id: "4997257d-dfb6-445b-929c-cbe2ab182818",
 };
@@ -245,13 +245,13 @@ Sorted by updated date descending
 
 
 ```typescript
-import { WebhooksApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WebhooksApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WebhooksApi(configuration);
 
-let body:WebhooksApiGetManyConfigsRequest = {
+let body:formance.WebhooksApiGetManyConfigsRequest = {
   // string | Optional filter by Config ID (optional)
   id: "4997257d-dfb6-445b-929c-cbe2ab182818",
   // string | Optional filter by endpoint URL (optional)
@@ -302,13 +302,13 @@ Insert a new webhooks config.  The endpoint should be a valid https URL and be u
 
 
 ```typescript
-import { WebhooksApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WebhooksApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WebhooksApi(configuration);
 
-let body:WebhooksApiInsertConfigRequest = {
+let body:formance.WebhooksApiInsertConfigRequest = {
   // ConfigUser
   configUser: {
     endpoint: "https://example.com",
@@ -361,13 +361,13 @@ Test a config by sending a webhook to its endpoint.
 
 
 ```typescript
-import { WebhooksApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new WebhooksApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.WebhooksApi(configuration);
 
-let body:WebhooksApiTestConfigRequest = {
+let body:formance.WebhooksApiTestConfigRequest = {
   // string | Config ID
   id: "4997257d-dfb6-445b-929c-cbe2ab182818",
 };
@@ -405,4 +405,5 @@ Name | Type | Description  | Notes
 **200** | OK |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

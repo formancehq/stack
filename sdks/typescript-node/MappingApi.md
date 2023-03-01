@@ -16,13 +16,13 @@ Method | HTTP request | Description
 
 
 ```typescript
-import { MappingApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new MappingApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.MappingApi(configuration);
 
-let body:MappingApiGetMappingRequest = {
+let body:formance.MappingApiGetMappingRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
 };
@@ -70,13 +70,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { MappingApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new MappingApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.MappingApi(configuration);
 
-let body:MappingApiUpdateMappingRequest = {
+let body:formance.MappingApiUpdateMappingRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
   // Mapping
@@ -125,4 +125,5 @@ Name | Type | Description  | Notes
 **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

@@ -1,4 +1,4 @@
-# Formance.model.transfers_response.TransfersResponse
+# FormanceHQ.model.transfers_response.TransfersResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

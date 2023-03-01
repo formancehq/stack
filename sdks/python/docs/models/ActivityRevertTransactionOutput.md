@@ -1,4 +1,4 @@
-# Formance.model.activity_revert_transaction_output.ActivityRevertTransactionOutput
+# FormanceHQ.model.activity_revert_transaction_output.ActivityRevertTransactionOutput
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

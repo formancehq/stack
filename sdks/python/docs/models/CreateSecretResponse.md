@@ -1,4 +1,4 @@
-# Formance.model.create_secret_response.CreateSecretResponse
+# FormanceHQ.model.create_secret_response.CreateSecretResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

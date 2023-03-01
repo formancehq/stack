@@ -1,4 +1,4 @@
-# Formance.model.payments_cursor.PaymentsCursor
+# FormanceHQ.model.payments_cursor.PaymentsCursor
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

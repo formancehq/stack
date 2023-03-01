@@ -1,4 +1,4 @@
-# Formance.model.balance_with_assets.BalanceWithAssets
+# FormanceHQ.model.balance_with_assets.BalanceWithAssets
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

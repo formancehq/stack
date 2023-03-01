@@ -1,4 +1,4 @@
-# Formance.model.get_hold_response.GetHoldResponse
+# FormanceHQ.model.get_hold_response.GetHoldResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

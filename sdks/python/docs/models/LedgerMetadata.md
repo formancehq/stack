@@ -1,4 +1,4 @@
-# Formance.model.ledger_metadata.LedgerMetadata
+# FormanceHQ.model.ledger_metadata.LedgerMetadata
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

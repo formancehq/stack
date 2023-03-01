@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.clients_api.ClientsApi
+# FormanceHQ.apis.tags.clients_api.ClientsApi
 
 All URIs are relative to *http://localhost*
 
@@ -25,12 +25,12 @@ Add scope to client
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import clients_api
+import FormanceHQ
+from FormanceHQ.apis.tags import clients_api
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -40,12 +40,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = clients_api.ClientsApi(api_client)
 
@@ -59,7 +59,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.add_scope_to_client(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->add_scope_to_client: %s\n" % e)
 ```
 ### Parameters
@@ -123,14 +123,14 @@ Create client
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import clients_api
-from Formance.model.client_options import ClientOptions
-from Formance.model.create_client_response import CreateClientResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import clients_api
+from FormanceHQ.model.create_client_response import CreateClientResponse
+from FormanceHQ.model.client_options import ClientOptions
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -140,12 +140,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = clients_api.ClientsApi(api_client)
 
@@ -169,7 +169,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->create_client: %s\n" % e)
 ```
 ### Parameters
@@ -227,14 +227,14 @@ Add a secret to a client
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import clients_api
-from Formance.model.secret_options import SecretOptions
-from Formance.model.create_secret_response import CreateSecretResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import clients_api
+from FormanceHQ.model.create_secret_response import CreateSecretResponse
+from FormanceHQ.model.secret_options import SecretOptions
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -244,12 +244,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = clients_api.ClientsApi(api_client)
 
@@ -263,7 +263,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->create_secret: %s\n" % e)
 
     # example passing only optional values
@@ -283,7 +283,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->create_secret: %s\n" % e)
 ```
 ### Parameters
@@ -356,12 +356,12 @@ Delete client
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import clients_api
+import FormanceHQ
+from FormanceHQ.apis.tags import clients_api
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -371,12 +371,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = clients_api.ClientsApi(api_client)
 
@@ -389,7 +389,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.delete_client(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->delete_client: %s\n" % e)
 ```
 ### Parameters
@@ -445,12 +445,12 @@ Delete scope from client
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import clients_api
+import FormanceHQ
+from FormanceHQ.apis.tags import clients_api
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -460,12 +460,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = clients_api.ClientsApi(api_client)
 
@@ -479,7 +479,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.delete_scope_from_client(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->delete_scope_from_client: %s\n" % e)
 ```
 ### Parameters
@@ -543,12 +543,12 @@ Delete a secret from a client
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import clients_api
+import FormanceHQ
+from FormanceHQ.apis.tags import clients_api
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -558,12 +558,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = clients_api.ClientsApi(api_client)
 
@@ -577,7 +577,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.delete_secret(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->delete_secret: %s\n" % e)
 ```
 ### Parameters
@@ -641,13 +641,13 @@ List clients
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import clients_api
-from Formance.model.list_clients_response import ListClientsResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import clients_api
+from FormanceHQ.model.list_clients_response import ListClientsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -657,12 +657,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = clients_api.ClientsApi(api_client)
 
@@ -671,7 +671,7 @@ with Formance.ApiClient(configuration) as api_client:
         # List clients
         api_response = api_instance.list_clients()
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->list_clients: %s\n" % e)
 ```
 ### Parameters
@@ -713,13 +713,13 @@ Read client
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import clients_api
-from Formance.model.read_client_response import ReadClientResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import clients_api
+from FormanceHQ.model.read_client_response import ReadClientResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -729,12 +729,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = clients_api.ClientsApi(api_client)
 
@@ -748,7 +748,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->read_client: %s\n" % e)
 ```
 ### Parameters
@@ -811,14 +811,14 @@ Update client
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import clients_api
-from Formance.model.client_options import ClientOptions
-from Formance.model.create_client_response import CreateClientResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import clients_api
+from FormanceHQ.model.create_client_response import CreateClientResponse
+from FormanceHQ.model.client_options import ClientOptions
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -828,12 +828,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = clients_api.ClientsApi(api_client)
 
@@ -847,7 +847,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->update_client: %s\n" % e)
 
     # example passing only optional values
@@ -874,7 +874,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ClientsApi->update_client: %s\n" % e)
 ```
 ### Parameters

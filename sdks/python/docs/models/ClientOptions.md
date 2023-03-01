@@ -1,4 +1,4 @@
-# Formance.model.client_options.ClientOptions
+# FormanceHQ.model.client_options.ClientOptions
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.asset_holder.AssetHolder
+# FormanceHQ.model.asset_holder.AssetHolder
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

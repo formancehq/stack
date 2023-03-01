@@ -8,7 +8,7 @@ stages:
   script:
    - pip install -r requirements.txt
    - pip install -r test-requirements.txt
-   - pytest --cov=Formance
+   - pytest --cov=FormanceHQ
 
 test-3.5:
   extends: .tests

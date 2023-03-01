@@ -1,4 +1,4 @@
-# Formance.model.aggregated_volumes.AggregatedVolumes
+# FormanceHQ.model.aggregated_volumes.AggregatedVolumes
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

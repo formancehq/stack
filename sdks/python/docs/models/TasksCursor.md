@@ -1,4 +1,4 @@
-# Formance.model.tasks_cursor.TasksCursor
+# FormanceHQ.model.tasks_cursor.TasksCursor
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

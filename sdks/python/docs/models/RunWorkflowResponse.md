@@ -1,4 +1,4 @@
-# Formance.model.run_workflow_response.RunWorkflowResponse
+# FormanceHQ.model.run_workflow_response.RunWorkflowResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

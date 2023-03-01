@@ -1,4 +1,4 @@
-# Formance.model.cursor.Cursor
+# FormanceHQ.model.cursor.Cursor
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.server_info.ServerInfo
+# FormanceHQ.model.server_info.ServerInfo
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

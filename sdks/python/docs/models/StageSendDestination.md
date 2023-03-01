@@ -1,4 +1,4 @@
-# Formance.model.stage_send_destination.StageSendDestination
+# FormanceHQ.model.stage_send_destination.StageSendDestination
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.banking_circle_config.BankingCircleConfig
+# FormanceHQ.model.banking_circle_config.BankingCircleConfig
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

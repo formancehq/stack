@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.search_api.SearchApi
+# FormanceHQ.apis.tags.search_api.SearchApi
 
 All URIs are relative to *http://localhost*
 
@@ -19,14 +19,14 @@ ElasticSearch query engine
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import search_api
-from Formance.model.response import Response
-from Formance.model.query import Query
+import FormanceHQ
+from FormanceHQ.apis.tags import search_api
+from FormanceHQ.model.response import Response
+from FormanceHQ.model.query import Query
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -36,12 +36,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = search_api.SearchApi(api_client)
 
@@ -69,7 +69,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling SearchApi->search: %s\n" % e)
 ```
 ### Parameters

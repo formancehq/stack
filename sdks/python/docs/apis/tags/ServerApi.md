@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.server_api.ServerApi
+# FormanceHQ.apis.tags.server_api.ServerApi
 
 All URIs are relative to *http://localhost*
 
@@ -17,14 +17,14 @@ Show server information
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import server_api
-from Formance.model.config_info_response import ConfigInfoResponse
-from Formance.model.error_response import ErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import server_api
+from FormanceHQ.model.config_info_response import ConfigInfoResponse
+from FormanceHQ.model.error_response import ErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -34,12 +34,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = server_api.ServerApi(api_client)
 
@@ -48,7 +48,7 @@ with Formance.ApiClient(configuration) as api_client:
         # Show server information
         api_response = api_instance.get_info()
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ServerApi->get_info: %s\n" % e)
 ```
 ### Parameters

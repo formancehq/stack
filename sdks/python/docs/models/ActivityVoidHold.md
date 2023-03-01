@@ -1,4 +1,4 @@
-# Formance.model.activity_void_hold.ActivityVoidHold
+# FormanceHQ.model.activity_void_hold.ActivityVoidHold
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

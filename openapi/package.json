@@ -9,8 +9,8 @@
   "private": true,
   "scripts": {
     "cli": "openapi-merge-cli",
-    "build": "yarn run cli",
-    "build:all": "yarn run cli && task -p sdk:generate:all",
+    "build": "npm run cli",
+    "build:all": "npm run cli && task -p sdk:generate:all",
     "start": "node main.js"
   }
 }

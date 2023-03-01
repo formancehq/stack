@@ -1,4 +1,4 @@
-# Formance.model.payment_status.PaymentStatus
+# FormanceHQ.model.payment_status.PaymentStatus
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.secret_options.SecretOptions
+# FormanceHQ.model.secret_options.SecretOptions
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

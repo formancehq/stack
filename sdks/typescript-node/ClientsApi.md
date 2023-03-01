@@ -23,13 +23,13 @@ Method | HTTP request | Description
 
 
 ```typescript
-import { ClientsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ClientsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ClientsApi(configuration);
 
-let body:ClientsApiAddScopeToClientRequest = {
+let body:formance.ClientsApiAddScopeToClientRequest = {
   // string | Client ID
   clientId: "clientId_example",
   // string | Scope ID
@@ -79,13 +79,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { ClientsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ClientsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ClientsApi(configuration);
 
-let body:ClientsApiCreateClientRequest = {
+let body:formance.ClientsApiCreateClientRequest = {
   // ClientOptions (optional)
   body: {
     _public: true,
@@ -146,13 +146,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { ClientsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ClientsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ClientsApi(configuration);
 
-let body:ClientsApiCreateSecretRequest = {
+let body:formance.ClientsApiCreateSecretRequest = {
   // string | Client ID
   clientId: "clientId_example",
   // SecretOptions (optional)
@@ -207,13 +207,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { ClientsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ClientsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ClientsApi(configuration);
 
-let body:ClientsApiDeleteClientRequest = {
+let body:formance.ClientsApiDeleteClientRequest = {
   // string | Client ID
   clientId: "clientId_example",
 };
@@ -260,13 +260,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { ClientsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ClientsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ClientsApi(configuration);
 
-let body:ClientsApiDeleteScopeFromClientRequest = {
+let body:formance.ClientsApiDeleteScopeFromClientRequest = {
   // string | Client ID
   clientId: "clientId_example",
   // string | Scope ID
@@ -316,13 +316,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { ClientsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ClientsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ClientsApi(configuration);
 
-let body:ClientsApiDeleteSecretRequest = {
+let body:formance.ClientsApiDeleteSecretRequest = {
   // string | Client ID
   clientId: "clientId_example",
   // string | Secret ID
@@ -372,11 +372,11 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { ClientsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ClientsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ClientsApi(configuration);
 
 let body:any = {};
 
@@ -419,13 +419,13 @@ This endpoint does not need any parameter.
 
 
 ```typescript
-import { ClientsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ClientsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ClientsApi(configuration);
 
-let body:ClientsApiReadClientRequest = {
+let body:formance.ClientsApiReadClientRequest = {
   // string | Client ID
   clientId: "clientId_example",
 };
@@ -472,13 +472,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { ClientsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ClientsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ClientsApi(configuration);
 
-let body:ClientsApiUpdateClientRequest = {
+let body:formance.ClientsApiUpdateClientRequest = {
   // string | Client ID
   clientId: "clientId_example",
   // ClientOptions (optional)
@@ -533,4 +533,5 @@ Name | Type | Description  | Notes
 **200** | Updated client |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

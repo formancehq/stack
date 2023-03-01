@@ -11,9 +11,9 @@ from unittest.mock import patch
 
 import urllib3
 
-import Formance
-from Formance.paths.api_auth_clients_client_id import get  # noqa: E501
-from Formance import configuration, schemas, api_client
+import FormanceHQ
+from FormanceHQ.paths.api_auth_clients_client_id import get  # noqa: E501
+from FormanceHQ import configuration, schemas, api_client
 
 from .. import ApiTestMixin
 

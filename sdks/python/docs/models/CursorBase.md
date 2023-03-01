@@ -1,4 +1,4 @@
-# Formance.model.cursor_base.CursorBase
+# FormanceHQ.model.cursor_base.CursorBase
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

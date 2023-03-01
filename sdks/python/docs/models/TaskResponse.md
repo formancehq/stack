@@ -1,4 +1,4 @@
-# Formance.model.task_response.TaskResponse
+# FormanceHQ.model.task_response.TaskResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

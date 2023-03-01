@@ -1,4 +1,4 @@
-# Formance.model.transactions_cursor_response.TransactionsCursorResponse
+# FormanceHQ.model.transactions_cursor_response.TransactionsCursorResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

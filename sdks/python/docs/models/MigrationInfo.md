@@ -1,4 +1,4 @@
-# Formance.model.migration_info.MigrationInfo
+# FormanceHQ.model.migration_info.MigrationInfo
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

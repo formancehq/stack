@@ -1,4 +1,4 @@
-# Formance.model.mapping_response.MappingResponse
+# FormanceHQ.model.mapping_response.MappingResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.create_wallet_request.CreateWalletRequest
+# FormanceHQ.model.create_wallet_request.CreateWalletRequest
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.transfer_request.TransferRequest
+# FormanceHQ.model.transfer_request.TransferRequest
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

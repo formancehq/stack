@@ -1,4 +1,4 @@
-# Formance.model.activity_get_account.ActivityGetAccount
+# FormanceHQ.model.activity_get_account.ActivityGetAccount
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

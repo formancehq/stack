@@ -1,4 +1,4 @@
-# Formance.model.balance.Balance
+# FormanceHQ.model.balance.Balance
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

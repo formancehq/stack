@@ -16,13 +16,13 @@ List the logs from a ledger, sorted by ID in descending order.
 
 
 ```typescript
-import { LogsApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new LogsApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.LogsApi(configuration);
 
-let body:LogsApiListLogsRequest = {
+let body:formance.LogsApiListLogsRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
   // number | The maximum number of results to return per page.  (optional)
@@ -88,4 +88,5 @@ Name | Type | Description  | Notes
 **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

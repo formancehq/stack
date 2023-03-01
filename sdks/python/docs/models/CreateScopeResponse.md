@@ -1,4 +1,4 @@
-# Formance.model.create_scope_response.CreateScopeResponse
+# FormanceHQ.model.create_scope_response.CreateScopeResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

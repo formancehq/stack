@@ -1,4 +1,4 @@
-# Formance.model.errors_enum.ErrorsEnum
+# FormanceHQ.model.errors_enum.ErrorsEnum
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

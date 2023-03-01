@@ -1,4 +1,4 @@
-# Formance.model.read_workflow_response.ReadWorkflowResponse
+# FormanceHQ.model.read_workflow_response.ReadWorkflowResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

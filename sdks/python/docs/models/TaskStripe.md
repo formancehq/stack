@@ -1,4 +1,4 @@
-# Formance.model.task_stripe.TaskStripe
+# FormanceHQ.model.task_stripe.TaskStripe
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

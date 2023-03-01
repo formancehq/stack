@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    /* Basic Options */
+    "target": "es5",
+    "moduleResolution": "node",
+    "declaration": true,
+
+    "removeComments": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "lib": [ "ES6" ],
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
+  "filesGlob": [
+    "./**/*.ts",
+  ]
+}

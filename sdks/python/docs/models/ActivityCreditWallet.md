@@ -1,4 +1,4 @@
-# Formance.model.activity_credit_wallet.ActivityCreditWallet
+# FormanceHQ.model.activity_credit_wallet.ActivityCreditWallet
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

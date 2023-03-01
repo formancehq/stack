@@ -17,11 +17,11 @@ Method | HTTP request | Description
 
 
 ```typescript
-import { DefaultApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new DefaultApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.DefaultApi(configuration);
 
 let body:any = {};
 
@@ -64,11 +64,11 @@ This endpoint does not need any parameter.
 
 
 ```typescript
-import { DefaultApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new DefaultApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.DefaultApi(configuration);
 
 let body:any = {};
 
@@ -111,11 +111,11 @@ This endpoint does not need any parameter.
 
 
 ```typescript
-import { DefaultApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new DefaultApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.DefaultApi(configuration);
 
 let body:any = {};
 
@@ -149,4 +149,5 @@ This endpoint does not need any parameter.
 **200** | Server information |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

@@ -1,4 +1,4 @@
-# Formance.model.query.Query
+# FormanceHQ.model.query.Query
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

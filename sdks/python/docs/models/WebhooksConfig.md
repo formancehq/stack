@@ -1,4 +1,4 @@
-# Formance.model.webhooks_config.WebhooksConfig
+# FormanceHQ.model.webhooks_config.WebhooksConfig
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

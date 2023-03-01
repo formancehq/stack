@@ -1,4 +1,4 @@
-# Formance.model.activity_confirm_hold.ActivityConfirmHold
+# FormanceHQ.model.activity_confirm_hold.ActivityConfirmHold
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

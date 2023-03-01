@@ -1,9 +1,9 @@
-
-# https://taskfile.dev
+---
 version: "3"
 
-env:
-  VERSION: "develop"
+vars:
+  version: v1.0.{{now | date "20060102"}}
+  openapiGeneratorVersion: v6.4.0
 
 tasks:
   sdk:build:
@@ -11,46 +11,146 @@ tasks:
     cmds:
       - npm install
       - npm run build
-      - sed -i -e "s/SDK_VERSION/{{.VERSION}}/g" build/generate.json
+      - cat <<< $(jq '.info.version = "{{.version}}"' build/generate.json) > build/generate.json
 
   sdk:generate:
-    desc: Generate client code
-    preconditions:
-      - sh: '[ "{{.CLI_ARGS}}" != "" ]'
-        msg: Please specify generator as first cli arg (ie "task generate -- go")
+    internal: true
     cmds:
-      - rm -rf ./sdks/{{.CLI_ARGS}}
+      - rm -rf ../sdks/{{.target}}
       - >
-        docker run --rm -w /local -v ${PWD}/..:/local openapitools/openapi-generator-cli:v6.4.0 generate
+        docker run --rm -w /local -v $(pwd)/..:/local openapitools/openapi-generator-cli:{{.openapiGeneratorVersion}} generate
         -i ./openapi/build/generate.json
-        -g {{ (split "-" .CLI_ARGS)._0 }}
-        -c ./openapi/configs/{{.CLI_ARGS}}.yaml
-        -o ./sdks/{{.CLI_ARGS}}
+        -g {{ (split "-" .target)._0 }}
+        -c ./openapi/configs/{{.target}}.yaml
+        -o ./sdks/{{.target}}
         --git-user-id=formancehq
-        --git-repo-id=formance-sdk-{{.CLI_ARGS}}
-        -p packageVersion={{.VERSION}}
-        -p apiVersion={{.VERSION}}
+        --git-repo-id=formance-sdk-{{.target}}
+        -p packageVersion={{.version}}
+        -p apiVersion={{.version}}
+
+  sdk:test:
+    internal: true
+    vars:
+      testingImage:
+        sh: docker build -q -f tests/{{.target}}/Dockerfile ..
+    cmds:
+    - docker run --rm -e SDK_VERSION={{.version}} {{.testingImage}}
+
+  sdk:generate:typescript-node:
+    cmds:
+    - task: sdk:generate
+      vars:
+        target: typescript-node
+
+  sdk:generate:php:
+    cmds:
+    - task: sdk:generate
+      vars:
+        target: php
+
+  sdk:generate:java:
+    cmds:
+    - task: sdk:generate
+      vars:
+        target: java
+
+  sdk:generate:python:
+    cmds:
+    - task: sdk:generate
+      vars:
+        target: python
+
+  sdk:generate:go:
+    cmds:
+    - task: sdk:generate
+      vars:
+        target: go
+
+  sdk:test:typescript-node:
+    cmds:
+    - task: sdk:test
+      vars:
+        target: typescript-node
+
+  sdk:test:php:
+    cmds:
+    - task: sdk:test
+      vars:
+        target: php
+
+  sdk:test:java:
+    cmds:
+    - task: sdk:test
+      vars:
+        target: java
+
+  sdk:test:python:
+    cmds:
+    - task: sdk:test
+      vars:
+        target: python
+
+  sdk:test:go:
+    cmds:
+    - task: sdk:test
+      vars:
+        target: go
+
+  sdk:publish:go:
+    dir: ../sdks/go
+    cmds:
+    - echo "Nothing to do"
+
+  sdk:publish:java:
+    dir: ../sdks/java
+    cmds:
+    - mvn -q clean deploy -DaltDeploymentRepository=ossrh::default::https://s01.oss.sonatype.org/content/repositories/releases -DskipTests
+
+  sdk:publish:php:
+    dir: ../sdks/php
+    cmds:
+    - echo "Nothing to do"
+
+  sdk:publish:python:
+    dir: ../sdks/python
+    cmds:
+    - python3 -m pip install twine
+    - python3 setup.py sdist bdist_wheel
+    - twine check dist/*
+    - twine upload dist/*
+
+  sdk:publish:typescript-node:
+    dir: ../sdks/typescript-node
+    cmds:
+    - env
+    - npm install
+    - touch .npmignore # Override .gitignore which ignore dist/ directory
+    - npm ci
+    - npm publish --access public
 
   sdk:generate:all:
     desc: Generate all client code
     deps:
-      - task: sdk:generate
-        vars: {CLI_ARGS: "go", VERSION: "{{.VERSION}}"}
-      - task: sdk:generate
-        vars: {CLI_ARGS: "java", VERSION: "{{.VERSION}}"}
-      - task: sdk:generate
-        vars: {CLI_ARGS: "php", VERSION: "{{.VERSION}}"}
-      - task: sdk:generate
-        vars: {CLI_ARGS: "python", VERSION: "{{.VERSION}}"}
-      - task: sdk:generate
-        vars: {CLI_ARGS: "typescript-node", VERSION: "{{.VERSION}}"}
+    - task: sdk:generate:typescript-node
+    - task: sdk:generate:python
+    - task: sdk:generate:java
+    - task: sdk:generate:php
+    - task: sdk:generate:go
 
-  sdk:template:
-    desc: Extract templates
-    preconditions:
-    - sh: "[ \"{{.CLI_ARGS}}\" != \"\" ]"
-      msg: Please specify generator as first cli arg (ie "task template -- go")
-    cmds:
-    - >
-      docker run --rm -w /local -v ${PWD}:/local openapitools/openapi-generator-cli:v6.4.0 author
-      template -g {{.CLI_ARGS}} -o templates/{{.CLI_ARGS}}
+  sdk:test:all:
+    desc: Test all clients
+    deps:
+    - task: sdk:test:typescript-node
+    - task: sdk:test:python
+    - task: sdk:test:java
+    - task: sdk:test:php
+    - task: sdk:test:go
+
+  sdk:publish:all:
+    desc: Publish all SDKS
+    deps:
+    - task: sdk:publish:php
+    - task: sdk:publish:go
+    - task: sdk:publish:python
+    - task: sdk:publish:typescript-node
+    - task: sdk:publish:java

@@ -3,7 +3,7 @@ Formance Stack API
 
 Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
 
-API version: develop
+API version: v1.0.20230301
 Contact: support@formance.com
 */
 
@@ -43,7 +43,7 @@ var (
 	queryDescape    = strings.NewReplacer( "%5B", "[", "%5D", "]" )
 )
 
-// APIClient manages communication with the Formance Stack API API vdevelop
+// APIClient manages communication with the Formance Stack API API vv1.0.20230301
 // In most cases there should be only one, shared, APIClient.
 type APIClient struct {
 	cfg    *Configuration

@@ -1,4 +1,4 @@
-# Formance.model.activity_get_wallet_output.ActivityGetWalletOutput
+# FormanceHQ.model.activity_get_wallet_output.ActivityGetWalletOutput
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

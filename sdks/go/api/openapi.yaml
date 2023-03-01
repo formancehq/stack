@@ -17,7 +17,7 @@ info:
     and standard method from web, mobile and desktop applications.
     <SecurityDefinitions />
   title: Formance Stack API
-  version: develop
+  version: v1.0.20230301
   x-logo:
     url: https://avatars.githubusercontent.com/u/84325077?s=200&v=4
     altText: Formance
@@ -6421,7 +6421,7 @@ components:
         error: error
         nextExecution: 2000-01-23T04:56:07.000+00:00
         attempt: 0
-        terminated: ""
+        terminated: true
         lastFailure: lastFailure
       properties:
         name:
@@ -6433,7 +6433,7 @@ components:
         error:
           type: string
         terminated:
-          type: bool
+          type: boolean
         startedAt:
           format: date-time
           type: string
@@ -6461,7 +6461,7 @@ components:
         name: name
         startedAt: 2000-01-23T04:56:07.000+00:00
         error: error
-        terminated: ""
+        terminated: true
       properties:
         name:
           type: string
@@ -6470,7 +6470,7 @@ components:
         error:
           type: string
         terminated:
-          type: bool
+          type: boolean
         startedAt:
           format: date-time
           type: string
@@ -6673,13 +6673,13 @@ components:
           name: name
           startedAt: 2000-01-23T04:56:07.000+00:00
           error: error
-          terminated: ""
+          terminated: true
         - input: null
           terminatedAt: 2000-01-23T04:56:07.000+00:00
           name: name
           startedAt: 2000-01-23T04:56:07.000+00:00
           error: error
-          terminated: ""
+          terminated: true
       properties:
         data:
           items:
@@ -6946,7 +6946,7 @@ components:
           error: error
           nextExecution: 2000-01-23T04:56:07.000+00:00
           attempt: 0
-          terminated: ""
+          terminated: true
           lastFailure: lastFailure
         - output:
             CreateTransaction:
@@ -7203,7 +7203,7 @@ components:
           error: error
           nextExecution: 2000-01-23T04:56:07.000+00:00
           attempt: 0
-          terminated: ""
+          terminated: true
           lastFailure: lastFailure
       properties:
         data:

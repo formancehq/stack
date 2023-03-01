@@ -1,4 +1,4 @@
-# Formance.model.get_workflow_instance_history_response.GetWorkflowInstanceHistoryResponse
+# FormanceHQ.model.get_workflow_instance_history_response.GetWorkflowInstanceHistoryResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

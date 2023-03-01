@@ -15,11 +15,11 @@ Method | HTTP request | Description
 
 
 ```typescript
-import { ServerApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ServerApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ServerApi(configuration);
 
 let body:any = {};
 
@@ -54,4 +54,5 @@ This endpoint does not need any parameter.
 **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

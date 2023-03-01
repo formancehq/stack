@@ -1,4 +1,4 @@
-# Formance.model.task_wise.TaskWise
+# FormanceHQ.model.task_wise.TaskWise
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
