@@ -1,4 +1,4 @@
-# Formance.model.read_client_response.ReadClientResponse
+# FormanceHQ.model.read_client_response.ReadClientResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

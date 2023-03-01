@@ -1,4 +1,4 @@
-# Formance.model.stage_wait_event.StageWaitEvent
+# FormanceHQ.model.stage_wait_event.StageWaitEvent
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

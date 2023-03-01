@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.orchestration_api.OrchestrationApi
+# FormanceHQ.apis.tags.orchestration_api.OrchestrationApi
 
 All URIs are relative to *http://localhost*
 
@@ -29,13 +29,13 @@ Cancel a running workflow
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.error import Error
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.error import Error
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -45,12 +45,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -63,7 +63,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.cancel_event(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->cancel_event: %s\n" % e)
 ```
 ### Parameters
@@ -136,15 +136,15 @@ Create a workflow
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.workflow_config import WorkflowConfig
-from Formance.model.error import Error
-from Formance.model.create_workflow_response import CreateWorkflowResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.error import Error
+from FormanceHQ.model.create_workflow_response import CreateWorkflowResponse
+from FormanceHQ.model.workflow_config import WorkflowConfig
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -154,12 +154,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -178,7 +178,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->create_workflow: %s\n" % e)
 ```
 ### Parameters
@@ -252,14 +252,14 @@ Get a workflow instance by id
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.error import Error
-from Formance.model.get_workflow_instance_response import GetWorkflowInstanceResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.error import Error
+from FormanceHQ.model.get_workflow_instance_response import GetWorkflowInstanceResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -269,12 +269,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -288,7 +288,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->get_instance: %s\n" % e)
 ```
 ### Parameters
@@ -367,14 +367,14 @@ Get a workflow instance history by id
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.error import Error
-from Formance.model.get_workflow_instance_history_response import GetWorkflowInstanceHistoryResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.error import Error
+from FormanceHQ.model.get_workflow_instance_history_response import GetWorkflowInstanceHistoryResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -384,12 +384,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -403,7 +403,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->get_instance_history: %s\n" % e)
 ```
 ### Parameters
@@ -482,14 +482,14 @@ Get a workflow instance stage history
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.error import Error
-from Formance.model.get_workflow_instance_history_stage_response import GetWorkflowInstanceHistoryStageResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.get_workflow_instance_history_stage_response import GetWorkflowInstanceHistoryStageResponse
+from FormanceHQ.model.error import Error
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -499,12 +499,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -519,7 +519,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->get_instance_stage_history: %s\n" % e)
 ```
 ### Parameters
@@ -606,14 +606,14 @@ Get a flow by id
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.error import Error
-from Formance.model.get_workflow_response import GetWorkflowResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.error import Error
+from FormanceHQ.model.get_workflow_response import GetWorkflowResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -623,12 +623,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -642,7 +642,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->get_workflow: %s\n" % e)
 ```
 ### Parameters
@@ -721,14 +721,14 @@ List instances of a workflow
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.list_runs_response import ListRunsResponse
-from Formance.model.error import Error
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.error import Error
+from FormanceHQ.model.list_runs_response import ListRunsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -738,12 +738,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -758,7 +758,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->list_instances: %s\n" % e)
 ```
 ### Parameters
@@ -846,14 +846,14 @@ List registered workflows
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.error import Error
-from Formance.model.list_workflows_response import ListWorkflowsResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.error import Error
+from FormanceHQ.model.list_workflows_response import ListWorkflowsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -863,12 +863,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -877,7 +877,7 @@ with Formance.ApiClient(configuration) as api_client:
         # List registered workflows
         api_response = api_instance.list_workflows()
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->list_workflows: %s\n" % e)
 ```
 ### Parameters
@@ -933,14 +933,14 @@ Get server info
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.server_info import ServerInfo
-from Formance.model.error import Error
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.error import Error
+from FormanceHQ.model.server_info import ServerInfo
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -950,12 +950,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -964,7 +964,7 @@ with Formance.ApiClient(configuration) as api_client:
         # Get server info
         api_response = api_instance.orchestrationget_server_info()
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->orchestrationget_server_info: %s\n" % e)
 ```
 ### Parameters
@@ -1022,15 +1022,15 @@ Run workflow
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.error import Error
-from Formance.model.run_workflow_response import RunWorkflowResponse
-from Formance.model.run_workflow_request import RunWorkflowRequest
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.error import Error
+from FormanceHQ.model.run_workflow_request import RunWorkflowRequest
+from FormanceHQ.model.run_workflow_response import RunWorkflowResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1040,12 +1040,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -1062,7 +1062,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->run_workflow: %s\n" % e)
 
     # example passing only optional values
@@ -1083,7 +1083,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->run_workflow: %s\n" % e)
 ```
 ### Parameters
@@ -1188,13 +1188,13 @@ Send an event to a running workflow
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import orchestration_api
-from Formance.model.error import Error
+import FormanceHQ
+from FormanceHQ.apis.tags import orchestration_api
+from FormanceHQ.model.error import Error
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1204,12 +1204,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = orchestration_api.OrchestrationApi(api_client)
 
@@ -1222,7 +1222,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.send_event(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->send_event: %s\n" % e)
 
     # example passing only optional values
@@ -1238,7 +1238,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             body=body,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling OrchestrationApi->send_event: %s\n" % e)
 ```
 ### Parameters

@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.transactions_api.TransactionsApi
+# FormanceHQ.apis.tags.transactions_api.TransactionsApi
 
 All URIs are relative to *http://localhost*
 
@@ -23,14 +23,14 @@ Set the metadata of a transaction by its ID
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import transactions_api
-from Formance.model.error_response import ErrorResponse
-from Formance.model.ledger_metadata import LedgerMetadata
+import FormanceHQ
+from FormanceHQ.apis.tags import transactions_api
+from FormanceHQ.model.error_response import ErrorResponse
+from FormanceHQ.model.ledger_metadata import LedgerMetadata
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -40,12 +40,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = transactions_api.TransactionsApi(api_client)
 
@@ -59,7 +59,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.add_metadata_on_transaction(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->add_metadata_on_transaction: %s\n" % e)
 
     # example passing only optional values
@@ -76,7 +76,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             body=body,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->add_metadata_on_transaction: %s\n" % e)
 ```
 ### Parameters
@@ -165,13 +165,13 @@ Count the transactions from a ledger
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import transactions_api
-from Formance.model.error_response import ErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import transactions_api
+from FormanceHQ.model.error_response import ErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -181,12 +181,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = transactions_api.TransactionsApi(api_client)
 
@@ -202,7 +202,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             query_params=query_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->count_transactions: %s\n" % e)
 
     # example passing only optional values
@@ -226,7 +226,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             query_params=query_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->count_transactions: %s\n" % e)
 ```
 ### Parameters
@@ -390,15 +390,15 @@ Create a new transaction to a ledger
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import transactions_api
-from Formance.model.error_response import ErrorResponse
-from Formance.model.post_transaction import PostTransaction
-from Formance.model.transactions_response import TransactionsResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import transactions_api
+from FormanceHQ.model.post_transaction import PostTransaction
+from FormanceHQ.model.error_response import ErrorResponse
+from FormanceHQ.model.transactions_response import TransactionsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -408,12 +408,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = transactions_api.TransactionsApi(api_client)
 
@@ -450,7 +450,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->create_transaction: %s\n" % e)
 
     # example passing only optional values
@@ -487,7 +487,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->create_transaction: %s\n" % e)
 ```
 ### Parameters
@@ -590,15 +590,15 @@ Create a new batch of transactions to a ledger
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import transactions_api
-from Formance.model.error_response import ErrorResponse
-from Formance.model.transactions_response import TransactionsResponse
-from Formance.model.transactions import Transactions
+import FormanceHQ
+from FormanceHQ.apis.tags import transactions_api
+from FormanceHQ.model.transactions import Transactions
+from FormanceHQ.model.error_response import ErrorResponse
+from FormanceHQ.model.transactions_response import TransactionsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -608,12 +608,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = transactions_api.TransactionsApi(api_client)
 
@@ -647,7 +647,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->create_transactions: %s\n" % e)
 ```
 ### Parameters
@@ -734,14 +734,14 @@ Get transaction from a ledger by its ID
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import transactions_api
-from Formance.model.transaction_response import TransactionResponse
-from Formance.model.error_response import ErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import transactions_api
+from FormanceHQ.model.transaction_response import TransactionResponse
+from FormanceHQ.model.error_response import ErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -751,12 +751,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = transactions_api.TransactionsApi(api_client)
 
@@ -771,7 +771,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->get_transaction: %s\n" % e)
 ```
 ### Parameters
@@ -858,14 +858,14 @@ List transactions from a ledger, sorted by txid in descending order.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import transactions_api
-from Formance.model.error_response import ErrorResponse
-from Formance.model.transactions_cursor_response import TransactionsCursorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import transactions_api
+from FormanceHQ.model.transactions_cursor_response import TransactionsCursorResponse
+from FormanceHQ.model.error_response import ErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -875,12 +875,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = transactions_api.TransactionsApi(api_client)
 
@@ -897,7 +897,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->list_transactions: %s\n" % e)
 
     # example passing only optional values
@@ -927,7 +927,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->list_transactions: %s\n" % e)
 ```
 ### Parameters
@@ -1124,14 +1124,14 @@ Revert a ledger transaction by its ID
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import transactions_api
-from Formance.model.transaction_response import TransactionResponse
-from Formance.model.error_response import ErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import transactions_api
+from FormanceHQ.model.transaction_response import TransactionResponse
+from FormanceHQ.model.error_response import ErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1141,12 +1141,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = transactions_api.TransactionsApi(api_client)
 
@@ -1161,7 +1161,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling TransactionsApi->revert_transaction: %s\n" % e)
 ```
 ### Parameters

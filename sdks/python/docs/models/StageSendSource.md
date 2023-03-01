@@ -1,4 +1,4 @@
-# Formance.model.stage_send_source.StageSendSource
+# FormanceHQ.model.stage_send_source.StageSendSource
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

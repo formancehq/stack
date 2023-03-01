@@ -1,4 +1,4 @@
-# Formance.model.ledger_account_subject.LedgerAccountSubject
+# FormanceHQ.model.ledger_account_subject.LedgerAccountSubject
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

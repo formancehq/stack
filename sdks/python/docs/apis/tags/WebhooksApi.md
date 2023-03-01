@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.webhooks_api.WebhooksApi
+# FormanceHQ.apis.tags.webhooks_api.WebhooksApi
 
 All URIs are relative to *http://localhost*
 
@@ -25,13 +25,13 @@ Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import webhooks_api
-from Formance.model.config_response import ConfigResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import webhooks_api
+from FormanceHQ.model.config_response import ConfigResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -41,12 +41,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = webhooks_api.WebhooksApi(api_client)
 
@@ -60,7 +60,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WebhooksApi->activate_config: %s\n" % e)
 ```
 ### Parameters
@@ -133,14 +133,14 @@ Change the signing secret of the endpoint of a webhooks config.  If not passed o
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import webhooks_api
-from Formance.model.config_response import ConfigResponse
-from Formance.model.config_change_secret import ConfigChangeSecret
+import FormanceHQ
+from FormanceHQ.apis.tags import webhooks_api
+from FormanceHQ.model.config_change_secret import ConfigChangeSecret
+from FormanceHQ.model.config_response import ConfigResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -150,12 +150,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = webhooks_api.WebhooksApi(api_client)
 
@@ -169,7 +169,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WebhooksApi->change_config_secret: %s\n" % e)
 
     # example passing only optional values
@@ -186,7 +186,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WebhooksApi->change_config_secret: %s\n" % e)
 ```
 ### Parameters
@@ -261,13 +261,13 @@ Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import webhooks_api
-from Formance.model.config_response import ConfigResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import webhooks_api
+from FormanceHQ.model.config_response import ConfigResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -277,12 +277,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = webhooks_api.WebhooksApi(api_client)
 
@@ -296,7 +296,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WebhooksApi->deactivate_config: %s\n" % e)
 ```
 ### Parameters
@@ -369,12 +369,12 @@ Delete a webhooks config by ID.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import webhooks_api
+import FormanceHQ
+from FormanceHQ.apis.tags import webhooks_api
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -384,12 +384,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = webhooks_api.WebhooksApi(api_client)
 
@@ -402,7 +402,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.delete_config(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WebhooksApi->delete_config: %s\n" % e)
 ```
 ### Parameters
@@ -460,13 +460,13 @@ Sorted by updated date descending
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import webhooks_api
-from Formance.model.configs_response import ConfigsResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import webhooks_api
+from FormanceHQ.model.configs_response import ConfigsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -476,12 +476,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = webhooks_api.WebhooksApi(api_client)
 
@@ -496,7 +496,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WebhooksApi->get_many_configs: %s\n" % e)
 ```
 ### Parameters
@@ -570,14 +570,14 @@ Insert a new webhooks config.  The endpoint should be a valid https URL and be u
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import webhooks_api
-from Formance.model.config_user import ConfigUser
-from Formance.model.config_response import ConfigResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import webhooks_api
+from FormanceHQ.model.config_user import ConfigUser
+from FormanceHQ.model.config_response import ConfigResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -587,12 +587,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = webhooks_api.WebhooksApi(api_client)
 
@@ -608,7 +608,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WebhooksApi->insert_config: %s\n" % e)
 ```
 ### Parameters
@@ -683,13 +683,13 @@ Test a config by sending a webhook to its endpoint.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import webhooks_api
-from Formance.model.attempt_response import AttemptResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import webhooks_api
+from FormanceHQ.model.attempt_response import AttemptResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -699,12 +699,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = webhooks_api.WebhooksApi(api_client)
 
@@ -718,7 +718,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WebhooksApi->test_config: %s\n" % e)
 ```
 ### Parameters

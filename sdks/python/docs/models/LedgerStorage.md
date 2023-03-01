@@ -1,4 +1,4 @@
-# Formance.model.ledger_storage.LedgerStorage
+# FormanceHQ.model.ledger_storage.LedgerStorage
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

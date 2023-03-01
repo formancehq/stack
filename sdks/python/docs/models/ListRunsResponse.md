@@ -1,4 +1,4 @@
-# Formance.model.list_runs_response.ListRunsResponse
+# FormanceHQ.model.list_runs_response.ListRunsResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

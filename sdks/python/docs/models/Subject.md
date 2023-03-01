@@ -1,4 +1,4 @@
-# Formance.model.subject.Subject
+# FormanceHQ.model.subject.Subject
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

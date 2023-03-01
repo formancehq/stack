@@ -1,4 +1,4 @@
-# Formance.model.create_secret_request.CreateSecretRequest
+# FormanceHQ.model.create_secret_request.CreateSecretRequest
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

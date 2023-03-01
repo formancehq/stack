@@ -1,4 +1,4 @@
-# Formance.model.accounts_cursor.AccountsCursor
+# FormanceHQ.model.accounts_cursor.AccountsCursor
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

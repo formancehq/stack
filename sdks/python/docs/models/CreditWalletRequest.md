@@ -1,4 +1,4 @@
-# Formance.model.credit_wallet_request.CreditWalletRequest
+# FormanceHQ.model.credit_wallet_request.CreditWalletRequest
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

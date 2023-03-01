@@ -1,4 +1,4 @@
-# Formance.model.get_workflow_response.GetWorkflowResponse
+# FormanceHQ.model.get_workflow_response.GetWorkflowResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

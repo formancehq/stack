@@ -1,4 +1,4 @@
-# Formance.model.account_with_volumes_and_balances.AccountWithVolumesAndBalances
+# FormanceHQ.model.account_with_volumes_and_balances.AccountWithVolumesAndBalances
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

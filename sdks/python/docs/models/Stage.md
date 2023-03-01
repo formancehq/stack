@@ -1,4 +1,4 @@
-# Formance.model.stage.Stage
+# FormanceHQ.model.stage.Stage
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

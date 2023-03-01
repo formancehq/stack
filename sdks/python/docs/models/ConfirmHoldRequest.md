@@ -1,4 +1,4 @@
-# Formance.model.confirm_hold_request.ConfirmHoldRequest
+# FormanceHQ.model.confirm_hold_request.ConfirmHoldRequest
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

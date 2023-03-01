@@ -1,4 +1,4 @@
-# Formance.model.client_secret.ClientSecret
+# FormanceHQ.model.client_secret.ClientSecret
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

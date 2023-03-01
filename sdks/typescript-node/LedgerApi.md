@@ -15,13 +15,13 @@ Method | HTTP request | Description
 
 
 ```typescript
-import { LedgerApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new LedgerApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.LedgerApi(configuration);
 
-let body:LedgerApiGetLedgerInfoRequest = {
+let body:formance.LedgerApiGetLedgerInfoRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
 };
@@ -60,4 +60,5 @@ Name | Type | Description  | Notes
 **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

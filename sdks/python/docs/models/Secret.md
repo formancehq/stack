@@ -1,4 +1,4 @@
-# Formance.model.secret.Secret
+# FormanceHQ.model.secret.Secret
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

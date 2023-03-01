@@ -1,4 +1,4 @@
-# Formance.model.stripe_transfer_request.StripeTransferRequest
+# FormanceHQ.model.stripe_transfer_request.StripeTransferRequest
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

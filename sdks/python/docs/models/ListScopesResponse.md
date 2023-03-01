@@ -1,4 +1,4 @@
-# Formance.model.list_scopes_response.ListScopesResponse
+# FormanceHQ.model.list_scopes_response.ListScopesResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

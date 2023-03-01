@@ -1,4 +1,4 @@
-# Formance.model.config_change_secret.ConfigChangeSecret
+# FormanceHQ.model.config_change_secret.ConfigChangeSecret
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

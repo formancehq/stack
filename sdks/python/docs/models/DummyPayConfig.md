@@ -1,4 +1,4 @@
-# Formance.model.dummy_pay_config.DummyPayConfig
+# FormanceHQ.model.dummy_pay_config.DummyPayConfig
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

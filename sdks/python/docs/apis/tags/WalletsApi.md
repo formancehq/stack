@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.wallets_api.WalletsApi
+# FormanceHQ.apis.tags.wallets_api.WalletsApi
 
 All URIs are relative to *http://localhost*
 
@@ -31,14 +31,14 @@ Confirm a hold
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.confirm_hold_request import ConfirmHoldRequest
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.confirm_hold_request import ConfirmHoldRequest
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -48,12 +48,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -66,7 +66,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.confirm_hold(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->confirm_hold: %s\n" % e)
 
     # example passing only optional values
@@ -83,7 +83,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             body=body,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->confirm_hold: %s\n" % e)
 ```
 ### Parameters
@@ -164,15 +164,15 @@ Create a balance
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.create_balance_response import CreateBalanceResponse
-from Formance.model.balance import Balance
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.create_balance_response import CreateBalanceResponse
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
+from FormanceHQ.model.balance import Balance
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -182,12 +182,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -201,7 +201,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->create_balance: %s\n" % e)
 
     # example passing only optional values
@@ -218,7 +218,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->create_balance: %s\n" % e)
 ```
 ### Parameters
@@ -305,15 +305,15 @@ Create a new wallet
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.create_wallet_request import CreateWalletRequest
-from Formance.model.wallets_error_response import WalletsErrorResponse
-from Formance.model.create_wallet_response import CreateWalletResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.create_wallet_response import CreateWalletResponse
+from FormanceHQ.model.create_wallet_request import CreateWalletRequest
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -323,12 +323,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -345,7 +345,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->create_wallet: %s\n" % e)
 ```
 ### Parameters
@@ -417,14 +417,14 @@ Credit a wallet
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.credit_wallet_request import CreditWalletRequest
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.credit_wallet_request import CreditWalletRequest
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -434,12 +434,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -452,7 +452,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.credit_wallet(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->credit_wallet: %s\n" % e)
 
     # example passing only optional values
@@ -479,7 +479,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             body=body,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->credit_wallet: %s\n" % e)
 ```
 ### Parameters
@@ -560,15 +560,15 @@ Debit a wallet
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.debit_wallet_request import DebitWalletRequest
-from Formance.model.wallets_error_response import WalletsErrorResponse
-from Formance.model.debit_wallet_response import DebitWalletResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.debit_wallet_request import DebitWalletRequest
+from FormanceHQ.model.debit_wallet_response import DebitWalletResponse
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -578,12 +578,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -597,7 +597,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->debit_wallet: %s\n" % e)
 
     # example passing only optional values
@@ -626,7 +626,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->debit_wallet: %s\n" % e)
 ```
 ### Parameters
@@ -721,14 +721,14 @@ Get detailed balance
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.get_balance_response import GetBalanceResponse
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
+from FormanceHQ.model.get_balance_response import GetBalanceResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -738,12 +738,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -758,7 +758,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->get_balance: %s\n" % e)
 ```
 ### Parameters
@@ -843,14 +843,14 @@ Get a hold
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.get_hold_response import GetHoldResponse
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.get_hold_response import GetHoldResponse
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -860,12 +860,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -879,7 +879,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->get_hold: %s\n" % e)
 ```
 ### Parameters
@@ -956,14 +956,14 @@ Get all holds for a wallet
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.get_holds_response import GetHoldsResponse
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.get_holds_response import GetHoldsResponse
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -973,12 +973,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -995,7 +995,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->get_holds: %s\n" % e)
 ```
 ### Parameters
@@ -1097,14 +1097,14 @@ Type | Description  | Notes
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.get_transactions_response import GetTransactionsResponse
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.get_transactions_response import GetTransactionsResponse
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1114,12 +1114,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -1134,7 +1134,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->get_transactions: %s\n" % e)
 ```
 ### Parameters
@@ -1228,14 +1228,14 @@ Get a wallet
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.get_wallet_response import GetWalletResponse
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.get_wallet_response import GetWalletResponse
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1245,12 +1245,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -1264,7 +1264,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->get_wallet: %s\n" % e)
 ```
 ### Parameters
@@ -1349,13 +1349,13 @@ List balances of a wallet
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.list_balances_response import ListBalancesResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.list_balances_response import ListBalancesResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1365,12 +1365,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -1384,7 +1384,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->list_balances: %s\n" % e)
 ```
 ### Parameters
@@ -1447,13 +1447,13 @@ List all wallets
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.list_wallets_response import ListWalletsResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.list_wallets_response import ListWalletsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1463,12 +1463,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -1485,7 +1485,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->list_wallets: %s\n" % e)
 ```
 ### Parameters
@@ -1573,13 +1573,13 @@ Update a wallet
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1589,12 +1589,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -1607,7 +1607,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.update_wallet(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->update_wallet: %s\n" % e)
 
     # example passing only optional values
@@ -1625,7 +1625,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             body=body,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->update_wallet: %s\n" % e)
 ```
 ### Parameters
@@ -1727,13 +1727,13 @@ Cancel a hold
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1743,12 +1743,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -1761,7 +1761,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.void_hold(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->void_hold: %s\n" % e)
 ```
 ### Parameters
@@ -1832,14 +1832,14 @@ Get server info
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import wallets_api
-from Formance.model.server_info import ServerInfo
-from Formance.model.wallets_error_response import WalletsErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import wallets_api
+from FormanceHQ.model.server_info import ServerInfo
+from FormanceHQ.model.wallets_error_response import WalletsErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1849,12 +1849,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = wallets_api.WalletsApi(api_client)
 
@@ -1863,7 +1863,7 @@ with Formance.ApiClient(configuration) as api_client:
         # Get server info
         api_response = api_instance.walletsget_server_info()
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling WalletsApi->walletsget_server_info: %s\n" % e)
 ```
 ### Parameters

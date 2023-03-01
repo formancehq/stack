@@ -1,4 +1,4 @@
-# Formance.model.wallet_with_balances.WalletWithBalances
+# FormanceHQ.model.wallet_with_balances.WalletWithBalances
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

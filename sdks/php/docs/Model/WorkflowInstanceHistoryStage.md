@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **input** | [**\Formance\Model\WorkflowInstanceHistoryStageInput**](WorkflowInstanceHistoryStageInput.md) |  |
 **output** | [**\Formance\Model\WorkflowInstanceHistoryStageOutput**](WorkflowInstanceHistoryStageOutput.md) |  | [optional]
 **error** | **string** |  | [optional]
-**terminated** | [**Bool**](Bool.md) |  |
+**terminated** | **bool** |  |
 **started_at** | **\DateTime** |  |
 **terminated_at** | **\DateTime** |  | [optional]
 **last_failure** | **string** |  | [optional]

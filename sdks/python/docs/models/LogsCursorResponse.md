@@ -1,4 +1,4 @@
-# Formance.model.logs_cursor_response.LogsCursorResponse
+# FormanceHQ.model.logs_cursor_response.LogsCursorResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

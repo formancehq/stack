@@ -1,4 +1,4 @@
-# Formance.model.wallet_subject.WalletSubject
+# FormanceHQ.model.wallet_subject.WalletSubject
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

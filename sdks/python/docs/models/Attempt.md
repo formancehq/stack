@@ -1,4 +1,4 @@
-# Formance.model.attempt.Attempt
+# FormanceHQ.model.attempt.Attempt
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

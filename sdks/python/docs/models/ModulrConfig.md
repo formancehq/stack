@@ -1,4 +1,4 @@
-# Formance.model.modulr_config.ModulrConfig
+# FormanceHQ.model.modulr_config.ModulrConfig
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

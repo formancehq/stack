@@ -1,4 +1,4 @@
-# Formance.model.payment_response.PaymentResponse
+# FormanceHQ.model.payment_response.PaymentResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

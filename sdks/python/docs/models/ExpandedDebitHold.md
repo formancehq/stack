@@ -1,4 +1,4 @@
-# Formance.model.expanded_debit_hold.ExpandedDebitHold
+# FormanceHQ.model.expanded_debit_hold.ExpandedDebitHold
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.balances_cursor_response.BalancesCursorResponse
+# FormanceHQ.model.balances_cursor_response.BalancesCursorResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -22,13 +22,13 @@ Add a transient scope to a scope
 
 
 ```typescript
-import { ScopesApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ScopesApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ScopesApi(configuration);
 
-let body:ScopesApiAddTransientScopeRequest = {
+let body:formance.ScopesApiAddTransientScopeRequest = {
   // string | Scope ID
   scopeId: "scopeId_example",
   // string | Transient scope ID
@@ -79,13 +79,13 @@ Create scope
 
 
 ```typescript
-import { ScopesApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ScopesApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ScopesApi(configuration);
 
-let body:ScopesApiCreateScopeRequest = {
+let body:formance.ScopesApiCreateScopeRequest = {
   // ScopeOptions (optional)
   body: {
     label: "label_example",
@@ -138,13 +138,13 @@ Delete scope
 
 
 ```typescript
-import { ScopesApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ScopesApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ScopesApi(configuration);
 
-let body:ScopesApiDeleteScopeRequest = {
+let body:formance.ScopesApiDeleteScopeRequest = {
   // string | Scope ID
   scopeId: "scopeId_example",
 };
@@ -192,13 +192,13 @@ Delete a transient scope from a scope
 
 
 ```typescript
-import { ScopesApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ScopesApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ScopesApi(configuration);
 
-let body:ScopesApiDeleteTransientScopeRequest = {
+let body:formance.ScopesApiDeleteTransientScopeRequest = {
   // string | Scope ID
   scopeId: "scopeId_example",
   // string | Transient scope ID
@@ -249,11 +249,11 @@ List Scopes
 
 
 ```typescript
-import { ScopesApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ScopesApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ScopesApi(configuration);
 
 let body:any = {};
 
@@ -297,13 +297,13 @@ Read scope
 
 
 ```typescript
-import { ScopesApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ScopesApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ScopesApi(configuration);
 
-let body:ScopesApiReadScopeRequest = {
+let body:formance.ScopesApiReadScopeRequest = {
   // string | Scope ID
   scopeId: "scopeId_example",
 };
@@ -351,13 +351,13 @@ Update scope
 
 
 ```typescript
-import { ScopesApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new ScopesApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.ScopesApi(configuration);
 
-let body:ScopesApiUpdateScopeRequest = {
+let body:formance.ScopesApiUpdateScopeRequest = {
   // string | Scope ID
   scopeId: "scopeId_example",
   // ScopeOptions (optional)
@@ -403,4 +403,5 @@ Name | Type | Description  | Notes
 **200** | Updated scope |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

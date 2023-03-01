@@ -1,4 +1,4 @@
-# Formance.model.list_users_response.ListUsersResponse
+# FormanceHQ.model.list_users_response.ListUsersResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

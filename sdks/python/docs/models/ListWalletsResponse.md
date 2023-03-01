@@ -1,4 +1,4 @@
-# Formance.model.list_wallets_response.ListWalletsResponse
+# FormanceHQ.model.list_wallets_response.ListWalletsResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

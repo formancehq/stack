@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.scopes_api.ScopesApi
+# FormanceHQ.apis.tags.scopes_api.ScopesApi
 
 All URIs are relative to *http://localhost*
 
@@ -25,12 +25,12 @@ Add a transient scope to a scope
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import scopes_api
+import FormanceHQ
+from FormanceHQ.apis.tags import scopes_api
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -40,12 +40,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scopes_api.ScopesApi(api_client)
 
@@ -59,7 +59,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.add_transient_scope(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ScopesApi->add_transient_scope: %s\n" % e)
 ```
 ### Parameters
@@ -125,14 +125,14 @@ Create scope
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import scopes_api
-from Formance.model.create_scope_response import CreateScopeResponse
-from Formance.model.scope_options import ScopeOptions
+import FormanceHQ
+from FormanceHQ.apis.tags import scopes_api
+from FormanceHQ.model.create_scope_response import CreateScopeResponse
+from FormanceHQ.model.scope_options import ScopeOptions
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -142,12 +142,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scopes_api.ScopesApi(api_client)
 
@@ -164,7 +164,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ScopesApi->create_scope: %s\n" % e)
 ```
 ### Parameters
@@ -224,12 +224,12 @@ Delete scope
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import scopes_api
+import FormanceHQ
+from FormanceHQ.apis.tags import scopes_api
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -239,12 +239,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scopes_api.ScopesApi(api_client)
 
@@ -257,7 +257,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.delete_scope(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ScopesApi->delete_scope: %s\n" % e)
 ```
 ### Parameters
@@ -315,12 +315,12 @@ Delete a transient scope from a scope
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import scopes_api
+import FormanceHQ
+from FormanceHQ.apis.tags import scopes_api
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -330,12 +330,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scopes_api.ScopesApi(api_client)
 
@@ -349,7 +349,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.delete_transient_scope(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ScopesApi->delete_transient_scope: %s\n" % e)
 ```
 ### Parameters
@@ -415,13 +415,13 @@ List Scopes
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import scopes_api
-from Formance.model.list_scopes_response import ListScopesResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import scopes_api
+from FormanceHQ.model.list_scopes_response import ListScopesResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -431,12 +431,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scopes_api.ScopesApi(api_client)
 
@@ -445,7 +445,7 @@ with Formance.ApiClient(configuration) as api_client:
         # List scopes
         api_response = api_instance.list_scopes()
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ScopesApi->list_scopes: %s\n" % e)
 ```
 ### Parameters
@@ -489,13 +489,13 @@ Read scope
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import scopes_api
-from Formance.model.create_scope_response import CreateScopeResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import scopes_api
+from FormanceHQ.model.create_scope_response import CreateScopeResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -505,12 +505,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scopes_api.ScopesApi(api_client)
 
@@ -524,7 +524,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ScopesApi->read_scope: %s\n" % e)
 ```
 ### Parameters
@@ -589,14 +589,14 @@ Update scope
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import scopes_api
-from Formance.model.create_scope_response import CreateScopeResponse
-from Formance.model.scope_options import ScopeOptions
+import FormanceHQ
+from FormanceHQ.apis.tags import scopes_api
+from FormanceHQ.model.create_scope_response import CreateScopeResponse
+from FormanceHQ.model.scope_options import ScopeOptions
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -606,12 +606,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = scopes_api.ScopesApi(api_client)
 
@@ -625,7 +625,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ScopesApi->update_scope: %s\n" % e)
 
     # example passing only optional values
@@ -645,7 +645,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling ScopesApi->update_scope: %s\n" % e)
 ```
 ### Parameters

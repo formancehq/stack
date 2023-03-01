@@ -16,13 +16,13 @@ Method | HTTP request | Description
 
 
 ```typescript
-import { BalancesApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new BalancesApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.BalancesApi(configuration);
 
-let body:BalancesApiGetBalancesRequest = {
+let body:formance.BalancesApiGetBalancesRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
   // string | Filter balances involving given account, either as source or destination. (optional)
@@ -82,13 +82,13 @@ Name | Type | Description  | Notes
 
 
 ```typescript
-import { BalancesApi, createConfiguration } from '@formancehq/formance';
+import { formance } from '@formancehq/formance';
 import * as fs from 'fs';
 
-const configuration = createConfiguration();
-const apiInstance = new BalancesApi(configuration);
+const configuration = formance.createConfiguration();
+const apiInstance = new formance.BalancesApi(configuration);
 
-let body:BalancesApiGetBalancesAggregatedRequest = {
+let body:formance.BalancesApiGetBalancesAggregatedRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
   // string | Filter balances involving given account, either as source or destination. (optional)
@@ -130,4 +130,5 @@ Name | Type | Description  | Notes
 **0** | Error |  -  |
 
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
 

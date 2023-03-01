@@ -1,4 +1,4 @@
-# Formance.model.wallets_transaction.WalletsTransaction
+# FormanceHQ.model.wallets_transaction.WalletsTransaction
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

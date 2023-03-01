@@ -1,4 +1,4 @@
-# Formance.model.wallets_error_response.WalletsErrorResponse
+# FormanceHQ.model.wallets_error_response.WalletsErrorResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

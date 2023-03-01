@@ -1,4 +1,4 @@
-# Formance.model.stage_delay.StageDelay
+# FormanceHQ.model.stage_delay.StageDelay
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

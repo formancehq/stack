@@ -1,7 +1,3 @@
-# templateDir: templates/go
-# files:
-#   Taskfile.yml.mustache:
-#     destinationFilename: Taskfile.yml
 additionalProperties:
   packageName: formance
   goImportAlias: client

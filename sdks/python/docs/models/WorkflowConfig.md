@@ -1,4 +1,4 @@
-# Formance.model.workflow_config.WorkflowConfig
+# FormanceHQ.model.workflow_config.WorkflowConfig
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

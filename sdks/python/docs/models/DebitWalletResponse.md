@@ -1,4 +1,4 @@
-# Formance.model.debit_wallet_response.DebitWalletResponse
+# FormanceHQ.model.debit_wallet_response.DebitWalletResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

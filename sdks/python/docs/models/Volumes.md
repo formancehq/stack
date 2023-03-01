@@ -1,4 +1,4 @@
-# Formance.model.volumes.Volumes
+# FormanceHQ.model.volumes.Volumes
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

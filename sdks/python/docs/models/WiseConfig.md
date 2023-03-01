@@ -1,4 +1,4 @@
-# Formance.model.wise_config.WiseConfig
+# FormanceHQ.model.wise_config.WiseConfig
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

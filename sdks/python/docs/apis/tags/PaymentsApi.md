@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.payments_api.PaymentsApi
+# FormanceHQ.apis.tags.payments_api.PaymentsApi
 
 All URIs are relative to *http://localhost*
 
@@ -33,13 +33,13 @@ Execute a transfer between two Stripe accounts.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.stripe_transfer_request import StripeTransferRequest
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.stripe_transfer_request import StripeTransferRequest
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -49,12 +49,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -71,7 +71,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->connectors_stripe_transfer: %s\n" % e)
 ```
 ### Parameters
@@ -132,15 +132,15 @@ Execute a transfer between two accounts.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.connector import Connector
-from Formance.model.transfer_response import TransferResponse
-from Formance.model.transfer_request import TransferRequest
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.transfer_request import TransferRequest
+from FormanceHQ.model.connector import Connector
+from FormanceHQ.model.transfer_response import TransferResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -150,12 +150,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -176,7 +176,7 @@ with Formance.ApiClient(configuration) as api_client:
             body=body,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->connectors_transfer: %s\n" % e)
 ```
 ### Parameters
@@ -250,14 +250,14 @@ Get a specific task associated to the connector.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.task_response import TaskResponse
-from Formance.model.connector import Connector
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.connector import Connector
+from FormanceHQ.model.task_response import TaskResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -267,12 +267,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -287,7 +287,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->get_connector_task: %s\n" % e)
 ```
 ### Parameters
@@ -357,13 +357,13 @@ Get a payment
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.payment_response import PaymentResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.payment_response import PaymentResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -373,12 +373,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -392,7 +392,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->get_payment: %s\n" % e)
 ```
 ### Parameters
@@ -457,14 +457,14 @@ Install a connector by its name and config.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.connector import Connector
-from Formance.model.connector_config import ConnectorConfig
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.connector import Connector
+from FormanceHQ.model.connector_config import ConnectorConfig
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -474,12 +474,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -494,7 +494,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             body=body,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->install_connector: %s\n" % e)
 ```
 ### Parameters
@@ -561,13 +561,13 @@ List all installed connectors.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.connectors_response import ConnectorsResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.connectors_response import ConnectorsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -577,12 +577,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -591,7 +591,7 @@ with Formance.ApiClient(configuration) as api_client:
         # List all installed connectors
         api_response = api_instance.list_all_connectors()
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->list_all_connectors: %s\n" % e)
 ```
 ### Parameters
@@ -635,13 +635,13 @@ List the configs of each available connector.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.connectors_configs_response import ConnectorsConfigsResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.connectors_configs_response import ConnectorsConfigsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -651,12 +651,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -665,7 +665,7 @@ with Formance.ApiClient(configuration) as api_client:
         # List the configs of each available connector
         api_response = api_instance.list_configs_available_connectors()
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->list_configs_available_connectors: %s\n" % e)
 ```
 ### Parameters
@@ -709,14 +709,14 @@ List all tasks associated with this connector.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.connector import Connector
-from Formance.model.tasks_cursor import TasksCursor
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.connector import Connector
+from FormanceHQ.model.tasks_cursor import TasksCursor
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -726,12 +726,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -748,7 +748,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->list_connector_tasks: %s\n" % e)
 
     # example passing only optional values
@@ -766,7 +766,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->list_connector_tasks: %s\n" % e)
 ```
 ### Parameters
@@ -854,14 +854,14 @@ List transfers
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.connector import Connector
-from Formance.model.transfers_response import TransfersResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.connector import Connector
+from FormanceHQ.model.transfers_response import TransfersResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -871,12 +871,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -890,7 +890,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->list_connectors_transfers: %s\n" % e)
 ```
 ### Parameters
@@ -952,13 +952,13 @@ List payments
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.payments_cursor import PaymentsCursor
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.payments_cursor import PaymentsCursor
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -968,12 +968,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -991,7 +991,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->list_payments: %s\n" % e)
 ```
 ### Parameters
@@ -1076,13 +1076,13 @@ List accounts
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.accounts_cursor import AccountsCursor
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.accounts_cursor import AccountsCursor
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1092,12 +1092,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -1115,7 +1115,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->paymentslist_accounts: %s\n" % e)
 ```
 ### Parameters
@@ -1202,14 +1202,14 @@ Read connector config
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.connector_config_response import ConnectorConfigResponse
-from Formance.model.connector import Connector
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.connector import Connector
+from FormanceHQ.model.connector_config_response import ConnectorConfigResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1219,12 +1219,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -1238,7 +1238,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->read_connector_config: %s\n" % e)
 ```
 ### Parameters
@@ -1302,13 +1302,13 @@ Reset a connector by its name. It will remove the connector and ALL PAYMENTS gen
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.connector import Connector
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.connector import Connector
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1318,12 +1318,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -1336,7 +1336,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.reset_connector(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->reset_connector: %s\n" % e)
 ```
 ### Parameters
@@ -1393,13 +1393,13 @@ Uninstall a connector by its name.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.connector import Connector
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.connector import Connector
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1409,12 +1409,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -1427,7 +1427,7 @@ with Formance.ApiClient(configuration) as api_client:
         api_response = api_instance.uninstall_connector(
             path_params=path_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->uninstall_connector: %s\n" % e)
 ```
 ### Parameters
@@ -1482,13 +1482,13 @@ Update metadata
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import payments_api
-from Formance.model.payment_metadata import PaymentMetadata
+import FormanceHQ
+from FormanceHQ.apis.tags import payments_api
+from FormanceHQ.model.payment_metadata import PaymentMetadata
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -1498,12 +1498,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = payments_api.PaymentsApi(api_client)
 
@@ -1520,7 +1520,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             body=body,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling PaymentsApi->update_metadata: %s\n" % e)
 ```
 ### Parameters

@@ -1,4 +1,4 @@
-# Formance.model.activity_stripe_transfer.ActivityStripeTransfer
+# FormanceHQ.model.activity_stripe_transfer.ActivityStripeTransfer
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.accounts_balances.AccountsBalances
+# FormanceHQ.model.accounts_balances.AccountsBalances
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

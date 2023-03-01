@@ -1,5 +1,5 @@
 <a name="__pageTop"></a>
-# Formance.apis.tags.accounts_api.AccountsApi
+# FormanceHQ.apis.tags.accounts_api.AccountsApi
 
 All URIs are relative to *http://localhost*
 
@@ -20,14 +20,14 @@ Add metadata to an account
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import accounts_api
-from Formance.model.error_response import ErrorResponse
-from Formance.model.ledger_metadata import LedgerMetadata
+import FormanceHQ
+from FormanceHQ.apis.tags import accounts_api
+from FormanceHQ.model.error_response import ErrorResponse
+from FormanceHQ.model.ledger_metadata import LedgerMetadata
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -37,12 +37,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = accounts_api.AccountsApi(api_client)
 
@@ -60,7 +60,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             body=body,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling AccountsApi->add_metadata_to_account: %s\n" % e)
 ```
 ### Parameters
@@ -149,13 +149,13 @@ Count the accounts from a ledger
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import accounts_api
-from Formance.model.error_response import ErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import accounts_api
+from FormanceHQ.model.error_response import ErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -165,12 +165,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = accounts_api.AccountsApi(api_client)
 
@@ -186,7 +186,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             query_params=query_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling AccountsApi->count_accounts: %s\n" % e)
 
     # example passing only optional values
@@ -203,7 +203,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
             query_params=query_params,
         )
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling AccountsApi->count_accounts: %s\n" % e)
 ```
 ### Parameters
@@ -311,14 +311,14 @@ Get account by its address
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import accounts_api
-from Formance.model.error_response import ErrorResponse
-from Formance.model.account_response import AccountResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import accounts_api
+from FormanceHQ.model.error_response import ErrorResponse
+from FormanceHQ.model.account_response import AccountResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -328,12 +328,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = accounts_api.AccountsApi(api_client)
 
@@ -348,7 +348,7 @@ with Formance.ApiClient(configuration) as api_client:
             path_params=path_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling AccountsApi->get_account: %s\n" % e)
 ```
 ### Parameters
@@ -435,14 +435,14 @@ List accounts from a ledger, sorted by address in descending order.
 
 * OAuth Authentication (Authorization):
 ```python
-import Formance
-from Formance.apis.tags import accounts_api
-from Formance.model.accounts_cursor_response import AccountsCursorResponse
-from Formance.model.error_response import ErrorResponse
+import FormanceHQ
+from FormanceHQ.apis.tags import accounts_api
+from FormanceHQ.model.error_response import ErrorResponse
+from FormanceHQ.model.accounts_cursor_response import AccountsCursorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost"
 )
 
@@ -452,12 +452,12 @@ configuration = Formance.Configuration(
 # satisfies your auth use case.
 
 # Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
+configuration = FormanceHQ.Configuration(
     host = "http://localhost",
     access_token = 'YOUR_ACCESS_TOKEN'
 )
 # Enter a context with an instance of the API client
-with Formance.ApiClient(configuration) as api_client:
+with FormanceHQ.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = accounts_api.AccountsApi(api_client)
 
@@ -474,7 +474,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling AccountsApi->list_accounts: %s\n" % e)
 
     # example passing only optional values
@@ -500,7 +500,7 @@ with Formance.ApiClient(configuration) as api_client:
             query_params=query_params,
         )
         pprint(api_response)
-    except Formance.ApiException as e:
+    except FormanceHQ.ApiException as e:
         print("Exception when calling AccountsApi->list_accounts: %s\n" % e)
 ```
 ### Parameters

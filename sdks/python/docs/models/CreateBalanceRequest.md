@@ -1,4 +1,4 @@
-# Formance.model.create_balance_request.CreateBalanceRequest
+# FormanceHQ.model.create_balance_request.CreateBalanceRequest
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

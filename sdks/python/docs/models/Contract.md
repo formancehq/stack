@@ -1,4 +1,4 @@
-# Formance.model.contract.Contract
+# FormanceHQ.model.contract.Contract
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.posting.Posting
+# FormanceHQ.model.posting.Posting
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

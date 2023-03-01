@@ -1,4 +1,4 @@
-# Formance.model.task_base.TaskBase
+# FormanceHQ.model.task_base.TaskBase
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

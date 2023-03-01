@@ -1,4 +1,4 @@
-# Formance.model.activity_get_payment_output.ActivityGetPaymentOutput
+# FormanceHQ.model.activity_get_payment_output.ActivityGetPaymentOutput
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

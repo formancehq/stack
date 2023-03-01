@@ -1,4 +1,4 @@
-# Formance.model.payment_metadata.PaymentMetadata
+# FormanceHQ.model.payment_metadata.PaymentMetadata
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.monetary.Monetary
+# FormanceHQ.model.monetary.Monetary
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

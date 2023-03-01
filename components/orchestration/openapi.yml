@@ -404,7 +404,7 @@ components:
         error:
           type: string
         terminated:
-          type: bool
+          type: boolean
         startedAt:
           type: string
           format: date-time
@@ -433,7 +433,7 @@ components:
         error:
           type: string
         terminated:
-          type: bool
+          type: boolean
         startedAt:
           type: string
           format: date-time

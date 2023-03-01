@@ -1,4 +1,4 @@
-# Formance.model.currency_cloud_config.CurrencyCloudConfig
+# FormanceHQ.model.currency_cloud_config.CurrencyCloudConfig
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

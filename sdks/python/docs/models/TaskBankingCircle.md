@@ -1,4 +1,4 @@
-# Formance.model.task_banking_circle.TaskBankingCircle
+# FormanceHQ.model.task_banking_circle.TaskBankingCircle
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.metadata.Metadata
+# FormanceHQ.model.metadata.Metadata
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

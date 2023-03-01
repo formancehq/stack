@@ -1,4 +1,4 @@
-# Formance.model.scope.Scope
+# FormanceHQ.model.scope.Scope
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

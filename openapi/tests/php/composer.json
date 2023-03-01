@@ -1,0 +1,23 @@
+{
+    "name": "formancehq/sdks-tests-php",
+    "autoload": {
+        "psr-4": {
+            "FormanceHQ\\Php\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Geoffrey Ragot",
+            "email": "geoffrey.ragot@gmail.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../../sdks/php"
+        }
+    ],
+    "require-dev": {
+        "formancehq/formance-sdk-php": "dev-main"
+    }
+}

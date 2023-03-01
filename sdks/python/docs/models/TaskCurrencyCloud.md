@@ -1,4 +1,4 @@
-# Formance.model.task_currency_cloud.TaskCurrencyCloud
+# FormanceHQ.model.task_currency_cloud.TaskCurrencyCloud
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

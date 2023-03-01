@@ -1,4 +1,4 @@
-# Formance.model.connectors_response.ConnectorsResponse
+# FormanceHQ.model.connectors_response.ConnectorsResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

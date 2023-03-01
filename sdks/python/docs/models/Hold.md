@@ -1,4 +1,4 @@
-# Formance.model.hold.Hold
+# FormanceHQ.model.hold.Hold
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

@@ -1,4 +1,4 @@
-# Formance.model.script.Script
+# FormanceHQ.model.script.Script
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

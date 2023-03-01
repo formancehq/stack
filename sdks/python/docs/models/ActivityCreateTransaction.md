@@ -1,4 +1,4 @@
-# Formance.model.activity_create_transaction.ActivityCreateTransaction
+# FormanceHQ.model.activity_create_transaction.ActivityCreateTransaction
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

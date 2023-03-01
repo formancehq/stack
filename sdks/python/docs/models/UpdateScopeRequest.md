@@ -1,4 +1,4 @@
-# Formance.model.update_scope_request.UpdateScopeRequest
+# FormanceHQ.model.update_scope_request.UpdateScopeRequest
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

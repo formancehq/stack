@@ -1,4 +1,4 @@
-# Formance.model.create_scope_request.CreateScopeRequest
+# FormanceHQ.model.create_scope_request.CreateScopeRequest
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

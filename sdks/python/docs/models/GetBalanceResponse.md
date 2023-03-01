@@ -1,4 +1,4 @@
-# Formance.model.get_balance_response.GetBalanceResponse
+# FormanceHQ.model.get_balance_response.GetBalanceResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

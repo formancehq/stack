@@ -1,4 +1,4 @@
-# Formance.model.payment_adjustment.PaymentAdjustment
+# FormanceHQ.model.payment_adjustment.PaymentAdjustment
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

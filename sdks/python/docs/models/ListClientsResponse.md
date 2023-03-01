@@ -1,4 +1,4 @@
-# Formance.model.list_clients_response.ListClientsResponse
+# FormanceHQ.model.list_clients_response.ListClientsResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

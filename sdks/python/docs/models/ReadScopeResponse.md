@@ -1,4 +1,4 @@
-# Formance.model.read_scope_response.ReadScopeResponse
+# FormanceHQ.model.read_scope_response.ReadScopeResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

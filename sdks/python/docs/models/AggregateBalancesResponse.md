@@ -1,4 +1,4 @@
-# Formance.model.aggregate_balances_response.AggregateBalancesResponse
+# FormanceHQ.model.aggregate_balances_response.AggregateBalancesResponse
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
