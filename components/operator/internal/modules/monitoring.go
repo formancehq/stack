@@ -7,29 +7,29 @@ import (
 	"github.com/formancehq/operator/internal/controllerutils"
 )
 
-func MonitoringEnvVarsWithPrefix(m stackv1beta3.MonitoringSpec, prefix string) ContainerEnv {
+func MonitoringEnvVarsWithPrefix(m stackv1beta3.MonitoringSpec) ContainerEnv {
 	if m.Traces != nil {
-		return monitoringTracesEnvVars(m.Traces, prefix)
+		return monitoringTracesEnvVars(m.Traces)
 	}
 	return ContainerEnv{}
 }
 
-func monitoringTracesEnvVars(traces *stackv1beta3.TracesSpec, prefix string) ContainerEnv {
+func monitoringTracesEnvVars(traces *stackv1beta3.TracesSpec) ContainerEnv {
 	if traces.Otlp != nil {
-		return monitoringTracesOTLPEnvVars(traces.Otlp, prefix)
+		return monitoringTracesOTLPEnvVars(traces.Otlp)
 	}
 	return ContainerEnv{}
 }
 
-func monitoringTracesOTLPEnvVars(otlp *stackv1beta3.TracesOtlpSpec, prefix string) ContainerEnv {
+func monitoringTracesOTLPEnvVars(otlp *stackv1beta3.TracesOtlpSpec) ContainerEnv {
 	return ContainerEnv{
-		Env(prefix+"OTEL_TRACES", "true"),
-		Env(prefix+"OTEL_TRACES_EXPORTER", "otlp"),
-		EnvFromBool(prefix+"OTEL_TRACES_EXPORTER_OTLP_INSECURE", otlp.Insecure),
-		Env(prefix+"OTEL_TRACES_EXPORTER_OTLP_MODE", otlp.Mode),
-		Env(prefix+"OTEL_TRACES_PORT", fmt.Sprint(otlp.Port)),
-		Env(prefix+"OTEL_TRACES_ENDPOINT", otlp.Endpoint),
-		Env(prefix+"OTEL_TRACES_EXPORTER_OTLP_ENDPOINT", controllerutils.ComputeEnvVar(prefix, "%s:%s", "OTEL_TRACES_ENDPOINT", "OTEL_TRACES_PORT")),
-		Env(prefix+"OTEL_RESOURCE_ATTRIBUTES", otlp.ResourceAttributes),
+		Env("OTEL_TRACES", "true"),
+		Env("OTEL_TRACES_EXPORTER", "otlp"),
+		EnvFromBool("OTEL_TRACES_EXPORTER_OTLP_INSECURE", otlp.Insecure),
+		Env("OTEL_TRACES_EXPORTER_OTLP_MODE", otlp.Mode),
+		Env("OTEL_TRACES_PORT", fmt.Sprint(otlp.Port)),
+		Env("OTEL_TRACES_ENDPOINT", otlp.Endpoint),
+		Env("OTEL_TRACES_EXPORTER_OTLP_ENDPOINT", controllerutils.ComputeEnvVar("", "%s:%s", "OTEL_TRACES_ENDPOINT", "OTEL_TRACES_PORT")),
+		Env("OTEL_RESOURCE_ATTRIBUTES", otlp.ResourceAttributes),
 	}
 }
