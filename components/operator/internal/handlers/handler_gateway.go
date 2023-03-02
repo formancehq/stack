@@ -91,6 +91,7 @@ func createCaddyfile(context modules.InstallContext) string {
 
 	if err := tpl.Execute(buf, map[string]any{
 		"Region":   context.Region,
+		"Env":      context.Environment,
 		"Issuer":   fmt.Sprintf("%s/api/auth", context.Stack.URL()),
 		"Services": services,
 		"Debug":    context.Stack.Spec.Debug,
@@ -183,6 +184,7 @@ const caddyfile = `(cors) {
 	handle /versions {
 		versions {
 			region "{{ .Region }}"
+			env "{{ .Env }}"
 			endpoints {
 				{{- range $i, $service := .Services }}
 					{{- if $service.HasVersionEndpoint }}
