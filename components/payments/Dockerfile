@@ -32,4 +32,4 @@ EXPOSE 8080
 
 ENTRYPOINT ["payments"]
 ENV OTEL_SERVICE_NAME=payments
-CMD ["server"]
+CMD ["serve"]
