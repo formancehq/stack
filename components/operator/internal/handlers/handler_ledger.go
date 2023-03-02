@@ -18,6 +18,7 @@ func init() {
 				ExposeHTTP:              true,
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 					env := modules.NewEnv().Append(
+						modules.Env("BIND", "0.0.0.0:8080"),
 						modules.Env("STORAGE_DRIVER", "postgres"),
 						modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
 					).Append(modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "ledger")...)

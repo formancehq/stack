@@ -32,7 +32,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32768"
+                      value: "32857"
                     - name: POSTGRES_DATABASE
                       value: stack1-ledger
                     - name: POSTGRES_USERNAME
@@ -68,6 +68,8 @@ spec:
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: ledger
+                    - name: BIND
+                      value: 0.0.0.0:8080
                     - name: STORAGE_DRIVER
                       value: postgres
                     - name: PUBLISHER_TOPIC_MAPPING
