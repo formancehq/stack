@@ -21,16 +21,13 @@ const (
 	storageDriverFlag                   = "storage.driver"
 	storageSQLiteDBNameFlag             = "storage.sqlite.db_name"
 	storagePostgresConnectionStringFlag = "storage.postgres.conn_string"
-	// Deprecated
-	storageCacheFlag                 = "storage.cache"
-	serverHttpBindAddressFlag        = "server.http.bind_address"
-	uiHttpBindAddressFlag            = "ui.http.bind_address"
-	lockStrategyFlag                 = "lock-strategy"
-	lockStrategyRedisUrlFlag         = "lock-strategy-redis-url"
-	lockStrategyRedisDurationFlag    = "lock-strategy-redis-duration"
-	lockStrategyRedisRetryFlag       = "lock-strategy-redis-retry"
-	lockStrategyRedisTLSEnabledFlag  = "lock-strategy-redis-tls-enabled"
-	lockStrategyRedisTLSInsecureFlag = "lock-strategy-redis-tls-insecure"
+	bindFlag                            = "bind"
+	lockStrategyFlag                    = "lock-strategy"
+	lockStrategyRedisUrlFlag            = "lock-strategy-redis-url"
+	lockStrategyRedisDurationFlag       = "lock-strategy-redis-duration"
+	lockStrategyRedisRetryFlag          = "lock-strategy-redis-retry"
+	lockStrategyRedisTLSEnabledFlag     = "lock-strategy-redis-tls-enabled"
+	lockStrategyRedisTLSInsecureFlag    = "lock-strategy-redis-tls-insecure"
 
 	commitPolicyFlag = "commit-policy"
 
@@ -99,9 +96,7 @@ func NewRootCommand() *cobra.Command {
 	root.PersistentFlags().String(storageDirFlag, path.Join(home, ".numary/data"), "Storage directory (for sqlite)")
 	root.PersistentFlags().String(storageSQLiteDBNameFlag, "numary", "SQLite database name")
 	root.PersistentFlags().String(storagePostgresConnectionStringFlag, "postgresql://localhost/postgres", "Postgre connection string")
-	root.PersistentFlags().Bool(storageCacheFlag, true, "Storage cache")
-	root.PersistentFlags().String(serverHttpBindAddressFlag, "localhost:3068", "API bind address")
-	root.PersistentFlags().String(uiHttpBindAddressFlag, "localhost:3068", "UI bind address")
+	root.PersistentFlags().String(bindFlag, "localhost:3068", "API bind address")
 	root.PersistentFlags().String(lockStrategyFlag, "memory", "Lock strategy (memory, none, redis)")
 	root.PersistentFlags().String(lockStrategyRedisUrlFlag, "", "Redis url when using redis locking strategy")
 	root.PersistentFlags().Duration(lockStrategyRedisDurationFlag, redis.DefaultLockDuration, "Lock duration")
