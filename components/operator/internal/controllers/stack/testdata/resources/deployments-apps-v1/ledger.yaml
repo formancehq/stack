@@ -28,27 +28,27 @@ spec:
         spec:
             containers:
                 - env:
-                    - name: NUMARY_POSTGRES_HOST
+                    - name: POSTGRES_HOST
                       value: localhost
-                    - name: NUMARY_POSTGRES_PORT
-                      value: "33394"
-                    - name: NUMARY_POSTGRES_DATABASE
+                    - name: POSTGRES_PORT
+                      value: "32824"
+                    - name: POSTGRES_DATABASE
                       value: stack1-ledger
-                    - name: NUMARY_POSTGRES_USERNAME
+                    - name: POSTGRES_USERNAME
                       value: root
-                    - name: NUMARY_POSTGRES_PASSWORD
+                    - name: POSTGRES_PASSWORD
                       value: root
-                    - name: NUMARY_POSTGRES_NO_DATABASE_URI
-                      value: postgresql://$(NUMARY_POSTGRES_USERNAME):$(NUMARY_POSTGRES_PASSWORD)@$(NUMARY_POSTGRES_HOST):$(NUMARY_POSTGRES_PORT)
-                    - name: NUMARY_POSTGRES_URI
-                      value: $(NUMARY_POSTGRES_NO_DATABASE_URI)/$(NUMARY_POSTGRES_DATABASE)?sslmode=disable
-                    - name: NUMARY_DEBUG
+                    - name: POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
+                    - name: POSTGRES_URI
+                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: DEBUG
                       value: "false"
-                    - name: NUMARY_DEV
+                    - name: DEV
                       value: "false"
-                    - name: NUMARY_STACK_URL
+                    - name: STACK_URL
                       value: http://example.net
-                    - name: NUMARY_OTEL_SERVICE_NAME
+                    - name: OTEL_SERVICE_NAME
                       value: ledger
                     - name: NUMARY_SERVER_HTTP_BIND_ADDRESS
                       value: 0.0.0.0:8080
