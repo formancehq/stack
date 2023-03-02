@@ -49,15 +49,6 @@ func NewRootCommand() *cobra.Command {
 	server.Flags().String(postgresURIFlag, "postgres://localhost/payments", "PostgreSQL DB address")
 	server.Flags().String(configEncryptionKeyFlag, "", "Config encryption key")
 	server.Flags().String(envFlag, "local", "Environment")
-	server.Flags().Bool(authBasicEnabledFlag, false, "Enable basic auth")
-	server.Flags().StringSlice(authBasicCredentialsFlag, []string{},
-		"HTTP basic auth credentials (<username>:<password>)")
-	server.Flags().Bool(authBearerEnabledFlag, false, "Enable bearer auth")
-	server.Flags().String(authBearerIntrospectURLFlag, "", "OAuth2 introspect URL")
-	server.Flags().StringSlice(authBearerAudienceFlag, []string{}, "Allowed audiences")
-	server.Flags().Bool(authBearerAudiencesWildcardFlag, false, "Don't check audience")
-	server.Flags().Bool(authBearerUseScopesFlag,
-		false, "Use scopes as defined by rfc https://datatracker.ietf.org/doc/html/rfc8693")
 	server.Flags().String(listenFlag, ":8080", "Listen address")
 	server.Flags().Bool(autoMigrateFlag, false, "Auto migrate database")
 
