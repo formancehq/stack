@@ -7,7 +7,6 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 	"github.com/formancehq/payments/internal/app/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/gorilla/mux"
 	"github.com/spf13/viper"
@@ -35,10 +34,6 @@ func httpRouter(logger logging.Logger, store *storage.Storage, serviceInfo api.S
 	rootMux.Path("/_info").Handler(api.InfoHandler(serviceInfo))
 
 	authGroup := rootMux.Name("authenticated").Subrouter()
-
-	if methods := sharedAuthMethods(); len(methods) > 0 {
-		authGroup.Use(auth.Middleware(methods...))
-	}
 
 	authGroup.Path("/payments").Methods(http.MethodGet).Handler(listPaymentsHandler(store))
 	authGroup.Path("/payments/{paymentID}").Methods(http.MethodGet).Handler(readPaymentHandler(store))
