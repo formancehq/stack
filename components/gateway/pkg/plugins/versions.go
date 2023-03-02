@@ -131,10 +131,10 @@ func (v Versions) ServeHTTP(w http.ResponseWriter, r *http.Request, next caddyht
 //------------------------------------------------------------------------------
 
 type serviceInfo struct {
-	Name    string `json:"name,omitempty"`
-	Version string `json:"version,omitempty"`
+	Name string `json:"name"`
 	// We do not want to omit empty values in the json response
-	Health bool `json:"health"`
+	Version string `json:"version"`
+	Health  bool   `json:"health"`
 }
 
 type versionsResponse struct {
@@ -247,6 +247,10 @@ func serviceVersion(
 
 	if err := json.Unmarshal(responseBody, &sInfo); err != nil {
 		return "", fmt.Errorf("failed to unmarshal response body for %s: %w", versionEndpoint, err)
+	}
+
+	if sInfo.Version == "" {
+		sInfo.Version = "unknown"
 	}
 
 	return sInfo.Version, nil
