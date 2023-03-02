@@ -52,12 +52,12 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      NUMARY_STORAGE_DRIVER: "postgres"
-      NUMARY_STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger"
-      NUMARY_SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
-      NUMARY_OTEL_TRACES: "true"
-      NUMARY_OTEL_TRACES_EXPORTER: jaeger
-      NUMARY_OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
+      STORAGE_DRIVER: "postgres"
+      STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger"
+      SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
+      OTEL_TRACES: "true"
+      OTEL_TRACES_EXPORTER: jaeger
+      OTEL_TRACES_EXPORTER_JAEGER_ENDPOINT: http://jaeger:14268/api/traces
       OTEL_SERVICE_NAME: ledger
 
   proxy:
