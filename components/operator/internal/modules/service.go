@@ -289,7 +289,6 @@ type Service struct {
 	Port int32
 	// Path indicates the path used to expose the service using an ingress
 	Path                    string
-	EnvPrefix               string
 	InjectPostgresVariables bool
 	HasVersionEndpoint      bool
 	AuthConfiguration       func(resolveContext PrepareContext) stackv1beta3.ClientConfiguration
@@ -500,29 +499,29 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 	env := NewEnv()
 	if service.InjectPostgresVariables {
 		env = env.Append(
-			DefaultPostgresEnvVarsWithPrefix(*ctx.Postgres, ctx.Stack.GetServiceName(ctx.Module), service.EnvPrefix)...,
+			DefaultPostgresEnvVarsWithPrefix(*ctx.Postgres, ctx.Stack.GetServiceName(ctx.Module), "")...,
 		)
 	}
 	if service.ListenEnvVar != "" {
 		env = env.Append(
-			Env(service.EnvPrefix+service.ListenEnvVar, fmt.Sprintf(":%d", service.usedPort)),
+			Env(service.ListenEnvVar, fmt.Sprintf(":%d", service.usedPort)),
 		)
 	}
 
 	if ctx.Configuration.Spec.Monitoring != nil {
 		env = env.Append(
-			MonitoringEnvVarsWithPrefix(*ctx.Configuration.Spec.Monitoring, service.EnvPrefix)...,
+			MonitoringEnvVarsWithPrefix(*ctx.Configuration.Spec.Monitoring)...,
 		)
 	}
 
 	if !init {
 		env = env.Append(
-			Env(service.EnvPrefix+"DEBUG", fmt.Sprintf("%v", ctx.Stack.Spec.Debug)),
-			Env(service.EnvPrefix+"DEV", fmt.Sprintf("%v", ctx.Stack.Spec.Dev)),
+			Env("DEBUG", fmt.Sprintf("%v", ctx.Stack.Spec.Debug)),
+			Env("DEV", fmt.Sprintf("%v", ctx.Stack.Spec.Dev)),
 			// TODO: the stack url is a full url, we can target the gateway. Need to find how to generalize this
 			// as the gateway is a component like another
-			Env(service.EnvPrefix+"STACK_URL", ctx.Stack.URL()),
-			Env(service.EnvPrefix+"OTEL_SERVICE_NAME", serviceName),
+			Env("STACK_URL", ctx.Stack.URL()),
+			Env("OTEL_SERVICE_NAME", serviceName),
 		)
 	}
 
