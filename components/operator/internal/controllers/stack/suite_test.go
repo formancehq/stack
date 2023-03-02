@@ -91,7 +91,7 @@ var _ = ginkgo.BeforeEach(func() {
 	})
 	gomega.Expect(err).ToNot(gomega.HaveOccurred())
 
-	err = stack.NewReconciler(mgr.GetClient(), mgr.GetScheme(), "us-west-1").SetupWithManager(mgr)
+	err = stack.NewReconciler(mgr.GetClient(), mgr.GetScheme(), "us-west-1", "staging").SetupWithManager(mgr)
 	gomega.Expect(err).ToNot(gomega.HaveOccurred())
 
 	go func() {
