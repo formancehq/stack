@@ -28,7 +28,7 @@ const (
 
 func newServer() *cobra.Command {
 	return &cobra.Command{
-		Use:          "server",
+		Use:          "serve",
 		Short:        "Launch server",
 		SilenceUsage: true,
 		RunE:         runServer,

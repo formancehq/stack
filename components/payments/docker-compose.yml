@@ -22,7 +22,7 @@ services:
 
   payments:
     image: golang:1.19.3-alpine3.16
-    command: go run ./ migrate up && go run ./ server
+    command: go run ./ migrate up && go run ./ serve
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:8080/_healthcheck" ]
       interval: 10s
