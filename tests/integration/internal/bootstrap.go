@@ -169,7 +169,7 @@ func startLedger() {
 		fmt.Sprintf("--publisher-topic-mapping=*:%s-ledger", actualTestID),
 		"--storage.driver=postgres",
 		"--storage.postgres.conn_string=" + dsn.String(),
-		"--server.http.bind_address=0.0.0.0:0", // Random port
+		"--bind=0.0.0.0:0", // Random port
 	}
 	if testing.Verbose() {
 		args = append(args, "--debug")
