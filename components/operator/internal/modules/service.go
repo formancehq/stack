@@ -252,7 +252,11 @@ func (h ConfigHandle) GetMountPath() string {
 
 type Context struct {
 	context.Context
-	Region        string
+	// Region is the cloud region the stack is deployed to
+	Region string
+	// Environment is the environment the stack is deployed to: staging,
+	// production, sandbox, etc.
+	Environment   string
 	Stack         *stackv1beta3.Stack
 	Configuration *stackv1beta3.Configuration
 	Versions      *stackv1beta3.Versions

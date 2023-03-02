@@ -35,8 +35,9 @@ type Versions struct {
 	logger          *zap.Logger  `json:"-"`
 	versionsHandler http.Handler `json:"-"`
 
-	Region    string     `json:"region,omitempty"`
-	Endpoints []Endpoint `json:"endpoints,omitempty"`
+	Region      string     `json:"region,omitempty"`
+	Environment string     `json:"env,omitempty"`
+	Endpoints   []Endpoint `json:"endpoints,omitempty"`
 }
 
 // Implements the caddy.Module interface.
@@ -56,6 +57,7 @@ func (v *Versions) Provision(ctx caddy.Context) error {
 		v.logger,
 		newHTTPClient(),
 		v.Region,
+		v.Environment,
 		v.Endpoints,
 	)
 
@@ -96,9 +98,15 @@ func (m *Versions) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 						})
 					}
 				}
+
 			case "region":
 				if !d.AllArgs(&m.Region) {
 					return d.Errf("invalid number of region's arguments: want <region>")
+				}
+
+			case "env":
+				if !d.AllArgs(&m.Environment) {
+					return d.Errf("invalid number of env's arguments: want <env>")
 				}
 			}
 		}
@@ -139,6 +147,7 @@ type serviceInfo struct {
 
 type versionsResponse struct {
 	Region   string         `json:"region"`
+	Env      string         `json:"env"`
 	Versions []*serviceInfo `json:"versions"`
 }
 
@@ -147,14 +156,16 @@ type versionsHandler struct {
 	httpClient *http.Client
 
 	region    string
+	env       string
 	endpoints []Endpoint
 }
 
-func newVersionsHandler(logger *zap.Logger, httpClient *http.Client, region string, endpoints []Endpoint) http.Handler {
+func newVersionsHandler(logger *zap.Logger, httpClient *http.Client, region, env string, endpoints []Endpoint) http.Handler {
 	return &versionsHandler{
 		logger:     logger,
 		httpClient: httpClient,
 		region:     region,
+		env:        env,
 		endpoints:  endpoints,
 	}
 }
@@ -212,6 +223,7 @@ func (v *versionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res := versionsResponse{
 		Region: v.region,
+		Env:    v.env,
 	}
 	res.Versions = make([]*serviceInfo, 0, len(v.endpoints))
 	for version := range versions {

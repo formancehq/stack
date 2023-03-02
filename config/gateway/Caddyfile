@@ -72,6 +72,7 @@ localhost:80 {
 	handle /versions {
 		versions {
 			region "us-east-1"
+			env "staging"
 			endpoints {
 				auth http://127.0.0.1:8080/_info http://127.0.0.1:8080/_healthcheck
 				ledger http://ledger:3068/_info http://ledger:3068/_healthcheck
