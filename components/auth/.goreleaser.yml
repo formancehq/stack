@@ -8,9 +8,9 @@ builds:
   - binary: auth
     id: auth
     ldflags:
-      - -X github.com/numary/auth/cmd.BuildDate={{ .Date }}
-      - -X github.com/numary/auth/cmd.Version={{ .Version }}
-      - -X github.com/numary/auth/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/auth/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/auth/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/auth/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0

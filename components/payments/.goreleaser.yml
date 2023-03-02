@@ -8,9 +8,9 @@ builds:
   - binary: payments
     id: payments
     ldflags:
-      - -X github.com/numary/payments/cmd.BuildDate={{ .Date }}
-      - -X github.com/numary/payments/cmd.Version={{ .Version }}
-      - -X github.com/numary/payments/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/payments/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/payments/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/payments/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
