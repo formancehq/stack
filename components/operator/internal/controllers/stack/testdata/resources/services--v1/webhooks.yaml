@@ -6,9 +6,9 @@ metadata:
     name: webhooks
     namespace: stack1
 spec:
-    clusterIP: 10.0.0.190
+    clusterIP: 10.0.0.68
     clusterIPs:
-        - 10.0.0.190
+        - 10.0.0.68
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
