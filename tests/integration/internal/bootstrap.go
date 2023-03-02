@@ -27,8 +27,8 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/egymgmbh/go-prefix-writer/prefixer"
+	"github.com/formancehq/ledger/cmd"
 	natsServer "github.com/nats-io/nats-server/v2/server"
-	"github.com/numary/ledger/cmd"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/ory/dockertest/v3"
