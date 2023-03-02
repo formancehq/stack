@@ -58,10 +58,8 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 
-	server := NewServer()
+	serve := NewServe()
 	version := NewVersion()
-	start := NewServerStart()
-	server.AddCommand(start)
 
 	conf := NewConfig()
 	conf.AddCommand(NewConfigInit())
@@ -75,7 +73,7 @@ func NewRootCommand() *cobra.Command {
 	scriptExec := NewScriptExec()
 	scriptCheck := NewScriptCheck()
 
-	root.AddCommand(server)
+	root.AddCommand(serve)
 	root.AddCommand(conf)
 	root.AddCommand(UICmd)
 	root.AddCommand(store)

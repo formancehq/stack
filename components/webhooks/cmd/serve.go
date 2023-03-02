@@ -13,7 +13,7 @@ import (
 )
 
 var serverCmd = &cobra.Command{
-	Use:   "server",
+	Use:   "serve",
 	Short: "Run webhooks server",
 	RunE:  RunServer,
 }

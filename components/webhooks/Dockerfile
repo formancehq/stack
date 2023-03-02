@@ -20,4 +20,4 @@ COPY --from=builder /src/components/webhooks/webhooks /usr/bin/webhooks
 EXPOSE 3068
 ENV OTEL_SERVICE_NAME webhooks
 ENTRYPOINT ["/usr/bin/webhooks"]
-CMD ["server"]
+CMD ["serve"]
