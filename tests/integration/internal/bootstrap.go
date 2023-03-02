@@ -162,7 +162,7 @@ func startLedger() {
 
 	ledgerCmd := cmd.NewRootCommand()
 	args := []string{
-		"server", "start",
+		"serve",
 		"--publisher-nats-enabled",
 		"--publisher-nats-client-id=ledger",
 		"--publisher-nats-url=" + natsAddress(),
@@ -238,7 +238,7 @@ func startPayments() {
 
 	args := make([]string, 0)
 	args = append(args,
-		"server",
+		"serve",
 		"--postgres-uri="+dsn.String(),
 		"--config-encryption-key=encryption-key",
 		"--publisher-nats-enabled",
@@ -341,7 +341,7 @@ func startWallets() {
 
 	args := make([]string, 0)
 	args = append(args,
-		"server",
+		"serve",
 		"--stack-client-id=global",
 		"--stack-client-secret=global",
 		"--stack-url="+gatewayServer.URL,
