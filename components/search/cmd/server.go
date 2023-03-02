@@ -5,16 +5,13 @@ import (
 	"crypto/tls"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/formancehq/search/pkg/searchengine"
 	"github.com/formancehq/search/pkg/searchhttp"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/auth"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/oauth2/oauth2introspect"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	app "github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/gorilla/handlers"
@@ -37,12 +34,6 @@ const (
 	esIndicesFlag            = "es-indices"
 	esDisableMappingInitFlag = "mapping-init-disabled"
 	bindFlag                 = "bind"
-
-	authBasicEnabledFlag        = "auth-basic-enabled"
-	authBasicCredentialsFlag    = "auth-basic-credentials"
-	authBearerEnabledFlag       = "auth-bearer-enabled"
-	authBearerIntrospectUrlFlag = "auth-bearer-introspect-url"
-	authBearerAudienceFlag      = "auth-bearer-audience"
 
 	defaultBind = ":8080"
 
@@ -101,11 +92,6 @@ func NewServer() *cobra.Command {
 	cmd.Flags().String(openSearchSchemeFlag, "https", "OpenSearch scheme")
 	cmd.Flags().String(openSearchUsernameFlag, "", "OpenSearch username")
 	cmd.Flags().String(openSearchPasswordFlag, "", "OpenSearch password")
-	cmd.Flags().Bool(authBasicEnabledFlag, false, "Enable basic auth")
-	cmd.Flags().StringSlice(authBasicCredentialsFlag, []string{}, "HTTP basic auth credentials (<username>:<password>)")
-	cmd.Flags().Bool(authBearerEnabledFlag, false, "Enable bearer auth")
-	cmd.Flags().String(authBearerIntrospectUrlFlag, "", "OAuth2 introspect URL")
-	cmd.Flags().String(authBearerAudienceFlag, "", "OAuth2 audience template")
 	cmd.Flags().Bool(esDisableMappingInitFlag, false, "Disable mapping initialization")
 	otlptraces.InitOTLPTracesFlags(cmd.Flags())
 
@@ -159,34 +145,6 @@ func apiModule(serviceName, bind string, serviceInfo api.ServiceInfo, esIndex st
 				routerWithTraces.Use(otelmux.Middleware(serviceName, otelmux.WithTracerProvider(tp)))
 			}
 			routerWithTraces.Path("/_info").Methods(http.MethodGet).Handler(api.InfoHandler(serviceInfo))
-
-			protected := routerWithTraces.PathPrefix("/").Subrouter()
-
-			methods := make([]auth.Method, 0)
-			if viper.GetBool(authBasicEnabledFlag) {
-				credentials := auth.Credentials{}
-				for _, kv := range viper.GetStringSlice(authBasicCredentialsFlag) {
-					parts := strings.SplitN(kv, ":", 2)
-					credentials[parts[0]] = auth.Credential{
-						Password: parts[1],
-						Scopes:   []string{"search"},
-					}
-				}
-				methods = append(methods, auth.NewHTTPBasicMethod(credentials))
-			}
-			if viper.GetBool(authBearerEnabledFlag) {
-				methods = append(methods, auth.NewHttpBearerMethod(
-					auth.NewIntrospectionValidator(
-						oauth2introspect.NewIntrospecter(viper.GetString(authBearerIntrospectUrlFlag)),
-						false,
-						auth.AudienceIn(viper.GetString(authBearerAudienceFlag)),
-					),
-				))
-			}
-
-			if len(methods) > 0 {
-				protected.Use(auth.Middleware(methods...))
-			}
 			routerWithTraces.PathPrefix("/").Handler(searchhttp.Handler(searchengine.NewDefaultEngine(
 				openSearchClient,
 				searchengine.WithESIndex(esIndex),

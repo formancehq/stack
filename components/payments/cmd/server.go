@@ -18,20 +18,12 @@ import (
 	"go.uber.org/fx"
 )
 
-//nolint:gosec // false positive
 const (
-	postgresURIFlag                 = "postgres-uri"
-	configEncryptionKeyFlag         = "config-encryption-key"
-	envFlag                         = "env"
-	authBasicEnabledFlag            = "auth-basic-enabled"
-	authBasicCredentialsFlag        = "auth-basic-credentials"
-	authBearerEnabledFlag           = "auth-bearer-enabled"
-	authBearerIntrospectURLFlag     = "auth-bearer-introspect-url"
-	authBearerAudienceFlag          = "auth-bearer-audience"
-	authBearerAudiencesWildcardFlag = "auth-bearer-audiences-wildcard"
-	authBearerUseScopesFlag         = "auth-bearer-use-scopes"
-	listenFlag                      = "listen"
-	autoMigrateFlag                 = "auto-migrate"
+	postgresURIFlag         = "postgres-uri"
+	configEncryptionKeyFlag = "config-encryption-key"
+	envFlag                 = "env"
+	listenFlag              = "listen"
+	autoMigrateFlag         = "auto-migrate"
 
 	serviceName = "Payments"
 )
