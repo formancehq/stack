@@ -11,7 +11,7 @@ import (
 
 func NewServe() *cobra.Command {
 	return &cobra.Command{
-		Use: "server",
+		Use: "serve",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return app.New(cmd.OutOrStdout(), resolveOptions(
 				viper.GetViper(),
