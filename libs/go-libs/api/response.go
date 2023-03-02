@@ -12,11 +12,6 @@ type Cursor[T any] struct {
 	Previous string `json:"previous,omitempty"`
 	Next     string `json:"next,omitempty"`
 	Data     []T    `json:"data"`
-
-	// deprecated
-	PageSizeDeprecated int `json:"page_size,omitempty"`
-	// deprecated
-	HasMoreDeprecated *bool `json:"has_more,omitempty"`
 }
 
 type Total struct {
@@ -28,9 +23,4 @@ type ErrorResponse struct {
 	ErrorCode    string `json:"errorCode,omitempty"`
 	ErrorMessage string `json:"errorMessage,omitempty"`
 	Details      string `json:"details,omitempty"`
-
-	// deprecated
-	ErrorCodeDeprecated string `json:"error_code,omitempty"`
-	// deprecated
-	ErrorMessageDeprecated string `json:"error_message,omitempty"`
 }
