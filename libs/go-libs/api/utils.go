@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,6 +10,13 @@ import (
 )
 
 const defaultLimit = 15
+
+func writeJSON(w http.ResponseWriter, v any) {
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(v); err != nil {
+		panic(err)
+	}
+}
 
 func NotFound(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
@@ -22,24 +28,20 @@ func NoContent(w http.ResponseWriter) {
 
 func BadRequest(w http.ResponseWriter, code string, err error) {
 	w.WriteHeader(http.StatusBadRequest)
-	if err := json.NewEncoder(w).Encode(ErrorResponse{
+	writeJSON(w, ErrorResponse{
 		ErrorCode:    code,
 		ErrorMessage: err.Error(),
-	}); err != nil {
-		panic(err)
-	}
+	})
 }
 
 func InternalServerError(w http.ResponseWriter, r *http.Request, err error) {
 	logging.FromContext(r.Context()).Error(err)
 
 	w.WriteHeader(http.StatusInternalServerError)
-	if err := json.NewEncoder(w).Encode(ErrorResponse{
+	writeJSON(w, ErrorResponse{
 		ErrorCode:    "INTERNAL_ERROR",
 		ErrorMessage: err.Error(),
-	}); err != nil {
-		panic(err)
-	}
+	})
 }
 
 func Created(w http.ResponseWriter, v any) {
@@ -47,23 +49,23 @@ func Created(w http.ResponseWriter, v any) {
 	Ok(w, v)
 }
 
-func Ok(w io.Writer, v any) {
-	if err := json.NewEncoder(w).Encode(BaseResponse[any]{
+func RawOk(w http.ResponseWriter, v any) {
+	writeJSON(w, v)
+}
+
+func Ok(w http.ResponseWriter, v any) {
+	RawOk(w, BaseResponse[any]{
 		Data: &v,
-	}); err != nil {
-		panic(err)
-	}
+	})
 }
 
-func RenderCursor[T any](w io.Writer, v Cursor[T]) {
-	if err := json.NewEncoder(w).Encode(BaseResponse[T]{
+func RenderCursor[T any](w http.ResponseWriter, v Cursor[T]) {
+	writeJSON(w, BaseResponse[T]{
 		Cursor: &v,
-	}); err != nil {
-		panic(err)
-	}
+	})
 }
 
-func CursorFromListResponse[T any, V any](w io.Writer, query ListQuery[V], response *ListResponse[T]) {
+func CursorFromListResponse[T any, V any](w http.ResponseWriter, query ListQuery[V], response *ListResponse[T]) {
 	RenderCursor(w, Cursor[T]{
 		PageSize: query.Limit,
 		HasMore:  response.HasMore,
@@ -104,8 +106,8 @@ func ReadPaginatedRequest[T any](r *http.Request, f func(r *http.Request) T) Lis
 	}
 }
 
-func GetQueryMap(m map[string][]string, key string) map[string]any {
-	dicts := make(map[string]any)
+func GetQueryMap(m map[string][]string, key string) map[string]string {
+	dicts := make(map[string]string)
 	for k, v := range m {
 		if i := strings.IndexByte(k, '['); i >= 1 && k[0:i] == key {
 			if j := strings.IndexByte(k[i+1:], ']'); j >= 1 {
