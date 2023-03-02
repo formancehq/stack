@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
-	"github.com/numary/ledger/pkg/bus"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )

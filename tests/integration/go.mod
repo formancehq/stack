@@ -17,7 +17,7 @@ require (
 	github.com/jackc/pgx/v5 v5.3.0
 	github.com/nats-io/nats-server/v2 v2.9.14
 	github.com/nats-io/nats.go v1.23.0
-	github.com/numary/ledger v1.9.0
+	github.com/formancehq/ledger v1.9.0
 	github.com/onsi/ginkgo/v2 v2.8.3
 	github.com/onsi/gomega v1.27.1
 	github.com/opensearch-project/opensearch-go v1.1.0
@@ -260,6 +260,6 @@ replace (
 	github.com/formancehq/stack => ../../
 	github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
 	github.com/formancehq/wallets => ../../components/wallets
-	github.com/numary/ledger => ../../components/ledger
+	github.com/formancehq/ledger => ../../components/ledger
 	github.com/zitadel/oidc => github.com/formancehq/oidc v0.0.0-20220923202448-e2960a99b71c
 )
