@@ -123,14 +123,6 @@ func NewRootCommand() *cobra.Command {
 		panic(err)
 	}
 
-	viper.SetConfigName("numary")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("$HOME/.numary")
-	viper.AddConfigPath("/etc/numary")
-	if err = viper.ReadInConfig(); err != nil {
-		fmt.Printf("loading config file: %s\n", err)
-	}
-
 	internal.BindEnv(viper.GetViper())
 
 	return root
