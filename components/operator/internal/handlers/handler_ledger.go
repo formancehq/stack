@@ -12,7 +12,7 @@ func init() {
 		},
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{{
-				ListenEnvVar:            "BIND",
+				Port:                    8080,
 				InjectPostgresVariables: true,
 				HasVersionEndpoint:      true,
 				ExposeHTTP:              true,
