@@ -8,9 +8,9 @@ builds:
   - binary: search
     id: search
     ldflags:
-      - -X github.com/numary/search/cmd.BuildDate={{ .Date }}
-      - -X github.com/numary/search/cmd.Version={{ .Version }}
-      - -X github.com/numary/search/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/search/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/search/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/search/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0

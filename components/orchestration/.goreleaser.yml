@@ -8,9 +8,9 @@ builds:
   - binary: orchestration
     id: orchestration
     ldflags:
-      - -X github.com/numary/orchestration/cmd.BuildDate={{ .Date }}
-      - -X github.com/numary/orchestration/cmd.Version={{ .Version }}
-      - -X github.com/numary/orchestration/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/orchestration/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/orchestration/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/orchestration/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0

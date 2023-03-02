@@ -8,9 +8,9 @@ builds:
   - binary: operator
     id: operator
     ldflags:
-      - -X github.com/numary/operator/cmd.BuildDate={{ .Date }}
-      - -X github.com/numary/operator/cmd.Version={{ .Version }}
-      - -X github.com/numary/operator/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/operator/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/operator/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/operator/cmd.Commit={{ .ShortCommit }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=0
