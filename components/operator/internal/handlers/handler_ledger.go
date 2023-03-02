@@ -12,21 +12,20 @@ func init() {
 		},
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{{
-				EnvPrefix:               "NUMARY_",
-				ListenEnvVar:            "SERVER_HTTP_BIND_ADDRESS",
+				ListenEnvVar:            "BIND",
 				InjectPostgresVariables: true,
 				HasVersionEndpoint:      true,
 				ExposeHTTP:              true,
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 					env := modules.NewEnv().Append(
-						modules.Env("NUMARY_STORAGE_DRIVER", "postgres"),
-						modules.Env("NUMARY_PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
-					).Append(modules.BrokerEnvVarsWithPrefix(resolveContext.Configuration.Spec.Broker, "ledger", "NUMARY_")...)
+						modules.Env("STORAGE_DRIVER", "postgres"),
+						modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
+					).Append(modules.BrokerEnvVars(resolveContext.Configuration.Spec.Broker, "ledger")...)
 
 					return modules.Container{
 						Image: modules.GetImage("ledger", resolveContext.Versions.Spec.Ledger),
 						Env: env.Append(
-							modules.Env("NUMARY_STORAGE_POSTGRES_CONN_STRING", "$(NUMARY_POSTGRES_URI)"),
+							modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(POSTGRES_URI)"),
 						),
 					}
 				},
