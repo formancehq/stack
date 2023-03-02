@@ -5,12 +5,12 @@ import (
 	"os"
 	"path"
 
+	"github.com/formancehq/ledger/cmd/internal"
+	"github.com/formancehq/ledger/pkg/redis"
+	_ "github.com/formancehq/ledger/pkg/storage/sqlstorage/migrates/9-add-pre-post-volumes"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/stack/libs/go-libs/service"
-	"github.com/numary/ledger/cmd/internal"
-	"github.com/numary/ledger/pkg/redis"
-	_ "github.com/numary/ledger/pkg/storage/sqlstorage/migrates/9-add-pre-post-volumes"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -46,8 +46,8 @@ func NewRootCommand() *cobra.Command {
 	viper.SetDefault("version", Version)
 
 	root := &cobra.Command{
-		Use:               "numary",
-		Short:             "Numary",
+		Use:               "ledger",
+		Short:             "ledger",
 		DisableAutoGenTag: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			err := os.MkdirAll(viper.GetString(storageDirFlag), 0700)
@@ -93,8 +93,8 @@ func NewRootCommand() *cobra.Command {
 
 	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")
 	root.PersistentFlags().String(storageDriverFlag, "sqlite", "Storage driver")
-	root.PersistentFlags().String(storageDirFlag, path.Join(home, ".numary/data"), "Storage directory (for sqlite)")
-	root.PersistentFlags().String(storageSQLiteDBNameFlag, "numary", "SQLite database name")
+	root.PersistentFlags().String(storageDirFlag, path.Join(home, ".formance/data"), "Storage directory (for sqlite)")
+	root.PersistentFlags().String(storageSQLiteDBNameFlag, "formance", "SQLite database name")
 	root.PersistentFlags().String(storagePostgresConnectionStringFlag, "postgresql://localhost/postgres", "Postgre connection string")
 	root.PersistentFlags().String(bindFlag, "localhost:3068", "API bind address")
 	root.PersistentFlags().String(lockStrategyFlag, "memory", "Lock strategy (memory, none, redis)")
