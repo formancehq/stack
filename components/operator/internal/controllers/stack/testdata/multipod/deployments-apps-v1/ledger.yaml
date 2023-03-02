@@ -32,7 +32,11 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
+<<<<<<< HEAD:components/operator/internal/controllers/stack/testdata/multipod/deployments-apps-v1/ledger.yaml
                       value: "32768"
+=======
+                      value: "32857"
+>>>>>>> 6899bda0 (feat: remove deprecated flags and add --bind flag on ledger (replace --server.http.bind_address)" (#97)):components/operator/internal/controllers/stack/testdata/resources/deployments-apps-v1/ledger.yaml
                     - name: POSTGRES_DATABASE
                       value: stack1-ledger
                     - name: POSTGRES_USERNAME
@@ -68,18 +72,20 @@ spec:
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: ledger
-                    - name: NUMARY_STORAGE_DRIVER
+                    - name: BIND
+                      value: 0.0.0.0:8080
+                    - name: STORAGE_DRIVER
                       value: postgres
-                    - name: NUMARY_PUBLISHER_TOPIC_MAPPING
+                    - name: PUBLISHER_TOPIC_MAPPING
                       value: '*:stack1-ledger'
-                    - name: NUMARY_BROKER
+                    - name: BROKER
                       value: kafka
-                    - name: NUMARY_PUBLISHER_KAFKA_ENABLED
+                    - name: PUBLISHER_KAFKA_ENABLED
                       value: "true"
-                    - name: NUMARY_PUBLISHER_KAFKA_BROKER
+                    - name: PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
-                    - name: NUMARY_STORAGE_POSTGRES_CONN_STRING
-                      value: $(NUMARY_POSTGRES_URI)
+                    - name: STORAGE_POSTGRES_CONN_STRING
+                      value: $(POSTGRES_URI)
                   image: ghcr.io/formancehq/ledger:latest
                   imagePullPolicy: Always
                   livenessProbe:
