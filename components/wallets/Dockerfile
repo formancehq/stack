@@ -16,4 +16,4 @@ COPY --from=builder /src/components/wallets/wallets /wallets
 EXPOSE 3068
 ENV OTEL_SERVICE_NAME wallets
 ENTRYPOINT ["/wallets"]
-CMD ["server"]
+CMD ["serve"]
