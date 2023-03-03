@@ -7,7 +7,6 @@ Method | HTTP request | Description
 [**AddMetadataOnTransaction**](TransactionsApi.md#AddMetadataOnTransaction) | **Post** /api/ledger/{ledger}/transactions/{txid}/metadata | Set the metadata of a transaction by its ID
 [**CountTransactions**](TransactionsApi.md#CountTransactions) | **Head** /api/ledger/{ledger}/transactions | Count the transactions from a ledger
 [**CreateTransaction**](TransactionsApi.md#CreateTransaction) | **Post** /api/ledger/{ledger}/transactions | Create a new transaction to a ledger
-[**CreateTransactions**](TransactionsApi.md#CreateTransactions) | **Post** /api/ledger/{ledger}/transactions/batch | Create a new batch of transactions to a ledger
 [**GetTransaction**](TransactionsApi.md#GetTransaction) | **Get** /api/ledger/{ledger}/transactions/{txid} | Get transaction from a ledger by its ID
 [**ListTransactions**](TransactionsApi.md#ListTransactions) | **Get** /api/ledger/{ledger}/transactions | List transactions from a ledger
 [**RevertTransaction**](TransactionsApi.md#RevertTransaction) | **Post** /api/ledger/{ledger}/transactions/{txid}/revert | Revert a ledger transaction by its ID
@@ -172,7 +171,7 @@ Name | Type | Description  | Notes
 
 ## CreateTransaction
 
-> TransactionsResponse CreateTransaction(ctx, ledger).PostTransaction(postTransaction).Preview(preview).Execute()
+> TransactionResponse CreateTransaction(ctx, ledger).PostTransaction(postTransaction).Preview(preview).Execute()
 
 Create a new transaction to a ledger
 
@@ -200,7 +199,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.CreateTransaction``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `CreateTransaction`: TransactionsResponse
+    // response from `CreateTransaction`: TransactionResponse
     fmt.Fprintf(os.Stdout, "Response from `TransactionsApi.CreateTransaction`: %v\n", resp)
 }
 ```
@@ -226,77 +225,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**TransactionsResponse**](TransactionsResponse.md)
-
-### Authorization
-
-[Authorization](../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
-[[Back to Model list]](../README.md#documentation-for-models)
-[[Back to README]](../README.md)
-
-
-## CreateTransactions
-
-> TransactionsResponse CreateTransactions(ctx, ledger).Transactions(transactions).Execute()
-
-Create a new batch of transactions to a ledger
-
-### Example
-
-```go
-package main
-
-import (
-    "context"
-    "fmt"
-    "os"
-    client "github.com/formancehq/formance-sdk-go"
-)
-
-func main() {
-    ledger := "ledger001" // string | Name of the ledger.
-    transactions := *client.NewTransactions([]client.TransactionData{*client.NewTransactionData([]client.Posting{*client.NewPosting(int64(100), "COIN", "users:002", "users:001")})}) // Transactions | 
-
-    configuration := client.NewConfiguration()
-    apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.TransactionsApi.CreateTransactions(context.Background(), ledger).Transactions(transactions).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.CreateTransactions``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
-    // response from `CreateTransactions`: TransactionsResponse
-    fmt.Fprintf(os.Stdout, "Response from `TransactionsApi.CreateTransactions`: %v\n", resp)
-}
-```
-
-### Path Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**ledger** | **string** | Name of the ledger. | 
-
-### Other Parameters
-
-Other parameters are passed through a pointer to a apiCreateTransactionsRequest struct via the builder pattern
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-
- **transactions** | [**Transactions**](Transactions.md) |  | 
-
-### Return type
-
-[**TransactionsResponse**](TransactionsResponse.md)
+[**TransactionResponse**](TransactionResponse.md)
 
 ### Authorization
 

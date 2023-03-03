@@ -47,7 +47,6 @@ export * from '../models/ConnectorsConfigsResponseDataConnector';
 export * from '../models/ConnectorsConfigsResponseDataConnectorKey';
 export * from '../models/ConnectorsResponse';
 export * from '../models/ConnectorsResponseDataInner';
-export * from '../models/Contract';
 export * from '../models/CreateBalanceResponse';
 export * from '../models/CreateClientResponse';
 export * from '../models/CreateScopeResponse';
@@ -99,8 +98,6 @@ export * from '../models/ListWorkflowsResponse';
 export * from '../models/Log';
 export * from '../models/LogsCursorResponse';
 export * from '../models/LogsCursorResponseCursor';
-export * from '../models/Mapping';
-export * from '../models/MappingResponse';
 export * from '../models/MigrationInfo';
 export * from '../models/ModelError';
 export * from '../models/ModulrConfig';
@@ -180,7 +177,6 @@ export * from '../models/TransactionResponse';
 export * from '../models/Transactions';
 export * from '../models/TransactionsCursorResponse';
 export * from '../models/TransactionsCursorResponseCursor';
-export * from '../models/TransactionsResponse';
 export * from '../models/TransferRequest';
 export * from '../models/TransferResponse';
 export * from '../models/TransfersResponse';
@@ -255,7 +251,6 @@ import { ConnectorsConfigsResponseDataConnector } from '../models/ConnectorsConf
 import { ConnectorsConfigsResponseDataConnectorKey } from '../models/ConnectorsConfigsResponseDataConnectorKey';
 import { ConnectorsResponse } from '../models/ConnectorsResponse';
 import { ConnectorsResponseDataInner   } from '../models/ConnectorsResponseDataInner';
-import { Contract } from '../models/Contract';
 import { CreateBalanceResponse } from '../models/CreateBalanceResponse';
 import { CreateClientResponse } from '../models/CreateClientResponse';
 import { CreateScopeResponse } from '../models/CreateScopeResponse';
@@ -307,8 +302,6 @@ import { ListWorkflowsResponse } from '../models/ListWorkflowsResponse';
 import { Log , LogTypeEnum      } from '../models/Log';
 import { LogsCursorResponse } from '../models/LogsCursorResponse';
 import { LogsCursorResponseCursor } from '../models/LogsCursorResponseCursor';
-import { Mapping } from '../models/Mapping';
-import { MappingResponse } from '../models/MappingResponse';
 import { MigrationInfo   , MigrationInfoStateEnum   } from '../models/MigrationInfo';
 import { ModelError, ModelErrorErrorCodeEnum    } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
@@ -388,7 +381,6 @@ import { TransactionResponse } from '../models/TransactionResponse';
 import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
-import { TransactionsResponse } from '../models/TransactionsResponse';
 import { TransferRequest } from '../models/TransferRequest';
 import { TransferResponse } from '../models/TransferResponse';
 import { TransfersResponse } from '../models/TransfersResponse';
@@ -495,7 +487,6 @@ let typeMap: {[index: string]: any} = {
     "ConnectorsConfigsResponseDataConnectorKey": ConnectorsConfigsResponseDataConnectorKey,
     "ConnectorsResponse": ConnectorsResponse,
     "ConnectorsResponseDataInner": ConnectorsResponseDataInner,
-    "Contract": Contract,
     "CreateBalanceResponse": CreateBalanceResponse,
     "CreateClientResponse": CreateClientResponse,
     "CreateScopeResponse": CreateScopeResponse,
@@ -546,8 +537,6 @@ let typeMap: {[index: string]: any} = {
     "Log": Log,
     "LogsCursorResponse": LogsCursorResponse,
     "LogsCursorResponseCursor": LogsCursorResponseCursor,
-    "Mapping": Mapping,
-    "MappingResponse": MappingResponse,
     "MigrationInfo": MigrationInfo,
     "ModelError": ModelError,
     "ModulrConfig": ModulrConfig,
@@ -626,7 +615,6 @@ let typeMap: {[index: string]: any} = {
     "Transactions": Transactions,
     "TransactionsCursorResponse": TransactionsCursorResponse,
     "TransactionsCursorResponseCursor": TransactionsCursorResponseCursor,
-    "TransactionsResponse": TransactionsResponse,
     "TransferRequest": TransferRequest,
     "TransferResponse": TransferResponse,
     "TransfersResponse": TransfersResponse,
