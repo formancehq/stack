@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **GetAccount** | Pointer to [**AccountResponse**](AccountResponse.md) |  | [optional] 
-**CreateTransaction** | Pointer to [**TransactionsResponse**](TransactionsResponse.md) |  | [optional] 
+**CreateTransaction** | Pointer to [**TransactionResponse**](TransactionResponse.md) |  | [optional] 
 **RevertTransaction** | Pointer to [**TransactionResponse**](TransactionResponse.md) |  | [optional] 
 **GetPayment** | Pointer to [**PaymentResponse**](PaymentResponse.md) |  | [optional] 
 **DebitWallet** | Pointer to [**DebitWalletResponse**](DebitWalletResponse.md) |  | [optional] 
@@ -57,20 +57,20 @@ HasGetAccount returns a boolean if a field has been set.
 
 ### GetCreateTransaction
 
-`func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() TransactionsResponse`
+`func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() TransactionResponse`
 
 GetCreateTransaction returns the CreateTransaction field if non-nil, zero value otherwise.
 
 ### GetCreateTransactionOk
 
-`func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransactionOk() (*TransactionsResponse, bool)`
+`func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransactionOk() (*TransactionResponse, bool)`
 
 GetCreateTransactionOk returns a tuple with the CreateTransaction field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetCreateTransaction
 
-`func (o *WorkflowInstanceHistoryStageOutput) SetCreateTransaction(v TransactionsResponse)`
+`func (o *WorkflowInstanceHistoryStageOutput) SetCreateTransaction(v TransactionResponse)`
 
 SetCreateTransaction sets CreateTransaction field to given value.
 

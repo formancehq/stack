@@ -214,8 +214,6 @@ Class | Method | HTTP request | Description
 *ClientsApi* | [**update_client**](docs/apis/tags/ClientsApi.md#update_client) | **put** /api/auth/clients/{clientId} | Update client
 *LedgerApi* | [**get_ledger_info**](docs/apis/tags/LedgerApi.md#get_ledger_info) | **get** /api/ledger/{ledger}/_info | Get information about a ledger
 *LogsApi* | [**list_logs**](docs/apis/tags/LogsApi.md#list_logs) | **get** /api/ledger/{ledger}/logs | List the logs from a ledger
-*MappingApi* | [**get_mapping**](docs/apis/tags/MappingApi.md#get_mapping) | **get** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
-*MappingApi* | [**update_mapping**](docs/apis/tags/MappingApi.md#update_mapping) | **put** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
 *OrchestrationApi* | [**cancel_event**](docs/apis/tags/OrchestrationApi.md#cancel_event) | **put** /api/orchestration/instances/{instanceID}/abort | Cancel a running workflow
 *OrchestrationApi* | [**create_workflow**](docs/apis/tags/OrchestrationApi.md#create_workflow) | **post** /api/orchestration/workflows | Create workflow
 *OrchestrationApi* | [**get_instance**](docs/apis/tags/OrchestrationApi.md#get_instance) | **get** /api/orchestration/instances/{instanceID} | Get a workflow instance by id
@@ -256,7 +254,6 @@ Class | Method | HTTP request | Description
 *TransactionsApi* | [**add_metadata_on_transaction**](docs/apis/tags/TransactionsApi.md#add_metadata_on_transaction) | **post** /api/ledger/{ledger}/transactions/{txid}/metadata | Set the metadata of a transaction by its ID
 *TransactionsApi* | [**count_transactions**](docs/apis/tags/TransactionsApi.md#count_transactions) | **head** /api/ledger/{ledger}/transactions | Count the transactions from a ledger
 *TransactionsApi* | [**create_transaction**](docs/apis/tags/TransactionsApi.md#create_transaction) | **post** /api/ledger/{ledger}/transactions | Create a new transaction to a ledger
-*TransactionsApi* | [**create_transactions**](docs/apis/tags/TransactionsApi.md#create_transactions) | **post** /api/ledger/{ledger}/transactions/batch | Create a new batch of transactions to a ledger
 *TransactionsApi* | [**get_transaction**](docs/apis/tags/TransactionsApi.md#get_transaction) | **get** /api/ledger/{ledger}/transactions/{txid} | Get transaction from a ledger by its ID
 *TransactionsApi* | [**list_transactions**](docs/apis/tags/TransactionsApi.md#list_transactions) | **get** /api/ledger/{ledger}/transactions | List transactions from a ledger
 *TransactionsApi* | [**revert_transaction**](docs/apis/tags/TransactionsApi.md#revert_transaction) | **post** /api/ledger/{ledger}/transactions/{txid}/revert | Revert a ledger transaction by its ID
@@ -338,7 +335,6 @@ Class | Method | HTTP request | Description
  - [ConnectorConfigResponse](docs/models/ConnectorConfigResponse.md)
  - [ConnectorsConfigsResponse](docs/models/ConnectorsConfigsResponse.md)
  - [ConnectorsResponse](docs/models/ConnectorsResponse.md)
- - [Contract](docs/models/Contract.md)
  - [CreateBalanceRequest](docs/models/CreateBalanceRequest.md)
  - [CreateBalanceResponse](docs/models/CreateBalanceResponse.md)
  - [CreateClientRequest](docs/models/CreateClientRequest.md)
@@ -386,8 +382,6 @@ Class | Method | HTTP request | Description
  - [ListWorkflowsResponse](docs/models/ListWorkflowsResponse.md)
  - [Log](docs/models/Log.md)
  - [LogsCursorResponse](docs/models/LogsCursorResponse.md)
- - [Mapping](docs/models/Mapping.md)
- - [MappingResponse](docs/models/MappingResponse.md)
  - [Metadata](docs/models/Metadata.md)
  - [MigrationInfo](docs/models/MigrationInfo.md)
  - [ModulrConfig](docs/models/ModulrConfig.md)
@@ -448,7 +442,6 @@ Class | Method | HTTP request | Description
  - [TransactionResponse](docs/models/TransactionResponse.md)
  - [Transactions](docs/models/Transactions.md)
  - [TransactionsCursorResponse](docs/models/TransactionsCursorResponse.md)
- - [TransactionsResponse](docs/models/TransactionsResponse.md)
  - [TransferRequest](docs/models/TransferRequest.md)
  - [TransferResponse](docs/models/TransferResponse.md)
  - [TransfersResponse](docs/models/TransfersResponse.md)
@@ -493,7 +486,6 @@ Class | Method | HTTP request | Description
 
 ## Author
 
-support@formance.com
 support@formance.com
 support@formance.com
 support@formance.com
