@@ -87,7 +87,7 @@ func NewSendCommand() *cobra.Command {
 				return err
 			}
 
-			return internal.PrintTransaction(cmd.OutOrStdout(), response.Data[0])
+			return internal.PrintTransaction(cmd.OutOrStdout(), response.Data)
 		}),
 	)
 }

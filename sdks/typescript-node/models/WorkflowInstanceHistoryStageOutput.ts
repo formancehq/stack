@@ -15,12 +15,11 @@ import { DebitWalletResponse } from '../models/DebitWalletResponse';
 import { GetWalletResponse } from '../models/GetWalletResponse';
 import { PaymentResponse } from '../models/PaymentResponse';
 import { TransactionResponse } from '../models/TransactionResponse';
-import { TransactionsResponse } from '../models/TransactionsResponse';
 import { HttpFile } from '../http/http';
 
 export class WorkflowInstanceHistoryStageOutput {
     'getAccount'?: AccountResponse;
-    'createTransaction'?: TransactionsResponse;
+    'createTransaction'?: TransactionResponse;
     'revertTransaction'?: TransactionResponse;
     'getPayment'?: PaymentResponse;
     'debitWallet'?: DebitWalletResponse;
@@ -38,7 +37,7 @@ export class WorkflowInstanceHistoryStageOutput {
         {
             "name": "createTransaction",
             "baseName": "CreateTransaction",
-            "type": "TransactionsResponse",
+            "type": "TransactionResponse",
             "format": ""
         },
         {

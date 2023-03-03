@@ -59,7 +59,6 @@ from Formance.model.connector_config import ConnectorConfig
 from Formance.model.connector_config_response import ConnectorConfigResponse
 from Formance.model.connectors_configs_response import ConnectorsConfigsResponse
 from Formance.model.connectors_response import ConnectorsResponse
-from Formance.model.contract import Contract
 from Formance.model.create_balance_request import CreateBalanceRequest
 from Formance.model.create_balance_response import CreateBalanceResponse
 from Formance.model.create_client_request import CreateClientRequest
@@ -107,8 +106,6 @@ from Formance.model.list_wallets_response import ListWalletsResponse
 from Formance.model.list_workflows_response import ListWorkflowsResponse
 from Formance.model.log import Log
 from Formance.model.logs_cursor_response import LogsCursorResponse
-from Formance.model.mapping import Mapping
-from Formance.model.mapping_response import MappingResponse
 from Formance.model.metadata import Metadata
 from Formance.model.migration_info import MigrationInfo
 from Formance.model.modulr_config import ModulrConfig
@@ -169,7 +166,6 @@ from Formance.model.transaction_data import TransactionData
 from Formance.model.transaction_response import TransactionResponse
 from Formance.model.transactions import Transactions
 from Formance.model.transactions_cursor_response import TransactionsCursorResponse
-from Formance.model.transactions_response import TransactionsResponse
 from Formance.model.transfer_request import TransferRequest
 from Formance.model.transfer_response import TransferResponse
 from Formance.model.transfers_response import TransfersResponse

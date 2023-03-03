@@ -17,14 +17,12 @@ from Formance.apis.paths.api_ledger_ledger__info import ApiLedgerLedgerInfo
 from Formance.apis.paths.api_ledger_ledger_accounts import ApiLedgerLedgerAccounts
 from Formance.apis.paths.api_ledger_ledger_accounts_address import ApiLedgerLedgerAccountsAddress
 from Formance.apis.paths.api_ledger_ledger_accounts_address_metadata import ApiLedgerLedgerAccountsAddressMetadata
-from Formance.apis.paths.api_ledger_ledger_mapping import ApiLedgerLedgerMapping
 from Formance.apis.paths.api_ledger_ledger_script import ApiLedgerLedgerScript
 from Formance.apis.paths.api_ledger_ledger_stats import ApiLedgerLedgerStats
 from Formance.apis.paths.api_ledger_ledger_transactions import ApiLedgerLedgerTransactions
 from Formance.apis.paths.api_ledger_ledger_transactions_txid import ApiLedgerLedgerTransactionsTxid
 from Formance.apis.paths.api_ledger_ledger_transactions_txid_metadata import ApiLedgerLedgerTransactionsTxidMetadata
 from Formance.apis.paths.api_ledger_ledger_transactions_txid_revert import ApiLedgerLedgerTransactionsTxidRevert
-from Formance.apis.paths.api_ledger_ledger_transactions_batch import ApiLedgerLedgerTransactionsBatch
 from Formance.apis.paths.api_ledger_ledger_balances import ApiLedgerLedgerBalances
 from Formance.apis.paths.api_ledger_ledger_aggregate_balances import ApiLedgerLedgerAggregateBalances
 from Formance.apis.paths.api_ledger_ledger_logs import ApiLedgerLedgerLogs
@@ -92,14 +90,12 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.API_LEDGER_LEDGER_ACCOUNTS: ApiLedgerLedgerAccounts,
         PathValues.API_LEDGER_LEDGER_ACCOUNTS_ADDRESS: ApiLedgerLedgerAccountsAddress,
         PathValues.API_LEDGER_LEDGER_ACCOUNTS_ADDRESS_METADATA: ApiLedgerLedgerAccountsAddressMetadata,
-        PathValues.API_LEDGER_LEDGER_MAPPING: ApiLedgerLedgerMapping,
         PathValues.API_LEDGER_LEDGER_SCRIPT: ApiLedgerLedgerScript,
         PathValues.API_LEDGER_LEDGER_STATS: ApiLedgerLedgerStats,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS: ApiLedgerLedgerTransactions,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS_TXID: ApiLedgerLedgerTransactionsTxid,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS_TXID_METADATA: ApiLedgerLedgerTransactionsTxidMetadata,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS_TXID_REVERT: ApiLedgerLedgerTransactionsTxidRevert,
-        PathValues.API_LEDGER_LEDGER_TRANSACTIONS_BATCH: ApiLedgerLedgerTransactionsBatch,
         PathValues.API_LEDGER_LEDGER_BALANCES: ApiLedgerLedgerBalances,
         PathValues.API_LEDGER_LEDGER_AGGREGATE_BALANCES: ApiLedgerLedgerAggregateBalances,
         PathValues.API_LEDGER_LEDGER_LOGS: ApiLedgerLedgerLogs,
@@ -168,14 +164,12 @@ path_to_api = PathToApi(
         PathValues.API_LEDGER_LEDGER_ACCOUNTS: ApiLedgerLedgerAccounts,
         PathValues.API_LEDGER_LEDGER_ACCOUNTS_ADDRESS: ApiLedgerLedgerAccountsAddress,
         PathValues.API_LEDGER_LEDGER_ACCOUNTS_ADDRESS_METADATA: ApiLedgerLedgerAccountsAddressMetadata,
-        PathValues.API_LEDGER_LEDGER_MAPPING: ApiLedgerLedgerMapping,
         PathValues.API_LEDGER_LEDGER_SCRIPT: ApiLedgerLedgerScript,
         PathValues.API_LEDGER_LEDGER_STATS: ApiLedgerLedgerStats,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS: ApiLedgerLedgerTransactions,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS_TXID: ApiLedgerLedgerTransactionsTxid,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS_TXID_METADATA: ApiLedgerLedgerTransactionsTxidMetadata,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS_TXID_REVERT: ApiLedgerLedgerTransactionsTxidRevert,
-        PathValues.API_LEDGER_LEDGER_TRANSACTIONS_BATCH: ApiLedgerLedgerTransactionsBatch,
         PathValues.API_LEDGER_LEDGER_BALANCES: ApiLedgerLedgerBalances,
         PathValues.API_LEDGER_LEDGER_AGGREGATE_BALANCES: ApiLedgerLedgerAggregateBalances,
         PathValues.API_LEDGER_LEDGER_LOGS: ApiLedgerLedgerLogs,

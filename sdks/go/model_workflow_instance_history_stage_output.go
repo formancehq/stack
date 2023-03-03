@@ -21,7 +21,7 @@ var _ MappedNullable = &WorkflowInstanceHistoryStageOutput{}
 // WorkflowInstanceHistoryStageOutput struct for WorkflowInstanceHistoryStageOutput
 type WorkflowInstanceHistoryStageOutput struct {
 	GetAccount *AccountResponse `json:"GetAccount,omitempty"`
-	CreateTransaction *TransactionsResponse `json:"CreateTransaction,omitempty"`
+	CreateTransaction *TransactionResponse `json:"CreateTransaction,omitempty"`
 	RevertTransaction *TransactionResponse `json:"RevertTransaction,omitempty"`
 	GetPayment *PaymentResponse `json:"GetPayment,omitempty"`
 	DebitWallet *DebitWalletResponse `json:"DebitWallet,omitempty"`
@@ -78,9 +78,9 @@ func (o *WorkflowInstanceHistoryStageOutput) SetGetAccount(v AccountResponse) {
 }
 
 // GetCreateTransaction returns the CreateTransaction field value if set, zero value otherwise.
-func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() TransactionsResponse {
+func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() TransactionResponse {
 	if o == nil || IsNil(o.CreateTransaction) {
-		var ret TransactionsResponse
+		var ret TransactionResponse
 		return ret
 	}
 	return *o.CreateTransaction
@@ -88,7 +88,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() Transactions
 
 // GetCreateTransactionOk returns a tuple with the CreateTransaction field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransactionOk() (*TransactionsResponse, bool) {
+func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransactionOk() (*TransactionResponse, bool) {
 	if o == nil || IsNil(o.CreateTransaction) {
 		return nil, false
 	}
@@ -104,8 +104,8 @@ func (o *WorkflowInstanceHistoryStageOutput) HasCreateTransaction() bool {
 	return false
 }
 
-// SetCreateTransaction gets a reference to the given TransactionsResponse and assigns it to the CreateTransaction field.
-func (o *WorkflowInstanceHistoryStageOutput) SetCreateTransaction(v TransactionsResponse) {
+// SetCreateTransaction gets a reference to the given TransactionResponse and assigns it to the CreateTransaction field.
+func (o *WorkflowInstanceHistoryStageOutput) SetCreateTransaction(v TransactionResponse) {
 	o.CreateTransaction = &v
 }
 
