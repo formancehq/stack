@@ -8,10 +8,11 @@ import (
 
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -59,7 +60,10 @@ func TestReadUser(t *testing.T) {
 }
 
 func withDbAndUserRouter(t *testing.T, callback func(router *mux.Router, db *gorm.DB)) {
-	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"), &gorm.Config{})
+	pgDatabase := pgtesting.NewPostgresDatabase(t)
+	dialector := postgres.Open(pgDatabase.ConnString())
+
+	db, err := sqlstorage.LoadGorm(dialector, &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 
