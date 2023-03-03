@@ -72,14 +72,14 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-ledger | LedgerSchema | | 
+ledger | LedgerSchema | |
 
 # LedgerSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-str,  | str,  |  | 
+str,  | str,  |  |
 
 ### Return Types, Responses
 
@@ -99,7 +99,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**MappingResponse**](../../models/MappingResponse.md) |  | 
+[**MappingResponse**](../../models/MappingResponse.md) |  |
 
 
 #### get_mapping.ApiResponseForDefault
@@ -112,7 +112,7 @@ headers | Unset | headers were not defined |
 # SchemaFor0ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**ErrorResponse**](../../models/ErrorResponse.md) |  | 
+[**ErrorResponse**](../../models/ErrorResponse.md) |  |
 
 
 ### Authorization
@@ -197,7 +197,7 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 # SchemaForRequestBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**Mapping**](../../models/Mapping.md) |  | 
+[**Mapping**](../../models/Mapping.md) |  |
 
 
 ### path_params
@@ -205,14 +205,14 @@ Type | Description  | Notes
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-ledger | LedgerSchema | | 
+ledger | LedgerSchema | |
 
 # LedgerSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-str,  | str,  |  | 
+str,  | str,  |  |
 
 ### Return Types, Responses
 
@@ -232,7 +232,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**MappingResponse**](../../models/MappingResponse.md) |  | 
+[**MappingResponse**](../../models/MappingResponse.md) |  |
 
 
 #### update_mapping.ApiResponseForDefault
@@ -245,7 +245,7 @@ headers | Unset | headers were not defined |
 # SchemaFor0ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**ErrorResponse**](../../models/ErrorResponse.md) |  | 
+[**ErrorResponse**](../../models/ErrorResponse.md) |  |
 
 
 ### Authorization
@@ -253,4 +253,3 @@ Type | Description  | Notes
 [Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
-

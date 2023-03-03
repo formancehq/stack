@@ -31,7 +31,6 @@ export * from '../models/ClientSecret';
 export * from '../models/Config';
 export * from '../models/ConfigChangeSecret';
 export * from '../models/ConfigInfo';
-export * from '../models/ConfigInfoResponse';
 export * from '../models/ConfigResponse';
 export * from '../models/ConfigUser';
 export * from '../models/ConfigsResponse';
@@ -235,7 +234,6 @@ import { ClientSecret } from '../models/ClientSecret';
 import { Config } from '../models/Config';
 import { ConfigChangeSecret } from '../models/ConfigChangeSecret';
 import { ConfigInfo } from '../models/ConfigInfo';
-import { ConfigInfoResponse } from '../models/ConfigInfoResponse';
 import { ConfigResponse } from '../models/ConfigResponse';
 import { ConfigUser } from '../models/ConfigUser';
 import { ConfigsResponse } from '../models/ConfigsResponse';
@@ -472,7 +470,6 @@ let typeMap: {[index: string]: any} = {
     "Config": Config,
     "ConfigChangeSecret": ConfigChangeSecret,
     "ConfigInfo": ConfigInfo,
-    "ConfigInfoResponse": ConfigInfoResponse,
     "ConfigResponse": ConfigResponse,
     "ConfigUser": ConfigUser,
     "ConfigsResponse": ConfigsResponse,

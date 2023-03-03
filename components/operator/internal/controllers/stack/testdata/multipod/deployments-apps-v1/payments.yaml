@@ -109,7 +109,11 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
+<<<<<<< HEAD:components/operator/internal/controllers/stack/testdata/multipod/deployments-apps-v1/payments.yaml
                       value: "32768"
+=======
+                      value: "32947"
+>>>>>>> 522979ae (feat: remove wrapper on GET /_info (#108)):components/operator/internal/controllers/stack/testdata/resources/deployments-apps-v1/payments.yaml
                     - name: POSTGRES_DATABASE
                       value: stack1-payments
                     - name: POSTGRES_USERNAME
