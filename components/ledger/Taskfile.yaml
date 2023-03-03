@@ -42,19 +42,7 @@ tasks:
 
   tests:local:
     cmds:
-      - task: tests:local:sqlite
       - task: tests:local:postgres
-
-  tests:local:sqlite:
-    cmds:
-      - >
-        go test {{.TAGS}} {{if eq .VERBOSE "true"}}-v{{end}} {{.FAILFAST}} -coverpkg {{.PKG}}
-        -coverprofile coverage.out -covermode atomic
-        -run={{.RUN}} -timeout {{.TIMEOUT}} {{.PKG}} |
-        sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' |
-        sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/'' |
-        sed ''/RUN/s//$(printf "\033[34mRUN\033[0m")/''
-      - task: print:coverage
 
   tests:local:postgres:
     deps: [postgres]
