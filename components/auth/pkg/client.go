@@ -98,7 +98,7 @@ func (c *Client) HasScope(id string) bool {
 type Client struct {
 	ClientOptions
 	Secrets Array[ClientSecret] `gorm:"type:text" json:"secrets"`
-	Scopes  []Scope             `gorm:"many2many:client_scopes;" json:"scopes"`
+	Scopes  []Scope             `gorm:"many2many:client_scopes;constraint:OnDelete:CASCADE" json:"scopes"`
 }
 
 func (c *Client) GetScopes() []string {
