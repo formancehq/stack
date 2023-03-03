@@ -167,7 +167,6 @@ func startLedger() {
 		"--publisher-nats-client-id=ledger",
 		"--publisher-nats-url=" + natsAddress(),
 		fmt.Sprintf("--publisher-topic-mapping=*:%s-ledger", actualTestID),
-		"--storage.driver=postgres",
 		"--storage.postgres.conn_string=" + dsn.String(),
 		"--bind=0.0.0.0:0", // Random port
 	}
