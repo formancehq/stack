@@ -10,7 +10,7 @@ import {canConsumeForm, isCodeInRange} from '../util';
 import {SecurityAuthentication} from '../auth/auth';
 
 
-import { ConfigInfoResponse } from '../models/ConfigInfoResponse';
+import { ConfigInfo } from '../models/ConfigInfo';
 import { ErrorResponse } from '../models/ErrorResponse';
 
 /**
@@ -58,13 +58,13 @@ export class ServerApiResponseProcessor {
      * @params response Response returned by the server for a request to getInfo
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async getInfo(response: ResponseContext): Promise<ConfigInfoResponse > {
+     public async getInfo(response: ResponseContext): Promise<ConfigInfo > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: ConfigInfoResponse = ObjectSerializer.deserialize(
+            const body: ConfigInfo = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ConfigInfoResponse", ""
-            ) as ConfigInfoResponse;
+                "ConfigInfo", ""
+            ) as ConfigInfo;
             return body;
         }
         if (isCodeInRange("0", response.httpStatusCode)) {
@@ -77,10 +77,10 @@ export class ServerApiResponseProcessor {
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: ConfigInfoResponse = ObjectSerializer.deserialize(
+            const body: ConfigInfo = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ConfigInfoResponse", ""
-            ) as ConfigInfoResponse;
+                "ConfigInfo", ""
+            ) as ConfigInfo;
             return body;
         }
 

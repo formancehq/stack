@@ -34,7 +34,6 @@ import { ClientSecret } from '../models/ClientSecret';
 import { Config } from '../models/Config';
 import { ConfigChangeSecret } from '../models/ConfigChangeSecret';
 import { ConfigInfo } from '../models/ConfigInfo';
-import { ConfigInfoResponse } from '../models/ConfigInfoResponse';
 import { ConfigResponse } from '../models/ConfigResponse';
 import { ConfigUser } from '../models/ConfigUser';
 import { ConfigsResponse } from '../models/ConfigsResponse';
@@ -1002,7 +1001,7 @@ export class PromiseServerApi {
     /**
      * Show server information
      */
-    public getInfo(_options?: Configuration): Promise<ConfigInfoResponse> {
+    public getInfo(_options?: Configuration): Promise<ConfigInfo> {
         const result = this.api.getInfo(_options);
         return result.toPromise();
     }
