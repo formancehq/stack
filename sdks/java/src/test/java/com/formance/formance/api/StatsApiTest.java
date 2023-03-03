@@ -28,7 +28,7 @@ public class StatsApiTest {
     /**
      * Get statistics from a ledger
      *
-     * Get statistics from a ledger. (aggregate metrics on accounts and transactions) 
+     * Get statistics from a ledger. (aggregate metrics on accounts and transactions)
      */
     @Test
     public void readStatsTest() {
