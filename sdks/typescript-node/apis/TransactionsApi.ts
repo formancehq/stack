@@ -13,9 +13,7 @@ import {SecurityAuthentication} from '../auth/auth';
 import { ErrorResponse } from '../models/ErrorResponse';
 import { PostTransaction } from '../models/PostTransaction';
 import { TransactionResponse } from '../models/TransactionResponse';
-import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
-import { TransactionsResponse } from '../models/TransactionsResponse';
 
 /**
  * no description
@@ -223,61 +221,6 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         requestContext.setHeaderParam("Content-Type", contentType);
         const serializedBody = ObjectSerializer.stringify(
             ObjectSerializer.serialize(postTransaction, "PostTransaction", ""),
-            contentType
-        );
-        requestContext.setBody(serializedBody);
-
-        let authMethod: SecurityAuthentication | undefined;
-        // Apply auth methods
-        authMethod = _config.authMethods["Authorization"]
-        if (authMethod?.applySecurityAuthentication) {
-            await authMethod?.applySecurityAuthentication(requestContext);
-        }
-        
-        const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
-        if (defaultAuth?.applySecurityAuthentication) {
-            await defaultAuth?.applySecurityAuthentication(requestContext);
-        }
-
-        return requestContext;
-    }
-
-    /**
-     * Create a new batch of transactions to a ledger
-     * @param ledger Name of the ledger.
-     * @param transactions 
-     */
-    public async createTransactions(ledger: string, transactions: Transactions, _options?: Configuration): Promise<RequestContext> {
-        let _config = _options || this.configuration;
-
-        // verify required parameter 'ledger' is not null or undefined
-        if (ledger === null || ledger === undefined) {
-            throw new RequiredError("TransactionsApi", "createTransactions", "ledger");
-        }
-
-
-        // verify required parameter 'transactions' is not null or undefined
-        if (transactions === null || transactions === undefined) {
-            throw new RequiredError("TransactionsApi", "createTransactions", "transactions");
-        }
-
-
-        // Path Params
-        const localVarPath = '/api/ledger/{ledger}/transactions/batch'
-            .replace('{' + 'ledger' + '}', encodeURIComponent(String(ledger)));
-
-        // Make Request Context
-        const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.POST);
-        requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
-
-
-        // Body Params
-        const contentType = ObjectSerializer.getPreferredMediaType([
-            "application/json"
-        ]);
-        requestContext.setHeaderParam("Content-Type", contentType);
-        const serializedBody = ObjectSerializer.stringify(
-            ObjectSerializer.serialize(transactions, "Transactions", ""),
             contentType
         );
         requestContext.setBody(serializedBody);
@@ -598,13 +541,13 @@ export class TransactionsApiResponseProcessor {
      * @params response Response returned by the server for a request to createTransaction
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async createTransaction(response: ResponseContext): Promise<TransactionsResponse > {
+     public async createTransaction(response: ResponseContext): Promise<TransactionResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: TransactionsResponse = ObjectSerializer.deserialize(
+            const body: TransactionResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "TransactionsResponse", ""
-            ) as TransactionsResponse;
+                "TransactionResponse", ""
+            ) as TransactionResponse;
             return body;
         }
         if (isCodeInRange("0", response.httpStatusCode)) {
@@ -617,46 +560,10 @@ export class TransactionsApiResponseProcessor {
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: TransactionsResponse = ObjectSerializer.deserialize(
+            const body: TransactionResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "TransactionsResponse", ""
-            ) as TransactionsResponse;
-            return body;
-        }
-
-        throw new ApiException<string | Buffer | undefined>(response.httpStatusCode, "Unknown API Status Code!", await response.getBodyAsAny(), response.headers);
-    }
-
-    /**
-     * Unwraps the actual response sent by the server from the response context and deserializes the response content
-     * to the expected objects
-     *
-     * @params response Response returned by the server for a request to createTransactions
-     * @throws ApiException if the response code was not in [200, 299]
-     */
-     public async createTransactions(response: ResponseContext): Promise<TransactionsResponse > {
-        const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
-        if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: TransactionsResponse = ObjectSerializer.deserialize(
-                ObjectSerializer.parse(await response.body.text(), contentType),
-                "TransactionsResponse", ""
-            ) as TransactionsResponse;
-            return body;
-        }
-        if (isCodeInRange("0", response.httpStatusCode)) {
-            const body: ErrorResponse = ObjectSerializer.deserialize(
-                ObjectSerializer.parse(await response.body.text(), contentType),
-                "ErrorResponse", ""
-            ) as ErrorResponse;
-            throw new ApiException<ErrorResponse>(response.httpStatusCode, "Error", body, response.headers);
-        }
-
-        // Work around for missing responses in specification, e.g. for petstore.yaml
-        if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: TransactionsResponse = ObjectSerializer.deserialize(
-                ObjectSerializer.parse(await response.body.text(), contentType),
-                "TransactionsResponse", ""
-            ) as TransactionsResponse;
+                "TransactionResponse", ""
+            ) as TransactionResponse;
             return body;
         }
 

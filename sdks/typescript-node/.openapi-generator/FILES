@@ -5,7 +5,6 @@ ClientsApi.md
 DefaultApi.md
 LedgerApi.md
 LogsApi.md
-MappingApi.md
 OrchestrationApi.md
 PaymentsApi.md
 README.md
@@ -24,7 +23,6 @@ apis/ClientsApi.ts
 apis/DefaultApi.ts
 apis/LedgerApi.ts
 apis/LogsApi.ts
-apis/MappingApi.ts
 apis/OrchestrationApi.ts
 apis/PaymentsApi.ts
 apis/ScopesApi.ts
@@ -94,7 +92,6 @@ models/ConnectorsConfigsResponseDataConnector.ts
 models/ConnectorsConfigsResponseDataConnectorKey.ts
 models/ConnectorsResponse.ts
 models/ConnectorsResponseDataInner.ts
-models/Contract.ts
 models/CreateBalanceResponse.ts
 models/CreateClientResponse.ts
 models/CreateScopeResponse.ts
@@ -146,8 +143,6 @@ models/ListWorkflowsResponse.ts
 models/Log.ts
 models/LogsCursorResponse.ts
 models/LogsCursorResponseCursor.ts
-models/Mapping.ts
-models/MappingResponse.ts
 models/MigrationInfo.ts
 models/ModelError.ts
 models/ModulrConfig.ts
@@ -228,7 +223,6 @@ models/TransactionResponse.ts
 models/Transactions.ts
 models/TransactionsCursorResponse.ts
 models/TransactionsCursorResponseCursor.ts
-models/TransactionsResponse.ts
 models/TransferRequest.ts
 models/TransferResponse.ts
 models/TransfersResponse.ts

@@ -7,7 +7,6 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 | [**addMetadataOnTransaction()**](TransactionsApi.md#addMetadataOnTransaction) | **POST** /api/ledger/{ledger}/transactions/{txid}/metadata | Set the metadata of a transaction by its ID |
 | [**countTransactions()**](TransactionsApi.md#countTransactions) | **HEAD** /api/ledger/{ledger}/transactions | Count the transactions from a ledger |
 | [**createTransaction()**](TransactionsApi.md#createTransaction) | **POST** /api/ledger/{ledger}/transactions | Create a new transaction to a ledger |
-| [**createTransactions()**](TransactionsApi.md#createTransactions) | **POST** /api/ledger/{ledger}/transactions/batch | Create a new batch of transactions to a ledger |
 | [**getTransaction()**](TransactionsApi.md#getTransaction) | **GET** /api/ledger/{ledger}/transactions/{txid} | Get transaction from a ledger by its ID |
 | [**listTransactions()**](TransactionsApi.md#listTransactions) | **GET** /api/ledger/{ledger}/transactions | List transactions from a ledger |
 | [**revertTransaction()**](TransactionsApi.md#revertTransaction) | **POST** /api/ledger/{ledger}/transactions/{txid}/revert | Revert a ledger transaction by its ID |
@@ -152,7 +151,7 @@ void (empty response body)
 ## `createTransaction()`
 
 ```php
-createTransaction($ledger, $post_transaction, $preview): \Formance\Model\TransactionsResponse
+createTransaction($ledger, $post_transaction, $preview): \Formance\Model\TransactionResponse
 ```
 
 Create a new transaction to a ledger
@@ -196,67 +195,7 @@ try {
 
 ### Return type
 
-[**\Formance\Model\TransactionsResponse**](../Model/TransactionsResponse.md)
-
-### Authorization
-
-[Authorization](../../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: `application/json`
-- **Accept**: `application/json`
-
-[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
-[[Back to Model list]](../../README.md#models)
-[[Back to README]](../../README.md)
-
-## `createTransactions()`
-
-```php
-createTransactions($ledger, $transactions): \Formance\Model\TransactionsResponse
-```
-
-Create a new batch of transactions to a ledger
-
-### Example
-
-```php
-<?php
-require_once(__DIR__ . '/vendor/autoload.php');
-
-
-// Configure OAuth2 access token for authorization: Authorization
-$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
-
-
-$apiInstance = new Formance\Api\TransactionsApi(
-    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
-    // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client(),
-    $config
-);
-$ledger = ledger001; // string | Name of the ledger.
-$transactions = new \Formance\Model\Transactions(); // \Formance\Model\Transactions
-
-try {
-    $result = $apiInstance->createTransactions($ledger, $transactions);
-    print_r($result);
-} catch (Exception $e) {
-    echo 'Exception when calling TransactionsApi->createTransactions: ', $e->getMessage(), PHP_EOL;
-}
-```
-
-### Parameters
-
-| Name | Type | Description  | Notes |
-| ------------- | ------------- | ------------- | ------------- |
-| **ledger** | **string**| Name of the ledger. | |
-| **transactions** | [**\Formance\Model\Transactions**](../Model/Transactions.md)|  | |
-
-### Return type
-
-[**\Formance\Model\TransactionsResponse**](../Model/TransactionsResponse.md)
+[**\Formance\Model\TransactionResponse**](../Model/TransactionResponse.md)
 
 ### Authorization
 
