@@ -14,12 +14,13 @@ import (
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	authoidc "github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/oauth2-proxy/mockoidc"
 	"github.com/stretchr/testify/require"
 	"github.com/zitadel/oidc/pkg/client/rp"
 	"github.com/zitadel/oidc/pkg/oidc"
 	"github.com/zitadel/oidc/pkg/op"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -42,7 +43,10 @@ func TestVerifyAccessToken(t *testing.T) {
 	serverURL := fmt.Sprintf("http://%s", l.Addr().String())
 
 	// Construct our storage
-	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"), &gorm.Config{})
+	postgresDB := pgtesting.NewPostgresDatabase(t)
+	dialector := postgres.Open(postgresDB.ConnString())
+
+	db, err := sqlstorage.LoadGorm(dialector, &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 	storage := sqlstorage.New(db)
