@@ -4291,22 +4291,7 @@ components:
       - data
       type: object
     ConfigInfoResponse:
-      example:
-        data:
-          server: server
-          config:
-            storage:
-              driver: driver
-              ledgers:
-              - ledgers
-              - ledgers
-          version: version
-      properties:
-        data:
-          $ref: '#/components/schemas/ConfigInfo'
-      required:
-      - data
-      type: object
+      $ref: '#/components/schemas/ConfigInfo'
     Volume:
       example:
         input: 100

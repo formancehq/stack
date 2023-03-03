@@ -34,7 +34,6 @@ import { ClientSecret } from '../models/ClientSecret';
 import { Config } from '../models/Config';
 import { ConfigChangeSecret } from '../models/ConfigChangeSecret';
 import { ConfigInfo } from '../models/ConfigInfo';
-import { ConfigInfoResponse } from '../models/ConfigInfoResponse';
 import { ConfigResponse } from '../models/ConfigResponse';
 import { ConfigUser } from '../models/ConfigUser';
 import { ConfigsResponse } from '../models/ConfigsResponse';
@@ -1591,7 +1590,7 @@ export class ObjectServerApi {
      * Show server information
      * @param param the request object
      */
-    public getInfo(param: ServerApiGetInfoRequest = {}, options?: Configuration): Promise<ConfigInfoResponse> {
+    public getInfo(param: ServerApiGetInfoRequest = {}, options?: Configuration): Promise<ConfigInfo> {
         return this.api.getInfo( options).toPromise();
     }
 

@@ -1465,12 +1465,7 @@ components:
         - data
 
     ConfigInfoResponse:
-      properties:
-        data:
-          $ref: '#/components/schemas/ConfigInfo'
-      type: object
-      required:
-        - data
+      $ref: '#/components/schemas/ConfigInfo'
 
     Volume:
       type: object

@@ -37,7 +37,7 @@ func NewListCommand() *cobra.Command {
 				return err
 			}
 
-			tableData := fctl.Map(info.Data.Config.Storage.Ledgers, func(ledger string) []string {
+			tableData := fctl.Map(info.Config.Storage.Ledgers, func(ledger string) []string {
 				return []string{
 					ledger,
 				}

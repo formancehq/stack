@@ -32,7 +32,7 @@ public class ClientsApiTest {
     /**
      * Add scope to client
      *
-     * 
+     *
      */
     @Test
     public void addScopeToClientTest() {
@@ -45,7 +45,7 @@ public class ClientsApiTest {
     /**
      * Create client
      *
-     * 
+     *
      */
     @Test
     public void createClientTest() {
@@ -57,7 +57,7 @@ public class ClientsApiTest {
     /**
      * Add a secret to a client
      *
-     * 
+     *
      */
     @Test
     public void createSecretTest() {
@@ -70,7 +70,7 @@ public class ClientsApiTest {
     /**
      * Delete client
      *
-     * 
+     *
      */
     @Test
     public void deleteClientTest() {
@@ -82,7 +82,7 @@ public class ClientsApiTest {
     /**
      * Delete scope from client
      *
-     * 
+     *
      */
     @Test
     public void deleteScopeFromClientTest() {
@@ -95,7 +95,7 @@ public class ClientsApiTest {
     /**
      * Delete a secret from a client
      *
-     * 
+     *
      */
     @Test
     public void deleteSecretTest() {
@@ -108,7 +108,7 @@ public class ClientsApiTest {
     /**
      * List clients
      *
-     * 
+     *
      */
     @Test
     public void listClientsTest() {
@@ -119,7 +119,7 @@ public class ClientsApiTest {
     /**
      * Read client
      *
-     * 
+     *
      */
     @Test
     public void readClientTest() {
@@ -131,7 +131,7 @@ public class ClientsApiTest {
     /**
      * Update client
      *
-     * 
+     *
      */
     @Test
     public void updateClientTest() {
