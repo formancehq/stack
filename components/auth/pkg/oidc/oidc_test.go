@@ -20,6 +20,7 @@ import (
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/golang-jwt/jwt"
 	"github.com/gorilla/mux"
 	"github.com/oauth2-proxy/mockoidc"
@@ -28,7 +29,7 @@ import (
 	"github.com/zitadel/oidc/pkg/client/rs"
 	"github.com/zitadel/oidc/pkg/op"
 	"golang.org/x/oauth2/clientcredentials"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -77,8 +78,11 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 		fmt.Sprintf("%s/authorize/callback", serverUrl), []string{"openid", "email"}, rp.WithHTTPClient(cl))
 	require.NoError(t, err)
 
+	postgresDB := pgtesting.NewPostgresDatabase(t)
+	dialector := postgres.Open(postgresDB.ConnString())
+
 	// Construct our storage
-	db, err := sqlstorage.LoadGorm(sqlite.Open(":memory:"), &gorm.Config{})
+	db, err := sqlstorage.LoadGorm(dialector, &gorm.Config{})
 	require.NoError(t, err)
 	require.NoError(t, sqlstorage.MigrateTables(context.Background(), db))
 
