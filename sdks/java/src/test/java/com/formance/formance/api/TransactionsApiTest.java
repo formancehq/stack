@@ -33,7 +33,7 @@ public class TransactionsApiTest {
     /**
      * Set the metadata of a transaction by its ID
      *
-     * 
+     *
      */
     @Test
     public void addMetadataOnTransactionTest() {
@@ -47,7 +47,7 @@ public class TransactionsApiTest {
     /**
      * Count the transactions from a ledger
      *
-     * 
+     *
      */
     @Test
     public void countTransactionsTest() {
@@ -68,7 +68,7 @@ public class TransactionsApiTest {
     /**
      * Create a new transaction to a ledger
      *
-     * 
+     *
      */
     @Test
     public void createTransactionTest() {
@@ -82,7 +82,7 @@ public class TransactionsApiTest {
     /**
      * Create a new batch of transactions to a ledger
      *
-     * 
+     *
      */
     @Test
     public void createTransactionsTest() {
@@ -95,7 +95,7 @@ public class TransactionsApiTest {
     /**
      * Get transaction from a ledger by its ID
      *
-     * 
+     *
      */
     @Test
     public void getTransactionTest() {
@@ -134,7 +134,7 @@ public class TransactionsApiTest {
     /**
      * Revert a ledger transaction by its ID
      *
-     * 
+     *
      */
     @Test
     public void revertTransactionTest() {

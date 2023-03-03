@@ -10,7 +10,7 @@ All URIs are relative to *http://localhost*
 
 ## getInfo
 
-> ConfigInfoResponse getInfo()
+> ConfigInfo getInfo()
 
 Show server information
 
@@ -36,7 +36,7 @@ public class Example {
 
         ServerApi apiInstance = new ServerApi(defaultClient);
         try {
-            ConfigInfoResponse result = apiInstance.getInfo();
+            ConfigInfo result = apiInstance.getInfo();
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling ServerApi#getInfo");
@@ -55,7 +55,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**ConfigInfoResponse**](ConfigInfoResponse.md)
+[**ConfigInfo**](ConfigInfo.md)
 
 ### Authorization
 

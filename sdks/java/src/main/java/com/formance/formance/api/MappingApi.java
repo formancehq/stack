@@ -22,7 +22,7 @@ import java.util.Set;
 public interface MappingApi {
   /**
    * Get the mapping of a ledger
-   * 
+   *
    * @param ledger Name of the ledger. (required)
    * @return Call&lt;MappingResponse&gt;
    */
@@ -33,7 +33,7 @@ public interface MappingApi {
 
   /**
    * Update the mapping of a ledger
-   * 
+   *
    * @param ledger Name of the ledger. (required)
    * @param mapping  (required)
    * @return Call&lt;MappingResponse&gt;

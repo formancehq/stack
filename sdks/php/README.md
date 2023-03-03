@@ -212,7 +212,6 @@ Class | Method | HTTP request | Description
 - [Config](docs/Model/Config.md)
 - [ConfigChangeSecret](docs/Model/ConfigChangeSecret.md)
 - [ConfigInfo](docs/Model/ConfigInfo.md)
-- [ConfigInfoResponse](docs/Model/ConfigInfoResponse.md)
 - [ConfigResponse](docs/Model/ConfigResponse.md)
 - [ConfigUser](docs/Model/ConfigUser.md)
 - [ConfigsResponse](docs/Model/ConfigsResponse.md)

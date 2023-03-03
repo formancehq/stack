@@ -39,7 +39,7 @@ class Contract(
             "expr",
             "accounts",
         }
-        
+
         class properties:
             expr = schemas.DictSchema
             account = schemas.StrSchema
@@ -47,36 +47,36 @@ class Contract(
                 "expr": expr,
                 "account": account,
             }
-    
+
     expr: MetaOapg.properties.expr
     accounts: schemas.AnyTypeSchema
-    
+
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["expr"]) -> MetaOapg.properties.expr: ...
-    
+
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["account"]) -> MetaOapg.properties.account: ...
-    
+
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
-    
+
     def __getitem__(self, name: typing.Union[typing_extensions.Literal["expr", "account", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
-    
-    
+
+
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["expr"]) -> MetaOapg.properties.expr: ...
-    
+
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["account"]) -> typing.Union[MetaOapg.properties.account, schemas.Unset]: ...
-    
+
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
-    
+
     def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["expr", "account", ], str]):
         return super().get_item_oapg(name)
-    
+
 
     def __new__(
         cls,

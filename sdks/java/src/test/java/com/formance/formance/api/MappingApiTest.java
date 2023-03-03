@@ -29,7 +29,7 @@ public class MappingApiTest {
     /**
      * Get the mapping of a ledger
      *
-     * 
+     *
      */
     @Test
     public void getMappingTest() {
@@ -41,7 +41,7 @@ public class MappingApiTest {
     /**
      * Update the mapping of a ledger
      *
-     * 
+     *
      */
     @Test
     public void updateMappingTest() {

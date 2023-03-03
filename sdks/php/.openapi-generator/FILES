@@ -53,7 +53,6 @@ docs/Model/ClientSecret.md
 docs/Model/Config.md
 docs/Model/ConfigChangeSecret.md
 docs/Model/ConfigInfo.md
-docs/Model/ConfigInfoResponse.md
 docs/Model/ConfigResponse.md
 docs/Model/ConfigUser.md
 docs/Model/ConfigsResponse.md
@@ -277,7 +276,6 @@ lib/Model/ClientSecret.php
 lib/Model/Config.php
 lib/Model/ConfigChangeSecret.php
 lib/Model/ConfigInfo.php
-lib/Model/ConfigInfoResponse.php
 lib/Model/ConfigResponse.php
 lib/Model/ConfigUser.php
 lib/Model/ConfigsResponse.php

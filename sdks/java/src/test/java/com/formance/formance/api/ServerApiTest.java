@@ -28,7 +28,7 @@ public class ServerApiTest {
     /**
      * Show server information
      *
-     * 
+     *
      */
     @Test
     public void getInfoTest() {
