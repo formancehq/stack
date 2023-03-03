@@ -50,7 +50,6 @@ import { ConnectorsConfigsResponseDataConnector } from '../models/ConnectorsConf
 import { ConnectorsConfigsResponseDataConnectorKey } from '../models/ConnectorsConfigsResponseDataConnectorKey';
 import { ConnectorsResponse } from '../models/ConnectorsResponse';
 import { ConnectorsResponseDataInner } from '../models/ConnectorsResponseDataInner';
-import { Contract } from '../models/Contract';
 import { CreateBalanceResponse } from '../models/CreateBalanceResponse';
 import { CreateClientResponse } from '../models/CreateClientResponse';
 import { CreateScopeResponse } from '../models/CreateScopeResponse';
@@ -102,8 +101,6 @@ import { ListWorkflowsResponse } from '../models/ListWorkflowsResponse';
 import { Log } from '../models/Log';
 import { LogsCursorResponse } from '../models/LogsCursorResponse';
 import { LogsCursorResponseCursor } from '../models/LogsCursorResponseCursor';
-import { Mapping } from '../models/Mapping';
-import { MappingResponse } from '../models/MappingResponse';
 import { MigrationInfo } from '../models/MigrationInfo';
 import { ModelError } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
@@ -183,7 +180,6 @@ import { TransactionResponse } from '../models/TransactionResponse';
 import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
-import { TransactionsResponse } from '../models/TransactionsResponse';
 import { TransferRequest } from '../models/TransferRequest';
 import { TransferResponse } from '../models/TransferResponse';
 import { TransfersResponse } from '../models/TransfersResponse';
@@ -799,58 +795,6 @@ export class ObjectLogsApi {
      */
     public listLogs(param: LogsApiListLogsRequest, options?: Configuration): Promise<LogsCursorResponse> {
         return this.api.listLogs(param.ledger, param.pageSize, param.pageSize2, param.after, param.startTime, param.startTime2, param.endTime, param.endTime2, param.cursor, param.paginationToken,  options).toPromise();
-    }
-
-}
-
-import { ObservableMappingApi } from "./ObservableAPI";
-import { MappingApiRequestFactory, MappingApiResponseProcessor} from "../apis/MappingApi";
-
-export interface MappingApiGetMappingRequest {
-    /**
-     * Name of the ledger.
-     * @type string
-     * @memberof MappingApigetMapping
-     */
-    ledger: string
-}
-
-export interface MappingApiUpdateMappingRequest {
-    /**
-     * Name of the ledger.
-     * @type string
-     * @memberof MappingApiupdateMapping
-     */
-    ledger: string
-    /**
-     * 
-     * @type Mapping
-     * @memberof MappingApiupdateMapping
-     */
-    mapping: Mapping
-}
-
-export class ObjectMappingApi {
-    private api: ObservableMappingApi
-
-    public constructor(configuration: Configuration, requestFactory?: MappingApiRequestFactory, responseProcessor?: MappingApiResponseProcessor) {
-        this.api = new ObservableMappingApi(configuration, requestFactory, responseProcessor);
-    }
-
-    /**
-     * Get the mapping of a ledger
-     * @param param the request object
-     */
-    public getMapping(param: MappingApiGetMappingRequest, options?: Configuration): Promise<MappingResponse> {
-        return this.api.getMapping(param.ledger,  options).toPromise();
-    }
-
-    /**
-     * Update the mapping of a ledger
-     * @param param the request object
-     */
-    public updateMapping(param: MappingApiUpdateMappingRequest, options?: Configuration): Promise<MappingResponse> {
-        return this.api.updateMapping(param.ledger, param.mapping,  options).toPromise();
     }
 
 }
@@ -1791,21 +1735,6 @@ export interface TransactionsApiCreateTransactionRequest {
     preview?: boolean
 }
 
-export interface TransactionsApiCreateTransactionsRequest {
-    /**
-     * Name of the ledger.
-     * @type string
-     * @memberof TransactionsApicreateTransactions
-     */
-    ledger: string
-    /**
-     * 
-     * @type Transactions
-     * @memberof TransactionsApicreateTransactions
-     */
-    transactions: Transactions
-}
-
 export interface TransactionsApiGetTransactionRequest {
     /**
      * Name of the ledger.
@@ -1956,16 +1885,8 @@ export class ObjectTransactionsApi {
      * Create a new transaction to a ledger
      * @param param the request object
      */
-    public createTransaction(param: TransactionsApiCreateTransactionRequest, options?: Configuration): Promise<TransactionsResponse> {
+    public createTransaction(param: TransactionsApiCreateTransactionRequest, options?: Configuration): Promise<TransactionResponse> {
         return this.api.createTransaction(param.ledger, param.postTransaction, param.preview,  options).toPromise();
-    }
-
-    /**
-     * Create a new batch of transactions to a ledger
-     * @param param the request object
-     */
-    public createTransactions(param: TransactionsApiCreateTransactionsRequest, options?: Configuration): Promise<TransactionsResponse> {
-        return this.api.createTransactions(param.ledger, param.transactions,  options).toPromise();
     }
 
     /**

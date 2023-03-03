@@ -51,7 +51,6 @@ import { ConnectorsConfigsResponseDataConnector } from '../models/ConnectorsConf
 import { ConnectorsConfigsResponseDataConnectorKey } from '../models/ConnectorsConfigsResponseDataConnectorKey';
 import { ConnectorsResponse } from '../models/ConnectorsResponse';
 import { ConnectorsResponseDataInner } from '../models/ConnectorsResponseDataInner';
-import { Contract } from '../models/Contract';
 import { CreateBalanceResponse } from '../models/CreateBalanceResponse';
 import { CreateClientResponse } from '../models/CreateClientResponse';
 import { CreateScopeResponse } from '../models/CreateScopeResponse';
@@ -103,8 +102,6 @@ import { ListWorkflowsResponse } from '../models/ListWorkflowsResponse';
 import { Log } from '../models/Log';
 import { LogsCursorResponse } from '../models/LogsCursorResponse';
 import { LogsCursorResponseCursor } from '../models/LogsCursorResponseCursor';
-import { Mapping } from '../models/Mapping';
-import { MappingResponse } from '../models/MappingResponse';
 import { MigrationInfo } from '../models/MigrationInfo';
 import { ModelError } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
@@ -184,7 +181,6 @@ import { TransactionResponse } from '../models/TransactionResponse';
 import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
-import { TransactionsResponse } from '../models/TransactionsResponse';
 import { TransferRequest } from '../models/TransferRequest';
 import { TransferResponse } from '../models/TransferResponse';
 import { TransfersResponse } from '../models/TransfersResponse';
@@ -805,71 +801,6 @@ export class ObservableLogsApi {
                     middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
                 }
                 return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.listLogs(rsp)));
-            }));
-    }
-
-}
-
-import { MappingApiRequestFactory, MappingApiResponseProcessor} from "../apis/MappingApi";
-export class ObservableMappingApi {
-    private requestFactory: MappingApiRequestFactory;
-    private responseProcessor: MappingApiResponseProcessor;
-    private configuration: Configuration;
-
-    public constructor(
-        configuration: Configuration,
-        requestFactory?: MappingApiRequestFactory,
-        responseProcessor?: MappingApiResponseProcessor
-    ) {
-        this.configuration = configuration;
-        this.requestFactory = requestFactory || new MappingApiRequestFactory(configuration);
-        this.responseProcessor = responseProcessor || new MappingApiResponseProcessor();
-    }
-
-    /**
-     * Get the mapping of a ledger
-     * @param ledger Name of the ledger.
-     */
-    public getMapping(ledger: string, _options?: Configuration): Observable<MappingResponse> {
-        const requestContextPromise = this.requestFactory.getMapping(ledger, _options);
-
-        // build promise chain
-        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
-        for (let middleware of this.configuration.middleware) {
-            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
-        }
-
-        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
-            pipe(mergeMap((response: ResponseContext) => {
-                let middlewarePostObservable = of(response);
-                for (let middleware of this.configuration.middleware) {
-                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
-                }
-                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getMapping(rsp)));
-            }));
-    }
-
-    /**
-     * Update the mapping of a ledger
-     * @param ledger Name of the ledger.
-     * @param mapping 
-     */
-    public updateMapping(ledger: string, mapping: Mapping, _options?: Configuration): Observable<MappingResponse> {
-        const requestContextPromise = this.requestFactory.updateMapping(ledger, mapping, _options);
-
-        // build promise chain
-        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
-        for (let middleware of this.configuration.middleware) {
-            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
-        }
-
-        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
-            pipe(mergeMap((response: ResponseContext) => {
-                let middlewarePostObservable = of(response);
-                for (let middleware of this.configuration.middleware) {
-                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
-                }
-                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.updateMapping(rsp)));
             }));
     }
 
@@ -1976,7 +1907,7 @@ export class ObservableTransactionsApi {
      * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript 
      * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
      */
-    public createTransaction(ledger: string, postTransaction: PostTransaction, preview?: boolean, _options?: Configuration): Observable<TransactionsResponse> {
+    public createTransaction(ledger: string, postTransaction: PostTransaction, preview?: boolean, _options?: Configuration): Observable<TransactionResponse> {
         const requestContextPromise = this.requestFactory.createTransaction(ledger, postTransaction, preview, _options);
 
         // build promise chain
@@ -1992,30 +1923,6 @@ export class ObservableTransactionsApi {
                     middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
                 }
                 return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.createTransaction(rsp)));
-            }));
-    }
-
-    /**
-     * Create a new batch of transactions to a ledger
-     * @param ledger Name of the ledger.
-     * @param transactions 
-     */
-    public createTransactions(ledger: string, transactions: Transactions, _options?: Configuration): Observable<TransactionsResponse> {
-        const requestContextPromise = this.requestFactory.createTransactions(ledger, transactions, _options);
-
-        // build promise chain
-        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
-        for (let middleware of this.configuration.middleware) {
-            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
-        }
-
-        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
-            pipe(mergeMap((response: ResponseContext) => {
-                let middlewarePostObservable = of(response);
-                for (let middleware of this.configuration.middleware) {
-                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
-                }
-                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.createTransactions(rsp)));
             }));
     }
 

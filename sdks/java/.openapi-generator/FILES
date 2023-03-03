@@ -57,7 +57,6 @@ docs/ConnectorsConfigsResponseDataConnector.md
 docs/ConnectorsConfigsResponseDataConnectorKey.md
 docs/ConnectorsResponse.md
 docs/ConnectorsResponseDataInner.md
-docs/Contract.md
 docs/CreateBalanceResponse.md
 docs/CreateClientResponse.md
 docs/CreateScopeResponse.md
@@ -113,9 +112,6 @@ docs/Log.md
 docs/LogsApi.md
 docs/LogsCursorResponse.md
 docs/LogsCursorResponseCursor.md
-docs/Mapping.md
-docs/MappingApi.md
-docs/MappingResponse.md
 docs/MigrationInfo.md
 docs/ModulrConfig.md
 docs/Monetary.md
@@ -202,7 +198,6 @@ docs/Transactions.md
 docs/TransactionsApi.md
 docs/TransactionsCursorResponse.md
 docs/TransactionsCursorResponseCursor.md
-docs/TransactionsResponse.md
 docs/TransferRequest.md
 docs/TransferResponse.md
 docs/TransfersResponse.md
@@ -251,7 +246,6 @@ src/main/java/com/formance/formance/api/ClientsApi.java
 src/main/java/com/formance/formance/api/DefaultApi.java
 src/main/java/com/formance/formance/api/LedgerApi.java
 src/main/java/com/formance/formance/api/LogsApi.java
-src/main/java/com/formance/formance/api/MappingApi.java
 src/main/java/com/formance/formance/api/OrchestrationApi.java
 src/main/java/com/formance/formance/api/PaymentsApi.java
 src/main/java/com/formance/formance/api/ScopesApi.java
@@ -318,7 +312,6 @@ src/main/java/com/formance/formance/model/ConnectorsConfigsResponseDataConnector
 src/main/java/com/formance/formance/model/ConnectorsConfigsResponseDataConnectorKey.java
 src/main/java/com/formance/formance/model/ConnectorsResponse.java
 src/main/java/com/formance/formance/model/ConnectorsResponseDataInner.java
-src/main/java/com/formance/formance/model/Contract.java
 src/main/java/com/formance/formance/model/CreateBalanceResponse.java
 src/main/java/com/formance/formance/model/CreateClientResponse.java
 src/main/java/com/formance/formance/model/CreateScopeResponse.java
@@ -371,8 +364,6 @@ src/main/java/com/formance/formance/model/ListWorkflowsResponse.java
 src/main/java/com/formance/formance/model/Log.java
 src/main/java/com/formance/formance/model/LogsCursorResponse.java
 src/main/java/com/formance/formance/model/LogsCursorResponseCursor.java
-src/main/java/com/formance/formance/model/Mapping.java
-src/main/java/com/formance/formance/model/MappingResponse.java
 src/main/java/com/formance/formance/model/MigrationInfo.java
 src/main/java/com/formance/formance/model/ModulrConfig.java
 src/main/java/com/formance/formance/model/Monetary.java
@@ -451,7 +442,6 @@ src/main/java/com/formance/formance/model/TransactionResponse.java
 src/main/java/com/formance/formance/model/Transactions.java
 src/main/java/com/formance/formance/model/TransactionsCursorResponse.java
 src/main/java/com/formance/formance/model/TransactionsCursorResponseCursor.java
-src/main/java/com/formance/formance/model/TransactionsResponse.java
 src/main/java/com/formance/formance/model/TransferRequest.java
 src/main/java/com/formance/formance/model/TransferResponse.java
 src/main/java/com/formance/formance/model/TransfersResponse.java
