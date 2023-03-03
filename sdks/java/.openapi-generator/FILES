@@ -41,7 +41,6 @@ docs/ClientsApi.md
 docs/Config.md
 docs/ConfigChangeSecret.md
 docs/ConfigInfo.md
-docs/ConfigInfoResponse.md
 docs/ConfigResponse.md
 docs/ConfigUser.md
 docs/ConfigsResponse.md
@@ -296,7 +295,6 @@ src/main/java/com/formance/formance/model/ClientSecret.java
 src/main/java/com/formance/formance/model/Config.java
 src/main/java/com/formance/formance/model/ConfigChangeSecret.java
 src/main/java/com/formance/formance/model/ConfigInfo.java
-src/main/java/com/formance/formance/model/ConfigInfoResponse.java
 src/main/java/com/formance/formance/model/ConfigResponse.java
 src/main/java/com/formance/formance/model/ConfigUser.java
 src/main/java/com/formance/formance/model/ConfigsResponse.java

@@ -29,7 +29,7 @@ public class AccountsApiTest {
     /**
      * Add metadata to an account
      *
-     * 
+     *
      */
     @Test
     public void addMetadataToAccountTest() {
@@ -43,7 +43,7 @@ public class AccountsApiTest {
     /**
      * Count the accounts from a ledger
      *
-     * 
+     *
      */
     @Test
     public void countAccountsTest() {
@@ -57,7 +57,7 @@ public class AccountsApiTest {
     /**
      * Get account by its address
      *
-     * 
+     *
      */
     @Test
     public void getAccountTest() {

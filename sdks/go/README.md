@@ -214,7 +214,6 @@ Class | Method | HTTP request | Description
  - [Config](docs/Config.md)
  - [ConfigChangeSecret](docs/ConfigChangeSecret.md)
  - [ConfigInfo](docs/ConfigInfo.md)
- - [ConfigInfoResponse](docs/ConfigInfoResponse.md)
  - [ConfigResponse](docs/ConfigResponse.md)
  - [ConfigUser](docs/ConfigUser.md)
  - [ConfigsResponse](docs/ConfigsResponse.md)

@@ -57,7 +57,6 @@ docs/ClientsApi.md
 docs/Config.md
 docs/ConfigChangeSecret.md
 docs/ConfigInfo.md
-docs/ConfigInfoResponse.md
 docs/ConfigResponse.md
 docs/ConfigUser.md
 docs/ConfigsResponse.md
@@ -277,7 +276,6 @@ model_client_secret.go
 model_config.go
 model_config_change_secret.go
 model_config_info.go
-model_config_info_response.go
 model_config_response.go
 model_config_user.go
 model_configs_response.go

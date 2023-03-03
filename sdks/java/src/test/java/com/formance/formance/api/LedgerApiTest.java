@@ -28,7 +28,7 @@ public class LedgerApiTest {
     /**
      * Get information about a ledger
      *
-     * 
+     *
      */
     @Test
     public void getLedgerInfoTest() {

@@ -10,7 +10,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 ## `getInfo()`
 
 ```php
-getInfo(): \Formance\Model\ConfigInfoResponse
+getInfo(): \Formance\Model\ConfigInfo
 ```
 
 Show server information
@@ -47,7 +47,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-[**\Formance\Model\ConfigInfoResponse**](../Model/ConfigInfoResponse.md)
+[**\Formance\Model\ConfigInfo**](../Model/ConfigInfo.md)
 
 ### Authorization
 
