@@ -139,6 +139,7 @@ class BaseApi(api_client.Api):
         response = self.api_client.call_api(
             resource_path=used_path,
             method='delete'.upper(),
+            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

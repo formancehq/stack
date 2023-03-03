@@ -29,7 +29,7 @@ public class BalancesApiTest {
     /**
      * Get the balances from a ledger&#39;s account
      *
-     *
+     * 
      */
     @Test
     public void getBalancesTest() {
@@ -45,7 +45,7 @@ public class BalancesApiTest {
     /**
      * Get the aggregated balances from selected accounts
      *
-     *
+     * 
      */
     @Test
     public void getBalancesAggregatedTest() {

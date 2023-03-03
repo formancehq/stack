@@ -55,6 +55,9 @@ request_path_instance_id = api_client.PathParameter(
     schema=InstanceIDSchema,
     required=True,
 )
+_auth = [
+    'Authorization',
+]
 
 
 @dataclass
@@ -173,6 +176,7 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='put'.upper(),
             headers=_headers,
+            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )
