@@ -20,7 +20,6 @@ import com.formance.formance.model.DebitWalletResponse;
 import com.formance.formance.model.GetWalletResponse;
 import com.formance.formance.model.PaymentResponse;
 import com.formance.formance.model.TransactionResponse;
-import com.formance.formance.model.TransactionsResponse;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -39,7 +38,7 @@ public class WorkflowInstanceHistoryStageOutput {
 
   public static final String SERIALIZED_NAME_CREATE_TRANSACTION = "CreateTransaction";
   @SerializedName(SERIALIZED_NAME_CREATE_TRANSACTION)
-  private TransactionsResponse createTransaction;
+  private TransactionResponse createTransaction;
 
   public static final String SERIALIZED_NAME_REVERT_TRANSACTION = "RevertTransaction";
   @SerializedName(SERIALIZED_NAME_REVERT_TRANSACTION)
@@ -82,7 +81,7 @@ public class WorkflowInstanceHistoryStageOutput {
   }
 
 
-  public WorkflowInstanceHistoryStageOutput createTransaction(TransactionsResponse createTransaction) {
+  public WorkflowInstanceHistoryStageOutput createTransaction(TransactionResponse createTransaction) {
     
     this.createTransaction = createTransaction;
     return this;
@@ -94,12 +93,12 @@ public class WorkflowInstanceHistoryStageOutput {
   **/
   @javax.annotation.Nullable
 
-  public TransactionsResponse getCreateTransaction() {
+  public TransactionResponse getCreateTransaction() {
     return createTransaction;
   }
 
 
-  public void setCreateTransaction(TransactionsResponse createTransaction) {
+  public void setCreateTransaction(TransactionResponse createTransaction) {
     this.createTransaction = createTransaction;
   }
 

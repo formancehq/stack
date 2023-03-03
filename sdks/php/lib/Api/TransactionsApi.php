@@ -81,9 +81,6 @@ class TransactionsApi
         'createTransaction' => [
             'application/json',
         ],
-        'createTransactions' => [
-            'application/json',
-        ],
         'getTransaction' => [
             'application/json',
         ],
@@ -806,7 +803,7 @@ class TransactionsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\TransactionsResponse|\Formance\Model\ErrorResponse
+     * @return \Formance\Model\TransactionResponse|\Formance\Model\ErrorResponse
      */
     public function createTransaction($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
@@ -826,7 +823,7 @@ class TransactionsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\TransactionsResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\TransactionResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function createTransactionWithHttpInfo($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
@@ -869,17 +866,17 @@ class TransactionsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\TransactionsResponse' === '\SplFileObject') {
+                    if ('\Formance\Model\TransactionResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\TransactionsResponse' !== 'string') {
+                        if ('\Formance\Model\TransactionResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\TransactionsResponse', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\TransactionResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -900,7 +897,7 @@ class TransactionsApi
                     ];
             }
 
-            $returnType = '\Formance\Model\TransactionsResponse';
+            $returnType = '\Formance\Model\TransactionResponse';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -921,7 +918,7 @@ class TransactionsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\TransactionsResponse',
+                        '\Formance\Model\TransactionResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -977,7 +974,7 @@ class TransactionsApi
      */
     public function createTransactionAsyncWithHttpInfo($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
-        $returnType = '\Formance\Model\TransactionsResponse';
+        $returnType = '\Formance\Model\TransactionResponse';
         $request = $this->createTransactionRequest($ledger, $post_transaction, $preview, $contentType);
 
         return $this->client
@@ -1087,335 +1084,6 @@ class TransactionsApi
                 $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($post_transaction));
             } else {
                 $httpBody = $post_transaction;
-            }
-        } elseif (count($formParams) > 0) {
-            if ($multipart) {
-                $multipartContents = [];
-                foreach ($formParams as $formParamName => $formParamValue) {
-                    $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
-                    foreach ($formParamValueItems as $formParamValueItem) {
-                        $multipartContents[] = [
-                            'name' => $formParamName,
-                            'contents' => $formParamValueItem
-                        ];
-                    }
-                }
-                // for HTTP post (form)
-                $httpBody = new MultipartStream($multipartContents);
-
-            } elseif (stripos($headers['Content-Type'], 'application/json') !== false) {
-                # if Content-Type contains "application/json", json_encode the form parameters
-                $httpBody = \GuzzleHttp\Utils::jsonEncode($formParams);
-            } else {
-                // for HTTP post (form)
-                $httpBody = ObjectSerializer::buildQuery($formParams);
-            }
-        }
-
-        // this endpoint requires OAuth (access token)
-        if (!empty($this->config->getAccessToken())) {
-            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
-        }
-
-        $defaultHeaders = [];
-        if ($this->config->getUserAgent()) {
-            $defaultHeaders['User-Agent'] = $this->config->getUserAgent();
-        }
-
-        $headers = array_merge(
-            $defaultHeaders,
-            $headerParams,
-            $headers
-        );
-
-        $operationHost = $this->config->getHost();
-        $query = ObjectSerializer::buildQuery($queryParams);
-        return new Request(
-            'POST',
-            $operationHost . $resourcePath . ($query ? "?{$query}" : ''),
-            $headers,
-            $httpBody
-        );
-    }
-
-    /**
-     * Operation createTransactions
-     *
-     * Create a new batch of transactions to a ledger
-     *
-     * @param  string $ledger Name of the ledger. (required)
-     * @param  \Formance\Model\Transactions $transactions transactions (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransactions'] to see the possible values for this operation
-     *
-     * @throws \Formance\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return \Formance\Model\TransactionsResponse|\Formance\Model\ErrorResponse
-     */
-    public function createTransactions($ledger, $transactions, string $contentType = self::contentTypes['createTransactions'][0])
-    {
-        list($response) = $this->createTransactionsWithHttpInfo($ledger, $transactions, $contentType);
-        return $response;
-    }
-
-    /**
-     * Operation createTransactionsWithHttpInfo
-     *
-     * Create a new batch of transactions to a ledger
-     *
-     * @param  string $ledger Name of the ledger. (required)
-     * @param  \Formance\Model\Transactions $transactions (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransactions'] to see the possible values for this operation
-     *
-     * @throws \Formance\ApiException on non-2xx response
-     * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\TransactionsResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
-     */
-    public function createTransactionsWithHttpInfo($ledger, $transactions, string $contentType = self::contentTypes['createTransactions'][0])
-    {
-        $request = $this->createTransactionsRequest($ledger, $transactions, $contentType);
-
-        try {
-            $options = $this->createHttpClientOption();
-            try {
-                $response = $this->client->send($request, $options);
-            } catch (RequestException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    (int) $e->getCode(),
-                    $e->getResponse() ? $e->getResponse()->getHeaders() : null,
-                    $e->getResponse() ? (string) $e->getResponse()->getBody() : null
-                );
-            } catch (ConnectException $e) {
-                throw new ApiException(
-                    "[{$e->getCode()}] {$e->getMessage()}",
-                    (int) $e->getCode(),
-                    null,
-                    null
-                );
-            }
-
-            $statusCode = $response->getStatusCode();
-
-            if ($statusCode < 200 || $statusCode > 299) {
-                throw new ApiException(
-                    sprintf(
-                        '[%d] Error connecting to the API (%s)',
-                        $statusCode,
-                        (string) $request->getUri()
-                    ),
-                    $statusCode,
-                    $response->getHeaders(),
-                    (string) $response->getBody()
-                );
-            }
-
-            switch($statusCode) {
-                case 200:
-                    if ('\Formance\Model\TransactionsResponse' === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ('\Formance\Model\TransactionsResponse' !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\TransactionsResponse', []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-                default:
-                    if ('\Formance\Model\ErrorResponse' === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ('\Formance\Model\ErrorResponse' !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\ErrorResponse', []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-            }
-
-            $returnType = '\Formance\Model\TransactionsResponse';
-            if ($returnType === '\SplFileObject') {
-                $content = $response->getBody(); //stream goes to serializer
-            } else {
-                $content = (string) $response->getBody();
-                if ($returnType !== 'string') {
-                    $content = json_decode($content);
-                }
-            }
-
-            return [
-                ObjectSerializer::deserialize($content, $returnType, []),
-                $response->getStatusCode(),
-                $response->getHeaders()
-            ];
-
-        } catch (ApiException $e) {
-            switch ($e->getCode()) {
-                case 200:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Formance\Model\TransactionsResponse',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-                default:
-                    $data = ObjectSerializer::deserialize(
-                        $e->getResponseBody(),
-                        '\Formance\Model\ErrorResponse',
-                        $e->getResponseHeaders()
-                    );
-                    $e->setResponseObject($data);
-                    break;
-            }
-            throw $e;
-        }
-    }
-
-    /**
-     * Operation createTransactionsAsync
-     *
-     * Create a new batch of transactions to a ledger
-     *
-     * @param  string $ledger Name of the ledger. (required)
-     * @param  \Formance\Model\Transactions $transactions (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransactions'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function createTransactionsAsync($ledger, $transactions, string $contentType = self::contentTypes['createTransactions'][0])
-    {
-        return $this->createTransactionsAsyncWithHttpInfo($ledger, $transactions, $contentType)
-            ->then(
-                function ($response) {
-                    return $response[0];
-                }
-            );
-    }
-
-    /**
-     * Operation createTransactionsAsyncWithHttpInfo
-     *
-     * Create a new batch of transactions to a ledger
-     *
-     * @param  string $ledger Name of the ledger. (required)
-     * @param  \Formance\Model\Transactions $transactions (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransactions'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Promise\PromiseInterface
-     */
-    public function createTransactionsAsyncWithHttpInfo($ledger, $transactions, string $contentType = self::contentTypes['createTransactions'][0])
-    {
-        $returnType = '\Formance\Model\TransactionsResponse';
-        $request = $this->createTransactionsRequest($ledger, $transactions, $contentType);
-
-        return $this->client
-            ->sendAsync($request, $this->createHttpClientOption())
-            ->then(
-                function ($response) use ($returnType) {
-                    if ($returnType === '\SplFileObject') {
-                        $content = $response->getBody(); //stream goes to serializer
-                    } else {
-                        $content = (string) $response->getBody();
-                        if ($returnType !== 'string') {
-                            $content = json_decode($content);
-                        }
-                    }
-
-                    return [
-                        ObjectSerializer::deserialize($content, $returnType, []),
-                        $response->getStatusCode(),
-                        $response->getHeaders()
-                    ];
-                },
-                function ($exception) {
-                    $response = $exception->getResponse();
-                    $statusCode = $response->getStatusCode();
-                    throw new ApiException(
-                        sprintf(
-                            '[%d] Error connecting to the API (%s)',
-                            $statusCode,
-                            $exception->getRequest()->getUri()
-                        ),
-                        $statusCode,
-                        $response->getHeaders(),
-                        (string) $response->getBody()
-                    );
-                }
-            );
-    }
-
-    /**
-     * Create request for operation 'createTransactions'
-     *
-     * @param  string $ledger Name of the ledger. (required)
-     * @param  \Formance\Model\Transactions $transactions (required)
-     * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransactions'] to see the possible values for this operation
-     *
-     * @throws \InvalidArgumentException
-     * @return \GuzzleHttp\Psr7\Request
-     */
-    public function createTransactionsRequest($ledger, $transactions, string $contentType = self::contentTypes['createTransactions'][0])
-    {
-
-        // verify the required parameter 'ledger' is set
-        if ($ledger === null || (is_array($ledger) && count($ledger) === 0)) {
-            throw new \InvalidArgumentException(
-                'Missing the required parameter $ledger when calling createTransactions'
-            );
-        }
-
-        // verify the required parameter 'transactions' is set
-        if ($transactions === null || (is_array($transactions) && count($transactions) === 0)) {
-            throw new \InvalidArgumentException(
-                'Missing the required parameter $transactions when calling createTransactions'
-            );
-        }
-
-
-        $resourcePath = '/api/ledger/{ledger}/transactions/batch';
-        $formParams = [];
-        $queryParams = [];
-        $headerParams = [];
-        $httpBody = '';
-        $multipart = false;
-
-
-
-        // path params
-        if ($ledger !== null) {
-            $resourcePath = str_replace(
-                '{' . 'ledger' . '}',
-                ObjectSerializer::toPathValue($ledger),
-                $resourcePath
-            );
-        }
-
-
-        $headers = $this->headerSelector->selectHeaders(
-            ['application/json', ],
-            $contentType,
-            $multipart
-        );
-
-        // for model (json/xml)
-        if (isset($transactions)) {
-            if (stripos($headers['Content-Type'], 'application/json') !== false) {
-                # if Content-Type contains "application/json", json_encode the body
-                $httpBody = \GuzzleHttp\Utils::jsonEncode(ObjectSerializer::sanitizeForSerialization($transactions));
-            } else {
-                $httpBody = $transactions;
             }
         } elseif (count($formParams) > 0) {
             if ($multipart) {

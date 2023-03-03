@@ -7,7 +7,6 @@ All URIs are relative to *http://localhost*
 | [**addMetadataOnTransaction**](TransactionsApi.md#addMetadataOnTransaction) | **POST** api/ledger/{ledger}/transactions/{txid}/metadata | Set the metadata of a transaction by its ID |
 | [**countTransactions**](TransactionsApi.md#countTransactions) | **HEAD** api/ledger/{ledger}/transactions | Count the transactions from a ledger |
 | [**createTransaction**](TransactionsApi.md#createTransaction) | **POST** api/ledger/{ledger}/transactions | Create a new transaction to a ledger |
-| [**createTransactions**](TransactionsApi.md#createTransactions) | **POST** api/ledger/{ledger}/transactions/batch | Create a new batch of transactions to a ledger |
 | [**getTransaction**](TransactionsApi.md#getTransaction) | **GET** api/ledger/{ledger}/transactions/{txid} | Get transaction from a ledger by its ID |
 | [**listTransactions**](TransactionsApi.md#listTransactions) | **GET** api/ledger/{ledger}/transactions | List transactions from a ledger |
 | [**revertTransaction**](TransactionsApi.md#revertTransaction) | **POST** api/ledger/{ledger}/transactions/{txid}/revert | Revert a ledger transaction by its ID |
@@ -176,7 +175,7 @@ null (empty response body)
 
 ## createTransaction
 
-> TransactionsResponse createTransaction(ledger, postTransaction, preview)
+> TransactionResponse createTransaction(ledger, postTransaction, preview)
 
 Create a new transaction to a ledger
 
@@ -205,7 +204,7 @@ public class Example {
         PostTransaction postTransaction = new PostTransaction(); // PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript 
         Boolean preview = true; // Boolean | Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
         try {
-            TransactionsResponse result = apiInstance.createTransaction(ledger, postTransaction, preview);
+            TransactionResponse result = apiInstance.createTransaction(ledger, postTransaction, preview);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TransactionsApi#createTransaction");
@@ -229,79 +228,7 @@ public class Example {
 
 ### Return type
 
-[**TransactionsResponse**](TransactionsResponse.md)
-
-### Authorization
-
-[Authorization](../README.md#Authorization)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-| **200** | OK |  -  |
-| **0** | Error |  -  |
-
-
-## createTransactions
-
-> TransactionsResponse createTransactions(ledger, transactions)
-
-Create a new batch of transactions to a ledger
-
-### Example
-
-```java
-// Import classes:
-import com.formance.formance.ApiClient;
-import com.formance.formance.ApiException;
-import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
-import com.formance.formance.models.*;
-import com.formance.formance.api.TransactionsApi;
-
-public class Example {
-    public static void main(String[] args) {
-        ApiClient defaultClient = Configuration.getDefaultApiClient();
-        defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
-
-        TransactionsApi apiInstance = new TransactionsApi(defaultClient);
-        String ledger = "ledger001"; // String | Name of the ledger.
-        Transactions transactions = new Transactions(); // Transactions | 
-        try {
-            TransactionsResponse result = apiInstance.createTransactions(ledger, transactions);
-            System.out.println(result);
-        } catch (ApiException e) {
-            System.err.println("Exception when calling TransactionsApi#createTransactions");
-            System.err.println("Status code: " + e.getCode());
-            System.err.println("Reason: " + e.getResponseBody());
-            System.err.println("Response headers: " + e.getResponseHeaders());
-            e.printStackTrace();
-        }
-    }
-}
-```
-
-### Parameters
-
-
-| Name | Type | Description  | Notes |
-|------------- | ------------- | ------------- | -------------|
-| **ledger** | **String**| Name of the ledger. | |
-| **transactions** | [**Transactions**](Transactions.md)|  | |
-
-### Return type
-
-[**TransactionsResponse**](TransactionsResponse.md)
+[**TransactionResponse**](TransactionResponse.md)
 
 ### Authorization
 
