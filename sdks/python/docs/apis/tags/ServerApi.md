@@ -9,7 +9,7 @@ Method | HTTP request | Description
 
 # **get_info**
 <a name="get_info"></a>
-> ConfigInfoResponse get_info()
+> ConfigInfo get_info()
 
 Show server information
 
@@ -19,8 +19,8 @@ Show server information
 ```python
 import Formance
 from Formance.apis.tags import server_api
-from Formance.model.config_info_response import ConfigInfoResponse
 from Formance.model.error_response import ErrorResponse
+from Formance.model.config_info import ConfigInfo
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -72,7 +72,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**ConfigInfoResponse**](../../models/ConfigInfoResponse.md) |  | 
+[**ConfigInfo**](../../models/ConfigInfo.md) |  | 
 
 
 #### get_info.ApiResponseForDefault

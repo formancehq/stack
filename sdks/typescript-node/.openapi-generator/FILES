@@ -76,7 +76,6 @@ models/ClientSecret.ts
 models/Config.ts
 models/ConfigChangeSecret.ts
 models/ConfigInfo.ts
-models/ConfigInfoResponse.ts
 models/ConfigResponse.ts
 models/ConfigUser.ts
 models/ConfigsResponse.ts

@@ -9,7 +9,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okhttp3.MultipartBody;
 
-import com.formance.formance.model.ConfigInfoResponse;
+import com.formance.formance.model.ConfigInfo;
 import com.formance.formance.model.ErrorResponse;
 
 import java.util.ArrayList;
@@ -22,10 +22,10 @@ public interface ServerApi {
   /**
    * Show server information
    * 
-   * @return Call&lt;ConfigInfoResponse&gt;
+   * @return Call&lt;ConfigInfo&gt;
    */
   @GET("api/ledger/_info")
-  Call<ConfigInfoResponse> getInfo();
+  Call<ConfigInfo> getInfo();
     
 
 }
