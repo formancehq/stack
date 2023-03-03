@@ -42,7 +42,7 @@ func TestWalletsCreate(t *testing.T) {
 	)
 	testEnv.Router().ServeHTTP(rec, req)
 
-	require.Equal(t, http.StatusOK, rec.Result().StatusCode)
+	require.Equal(t, http.StatusCreated, rec.Result().StatusCode)
 	wallet := &wallet.Wallet{}
 	readResponse(t, rec, wallet)
 	require.Equal(t, testEnv.LedgerName(), ledger)

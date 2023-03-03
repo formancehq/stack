@@ -22,5 +22,5 @@ func (m *MainHandler) createWalletHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	ok(w, wallet)
+	created(w, wallet)
 }
