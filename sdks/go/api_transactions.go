@@ -59,21 +59,8 @@ type TransactionsApi interface {
 	CreateTransaction(ctx context.Context, ledger string) ApiCreateTransactionRequest
 
 	// CreateTransactionExecute executes the request
-	//  @return TransactionsResponse
-	CreateTransactionExecute(r ApiCreateTransactionRequest) (*TransactionsResponse, *http.Response, error)
-
-	/*
-	CreateTransactions Create a new batch of transactions to a ledger
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param ledger Name of the ledger.
-	@return ApiCreateTransactionsRequest
-	*/
-	CreateTransactions(ctx context.Context, ledger string) ApiCreateTransactionsRequest
-
-	// CreateTransactionsExecute executes the request
-	//  @return TransactionsResponse
-	CreateTransactionsExecute(r ApiCreateTransactionsRequest) (*TransactionsResponse, *http.Response, error)
+	//  @return TransactionResponse
+	CreateTransactionExecute(r ApiCreateTransactionRequest) (*TransactionResponse, *http.Response, error)
 
 	/*
 	GetTransaction Get transaction from a ledger by its ID
@@ -446,7 +433,7 @@ func (r ApiCreateTransactionRequest) Preview(preview bool) ApiCreateTransactionR
 	return r
 }
 
-func (r ApiCreateTransactionRequest) Execute() (*TransactionsResponse, *http.Response, error) {
+func (r ApiCreateTransactionRequest) Execute() (*TransactionResponse, *http.Response, error) {
 	return r.ApiService.CreateTransactionExecute(r)
 }
 
@@ -466,13 +453,13 @@ func (a *TransactionsApiService) CreateTransaction(ctx context.Context, ledger s
 }
 
 // Execute executes the request
-//  @return TransactionsResponse
-func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransactionRequest) (*TransactionsResponse, *http.Response, error) {
+//  @return TransactionResponse
+func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransactionRequest) (*TransactionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *TransactionsResponse
+		localVarReturnValue  *TransactionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.CreateTransaction")
@@ -512,126 +499,6 @@ func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransaction
 	}
 	// body params
 	localVarPostBody = r.postTransaction
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-			var v ErrorResponse
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiCreateTransactionsRequest struct {
-	ctx context.Context
-	ApiService TransactionsApi
-	ledger string
-	transactions *Transactions
-}
-
-func (r ApiCreateTransactionsRequest) Transactions(transactions Transactions) ApiCreateTransactionsRequest {
-	r.transactions = &transactions
-	return r
-}
-
-func (r ApiCreateTransactionsRequest) Execute() (*TransactionsResponse, *http.Response, error) {
-	return r.ApiService.CreateTransactionsExecute(r)
-}
-
-/*
-CreateTransactions Create a new batch of transactions to a ledger
-
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param ledger Name of the ledger.
- @return ApiCreateTransactionsRequest
-*/
-func (a *TransactionsApiService) CreateTransactions(ctx context.Context, ledger string) ApiCreateTransactionsRequest {
-	return ApiCreateTransactionsRequest{
-		ApiService: a,
-		ctx: ctx,
-		ledger: ledger,
-	}
-}
-
-// Execute executes the request
-//  @return TransactionsResponse
-func (a *TransactionsApiService) CreateTransactionsExecute(r ApiCreateTransactionsRequest) (*TransactionsResponse, *http.Response, error) {
-	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TransactionsResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.CreateTransactions")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/api/ledger/{ledger}/transactions/batch"
-	localVarPath = strings.Replace(localVarPath, "{"+"ledger"+"}", url.PathEscape(parameterValueToString(r.ledger, "ledger")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.transactions == nil {
-		return localVarReturnValue, nil, reportError("transactions is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.transactions
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

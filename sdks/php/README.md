@@ -109,8 +109,6 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**searchgetServerInfo**](docs/Api/DefaultApi.md#searchgetserverinfo) | **GET** /api/search/_info | Get server info
 *LedgerApi* | [**getLedgerInfo**](docs/Api/LedgerApi.md#getledgerinfo) | **GET** /api/ledger/{ledger}/_info | Get information about a ledger
 *LogsApi* | [**listLogs**](docs/Api/LogsApi.md#listlogs) | **GET** /api/ledger/{ledger}/logs | List the logs from a ledger
-*MappingApi* | [**getMapping**](docs/Api/MappingApi.md#getmapping) | **GET** /api/ledger/{ledger}/mapping | Get the mapping of a ledger
-*MappingApi* | [**updateMapping**](docs/Api/MappingApi.md#updatemapping) | **PUT** /api/ledger/{ledger}/mapping | Update the mapping of a ledger
 *OrchestrationApi* | [**cancelEvent**](docs/Api/OrchestrationApi.md#cancelevent) | **PUT** /api/orchestration/instances/{instanceID}/abort | Cancel a running workflow
 *OrchestrationApi* | [**createWorkflow**](docs/Api/OrchestrationApi.md#createworkflow) | **POST** /api/orchestration/workflows | Create workflow
 *OrchestrationApi* | [**getInstance**](docs/Api/OrchestrationApi.md#getinstance) | **GET** /api/orchestration/instances/{instanceID} | Get a workflow instance by id
@@ -151,7 +149,6 @@ Class | Method | HTTP request | Description
 *TransactionsApi* | [**addMetadataOnTransaction**](docs/Api/TransactionsApi.md#addmetadataontransaction) | **POST** /api/ledger/{ledger}/transactions/{txid}/metadata | Set the metadata of a transaction by its ID
 *TransactionsApi* | [**countTransactions**](docs/Api/TransactionsApi.md#counttransactions) | **HEAD** /api/ledger/{ledger}/transactions | Count the transactions from a ledger
 *TransactionsApi* | [**createTransaction**](docs/Api/TransactionsApi.md#createtransaction) | **POST** /api/ledger/{ledger}/transactions | Create a new transaction to a ledger
-*TransactionsApi* | [**createTransactions**](docs/Api/TransactionsApi.md#createtransactions) | **POST** /api/ledger/{ledger}/transactions/batch | Create a new batch of transactions to a ledger
 *TransactionsApi* | [**getTransaction**](docs/Api/TransactionsApi.md#gettransaction) | **GET** /api/ledger/{ledger}/transactions/{txid} | Get transaction from a ledger by its ID
 *TransactionsApi* | [**listTransactions**](docs/Api/TransactionsApi.md#listtransactions) | **GET** /api/ledger/{ledger}/transactions | List transactions from a ledger
 *TransactionsApi* | [**revertTransaction**](docs/Api/TransactionsApi.md#reverttransaction) | **POST** /api/ledger/{ledger}/transactions/{txid}/revert | Revert a ledger transaction by its ID
@@ -231,7 +228,6 @@ Class | Method | HTTP request | Description
 - [ConnectorsConfigsResponseDataConnectorKey](docs/Model/ConnectorsConfigsResponseDataConnectorKey.md)
 - [ConnectorsResponse](docs/Model/ConnectorsResponse.md)
 - [ConnectorsResponseDataInner](docs/Model/ConnectorsResponseDataInner.md)
-- [Contract](docs/Model/Contract.md)
 - [CreateBalanceResponse](docs/Model/CreateBalanceResponse.md)
 - [CreateClientResponse](docs/Model/CreateClientResponse.md)
 - [CreateScopeResponse](docs/Model/CreateScopeResponse.md)
@@ -284,8 +280,6 @@ Class | Method | HTTP request | Description
 - [Log](docs/Model/Log.md)
 - [LogsCursorResponse](docs/Model/LogsCursorResponse.md)
 - [LogsCursorResponseCursor](docs/Model/LogsCursorResponseCursor.md)
-- [Mapping](docs/Model/Mapping.md)
-- [MappingResponse](docs/Model/MappingResponse.md)
 - [MigrationInfo](docs/Model/MigrationInfo.md)
 - [ModulrConfig](docs/Model/ModulrConfig.md)
 - [Monetary](docs/Model/Monetary.md)
@@ -364,7 +358,6 @@ Class | Method | HTTP request | Description
 - [Transactions](docs/Model/Transactions.md)
 - [TransactionsCursorResponse](docs/Model/TransactionsCursorResponse.md)
 - [TransactionsCursorResponseCursor](docs/Model/TransactionsCursorResponseCursor.md)
-- [TransactionsResponse](docs/Model/TransactionsResponse.md)
 - [TransferRequest](docs/Model/TransferRequest.md)
 - [TransferResponse](docs/Model/TransferResponse.md)
 - [TransfersResponse](docs/Model/TransfersResponse.md)

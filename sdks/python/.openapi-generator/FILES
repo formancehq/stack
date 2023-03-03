@@ -10,7 +10,6 @@ Formance/apis/tags/clients_api.py
 Formance/apis/tags/default_api.py
 Formance/apis/tags/ledger_api.py
 Formance/apis/tags/logs_api.py
-Formance/apis/tags/mapping_api.py
 Formance/apis/tags/orchestration_api.py
 Formance/apis/tags/payments_api.py
 Formance/apis/tags/scopes_api.py
@@ -121,8 +120,6 @@ Formance/model/connectors_configs_response.py
 Formance/model/connectors_configs_response.pyi
 Formance/model/connectors_response.py
 Formance/model/connectors_response.pyi
-Formance/model/contract.py
-Formance/model/contract.pyi
 Formance/model/create_balance_request.py
 Formance/model/create_balance_request.pyi
 Formance/model/create_balance_response.py
@@ -217,10 +214,6 @@ Formance/model/log.py
 Formance/model/log.pyi
 Formance/model/logs_cursor_response.py
 Formance/model/logs_cursor_response.pyi
-Formance/model/mapping.py
-Formance/model/mapping.pyi
-Formance/model/mapping_response.py
-Formance/model/mapping_response.pyi
 Formance/model/metadata.py
 Formance/model/metadata.pyi
 Formance/model/migration_info.py
@@ -341,8 +334,6 @@ Formance/model/transactions.py
 Formance/model/transactions.pyi
 Formance/model/transactions_cursor_response.py
 Formance/model/transactions_cursor_response.pyi
-Formance/model/transactions_response.py
-Formance/model/transactions_response.pyi
 Formance/model/transfer_request.py
 Formance/model/transfer_request.pyi
 Formance/model/transfer_response.py
@@ -413,7 +404,6 @@ docs/apis/tags/ClientsApi.md
 docs/apis/tags/DefaultApi.md
 docs/apis/tags/LedgerApi.md
 docs/apis/tags/LogsApi.md
-docs/apis/tags/MappingApi.md
 docs/apis/tags/OrchestrationApi.md
 docs/apis/tags/PaymentsApi.md
 docs/apis/tags/ScopesApi.md
@@ -473,7 +463,6 @@ docs/models/ConnectorConfig.md
 docs/models/ConnectorConfigResponse.md
 docs/models/ConnectorsConfigsResponse.md
 docs/models/ConnectorsResponse.md
-docs/models/Contract.md
 docs/models/CreateBalanceRequest.md
 docs/models/CreateBalanceResponse.md
 docs/models/CreateClientRequest.md
@@ -521,8 +510,6 @@ docs/models/ListWalletsResponse.md
 docs/models/ListWorkflowsResponse.md
 docs/models/Log.md
 docs/models/LogsCursorResponse.md
-docs/models/Mapping.md
-docs/models/MappingResponse.md
 docs/models/Metadata.md
 docs/models/MigrationInfo.md
 docs/models/ModulrConfig.md
@@ -583,7 +570,6 @@ docs/models/TransactionData.md
 docs/models/TransactionResponse.md
 docs/models/Transactions.md
 docs/models/TransactionsCursorResponse.md
-docs/models/TransactionsResponse.md
 docs/models/TransferRequest.md
 docs/models/TransferResponse.md
 docs/models/TransfersResponse.md

@@ -788,69 +788,6 @@ paths:
       summary: Add metadata to an account
       tags:
       - Accounts
-  /api/ledger/{ledger}/mapping:
-    get:
-      operationId: getMapping
-      parameters:
-      - description: Name of the ledger.
-        explode: false
-        in: path
-        name: ledger
-        required: true
-        schema:
-          example: ledger001
-          type: string
-        style: simple
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MappingResponse'
-          description: OK
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: Error
-      summary: Get the mapping of a ledger
-      tags:
-      - Mapping
-    put:
-      operationId: updateMapping
-      parameters:
-      - description: Name of the ledger.
-        explode: false
-        in: path
-        name: ledger
-        required: true
-        schema:
-          example: ledger001
-          type: string
-        style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Mapping'
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MappingResponse'
-          description: OK
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: Error
-      summary: Update the mapping of a ledger
-      tags:
-      - Mapping
   /api/ledger/{ledger}/script:
     post:
       deprecated: true
@@ -1294,7 +1231,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionsResponse'
+                $ref: '#/components/schemas/TransactionResponse'
           description: OK
         default:
           content:
@@ -1426,41 +1363,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
           description: Error
       summary: Revert a ledger transaction by its ID
-      tags:
-      - Transactions
-  /api/ledger/{ledger}/transactions/batch:
-    post:
-      operationId: CreateTransactions
-      parameters:
-      - description: Name of the ledger.
-        explode: false
-        in: path
-        name: ledger
-        required: true
-        schema:
-          example: ledger001
-          type: string
-        style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Transactions'
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TransactionsResponse'
-          description: OK
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: Error
-      summary: Create a new batch of transactions to a ledger
       tags:
       - Transactions
   /api/ledger/{ledger}/balances:
@@ -4031,36 +3933,6 @@ components:
         USD: 100
         EUR: 12
       type: object
-    Contract:
-      example:
-        expr: "{}"
-        account: users:001
-      properties:
-        account:
-          example: users:001
-          type: string
-        expr:
-          type: object
-      required:
-      - accounts
-      - expr
-      type: object
-    Mapping:
-      example:
-        contracts:
-        - expr: "{}"
-          account: users:001
-        - expr: "{}"
-          account: users:001
-      nullable: true
-      properties:
-        contracts:
-          items:
-            $ref: '#/components/schemas/Contract'
-          type: array
-      required:
-      - contracts
-      type: object
     Posting:
       example:
         amount: 100
@@ -4229,23 +4101,6 @@ components:
       - txid
       type: object
     TransactionData:
-      example:
-        reference: ref:001
-        metadata:
-          admin: true
-          a:
-            nested:
-              key: value
-        postings:
-        - amount: 100
-          destination: users:002
-          source: users:001
-          asset: COIN
-        - amount: 100
-          destination: users:002
-          source: users:001
-          asset: COIN
-        timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         postings:
           items:
@@ -4270,40 +4125,6 @@ components:
       - postings
       type: object
     Transactions:
-      example:
-        transactions:
-        - reference: ref:001
-          metadata:
-            admin: true
-            a:
-              nested:
-                key: value
-          postings:
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          timestamp: 2000-01-23T04:56:07.000+00:00
-        - reference: ref:001
-          metadata:
-            admin: true
-            a:
-              nested:
-                key: value
-          postings:
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         transactions:
           items:
@@ -4410,95 +4231,6 @@ components:
       - id
       - type
       type: object
-    TransactionsResponse:
-      example:
-        data:
-        - reference: ref:001
-          metadata:
-            admin: true
-            a:
-              nested:
-                key: value
-          postings:
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          txid: 0
-          postCommitVolumes:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          preCommitVolumes:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          timestamp: 2000-01-23T04:56:07.000+00:00
-        - reference: ref:001
-          metadata:
-            admin: true
-            a:
-              nested:
-                key: value
-          postings:
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          txid: 0
-          postCommitVolumes:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          preCommitVolumes:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          timestamp: 2000-01-23T04:56:07.000+00:00
-      properties:
-        data:
-          items:
-            $ref: '#/components/schemas/Transaction'
-          type: array
-      required:
-      - data
-      type: object
     TransactionResponse:
       example:
         data:
@@ -4557,18 +4289,6 @@ components:
           $ref: '#/components/schemas/Stats'
       required:
       - data
-      type: object
-    MappingResponse:
-      example:
-        data:
-          contracts:
-          - expr: "{}"
-            account: users:001
-          - expr: "{}"
-            account: users:001
-      properties:
-        data:
-          $ref: '#/components/schemas/Mapping'
       type: object
     ConfigInfoResponse:
       example:
@@ -6169,46 +5889,7 @@ components:
         output:
           CreateTransaction:
             data:
-            - reference: ref:001
-              metadata:
-                admin: true
-                a:
-                  nested:
-                    key: value
-              postings:
-              - amount: 100
-                destination: users:002
-                source: users:001
-                asset: COIN
-              - amount: 100
-                destination: users:002
-                source: users:001
-                asset: COIN
-              txid: 0
-              postCommitVolumes:
-                orders:1:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
-                orders:2:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
-              preCommitVolumes:
-                orders:1:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
-                orders:2:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
-              timestamp: 2000-01-23T04:56:07.000+00:00
-            - reference: ref:001
+              reference: ref:001
               metadata:
                 admin: true
                 a:
@@ -6694,46 +6375,7 @@ components:
         - output:
             CreateTransaction:
               data:
-              - reference: ref:001
-                metadata:
-                  admin: true
-                  a:
-                    nested:
-                      key: value
-                postings:
-                - amount: 100
-                  destination: users:002
-                  source: users:001
-                  asset: COIN
-                - amount: 100
-                  destination: users:002
-                  source: users:001
-                  asset: COIN
-                txid: 0
-                postCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                preCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                timestamp: 2000-01-23T04:56:07.000+00:00
-              - reference: ref:001
+                reference: ref:001
                 metadata:
                   admin: true
                   a:
@@ -6951,46 +6593,7 @@ components:
         - output:
             CreateTransaction:
               data:
-              - reference: ref:001
-                metadata:
-                  admin: true
-                  a:
-                    nested:
-                      key: value
-                postings:
-                - amount: 100
-                  destination: users:002
-                  source: users:001
-                  asset: COIN
-                - amount: 100
-                  destination: users:002
-                  source: users:001
-                  asset: COIN
-                txid: 0
-                postCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                preCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                timestamp: 2000-01-23T04:56:07.000+00:00
-              - reference: ref:001
+                reference: ref:001
                 metadata:
                   admin: true
                   a:
@@ -7429,7 +7032,7 @@ components:
     ActivityGetAccountOutput:
       $ref: '#/components/schemas/AccountResponse'
     ActivityCreateTransactionOutput:
-      $ref: '#/components/schemas/TransactionsResponse'
+      $ref: '#/components/schemas/TransactionResponse'
     ActivityRevertTransactionOutput:
       $ref: '#/components/schemas/TransactionResponse'
     ActivityGetPaymentOutput:
@@ -7531,46 +7134,7 @@ components:
       example:
         CreateTransaction:
           data:
-          - reference: ref:001
-            metadata:
-              admin: true
-              a:
-                nested:
-                  key: value
-            postings:
-            - amount: 100
-              destination: users:002
-              source: users:001
-              asset: COIN
-            - amount: 100
-              destination: users:002
-              source: users:001
-              asset: COIN
-            txid: 0
-            postCommitVolumes:
-              orders:1:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-              orders:2:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-            preCommitVolumes:
-              orders:1:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-              orders:2:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-            timestamp: 2000-01-23T04:56:07.000+00:00
-          - reference: ref:001
+            reference: ref:001
             metadata:
               admin: true
               a:
@@ -7715,7 +7279,7 @@ components:
         GetAccount:
           $ref: '#/components/schemas/AccountResponse'
         CreateTransaction:
-          $ref: '#/components/schemas/TransactionsResponse'
+          $ref: '#/components/schemas/TransactionResponse'
         RevertTransaction:
           $ref: '#/components/schemas/TransactionResponse'
         GetPayment:
