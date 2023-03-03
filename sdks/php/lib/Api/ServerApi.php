@@ -132,7 +132,7 @@ class ServerApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ConfigInfoResponse|\Formance\Model\ErrorResponse
+     * @return \Formance\Model\ConfigInfo|\Formance\Model\ErrorResponse
      */
     public function getInfo(string $contentType = self::contentTypes['getInfo'][0])
     {
@@ -149,7 +149,7 @@ class ServerApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ConfigInfoResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\ConfigInfo|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function getInfoWithHttpInfo(string $contentType = self::contentTypes['getInfo'][0])
     {
@@ -192,17 +192,17 @@ class ServerApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\ConfigInfoResponse' === '\SplFileObject') {
+                    if ('\Formance\Model\ConfigInfo' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\ConfigInfoResponse' !== 'string') {
+                        if ('\Formance\Model\ConfigInfo' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\ConfigInfoResponse', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ConfigInfo', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -223,7 +223,7 @@ class ServerApi
                     ];
             }
 
-            $returnType = '\Formance\Model\ConfigInfoResponse';
+            $returnType = '\Formance\Model\ConfigInfo';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -244,7 +244,7 @@ class ServerApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\ConfigInfoResponse',
+                        '\Formance\Model\ConfigInfo',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -294,7 +294,7 @@ class ServerApi
      */
     public function getInfoAsyncWithHttpInfo(string $contentType = self::contentTypes['getInfo'][0])
     {
-        $returnType = '\Formance\Model\ConfigInfoResponse';
+        $returnType = '\Formance\Model\ConfigInfo';
         $request = $this->getInfoRequest($contentType);
 
         return $this->client
