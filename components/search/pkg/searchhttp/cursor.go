@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 
 	"github.com/formancehq/search/pkg/searchengine"
+	"github.com/formancehq/stack/libs/go-libs/api"
 )
 
 type cursorTokenInfo struct {
@@ -32,4 +33,18 @@ func EncodeCursorToken(c cursorTokenInfo) string {
 	}
 	enc.Close()
 	return buf.String()
+}
+
+type Total struct {
+	Value uint64 `json:"value,omitempty"`
+	Rel   string `json:"relation,omitempty"`
+}
+
+type Cursor[T any] struct {
+	api.Cursor[T]
+	Total Total `json:"value"`
+}
+
+type BaseResponse[T any] struct {
+	Cursor *Cursor[T] `json:"cursor,omitempty"`
 }
