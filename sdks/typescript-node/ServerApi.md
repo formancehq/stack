@@ -8,7 +8,7 @@ Method | HTTP request | Description
 
 
 # **getInfo**
-> ConfigInfoResponse getInfo()
+> ConfigInfo getInfo()
 
 
 ### Example
@@ -35,7 +35,7 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-**ConfigInfoResponse**
+**ConfigInfo**
 
 ### Authorization
 

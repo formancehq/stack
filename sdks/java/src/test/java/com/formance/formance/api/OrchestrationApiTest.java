@@ -135,7 +135,7 @@ public class OrchestrationApiTest {
     /**
      * Get server info
      *
-     * 
+     *
      */
     @Test
     public void orchestrationgetServerInfoTest() {
