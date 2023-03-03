@@ -50,7 +50,6 @@ import { ConnectorsConfigsResponseDataConnector } from '../models/ConnectorsConf
 import { ConnectorsConfigsResponseDataConnectorKey } from '../models/ConnectorsConfigsResponseDataConnectorKey';
 import { ConnectorsResponse } from '../models/ConnectorsResponse';
 import { ConnectorsResponseDataInner } from '../models/ConnectorsResponseDataInner';
-import { Contract } from '../models/Contract';
 import { CreateBalanceResponse } from '../models/CreateBalanceResponse';
 import { CreateClientResponse } from '../models/CreateClientResponse';
 import { CreateScopeResponse } from '../models/CreateScopeResponse';
@@ -102,8 +101,6 @@ import { ListWorkflowsResponse } from '../models/ListWorkflowsResponse';
 import { Log } from '../models/Log';
 import { LogsCursorResponse } from '../models/LogsCursorResponse';
 import { LogsCursorResponseCursor } from '../models/LogsCursorResponseCursor';
-import { Mapping } from '../models/Mapping';
-import { MappingResponse } from '../models/MappingResponse';
 import { MigrationInfo } from '../models/MigrationInfo';
 import { ModelError } from '../models/ModelError';
 import { ModulrConfig } from '../models/ModulrConfig';
@@ -183,7 +180,6 @@ import { TransactionResponse } from '../models/TransactionResponse';
 import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
-import { TransactionsResponse } from '../models/TransactionsResponse';
 import { TransferRequest } from '../models/TransferRequest';
 import { TransferResponse } from '../models/TransferResponse';
 import { TransfersResponse } from '../models/TransfersResponse';
@@ -526,44 +522,6 @@ export class PromiseLogsApi {
      */
     public listLogs(ledger: string, pageSize?: number, pageSize2?: number, after?: string, startTime?: Date, startTime2?: Date, endTime?: Date, endTime2?: Date, cursor?: string, paginationToken?: string, _options?: Configuration): Promise<LogsCursorResponse> {
         const result = this.api.listLogs(ledger, pageSize, pageSize2, after, startTime, startTime2, endTime, endTime2, cursor, paginationToken, _options);
-        return result.toPromise();
-    }
-
-
-}
-
-
-
-import { ObservableMappingApi } from './ObservableAPI';
-
-import { MappingApiRequestFactory, MappingApiResponseProcessor} from "../apis/MappingApi";
-export class PromiseMappingApi {
-    private api: ObservableMappingApi
-
-    public constructor(
-        configuration: Configuration,
-        requestFactory?: MappingApiRequestFactory,
-        responseProcessor?: MappingApiResponseProcessor
-    ) {
-        this.api = new ObservableMappingApi(configuration, requestFactory, responseProcessor);
-    }
-
-    /**
-     * Get the mapping of a ledger
-     * @param ledger Name of the ledger.
-     */
-    public getMapping(ledger: string, _options?: Configuration): Promise<MappingResponse> {
-        const result = this.api.getMapping(ledger, _options);
-        return result.toPromise();
-    }
-
-    /**
-     * Update the mapping of a ledger
-     * @param ledger Name of the ledger.
-     * @param mapping 
-     */
-    public updateMapping(ledger: string, mapping: Mapping, _options?: Configuration): Promise<MappingResponse> {
-        const result = this.api.updateMapping(ledger, mapping, _options);
         return result.toPromise();
     }
 
@@ -1132,18 +1090,8 @@ export class PromiseTransactionsApi {
      * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript 
      * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
      */
-    public createTransaction(ledger: string, postTransaction: PostTransaction, preview?: boolean, _options?: Configuration): Promise<TransactionsResponse> {
+    public createTransaction(ledger: string, postTransaction: PostTransaction, preview?: boolean, _options?: Configuration): Promise<TransactionResponse> {
         const result = this.api.createTransaction(ledger, postTransaction, preview, _options);
-        return result.toPromise();
-    }
-
-    /**
-     * Create a new batch of transactions to a ledger
-     * @param ledger Name of the ledger.
-     * @param transactions 
-     */
-    public createTransactions(ledger: string, transactions: Transactions, _options?: Configuration): Promise<TransactionsResponse> {
-        const result = this.api.createTransactions(ledger, transactions, _options);
         return result.toPromise();
     }
 

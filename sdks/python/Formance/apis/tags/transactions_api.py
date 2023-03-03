@@ -13,7 +13,6 @@
 from Formance.paths.api_ledger_ledger_transactions_txid_metadata.post import AddMetadataOnTransaction
 from Formance.paths.api_ledger_ledger_transactions.head import CountTransactions
 from Formance.paths.api_ledger_ledger_transactions.post import CreateTransaction
-from Formance.paths.api_ledger_ledger_transactions_batch.post import CreateTransactions
 from Formance.paths.api_ledger_ledger_transactions_txid.get import GetTransaction
 from Formance.paths.api_ledger_ledger_transactions.get import ListTransactions
 from Formance.paths.api_ledger_ledger_transactions_txid_revert.post import RevertTransaction
@@ -23,7 +22,6 @@ class TransactionsApi(
     AddMetadataOnTransaction,
     CountTransactions,
     CreateTransaction,
-    CreateTransactions,
     GetTransaction,
     ListTransactions,
     RevertTransaction,

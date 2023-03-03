@@ -7,7 +7,6 @@ Method | HTTP request | Description
 [**addMetadataOnTransaction**](TransactionsApi.md#addMetadataOnTransaction) | **POST** /api/ledger/{ledger}/transactions/{txid}/metadata | Set the metadata of a transaction by its ID
 [**countTransactions**](TransactionsApi.md#countTransactions) | **HEAD** /api/ledger/{ledger}/transactions | Count the transactions from a ledger
 [**createTransaction**](TransactionsApi.md#createTransaction) | **POST** /api/ledger/{ledger}/transactions | Create a new transaction to a ledger
-[**createTransactions**](TransactionsApi.md#createTransactions) | **POST** /api/ledger/{ledger}/transactions/batch | Create a new batch of transactions to a ledger
 [**getTransaction**](TransactionsApi.md#getTransaction) | **GET** /api/ledger/{ledger}/transactions/{txid} | Get transaction from a ledger by its ID
 [**listTransactions**](TransactionsApi.md#listTransactions) | **GET** /api/ledger/{ledger}/transactions | List transactions from a ledger
 [**revertTransaction**](TransactionsApi.md#revertTransaction) | **POST** /api/ledger/{ledger}/transactions/{txid}/revert | Revert a ledger transaction by its ID
@@ -157,7 +156,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **createTransaction**
-> TransactionsResponse createTransaction(postTransaction)
+> TransactionResponse createTransaction(postTransaction)
 
 
 ### Example
@@ -221,82 +220,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**TransactionsResponse**
-
-### Authorization
-
-[Authorization](README.md#Authorization)
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | OK |  -  |
-**0** | Error |  -  |
-
-[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
-
-# **createTransactions**
-> TransactionsResponse createTransactions(transactions)
-
-
-### Example
-
-
-```typescript
-import { TransactionsApi, createConfiguration } from '@formancehq/formance';
-import * as fs from 'fs';
-
-const configuration = createConfiguration();
-const apiInstance = new TransactionsApi(configuration);
-
-let body:TransactionsApiCreateTransactionsRequest = {
-  // string | Name of the ledger.
-  ledger: "ledger001",
-  // Transactions
-  transactions: {
-    transactions: [
-      {
-        postings: [
-          {
-            amount: 100,
-            asset: "COIN",
-            destination: "users:002",
-            source: "users:001",
-          },
-        ],
-        reference: "ref:001",
-        metadata: {
-          "key": null,
-        },
-        timestamp: new Date('1970-01-01T00:00:00.00Z'),
-      },
-    ],
-  },
-};
-
-apiInstance.createTransactions(body).then((data:any) => {
-  console.log('API called successfully. Returned data: ' + data);
-}).catch((error:any) => console.error(error));
-```
-
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **transactions** | **Transactions**|  |
- **ledger** | [**string**] | Name of the ledger. | defaults to undefined
-
-
-### Return type
-
-**TransactionsResponse**
+**TransactionResponse**
 
 ### Authorization
 

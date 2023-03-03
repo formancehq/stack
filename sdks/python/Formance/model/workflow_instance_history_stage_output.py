@@ -43,8 +43,8 @@ class WorkflowInstanceHistoryStageOutput(
                 return AccountResponse
         
             @staticmethod
-            def CreateTransaction() -> typing.Type['TransactionsResponse']:
-                return TransactionsResponse
+            def CreateTransaction() -> typing.Type['TransactionResponse']:
+                return TransactionResponse
         
             @staticmethod
             def RevertTransaction() -> typing.Type['TransactionResponse']:
@@ -74,7 +74,7 @@ class WorkflowInstanceHistoryStageOutput(
     def __getitem__(self, name: typing_extensions.Literal["GetAccount"]) -> 'AccountResponse': ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["CreateTransaction"]) -> 'TransactionsResponse': ...
+    def __getitem__(self, name: typing_extensions.Literal["CreateTransaction"]) -> 'TransactionResponse': ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["RevertTransaction"]) -> 'TransactionResponse': ...
@@ -100,7 +100,7 @@ class WorkflowInstanceHistoryStageOutput(
     def get_item_oapg(self, name: typing_extensions.Literal["GetAccount"]) -> typing.Union['AccountResponse', schemas.Unset]: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["CreateTransaction"]) -> typing.Union['TransactionsResponse', schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["CreateTransaction"]) -> typing.Union['TransactionResponse', schemas.Unset]: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["RevertTransaction"]) -> typing.Union['TransactionResponse', schemas.Unset]: ...
@@ -125,7 +125,7 @@ class WorkflowInstanceHistoryStageOutput(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
         GetAccount: typing.Union['AccountResponse', schemas.Unset] = schemas.unset,
-        CreateTransaction: typing.Union['TransactionsResponse', schemas.Unset] = schemas.unset,
+        CreateTransaction: typing.Union['TransactionResponse', schemas.Unset] = schemas.unset,
         RevertTransaction: typing.Union['TransactionResponse', schemas.Unset] = schemas.unset,
         GetPayment: typing.Union['PaymentResponse', schemas.Unset] = schemas.unset,
         DebitWallet: typing.Union['DebitWalletResponse', schemas.Unset] = schemas.unset,
@@ -151,4 +151,3 @@ from Formance.model.debit_wallet_response import DebitWalletResponse
 from Formance.model.get_wallet_response import GetWalletResponse
 from Formance.model.payment_response import PaymentResponse
 from Formance.model.transaction_response import TransactionResponse
-from Formance.model.transactions_response import TransactionsResponse
