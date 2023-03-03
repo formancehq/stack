@@ -59,7 +59,7 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
       */
     protected static $openAPITypes = [
         'get_account' => '\Formance\Model\AccountResponse',
-        'create_transaction' => '\Formance\Model\TransactionsResponse',
+        'create_transaction' => '\Formance\Model\TransactionResponse',
         'revert_transaction' => '\Formance\Model\TransactionResponse',
         'get_payment' => '\Formance\Model\PaymentResponse',
         'debit_wallet' => '\Formance\Model\DebitWalletResponse',
@@ -355,7 +355,7 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
     /**
      * Gets create_transaction
      *
-     * @return \Formance\Model\TransactionsResponse|null
+     * @return \Formance\Model\TransactionResponse|null
      */
     public function getCreateTransaction()
     {
@@ -365,7 +365,7 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
     /**
      * Sets create_transaction
      *
-     * @param \Formance\Model\TransactionsResponse|null $create_transaction create_transaction
+     * @param \Formance\Model\TransactionResponse|null $create_transaction create_transaction
      *
      * @return self
      */

@@ -9,7 +9,6 @@ docs/Api/ClientsApi.md
 docs/Api/DefaultApi.md
 docs/Api/LedgerApi.md
 docs/Api/LogsApi.md
-docs/Api/MappingApi.md
 docs/Api/OrchestrationApi.md
 docs/Api/PaymentsApi.md
 docs/Api/ScopesApi.md
@@ -70,7 +69,6 @@ docs/Model/ConnectorsConfigsResponseDataConnector.md
 docs/Model/ConnectorsConfigsResponseDataConnectorKey.md
 docs/Model/ConnectorsResponse.md
 docs/Model/ConnectorsResponseDataInner.md
-docs/Model/Contract.md
 docs/Model/CreateBalanceResponse.md
 docs/Model/CreateClientResponse.md
 docs/Model/CreateScopeResponse.md
@@ -123,8 +121,6 @@ docs/Model/ListWorkflowsResponse.md
 docs/Model/Log.md
 docs/Model/LogsCursorResponse.md
 docs/Model/LogsCursorResponseCursor.md
-docs/Model/Mapping.md
-docs/Model/MappingResponse.md
 docs/Model/MigrationInfo.md
 docs/Model/ModulrConfig.md
 docs/Model/Monetary.md
@@ -203,7 +199,6 @@ docs/Model/TransactionResponse.md
 docs/Model/Transactions.md
 docs/Model/TransactionsCursorResponse.md
 docs/Model/TransactionsCursorResponseCursor.md
-docs/Model/TransactionsResponse.md
 docs/Model/TransferRequest.md
 docs/Model/TransferResponse.md
 docs/Model/TransfersResponse.md
@@ -235,7 +230,6 @@ lib/Api/ClientsApi.php
 lib/Api/DefaultApi.php
 lib/Api/LedgerApi.php
 lib/Api/LogsApi.php
-lib/Api/MappingApi.php
 lib/Api/OrchestrationApi.php
 lib/Api/PaymentsApi.php
 lib/Api/ScopesApi.php
@@ -299,7 +293,6 @@ lib/Model/ConnectorsConfigsResponseDataConnector.php
 lib/Model/ConnectorsConfigsResponseDataConnectorKey.php
 lib/Model/ConnectorsResponse.php
 lib/Model/ConnectorsResponseDataInner.php
-lib/Model/Contract.php
 lib/Model/CreateBalanceResponse.php
 lib/Model/CreateClientResponse.php
 lib/Model/CreateScopeResponse.php
@@ -352,8 +345,6 @@ lib/Model/ListWorkflowsResponse.php
 lib/Model/Log.php
 lib/Model/LogsCursorResponse.php
 lib/Model/LogsCursorResponseCursor.php
-lib/Model/Mapping.php
-lib/Model/MappingResponse.php
 lib/Model/MigrationInfo.php
 lib/Model/ModelInterface.php
 lib/Model/ModulrConfig.php
@@ -433,7 +424,6 @@ lib/Model/TransactionResponse.php
 lib/Model/Transactions.php
 lib/Model/TransactionsCursorResponse.php
 lib/Model/TransactionsCursorResponseCursor.php
-lib/Model/TransactionsResponse.php
 lib/Model/TransferRequest.php
 lib/Model/TransferResponse.php
 lib/Model/TransfersResponse.php

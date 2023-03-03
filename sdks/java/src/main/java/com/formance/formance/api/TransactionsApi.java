@@ -13,9 +13,7 @@ import com.formance.formance.model.ErrorResponse;
 import java.time.OffsetDateTime;
 import com.formance.formance.model.PostTransaction;
 import com.formance.formance.model.TransactionResponse;
-import com.formance.formance.model.Transactions;
 import com.formance.formance.model.TransactionsCursorResponse;
-import com.formance.formance.model.TransactionsResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,29 +64,14 @@ public interface TransactionsApi {
    * @param ledger Name of the ledger. (required)
    * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  (required)
    * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
-   * @return Call&lt;TransactionsResponse&gt;
+   * @return Call&lt;TransactionResponse&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
   @POST("api/ledger/{ledger}/transactions")
-  Call<TransactionsResponse> createTransaction(
+  Call<TransactionResponse> createTransaction(
     @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Body PostTransaction postTransaction, @retrofit2.http.Query("preview") Boolean preview
-  );
-
-  /**
-   * Create a new batch of transactions to a ledger
-   * 
-   * @param ledger Name of the ledger. (required)
-   * @param transactions  (required)
-   * @return Call&lt;TransactionsResponse&gt;
-   */
-  @Headers({
-    "Content-Type:application/json"
-  })
-  @POST("api/ledger/{ledger}/transactions/batch")
-  Call<TransactionsResponse> createTransactions(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Body Transactions transactions
   );
 
   /**

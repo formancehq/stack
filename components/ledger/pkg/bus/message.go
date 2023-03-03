@@ -12,7 +12,6 @@ const (
 
 	EventTypeCommittedTransactions = "COMMITTED_TRANSACTIONS"
 	EventTypeSavedMetadata         = "SAVED_METADATA"
-	EventTypeUpdatedMapping        = "UPDATED_MAPPING"
 	EventTypeRevertedTransaction   = "REVERTED_TRANSACTION"
 )
 
@@ -61,22 +60,6 @@ func newEventSavedMetadata(metadata SavedMetadata) EventMessage {
 		Type:    EventTypeSavedMetadata,
 		Payload: metadata,
 		Ledger:  metadata.Ledger,
-	}
-}
-
-type UpdatedMapping struct {
-	Ledger  string       `json:"ledger"`
-	Mapping core.Mapping `json:"mapping"`
-}
-
-func newEventUpdatedMapping(mapping UpdatedMapping) EventMessage {
-	return EventMessage{
-		Date:    time.Now().UTC(),
-		App:     EventApp,
-		Version: EventVersion,
-		Type:    EventTypeUpdatedMapping,
-		Payload: mapping,
-		Ledger:  mapping.Ledger,
 	}
 }
 

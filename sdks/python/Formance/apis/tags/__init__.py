@@ -11,7 +11,6 @@ class TagValues(str, enum.Enum):
     CLIENTS = "Clients"
     LEDGER = "Ledger"
     LOGS = "Logs"
-    MAPPING = "Mapping"
     ORCHESTRATION = "Orchestration"
     PAYMENTS = "Payments"
     SCOPES = "Scopes"
