@@ -38,21 +38,21 @@ class TransactionsResponse(
         required = {
             "data",
         }
-        
+
         class properties:
-            
-            
+
+
             class data(
                 schemas.ListSchema
             ):
-            
-            
+
+
                 class MetaOapg:
-                    
+
                     @staticmethod
                     def items() -> typing.Type['Transaction']:
                         return Transaction
-            
+
                 def __new__(
                     cls,
                     _arg: typing.Union[typing.Tuple['Transaction'], typing.List['Transaction']],
@@ -63,35 +63,35 @@ class TransactionsResponse(
                         _arg,
                         _configuration=_configuration,
                     )
-            
+
                 def __getitem__(self, i: int) -> 'Transaction':
                     return super().__getitem__(i)
             __annotations__ = {
                 "data": data,
             }
-    
+
     data: MetaOapg.properties.data
-    
+
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["data"]) -> MetaOapg.properties.data: ...
-    
+
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
-    
+
     def __getitem__(self, name: typing.Union[typing_extensions.Literal["data", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
-    
-    
+
+
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["data"]) -> MetaOapg.properties.data: ...
-    
+
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
-    
+
     def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["data", ], str]):
         return super().get_item_oapg(name)
-    
+
 
     def __new__(
         cls,

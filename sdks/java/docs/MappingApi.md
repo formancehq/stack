@@ -30,7 +30,7 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
+
         // Configure OAuth2 access token for authorization: Authorization
         OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
@@ -100,14 +100,14 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
+
         // Configure OAuth2 access token for authorization: Authorization
         OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
         Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         MappingApi apiInstance = new MappingApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
-        Mapping mapping = new Mapping(); // Mapping | 
+        Mapping mapping = new Mapping(); // Mapping |
         try {
             MappingResponse result = apiInstance.updateMapping(ledger, mapping);
             System.out.println(result);
@@ -149,4 +149,3 @@ public class Example {
 |-------------|-------------|------------------|
 | **200** | OK |  -  |
 | **0** | Error |  -  |
-

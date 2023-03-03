@@ -25,10 +25,10 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.config_info_response import ConfigInfoResponse
 from Formance.model.error_response import ErrorResponse
+from Formance.model.config_info import ConfigInfo
 
-SchemaFor200ResponseBodyApplicationJson = ConfigInfoResponse
+SchemaFor200ResponseBodyApplicationJson = ConfigInfo
 
 
 @dataclass

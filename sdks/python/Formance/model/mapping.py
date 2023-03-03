@@ -41,21 +41,21 @@ class Mapping(
         required = {
             "contracts",
         }
-        
+
         class properties:
-            
-            
+
+
             class contracts(
                 schemas.ListSchema
             ):
-            
-            
+
+
                 class MetaOapg:
-                    
+
                     @staticmethod
                     def items() -> typing.Type['Contract']:
                         return Contract
-            
+
                 def __new__(
                     cls,
                     _arg: typing.Union[typing.Tuple['Contract'], typing.List['Contract']],
@@ -66,36 +66,36 @@ class Mapping(
                         _arg,
                         _configuration=_configuration,
                     )
-            
+
                 def __getitem__(self, i: int) -> 'Contract':
                     return super().__getitem__(i)
             __annotations__ = {
                 "contracts": contracts,
             }
 
-    
+
     contracts: MetaOapg.properties.contracts
-    
+
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["contracts"]) -> MetaOapg.properties.contracts: ...
-    
+
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
-    
+
     def __getitem__(self, name: typing.Union[typing_extensions.Literal["contracts", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
-    
-    
+
+
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["contracts"]) -> MetaOapg.properties.contracts: ...
-    
+
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
-    
+
     def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["contracts", ], str]):
         return super().get_item_oapg(name)
-    
+
 
     def __new__(
         cls,
