@@ -5,9 +5,7 @@ import com.formance.formance.model.ErrorResponse;
 import java.time.OffsetDateTime;
 import com.formance.formance.model.PostTransaction;
 import com.formance.formance.model.TransactionResponse;
-import com.formance.formance.model.Transactions;
 import com.formance.formance.model.TransactionsCursorResponse;
-import com.formance.formance.model.TransactionsResponse;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +31,7 @@ public class TransactionsApiTest {
     /**
      * Set the metadata of a transaction by its ID
      *
-     *
+     * 
      */
     @Test
     public void addMetadataOnTransactionTest() {
@@ -47,7 +45,7 @@ public class TransactionsApiTest {
     /**
      * Count the transactions from a ledger
      *
-     *
+     * 
      */
     @Test
     public void countTransactionsTest() {
@@ -68,34 +66,21 @@ public class TransactionsApiTest {
     /**
      * Create a new transaction to a ledger
      *
-     *
+     * 
      */
     @Test
     public void createTransactionTest() {
         String ledger = null;
         PostTransaction postTransaction = null;
         Boolean preview = null;
-        // TransactionsResponse response = api.createTransaction(ledger, postTransaction, preview);
-
-        // TODO: test validations
-    }
-    /**
-     * Create a new batch of transactions to a ledger
-     *
-     *
-     */
-    @Test
-    public void createTransactionsTest() {
-        String ledger = null;
-        Transactions transactions = null;
-        // TransactionsResponse response = api.createTransactions(ledger, transactions);
+        // TransactionResponse response = api.createTransaction(ledger, postTransaction, preview);
 
         // TODO: test validations
     }
     /**
      * Get transaction from a ledger by its ID
      *
-     *
+     * 
      */
     @Test
     public void getTransactionTest() {
@@ -134,7 +119,7 @@ public class TransactionsApiTest {
     /**
      * Revert a ledger transaction by its ID
      *
-     *
+     * 
      */
     @Test
     public void revertTransactionTest() {

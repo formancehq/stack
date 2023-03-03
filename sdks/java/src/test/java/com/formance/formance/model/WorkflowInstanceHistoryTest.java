@@ -1,6 +1,6 @@
 /*
  * Formance Stack API
- * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions />
+ * Open, modular foundation for unique payments flows  # Introduction This API is documented in **OpenAPI format**.  # Authentication Formance Stack offers one forms of authentication:   - OAuth2 OAuth2 - an open protocol to allow secure authorization in a simple and standard method from web, mobile and desktop applications. <SecurityDefinitions /> 
  *
  * The version of the OpenAPI document: develop
  * Contact: support@formance.com
@@ -13,7 +13,6 @@
 
 package com.formance.formance.model;
 
-import com.formance.formance.model.Bool;
 import com.formance.formance.model.Stage;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;

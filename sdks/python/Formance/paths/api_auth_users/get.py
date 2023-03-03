@@ -29,6 +29,9 @@ from Formance.model.list_users_response import ListUsersResponse
 
 from . import path
 
+_auth = [
+    'Authorization',
+]
 SchemaFor200ResponseBodyApplicationJson = ListUsersResponse
 
 
@@ -114,6 +117,7 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='get'.upper(),
             headers=_headers,
+            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

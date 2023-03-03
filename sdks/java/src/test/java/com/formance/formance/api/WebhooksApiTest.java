@@ -43,7 +43,7 @@ public class WebhooksApiTest {
     /**
      * Change the signing secret of a config
      *
-     * Change the signing secret of the endpoint of a webhooks config.  If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)
+     * Change the signing secret of the endpoint of a webhooks config.  If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding) 
      */
     @Test
     public void changeConfigSecretTest() {
@@ -93,7 +93,7 @@ public class WebhooksApiTest {
     /**
      * Insert a new config
      *
-     * Insert a new webhooks config.  The endpoint should be a valid https URL and be unique.  The secret is the endpoint&#39;s verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)  All eventTypes are converted to lower-case when inserted.
+     * Insert a new webhooks config.  The endpoint should be a valid https URL and be unique.  The secret is the endpoint&#39;s verification secret. If not passed or empty, a secret is automatically generated. The format is a random string of bytes of size 24, base64 encoded. (larger size after encoding)  All eventTypes are converted to lower-case when inserted. 
      */
     @Test
     public void insertConfigTest() {

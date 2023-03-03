@@ -17,6 +17,7 @@ List the logs from a ledger, sorted by ID in descending order.
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import logs_api
@@ -29,6 +30,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -215,7 +226,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 

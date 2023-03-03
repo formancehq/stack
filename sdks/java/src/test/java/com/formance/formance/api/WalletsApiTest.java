@@ -44,7 +44,7 @@ public class WalletsApiTest {
     /**
      * Confirm a hold
      *
-     *
+     * 
      */
     @Test
     public void confirmHoldTest() {
@@ -57,7 +57,7 @@ public class WalletsApiTest {
     /**
      * Create a balance
      *
-     *
+     * 
      */
     @Test
     public void createBalanceTest() {
@@ -70,7 +70,7 @@ public class WalletsApiTest {
     /**
      * Create a new wallet
      *
-     *
+     * 
      */
     @Test
     public void createWalletTest() {
@@ -82,7 +82,7 @@ public class WalletsApiTest {
     /**
      * Credit a wallet
      *
-     *
+     * 
      */
     @Test
     public void creditWalletTest() {
@@ -95,7 +95,7 @@ public class WalletsApiTest {
     /**
      * Debit a wallet
      *
-     *
+     * 
      */
     @Test
     public void debitWalletTest() {
@@ -108,7 +108,7 @@ public class WalletsApiTest {
     /**
      * Get detailed balance
      *
-     *
+     * 
      */
     @Test
     public void getBalanceTest() {
@@ -121,7 +121,7 @@ public class WalletsApiTest {
     /**
      * Get a hold
      *
-     *
+     * 
      */
     @Test
     public void getHoldTest() {
@@ -133,7 +133,7 @@ public class WalletsApiTest {
     /**
      * Get all holds for a wallet
      *
-     *
+     * 
      */
     @Test
     public void getHoldsTest() {
@@ -146,9 +146,9 @@ public class WalletsApiTest {
         // TODO: test validations
     }
     /**
+     * 
      *
-     *
-     *
+     * 
      */
     @Test
     public void getTransactionsTest() {
@@ -162,7 +162,7 @@ public class WalletsApiTest {
     /**
      * Get a wallet
      *
-     *
+     * 
      */
     @Test
     public void getWalletTest() {
@@ -174,7 +174,7 @@ public class WalletsApiTest {
     /**
      * List balances of a wallet
      *
-     *
+     * 
      */
     @Test
     public void listBalancesTest() {
@@ -186,7 +186,7 @@ public class WalletsApiTest {
     /**
      * List all wallets
      *
-     *
+     * 
      */
     @Test
     public void listWalletsTest() {
@@ -201,7 +201,7 @@ public class WalletsApiTest {
     /**
      * Update a wallet
      *
-     *
+     * 
      */
     @Test
     public void updateWalletTest() {
@@ -214,7 +214,7 @@ public class WalletsApiTest {
     /**
      * Cancel a hold
      *
-     *
+     * 
      */
     @Test
     public void voidHoldTest() {
@@ -226,7 +226,7 @@ public class WalletsApiTest {
     /**
      * Get server info
      *
-     *
+     * 
      */
     @Test
     public void walletsgetServerInfoTest() {

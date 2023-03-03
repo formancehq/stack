@@ -28,7 +28,7 @@ public class ScriptApiTest {
     /**
      * Execute a Numscript
      *
-     * This route is deprecated, and has been merged into &#x60;POST /{ledger}/transactions&#x60;.
+     * This route is deprecated, and has been merged into &#x60;POST /{ledger}/transactions&#x60;. 
      */
     @Test
     public void runScriptTest() {
