@@ -23,6 +23,8 @@ brew install fctl
 fctl login
 
 # create a sandbox stack deployment
+# please note: sandbox are made available for testing and not made for production usage
+# read more in the docs [1]
 fctl stack create foobar
 
 # commit your first ledger transaction
@@ -31,6 +33,8 @@ fctl ledger send world foo 100 EUR/2 --ledger=demo
 # checkout the control dashboard
 fctl ui
 ```
+
+[1] https://docs.formance.com/cloud/sandboxes
 
 ## 💻 Getting started locally
 
