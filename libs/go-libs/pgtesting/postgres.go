@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strconv"
 	"sync"
-	"testing"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,6 +13,11 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
+
+type TestingT interface {
+	require.TestingT
+	Cleanup(func())
+}
 
 type pgDatabase struct {
 	url string
@@ -60,7 +64,7 @@ func (s *pgServer) GetDatabaseDSN(databaseName string) string {
 		s.config.initialUserPassword, s.port, databaseName)
 }
 
-func (s *pgServer) NewDatabase(t *testing.T) *pgDatabase {
+func (s *pgServer) NewDatabase(t TestingT) *pgDatabase {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -99,7 +103,7 @@ func Server() *pgServer {
 	return srv
 }
 
-func NewPostgresDatabase(t *testing.T) *pgDatabase {
+func NewPostgresDatabase(t TestingT) *pgDatabase {
 	return srv.NewDatabase(t)
 }
 
