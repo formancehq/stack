@@ -86,7 +86,6 @@ spec:
                 - command:
                     - payments
                     - migrate
-                    - up
                   env:
                     - name: POSTGRES_HOST
                       value: localhost

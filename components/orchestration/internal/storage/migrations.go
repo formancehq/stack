@@ -1,37 +1,73 @@
 package storage
 
 import (
-	"embed"
+	"database/sql"
 
 	_ "github.com/formancehq/orchestration/internal/storage/migrations"
-	"github.com/pressly/goose/v3"
+	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/uptrace/bun"
 )
 
-//go:embed migrations
-var embedMigrations embed.FS
+func Migrate(db *bun.DB) error {
+	migrator := migrations.NewMigrator()
+	registerMigrations(migrator)
 
-func init() {
-	goose.SetBaseFS(embedMigrations)
+	return migrator.Up(db.DB)
 }
 
-func Migrate(db *bun.DB, debug bool) error {
-	dialect := db.Dialect().Name().String()
-	if dialect == "pg" {
-		dialect = "postgres"
-	}
-	if !debug {
-		goose.SetLogger(goose.NopLogger())
-	} else {
-		goose.SetVerbose(true)
-	}
-	if err := goose.SetDialect(dialect); err != nil {
-		return err
-	}
-
-	if err := goose.Up(db.DB, "migrations"); err != nil {
-		return err
-	}
-
-	return nil
+func registerMigrations(migrator *migrations.Migrator) {
+	migrator.RegisterMigrations(
+		migrations.Migration{
+			Up: func(tx *sql.Tx) error {
+				if _, err := tx.Exec(`
+					create table "workflows" (
+						config jsonb,
+						id varchar not null,
+						created_at timestamp default now(),
+						updated_at timestamp default now(),
+						primary key (id)
+					);
+					create table "workflow_instances" (
+						workflow_id varchar references workflows (id),
+						id varchar,
+						created_at timestamp default now(),
+						updated_at timestamp default now(),
+						primary key (id)
+					);
+					create table "workflow_instance_stage_statuses" (
+						instance_id varchar references workflow_instances (id),
+						stage int,
+						started_at timestamp default now(),
+						terminated_at timestamp default null,
+						error varchar,
+						primary key (instance_id, stage)
+					);
+				`); err != nil {
+					return err
+				}
+				return nil
+			},
+		},
+		migrations.Migration{
+			Up: func(tx *sql.Tx) error {
+				if _, err := tx.Exec(`
+					alter table "workflow_instances" add column terminated bool;
+					alter table "workflow_instances" add column terminated_at timestamp default null;
+				`); err != nil {
+					return err
+				}
+				return nil
+			},
+		},
+		migrations.Migration{
+			Up: func(tx *sql.Tx) error {
+				if _, err := tx.Exec(`
+					alter table "workflow_instances" add column error varchar;
+				`); err != nil {
+					return err
+				}
+				return nil
+			},
+		},
+	)
 }
