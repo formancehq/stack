@@ -4,13 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"testing"
-	"time"
 
-	"github.com/formancehq/webhooks/cmd/flag"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage/postgres"
-	"github.com/spf13/pflag"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
@@ -18,26 +15,19 @@ import (
 )
 
 func TestStore(t *testing.T) {
-	flagSet := pflag.NewFlagSet("storage test", pflag.ContinueOnError)
-	_, err := flag.Init(flagSet)
-	require.NoError(t, err)
+	pgDB := pgtesting.NewPostgresDatabase(t)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	sqldb := sql.OpenDB(
-		pgdriver.NewConnector(
-			pgdriver.WithDSN(viper.GetString(flag.StoragePostgresConnString))))
+	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(pgDB.ConnString())))
 	db := bun.NewDB(sqldb, pgdialect.New())
 	defer db.Close()
 
 	require.NoError(t, db.Ping())
 
 	// Cleanup tables
-	require.NoError(t, db.ResetModel(ctx, (*webhooks.Config)(nil)))
-	require.NoError(t, db.ResetModel(ctx, (*webhooks.Attempt)(nil)))
+	require.NoError(t, db.ResetModel(context.TODO(), (*webhooks.Config)(nil)))
+	require.NoError(t, db.ResetModel(context.TODO(), (*webhooks.Attempt)(nil)))
 
-	store, err := postgres.NewStore()
+	store, err := postgres.NewStore(pgDB.ConnString())
 	require.NoError(t, err)
 
 	cfgs, err := store.FindManyConfigs(context.Background(), map[string]any{})

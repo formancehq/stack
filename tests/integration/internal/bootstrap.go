@@ -20,6 +20,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	walletsCmd "github.com/formancehq/wallets/cmd"
+	webhooksCmd "github.com/formancehq/webhooks/cmd"
 	"github.com/google/uuid"
 	"github.com/opensearch-project/opensearch-go"
 	"github.com/sirupsen/logrus"
@@ -97,6 +98,7 @@ var _ = BeforeEach(func() {
 	startAuth()
 	startWallets()
 	startPayments()
+	startWebhooks()
 
 	// TODO: Wait search has properly configured mapping before trying to ingest any data
 	startBenthosServer()
@@ -132,6 +134,12 @@ var _ = BeforeEach(func() {
 	}
 	registerService("payments", paymentsUrl)
 
+	webhooksUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", webhooksPort))
+	if err != nil {
+		panic(err)
+	}
+	registerService("webhooks", webhooksUrl)
+
 	// Start services
 	// Configure the sdk with a preconfigured auth client
 	configureSDK()
@@ -144,6 +152,7 @@ var _ = AfterEach(func() {
 	stopAuth()
 	stopWallets()
 	stopPayments()
+	stopWebhooks()
 	stopFakeGateway() // TODO: Wait for gateway to be shutdown
 })
 
@@ -357,6 +366,51 @@ func stopWallets() {
 	case <-walletsErrCh:
 	case <-time.After(5 * time.Second):
 		Fail("timeout waiting for wallet stopped")
+	}
+}
+
+var (
+	webhooksPort   int
+	webhooksErrCh  chan error
+	webhooksCancel func()
+)
+
+func startWebhooks() {
+
+	dsn, err := getPostgresDSN()
+	Expect(err).To(BeNil())
+	dsn.Path = fmt.Sprintf("%s-webhooks", actualTestID)
+
+	webhooksCmd := webhooksCmd.NewRootCommand()
+	if testing.Verbose() {
+		webhooksCmd.SetOut(os.Stdout)
+		webhooksCmd.SetErr(os.Stderr)
+	}
+
+	args := make([]string, 0)
+	args = append(args,
+		"serve",
+		"--storage-postgres-conn-string="+dsn.String(),
+		"--listen=0.0.0.0:0",
+		"--worker",
+		"--publisher-nats-enabled",
+		"--publisher-nats-client-id=webhooks",
+		"--publisher-nats-url="+natsAddress(),
+		fmt.Sprintf("--kafka-topics=%s-ledger", actualTestID),
+	)
+	if testing.Verbose() {
+		args = append(args, "--debug")
+	}
+	webhooksCmd.SetArgs(args)
+	webhooksPort, webhooksCancel, webhooksErrCh = runAndWaitPort("webhooks", webhooksCmd)
+}
+
+func stopWebhooks() {
+	webhooksCancel()
+	select {
+	case <-webhooksErrCh:
+	case <-time.After(5 * time.Second):
+		Fail("timeout waiting for webhooks stopped")
 	}
 }
 

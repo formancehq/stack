@@ -1,12 +1,12 @@
 package server
 
 import (
+	"net/http"
 	"os"
 
+	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
-	"github.com/formancehq/webhooks/pkg/httpserver"
-	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
@@ -17,13 +17,10 @@ func StartModule(addr string) fx.Option {
 	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 
 	options = append(options, fx.Provide(
-		func() string { return addr },
-		httpserver.NewMuxServer,
-		postgres.NewStore,
 		newServerHandler,
-	))
-	options = append(options, fx.Invoke(httpserver.RegisterHandler))
-	options = append(options, fx.Invoke(httpserver.Run))
+	), fx.Invoke(func(lc fx.Lifecycle, handler http.Handler) {
+		lc.Append(httpserver.NewHook(addr, handler))
+	}))
 
 	logging.Debugf("starting server with env:")
 	for _, e := range os.Environ() {

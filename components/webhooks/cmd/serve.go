@@ -8,23 +8,39 @@ import (
 	"github.com/formancehq/webhooks/cmd/flag"
 	"github.com/formancehq/webhooks/pkg/otlp"
 	"github.com/formancehq/webhooks/pkg/server"
+	"github.com/formancehq/webhooks/pkg/storage/postgres"
+	"github.com/formancehq/webhooks/pkg/worker"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.uber.org/fx"
 )
 
-var serverCmd = &cobra.Command{
-	Use:   "serve",
-	Short: "Run webhooks server",
-	RunE:  RunServer,
+func newServeCommand() *cobra.Command {
+	return &cobra.Command{
+		Use:   "serve",
+		Short: "Run webhooks server",
+		RunE:  serve,
+	}
 }
 
-func RunServer(cmd *cobra.Command, _ []string) error {
+func serve(cmd *cobra.Command, _ []string) error {
 	logging.FromContext(cmd.Context()).Debugf(
 		"starting webhooks server module: env variables: %+v viper keys: %+v",
 		syscall.Environ(), viper.AllKeys())
 
-	return service.New(cmd.OutOrStdout(),
+	options := []fx.Option{
+		postgres.NewModule(viper.GetString(flag.StoragePostgresConnString)),
 		otlp.HttpClientModule(),
-		server.StartModule(viper.GetString(flag.HttpBindAddressServer)),
-	).Run(cmd.Context())
+		server.StartModule(viper.GetString(flag.Listen)),
+	}
+
+	if viper.GetBool(flag.Worker) {
+		options = append(options, worker.StartModule(
+			ServiceName,
+			viper.GetDuration(flag.RetriesCron),
+			retriesSchedule))
+	}
+
+	return errors.Wrap(service.New(cmd.OutOrStdout(), options...).Run(cmd.Context()), "staging service")
 }
