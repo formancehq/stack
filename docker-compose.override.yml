@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: reflex.Dockerfile
-    command: reflex -r \.go$$ -s go run ./ serve
+    entrypoint: reflex -r \.go$$ -s go run ./ serve
     working_dir: /app/components/auth
     volumes:
       - .:/app
@@ -12,7 +12,7 @@ services:
     build:
       context: .
       dockerfile: reflex.Dockerfile
-    command: reflex -r \.go$$ -s go run ./ server start
+    entrypoint: reflex -r \.go$$ -s go run ./ serve
     working_dir: /app/components/ledger
     volumes:
       - .:/app
@@ -21,7 +21,7 @@ services:
     build:
       context: .
       dockerfile: reflex.Dockerfile
-    command: reflex -r \.go$$ -s go run ./ serve
+    entrypoint: reflex -r \.go$$ -s go run ./ serve
     working_dir: /app/components/payments
     volumes:
       - .:/app
@@ -30,7 +30,7 @@ services:
     build:
       context: .
       dockerfile: reflex.Dockerfile
-    command: reflex -r \.go$$ -s go run ./ serve
+    entrypoint: reflex -r \.go$$ -s go run ./ serve
     working_dir: /app/components/search
     volumes:
       - .:/app
@@ -39,7 +39,7 @@ services:
     build:
       context: .
       dockerfile: reflex.Dockerfile
-    command: reflex -r \.go$$ -s go run ./ serve
+    entrypoint: reflex -r \.go$$ -s go run ./ serve
     working_dir: /app/components/wallets
     volumes:
       - .:/app
@@ -48,7 +48,7 @@ services:
     build:
       context: .
       dockerfile: reflex.Dockerfile
-    command: reflex -r \.go$$ -s go run ./ serve
+    entrypoint: reflex -r \.go$$ -s go run ./ serve
     working_dir: /app/components/webhooks
     volumes:
       - .:/app
@@ -57,7 +57,7 @@ services:
     build:
       context: .
       dockerfile: reflex.Dockerfile
-    command: reflex -r \.go$$ -s go run ./ worker
+    entrypoint: reflex -r \.go$$ -s go run ./ serve
     working_dir: /app/components/webhooks
     volumes:
       - .:/app
