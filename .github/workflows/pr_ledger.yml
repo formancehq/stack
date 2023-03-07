@@ -22,4 +22,4 @@ jobs:
       - name: Run load testing
         run: |
           cd tests/loadtesting
-          task
+          task run:ledger

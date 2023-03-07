@@ -6,7 +6,7 @@ vars:
   LEDGER_COMPOSE_FILE: -f docker-compose.ledger.yml
 
 tasks:
-  default:
+  run:ledger:
     cmds:
       - docker compose {{.LEDGER_COMPOSE_FILE}} up --abort-on-container-exit --exit-code-from k6 --build
       - docker compose {{.LEDGER_COMPOSE_FILE}} down
