@@ -172,7 +172,7 @@ func WithContext(ctx context.Context) option {
 var defaultOptions = []option{
 	WithStatusCheckInterval(200 * time.Millisecond),
 	WithInitialUser("root", "root"),
-	WithMaximumWaitingTime(5 * time.Second),
+	WithMaximumWaitingTime(20 * time.Second),
 	WithInitialDatabaseName("formance"),
 	WithContext(context.Background()),
 }

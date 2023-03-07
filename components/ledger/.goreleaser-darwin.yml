@@ -10,10 +10,10 @@ builds:
   - binary: ledger
     id: ledger_darwin
     ldflags:
-      - -X github.com/ledger/ledger/cmd.BuildDate={{ .Date }}
-      - -X github.com/ledger/ledger/cmd.Version={{ .Version }}
-      - -X github.com/ledger/ledger/cmd.Commit={{ .ShortCommit }}
-      - -X github.com/ledger/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
+      - -X github.com/formancehq/ledger/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/ledger/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/ledger/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
       - -s
     env:
       - CGO_ENABLED=1

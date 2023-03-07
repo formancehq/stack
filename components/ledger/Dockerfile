@@ -18,10 +18,10 @@ RUN --mount=type=cache,id=gomod,target=/go/pkg/mod \
     CGO_ENABLED=1 GOOS=linux GOARCH=$TARGETARCH \
     CC=$TARGETARCH-linux-gnu-gcc \
     go build -o ledger -tags json1,netgo \
-    -ldflags="-X github.com/ledger/ledger/cmd.Version=${VERSION} \
-    -X github.com/ledger/ledger/cmd.BuildDate=$(date +%s) \
-    -X github.com/ledger/ledger/cmd.Commit=${APP_SHA} \
-    -X github.com/ledger/ledger/cmd.DefaultSegmentWriteKey=${SEGMENT_WRITE_KEY}" ./
+    -ldflags="-X github.com/formancehq/ledger/cmd.Version=${VERSION} \
+    -X github.com/formancehq/ledger/cmd.BuildDate=$(date +%s) \
+    -X github.com/formancehq/ledger/cmd.Commit=${APP_SHA} \
+    -X github.com/formancehq/ledger/cmd.DefaultSegmentWriteKey=${SEGMENT_WRITE_KEY}" ./
 
 FROM ubuntu:jammy as app
 RUN apt update && apt install -y ca-certificates wget && rm -rf /var/lib/apt/lists/*

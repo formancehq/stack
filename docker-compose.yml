@@ -130,7 +130,7 @@ services:
       KAFKA_BROKERS: "redpanda:29092"
 
   postgres:
-    image: "postgres:13-alpine"
+    image: "postgres:15-alpine"
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ledger" ]
@@ -157,7 +157,6 @@ services:
       redpanda:
         condition: service_healthy
     environment:
-      STORAGE_DRIVER: "postgres"
       STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger"
       SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
       PUBLISHER_KAFKA_ENABLED: "true"

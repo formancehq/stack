@@ -7,10 +7,10 @@ builds:
   - binary: ledger
     id: ledger_windows
     ldflags:
-      - -X github.com/ledger/ledger/cmd.BuildDate={{ .Date }}
-      - -X github.com/ledger/ledger/cmd.Version={{ .Version }}
-      - -X github.com/ledger/ledger/cmd.Commit={{ .ShortCommit }}
-      - -X github.com/ledger/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
+      - -X github.com/formancehq/ledger/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/ledger/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/ledger/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
     env:
       - CGO_ENABLED=1
       - CC=x86_64-w64-mingw32-gcc
@@ -23,10 +23,10 @@ builds:
   - binary: ledger
     id: ledger_linux_amd64
     ldflags:
-      - -X github.com/ledger/ledger/cmd.BuildDate={{ .Date }}
-      - -X github.com/ledger/ledger/cmd.Version={{ .Version }}
-      - -X github.com/ledger/ledger/cmd.Commit={{ .ShortCommit }}
-      - -X github.com/ledger/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
+      - -X github.com/formancehq/ledger/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/ledger/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/ledger/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=1
@@ -39,10 +39,10 @@ builds:
   - binary: ledger
     id: ledger_linux_arm64
     ldflags:
-      - -X github.com/ledger/ledger/cmd.BuildDate={{ .Date }}
-      - -X github.com/ledger/ledger/cmd.Version={{ .Version }}
-      - -X github.com/ledger/ledger/cmd.Commit={{ .ShortCommit }}
-      - -X github.com/ledger/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
+      - -X github.com/formancehq/ledger/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/ledger/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/ledger/cmd.Commit={{ .ShortCommit }}
+      - -X github.com/formancehq/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
       - -extldflags "-static"
     env:
       - CGO_ENABLED=1

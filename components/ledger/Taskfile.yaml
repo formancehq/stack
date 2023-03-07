@@ -31,7 +31,6 @@ tasks:
       - golangci-lint run --fix {{if eq .VERBOSE "true"}}-v{{end}}
 
   tests:
-    deps: [postgres]
     cmds:
       - >
         go test {{.TAGS}} {{if eq .VERBOSE "true"}}-v{{end}} -coverpkg {{.PKG}}
@@ -40,11 +39,6 @@ tasks:
       STORAGE_POSTGRES_CONN_STRING: "postgresql://ledger:ledger@127.0.0.1/ledger"
 
   tests:local:
-    cmds:
-      - task: tests:local:postgres
-
-  tests:local:postgres:
-    deps: [postgres]
     cmds:
       - >
         go test {{.TAGS}} {{if eq .VERBOSE "true"}}-v{{end}} {{.FAILFAST}} -coverpkg {{.PKG}}
@@ -67,7 +61,6 @@ tasks:
     silent: true
 
   bench:
-    deps: [postgres]
     cmds:
       - mkdir -p {{.BENCH_RESULTS_DIR}}
       - >

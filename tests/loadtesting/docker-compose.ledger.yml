@@ -15,7 +15,7 @@ services:
       LEDGER_URL: "http://ledger:3068"
 
   postgres:
-    image: "postgres:13-alpine"
+    image: "postgres:15-alpine"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ledger" ]
       interval: 10s
@@ -32,7 +32,7 @@ services:
       - postgres:/data/postgres
 
   ledger:
-    image: "ghcr.io/formancehq/ledger:v1.8.2"
+    image: "ghcr.io/formancehq/ledger:latest"
     healthcheck:
       test: [ "CMD", "wget", "http://127.0.0.1:3068/_info", "-O", "-", "-q" ]
       interval: 10s
@@ -42,7 +42,6 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      STORAGE_DRIVER: "postgres"
       STORAGE_POSTGRES_CONN_STRING: "postgresql://ledger:ledger@postgres/ledger"
       SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
     deploy:

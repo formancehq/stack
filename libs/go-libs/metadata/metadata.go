@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	namespace = "com.numary.spec/"
+	namespace = "com.formance.spec/"
 )
 
 func SpecMetadata(name string) string {
