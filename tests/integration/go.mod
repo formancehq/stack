@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/docker/docker v23.0.1+incompatible
 	github.com/egymgmbh/go-prefix-writer v0.0.0-20180609083313-7326ea162eca
-	github.com/formancehq/auth v0.3.1
+	github.com/formancehq/auth v0.0.0-00010101000000-000000000000
 	github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20230213140938-3b8735cf0168
 	github.com/formancehq/ledger v1.9.0
 	github.com/formancehq/payments v0.5.0
@@ -13,6 +13,7 @@ require (
 	github.com/formancehq/stack v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230222164357-55840b21a337
 	github.com/formancehq/wallets v0.3.0
+	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
 	github.com/getkin/kin-openapi v0.115.0
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v5 v5.3.0
@@ -143,6 +144,7 @@ require (
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/uptrace/bun v1.1.12 // indirect
 	github.com/uptrace/bun/dialect/pgdialect v1.1.12 // indirect
+	github.com/uptrace/bun/driver/pgdriver v1.1.12 // indirect
 	github.com/uptrace/bun/extra/bundebug v1.1.12 // indirect
 	github.com/uptrace/bun/extra/bunotel v1.1.12 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
@@ -200,13 +202,13 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/postgres v1.4.8 // indirect
 	gorm.io/gorm v1.24.5 // indirect
+	mellium.im/sasl v0.3.1 // indirect
 )
 
 replace (
 	github.com/formancehq/auth => ../../components/auth
 	github.com/formancehq/formance-sdk-go => ../../sdks/go
 	github.com/formancehq/ledger => ../../components/ledger
-	github.com/formancehq/orchestration => ../../components/orchestration
 	github.com/formancehq/payments => ../../components/payments
 	github.com/formancehq/search => ../../components/search
 	github.com/formancehq/stack => ../../

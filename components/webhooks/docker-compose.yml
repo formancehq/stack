@@ -3,7 +3,7 @@ volumes:
   postgres:
 services:
   server:
-    command: reflex -r '\.go' -s -- sh -c "go run . server"
+    command: reflex -r '\.go' -s -- sh -c "go run . serve"
     build:
       target: dev
     healthcheck:

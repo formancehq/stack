@@ -6,11 +6,9 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"github.com/uptrace/bun/driver/pgdriver"
@@ -23,14 +21,12 @@ type Store struct {
 
 var _ storage.Store = &Store{}
 
-func NewStore() (storage.Store, error) {
+func NewStore(dsn string) (storage.Store, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	logging.Infof("postgres.NewStore: connecting to '%s'", viper.GetString(flag.StoragePostgresConnString))
-	sqldb := sql.OpenDB(
-		pgdriver.NewConnector(
-			pgdriver.WithDSN(viper.GetString(flag.StoragePostgresConnString))))
+	logging.Infof("postgres.NewStore: connecting to '%s'", dsn)
+	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	db := bun.NewDB(sqldb, pgdialect.New())
 	db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName("webhooks")))
 	if err := db.Ping(); err != nil {

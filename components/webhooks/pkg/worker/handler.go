@@ -12,7 +12,7 @@ const (
 	PathHealthCheck = "/_healthcheck"
 )
 
-func newWorkerHandler() http.Handler {
+func NewWorkerHandler() http.Handler {
 	h := chi.NewRouter()
 	h.Use(otelchi.Middleware("webhooks"))
 	h.Get(PathHealthCheck, healthCheckHandle)
