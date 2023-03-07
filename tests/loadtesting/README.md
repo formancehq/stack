@@ -5,12 +5,13 @@
 Tests are located in tests folder.
 Libraries are located in libs folder.
 
-A task file help to start tests.
+A task file help to start the tests.
 
-## Run a test
+## Run all the tests
 
 ```
-task run:ledger
+task
+
 ```
 
 This will :

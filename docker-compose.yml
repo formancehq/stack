@@ -158,7 +158,6 @@ services:
         condition: service_healthy
     environment:
       STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger"
-      SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
       PUBLISHER_KAFKA_ENABLED: "true"
       PUBLISHER_KAFKA_BROKER: "redpanda:29092"
       PUBLISHER_TOPIC_MAPPING: "*:ledger"
