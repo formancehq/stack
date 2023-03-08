@@ -7,7 +7,7 @@ import (
 	"github.com/formancehq/ledger/pkg/api/idempotency"
 	"github.com/formancehq/ledger/pkg/api/middlewares"
 	"github.com/formancehq/ledger/pkg/ledger"
-	"github.com/formancehq/ledger/pkg/storage"
+	storage "github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/go-chi/chi/v5"
 	"github.com/riandyrn/otelchi"
@@ -102,7 +102,6 @@ func (r *Routes) Engine() *chi.Mux {
 			router.Head("/accounts", r.accountController.CountAccounts)
 			router.Get("/accounts/{address}", r.accountController.GetAccount)
 			router.With(
-				middlewares.Transaction(r.locker),
 				idempotency.Middleware(r.idempotencyStore),
 			).Post("/accounts/{address}/metadata", r.accountController.PostAccountMetadata)
 
@@ -111,17 +110,14 @@ func (r *Routes) Engine() *chi.Mux {
 			router.Head("/transactions", r.transactionController.CountTransactions)
 
 			router.With(
-				middlewares.Transaction(r.locker),
 				idempotency.Middleware(r.idempotencyStore),
 			).Post("/transactions", r.transactionController.PostTransaction)
 
 			router.Get("/transactions/{txid}", r.transactionController.GetTransaction)
 			router.With(
-				middlewares.Transaction(r.locker),
 				idempotency.Middleware(r.idempotencyStore),
 			).Post("/transactions/{txid}/revert", r.transactionController.RevertTransaction)
 			router.With(
-				middlewares.Transaction(r.locker),
 				idempotency.Middleware(r.idempotencyStore),
 			).Post("/transactions/{txid}/metadata", r.transactionController.PostTransactionMetadata)
 

@@ -1,4 +1,4 @@
-package sqlstorage
+package ledger
 
 import (
 	"context"
@@ -13,17 +13,58 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/huandu/go-sqlbuilder"
 	"github.com/pkg/errors"
+	"github.com/uptrace/bun"
 )
+
+const TransactionsTableName = "transactions"
 
 // this regexp is used to distinguish between deprecated regex queries for
 // source, destination and account params and the new wildcard query
 // which allows segmented address pattern matching, e.g; "foo:bar:*"
 var addressQueryRegexp = regexp.MustCompile(`^(\w+|\*|\.\*)(:(\w+|\*|\.\*))*$`)
 
-func (s *Store) buildTransactionsQuery(p ledger.TransactionsQuery) (*sqlbuilder.SelectBuilder, TxsPaginationToken) {
-	sb := sqlbuilder.NewSelectBuilder()
+type Transactions struct {
+	bun.BaseModel `bun:"transactions,alias:transactions"`
+
+	ID                int64          `bun:"id,unique"`
+	Timestamp         time.Time      `bun:"timestamp,type:timestamptz"`
+	Reference         string         `bun:"reference,type:varchar,unique"`
+	Hash              string         `bun:"hash,type:varchar"`
+	Postings          map[string]any `bun:"postings,type:jsonb"`
+	Metadata          map[string]any `bun:"metadata,type:jsonb,default:'{}'"`
+	PreCommitVolumes  map[string]any `bun:"pre_commit_volumes,type:jsonb"`
+	PostCommitVolumes map[string]any `bun:"post_commit_volumes,type:jsonb"`
+}
+
+type Postings struct {
+	bun.BaseModel `bun:"postings,alias:postings"`
+
+	TxID         int64          `bun:"txid,type:bigint"`
+	PostingIndex int            `bun:"posting_index,type:integer"`
+	Source       map[string]any `bun:"source,type:jsonb"`
+	Destination  map[string]any `bun:"destination,type:jsonb"`
+}
+
+//------------------------------------------------------------------------------
+
+type TxsPaginationToken struct {
+	AfterTxID         uint64            `json:"after"`
+	ReferenceFilter   string            `json:"reference,omitempty"`
+	AccountFilter     string            `json:"account,omitempty"`
+	SourceFilter      string            `json:"source,omitempty"`
+	DestinationFilter string            `json:"destination,omitempty"`
+	StartTime         time.Time         `json:"startTime,omitempty"`
+	EndTime           time.Time         `json:"endTime,omitempty"`
+	MetadataFilter    map[string]string `json:"metadata,omitempty"`
+	PageSize          uint              `json:"pageSize,omitempty"`
+}
+
+//------------------------------------------------------------------------------
+
+func (s *Store) buildTransactionsQuery(p ledger.TransactionsQuery) (*bun.SelectQuery, TxsPaginationToken) {
+	sb := s.schema.NewSelect(TransactionsTableName).
+		Model((*Transactions)(nil))
 	t := TxsPaginationToken{}
 
 	var (
@@ -36,22 +77,19 @@ func (s *Store) buildTransactionsQuery(p ledger.TransactionsQuery) (*sqlbuilder.
 		metadata    = p.Filters.Metadata
 	)
 
-	sb.Select("id", "timestamp", "reference", "metadata", "postings", "pre_commit_volumes", "post_commit_volumes").
+	sb.Column("id", "timestamp", "reference", "metadata", "postings", "pre_commit_volumes", "post_commit_volumes").
 		Distinct()
-	sb.From(s.schema.Table("transactions"))
 	if source != "" || destination != "" || account != "" {
 		// new wildcard handling
 		sb.Join(fmt.Sprintf(
-			"%s postings on postings.txid = %s.id",
+			"JOIN %s postings",
 			s.schema.Table("postings"),
-			s.schema.Table("transactions"),
-		))
+		)).JoinOn(fmt.Sprintf("postings.txid = %s.id", s.schema.Table("transactions")))
 	}
 	if source != "" {
 		if !addressQueryRegexp.MatchString(source) {
 			// deprecated regex handling
-			arg := sb.Args.Add(source)
-			sb.Where(s.schema.Table("use_account_as_source") + "(postings, " + arg + ")")
+			sb.Where(fmt.Sprintf("%s(postings, ?)", s.schema.Table("use_account_as_source")), source)
 		} else {
 			// new wildcard handling
 			src := strings.Split(source, ":")
@@ -62,8 +100,7 @@ func (s *Store) buildTransactionsQuery(p ledger.TransactionsQuery) (*sqlbuilder.
 					continue
 				}
 
-				arg := sb.Args.Add(segment)
-				sb.Where(fmt.Sprintf("postings.source @@ ('$[%d] == \"' || %s::text || '\"')::jsonpath", i, arg))
+				sb.Where(fmt.Sprintf("postings.source @@ ('$[%d] == \"' || ?::text || '\"')::jsonpath", i), segment)
 			}
 		}
 		t.SourceFilter = source
@@ -71,8 +108,7 @@ func (s *Store) buildTransactionsQuery(p ledger.TransactionsQuery) (*sqlbuilder.
 	if destination != "" {
 		if !addressQueryRegexp.MatchString(destination) {
 			// deprecated regex handling
-			arg := sb.Args.Add(destination)
-			sb.Where(s.schema.Table("use_account_as_destination") + "(postings, " + arg + ")")
+			sb.Where(fmt.Sprintf("%s(postings, ?)", s.schema.Table("use_account_as_destination")), destination)
 		} else {
 			// new wildcard handling
 			dst := strings.Split(destination, ":")
@@ -82,8 +118,7 @@ func (s *Store) buildTransactionsQuery(p ledger.TransactionsQuery) (*sqlbuilder.
 					continue
 				}
 
-				arg := sb.Args.Add(segment)
-				sb.Where(fmt.Sprintf("postings.destination @@ ('$[%d] == \"' || %s::text || '\"')::jsonpath", i, arg))
+				sb.Where(fmt.Sprintf("postings.destination @@ ('$[%d] == \"' || ?::text || '\"')::jsonpath", i), segment)
 			}
 		}
 		t.DestinationFilter = destination
@@ -91,8 +126,7 @@ func (s *Store) buildTransactionsQuery(p ledger.TransactionsQuery) (*sqlbuilder.
 	if account != "" {
 		if !addressQueryRegexp.MatchString(account) {
 			// deprecated regex handling
-			arg := sb.Args.Add(account)
-			sb.Where(s.schema.Table("use_account") + "(postings, " + arg + ")")
+			sb.Where(fmt.Sprintf("%s(postings, ?)", s.schema.Table("use_account")), account)
 		} else {
 			// new wildcard handling
 			dst := strings.Split(account, ":")
@@ -102,31 +136,29 @@ func (s *Store) buildTransactionsQuery(p ledger.TransactionsQuery) (*sqlbuilder.
 					continue
 				}
 
-				arg := sb.Args.Add(segment)
-				sb.Where(fmt.Sprintf("(postings.source @@ ('$[%d] == \"' || %s::text || '\"')::jsonpath OR postings.destination @@ ('$[%d] == \"' || %s::text || '\"')::jsonpath)", i, arg, i, arg))
+				sb.Where(fmt.Sprintf("(postings.source @@ ('$[%d] == \"' || ?0::text || '\"')::jsonpath OR postings.destination @@ ('$[%d] == \"' || ?0::text || '\"')::jsonpath)", i, i), segment)
 			}
 		}
 		t.AccountFilter = account
 	}
 	if reference != "" {
-		sb.Where(sb.E("reference", reference))
+		sb.Where("reference = ?", reference)
 		t.ReferenceFilter = reference
 	}
 	if !startTime.IsZero() {
-		sb.Where(sb.GE("timestamp", startTime.UTC()))
+		sb.Where("timestamp >= ?", startTime.UTC())
 		t.StartTime = startTime
 	}
 	if !endTime.IsZero() {
-		sb.Where(sb.L("timestamp", endTime.UTC()))
+		sb.Where("timestamp < ?", endTime.UTC())
 		t.EndTime = endTime
 	}
 
 	for key, value := range metadata {
-		arg := sb.Args.Add(value)
 		sb.Where(s.schema.Table(
-			fmt.Sprintf("%s(metadata, %s, '%s')",
-				SQLCustomFuncMetaCompare, arg, strings.ReplaceAll(key, ".", "', '")),
-		))
+			fmt.Sprintf("%s(metadata, ?, '%s')",
+				SQLCustomFuncMetaCompare, strings.ReplaceAll(key, ".", "', '")),
+		), value)
 	}
 	t.MetadataFilter = metadata
 
@@ -141,22 +173,16 @@ func (s *Store) GetTransactions(ctx context.Context, q ledger.TransactionsQuery)
 	}
 
 	sb, t := s.buildTransactionsQuery(q)
-	sb.OrderBy("id").Desc()
+	sb.OrderExpr("id DESC")
 	if q.AfterTxID > 0 {
-		sb.Where(sb.LE("id", q.AfterTxID))
+		sb.Where("id <= ?", q.AfterTxID)
 	}
 
 	// We fetch additional transactions to know if there are more before and/or after.
 	sb.Limit(int(q.PageSize + 2))
 	t.PageSize = q.PageSize
 
-	executor, err := s.executorProvider(ctx)
-	if err != nil {
-		return api.Cursor[core.ExpandedTransaction]{}, err
-	}
-
-	sqlq, args := sb.BuildWithFlavor(s.schema.Flavor())
-	rows, err := executor.QueryContext(ctx, sqlq, args...)
+	rows, err := s.schema.QueryContext(ctx, sb.String())
 	if err != nil {
 		return api.Cursor[core.ExpandedTransaction]{}, s.error(err)
 	}
@@ -221,20 +247,20 @@ func (s *Store) GetTransactions(ctx context.Context, q ledger.TransactionsQuery)
 	}, nil
 }
 
+func (s *Store) CountTransactions(ctx context.Context, q ledger.TransactionsQuery) (uint64, error) {
+	sb, _ := s.buildTransactionsQuery(q)
+	count, err := sb.Count(ctx)
+	return uint64(count), s.error(err)
+}
+
 func (s *Store) GetTransaction(ctx context.Context, txId uint64) (*core.ExpandedTransaction, error) {
-	sb := sqlbuilder.NewSelectBuilder()
-	sb.Select("id", "timestamp", "reference", "metadata", "postings", "pre_commit_volumes", "post_commit_volumes")
-	sb.From(s.schema.Table("transactions"))
-	sb.Where(sb.Equal("id", txId))
-	sb.OrderBy("id desc")
+	sb := s.schema.NewSelect(TransactionsTableName).
+		Model((*Transactions)(nil)).
+		Column("id", "timestamp", "reference", "metadata", "postings", "pre_commit_volumes", "post_commit_volumes").
+		Where("id = ?", txId).
+		OrderExpr("id DESC")
 
-	executor, err := s.executorProvider(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	sqlq, args := sb.BuildWithFlavor(s.schema.Flavor())
-	row := executor.QueryRowContext(ctx, sqlq, args...)
+	row := s.schema.QueryRowContext(ctx, sb.String())
 	if row.Err() != nil {
 		return nil, s.error(row.Err())
 	}
@@ -272,19 +298,13 @@ func (s *Store) GetTransaction(ctx context.Context, txId uint64) (*core.Expanded
 }
 
 func (s *Store) GetLastTransaction(ctx context.Context) (*core.ExpandedTransaction, error) {
-	sb := sqlbuilder.NewSelectBuilder()
-	sb.Select("id", "timestamp", "reference", "metadata", "postings", "pre_commit_volumes", "post_commit_volumes")
-	sb.From(s.schema.Table("transactions"))
-	sb.OrderBy("id desc")
-	sb.Limit(1)
+	sb := s.schema.NewSelect(TransactionsTableName).
+		Model((*Transactions)(nil)).
+		Column("id", "timestamp", "reference", "metadata", "postings", "pre_commit_volumes", "post_commit_volumes").
+		OrderExpr("id DESC").
+		Limit(1)
 
-	executor, err := s.executorProvider(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	sqlq, args := sb.BuildWithFlavor(s.schema.Flavor())
-	row := executor.QueryRowContext(ctx, sqlq, args...)
+	row := s.schema.QueryRowContext(ctx, sb.String())
 	if row.Err() != nil {
 		return nil, s.error(row.Err())
 	}
@@ -324,11 +344,6 @@ func (s *Store) GetLastTransaction(ctx context.Context) (*core.ExpandedTransacti
 func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTransaction) error {
 	var queryTxs string
 	var argsTxs []any
-
-	executor, err := s.executorProvider(ctx)
-	if err != nil {
-		return err
-	}
 
 	txIds := make([]uint64, len(txs))
 	timestamps := make([]time.Time, len(txs))
@@ -399,13 +414,13 @@ func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTran
                                postings, metadata,
                                pre_commit_volumes,
                                post_commit_volumes) (SELECT * FROM unnest(
-                                   $1::int[],
-                                   $2::timestamp[],
-                                   $3::varchar[],
-                                   $4::jsonb[],
-                                   $5::jsonb[],
-                                   $6::jsonb[],
-                                   $7::jsonb[]))`,
+                                   ?::int[],
+                                   ?::timestamp[],
+                                   ?::varchar[],
+                                   ?::jsonb[],
+                                   ?::jsonb[],
+                                   ?::jsonb[],
+                                   ?::jsonb[]))`,
 			s.schema.Name())
 		argsTxs = []any{
 			txIds, timestamps, references,
@@ -416,22 +431,22 @@ func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTran
 		queryPostings := fmt.Sprintf(
 			`INSERT INTO "%s".postings (txid, posting_index,
                            source, destination) (SELECT * FROM unnest(
-                                   $1::int[],
-                                   $2::int[],
-                                   $3::jsonb[],
-                                   $4::jsonb[]))`,
+                                   ?::int[],
+                                   ?::int[],
+                                   ?::jsonb[],
+                                   ?::jsonb[]))`,
 			s.schema.Name())
 		argsPostings := []any{
 			postingTxIds, postingIndices, sources, destinations,
 		}
 
-		_, err = executor.ExecContext(ctx, queryPostings, argsPostings...)
+		_, err = s.schema.ExecContext(ctx, queryPostings, argsPostings...)
 		if err != nil {
 			return s.error(err)
 		}
 	}
 
-	_, err = executor.ExecContext(ctx, queryTxs, argsTxs...)
+	_, err := s.schema.ExecContext(ctx, queryTxs, argsTxs...)
 	if err != nil {
 		return s.error(err)
 	}
@@ -440,26 +455,16 @@ func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTran
 }
 
 func (s *Store) UpdateTransactionMetadata(ctx context.Context, id uint64, metadata core.Metadata, at time.Time) error {
-	ub := sqlbuilder.NewUpdateBuilder()
-
 	metadataData, err := json.Marshal(metadata)
 	if err != nil {
 		return err
 	}
-	ub.
-		Update(s.schema.Table("transactions")).
-		Where(ub.E("id", id))
 
-	placeholder := ub.Var(string(metadataData))
-	ub.Set(fmt.Sprintf("metadata = metadata || %s", placeholder))
-
-	executor, err := s.executorProvider(ctx)
-	if err != nil {
-		return err
-	}
-
-	sqlq, args := ub.BuildWithFlavor(s.schema.Flavor())
-	_, err = executor.ExecContext(ctx, sqlq, args...)
+	_, err = s.schema.NewUpdate(TransactionsTableName).
+		Model((*Transactions)(nil)).
+		Set("metadata = metadata || ?", string(metadataData)).
+		Where("id = ?", id).
+		Exec(ctx)
 	if err != nil {
 		return err
 	}

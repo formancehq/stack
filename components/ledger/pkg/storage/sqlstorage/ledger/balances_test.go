@@ -1,4 +1,4 @@
-package sqlstorage_test
+package ledger_test
 
 import (
 	"context"
@@ -6,13 +6,12 @@ import (
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
-	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func testGetBalances(t *testing.T, store *sqlstorage.Store) {
-
+func testGetBalances(t *testing.T, store *ledgerstore.Store) {
 	err := store.Commit(context.Background(), tx1, tx2, tx3)
 	require.NoError(t, err)
 
@@ -131,7 +130,7 @@ func testGetBalances(t *testing.T, store *sqlstorage.Store) {
 	})
 }
 
-func testGetBalancesAggregated(t *testing.T, store *sqlstorage.Store) {
+func testGetBalancesAggregated(t *testing.T, store *ledgerstore.Store) {
 	err := store.Commit(context.Background(), tx1, tx2, tx3)
 	assert.NoError(t, err)
 

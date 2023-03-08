@@ -1,4 +1,4 @@
-package sqlstorage_test
+package ledger_test
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -28,7 +29,7 @@ func BenchmarkStore_GetTransactions(b *testing.B) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					ledgerName := uuid.NewString()
-					var store *sqlstorage.Store
+					var store *ledgerstore.Store
 					var err error
 					for store == nil {
 						store, _, err = driver.GetLedgerStore(ctx, ledgerName, true)
@@ -57,7 +58,7 @@ func BenchmarkStore_GetTransactions(b *testing.B) {
 	}(app, context.Background())
 }
 
-func benchGetTransactions(b *testing.B, store *sqlstorage.Store) {
+func benchGetTransactions(b *testing.B, store *ledgerstore.Store) {
 	maxPages := 120
 	maxPageSize := 500
 	id := uint64(0)
@@ -234,7 +235,7 @@ func benchGetTransactions(b *testing.B, store *sqlstorage.Store) {
 	})
 }
 
-func getTxQueries(b *testing.B, store *sqlstorage.Store, pageSize, maxNumTxs int) (firstQ, midQ, lastQ *ledger.TransactionsQuery) {
+func getTxQueries(b *testing.B, store *ledgerstore.Store, pageSize, maxNumTxs int) (firstQ, midQ, lastQ *ledger.TransactionsQuery) {
 	numTxs := 0
 	txQuery := &ledger.TransactionsQuery{
 		Filters: ledger.TransactionsQueryFilters{
@@ -254,7 +255,7 @@ func getTxQueries(b *testing.B, store *sqlstorage.Store, pageSize, maxNumTxs int
 				return
 			}
 
-			token := sqlstorage.TxsPaginationToken{}
+			token := ledgerstore.TxsPaginationToken{}
 			if err = json.Unmarshal(res, &token); err != nil {
 				return
 			}

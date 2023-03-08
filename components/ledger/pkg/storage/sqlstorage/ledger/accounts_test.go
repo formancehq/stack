@@ -1,4 +1,4 @@
-package sqlstorage_test
+package ledger_test
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
-	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	sqlstorage "github.com/formancehq/ledger/pkg/storage/sqlstorage"
 	"github.com/stretchr/testify/assert"
 )
 

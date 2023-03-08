@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/ledger/pkg/api/apierrors"
-	"github.com/formancehq/ledger/pkg/storage"
+	storage "github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/go-chi/chi/v5"
 )

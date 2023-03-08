@@ -1,4 +1,4 @@
-package sqlstorage_test
+package ledger_test
 
 import (
 	"context"
@@ -12,8 +12,9 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
-	"github.com/formancehq/ledger/pkg/storage"
-	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	storage "github.com/formancehq/ledger/pkg/storage"
+	sqlstorage "github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -23,7 +24,7 @@ import (
 func TestStore(t *testing.T) {
 	type testingFunction struct {
 		name string
-		fn   func(t *testing.T, store *sqlstorage.Store)
+		fn   func(t *testing.T, store *ledgerstore.Store)
 	}
 
 	for _, tf := range []testingFunction{
@@ -223,7 +224,7 @@ var tx3 = core.ExpandedTransaction{
 	},
 }
 
-func testCommit(t *testing.T, store *sqlstorage.Store) {
+func testCommit(t *testing.T, store *ledgerstore.Store) {
 	tx := core.ExpandedTransaction{
 		Transaction: core.Transaction{
 			ID: 0,
@@ -253,7 +254,7 @@ func testCommit(t *testing.T, store *sqlstorage.Store) {
 	require.Len(t, cursor.Data, 1)
 }
 
-func testIKS(t *testing.T, store *sqlstorage.Store) {
+func testIKS(t *testing.T, store *ledgerstore.Store) {
 	t.Run("Create and Read", func(t *testing.T) {
 		response := idempotency.Response{
 			RequestHash: "xxx",
@@ -275,7 +276,7 @@ func testIKS(t *testing.T, store *sqlstorage.Store) {
 	})
 }
 
-func testUpdateTransactionMetadata(t *testing.T, store *sqlstorage.Store) {
+func testUpdateTransactionMetadata(t *testing.T, store *ledgerstore.Store) {
 	tx := core.ExpandedTransaction{
 		Transaction: core.Transaction{
 			ID: 0,
@@ -310,7 +311,7 @@ func testUpdateTransactionMetadata(t *testing.T, store *sqlstorage.Store) {
 	require.Len(t, cursor.Data, 2)
 }
 
-func testUpdateAccountMetadata(t *testing.T, store *sqlstorage.Store) {
+func testUpdateAccountMetadata(t *testing.T, store *ledgerstore.Store) {
 	tx := core.ExpandedTransaction{
 		Transaction: core.Transaction{
 			ID: 0,
@@ -345,7 +346,7 @@ func testUpdateAccountMetadata(t *testing.T, store *sqlstorage.Store) {
 	require.Len(t, cursor.Data, 2)
 }
 
-func testCountAccounts(t *testing.T, store *sqlstorage.Store) {
+func testCountAccounts(t *testing.T, store *ledgerstore.Store) {
 	tx := core.ExpandedTransaction{
 		Transaction: core.Transaction{
 			ID: 0,
@@ -370,7 +371,7 @@ func testCountAccounts(t *testing.T, store *sqlstorage.Store) {
 	require.EqualValues(t, 2, countAccounts) // world + central_bank
 }
 
-func testGetAssetsVolumes(t *testing.T, store *sqlstorage.Store) {
+func testGetAssetsVolumes(t *testing.T, store *ledgerstore.Store) {
 	tx := core.ExpandedTransaction{
 		Transaction: core.Transaction{
 			TransactionData: core.TransactionData{
@@ -412,7 +413,7 @@ func testGetAssetsVolumes(t *testing.T, store *sqlstorage.Store) {
 	require.EqualValues(t, core.NewMonetaryInt(0), volumes["USD"].Output)
 }
 
-func testGetAccounts(t *testing.T, store *sqlstorage.Store) {
+func testGetAccounts(t *testing.T, store *ledgerstore.Store) {
 	require.NoError(t, store.UpdateAccountMetadata(context.Background(), "world", core.Metadata{
 		"foo": json.RawMessage(`"bar"`),
 	}, now))
@@ -497,7 +498,7 @@ func testGetAccounts(t *testing.T, store *sqlstorage.Store) {
 	require.Len(t, accounts.Data, 1)
 }
 
-func testTransactions(t *testing.T, store *sqlstorage.Store) {
+func testTransactions(t *testing.T, store *ledgerstore.Store) {
 	err := store.Commit(context.Background(), tx1, tx2, tx3)
 	require.NoError(t, err)
 
@@ -658,7 +659,7 @@ func testTransactions(t *testing.T, store *sqlstorage.Store) {
 	})
 }
 
-func testGetTransaction(t *testing.T, store *sqlstorage.Store) {
+func testGetTransaction(t *testing.T, store *ledgerstore.Store) {
 	err := store.Commit(context.Background(), tx1, tx2)
 	require.NoError(t, err)
 
@@ -673,7 +674,7 @@ func TestInitializeStore(t *testing.T) {
 	driver, stopFn, err := ledgertesting.StorageDriver(t)
 	require.NoError(t, err)
 	defer stopFn()
-	defer func(driver storage.Driver[*sqlstorage.Store], ctx context.Context) {
+	defer func(driver storage.Driver[*ledgerstore.Store], ctx context.Context) {
 		require.NoError(t, driver.Close(ctx))
 	}(driver, context.Background())
 
@@ -692,7 +693,7 @@ func TestInitializeStore(t *testing.T) {
 	require.False(t, modified)
 }
 
-func testGetLastLog(t *testing.T, store *sqlstorage.Store) {
+func testGetLastLog(t *testing.T, store *ledgerstore.Store) {
 	err := store.Commit(context.Background(), tx1)
 	require.NoError(t, err)
 
@@ -705,7 +706,7 @@ func testGetLastLog(t *testing.T, store *sqlstorage.Store) {
 	require.Equal(t, tx1.Timestamp, lastLog.Data.(core.Transaction).Timestamp)
 }
 
-func testGetLogs(t *testing.T, store *sqlstorage.Store) {
+func testGetLogs(t *testing.T, store *ledgerstore.Store) {
 	require.NoError(t, store.Commit(context.Background(), tx1, tx2, tx3))
 
 	cursor, err := store.GetLogs(context.Background(), ledger.NewLogsQuery())

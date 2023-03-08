@@ -1,4 +1,4 @@
-package sqlstorage
+package ledger
 
 import (
 	"context"
@@ -10,28 +10,29 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/huandu/go-sqlbuilder"
 	"github.com/lib/pq"
 )
 
+type BalancesPaginationToken struct {
+	PageSize            uint   `json:"pageSize"`
+	Offset              uint   `json:"offset"`
+	AfterAddress        string `json:"after,omitempty"`
+	AddressRegexpFilter string `json:"address,omitempty"`
+}
+
+//------------------------------------------------------------------------------
+
 func (s *Store) GetBalancesAggregated(ctx context.Context, q ledger.BalancesQuery) (core.AssetsBalances, error) {
-	sb := sqlbuilder.NewSelectBuilder()
-	sb.Select("asset", "sum(input - output)")
-	sb.From(s.schema.Table("volumes"))
-	sb.GroupBy("asset")
+	sb := s.schema.NewSelect(volumesTableName).
+		Model((*Volumes)(nil)).
+		ColumnExpr("asset", "sum(input - output)").
+		Group("asset")
 
 	if q.Filters.AddressRegexp != "" {
-		arg := sb.Args.Add("^" + q.Filters.AddressRegexp + "$")
-		sb.Where("account ~* " + arg)
+		sb.Where("account ~* ?", "^"+q.Filters.AddressRegexp+"$")
 	}
 
-	executor, err := s.executorProvider(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	balanceAggregatedQuery, args := sb.BuildWithFlavor(s.schema.Flavor())
-	rows, err := executor.QueryContext(ctx, balanceAggregatedQuery, args...)
+	rows, err := s.schema.QueryContext(ctx, sb.String())
 	if err != nil {
 		return nil, s.error(err)
 	}
@@ -64,28 +65,21 @@ func (s *Store) GetBalancesAggregated(ctx context.Context, q ledger.BalancesQuer
 }
 
 func (s *Store) GetBalances(ctx context.Context, q ledger.BalancesQuery) (api.Cursor[core.AccountsBalances], error) {
-	executor, err := s.executorProvider(ctx)
-	if err != nil {
-		return api.Cursor[core.AccountsBalances]{}, err
-	}
-
-	sb := sqlbuilder.NewSelectBuilder()
-	sb.Select("account", "array_agg((asset, input - output))")
-
-	sb.From(s.schema.Table("volumes"))
-	sb.GroupBy("account")
-	sb.OrderBy("account desc")
+	sb := s.schema.NewSelect(volumesTableName).
+		Model((*Volumes)(nil)).
+		ColumnExpr("account", "array_agg((asset, input - output))").
+		Group("account").
+		Order("account DESC")
 
 	t := BalancesPaginationToken{}
 
 	if q.AfterAddress != "" {
-		sb.Where(sb.L("account", q.AfterAddress))
+		sb.Where("account < ?", q.AfterAddress)
 		t.AfterAddress = q.AfterAddress
 	}
 
 	if q.Filters.AddressRegexp != "" {
-		arg := sb.Args.Add("^" + q.Filters.AddressRegexp + "$")
-		sb.Where("account ~* " + arg)
+		sb.Where("account ~* ?", "^"+q.Filters.AddressRegexp+"$")
 		t.AddressRegexpFilter = q.Filters.AddressRegexp
 	}
 
@@ -93,8 +87,7 @@ func (s *Store) GetBalances(ctx context.Context, q ledger.BalancesQuery) (api.Cu
 	t.PageSize = q.PageSize
 	sb.Offset(int(q.Offset))
 
-	balanceQuery, args := sb.BuildWithFlavor(s.schema.Flavor())
-	rows, err := executor.QueryContext(ctx, balanceQuery, args...)
+	rows, err := s.schema.QueryContext(ctx, sb.String())
 	if err != nil {
 		return api.Cursor[core.AccountsBalances]{}, s.error(err)
 	}

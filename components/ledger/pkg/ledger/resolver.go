@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/dgraph-io/ristretto"
-	"github.com/formancehq/ledger/pkg/storage"
+	storage "github.com/formancehq/ledger/pkg/storage"
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
 )

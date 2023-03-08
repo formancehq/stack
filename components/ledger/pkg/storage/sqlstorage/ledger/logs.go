@@ -1,4 +1,4 @@
-package sqlstorage
+package ledger
 
 import (
 	"context"
@@ -11,9 +11,32 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/huandu/go-sqlbuilder"
 	"github.com/pkg/errors"
+	"github.com/uptrace/bun"
 )
+
+const LogTableName = "log"
+
+type Log struct {
+	bun.BaseModel `bun:"log,alias:log"`
+
+	ID   uint64          `bun:"id,unique,type:bigint"`
+	Type string          `bun:"type,type:varchar"`
+	Hash string          `bun:"hash,type:varchar"`
+	Date time.Time       `bun:"date,type:timestamptz"`
+	Data json.RawMessage `bun:"data,type:jsonb"`
+}
+
+//------------------------------------------------------------------------------
+
+type LogsPaginationToken struct {
+	AfterID   uint64    `json:"after"`
+	PageSize  uint      `json:"pageSize,omitempty"`
+	StartTime time.Time `json:"startTime,omitempty"`
+	EndTime   time.Time `json:"endTime,omitempty"`
+}
+
+//------------------------------------------------------------------------------
 
 func (s *Store) appendLog(ctx context.Context, log ...core.Log) error {
 	var (
@@ -46,12 +69,7 @@ func (s *Store) appendLog(ctx context.Context, log ...core.Log) error {
 		ids, types, hashes, dates, datas,
 	}
 
-	executor, err := s.executorProvider(ctx)
-	if err != nil {
-		return err
-	}
-
-	_, err = executor.ExecContext(ctx, query, args...)
+	_, err := s.schema.ExecContext(ctx, query, args...)
 	if err != nil {
 		return s.error(err)
 	}
@@ -59,21 +77,15 @@ func (s *Store) appendLog(ctx context.Context, log ...core.Log) error {
 }
 
 func (s *Store) GetLastLog(ctx context.Context) (*core.Log, error) {
-	sb := sqlbuilder.NewSelectBuilder()
-	sb.From(s.schema.Table("log"))
-	sb.Select("id", "type", "hash", "date", "data")
-	sb.OrderBy("id desc")
-	sb.Limit(1)
-
-	executor, err := s.executorProvider(ctx)
-	if err != nil {
-		return nil, err
-	}
+	sb := s.schema.NewSelect(LogTableName).
+		Model((*Log)(nil)).
+		Column("id", "type", "hash", "date", "data").
+		OrderExpr("id desc").
+		Limit(1)
 
 	l := core.Log{}
 	data := sql.NullString{}
-	sqlq, _ := sb.BuildWithFlavor(s.schema.Flavor())
-	row := executor.QueryRowContext(ctx, sqlq)
+	row := s.schema.QueryRowContext(ctx, sb.String())
 	if err := row.Scan(&l.ID, &l.Type, &l.Hash, &l.Date, &data); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
@@ -82,6 +94,7 @@ func (s *Store) GetLastLog(ctx context.Context) (*core.Log, error) {
 	}
 	l.Date = l.Date.UTC()
 
+	var err error
 	l.Data, err = core.HydrateLog(l.Type, data.String)
 	if err != nil {
 		return nil, err
@@ -99,13 +112,8 @@ func (s *Store) GetLogs(ctx context.Context, q *ledger.LogsQuery) (api.Cursor[co
 	}
 
 	sb, t := s.buildLogsQuery(q)
-	executor, err := s.executorProvider(ctx)
-	if err != nil {
-		return api.Cursor[core.Log]{}, err
-	}
 
-	sqlq, args := sb.BuildWithFlavor(s.schema.Flavor())
-	rows, err := executor.QueryContext(ctx, sqlq, args...)
+	rows, err := s.schema.QueryContext(ctx, sb.String())
 	if err != nil {
 		return api.Cursor[core.Log]{}, s.error(err)
 	}
@@ -164,25 +172,26 @@ func (s *Store) GetLogs(ctx context.Context, q *ledger.LogsQuery) (api.Cursor[co
 	}, nil
 }
 
-func (s *Store) buildLogsQuery(q *ledger.LogsQuery) (*sqlbuilder.SelectBuilder, LogsPaginationToken) {
-	sb := sqlbuilder.NewSelectBuilder()
+func (s *Store) buildLogsQuery(q *ledger.LogsQuery) (*bun.SelectQuery, LogsPaginationToken) {
 	t := LogsPaginationToken{}
-
-	sb.Select("id", "type", "hash", "date", "data")
-	sb.From(s.schema.Table("log"))
+	sb := s.schema.NewSelect(LogTableName).
+		Model((*Log)(nil)).
+		Column("id", "type", "hash", "date", "data")
 
 	if !q.Filters.StartTime.IsZero() {
-		sb.Where(sb.GE("date", q.Filters.StartTime.UTC()))
+		sb.Where("date >= ?", q.Filters.StartTime.UTC())
 		t.StartTime = q.Filters.StartTime
 	}
+
 	if !q.Filters.EndTime.IsZero() {
-		sb.Where(sb.L("date", q.Filters.EndTime.UTC()))
+		sb.Where("date < ?", q.Filters.EndTime.UTC())
 		t.EndTime = q.Filters.EndTime
 	}
-	sb.OrderBy("id").Desc()
+
+	sb.OrderExpr("id DESC")
 
 	if q.AfterID > 0 {
-		sb.Where(sb.LE("id", q.AfterID))
+		sb.Where("id <= ?", q.AfterID)
 	}
 
 	// We fetch additional logs to know if there are more before and/or after.

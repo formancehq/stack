@@ -8,15 +8,14 @@ import (
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
-	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage/migrations"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
-	"github.com/huandu/go-sqlbuilder"
 	"github.com/pborman/uuid"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMigrate(t *testing.T) {
-
 	require.NoError(t, pgtesting.CreatePostgresServer())
 	defer func() {
 		require.NoError(t, pgtesting.DestroyPostgresServer())
@@ -32,43 +31,53 @@ func TestMigrate(t *testing.T) {
 
 	schema := store.Schema()
 
-	migrations, err := sqlstorage.CollectMigrationFiles(sqlstorage.MigrationsFS)
+	ms, err := migrations.CollectMigrationFiles(ledgerstore.MigrationsFS)
 	require.NoError(t, err)
 
-	modified, err := sqlstorage.Migrate(context.Background(), schema, migrations[0:13]...)
-	require.NoError(t, err)
-	require.True(t, modified)
-
-	sqlq, args := sqlbuilder.NewInsertBuilder().
-		InsertInto(schema.Table("log")).
-		Cols("id", "type", "hash", "date", "data").
-		Values("0", core.NewTransactionType, "", time.Now(), `{
-			"txid": 0,
-			"postings": [],
-			"reference": "tx1"
-		}`).
-		Values("1", core.NewTransactionType, "", time.Now(), `{
-			"txid": 1,
-			"postings": [],
-			"preCommitVolumes": {},
-			"postCommitVolumes": {},
-			"reference": "tx2"
-		}`).
-		BuildWithFlavor(schema.Flavor())
-
-	_, err = schema.ExecContext(context.Background(), sqlq, args...)
-	require.NoError(t, err)
-
-	modified, err = sqlstorage.Migrate(context.Background(), schema, migrations[13])
+	modified, err := migrations.Migrate(context.Background(), schema, ms[0:13]...)
 	require.NoError(t, err)
 	require.True(t, modified)
 
-	sqlq, args = sqlbuilder.NewSelectBuilder().
-		Select("data").
-		From(schema.Table("log")).
-		BuildWithFlavor(schema.Flavor())
+	ls := []ledgerstore.Log{
+		{
+			ID:   0,
+			Type: core.NewTransactionType,
+			Hash: "",
+			Date: time.Now(),
+			Data: []byte(`{
+				"txid": 0,
+				"postings": [],
+				"reference": "tx1"
+			}`),
+		},
+		{
+			ID:   1,
+			Type: core.NewTransactionType,
+			Hash: "",
+			Date: time.Now(),
+			Data: []byte(`{
+				"txid": 1,
+				"postings": [],
+				"preCommitVolumes": {},
+				"postCommitVolumes": {},
+				"reference": "tx2"
+			}`),
+		},
+	}
+	_, err = schema.NewInsert(ledgerstore.LogTableName).
+		Model(&ls).
+		Exec(context.Background())
+	require.NoError(t, err)
 
-	rows, err := schema.QueryContext(context.Background(), sqlq, args...)
+	modified, err = migrations.Migrate(context.Background(), schema, ms[13])
+	require.NoError(t, err)
+	require.True(t, modified)
+
+	sb := schema.NewSelect(ledgerstore.LogTableName).
+		Model((*ledgerstore.Log)(nil)).
+		Column("data")
+
+	rows, err := schema.QueryContext(context.Background(), sb.String())
 	require.NoError(t, err)
 
 	require.True(t, rows.Next())

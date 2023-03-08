@@ -14,7 +14,7 @@ import (
 	"github.com/formancehq/ledger/pkg/machine/vm"
 	"github.com/formancehq/ledger/pkg/machine/vm/program"
 	"github.com/formancehq/ledger/pkg/opentelemetry"
-	"github.com/formancehq/ledger/pkg/storage"
+	storage "github.com/formancehq/ledger/pkg/storage"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"

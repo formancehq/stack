@@ -2,17 +2,18 @@ package add_pre_post_volumes
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
-	"github.com/huandu/go-sqlbuilder"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage/migrations"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
 	"github.com/pkg/errors"
+	"github.com/uptrace/bun"
 )
 
 func init() {
-	sqlstorage.RegisterGoMigration(Upgrade)
+	migrations.RegisterGoMigration(Upgrade)
 }
 
 type Transaction struct {
@@ -20,23 +21,20 @@ type Transaction struct {
 	Postings core.Postings `json:"postings"`
 }
 
-func Upgrade(ctx context.Context, schema sqlstorage.Schema, sqlTx *sql.Tx) error {
-	sb := sqlbuilder.NewSelectBuilder()
-	sb.
-		From(schema.Table("log")).
-		Select("data").
-		Where(sb.E("type", core.NewTransactionType)).
-		OrderBy("id").
-		Asc()
+func Upgrade(ctx context.Context, schema schema.Schema, sqlTx *bun.Tx) error {
+	sb := schema.NewSelect(ledger.LogTableName).
+		Model((*ledger.Log)(nil)).
+		Column("data").
+		Where("type = ?", core.NewTransactionType).
+		Order("id ASC")
 
-	sqlq, args := sb.BuildWithFlavor(schema.Flavor())
-	rows, err := sqlTx.QueryContext(ctx, sqlq, args...)
+	rows, err := sqlTx.QueryContext(ctx, sb.String())
 	if err != nil {
 		return errors.Wrap(err, "querying rows")
 	}
 	defer rows.Close()
 
-	updates := make([]*sqlbuilder.UpdateBuilder, 0)
+	updates := make([]*bun.UpdateQuery, 0)
 
 	aggregatedVolumes := core.AccountsAssetsVolumes{}
 	for rows.Next() {
@@ -116,13 +114,11 @@ func Upgrade(ctx context.Context, schema sqlstorage.Schema, sqlTx *sql.Tx) error
 			return err
 		}
 
-		ub := sqlbuilder.NewUpdateBuilder()
-		ub.Update(schema.Table("transactions"))
-		ub.Set(
-			ub.Assign("pre_commit_volumes", preCommitVolumesData),
-			ub.Assign("post_commit_volumes", postCommitVolumesData),
-		)
-		ub.Where(ub.E("id", tx.ID))
+		ub := schema.NewUpdate(ledger.TransactionsTableName).
+			Model((*ledger.Transactions)(nil)).
+			Set("pre_commit_volumes = ?", preCommitVolumesData).
+			Set("post_commit_volumes = ?", postCommitVolumesData).
+			Where("id = ?", tx.ID)
 
 		updates = append(updates, ub)
 	}
@@ -132,9 +128,7 @@ func Upgrade(ctx context.Context, schema sqlstorage.Schema, sqlTx *sql.Tx) error
 	}
 
 	for _, update := range updates {
-		sqlq, args := update.BuildWithFlavor(schema.Flavor())
-
-		_, err = sqlTx.ExecContext(ctx, sqlq, args...)
+		_, err = sqlTx.ExecContext(ctx, update.String())
 		if err != nil {
 			return errors.Wrap(err, "executing update")
 		}

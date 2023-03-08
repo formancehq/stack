@@ -11,7 +11,7 @@ import (
 	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/redis"
-	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	sqlstorage "github.com/formancehq/ledger/pkg/storage/sqlstorage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"

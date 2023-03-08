@@ -10,10 +10,10 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
-	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
-	add_pre_post_volumes "github.com/formancehq/ledger/pkg/storage/sqlstorage/migrates/9-add-pre-post-volumes"
+	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
+	add_pre_post_volumes "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger/migrates/9-add-pre-post-volumes"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage/migrations"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
-	"github.com/huandu/go-sqlbuilder"
 	"github.com/pborman/uuid"
 	"github.com/stretchr/testify/require"
 )
@@ -216,7 +216,6 @@ var testCases = []testCase{
 }
 
 func TestMigrate9(t *testing.T) {
-
 	require.NoError(t, pgtesting.CreatePostgresServer())
 	defer func() {
 		require.NoError(t, pgtesting.DestroyPostgresServer())
@@ -232,10 +231,10 @@ func TestMigrate9(t *testing.T) {
 
 	schema := store.Schema()
 
-	migrations, err := sqlstorage.CollectMigrationFiles(sqlstorage.MigrationsFS)
+	ms, err := migrations.CollectMigrationFiles(ledgerstore.MigrationsFS)
 	require.NoError(t, err)
 
-	modified, err := sqlstorage.Migrate(context.Background(), schema, migrations[0:9]...)
+	modified, err := migrations.Migrate(context.Background(), schema, ms[0:9]...)
 	require.NoError(t, err)
 	require.True(t, modified)
 
@@ -253,13 +252,17 @@ func TestMigrate9(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		ib := sqlbuilder.NewInsertBuilder()
-		ib.InsertInto(schema.Table("log"))
-		ib.Cols("id", "data", "type", "date")
-		ib.Values(i, string(txData), core.NewTransactionType, now)
-		sqlq, args := ib.BuildWithFlavor(schema.Flavor())
+		l := &ledgerstore.Log{
+			ID:   uint64(i),
+			Data: txData,
+			Type: core.NewTransactionType,
+			Date: now,
+		}
+		_, err = schema.NewInsert(ledgerstore.LogTableName).
+			Model(l).
+			Column("id", "data", "type", "date").
+			Exec(context.Background())
 
-		_, err = schema.ExecContext(context.Background(), sqlq, args...)
 		require.NoError(t, err)
 	}
 
@@ -270,18 +273,15 @@ func TestMigrate9(t *testing.T) {
 	sqlTx, err := schema.BeginTx(context.Background(), &sql.TxOptions{})
 	require.NoError(t, err)
 
-	require.NoError(t, add_pre_post_volumes.Upgrade(context.Background(), schema, sqlTx))
+	require.NoError(t, add_pre_post_volumes.Upgrade(context.Background(), schema, &sqlTx))
 	require.NoError(t, sqlTx.Commit())
 
 	for i, tc := range testCases {
-
-		sb := sqlbuilder.NewSelectBuilder()
-		sqlq, args := sb.
-			From(schema.Table("transactions")).
-			Select("pre_commit_volumes", "post_commit_volumes").
-			Where(sb.E("id", i)).
-			BuildWithFlavor(schema.Flavor())
-		row := schema.QueryRowContext(context.Background(), sqlq, args...)
+		sb := schema.NewSelect(ledgerstore.TransactionsTableName).
+			Model((*ledgerstore.Transactions)(nil)).
+			Column("pre_commit_volumes", "post_commit_volumes").
+			Where("id = ?", i)
+		row := schema.QueryRowContext(context.Background(), sb.String())
 		require.NoError(t, row.Err())
 
 		preCommitVolumes, postCommitVolumes := core.AccountsAssetsVolumes{}, core.AccountsAssetsVolumes{}
