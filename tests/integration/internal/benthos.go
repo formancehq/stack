@@ -13,9 +13,7 @@ import (
 	"github.com/ory/dockertest/v3"
 )
 
-var (
-	benthosResource *dockertest.Resource
-)
+var benthosResource *dockertest.Resource
 
 func startBenthosServer() {
 	entrypoint := []string{
