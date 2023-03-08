@@ -45,7 +45,7 @@ var _ = Given("empty environment for webhooks configs", func() {
 			}
 			insertResp, httpResp, err = Client().WebhooksApi.
 				InsertConfig(TestContext()).ConfigUser(cfg).Execute()
-			Expect(err).To(Not(HaveOccurred()))
+			Expect(err).To(BeNil())
 			Expect(httpResp.StatusCode).To(Equal(http.StatusOK))
 			Expect(insertResp.Data.Endpoint).To(Equal(cfg.Endpoint))
 			Expect(insertResp.Data.EventTypes).To(Equal(cfg.EventTypes))
@@ -283,7 +283,7 @@ var _ = Given("empty environment for webhooks configs", func() {
 				var err error
 				insertResp, _, err = Client().WebhooksApi.
 					InsertConfig(TestContext()).ConfigUser(cfg).Execute()
-				Expect(err).To(Not(HaveOccurred()))
+				Expect(err).To(BeNil())
 				DeferCleanup(func() {
 					httpServer.Close()
 				})
@@ -293,7 +293,7 @@ var _ = Given("empty environment for webhooks configs", func() {
 				It("should return a successful attempt", func() {
 					attemptResp, httpResp, err := Client().WebhooksApi.
 						TestConfig(TestContext(), insertResp.Data.Id).Execute()
-					Expect(err).To(Not(HaveOccurred()))
+					Expect(err).To(BeNil())
 					Expect(httpResp.StatusCode).To(Equal(http.StatusOK))
 					Expect(attemptResp.Data.Config.Id).To(Equal(insertResp.Data.Id))
 					Expect(attemptResp.Data.Payload).To(Equal(`{"data":"test"}`))
@@ -321,7 +321,7 @@ var _ = Given("empty environment for webhooks configs", func() {
 				var err error
 				insertResp, _, err = Client().WebhooksApi.
 					InsertConfig(TestContext()).ConfigUser(cfg).Execute()
-				Expect(err).To(Not(HaveOccurred()))
+				Expect(err).To(BeNil())
 				DeferCleanup(func() {
 					httpServer.Close()
 				})
@@ -331,7 +331,7 @@ var _ = Given("empty environment for webhooks configs", func() {
 				It("should return a failed attempt", func() {
 					attemptResp, httpResp, err := Client().WebhooksApi.
 						TestConfig(TestContext(), insertResp.Data.Id).Execute()
-					Expect(err).To(Not(HaveOccurred()))
+					Expect(err).To(BeNil())
 					Expect(httpResp.StatusCode).To(Equal(http.StatusOK))
 					Expect(attemptResp.Data.Config.Id).To(Equal(insertResp.Data.Id))
 					Expect(attemptResp.Data.Payload).To(Equal(`{"data":"test"}`))

@@ -19,7 +19,6 @@ func StorageDriver(t pgtesting.TestingT) (*sqlstorage.Driver, func(), error) {
 	if err != nil {
 		return nil, nil, err
 	}
-
 	return sqlstorage.NewDriver(
 		"postgres",
 		sqlstorage.NewPostgresDB(db),

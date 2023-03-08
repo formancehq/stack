@@ -52,21 +52,21 @@ var _ = BeforeSuite(func() {
 
 	var err error
 	dockerPool, err = dockertest.NewPool("")
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 
 	dockerClient, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 
 	// uses pool to try to connect to Docker
 	err = dockerPool.Client.Ping()
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 })
 
 func runDockerResource(options *dockertest.RunOptions) *dockertest.Resource {
 	resource, err := dockerPool.RunWithOptions(options, func(config *docker.HostConfig) {
 		config.AutoRemove = true
 	})
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 
 	return resource
 }
@@ -82,7 +82,7 @@ var _ = BeforeEach(func() {
 		Addresses: []string{"http://" + getOpenSearchUrl()},
 		Transport: httpclient.NewDebugHTTPTransport(http.DefaultTransport),
 	})
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	Eventually(func() error {
 		return searchengine.CreateIndex(ctx, openSearchClient, actualTestID)
 	}).WithTimeout(10 * time.Second).Should(Not(HaveOccurred()))
@@ -103,27 +103,27 @@ var _ = BeforeEach(func() {
 
 	// Start the gateway
 	ledgerUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", ledgerPort))
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	registerService("ledger", ledgerUrl)
 
 	searchUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", searchPort))
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	registerService("search", searchUrl)
 
 	authUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", authPort))
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	registerService("auth", authUrl)
 
 	walletsUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", walletsPort))
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	registerService("wallets", walletsUrl)
 
 	paymentsUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", paymentsPort))
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	registerService("payments", paymentsUrl)
 
 	webhooksUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", webhooksPort))
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	registerService("webhooks", webhooksUrl)
 
 	// Start services
@@ -150,7 +150,7 @@ var (
 
 func startLedger() {
 	dsn, err := getPostgresDSN()
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	dsn.Path = fmt.Sprintf("%s-ledger", actualTestID)
 
 	ledgerCmd := cmd.NewRootCommand()
@@ -219,7 +219,7 @@ var (
 
 func startPayments() {
 	dsn, err := getPostgresDSN()
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	dsn.Path = fmt.Sprintf("%s-payments", actualTestID)
 
 	command := paymentsCmd.NewRootCommand()
@@ -261,7 +261,7 @@ var (
 
 func startAuth() {
 	dsn, err := getPostgresDSN()
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	dsn.Path = fmt.Sprintf("%s-auth", actualTestID)
 
 	command := authCmd.NewRootCommand()
@@ -287,7 +287,7 @@ func startAuth() {
 	}
 	configFile := filepath.Join(authDir, "config.yaml")
 	f, err := os.Create(configFile)
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	Expect(yaml.NewEncoder(f).Encode(cfg)).To(BeNil())
 
 	Expect(os.Setenv("CAOS_OIDC_DEV", "1")).To(Succeed())
@@ -363,7 +363,7 @@ var (
 
 func startWebhooks() {
 	dsn, err := getPostgresDSN()
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 	dsn.Path = fmt.Sprintf("%s-webhooks", actualTestID)
 
 	command := webhooksCmd.NewRootCommand()
@@ -416,7 +416,7 @@ func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc
 	case <-httpserver.Started(ctx):
 	case err := <-errCh:
 		By("starting service " + service)
-		Expect(err).To(Not(HaveOccurred()))
+		Expect(err).To(BeNil())
 	case <-time.After(5 * time.Second):
 		Fail("timeout waiting for service to be properly started")
 	}
