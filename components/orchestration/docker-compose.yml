@@ -112,21 +112,17 @@ services:
       retries: 30
 
   api:
-    build:
-      dockerfile: reflex.Dockerfile
+    image: golang:1.19-alpine
     entrypoint:
-    - reflex
-    - -r
-    - \.go$$
-    - -s
     - go
     - run
-    - components/orchestration/main.go
+    - main.go
     - serve
+    - --worker
     volumes:
     - ../..:/src
     - build-cache:/go
-    working_dir: /src
+    working_dir: /src/components/orchestration
     ports:
     - "8080:8080/tcp"
     environment:
@@ -153,12 +149,12 @@ services:
     - -s
     - go
     - run
-    - components/orchestration/main.go
+    - main.go
     - worker
     volumes:
     - ../..:/src
     - build-cache:/go
-    working_dir: /src
+    working_dir: /src/components/orchestration
     environment:
       DEBUG: "true"
       OTEL_TRACES: "true"
