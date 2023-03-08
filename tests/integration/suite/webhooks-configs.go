@@ -31,7 +31,7 @@ var _ = Given("empty environment for webhooks configs", func() {
 	})
 
 	When("inserting 1 config", func() {
-		var secret = webhooks.NewSecret()
+		secret := webhooks.NewSecret()
 		var insertResp *formance.ConfigResponse
 		BeforeEach(func() {
 			var err error
@@ -242,7 +242,7 @@ var _ = Given("empty environment for webhooks configs", func() {
 		Context("inserting a config with an endpoint to a success handler", func() {
 			var httpServer *httptest.Server
 			var insertResp *formance.ConfigResponse
-			var secret = webhooks.NewSecret()
+			secret := webhooks.NewSecret()
 
 			BeforeEach(func() {
 				httpServer = httptest.NewServer(http.HandlerFunc(

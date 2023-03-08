@@ -271,7 +271,7 @@ func startAuth() {
 	}
 
 	authDir := filepath.Join(os.TempDir(), uuid.NewString())
-	Expect(os.MkdirAll(authDir, 0777)).To(BeNil())
+	Expect(os.MkdirAll(authDir, 0o777)).To(BeNil())
 	type configuration struct {
 		Clients []auth.StaticClient `yaml:"clients"`
 	}

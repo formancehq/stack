@@ -25,7 +25,7 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription, msgs = SubscribePayments()
 
 			paymentsDir := filepath.Join(os.TempDir(), uuid.NewString())
-			Expect(os.MkdirAll(paymentsDir, 0777)).To(BeNil())
+			Expect(os.MkdirAll(paymentsDir, 0o777)).To(BeNil())
 			_, err := Client().PaymentsApi.
 				InstallConnector(TestContext(), formance.DUMMY_PAY).
 				ConnectorConfig(formance.ConnectorConfig{
