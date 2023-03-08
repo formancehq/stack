@@ -52,7 +52,7 @@ func runMigrate(cmd *cobra.Command, args []string) error {
 
 	bunDB := bun.NewDB(db, pgdialect.New())
 	if viper.GetBool(service.DebugFlag) {
-		bunDB.AddQueryHook(bundebug.NewQueryHook())
+		bunDB.AddQueryHook(bundebug.NewQueryHook(bundebug.WithWriter(cmd.OutOrStdout())))
 	}
 
 	return storage.Migrate(cmd.Context(), bunDB)

@@ -13,7 +13,6 @@ import (
 	"github.com/docker/docker/client"
 	authCmd "github.com/formancehq/auth/cmd"
 	auth "github.com/formancehq/auth/pkg"
-	orchestrationCmd "github.com/formancehq/orchestration/cmd"
 	paymentsCmd "github.com/formancehq/payments/cmd"
 	searchCmd "github.com/formancehq/search/cmd"
 	"github.com/formancehq/search/pkg/searchengine"
@@ -21,7 +20,6 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	walletsCmd "github.com/formancehq/wallets/cmd"
-	webhooksCmd "github.com/formancehq/webhooks/cmd"
 	"github.com/google/uuid"
 	"github.com/opensearch-project/opensearch-go"
 	"github.com/sirupsen/logrus"
@@ -99,8 +97,6 @@ var _ = BeforeEach(func() {
 	startAuth()
 	startWallets()
 	startPayments()
-	startWebhooks()
-	startOrchestration()
 
 	// TODO: Wait search has properly configured mapping before trying to ingest any data
 	startBenthosServer()
@@ -136,18 +132,6 @@ var _ = BeforeEach(func() {
 	}
 	registerService("payments", paymentsUrl)
 
-	webhooksUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", webhooksPort))
-	if err != nil {
-		panic(err)
-	}
-	registerService("webhooks", webhooksUrl)
-
-	orchestrationUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", orchestrationPort))
-	if err != nil {
-		panic(err)
-	}
-	registerService("orchestration", orchestrationUrl)
-
 	// Start services
 	// Configure the sdk with a preconfigured auth client
 	configureSDK()
@@ -160,8 +144,6 @@ var _ = AfterEach(func() {
 	stopAuth()
 	stopWallets()
 	stopPayments()
-	stopWebhooks()
-	stopOrchestration()
 	stopFakeGateway() // TODO: Wait for gateway to be shutdown
 })
 
@@ -277,47 +259,6 @@ func stopPayments() {
 }
 
 var (
-	orchestrationPort   int
-	orchestrationErrCh  chan error
-	orchestrationCancel func()
-)
-
-func startOrchestration() {
-	dsn, err := getPostgresDSN()
-	Expect(err).To(BeNil())
-	dsn.Path = fmt.Sprintf("%s-orchestration", actualTestID)
-
-	orchestrationCmd := orchestrationCmd.NewRootCommand()
-	if testing.Verbose() {
-		orchestrationCmd.SetOut(os.Stdout)
-		orchestrationCmd.SetErr(os.Stderr)
-	}
-
-	args := make([]string, 0)
-	args = append(args,
-		"serve",
-		"--postgres-dsn="+dsn.String(),
-		"--stack-client-id=global",
-		"--stack-client-secret=global",
-		"--stack-url="+gatewayServer.URL,
-		"--temporal-address="+getTemporalAddress(),
-		"--temporal-task-queue="+actualTestID,
-		"--worker",
-	)
-	orchestrationCmd.SetArgs(args)
-	orchestrationPort, orchestrationCancel, orchestrationErrCh = runAndWaitPort("orchestration", orchestrationCmd)
-}
-
-func stopOrchestration() {
-	orchestrationCancel()
-	select {
-	case <-orchestrationErrCh:
-	case <-time.After(5 * time.Second):
-		Fail("timeout waiting for orchestration stopped")
-	}
-}
-
-var (
 	authPort   int
 	authErrCh  chan error
 	authCancel func()
@@ -416,51 +357,6 @@ func stopWallets() {
 	case <-walletsErrCh:
 	case <-time.After(5 * time.Second):
 		Fail("timeout waiting for wallet stopped")
-	}
-}
-
-var (
-	webhooksPort   int
-	webhooksErrCh  chan error
-	webhooksCancel func()
-)
-
-func startWebhooks() {
-
-	dsn, err := getPostgresDSN()
-	Expect(err).To(BeNil())
-	dsn.Path = fmt.Sprintf("%s-webhooks", actualTestID)
-
-	webhooksCmd := webhooksCmd.NewRootCommand()
-	if testing.Verbose() {
-		webhooksCmd.SetOut(os.Stdout)
-		webhooksCmd.SetErr(os.Stderr)
-	}
-
-	args := make([]string, 0)
-	args = append(args,
-		"serve",
-		"--storage-postgres-conn-string="+dsn.String(),
-		"--listen=0.0.0.0:0",
-		"--worker",
-		"--publisher-nats-enabled",
-		"--publisher-nats-client-id=webhooks",
-		"--publisher-nats-url="+natsAddress(),
-		fmt.Sprintf("--kafka-topics=%s-ledger", actualTestID),
-	)
-	if testing.Verbose() {
-		args = append(args, "--debug")
-	}
-	webhooksCmd.SetArgs(args)
-	webhooksPort, webhooksCancel, webhooksErrCh = runAndWaitPort("webhooks", webhooksCmd)
-}
-
-func stopWebhooks() {
-	webhooksCancel()
-	select {
-	case <-webhooksErrCh:
-	case <-time.After(5 * time.Second):
-		Fail("timeout waiting for webhooks stopped")
 	}
 }
 

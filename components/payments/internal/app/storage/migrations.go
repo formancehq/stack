@@ -216,7 +216,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 				}
 
 				_, err = tx.Exec(`
-					UPDATE connectors.connector SET config = pgp_sym_encrypt(config_unencrypted::TEXT, $1, 'compress-algo=1, cipher-algo=aes256');
+					UPDATE connectors.connector SET config = pgp_sym_encrypt(config_unencrypted::TEXT, ?, 'compress-algo=1, cipher-algo=aes256');
 				`, EncryptionKey)
 				if err != nil {
 					return fmt.Errorf("failed to encrypt config: %w", err)

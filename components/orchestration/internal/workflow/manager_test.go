@@ -2,6 +2,7 @@ package workflow
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/formancehq/orchestration/internal/storage"
@@ -27,7 +28,7 @@ func TestConfig(t *testing.T) {
 	t.Parallel()
 
 	database := pgtesting.NewPostgresDatabase(t)
-	db := storage.LoadDB(database.ConnString(), testing.Verbose())
+	db := storage.LoadDB(database.ConnString(), testing.Verbose(), os.Stdout)
 	require.NoError(t, storage.Migrate(context.Background(), db))
 	testSuite := &testsuite.WorkflowTestSuite{}
 	env := testSuite.NewTestWorkflowEnvironment()

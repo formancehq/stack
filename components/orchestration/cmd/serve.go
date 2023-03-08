@@ -49,7 +49,7 @@ func newServeCommand() *cobra.Command {
 				fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux) {
 					lc.Append(httpserver.NewHook(viper.GetString(listenFlag), router))
 				}),
-				commonOptions(),
+				commonOptions(cmd.OutOrStdout()),
 			}
 			if viper.GetBool(workerFlag) {
 				options = append(options, workerOptions())
