@@ -6,10 +6,8 @@ import (
 	"net/http"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/temporal"
 	"github.com/formancehq/stack/libs/go-libs/otlp"
-	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,29 +39,26 @@ func stackClientModule() fx.Option {
 	)
 }
 
-var workerCommand = &cobra.Command{
-	Use: "worker",
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		return bindFlagsToViper(cmd)
-	},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		options := []fx.Option{
-			otlptraces.CLITracesModule(viper.GetViper()),
-			storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag)),
-			stackClientModule(),
-			temporal.NewClientModule(
-				viper.GetString(temporalAddressFlag),
-				viper.GetString(temporalNamespaceFlag),
-				viper.GetString(temporalSSLClientCertFlag),
-				viper.GetString(temporalSSLClientKeyFlag),
-			),
-			temporal.NewWorkerModule(viper.GetString(temporalTaskQueueFlag)),
-		}
-
-		return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
-	},
+func workerOptions() fx.Option {
+	return fx.Options(
+		stackClientModule(),
+		temporal.NewWorkerModule(viper.GetString(temporalTaskQueueFlag)),
+	)
 }
 
-func init() {
-	rootCmd.AddCommand(workerCommand)
+func newWorkerCommand() *cobra.Command {
+	return &cobra.Command{
+		Use: "worker",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return bindFlagsToViper(cmd)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			options := []fx.Option{
+				commonOptions(),
+				workerOptions(),
+			}
+
+			return service.New(cmd.OutOrStdout(), options...).Run(cmd.Context())
+		},
+	}
 }
