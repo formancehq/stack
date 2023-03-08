@@ -10,6 +10,7 @@ import (
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/go-chi/chi/v5"
 	flag "github.com/spf13/pflag"
@@ -75,7 +76,7 @@ func test(t *testing.T, fn func(router *chi.Mux, m *workflow.Manager, db *bun.DB
 	db := storage.LoadDB(database.ConnString(), testing.Verbose())
 	require.NoError(t, storage.Migrate(db, testing.Verbose()))
 	manager := workflow.NewManager(db, newMockedClient(t, db), "default")
-	router := newRouter(manager)
+	router := newRouter(manager, &health.HealthController{})
 	fn(router, manager, db)
 }
 
