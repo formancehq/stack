@@ -13,7 +13,7 @@ require (
 	github.com/formancehq/stack v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230222164357-55840b21a337
 	github.com/formancehq/wallets v0.3.0
-	github.com/getkin/kin-openapi v0.114.0
+	github.com/getkin/kin-openapi v0.115.0
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v5 v5.3.0
 	github.com/nats-io/nats-server/v2 v2.9.14
@@ -22,6 +22,7 @@ require (
 	github.com/onsi/gomega v1.27.1
 	github.com/opensearch-project/opensearch-go v1.1.0
 	github.com/ory/dockertest/v3 v3.9.1
+	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.6.1
 	github.com/xo/dburl v0.13.0
@@ -125,7 +126,6 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/perimeterx/marshmallow v1.1.4 // indirect
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/riandyrn/otelchi v0.5.1 // indirect
 	github.com/rs/cors v1.8.3 // indirect
