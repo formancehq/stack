@@ -103,7 +103,6 @@ spec:
             initContainers:
                 - args:
                     - migrate
-                    - up
                   env:
                     - name: POSTGRES_HOST
                       value: localhost

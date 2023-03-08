@@ -34,10 +34,10 @@ func init() {
 				},
 				InitContainer: func(resolveContext modules.ContainerResolutionContext) []modules.Container {
 					return []modules.Container{{
-						Name:  "migrate",
-						Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
-						Env:   env(resolveContext),
-						Args:  []string{"migrate", "up"},
+						Name:    "migrate",
+						Image:   modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+						Env:     env(resolveContext),
+						Command: []string{"payments", "migrate"},
 					}}
 				},
 			}}
