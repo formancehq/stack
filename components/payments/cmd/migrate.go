@@ -1,17 +1,19 @@
 package cmd
 
 import (
+	"database/sql"
 	"fmt"
-	"log"
 
-	"github.com/formancehq/payments/internal/app/migrations"
-
+	"github.com/formancehq/payments/internal/app/storage"
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/viper"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/extra/bundebug"
 
 	// Import the postgres driver.
 	_ "github.com/lib/pq"
 
-	"github.com/pressly/goose/v3"
 	"github.com/spf13/cobra"
 )
 
@@ -22,22 +24,6 @@ func newMigrate() *cobra.Command {
 		RunE:  runMigrate,
 	}
 }
-
-// Usage: `go run cmd/main.go migrate --postgres-uri {uri} {command}`
-/*
-Commands:
-    up                   Migrate the DB to the most recent version available
-    up-by-one            Migrate the DB up by 1
-    up-to VERSION        Migrate the DB to a specific VERSION
-    down                 Roll back the version by 1
-    down-to VERSION      Roll back to a specific VERSION
-    redo                 Re-run the latest migration
-    reset                Roll back all migrations
-    status               Dump the migration status for the current DB
-    version              Print the current version of the database
-    create NAME [sql|go] Creates new migration file with the current timestamp
-    fix                  Apply sequential ordering to migrations
-*/
 
 func runMigrate(cmd *cobra.Command, args []string) error {
 	postgresURI := viper.GetString(postgresURIFlag)
@@ -55,30 +41,19 @@ func runMigrate(cmd *cobra.Command, args []string) error {
 	}
 
 	if cfgEncryptionKey != "" {
-		migrations.EncryptionKey = cfgEncryptionKey
+		storage.EncryptionKey = cfgEncryptionKey
 	}
 
-	database, err := goose.OpenDBWithDriver("postgres", postgresURI)
+	// TODO: Maybe use pgx everywhere instead of pq
+	db, err := sql.Open("postgres", postgresURI)
 	if err != nil {
-		return fmt.Errorf("failed to open database: %w", err)
+		return err
 	}
 
-	defer func() {
-		if err = database.Close(); err != nil {
-			log.Fatalf("failed to close DB: %v\n", err)
-		}
-	}()
-
-	if len(args) == 0 {
-		return fmt.Errorf("missing migration direction")
+	bunDB := bun.NewDB(db, pgdialect.New())
+	if viper.GetBool(service.DebugFlag) {
+		bunDB.AddQueryHook(bundebug.NewQueryHook(bundebug.WithWriter(cmd.OutOrStdout())))
 	}
 
-	command := args[0]
-
-	goose.SetLogger(log.New(cmd.OutOrStdout(), "", log.LstdFlags))
-	if err = goose.Run(command, database, ".", args[1:]...); err != nil {
-		log.Printf("migrate %v: %v", command, err)
-	}
-
-	return nil
+	return storage.Migrate(cmd.Context(), bunDB)
 }

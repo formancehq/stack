@@ -7,3 +7,7 @@ import (
 func Given(text string, body func()) bool {
 	return ginkgo.Context(text, body)
 }
+
+func With(text string, body func()) bool {
+	return ginkgo.Context(text, body)
+}
