@@ -15,7 +15,7 @@ import (
 func (h *serverHandler) activateOneConfigHandle(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, PathParamId)
 	c, err := h.store.UpdateOneConfigActivation(r.Context(), id, true)
-	if err == nil {
+	if err == nil || errors.Is(err, storage.ErrConfigNotModified) {
 		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s", PathConfigs, id, PathActivate)
 		resp := api.BaseResponse[webhooks.Config]{
 			Data: &c,
@@ -28,9 +28,6 @@ func (h *serverHandler) activateOneConfigHandle(w http.ResponseWriter, r *http.R
 	} else if errors.Is(err, storage.ErrConfigNotFound) {
 		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s: %s", PathConfigs, id, PathActivate, storage.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	} else if errors.Is(err, storage.ErrConfigNotModified) {
-		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s: %s", PathConfigs, id, PathActivate, storage.ErrConfigNotModified)
-		w.WriteHeader(http.StatusNotModified)
 	} else {
 		logging.FromContext(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, id, PathActivate, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -40,7 +37,7 @@ func (h *serverHandler) activateOneConfigHandle(w http.ResponseWriter, r *http.R
 func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, PathParamId)
 	c, err := h.store.UpdateOneConfigActivation(r.Context(), id, false)
-	if err == nil {
+	if err == nil || errors.Is(err, storage.ErrConfigNotModified) {
 		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s", PathConfigs, id, PathDeactivate)
 		resp := api.BaseResponse[webhooks.Config]{
 			Data: &c,
@@ -53,9 +50,6 @@ func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http
 	} else if errors.Is(err, storage.ErrConfigNotFound) {
 		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s: %s", PathConfigs, id, PathDeactivate, storage.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	} else if errors.Is(err, storage.ErrConfigNotModified) {
-		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s: %s", PathConfigs, id, PathDeactivate, storage.ErrConfigNotModified)
-		w.WriteHeader(http.StatusNotModified)
 	} else {
 		logging.FromContext(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, id, PathDeactivate, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

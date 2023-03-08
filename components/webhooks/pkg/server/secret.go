@@ -33,7 +33,7 @@ func (h *serverHandler) changeSecretHandle(w http.ResponseWriter, r *http.Reques
 	}
 
 	c, err := h.store.UpdateOneConfigSecret(r.Context(), id, sec.Secret)
-	if err == nil {
+	if err == nil || errors.Is(err, storage.ErrConfigNotModified) {
 		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s", PathConfigs, id, PathChangeSecret)
 		resp := api.BaseResponse[webhooks.Config]{
 			Data: &c,

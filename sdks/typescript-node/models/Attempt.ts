@@ -14,15 +14,15 @@ import { WebhooksConfig } from '../models/WebhooksConfig';
 import { HttpFile } from '../http/http';
 
 export class Attempt {
-    'id'?: string;
-    'webhookID'?: string;
-    'createdAt'?: Date;
-    'updatedAt'?: Date;
-    'config'?: WebhooksConfig;
-    'payload'?: string;
-    'statusCode'?: number;
-    'retryAttempt'?: number;
-    'status'?: string;
+    'id': string;
+    'webhookID': string;
+    'createdAt': Date;
+    'updatedAt': Date;
+    'config': WebhooksConfig;
+    'payload': string;
+    'statusCode': number;
+    'retryAttempt': number;
+    'status': string;
     'nextRetryAfter'?: Date;
 
     static readonly discriminator: string | undefined = undefined;

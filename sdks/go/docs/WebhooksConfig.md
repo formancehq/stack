@@ -4,19 +4,19 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | Pointer to **string** |  | [optional] 
-**Endpoint** | Pointer to **string** |  | [optional] 
-**Secret** | Pointer to **string** |  | [optional] 
-**EventTypes** | Pointer to **[]string** |  | [optional] 
-**Active** | Pointer to **bool** |  | [optional] 
-**CreatedAt** | Pointer to **time.Time** |  | [optional] 
-**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
+**Id** | **string** |  | 
+**Endpoint** | **string** |  | 
+**Secret** | **string** |  | 
+**EventTypes** | **[]string** |  | 
+**Active** | **bool** |  | 
+**CreatedAt** | **time.Time** |  | 
+**UpdatedAt** | **time.Time** |  | 
 
 ## Methods
 
 ### NewWebhooksConfig
 
-`func NewWebhooksConfig() *WebhooksConfig`
+`func NewWebhooksConfig(id string, endpoint string, secret string, eventTypes []string, active bool, createdAt time.Time, updatedAt time.Time, ) *WebhooksConfig`
 
 NewWebhooksConfig instantiates a new WebhooksConfig object
 This constructor will assign default values to properties that have it defined,
@@ -50,11 +50,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
-
-`func (o *WebhooksConfig) HasId() bool`
-
-HasId returns a boolean if a field has been set.
 
 ### GetEndpoint
 
@@ -75,11 +70,6 @@ and a boolean to check if the value has been set.
 
 SetEndpoint sets Endpoint field to given value.
 
-### HasEndpoint
-
-`func (o *WebhooksConfig) HasEndpoint() bool`
-
-HasEndpoint returns a boolean if a field has been set.
 
 ### GetSecret
 
@@ -100,11 +90,6 @@ and a boolean to check if the value has been set.
 
 SetSecret sets Secret field to given value.
 
-### HasSecret
-
-`func (o *WebhooksConfig) HasSecret() bool`
-
-HasSecret returns a boolean if a field has been set.
 
 ### GetEventTypes
 
@@ -125,11 +110,6 @@ and a boolean to check if the value has been set.
 
 SetEventTypes sets EventTypes field to given value.
 
-### HasEventTypes
-
-`func (o *WebhooksConfig) HasEventTypes() bool`
-
-HasEventTypes returns a boolean if a field has been set.
 
 ### GetActive
 
@@ -150,11 +130,6 @@ and a boolean to check if the value has been set.
 
 SetActive sets Active field to given value.
 
-### HasActive
-
-`func (o *WebhooksConfig) HasActive() bool`
-
-HasActive returns a boolean if a field has been set.
 
 ### GetCreatedAt
 
@@ -175,11 +150,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-### HasCreatedAt
-
-`func (o *WebhooksConfig) HasCreatedAt() bool`
-
-HasCreatedAt returns a boolean if a field has been set.
 
 ### GetUpdatedAt
 
@@ -200,11 +170,6 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-### HasUpdatedAt
-
-`func (o *WebhooksConfig) HasUpdatedAt() bool`
-
-HasUpdatedAt returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

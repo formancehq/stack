@@ -8,13 +8,13 @@ dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**id** | str, uuid.UUID,  | str,  |  | [optional] value must be a uuid
-**endpoint** | str,  | str,  |  | [optional] 
-**secret** | str,  | str,  |  | [optional] 
-**[eventTypes](#eventTypes)** | list, tuple,  | tuple,  |  | [optional] 
-**active** | bool,  | BoolClass,  |  | [optional] 
-**createdAt** | str, datetime,  | str,  |  | [optional] value must conform to RFC-3339 date-time
-**updatedAt** | str, datetime,  | str,  |  | [optional] value must conform to RFC-3339 date-time
+**createdAt** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
+**endpoint** | str,  | str,  |  | 
+**active** | bool,  | BoolClass,  |  | 
+**id** | str, uuid.UUID,  | str,  |  | value must be a uuid
+**secret** | str,  | str,  |  | 
+**[eventTypes](#eventTypes)** | list, tuple,  | tuple,  |  | 
+**updatedAt** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # eventTypes
