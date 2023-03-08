@@ -32,7 +32,7 @@ func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Req
 
 	c, err := h.store.InsertOneConfig(r.Context(), cfg)
 	if err == nil {
-		logging.FromContext(r.Context()).Infof("POST %s: inserted id %s", PathConfigs, c.ID)
+		logging.FromContext(r.Context()).Debugf("POST %s: inserted id %s", PathConfigs, c.ID)
 		resp := api.BaseResponse[webhooks.Config]{
 			Data: &c,
 		}

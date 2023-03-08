@@ -36,7 +36,7 @@ var _ = Given("some empty environment", func() {
 					},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).To(Not(HaveOccurred()))
 		})
 		AfterEach(func() {
 			cancelSubscription()
@@ -50,7 +50,7 @@ var _ = Given("some empty environment", func() {
 				res, _, err := Client().PaymentsApi.
 					ListPayments(TestContext()).
 					Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).To(Not(HaveOccurred()))
 				return res.Cursor.Data
 			}).WithTimeout(10 * time.Second).ShouldNot(BeEmpty()) // TODO: Check other fields
 		})

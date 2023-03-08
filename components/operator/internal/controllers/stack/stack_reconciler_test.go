@@ -79,19 +79,19 @@ var _ = Describe("When creating a stack", func() {
 	It("should create resources", func() {
 
 		entries, err := os.ReadDir(testDataResourcesDir)
-		Expect(err).To(BeNil())
+		Expect(err).To(Not(HaveOccurred()))
 
 		for _, gvkEntry := range entries {
 
 			resourceDirFilename := filepath.Join(testDataResourcesDir, gvkEntry.Name())
 			resourceEntries, err := os.ReadDir(resourceDirFilename)
-			Expect(err).To(BeNil())
+			Expect(err).To(Not(HaveOccurred()))
 
 			for _, resourceEntry := range resourceEntries {
 				gvkParts := strings.SplitN(gvkEntry.Name(), "-", 3)
 
 				kind, err := k8sClient.RESTMapper().ResourceSingularizer(gvkParts[0])
-				Expect(err).To(BeNil())
+				Expect(err).To(Not(HaveOccurred()))
 
 				actualResource := &unstructured.Unstructured{
 					Object: map[string]interface{}{
@@ -110,13 +110,13 @@ var _ = Describe("When creating a stack", func() {
 				resourceEntryFilename := filepath.Join(resourceDirFilename, resourceEntry.Name())
 
 				expectedContent, err := os.ReadFile(resourceEntryFilename)
-				Expect(err).To(BeNil())
+				Expect(err).To(Not(HaveOccurred()))
 
 				expectedContentAsMap := make(map[string]any)
 				Expect(yaml.Unmarshal(expectedContent, &expectedContentAsMap)).To(BeNil())
 
 				expectedContentAsJSON, err := json.Marshal(expectedContentAsMap)
-				Expect(err).To(BeNil())
+				Expect(err).To(Not(HaveOccurred()))
 
 				expectedResource := &unstructured.Unstructured{}
 				Expect(json.Unmarshal(expectedContentAsJSON, &expectedResource)).To(BeNil())
@@ -222,7 +222,7 @@ func updateTestingData(stack *stackv1beta3.Stack) func() {
 		}
 		for _, gvk := range gvks {
 			list, err := dynamic.Resource(gvk).Namespace(stack.Name).List(ctx, v1.ListOptions{})
-			Expect(err).To(BeNil())
+			Expect(err).To(Not(HaveOccurred()))
 
 			for _, item := range list.Items {
 				groupDir := filepath.Join("testdata", "resources", fmt.Sprintf("%s-%s-%s",
@@ -230,10 +230,10 @@ func updateTestingData(stack *stackv1beta3.Stack) func() {
 
 				Expect(os.MkdirAll(groupDir, os.ModePerm)).To(BeNil())
 				sampleFile, err := os.Create(fmt.Sprintf("%s/%s.yaml", groupDir, item.GetName()))
-				Expect(err).To(BeNil())
+				Expect(err).To(Not(HaveOccurred()))
 
 				itemAsJson, err := json.Marshal(item.UnstructuredContent())
-				Expect(err).To(BeNil())
+				Expect(err).To(Not(HaveOccurred()))
 
 				itemAsMap := make(map[string]any)
 				Expect(json.Unmarshal(itemAsJson, &itemAsMap)).To(BeNil())
