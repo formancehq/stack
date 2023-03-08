@@ -54,7 +54,7 @@ func newWorkerCommand() *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := []fx.Option{
-				commonOptions(),
+				commonOptions(cmd.OutOrStdout()),
 				workerOptions(),
 			}
 

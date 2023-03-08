@@ -35,7 +35,7 @@ func init() {
 						Name:    "migrate",
 						Image:   modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
 						Env:     env(resolveContext),
-						Command: []string{"payments", "migrate", "up"},
+						Command: []string{"payments", "migrate"},
 					}}
 				},
 			}}
