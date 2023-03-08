@@ -15,3 +15,14 @@ func WaitOnChanWithTimeout[T any](ch chan T, timeout time.Duration) T {
 	}
 	panic("cannot happen")
 }
+
+func ChanClosed[T any](ch chan T) func() bool {
+	return func() bool {
+		select {
+		case _, alive := <-ch:
+			return !alive
+		default:
+			return false
+		}
+	}
+}

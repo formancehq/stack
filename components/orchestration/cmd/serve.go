@@ -42,14 +42,14 @@ func newServeCommand() *cobra.Command {
 				fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
 					lifecycle.Append(fx.Hook{
 						OnStart: func(ctx context.Context) error {
-							return storage.Migrate(db, viper.GetBool(service.DebugFlag))
+							return storage.Migrate(ctx, db)
 						},
 					})
 				}),
 				fx.Invoke(func(lc fx.Lifecycle, router *chi.Mux) {
 					lc.Append(httpserver.NewHook(viper.GetString(listenFlag), router))
 				}),
-				commonOptions(),
+				commonOptions(cmd.OutOrStdout()),
 			}
 			if viper.GetBool(workerFlag) {
 				options = append(options, workerOptions())
