@@ -54,7 +54,7 @@ tasks:
       - task wallets:lint
       - task webhooks:lint
       - task ledger:lint
-      - task integration:tests
+      - task integration:lint
 
 includes:
   openapi:
