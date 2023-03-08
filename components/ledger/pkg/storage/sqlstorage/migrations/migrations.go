@@ -28,7 +28,7 @@ type MigrationsTable struct {
 	bun.BaseModel `bun:"migrations,alias:migrations"`
 
 	Version string `bun:"version,type:varchar,unique"`
-	date    string `bun:"date,type:varchar"`
+	Date    string `bun:"date,type:varchar"`
 }
 
 //------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ func Migrate(ctx context.Context, schema schema.Schema, migrations ...Migration)
 
 		m := MigrationsTable{
 			Version: m.Version,
-			date:    time.Now().UTC().Format(time.RFC3339),
+			Date:    time.Now().UTC().Format(time.RFC3339),
 		}
 		if _, err := schema.NewInsert(migrationsTableName).
 			Model(&m).

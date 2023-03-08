@@ -2,6 +2,7 @@ package ledgertesting
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/formancehq/ledger/pkg/api/idempotency"
 	"github.com/formancehq/ledger/pkg/ledger"
@@ -13,7 +14,6 @@ import (
 )
 
 func StorageDriver(t pgtesting.TestingT) (*sqlstorage.Driver, func(), error) {
-
 	pgServer := pgtesting.NewPostgresDatabase(t)
 
 	db, err := sqlstorage.OpenSQLDB(pgServer.ConnString())
@@ -35,6 +35,7 @@ func ProvideStorageDriver(t pgtesting.TestingT) fx.Option {
 		lc.Append(fx.Hook{
 			OnStart: driver.Initialize,
 			OnStop: func(ctx context.Context) error {
+				fmt.Println("Stopping storage driver")
 				stopFn()
 				return driver.Close(ctx)
 			},

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/formancehq/ledger/pkg/core"
@@ -39,37 +38,24 @@ type LogsPaginationToken struct {
 //------------------------------------------------------------------------------
 
 func (s *Store) appendLog(ctx context.Context, log ...core.Log) error {
-	var (
-		query string
-		args  []interface{}
-	)
-
-	ids := make([]uint64, len(log))
-	types := make([]string, len(log))
-	hashes := make([]string, len(log))
-	dates := make([]time.Time, len(log))
-	datas := make([][]byte, len(log))
+	ls := make([]Log, len(log))
 
 	for i, l := range log {
 		data, err := json.Marshal(l.Data)
 		if err != nil {
 			panic(err)
 		}
-		ids[i] = l.ID
-		types[i] = l.Type
-		hashes[i] = l.Hash
-		dates[i] = l.Date
-		datas[i] = data
+		ls[i].ID = l.ID
+		ls[i].Type = l.Type
+		ls[i].Hash = l.Hash
+		ls[i].Date = l.Date
+		ls[i].Data = data
 	}
 
-	query = fmt.Sprintf(
-		`INSERT INTO "%s".log (id, type, hash, date, data) (SELECT * FROM unnest($1::int[], $2::varchar[], $3::varchar[], $4::timestamptz[], $5::jsonb[]))`,
-		s.schema.Name())
-	args = []interface{}{
-		ids, types, hashes, dates, datas,
-	}
-
-	_, err := s.schema.ExecContext(ctx, query, args...)
+	_, err := s.schema.NewInsert(LogTableName).
+		Model(&ls).
+		Column("id", "type", "hash", "date", "data").
+		Exec(ctx)
 	if err != nil {
 		return s.error(err)
 	}

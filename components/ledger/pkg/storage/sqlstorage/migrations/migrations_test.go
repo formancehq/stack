@@ -3,6 +3,7 @@ package migrations_test
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -12,11 +13,24 @@ import (
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/migrations"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/psanford/memfs"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
 )
+
+func TestMain(t *testing.M) {
+	if err := pgtesting.CreatePostgresServer(); err != nil {
+		logging.Error(err)
+		os.Exit(1)
+	}
+	code := t.Run()
+	if err := pgtesting.DestroyPostgresServer(); err != nil {
+		logging.Error(err)
+	}
+	os.Exit(code)
+}
 
 func TestCollectMigrations(t *testing.T) {
 
@@ -125,10 +139,13 @@ func TestMigrates(t *testing.T) {
 			Handlers: migrations.HandlersByEngine{
 				"any": {
 					func(ctx context.Context, schema schema.Schema, tx *bun.Tx) error {
-						_, err := s.NewUpdate(ledgerstore.TransactionsTableName).
+						sb := s.NewUpdate(ledgerstore.TransactionsTableName).
 							Model((*ledgerstore.Transactions)(nil)).
 							Set("timestamp = ?", time.Now()).
-							Exec(ctx)
+							Where("TRUE")
+
+						_, err := tx.ExecContext(ctx, sb.String())
+
 						return err
 					},
 				},

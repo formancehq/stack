@@ -18,6 +18,7 @@ import (
 )
 
 const TransactionsTableName = "transactions"
+const PostingsTableName = "postings"
 
 // this regexp is used to distinguish between deprecated regex queries for
 // source, destination and account params and the new wildcard query
@@ -27,23 +28,23 @@ var addressQueryRegexp = regexp.MustCompile(`^(\w+|\*|\.\*)(:(\w+|\*|\.\*))*$`)
 type Transactions struct {
 	bun.BaseModel `bun:"transactions,alias:transactions"`
 
-	ID                int64          `bun:"id,unique"`
-	Timestamp         time.Time      `bun:"timestamp,type:timestamptz"`
-	Reference         string         `bun:"reference,type:varchar,unique"`
-	Hash              string         `bun:"hash,type:varchar"`
-	Postings          map[string]any `bun:"postings,type:jsonb"`
-	Metadata          map[string]any `bun:"metadata,type:jsonb,default:'{}'"`
-	PreCommitVolumes  map[string]any `bun:"pre_commit_volumes,type:jsonb"`
-	PostCommitVolumes map[string]any `bun:"post_commit_volumes,type:jsonb"`
+	ID                uint64          `bun:"id,type:bigint,unique"`
+	Timestamp         time.Time       `bun:"timestamp,type:timestamptz"`
+	Reference         string          `bun:"reference,type:varchar,unique,nullzero"`
+	Hash              string          `bun:"hash,type:varchar"`
+	Postings          json.RawMessage `bun:"postings,type:jsonb"`
+	Metadata          json.RawMessage `bun:"metadata,type:jsonb,default:'{}'"`
+	PreCommitVolumes  json.RawMessage `bun:"pre_commit_volumes,type:jsonb"`
+	PostCommitVolumes json.RawMessage `bun:"post_commit_volumes,type:jsonb"`
 }
 
 type Postings struct {
 	bun.BaseModel `bun:"postings,alias:postings"`
 
-	TxID         int64          `bun:"txid,type:bigint"`
-	PostingIndex int            `bun:"posting_index,type:integer"`
-	Source       map[string]any `bun:"source,type:jsonb"`
-	Destination  map[string]any `bun:"destination,type:jsonb"`
+	TxID         uint64          `bun:"txid,type:bigint"`
+	PostingIndex int             `bun:"posting_index,type:integer"`
+	Source       json.RawMessage `bun:"source,type:jsonb"`
+	Destination  json.RawMessage `bun:"destination,type:jsonb"`
 }
 
 //------------------------------------------------------------------------------
@@ -84,7 +85,7 @@ func (s *Store) buildTransactionsQuery(p ledger.TransactionsQuery) (*bun.SelectQ
 		sb.Join(fmt.Sprintf(
 			"JOIN %s postings",
 			s.schema.Table("postings"),
-		)).JoinOn(fmt.Sprintf("postings.txid = %s.id", s.schema.Table("transactions")))
+		)).JoinOn("postings.txid = transactions.id")
 	}
 	if source != "" {
 		if !addressQueryRegexp.MatchString(source) {
@@ -342,21 +343,8 @@ func (s *Store) GetLastTransaction(ctx context.Context) (*core.ExpandedTransacti
 }
 
 func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTransaction) error {
-	var queryTxs string
-	var argsTxs []any
-
-	txIds := make([]uint64, len(txs))
-	timestamps := make([]time.Time, len(txs))
-	references := make([]*string, len(txs))
-	postingDataSet := make([]string, len(txs))
-	metadataDataSet := make([]string, len(txs))
-	preCommitVolumesDataSet := make([]string, len(txs))
-	postCommitVolumesDataSet := make([]string, len(txs))
-
-	postingTxIds := []uint64{}
-	postingIndices := []int{}
-	sources := []string{}
-	destinations := []string{}
+	ts := make([]Transactions, len(txs))
+	ps := []Postings{}
 
 	for i, tx := range txs {
 		postingsData, err := json.Marshal(tx.Postings)
@@ -382,16 +370,16 @@ func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTran
 			panic(err)
 		}
 
-		txIds[i] = tx.ID
-		timestamps[i] = tx.Timestamp
-		postingDataSet[i] = string(postingsData)
-		metadataDataSet[i] = string(metadataData)
-		preCommitVolumesDataSet[i] = string(preCommitVolumesData)
-		postCommitVolumesDataSet[i] = string(postCommitVolumesData)
-		references[i] = nil
+		ts[i].ID = tx.ID
+		ts[i].Timestamp = tx.Timestamp
+		ts[i].Postings = postingsData
+		ts[i].Metadata = metadataData
+		ts[i].PreCommitVolumes = preCommitVolumesData
+		ts[i].PostCommitVolumes = postCommitVolumesData
+		ts[i].Reference = ""
 		if tx.Reference != "" {
 			cp := tx.Reference
-			references[i] = &cp
+			ts[i].Reference = cp
 		}
 
 		for i, p := range tx.Postings {
@@ -403,50 +391,25 @@ func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTran
 			if err != nil {
 				panic(err)
 			}
-			postingTxIds = append(postingTxIds, tx.ID)
-			postingIndices = append(postingIndices, i)
-			sources = append(sources, string(sourcesBy))
-			destinations = append(destinations, string(destinationsBy))
-		}
-
-		queryTxs = fmt.Sprintf(
-			`INSERT INTO "%s".transactions (id, timestamp, reference,
-                               postings, metadata,
-                               pre_commit_volumes,
-                               post_commit_volumes) (SELECT * FROM unnest(
-                                   ?::int[],
-                                   ?::timestamp[],
-                                   ?::varchar[],
-                                   ?::jsonb[],
-                                   ?::jsonb[],
-                                   ?::jsonb[],
-                                   ?::jsonb[]))`,
-			s.schema.Name())
-		argsTxs = []any{
-			txIds, timestamps, references,
-			postingDataSet, metadataDataSet,
-			preCommitVolumesDataSet, postCommitVolumesDataSet,
-		}
-
-		queryPostings := fmt.Sprintf(
-			`INSERT INTO "%s".postings (txid, posting_index,
-                           source, destination) (SELECT * FROM unnest(
-                                   ?::int[],
-                                   ?::int[],
-                                   ?::jsonb[],
-                                   ?::jsonb[]))`,
-			s.schema.Name())
-		argsPostings := []any{
-			postingTxIds, postingIndices, sources, destinations,
-		}
-
-		_, err = s.schema.ExecContext(ctx, queryPostings, argsPostings...)
-		if err != nil {
-			return s.error(err)
+			ps = append(ps, Postings{
+				TxID:         tx.ID,
+				PostingIndex: i,
+				Source:       sourcesBy,
+				Destination:  destinationsBy,
+			})
 		}
 	}
 
-	_, err := s.schema.ExecContext(ctx, queryTxs, argsTxs...)
+	_, err := s.schema.NewInsert(PostingsTableName).
+		Model(&ps).
+		Exec(ctx)
+	if err != nil {
+		return s.error(err)
+	}
+
+	_, err = s.schema.NewInsert(TransactionsTableName).
+		Model(&ts).
+		Exec(ctx)
 	if err != nil {
 		return s.error(err)
 	}

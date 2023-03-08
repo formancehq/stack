@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/uptrace/bun"
 	"go.uber.org/fx"
 )
 
@@ -138,7 +139,7 @@ func NewStorageScan() *cobra.Command {
 		Use: "scan",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			opt := fx.Invoke(func(driver *sqlstorage.Driver, sqlDb *sql.DB, db schema.DB, lc fx.Lifecycle) {
+			opt := fx.Invoke(func(driver *sqlstorage.Driver, sqlDb *bun.DB, db schema.DB, lc fx.Lifecycle) {
 				lc.Append(fx.Hook{
 					OnStart: func(ctx context.Context) error {
 						rows, err := sqlDb.QueryContext(ctx, `

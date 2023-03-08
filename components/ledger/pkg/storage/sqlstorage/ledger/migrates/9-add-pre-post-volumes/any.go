@@ -104,20 +104,10 @@ func Upgrade(ctx context.Context, schema schema.Schema, sqlTx *bun.Tx) error {
 			}
 		}
 
-		preCommitVolumesData, err := json.Marshal(preCommitVolumes)
-		if err != nil {
-			return err
-		}
-
-		postCommitVolumesData, err := json.Marshal(postCommitVolumes)
-		if err != nil {
-			return err
-		}
-
 		ub := schema.NewUpdate(ledger.TransactionsTableName).
 			Model((*ledger.Transactions)(nil)).
-			Set("pre_commit_volumes = ?", preCommitVolumesData).
-			Set("post_commit_volumes = ?", postCommitVolumesData).
+			Set("pre_commit_volumes = ?", preCommitVolumes).
+			Set("post_commit_volumes = ?", postCommitVolumes).
 			Where("id = ?", tx.ID)
 
 		updates = append(updates, ub)

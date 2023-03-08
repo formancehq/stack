@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sqlerrors "github.com/formancehq/ledger/pkg/storage/sqlstorage/errors"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage/migrations"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -45,14 +46,12 @@ func (s *Store) Delete(ctx context.Context) error {
 func (s *Store) Initialize(ctx context.Context) (bool, error) {
 	logging.FromContext(ctx).Debug("Initialize store")
 
-	return false, nil
-	// TODO(polo): handle migration
-	// migrations, err := CollectMigrationFiles(MigrationsFS)
-	// if err != nil {
-	// 	return false, err
-	// }
+	ms, err := migrations.CollectMigrationFiles(MigrationsFS)
+	if err != nil {
+		return false, err
+	}
 
-	// return Migrate(ctx, s.schema, migrations...)
+	return migrations.Migrate(ctx, s.schema, ms...)
 }
 
 func (s *Store) Close(ctx context.Context) error {

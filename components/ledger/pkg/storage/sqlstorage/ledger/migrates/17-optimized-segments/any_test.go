@@ -41,13 +41,10 @@ func TestMigrate17(t *testing.T) {
 	tr := &ledgerstore.Transactions{
 		ID:        0,
 		Timestamp: now,
-		Postings: map[string]any{
-			"source":      "world",
-			"destination": "users:001",
-			"asset":       "USD",
-			"amount":      100,
-		},
-		Metadata: map[string]any{},
+		Postings: []byte(`[
+			{"source": "world", "destination": "users:001", "asset": "USD", "amount": 100}
+		]`),
+		Metadata: []byte(`{}`),
 	}
 	_, err = schema.NewInsert(ledgerstore.TransactionsTableName).
 		Column("id", "timestamp", "postings", "metadata").

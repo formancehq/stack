@@ -1,12 +1,12 @@
 package sqlstorage
 
 import (
-	"database/sql"
-
 	storage "github.com/formancehq/ledger/pkg/storage"
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
 	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
 	"go.uber.org/fx"
@@ -21,10 +21,13 @@ type ModuleConfig struct {
 }
 
 func OpenSQLDB(dataSourceName string) (*bun.DB, error) {
-	sqldb, err := sql.Open("postgres", dataSourceName)
+	config, err := pgx.ParseConfig(dataSourceName)
 	if err != nil {
 		return nil, err
 	}
+	config.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+
+	sqldb := stdlib.OpenDB(*config)
 
 	db := bun.NewDB(sqldb, pgdialect.New())
 
@@ -48,7 +51,7 @@ func DriverModule(cfg ModuleConfig) fx.Option {
 	options = append(options, fx.Provide(func(db schema.DB) (*Driver, error) {
 		return NewDriver("postgres", db), nil
 	}))
-	options = append(options, health.ProvideHealthCheck(func(db *sql.DB) health.NamedCheck {
+	options = append(options, health.ProvideHealthCheck(func(db *bun.DB) health.NamedCheck {
 		return health.NewNamedCheck("postgres", health.CheckFn(db.PingContext))
 	}))
 

@@ -119,6 +119,7 @@ func (d *Driver) GetLedgerStore(ctx context.Context, name string, create bool) (
 		if err = schema.Initialize(ctx); err != nil {
 			return nil, false, err
 		}
+
 		d.registeredLedgers[name] = struct{}{}
 	} else {
 		schema, err = d.db.Schema(ctx, name)

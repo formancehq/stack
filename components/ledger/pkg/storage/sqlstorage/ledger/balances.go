@@ -25,7 +25,8 @@ type BalancesPaginationToken struct {
 func (s *Store) GetBalancesAggregated(ctx context.Context, q ledger.BalancesQuery) (core.AssetsBalances, error) {
 	sb := s.schema.NewSelect(volumesTableName).
 		Model((*Volumes)(nil)).
-		ColumnExpr("asset", "sum(input - output)").
+		ColumnExpr("asset").
+		ColumnExpr("sum(input - output) as arr").
 		Group("asset")
 
 	if q.Filters.AddressRegexp != "" {
@@ -67,7 +68,8 @@ func (s *Store) GetBalancesAggregated(ctx context.Context, q ledger.BalancesQuer
 func (s *Store) GetBalances(ctx context.Context, q ledger.BalancesQuery) (api.Cursor[core.AccountsBalances], error) {
 	sb := s.schema.NewSelect(volumesTableName).
 		Model((*Volumes)(nil)).
-		ColumnExpr("account", "array_agg((asset, input - output))").
+		ColumnExpr("account").
+		ColumnExpr("array_agg((asset, input - output)) as arr").
 		Group("account").
 		Order("account DESC")
 

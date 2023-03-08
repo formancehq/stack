@@ -13,8 +13,8 @@ const ledgersTableName = "ledgers"
 type Ledgers struct {
 	bun.BaseModel `bun:"ledgers,alias:ledgers"`
 
-	ledger  string    `bun:"ledger,type:varchar(255),pk"` // Primary key
-	addedAt time.Time `bun:"addedAt,type:timestamp"`
+	Ledger  string    `bun:"ledger,type:varchar(255),pk"` // Primary key
+	AddedAt time.Time `bun:"addedAt,type:timestamp"`
 }
 
 func (s *Store) CreateLedgersTable(ctx context.Context) error {
@@ -60,8 +60,8 @@ func (s *Store) DeleteLedger(ctx context.Context, name string) error {
 
 func (s *Store) Register(ctx context.Context, ledger string) (bool, error) {
 	l := &Ledgers{
-		ledger:  ledger,
-		addedAt: time.Now(),
+		Ledger:  ledger,
+		AddedAt: time.Now(),
 	}
 
 	ret, err := s.schema.NewInsert(ledgersTableName).
