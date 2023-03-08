@@ -5976,7 +5976,16 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "id",
+          "endpoint",
+          "secret",
+          "eventTypes",
+          "active",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "ConfigChangeSecret": {
         "type": "object",
@@ -5985,7 +5994,10 @@
             "type": "string",
             "example": "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
           }
-        }
+        },
+        "required": [
+          "secret"
+        ]
       },
       "AttemptResponse": {
         "type": "object",
@@ -6039,7 +6051,18 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "id",
+          "webhookID",
+          "createdAt",
+          "updatedAt",
+          "config",
+          "payload",
+          "statusCode",
+          "retryAttempt",
+          "status"
+        ]
       },
       "Monetary": {
         "type": "object",

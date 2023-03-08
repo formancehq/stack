@@ -106,7 +106,7 @@ import (
 
 func main() {
     id := "4997257d-dfb6-445b-929c-cbe2ab182818" // string | Config ID
-    configChangeSecret := *client.NewConfigChangeSecret() // ConfigChangeSecret |  (optional)
+    configChangeSecret := *client.NewConfigChangeSecret("V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3") // ConfigChangeSecret |  (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)

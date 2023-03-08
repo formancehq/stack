@@ -5304,6 +5304,14 @@ components:
         updatedAt:
           format: date-time
           type: string
+      required:
+      - active
+      - createdAt
+      - endpoint
+      - eventTypes
+      - id
+      - secret
+      - updatedAt
     ConfigChangeSecret:
       example:
         secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
@@ -5311,6 +5319,8 @@ components:
         secret:
           example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
           type: string
+      required:
+      - secret
       type: object
     AttemptResponse:
       example:
@@ -5391,6 +5401,16 @@ components:
         nextRetryAfter:
           format: date-time
           type: string
+      required:
+      - config
+      - createdAt
+      - id
+      - payload
+      - retryAttempt
+      - status
+      - statusCode
+      - updatedAt
+      - webhookID
     Monetary:
       properties:
         asset:

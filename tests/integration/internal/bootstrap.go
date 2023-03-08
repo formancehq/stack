@@ -290,7 +290,7 @@ func startAuth() {
 	Expect(err).To(Not(HaveOccurred()))
 	Expect(yaml.NewEncoder(f).Encode(cfg)).To(BeNil())
 
-	Expect(os.Setenv("CAOS_OIDC_DEV", "1")).To(Not(HaveOccurred()))
+	Expect(os.Setenv("CAOS_OIDC_DEV", "1")).To(Succeed())
 	args := make([]string, 0)
 	args = append(args,
 		"serve",

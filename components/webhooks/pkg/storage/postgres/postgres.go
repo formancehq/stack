@@ -106,7 +106,7 @@ func (s Store) UpdateOneConfigActivation(ctx context.Context, id string, active 
 		return webhooks.Config{}, errors.Wrap(err, "selecting one config before updating activation")
 	}
 	if cfg.Active == active {
-		return webhooks.Config{}, storage.ErrConfigNotModified
+		return cfg, storage.ErrConfigNotModified
 	}
 
 	if _, err := s.db.NewUpdate().Model((*webhooks.Config)(nil)).
@@ -131,7 +131,7 @@ func (s Store) UpdateOneConfigSecret(ctx context.Context, id, secret string) (we
 		return webhooks.Config{}, errors.Wrap(err, "selecting one config before updating secret")
 	}
 	if cfg.Secret == secret {
-		return webhooks.Config{}, storage.ErrConfigNotModified
+		return cfg, storage.ErrConfigNotModified
 	}
 
 	if _, err := s.db.NewUpdate().Model((*webhooks.Config)(nil)).
