@@ -27,7 +27,7 @@ func startBenthosServer() {
 	}
 	entrypoint = append(entrypoint, "streams", "/config/streams/*.yaml")
 	wd, err := os.Getwd()
-	Expect(err).To(Not(HaveOccurred()))
+	Expect(err).To(BeNil())
 
 	host := os.Getenv("DOCKER_HOSTNAME")
 	if host == "" {

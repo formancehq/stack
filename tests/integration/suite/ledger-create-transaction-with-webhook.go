@@ -74,7 +74,7 @@ var _ = Given("An environment configured with a webhook sent on created transact
 			},
 		}).
 			Execute()
-		Expect(err).To(Not(HaveOccurred()))
+		Expect(err).To(BeNil())
 	})
 
 	When("creating a transaction", func() {
@@ -91,7 +91,7 @@ var _ = Given("An environment configured with a webhook sent on created transact
 					}},
 				}).
 				Execute()
-			Expect(err).To(Not(HaveOccurred()))
+			Expect(err).To(BeNil())
 		})
 
 		It("should trigger a call to the webhook endpoint", func() {

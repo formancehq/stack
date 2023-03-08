@@ -17,14 +17,14 @@ var _ = Given("some empty environment", func() {
 					Name: uuid.NewString(),
 				}).
 				Execute()
-			Expect(err).To(Not(HaveOccurred()))
+			Expect(err).To(BeNil())
 		})
 		It("should be ok", func() {
 			Eventually(func(g Gomega) []formance.Wallet {
 				res, _, err := Client().WalletsApi.
 					ListWallets(TestContext()).
 					Execute()
-				g.Expect(err).To(Not(HaveOccurred()))
+				g.Expect(err).To(BeNil())
 				return res.Cursor.Data
 			}).Should(HaveLen(1)) // TODO: Check other fields
 		})

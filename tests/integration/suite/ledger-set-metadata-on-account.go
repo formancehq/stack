@@ -29,7 +29,7 @@ var _ = Given("some empty environment", func() {
 				AddMetadataToAccount(TestContext(), "default", "foo").
 				RequestBody(metadata).
 				Execute()
-			Expect(err).To(Not(HaveOccurred()))
+			Expect(err).To(BeNil())
 		})
 		AfterEach(func() {
 			cancelSubscription()
@@ -44,7 +44,7 @@ var _ = Given("some empty environment", func() {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("ACCOUNT"),
 				}).Execute()
-				g.Expect(err).To(Not(HaveOccurred()))
+				g.Expect(err).To(BeNil())
 				g.Expect(res.Cursor.Data).To(HaveLen(1))
 				g.Expect(res.Cursor.Data[0]).To(Equal(map[string]any{
 					"ledger":   "default",
