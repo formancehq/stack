@@ -1,12 +1,16 @@
 package migrations
 
 import (
+	"context"
 	"database/sql"
 	"testing"
 
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/stretchr/testify/require"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/extra/bundebug"
 )
 
 func TestMigrations(t *testing.T) {
@@ -18,7 +22,7 @@ func TestMigrations(t *testing.T) {
 	migrator := NewMigrator()
 	migrator.RegisterMigrations(
 		Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`CREATE TABLE "foo" (id varchar)`)
 				return err
 			},
@@ -29,8 +33,16 @@ func TestMigrations(t *testing.T) {
 	sqlDB, err := sql.Open("pgx", db.ConnString())
 	require.NoError(t, err)
 
-	require.NoError(t, migrator.Up(sqlDB))
-	version, err := migrator.GetDBVersion(sqlDB)
+	bunDB := bun.NewDB(sqlDB, pgdialect.New())
+	if testing.Verbose() {
+		bunDB.AddQueryHook(bundebug.NewQueryHook(
+			bundebug.WithVerbose(true),
+			bundebug.FromEnv("BUNDEBUG"),
+		))
+	}
+
+	require.NoError(t, migrator.Up(context.Background(), bunDB))
+	version, err := migrator.GetDBVersion(context.Background(), bunDB)
 	require.NoError(t, err)
 	require.EqualValues(t, 1, version)
 }

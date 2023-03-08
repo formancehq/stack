@@ -1,11 +1,13 @@
 package migrations
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/uptrace/bun"
 )
 
 const (
@@ -22,8 +24,8 @@ func (m *Migrator) RegisterMigrations(migrations ...Migration) *Migrator {
 	return m
 }
 
-func (m *Migrator) createVersionTable(tx *sql.Tx) error {
-	_, err := tx.Exec(fmt.Sprintf(`create table if not exists %s (
+func (m *Migrator) createVersionTable(ctx context.Context, tx bun.Tx) error {
+	_, err := tx.ExecContext(ctx, fmt.Sprintf(`create table if not exists %s (
 		id serial primary key,
 		version_id bigint not null,
 		is_applied boolean not null,
@@ -33,13 +35,13 @@ func (m *Migrator) createVersionTable(tx *sql.Tx) error {
 		return err
 	}
 
-	lastVersion, err := m.getLastVersion(tx)
+	lastVersion, err := m.getLastVersion(ctx, tx)
 	if err != nil {
 		return err
 	}
 
 	if lastVersion == -1 {
-		if err := m.insertVersion(tx, 0); err != nil {
+		if err := m.insertVersion(ctx, tx, 0); err != nil {
 			return err
 		}
 	}
@@ -47,10 +49,10 @@ func (m *Migrator) createVersionTable(tx *sql.Tx) error {
 	return err
 }
 
-func (m *Migrator) getLastVersion(querier interface {
-	QueryRow(query string, args ...any) *sql.Row
+func (m *Migrator) getLastVersion(ctx context.Context, querier interface {
+	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
 }) (int64, error) {
-	row := querier.QueryRow(fmt.Sprintf(`select max(version_id) from "%s";`, migrationTable))
+	row := querier.QueryRowContext(ctx, fmt.Sprintf(`select max(version_id) from "%s";`, migrationTable))
 	if err := row.Err(); err != nil {
 		if err == sql.ErrNoRows {
 			return -1, nil
@@ -69,18 +71,18 @@ func (m *Migrator) getLastVersion(querier interface {
 	return number.Int64, nil
 }
 
-func (m *Migrator) insertVersion(tx *sql.Tx, version int) error {
-	_, err := tx.Exec(
-		fmt.Sprintf(`INSERT INTO "%s" (version_id, is_applied, tstamp) VALUES ($1, $2, $3)`, migrationTable),
+func (m *Migrator) insertVersion(ctx context.Context, tx bun.Tx, version int) error {
+	_, err := tx.ExecContext(ctx,
+		fmt.Sprintf(`INSERT INTO "%s" (version_id, is_applied, tstamp) VALUES (?, ?, ?)`, migrationTable),
 		version, true, time.Now())
 	return err
 }
 
-func (m *Migrator) GetDBVersion(db *sql.DB) (int64, error) {
-	return m.getLastVersion(db)
+func (m *Migrator) GetDBVersion(ctx context.Context, db *bun.DB) (int64, error) {
+	return m.getLastVersion(ctx, db)
 }
 
-func (m *Migrator) Up(db *sql.DB) error {
+func (m *Migrator) Up(ctx context.Context, db *bun.DB) error {
 	tx, err := db.Begin()
 	if err != nil {
 		return err
@@ -89,11 +91,11 @@ func (m *Migrator) Up(db *sql.DB) error {
 		_ = tx.Rollback()
 	}()
 
-	if err := m.createVersionTable(tx); err != nil {
+	if err := m.createVersionTable(ctx, tx); err != nil {
 		return err
 	}
 
-	lastMigration, err := m.getLastVersion(tx)
+	lastMigration, err := m.getLastVersion(ctx, tx)
 	if err != nil {
 		return err
 	}
@@ -103,7 +105,7 @@ func (m *Migrator) Up(db *sql.DB) error {
 			return err
 		}
 
-		if err := m.insertVersion(tx, ind+1); err != nil {
+		if err := m.insertVersion(ctx, tx, ind+1); err != nil {
 			return err
 		}
 	}

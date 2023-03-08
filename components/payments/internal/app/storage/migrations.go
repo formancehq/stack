@@ -1,11 +1,12 @@
 package storage
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 
 	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/pkg/errors"
+	"github.com/uptrace/bun"
 )
 
 // EncryptionKey is set from the migration utility to specify default encryption key to migrate to.
@@ -14,17 +15,17 @@ import (
 //nolint:gochecknoglobals // This is a global variable by design.
 var EncryptionKey string
 
-func Migrate(db *sql.DB) error {
+func Migrate(ctx context.Context, db *bun.DB) error {
 	migrator := migrations.NewMigrator()
 	registerMigrations(migrator)
 
-	return migrator.Up(db)
+	return migrator.Up(ctx, db)
 }
 
 func registerMigrations(migrator *migrations.Migrator) {
 	migrator.RegisterMigrations(
 		migrations.Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
 					CREATE SCHEMA IF NOT EXISTS connectors;
 					CREATE SCHEMA IF NOT EXISTS tasks;
@@ -39,7 +40,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 			},
 		},
 		migrations.Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
 					CREATE TYPE connector_provider AS ENUM ('BANKING-CIRCLE', 'CURRENCY-CLOUD', 'DUMMY-PAY', 'MODULR', 'STRIPE', 'WISE');;
 					CREATE TABLE connectors.connector (
@@ -59,7 +60,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 			},
 		},
 		migrations.Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
 					CREATE TYPE task_status AS ENUM ('STOPPED', 'PENDING', 'ACTIVE', 'TERMINATED', 'FAILED');;
 					CREATE TABLE tasks.task (
@@ -90,7 +91,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 			},
 		},
 		migrations.Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
 					CREATE TYPE account_type AS ENUM('SOURCE', 'TARGET', 'UNKNOWN');;
 
@@ -111,7 +112,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 			},
 		},
 		migrations.Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
 					CREATE TYPE payment_type AS ENUM ('PAY-IN', 'PAYOUT', 'TRANSFER', 'OTHER');
 					CREATE TYPE payment_status AS ENUM ('SUCCEEDED', 'CANCELLED', 'FAILED', 'PENDING', 'OTHER');;
@@ -193,7 +194,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 		},
 		//nolint:varnamelen
 		migrations.Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				var exists bool
 
 				err := tx.QueryRow("SELECT EXISTS(SELECT 1 FROM connectors.connector)").Scan(&exists)
@@ -232,7 +233,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 			},
 		},
 		migrations.Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				_, err := tx.Exec(`
 					CREATE TYPE transfer_status AS ENUM ('PENDING', 'SUCCEEDED', 'FAILED');
 

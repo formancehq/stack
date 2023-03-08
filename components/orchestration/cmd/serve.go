@@ -42,7 +42,7 @@ func newServeCommand() *cobra.Command {
 				fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
 					lifecycle.Append(fx.Hook{
 						OnStart: func(ctx context.Context) error {
-							return storage.Migrate(db)
+							return storage.Migrate(ctx, db)
 						},
 					})
 				}),

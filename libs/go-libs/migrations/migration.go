@@ -1,9 +1,9 @@
 package migrations
 
 import (
-	"database/sql"
+	"github.com/uptrace/bun"
 )
 
 type Migration struct {
-	Up func(tx *sql.Tx) error
+	Up func(tx bun.Tx) error
 }

@@ -5,8 +5,11 @@ import (
 	"fmt"
 
 	"github.com/formancehq/payments/internal/app/storage"
-
+	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/spf13/viper"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
+	"github.com/uptrace/bun/extra/bundebug"
 
 	// Import the postgres driver.
 	_ "github.com/lib/pq"
@@ -47,5 +50,10 @@ func runMigrate(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	return storage.Migrate(db)
+	bunDB := bun.NewDB(db, pgdialect.New())
+	if viper.GetBool(service.DebugFlag) {
+		bunDB.AddQueryHook(bundebug.NewQueryHook())
+	}
+
+	return storage.Migrate(cmd.Context(), bunDB)
 }

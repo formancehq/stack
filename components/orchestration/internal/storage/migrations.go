@@ -1,24 +1,24 @@
 package storage
 
 import (
-	"database/sql"
+	"context"
 
 	_ "github.com/formancehq/orchestration/internal/storage/migrations"
 	"github.com/formancehq/stack/libs/go-libs/migrations"
 	"github.com/uptrace/bun"
 )
 
-func Migrate(db *bun.DB) error {
+func Migrate(ctx context.Context, db *bun.DB) error {
 	migrator := migrations.NewMigrator()
 	registerMigrations(migrator)
 
-	return migrator.Up(db.DB)
+	return migrator.Up(ctx, db)
 }
 
 func registerMigrations(migrator *migrations.Migrator) {
 	migrator.RegisterMigrations(
 		migrations.Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				if _, err := tx.Exec(`
 					create table "workflows" (
 						config jsonb,
@@ -49,7 +49,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 			},
 		},
 		migrations.Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				if _, err := tx.Exec(`
 					alter table "workflow_instances" add column terminated bool;
 					alter table "workflow_instances" add column terminated_at timestamp default null;
@@ -60,7 +60,7 @@ func registerMigrations(migrator *migrations.Migrator) {
 			},
 		},
 		migrations.Migration{
-			Up: func(tx *sql.Tx) error {
+			Up: func(tx bun.Tx) error {
 				if _, err := tx.Exec(`
 					alter table "workflow_instances" add column error varchar;
 				`); err != nil {
