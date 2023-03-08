@@ -12,7 +12,6 @@ require (
 	github.com/jackc/pgx/v5 v5.3.0
 	github.com/lib/pq v1.10.7
 	github.com/pkg/errors v0.9.1
-	github.com/pressly/goose/v3 v3.9.0
 	github.com/rs/cors v1.8.3
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/afero v1.9.3
@@ -80,7 +79,6 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
@@ -117,7 +115,6 @@ require (
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/sqlite v1.20.3 // indirect
 )
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
