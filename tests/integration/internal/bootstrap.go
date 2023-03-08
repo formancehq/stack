@@ -88,7 +88,7 @@ var _ = BeforeEach(func() {
 	})
 	Eventually(func() error {
 		return searchengine.CreateIndex(ctx, openSearchClient, actualTestID)
-	}).Should(BeNil())
+	}).WithTimeout(10 * time.Second).Should(BeNil())
 
 	createDatabases() // TODO: drop databases
 
