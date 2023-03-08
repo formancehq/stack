@@ -37,7 +37,7 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	logging.FromContext(r.Context()).Infof("GET /configs: %d results", len(resp.Cursor.Data))
+	logging.FromContext(r.Context()).Debugf("GET /configs: %d results", len(resp.Cursor.Data))
 }
 
 var ErrInvalidParams = errors.New("invalid params: only 'id' and 'endpoint' with a valid URL are accepted")

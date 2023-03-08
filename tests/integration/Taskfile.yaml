@@ -1,14 +1,34 @@
 version: "3"
 
+vars:
+  PKG: "./suite"
+  RUN: ".*"
+  VERBOSE: "false"
+  PARALLEL: "true"
+  FAILFAST: "true"
+  REPEAT: 0
+
 tasks:
   default:
     cmds:
+      - task: lint
       - task: tests
+
+  lint:
+    cmds:
+      - golangci-lint run --fix {{if eq .VERBOSE "true"}}-v{{end}}
 
   tests:
     deps: [run-docker-compose]
     cmds:
-      - ginkgo -v -p ./suite
+      - >
+        ginkgo --race --vet ""
+        {{if eq .VERBOSE "true"}}-v{{end}}
+        {{if eq .PARALLEL "true"}}-p{{end}}
+        {{if eq .FAILFAST "true"}}--fail-fast{{end}}
+        --focus-file "{{.RUN}}"
+        --repeat {{.REPEAT}}
+        {{.PKG}}
 
   run-docker-compose:
     cmds:

@@ -11,7 +11,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Given("An environment configured with a webhooks on transactions created", func() {
+var _ = Given("An environment configured with a webhook sent on created transaction", func() {
 	var (
 		testingHttpServer *httptest.Server
 		now               = time.Now().Round(time.Second).UTC()
@@ -19,9 +19,10 @@ var _ = Given("An environment configured with a webhooks on transactions created
 	)
 	BeforeEach(func() {
 		called = make(chan struct{})
-		testingHttpServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			close(called)
-		}))
+		testingHttpServer = httptest.NewServer(
+			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				close(called)
+			}))
 		_, _, err := Client().WebhooksApi.
 			InsertConfig(TestContext()).ConfigUser(formance.ConfigUser{
 			Endpoint: testingHttpServer.URL,
@@ -30,7 +31,7 @@ var _ = Given("An environment configured with a webhooks on transactions created
 			},
 		}).
 			Execute()
-		Expect(err).To(BeNil())
+		Expect(err).To(Not(HaveOccurred()))
 	})
 	AfterEach(func() {
 		testingHttpServer.Close()
@@ -49,7 +50,7 @@ var _ = Given("An environment configured with a webhooks on transactions created
 					}},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).To(Not(HaveOccurred()))
 		})
 		It("should trigger a call to the webhook endpoint", func() {
 			Eventually(ChanClosed(called)).Should(BeTrue())

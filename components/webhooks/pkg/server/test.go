@@ -21,14 +21,14 @@ func (h *serverHandler) testOneConfigHandle(w http.ResponseWriter, r *http.Reque
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
-		logging.FromContext(r.Context()).Infof("GET %s/%s%s", PathConfigs, id, PathTest)
+		logging.FromContext(r.Context()).Debugf("GET %s/%s%s", PathConfigs, id, PathTest)
 		attempt, err := webhooks.MakeAttempt(r.Context(), h.httpClient, nil, uuid.NewString(),
 			uuid.NewString(), 0, cfgs[0], []byte(`{"data":"test"}`), true)
 		if err != nil {
 			logging.FromContext(r.Context()).Errorf("GET %s/%s%s: %s", PathConfigs, id, PathTest, err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		} else {
-			logging.FromContext(r.Context()).Infof("GET %s/%s%s", PathConfigs, id, PathTest)
+			logging.FromContext(r.Context()).Debugf("GET %s/%s%s", PathConfigs, id, PathTest)
 			resp := api.BaseResponse[webhooks.Attempt]{
 				Data: &attempt,
 			}

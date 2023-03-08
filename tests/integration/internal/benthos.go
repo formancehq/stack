@@ -29,13 +29,13 @@ func startBenthosServer() {
 	}
 	entrypoint = append(entrypoint, "streams", "/config/streams/*.yaml")
 	wd, err := os.Getwd()
+	Expect(err).To(Not(HaveOccurred()))
 
 	host := os.Getenv("DOCKER_HOSTNAME")
 	if host == "" {
 		host = "host.docker.internal"
 	}
 
-	Expect(err).To(BeNil())
 	benthosResource = runDockerResource(&dockertest.RunOptions{
 		Repository: "jeffail/benthos",
 		Tag:        "4.11",
@@ -64,7 +64,7 @@ func startBenthosServer() {
 			Details:    false,
 		})
 		if reader != nil {
-			io.Copy(prefixer.New(GinkgoWriter, func() string {
+			_, _ = io.Copy(prefixer.New(GinkgoWriter, func() string {
 				return "benthos | "
 			}), reader)
 		}
@@ -72,5 +72,5 @@ func startBenthosServer() {
 }
 
 func stopBenthosServer() {
-	Expect(benthosResource.Close()).Should(BeNil())
+	Expect(benthosResource.Close()).Should(Not(HaveOccurred()))
 }

@@ -25,7 +25,7 @@ func NewStore(dsn string) (storage.Store, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	logging.Infof("postgres.NewStore: connecting to '%s'", dsn)
+	logging.Debugf("postgres.NewStore: connecting to '%s'", dsn)
 	sqldb := sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn)))
 	db := bun.NewDB(sqldb, pgdialect.New())
 	db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName("webhooks")))

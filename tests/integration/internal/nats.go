@@ -17,7 +17,7 @@ func natsAddress() string {
 
 func NatsClient() *nats.Conn {
 	natsConn, err := nats.Connect(natsAddress())
-	Expect(err).To(BeNil())
+	Expect(err).To(Not(HaveOccurred()))
 	return natsConn
 }
 
@@ -26,7 +26,7 @@ func SubscribeLedger() (func(), chan *nats.Msg) {
 	subscription, err := NatsClient().Subscribe(fmt.Sprintf("%s-ledger", actualTestID), func(msg *nats.Msg) {
 		msgs <- msg
 	})
-	Expect(err).To(BeNil())
+	Expect(err).To(Not(HaveOccurred()))
 	return func() {
 		Expect(subscription.Unsubscribe()).To(BeNil())
 	}, msgs
@@ -37,7 +37,7 @@ func SubscribePayments() (func(), chan *nats.Msg) {
 	subscription, err := NatsClient().Subscribe(fmt.Sprintf("%s-payments", actualTestID), func(msg *nats.Msg) {
 		msgs <- msg
 	})
-	Expect(err).To(BeNil())
+	Expect(err).To(Not(HaveOccurred()))
 	return func() {
 		Expect(subscription.Unsubscribe()).To(BeNil())
 	}, msgs

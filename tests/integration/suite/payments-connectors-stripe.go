@@ -35,10 +35,12 @@ var _ = Given("some empty environment", func() {
 					},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).To(Not(HaveOccurred()))
 		})
 		AfterEach(func() {
-			cancelSubscription()
+			if cancelSubscription != nil {
+				cancelSubscription()
+			}
 		})
 		It("should trigger some events", func() {
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
@@ -49,7 +51,7 @@ var _ = Given("some empty environment", func() {
 				res, _, err := Client().PaymentsApi.
 					ListPayments(TestContext()).
 					Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).To(Not(HaveOccurred()))
 				return res.Cursor.Data
 			}).ShouldNot(BeEmpty()) // TODO: Check other fields
 		})
@@ -58,7 +60,7 @@ var _ = Given("some empty environment", func() {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("PAYMENT"),
 				}).Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).To(Not(HaveOccurred()))
 				g.Expect(res.Cursor.Data).NotTo(BeEmpty())
 
 				return true

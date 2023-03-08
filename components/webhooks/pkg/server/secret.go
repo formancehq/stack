@@ -34,7 +34,7 @@ func (h *serverHandler) changeSecretHandle(w http.ResponseWriter, r *http.Reques
 
 	c, err := h.store.UpdateOneConfigSecret(r.Context(), id, sec.Secret)
 	if err == nil {
-		logging.FromContext(r.Context()).Infof("PUT %s/%s%s", PathConfigs, id, PathChangeSecret)
+		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s", PathConfigs, id, PathChangeSecret)
 		resp := api.BaseResponse[webhooks.Config]{
 			Data: &c,
 		}
@@ -44,7 +44,7 @@ func (h *serverHandler) changeSecretHandle(w http.ResponseWriter, r *http.Reques
 			return
 		}
 	} else if errors.Is(err, storage.ErrConfigNotFound) {
-		logging.FromContext(r.Context()).Infof("PUT %s/%s%s: %s", PathConfigs, id, PathChangeSecret, storage.ErrConfigNotFound)
+		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s: %s", PathConfigs, id, PathChangeSecret, storage.ErrConfigNotFound)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 	} else {
 		logging.FromContext(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, id, PathChangeSecret, err)

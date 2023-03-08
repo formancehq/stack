@@ -118,7 +118,7 @@ func processMessages(store storage.Store, httpClient *http.Client, retriesSchedu
 			}
 
 			if attempt.Status == webhooks.StatusAttemptSuccess {
-				logging.FromContext(msg.Context()).Infof(
+				logging.FromContext(msg.Context()).Debugf(
 					"webhook sent with ID %s to %s of type %s",
 					attempt.WebhookID, cfg.Endpoint, ev.Type)
 			}
