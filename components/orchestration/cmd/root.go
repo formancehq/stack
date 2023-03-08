@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/formancehq/orchestration/internal/storage"
@@ -68,7 +69,7 @@ func Execute() {
 	}
 }
 
-func commonOptions() fx.Option {
+func commonOptions(output io.Writer) fx.Option {
 	return fx.Options(
 		otlptraces.CLITracesModule(viper.GetViper()),
 		temporal.NewClientModule(
@@ -77,6 +78,6 @@ func commonOptions() fx.Option {
 			viper.GetString(temporalSSLClientCertFlag),
 			viper.GetString(temporalSSLClientKeyFlag),
 		),
-		storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag)),
+		storage.NewModule(viper.GetString(postgresDSNFlag), viper.GetBool(service.DebugFlag), output),
 	)
 }

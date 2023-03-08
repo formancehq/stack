@@ -57,17 +57,17 @@ func startBenthosServer() {
 
 	go func() {
 		defer GinkgoRecover()
-		reader, err := dockerClient.ContainerLogs(TestContext(), benthosResource.Container.ID, types.ContainerLogsOptions{
+		reader, _ := dockerClient.ContainerLogs(TestContext(), benthosResource.Container.ID, types.ContainerLogsOptions{
 			ShowStdout: true,
 			ShowStderr: true,
 			Follow:     true,
 			Details:    false,
 		})
-		Expect(err).To(BeNil())
-
-		io.Copy(prefixer.New(GinkgoWriter, func() string {
-			return "benthos | "
-		}), reader)
+		if reader != nil {
+			io.Copy(prefixer.New(GinkgoWriter, func() string {
+				return "benthos | "
+			}), reader)
+		}
 	}()
 }
 

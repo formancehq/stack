@@ -10,7 +10,6 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/benthosdev/benthos/v4/public/components/pure"
 	"github.com/docker/docker/client"
 	authCmd "github.com/formancehq/auth/cmd"
 	auth "github.com/formancehq/auth/pkg"
@@ -40,7 +39,6 @@ var (
 	server       *natsServer.Server
 	actualTestID string
 	ctx          context.Context
-	cancel       func()
 	dockerPool   *dockertest.Pool
 	dockerClient *client.Client
 )
@@ -76,8 +74,8 @@ func runDockerResource(options *dockertest.RunOptions) *dockertest.Resource {
 }
 
 var _ = BeforeEach(func() {
+	ctx = context.TODO()
 	actualTestID = uuid.NewString()
-	ctx, cancel = context.WithCancel(context.TODO())
 	l := logrus.New()
 	l.Out = GinkgoWriter
 	l.Level = logrus.DebugLevel
