@@ -222,13 +222,5 @@ func (s Store) InsertOneAttempt(ctx context.Context, att webhooks.Attempt) error
 }
 
 func (s Store) Close(ctx context.Context) error {
-	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
-	defer cancel()
-	if err := s.db.PingContext(ctx); err == nil {
-		if err := s.db.Close(); err != nil {
-			return errors.Wrap(err, "closing postgres")
-		}
-	}
-
-	return nil
+	return s.db.Close()
 }

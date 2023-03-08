@@ -35,16 +35,24 @@ func Module(uri, configEncryptionKey string) fx.Option {
 		fx.Provide(func(config *pgx.ConnConfig) *sql.DB {
 			return stdlib.OpenDB(*config)
 		}),
-
-		fx.Provide(func(client *sql.DB) *Storage {
+		fx.Provide(func(client *sql.DB) *bun.DB {
 			db := bun.NewDB(client, pgdialect.New())
 
 			db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(dbName)))
 			db.AddQueryHook(bundebug.NewQueryHook())
 
+			return db
+		}),
+		fx.Invoke(func(lc fx.Lifecycle, db *bun.DB) {
+			lc.Append(fx.Hook{
+				OnStop: func(ctx context.Context) error {
+					return db.Close()
+				},
+			})
+		}),
+		fx.Provide(func(db *bun.DB) *Storage {
 			return newStorage(db, configEncryptionKey)
 		}),
-
 		fx.Invoke(func(lc fx.Lifecycle, repo *Storage) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
