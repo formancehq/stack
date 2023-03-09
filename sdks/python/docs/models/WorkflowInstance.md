@@ -9,7 +9,6 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **createdAt** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
-**statuses** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO |  | 
 **id** | str,  | str,  |  | 
 **terminated** | bool,  | BoolClass,  |  | 
 **workflowID** | str,  | str,  |  | 

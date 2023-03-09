@@ -170,7 +170,7 @@ type StageHistory struct {
 	Error        string         `json:"error,omitempty"`
 	Terminated   bool           `json:"terminated"`
 	StartedAt    time.Time      `json:"startedAt"`
-	TerminatedAt *time.Time     `json:"terminatedAt"`
+	TerminatedAt *time.Time     `json:"terminatedAt,omitempty"`
 }
 
 func (m *Manager) ReadInstanceHistory(ctx context.Context, instanceID string) ([]StageHistory, error) {
@@ -230,19 +230,23 @@ type ActivityHistory struct {
 	Error         string         `json:"error,omitempty"`
 	Terminated    bool           `json:"terminated"`
 	StartedAt     time.Time      `json:"startedAt"`
-	TerminatedAt  *time.Time     `json:"terminatedAt"`
+	TerminatedAt  *time.Time     `json:"terminatedAt,omitempty"`
 	LastFailure   string         `json:"lastFailure,omitempty"`
 	Attempt       int            `json:"attempt"`
 	NextExecution *time.Time     `json:"nextExecution,omitempty"`
 }
 
 func (m *Manager) ReadStageHistory(ctx context.Context, instanceID string, stage int) ([]*ActivityHistory, error) {
-	described, err := m.temporalClient.DescribeWorkflowExecution(ctx, instanceID+"-0", "")
+	stageID := fmt.Sprintf("%s-%d", instanceID, stage)
+	described, err := m.temporalClient.DescribeWorkflowExecution(ctx, stageID, "")
 	if err != nil {
+		if _, ok := err.(*serviceerror.NotFound); ok {
+			return nil, ErrInstanceNotFound
+		}
 		panic(err)
 	}
 
-	historyIterator := m.temporalClient.GetWorkflowHistory(ctx, fmt.Sprintf("%s-%d", instanceID, stage), "",
+	historyIterator := m.temporalClient.GetWorkflowHistory(ctx, stageID, "",
 		false, enums.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT)
 	ret := make([]*ActivityHistory, 0)
 	for historyIterator.HasNext() {

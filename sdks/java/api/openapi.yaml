@@ -5564,6 +5564,7 @@ components:
         errorCode:
           enum:
           - VALIDATION
+          - NOT_FOUND
           type: string
         errorMessage:
           type: string
@@ -5685,7 +5686,6 @@ components:
       required:
       - createdAt
       - id
-      - statuses
       - terminated
       - updatedAt
       - workflowID

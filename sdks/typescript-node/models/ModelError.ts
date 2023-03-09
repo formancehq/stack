@@ -41,5 +41,5 @@ export class ModelError {
 }
 
 
-export type ModelErrorErrorCodeEnum = "VALIDATION" ;
+export type ModelErrorErrorCodeEnum = "VALIDATION" | "NOT_FOUND" ;
 

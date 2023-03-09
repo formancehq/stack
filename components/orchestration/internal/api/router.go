@@ -12,7 +12,6 @@ import (
 
 func newRouter(m *workflow.Manager, healthController *health.HealthController) *chi.Mux {
 	r := chi.NewRouter()
-	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

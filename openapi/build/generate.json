@@ -6518,7 +6518,8 @@
           "errorCode": {
             "type": "string",
             "enum": [
-              "VALIDATION"
+              "VALIDATION",
+              "NOT_FOUND"
             ]
           },
           "errorMessage": {
@@ -6603,7 +6604,6 @@
           "id",
           "createdAt",
           "updatedAt",
-          "statuses",
           "terminated"
         ],
         "properties": {

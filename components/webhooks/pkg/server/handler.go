@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/riandyrn/otelchi"
@@ -26,7 +27,7 @@ type serverHandler struct {
 	httpClient *http.Client
 }
 
-func newServerHandler(store storage.Store, httpClient *http.Client) http.Handler {
+func newServerHandler(store storage.Store, httpClient *http.Client, logger logging.Logger) http.Handler {
 	h := &serverHandler{
 		Mux:        chi.NewRouter(),
 		store:      store,
@@ -37,6 +38,11 @@ func newServerHandler(store storage.Store, httpClient *http.Client) http.Handler
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
 			handler.ServeHTTP(w, r)
+		})
+	})
+	h.Mux.Use(func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			handler.ServeHTTP(w, r.WithContext(logging.ContextWithLogger(r.Context(), logger)))
 		})
 	})
 	h.Mux.Get(PathHealthCheck, h.HealthCheckHandle)
