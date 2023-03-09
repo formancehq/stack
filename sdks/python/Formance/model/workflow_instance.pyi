@@ -37,7 +37,6 @@ class WorkflowInstance(
     class MetaOapg:
         required = {
             "createdAt",
-            "statuses",
             "id",
             "terminated",
             "workflowID",
@@ -90,7 +89,6 @@ class WorkflowInstance(
             }
     
     createdAt: MetaOapg.properties.createdAt
-    statuses: schemas.AnyTypeSchema
     id: MetaOapg.properties.id
     terminated: MetaOapg.properties.terminated
     workflowID: MetaOapg.properties.workflowID
@@ -163,7 +161,6 @@ class WorkflowInstance(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
         createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, ],
-        statuses: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
         id: typing.Union[MetaOapg.properties.id, str, ],
         terminated: typing.Union[MetaOapg.properties.terminated, bool, ],
         workflowID: typing.Union[MetaOapg.properties.workflowID, str, ],
@@ -178,7 +175,6 @@ class WorkflowInstance(
             cls,
             *_args,
             createdAt=createdAt,
-            statuses=statuses,
             id=id,
             terminated=terminated,
             workflowID=workflowID,

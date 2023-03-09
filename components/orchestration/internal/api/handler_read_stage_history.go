@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/go-chi/chi/v5"
+	"github.com/pkg/errors"
 )
 
 func readStageHistory(m *workflow.Manager) http.HandlerFunc {
@@ -19,7 +20,12 @@ func readStageHistory(m *workflow.Manager) http.HandlerFunc {
 		}
 		workflows, err := m.ReadStageHistory(r.Context(), instanceID(r), int(stage))
 		if err != nil {
-			api.InternalServerError(w, r, err)
+			switch {
+			case errors.Is(err, workflow.ErrInstanceNotFound):
+				api.NotFound(w)
+			default:
+				api.InternalServerError(w, r, err)
+			}
 			return
 		}
 
