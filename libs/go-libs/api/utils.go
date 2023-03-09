@@ -9,7 +9,11 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 )
 
-const defaultLimit = 15
+const (
+	defaultLimit = 15
+
+	ErrorCodeNotFound = "NOT_FOUND"
+)
 
 func writeJSON(w http.ResponseWriter, v any) {
 	w.Header().Set("Content-Type", "application/json")
@@ -20,6 +24,10 @@ func writeJSON(w http.ResponseWriter, v any) {
 
 func NotFound(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNotFound)
+	writeJSON(w, ErrorResponse{
+		ErrorCode:    ErrorCodeNotFound,
+		ErrorMessage: "resource not found",
+	})
 }
 
 func NoContent(w http.ResponseWriter) {

@@ -236,6 +236,7 @@ class Error implements ModelInterface, ArrayAccess, \JsonSerializable
     }
 
     public const ERROR_CODE_VALIDATION = 'VALIDATION';
+    public const ERROR_CODE_NOT_FOUND = 'NOT_FOUND';
 
     /**
      * Gets allowable values of the enum
@@ -246,6 +247,7 @@ class Error implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         return [
             self::ERROR_CODE_VALIDATION,
+            self::ERROR_CODE_NOT_FOUND,
         ];
     }
 

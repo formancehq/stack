@@ -52,11 +52,16 @@ class Error(
                 class MetaOapg:
                     enum_value_to_name = {
                         "VALIDATION": "VALIDATION",
+                        "NOT_FOUND": "NOT_FOUND",
                     }
                 
                 @schemas.classproperty
                 def VALIDATION(cls):
                     return cls("VALIDATION")
+                
+                @schemas.classproperty
+                def NOT_FOUND(cls):
+                    return cls("NOT_FOUND")
             errorMessage = schemas.StrSchema
             __annotations__ = {
                 "errorCode": errorCode,
