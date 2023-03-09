@@ -14,6 +14,7 @@ import (
 	"github.com/formancehq/auth/pkg/oidc"
 	"github.com/formancehq/auth/pkg/storage/sqlstorage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/pkg/errors"
@@ -155,11 +156,11 @@ func newServeCommand() *cobra.Command {
 				oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
 				authorization.Module(),
 				delegatedauth.Module(),
-			}
-			if viper.GetBool(service.DebugFlag) {
-				options = append(options, fx.Replace(&gorm.Config{
-					Logger: sqlstorage.NewLogger(cmd.OutOrStdout()),
-				}))
+				fx.Decorate(func(logger logging.Logger) *gorm.Config {
+					return &gorm.Config{
+						Logger: sqlstorage.NewLogger(logger),
+					}
+				}),
 			}
 
 			options = append(options, otlptraces.CLITracesModule(viper.GetViper()))

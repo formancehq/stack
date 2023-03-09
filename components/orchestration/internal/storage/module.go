@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"database/sql"
 	"io"
 
@@ -28,6 +29,13 @@ func NewModule(dsn string, debug bool, output io.Writer) fx.Option {
 	return fx.Options(
 		fx.Provide(func() *bun.DB {
 			return LoadDB(dsn, debug, output)
+		}),
+		fx.Invoke(func(lc fx.Lifecycle, db *bun.DB) {
+			lc.Append(fx.Hook{
+				OnStop: func(ctx context.Context) error {
+					return db.Close()
+				},
+			})
 		}),
 	)
 }

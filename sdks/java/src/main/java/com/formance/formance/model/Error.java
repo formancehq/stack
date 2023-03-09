@@ -32,7 +32,9 @@ public class Error {
    */
   @JsonAdapter(ErrorCodeEnum.Adapter.class)
   public enum ErrorCodeEnum {
-    VALIDATION("VALIDATION");
+    VALIDATION("VALIDATION"),
+    
+    NOT_FOUND("NOT_FOUND");
 
     private String value;
 

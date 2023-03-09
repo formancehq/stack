@@ -15,8 +15,9 @@ type Instance struct {
 	UpdatedAt     time.Time  `json:"updatedAt"`
 	Terminated    bool       `json:"terminated"`
 	TerminatedAt  *time.Time `json:"terminatedAt,omitempty"`
-	Statuses      []Stage    `json:"status,omitempty" bun:"rel:has-many,join:id=instance_id"`
-	Error         string     `json:"error"`
+	//TODO: change JSON tag from status to statuses
+	Statuses []Stage `json:"status,omitempty" bun:"rel:has-many,join:id=instance_id"`
+	Error    string  `json:"error"`
 }
 
 func (i *Instance) SetTerminated(at time.Time) {

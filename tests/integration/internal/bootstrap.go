@@ -15,6 +15,7 @@ import (
 	authCmd "github.com/formancehq/auth/cmd"
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/ledger/cmd"
+	orchestrationCmd "github.com/formancehq/orchestration/cmd"
 	paymentsCmd "github.com/formancehq/payments/cmd"
 	searchCmd "github.com/formancehq/search/cmd"
 	"github.com/formancehq/search/pkg/searchengine"
@@ -97,6 +98,7 @@ var _ = BeforeEach(func() {
 	startWallets()
 	startPayments()
 	startWebhooks()
+	startOrchestration()
 
 	// TODO: Wait search has properly configured mapping before trying to ingest any data
 	startBenthosServer()
@@ -126,6 +128,10 @@ var _ = BeforeEach(func() {
 	Expect(err).ToNot(HaveOccurred())
 	registerService("webhooks", webhooksUrl)
 
+	orchestrationUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", orchestrationPort))
+	Expect(err).ToNot(HaveOccurred())
+	registerService("orchestration", orchestrationUrl)
+
 	// Start services
 	// Configure the sdk with a preconfigured auth client
 	configureSDK()
@@ -139,6 +145,7 @@ var _ = AfterEach(func() {
 	stopWallets()
 	stopPayments()
 	stopWebhooks()
+	stopOrchestration()
 	stopFakeGateway() // TODO: Wait for gateway to be shutdown
 })
 
@@ -153,7 +160,7 @@ func startLedger() {
 	Expect(err).ToNot(HaveOccurred())
 	dsn.Path = fmt.Sprintf("%s-ledger", actualTestID)
 
-	ledgerCmd := cmd.NewRootCommand()
+	command := cmd.NewRootCommand()
 	args := []string{
 		"serve",
 		"--publisher-nats-enabled",
@@ -166,8 +173,8 @@ func startLedger() {
 	if testing.Verbose() {
 		args = append(args, "--debug")
 	}
-	ledgerCmd.SetArgs(args)
-	ledgerPort, ledgerCancel, ledgerErrCh = runAndWaitPort("ledger", ledgerCmd)
+	command.SetArgs(args)
+	ledgerPort, ledgerCancel, ledgerErrCh = runAndWaitPort("ledger", command)
 }
 
 func stopLedger() {
@@ -250,6 +257,48 @@ func stopPayments() {
 	case <-paymentsErrCh:
 	case <-time.After(5 * time.Second):
 		Fail("timeout waiting for payments stopped")
+	}
+}
+
+var (
+	orchestrationPort   int
+	orchestrationErrCh  chan error
+	orchestrationCancel func()
+)
+
+func startOrchestration() {
+	dsn, err := getPostgresDSN()
+	Expect(err).ToNot(HaveOccurred())
+	dsn.Path = fmt.Sprintf("%s-orchestration", actualTestID)
+
+	command := orchestrationCmd.NewRootCommand()
+	if testing.Verbose() {
+		command.SetOut(os.Stdout)
+		command.SetErr(os.Stderr)
+	}
+
+	args := make([]string, 0)
+	args = append(args,
+		"serve",
+		"--listen=0.0.0.0:0",
+		"--postgres-dsn="+dsn.String(),
+		"--stack-client-id=global",
+		"--stack-client-secret=global",
+		"--stack-url="+gatewayServer.URL,
+		"--temporal-address="+getTemporalAddress(),
+		"--temporal-task-queue="+actualTestID,
+		"--worker",
+	)
+	command.SetArgs(args)
+	orchestrationPort, orchestrationCancel, orchestrationErrCh = runAndWaitPort("orchestration", command)
+}
+
+func stopOrchestration() {
+	orchestrationCancel()
+	select {
+	case <-orchestrationErrCh:
+	case <-time.After(5 * time.Second):
+		Fail("timeout waiting for orchestration stopped")
 	}
 }
 
@@ -420,7 +469,7 @@ func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc
 		By("starting service " + service)
 		Expect(err).ToNot(HaveOccurred())
 	case <-time.After(5 * time.Second):
-		Fail("timeout waiting for service to be properly started")
+		Fail(fmt.Sprintf("timeout waiting for service '%s' to be properly started", service))
 	}
 	port := httpserver.Port(ctx)
 
