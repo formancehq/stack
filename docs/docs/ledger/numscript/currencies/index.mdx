@@ -1,0 +1,84 @@
+---
+title: Working with currencies
+description: How does Numscript handle different currencies, and how do you specify the level of precision you need to work with?
+---
+
+import { NumscriptBlock } from 'react-numscript-codeblock';
+import Prerequisites from '/docs/ledger/partials/numscript/_prerequisites.mdx';
+import Prereqwarn from '/docs/ledger/partials/numscript/_prereq_warning.mdx';
+
+Formance Ledger has robust support for working in different currencies. Let's go a little deeper into how that works.
+
+<Prerequisites />
+
+## Specifying an amount with a currency and quantity
+
+The game world of Cones of Dunshire operates on primarily on a currency called coins. Coins are indivisible, and are the universal medium of exchange among game players and with the game system. We've seen coins in use in transactions expressed in Numscript before:
+
+<NumscriptBlock script={`send [COIN 100] (
+  source = @centralbank
+  destination = @player:benwyatt
+)`}></NumscriptBlock>
+
+This Numscript instructs Formance Ledger to transfer 100 coins to the player `benwyatt`. Notice that we specify the currency and amount together, and that we specify the currency as `COIN` singular. All amounts in Numscript are always specified in this way.
+
+## Divisible currencies
+
+However, lately, the economy of Cones of Dunshire has been undergoing significant deflation, and thus coins have been appreciating in value. Because they're indivisble, small transactions among players have become difficult, and they've had to resort to making change by bartering with clumps of dirt. So, as ledgerman, we have decided to introduce a new currency, the piece-of-ten (designated as `DSP` for "<u>D</u>un<u>s</u>hire <u>P</u>iece-of-Ten"), at a lower valuation. This new currency will initially trade at a rate of 10 pieces-of-ten to the coin, and as its name suggests, will itself be divisible into 10 sub-units (colloquially called "pieces-of-one" or just "pieces" for short).
+
+Let's suppose that our intrepid player `benwyatt` has completed a new task for us, but this time we're paying him in 1,000 pieces-of-ten instead of 100 coin. Here's what the Numscript would look like:
+
+<NumscriptBlock script={`send [DSP/1 10000] (
+  source = @centralbank
+  destination = @player:benwyatt
+)`}></NumscriptBlock>
+
+### What's going on here?
+
+You'll notice two strange things going on here. First of all, what's with this `DSP/1`? Didn't we say pieces-of-ten were designated as `DSP`? Second of all, didn't we specify that this transaction would be for 1,000 DSP, but here we see an amount ten times that being transferred, 10,000?
+
+This is because, unlike coin, DSP is divisible into ten subunits of currency. We need to tell Formance Ledger that we are working with a divisible currency. Knowing what we know about the currency, a designation like [DSP 1000] is ambiguous. Do we mean 1,000 pieces-of-ten? Or did we mean 1,000 pieces-of-one? There isn't enough context to know.
+
+We avoid this ambiguity by indicating the scale of the subdivisibility of the currency in its label, in the form `[name/power-of-ten]`. The name should be clear of course, but what's this power of ten? That indicates the degree to which the currency is subdivisible. In the case of `[DSP/1]`, the `1` indicates that DSP is divisible by **one** power of ten, that is, by ten. This way we can always be assured that we're representing the currency subdivisions.
+
+Consider a real world example, the US Dollar, which is divisible into 100 cents. We would desginate that as `[USD/2]` because it is divisible by the second power of ten, that is, by one-hundred. Or another: the Japanese Yen prior to 1954 was subdividable into 1,000 rin. We could represent transactions divisible into rin with '[JPY/3]'
+
+Putting it all together, we can represent a transaction of 5.2 DSP as `[DSP/1 52]`. Or a transaction of €5.23 as `[EUR/2 523]`.
+
+
+Sometimes you need to work with even fractions of the smallest subunit of currency, for example, hundreths of a US cent. This is possible too, in this case, by designating the currency as `USD/4` to indicate that you require hundreth of a cent (ten-thousdanth of a dollar, or 10e-4) precision.
+
+:::info
+
+You might find yourself asking: Why not use a decimal representation? Why not `[DSP 5.2]` or `[EUR 5.23]`? The answer is, that [floating point numbers are too imprecise for finance](https://www.youtube.com/watch?v=yZjCQ3T5yXo). Numscript and Formance Ledger avoid this problem by only using integer math.
+
+:::
+
+## Currency naming
+
+Numscript allows you to use any combination of 1 to 16 capital letters to designate a currency, plus an optional scaling factor (for those that like regexes: [`[A-Z]{1,16}(\/\d{1,6})?`](https://regex101.com/r/X53wwg/1)). Thus the following are all valid currency names:
+
+* ✅ `COIN`
+* ✅ `A/1`
+* ✅ `QWERTYUIOPASDFGH/6`
+* ✅ `USD/2`
+
+But the following are not valid:
+
+* ❌ `coin`
+* ❌ `10`
+* ❌ `US_Dollar/100`
+
+But when working with real-world currencies, we strongly encourage you to use [ISO 4217 currency codes](https://en.wikipedia.org/wiki/ISO_4217) with a scaling factor (when that currency is subdividable). Thus:
+
+ * `JPY`
+ * `EUR/2`
+ * `USD/2`
+
+## Going further
+
+As you can see, Numscript is set up to handle a wide range of scenarios when it comes to specifying currencies and precision.
+
+:::tip Dig deeper
+Want to learn more about how Formance Ledger does integer math? [The reference docs](/ledger/reference/numscript/rounding) have you covered!
+:::

@@ -1,0 +1,26 @@
+---
+title: Holding and confirm
+---
+
+In some cases, you might want to hold temporarily before confirming the debit. This is useful when you want to make sure that the event that led to this debit will actually happen; for example, you might want to make sure that an order will be shipped before actually debiting the confirming the hold. Wallets comes with a built-in hold and confirm/void mechanism to achieve this.
+
+To create a hold, you simply need to issue a debit against the wallet with the `pending` flag set to `true`.
+
+```json
+{
+  "amount": {
+    "amount": 100,
+    "asset": "USD/2"
+  },
+  "pending": true
+}
+```
+
+Doing so will yield an API response with a `hold` field, containing the ID of the hold. You will then be able to confirm or void the hold using that ID.
+
+```json
+{
+  "id": "4f431408-c567-41eb-aa03-2ad37de99cf8",
+  "asset": "USD/2"
+}
+```
