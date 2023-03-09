@@ -42,7 +42,7 @@ func init() {
 						Env: modules.NewEnv().Append(
 							modules.Env(
 								"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
-								"http://$(OTEL_TRACES_OTLP_ENDPOINT)",
+								"http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)",
 							),
 						),
 					}

@@ -31,7 +31,7 @@ spec:
                     - name: NUMARY_POSTGRES_HOST
                       value: localhost
                     - name: NUMARY_POSTGRES_PORT
-                      value: "33394"
+                      value: "33679"
                     - name: NUMARY_POSTGRES_DATABASE
                       value: stack1-ledger
                     - name: NUMARY_POSTGRES_USERNAME
@@ -42,6 +42,21 @@ spec:
                       value: postgresql://$(NUMARY_POSTGRES_USERNAME):$(NUMARY_POSTGRES_PASSWORD)@$(NUMARY_POSTGRES_HOST):$(NUMARY_POSTGRES_PORT)
                     - name: NUMARY_POSTGRES_URI
                       value: $(NUMARY_POSTGRES_NO_DATABASE_URI)/$(NUMARY_POSTGRES_DATABASE)?sslmode=disable
+                    - name: NUMARY_OTEL_TRACES
+                      value: "true"
+                    - name: NUMARY_OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: NUMARY_OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: NUMARY_OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: NUMARY_OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: NUMARY_OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: NUMARY_OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(NUMARY_OTEL_TRACES_ENDPOINT):$(NUMARY_OTEL_TRACES_PORT)
+                    - name: NUMARY_OTEL_RESOURCE_ATTRIBUTES
                     - name: NUMARY_DEBUG
                       value: "false"
                     - name: NUMARY_DEV
