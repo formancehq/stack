@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"io"
+
 	"github.com/bombsimon/logrusr/v3"
 	"github.com/formancehq/payments/internal/app/api"
 	"github.com/formancehq/payments/internal/app/storage"
@@ -52,7 +54,7 @@ func runServer(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	databaseOptions, err := prepareDatabaseOptions()
+	databaseOptions, err := prepareDatabaseOptions(cmd.OutOrStdout())
 	if err != nil {
 		return err
 	}
@@ -74,7 +76,7 @@ func setLogger() {
 	otel.SetLogger(logrusr.New(logrus.New().WithField("component", "otlp")))
 }
 
-func prepareDatabaseOptions() (fx.Option, error) {
+func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
 	postgresURI := viper.GetString(postgresURIFlag)
 	if postgresURI == "" {
 		return nil, errors.New("missing postgres uri")
@@ -85,5 +87,5 @@ func prepareDatabaseOptions() (fx.Option, error) {
 		return nil, errors.New("missing config encryption key")
 	}
 
-	return storage.Module(postgresURI, configEncryptionKey), nil
+	return storage.Module(postgresURI, configEncryptionKey, output), nil
 }

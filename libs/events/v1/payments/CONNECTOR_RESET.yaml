@@ -1,0 +1,10 @@
+---
+type: object
+properties:
+  createdAt:
+    type: string
+  connector:
+    type: string
+required:
+- createdAt
+- connector

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"io"
 
 	"github.com/uptrace/bun/extra/bunotel"
 
@@ -21,7 +22,7 @@ import (
 
 const dbName = "paymentsDB"
 
-func Module(uri, configEncryptionKey string) fx.Option {
+func Module(uri, configEncryptionKey string, output io.Writer) fx.Option {
 	return fx.Options(
 		fx.Provide(func() (*pgx.ConnConfig, error) {
 			config, err := pgx.ParseConfig(uri)
@@ -40,7 +41,9 @@ func Module(uri, configEncryptionKey string) fx.Option {
 			db := bun.NewDB(client, pgdialect.New())
 
 			db.AddQueryHook(bunotel.NewQueryHook(bunotel.WithDBName(dbName)))
-			db.AddQueryHook(bundebug.NewQueryHook())
+			db.AddQueryHook(bundebug.NewQueryHook(
+				bundebug.WithWriter(output),
+			))
 
 			return newStorage(db, configEncryptionKey)
 		}),

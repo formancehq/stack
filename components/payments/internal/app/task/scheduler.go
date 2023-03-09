@@ -316,7 +316,6 @@ func (s *DefaultTaskScheduler) startTask(ctx context.Context, descriptor models.
 		err = container.Invoke(taskResolver)
 		if err != nil {
 			s.registerTaskError(ctx, holder, err)
-			debug.PrintStack()
 
 			return
 		}

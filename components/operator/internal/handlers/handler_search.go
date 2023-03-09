@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"embed"
 	"fmt"
 	"io/fs"
 	"path/filepath"
@@ -8,7 +9,9 @@ import (
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/controllerutils"
+	benthosOperator "github.com/formancehq/operator/internal/handlers/benthos"
 	"github.com/formancehq/operator/internal/modules"
+	"github.com/formancehq/search/benthos"
 	"github.com/formancehq/search/pkg/searchengine"
 )
 
@@ -51,10 +54,33 @@ func init() {
 					Port: 4195,
 					Configs: func(resolveContext modules.InstallContext) modules.Configs {
 						ret := modules.Configs{}
-						for _, dir := range []string{"templates", "streams", "resources", "global"} {
+
+						type directory struct {
+							name string
+							fs   embed.FS
+						}
+
+						for _, x := range []directory{
+							{
+								name: "templates",
+								fs:   benthos.Templates,
+							},
+							{
+								name: "resources",
+								fs:   benthos.Resources,
+							},
+							{
+								name: "streams",
+								fs:   benthos.Streams,
+							},
+							{
+								name: "global",
+								fs:   benthosOperator.Global,
+							},
+						} {
 							data := make(map[string]string)
-							copyDir(benthosConfigDir, "benthos/"+dir, "benthos/"+dir, &data)
-							ret[dir] = modules.Config{
+							copyDir(x.fs, x.name, x.name, &data)
+							ret[x.name] = modules.Config{
 								Mount: true,
 								Data:  data,
 							}
