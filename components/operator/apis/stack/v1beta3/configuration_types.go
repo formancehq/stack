@@ -103,6 +103,9 @@ type ConfigurationSpec struct {
 	// +optional
 	Ingress  IngressGlobalConfig `json:"ingress,omitempty"`
 	Temporal TemporalConfig      `json:"temporal"`
+	// LightMode is experimental and indicate we want monopods
+	// +optional
+	LightMode bool `json:"light,omitempty"`
 }
 
 func (in *ConfigurationSpec) GetServices() []string {

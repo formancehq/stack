@@ -10,16 +10,17 @@ import (
 )
 
 const (
-	gatewayPort = 8080
+	gatewayPort = 8000
 )
 
 func init() {
 	modules.Register("gateway", modules.Module{
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{{
-				Port: gatewayPort,
-				Path: "/",
-				Configs: func(resolveContext modules.InstallContext) modules.Configs {
+				Port:       gatewayPort,
+				Path:       "/",
+				ExposeHTTP: true,
+				Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
 					return modules.Configs{
 						"config": modules.Config{
 							Data: map[string]string{
@@ -52,13 +53,15 @@ func init() {
 	})
 }
 
-func createCaddyfile(context modules.InstallContext) string {
+func createCaddyfile(context modules.ServiceInstallContext) string {
 	tpl := template.Must(template.New("caddyfile").Parse(caddyfile))
 	buf := bytes.NewBufferString("")
 
 	type service struct {
 		Name string
-		modules.Service
+		*modules.Service
+		Port     int32
+		Hostname string
 	}
 
 	servicesMap := make(map[string]service, 0)
@@ -68,16 +71,23 @@ func createCaddyfile(context modules.InstallContext) string {
 			continue
 		}
 		for _, s := range module.Services {
-			if s.Port == 0 {
+			usedPort := s.GetUsedPort()
+			if usedPort == 0 {
 				continue
 			}
 			serviceName := moduleName
 			if s.Name != "" {
 				serviceName += "-" + s.Name
 			}
+			hostname := serviceName
+			if context.Configuration.Spec.LightMode {
+				hostname = "127.0.0.1"
+			}
 			servicesMap[serviceName] = service{
-				Name:    serviceName,
-				Service: s,
+				Name:     serviceName,
+				Service:  s,
+				Port:     usedPort,
+				Hostname: hostname,
 			}
 			keys = append(keys, serviceName)
 		}
@@ -174,9 +184,9 @@ const caddyfile = `(cors) {
 	{{- range $i, $service := .Services }}
 		{{- if not (eq $service.Name "control") }}
 			{{- if not $service.Secured }}
-	import handle_path_route_with_auth /api/{{ $service.Name }} {{ $service.Name }}:{{ $service.Port }}
+	import handle_path_route_with_auth /api/{{ $service.Name }} {{ $service.Hostname }}:{{ $service.Port }}
 			{{- else }}
-	import handle_path_route_without_auth /api/{{ $service.Name }} {{ $service.Name }}:{{ $service.Port }}
+	import handle_path_route_without_auth /api/{{ $service.Name }} {{ $service.Hostname }}:{{ $service.Port }}
 			{{- end }}
 		{{- end }}
 	{{- end }}
@@ -188,7 +198,7 @@ const caddyfile = `(cors) {
 			endpoints {
 				{{- range $i, $service := .Services }}
 					{{- if $service.HasVersionEndpoint }}
-				{{ $service.Name }} http://{{ $service.Name }}:{{ $service.Port}}/_info http://{{ $service.Name }}:{{ $service.Port }}/_healthcheck
+				{{ $service.Name }} http://{{ $service.Hostname }}:{{ $service.Port }}/_info http://{{ $service.Hostname }}:{{ $service.Port }}/_healthcheck
 					{{- end }}
 				{{- end }}
 			}

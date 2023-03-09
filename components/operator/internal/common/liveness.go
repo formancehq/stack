@@ -6,21 +6,21 @@ import (
 	"k8s.io/utils/pointer"
 )
 
-func DefaultLiveness() *corev1.Probe {
-	return liveness("/_healthcheck")
+func DefaultLiveness(port int32) *corev1.Probe {
+	return liveness(port, "/_healthcheck")
 }
 
-func LegacyLiveness() *corev1.Probe {
-	return liveness("/_health")
+func LegacyLiveness(port int32) *corev1.Probe {
+	return liveness(port, "/_health")
 }
 
-func liveness(path string) *corev1.Probe {
+func liveness(port int32, path string) *corev1.Probe {
 	return &corev1.Probe{
 		ProbeHandler: corev1.ProbeHandler{
 			HTTPGet: &corev1.HTTPGetAction{
 				Path: path,
 				Port: intstr.IntOrString{
-					IntVal: 8080,
+					IntVal: port,
 				},
 				Scheme: "HTTP",
 			},

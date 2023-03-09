@@ -23,8 +23,7 @@ package v1beta2
 
 import (
 	"encoding/json"
-
-	v1 "k8s.io/api/core/v1"
+	"k8s.io/api/core/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
 

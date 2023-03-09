@@ -4162,6 +4162,9 @@ spec:
                         type: string
                     type: object
                 type: object
+              light:
+                description: LightMode is experimental and indicate we want monopods
+                type: boolean
               monitoring:
                 properties:
                   traces:

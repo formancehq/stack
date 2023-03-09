@@ -106,11 +106,9 @@ spec:
         disableSSLMode: true
     search:
       elasticSearch:
-        host: zinc.default.svc.cluster.local
-        port: 4080
+        host: elasticsearch-master.default.svc.cluster.local
+        port: 9200
         scheme: http
-        pathPrefix: /es
-        useZinc: true
         basicAuth:
           username: admin
           password: "Complexpass#123"
@@ -127,13 +125,15 @@ kind: Versions
 metadata:
   name: default
 spec:
+  auth: v0.3.1
   control: b8095a6244484304f9de3e530e5a41a3657fe56f
-  search: 58fff24a1e1aa4160f2dbb3a3169ba416e4d255f
+  gateway: v0.1.5
+  ledger: v1.9.0
   orchestration: 58fff24a1e1aa4160f2dbb3a3169ba416e4d255f
-  ledger: 79961782b3e5b0849121739ac61fbcd1f395a2b0
-  payments: 79961782b3e5b0849121739ac61fbcd1f395a2b0
+  payments: 7d6e38663b46cf94fc20733e25c49db2b5d85e11
+  search: 58fff24a1e1aa4160f2dbb3a3169ba416e4d255f
+  wallets: v0.3.5
   webhooks: v0.6.2
-  gateway: 079d781068e6285b63601f4c3cef9ddb819812c5
 ---
 apiVersion: stack.formance.com/v1beta3
 kind: Stack

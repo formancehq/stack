@@ -16,7 +16,6 @@ func init() {
 			modules.Env("TEMPORAL_SSL_CLIENT_CERT", resolveContext.Configuration.Spec.Temporal.TLS.CRT),
 			modules.Env("STACK_CLIENT_ID", resolveContext.Stack.Status.StaticAuthClients["orchestration"].ID),
 			modules.Env("STACK_CLIENT_SECRET", resolveContext.Stack.Status.StaticAuthClients["orchestration"].Secrets[0]),
-			modules.Env("POSTGRES_DSN", "$(POSTGRES_URI)"),
 		)
 	}
 	modules.Register("orchestration", modules.Module{
@@ -25,11 +24,12 @@ func init() {
 		},
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{
-				modules.Service{
+				{
 					Port: 8080,
 					AuthConfiguration: func(resolveContext modules.PrepareContext) stackv1beta3.ClientConfiguration {
 						return stackv1beta3.NewClientConfiguration()
 					},
+					ExposeHTTP:              true,
 					HasVersionEndpoint:      true,
 					InjectPostgresVariables: true,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
@@ -39,7 +39,7 @@ func init() {
 						}
 					},
 				},
-				modules.Service{
+				{
 					Name:                    "worker",
 					InjectPostgresVariables: true,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {

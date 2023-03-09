@@ -20,17 +20,16 @@ func init() {
 			return ctx.Configuration.Spec.Services.Auth.Postgres
 		},
 		Services: func(ctx modules.Context) modules.Services {
-			return modules.Services{
-				modules.Service{
-					Secured:                 true,
-					Port:                    8080,
-					Configs:                 resolveAuthConfigs,
-					Secrets:                 resolveAuthSecrets,
-					Container:               resolveAuthContainer,
-					InjectPostgresVariables: true,
-					HasVersionEndpoint:      true,
-				},
-			}
+			return modules.Services{{
+				Secured:                 true,
+				ListenEnvVar:            "LISTEN",
+				ExposeHTTP:              true,
+				Configs:                 resolveAuthConfigs,
+				Secrets:                 resolveAuthSecrets,
+				Container:               resolveAuthContainer,
+				InjectPostgresVariables: true,
+				HasVersionEndpoint:      true,
+			}}
 		},
 	})
 }
@@ -54,7 +53,7 @@ func resolveAuthContainer(resolveContext modules.ContainerResolutionContext) mod
 	}
 }
 
-func resolveAuthSecrets(resolveContext modules.InstallContext) modules.Secrets {
+func resolveAuthSecrets(resolveContext modules.ServiceInstallContext) modules.Secrets {
 	return modules.Secrets{
 		"secret": modules.Secret{
 			Data: map[string][]byte{
@@ -64,7 +63,7 @@ func resolveAuthSecrets(resolveContext modules.InstallContext) modules.Secrets {
 	}
 }
 
-func resolveAuthConfigs(resolveContext modules.InstallContext) modules.Configs {
+func resolveAuthConfigs(resolveContext modules.ServiceInstallContext) modules.Configs {
 	yaml, err := yaml.Marshal(struct {
 		Clients []stackv1beta3.StaticClient `yaml:"clients"`
 	}{
