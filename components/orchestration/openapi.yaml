@@ -304,6 +304,7 @@ components:
           type: string
           enum:
           - VALIDATION
+          - NOT_FOUND
         errorMessage:
           type: string
     WorkflowConfig:
@@ -362,7 +363,6 @@ components:
       - id
       - createdAt
       - updatedAt
-      - statuses
       - terminated
       properties:
         workflowID:

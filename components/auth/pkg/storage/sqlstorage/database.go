@@ -2,8 +2,6 @@ package sqlstorage
 
 import (
 	"context"
-	"io"
-	"log"
 	"time"
 
 	auth "github.com/formancehq/auth/pkg"
@@ -18,17 +16,36 @@ const (
 	KindPostgres = "postgres"
 )
 
-// TODO: Replace by logging
-func NewLogger(out io.Writer) logger.Interface {
-	return logger.New(
-		log.New(out, "\r\n", log.LstdFlags), // io writer
-		logger.Config{
-			SlowThreshold:             time.Second, // Slow SQL threshold
-			LogLevel:                  logger.Info, // Log level
-			IgnoreRecordNotFoundError: false,       // Ignore ErrRecordNotFound error for logger
-			Colorful:                  false,       // Disable color
-		},
-	)
+type gormLogger struct {
+	underlying logging.Logger
+}
+
+func (g gormLogger) LogMode(level logger.LogLevel) logger.Interface {
+	return g
+}
+
+func (g gormLogger) Info(ctx context.Context, s string, i ...interface{}) {
+	g.underlying.WithContext(ctx).Infof(s, i...)
+}
+
+func (g gormLogger) Warn(ctx context.Context, s string, i ...interface{}) {
+	g.underlying.WithContext(ctx).Errorf(s, i...)
+}
+
+func (g gormLogger) Error(ctx context.Context, s string, i ...interface{}) {
+	g.underlying.WithContext(ctx).Errorf(s, i...)
+}
+
+func (g gormLogger) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
+	// TODO(gfyrag): Actually don't log traces
+}
+
+var _ logger.Interface = (*gormLogger)(nil)
+
+func NewLogger(l logging.Logger) logger.Interface {
+	return &gormLogger{
+		underlying: l,
+	}
 }
 
 func OpenPostgresDatabase(uri string) gorm.Dialector {
@@ -68,7 +85,9 @@ func init() {
 func gormModule(kind, uri string) fx.Option {
 	return fx.Options(
 		fx.Provide(LoadGorm),
-		fx.Supply(&gorm.Config{}),
+		fx.Provide(func() *gorm.Config {
+			return &gorm.Config{}
+		}),
 		fx.Invoke(func(lc fx.Lifecycle, db *gorm.DB) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {

@@ -51,6 +51,10 @@ class Error(
                 @schemas.classproperty
                 def VALIDATION(cls):
                     return cls("VALIDATION")
+                
+                @schemas.classproperty
+                def NOT_FOUND(cls):
+                    return cls("NOT_FOUND")
             errorMessage = schemas.StrSchema
             __annotations__ = {
                 "errorCode": errorCode,

@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 
 	"github.com/formancehq/orchestration/internal/workflow"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/contrib/opentelemetry"
 	"go.temporal.io/sdk/interceptor"
@@ -13,7 +14,7 @@ import (
 
 func NewClientModule(address, namespace string, certStr string, key string) fx.Option {
 	return fx.Options(
-		fx.Provide(func() (client.Options, error) {
+		fx.Provide(func(logger logging.Logger) (client.Options, error) {
 
 			var cert *tls.Certificate
 			if key != "" && certStr != "" {
@@ -35,6 +36,7 @@ func NewClientModule(address, namespace string, certStr string, key string) fx.O
 				Namespace:    namespace,
 				HostPort:     address,
 				Interceptors: []interceptor.ClientInterceptor{tracingInterceptor},
+				Logger:       newLogger(logger),
 			}
 			if cert != nil {
 				options.ConnectionOptions = client.ConnectionOptions{
