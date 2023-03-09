@@ -18,8 +18,6 @@ type Volumes struct {
 	Output  uint64 `bun:"output,type:numeric"`
 }
 
-//------------------------------------------------------------------------------
-
 func (s *Store) updateVolumes(ctx context.Context, volumes core.AccountsAssetsVolumes) error {
 	for account, accountVolumes := range volumes {
 		for asset, volumes := range accountVolumes {

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/formancehq/ledger/pkg/ledger"
-	storage "github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pbnjay/memory"
 	"github.com/pborman/uuid"

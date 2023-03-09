@@ -3,6 +3,7 @@ package ledger
 import (
 	"context"
 
+	"github.com/formancehq/ledger/pkg/ledger"
 	sqlerrors "github.com/formancehq/ledger/pkg/storage/sqlstorage/errors"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/migrations"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
@@ -69,8 +70,4 @@ func NewStore(
 	}
 }
 
-//------------------------------------------------------------------------------
-
-// TODO(polo): Reinstate this when we have a proper ledger store defined in
-// storage package.
-// var _ ledger.Store = &Store{}
+var _ ledger.Store = &Store{}

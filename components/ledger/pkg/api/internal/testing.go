@@ -16,7 +16,7 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
-	storage "github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pborman/uuid"
 	"github.com/stretchr/testify/assert"

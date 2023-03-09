@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"time"
 
-	storage "github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )

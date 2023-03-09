@@ -31,8 +31,6 @@ type MigrationsTable struct {
 	Date    string `bun:"date,type:varchar"`
 }
 
-//------------------------------------------------------------------------------
-
 func createMigrationsTable(ctx context.Context, schema schema.Schema) error {
 	_, err := schema.NewCreateTable(migrationsTableName).
 		Model((*MigrationsTable)(nil)).
@@ -149,8 +147,6 @@ func GetMigrations(ctx context.Context, schema schema.Schema) ([]core.MigrationI
 	return res, nil
 }
 
-//------------------------------------------------------------------------------
-
 func RegisterGoMigration(fn MigrationFunc) {
 	_, filename, _, _ := runtime.Caller(1)
 	RegisterGoMigrationFromFilename(filename, fn)
@@ -257,8 +253,6 @@ func SQLMigrationFunc(content string) MigrationFunc {
 		return err
 	}
 }
-
-//------------------------------------------------------------------------------
 
 var RegisteredGoMigrations []Migration
 

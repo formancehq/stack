@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/ledger/pkg/ledger"
-	storage "github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 )
 

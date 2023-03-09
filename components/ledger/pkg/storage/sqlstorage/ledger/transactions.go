@@ -47,8 +47,6 @@ type Postings struct {
 	Destination  json.RawMessage `bun:"destination,type:jsonb"`
 }
 
-//------------------------------------------------------------------------------
-
 type TxsPaginationToken struct {
 	AfterTxID         uint64            `json:"after"`
 	ReferenceFilter   string            `json:"reference,omitempty"`
@@ -60,8 +58,6 @@ type TxsPaginationToken struct {
 	MetadataFilter    map[string]string `json:"metadata,omitempty"`
 	PageSize          uint              `json:"pageSize,omitempty"`
 }
-
-//------------------------------------------------------------------------------
 
 func (s *Store) buildTransactionsQuery(p ledger.TransactionsQuery) (*bun.SelectQuery, TxsPaginationToken) {
 	sb := s.schema.NewSelect(TransactionsTableName).

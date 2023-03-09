@@ -20,8 +20,6 @@ type BalancesPaginationToken struct {
 	AddressRegexpFilter string `json:"address,omitempty"`
 }
 
-//------------------------------------------------------------------------------
-
 func (s *Store) GetBalancesAggregated(ctx context.Context, q ledger.BalancesQuery) (core.AssetsBalances, error) {
 	sb := s.schema.NewSelect(volumesTableName).
 		Model((*Volumes)(nil)).

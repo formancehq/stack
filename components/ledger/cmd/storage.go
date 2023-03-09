@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	storage "github.com/formancehq/ledger/pkg/storage"
-	sqlstorage "github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/system"
 	"github.com/formancehq/stack/libs/go-libs/service"

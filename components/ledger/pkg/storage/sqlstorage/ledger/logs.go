@@ -26,16 +26,12 @@ type Log struct {
 	Data json.RawMessage `bun:"data,type:jsonb"`
 }
 
-//------------------------------------------------------------------------------
-
 type LogsPaginationToken struct {
 	AfterID   uint64    `json:"after"`
 	PageSize  uint      `json:"pageSize,omitempty"`
 	StartTime time.Time `json:"startTime,omitempty"`
 	EndTime   time.Time `json:"endTime,omitempty"`
 }
-
-//------------------------------------------------------------------------------
 
 func (s *Store) appendLog(ctx context.Context, log ...core.Log) error {
 	ls := make([]Log, len(log))

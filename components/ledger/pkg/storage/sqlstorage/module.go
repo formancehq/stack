@@ -1,7 +1,7 @@
 package sqlstorage
 
 import (
-	storage "github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/storage"
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
 	"github.com/formancehq/stack/libs/go-libs/health"
@@ -31,7 +31,6 @@ func OpenSQLDB(dataSourceName string) (*bun.DB, error) {
 
 	db := bun.NewDB(sqldb, pgdialect.New())
 
-	// TODO(polo): Should we ping here?
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}

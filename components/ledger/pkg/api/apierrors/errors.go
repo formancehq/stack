@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/formancehq/ledger/pkg/ledger"
-	storage "github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"

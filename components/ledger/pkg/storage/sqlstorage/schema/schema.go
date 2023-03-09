@@ -7,8 +7,6 @@ import (
 	"github.com/uptrace/bun"
 )
 
-//------------------------------------------------------------------------------
-
 type Schema struct {
 	*bun.DB
 	name string
@@ -49,8 +47,6 @@ func (s *Schema) Close(ctx context.Context) error {
 	return nil
 }
 
-//------------------------------------------------------------------------------
-
 // Override all bun methods to use the schema name
 
 func (s *Schema) NewInsert(tableName string) *bun.InsertQuery {
@@ -72,8 +68,6 @@ func (s *Schema) NewCreateTable(tableName string) *bun.CreateTableQuery {
 func (s *Schema) NewDelete(tableName string) *bun.DeleteQuery {
 	return s.DB.NewDelete().ModelTableExpr("?0.?1", bun.Ident(s.Name()), bun.Ident(tableName))
 }
-
-//------------------------------------------------------------------------------
 
 type DB interface {
 	Initialize(ctx context.Context) error

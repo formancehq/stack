@@ -9,8 +9,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-//------------------------------------------------------------------------------
-
 func (s *Store) GetMigrationsDone(ctx context.Context) ([]core.MigrationInfo, error) {
 	migrations, err := migrations.GetMigrations(ctx, s.schema)
 	return migrations, s.error(err)
@@ -32,8 +30,6 @@ func (s *Store) GetMigrationsAvailable() ([]core.MigrationInfo, error) {
 
 	return res, nil
 }
-
-//------------------------------------------------------------------------------
 
 //go:embed migrates
 var MigrationsFS embed.FS

@@ -3,7 +3,7 @@ package errors
 import (
 	"errors"
 
-	storage "github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 

@@ -28,8 +28,6 @@ type Idempotency struct {
 	RequestHash string `bun:"request_hash,type:varchar"`
 }
 
-//------------------------------------------------------------------------------
-
 func (s *Store) CreateIK(ctx context.Context, key string, response idempotency.Response) error {
 	data, err := json.Marshal(response.Header)
 	if err != nil {

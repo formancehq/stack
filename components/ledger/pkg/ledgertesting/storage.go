@@ -2,12 +2,11 @@ package ledgertesting
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/formancehq/ledger/pkg/api/idempotency"
 	"github.com/formancehq/ledger/pkg/ledger"
-	storage "github.com/formancehq/ledger/pkg/storage"
-	sqlstorage "github.com/formancehq/ledger/pkg/storage/sqlstorage"
+	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"go.uber.org/fx"
@@ -35,7 +34,6 @@ func ProvideStorageDriver(t pgtesting.TestingT) fx.Option {
 		lc.Append(fx.Hook{
 			OnStart: driver.Initialize,
 			OnStop: func(ctx context.Context) error {
-				fmt.Println("Stopping storage driver")
 				stopFn()
 				return driver.Close(ctx)
 			},

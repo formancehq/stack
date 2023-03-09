@@ -3,6 +3,7 @@ package system
 import (
 	"context"
 
+	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
 )
 
@@ -26,5 +27,4 @@ func (s *Store) Close(ctx context.Context) error {
 	return s.schema.Close(ctx)
 }
 
-// TODO(polo): change that to use current package
-//var _ storage.SystemStore = &Store{}
+var _ storage.SystemStore = &Store{}

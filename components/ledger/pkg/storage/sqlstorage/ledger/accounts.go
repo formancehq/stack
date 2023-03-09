@@ -26,8 +26,6 @@ type Accounts struct {
 	Metadata map[string]any `bun:"metadata,type:jsonb,default:'{}'"`
 }
 
-//------------------------------------------------------------------------------
-
 type AccountsPaginationToken struct {
 	PageSize              uint                   `json:"pageSize"`
 	Offset                uint                   `json:"offset"`
@@ -37,8 +35,6 @@ type AccountsPaginationToken struct {
 	BalanceFilter         string                 `json:"balance,omitempty"`
 	BalanceOperatorFilter ledger.BalanceOperator `json:"balanceOperator,omitempty"`
 }
-
-//------------------------------------------------------------------------------
 
 func (s *Store) buildAccountsQuery(p ledger.AccountsQuery) (*bun.SelectQuery, AccountsPaginationToken) {
 	sb := s.schema.NewSelect(accountsTableName).
