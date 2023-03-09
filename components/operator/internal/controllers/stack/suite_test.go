@@ -165,7 +165,8 @@ func NewDumbConfiguration() *v1beta3.Configuration {
 					Postgres: NewPostgresConfig(),
 				},
 			},
-			Broker: NewDumbBrokerConfig(),
+			Broker:     NewDumbBrokerConfig(),
+			Monitoring: NewDumbMonitoring(),
 		},
 	}
 }
@@ -182,6 +183,19 @@ func NewDumbBrokerConfig() v1beta3.Broker {
 			ret := NewDumpKafkaConfig()
 			return &ret
 		}(),
+	}
+}
+
+func NewDumbMonitoring() *v1beta3.MonitoringSpec {
+	return &v1beta3.MonitoringSpec{
+		Traces: &v1beta3.TracesSpec{
+			Otlp: &v1beta3.TracesOtlpSpec{
+				Endpoint: "localhost",
+				Port:     4317,
+				Insecure: true,
+				Mode:     "grpc",
+			},
+		},
 	}
 }
 

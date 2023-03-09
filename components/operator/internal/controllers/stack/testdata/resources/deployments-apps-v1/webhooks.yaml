@@ -31,7 +31,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "33394"
+                      value: "33679"
                     - name: POSTGRES_DATABASE
                       value: stack1-webhooks
                     - name: POSTGRES_USERNAME
@@ -42,6 +42,21 @@ spec:
                       value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
+                    - name: OTEL_TRACES
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER
+                      value: otlp
+                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                      value: "true"
+                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                      value: grpc
+                    - name: OTEL_TRACES_PORT
+                      value: "4317"
+                    - name: OTEL_TRACES_ENDPOINT
+                      value: localhost
+                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
+                    - name: OTEL_RESOURCE_ATTRIBUTES
                     - name: DEBUG
                       value: "false"
                     - name: DEV
