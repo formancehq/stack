@@ -1,0 +1,88 @@
+---
+title: Formance Stack Authentication
+description: How to configure Formance Stack Authentication
+---
+import CloudToken from '../../fctl/partials/_cloud_token.mdx';
+import {StackCmd} from '@site/src/components/StackCmd';
+
+The Formance Stack uses the standard OpenID Connect (OIDC) and OAuth 2.0 protocols, along with JSON Web Tokens (JWTs) to authenticate users and applications.
+
+## Clients
+
+The auth service of the Formance Stack authenticates users and applications through clients. Clients are registered in the auth service and are assigned a client ID and secret, which can be traded for a JWT token. The JWT token can then be used to authenticate against the other services of the Formance Stack.
+
+### Static Clients
+
+If you used the main [docker-compose.yml](https://github.com/formancehq/stack/blob/main/docker-compose.yml) file to run or deploy the Formance Stack, a default static client was automatically provisioned for you, with the following credentials:
+
+- Client ID: `testing`
+- Client Secret: `testing`
+
+:::caution
+These credentials are only for testing purposes. You should not use them in production. In real world deployments, you should modify the `config.yml` file passed to the auth service to change the default static client credentials.
+:::
+
+You can add more static clients by modifying the `config.yml` file passed to the auth service. For example, to add a client with the ID `my-client` and secret `my-secret`, you would add the following to the `config.yml` file:
+
+```yaml
+clients:
+  - id: my-client
+    secrets:
+      - my-secret
+```
+
+### Creating Clients
+
+In order to call the Stack API to create clients, we will authenticate ourselves first. Assuming our stack is up on running locally on port 80, we can run the following command to authenticate ourselves using the default provisioned static client:
+
+```shell
+# We fetch the OIDC discovery endpoint URL
+tokenUrl=$(curl http://localhost/api/auth/.well-known/openid-configuration | jq .token_endpoint -r)
+
+# We request a token using the client_credentials flow
+accessToken=$(curl -X POST $tokenUrl -d "client_id=testing&client_secret=testing&grant_type=client_credentials" -v | jq .access_token -r)
+
+# We verify our token by performing a simple call to the API
+curl -v http://localhost/api/ledger/quickstart/transactions -H "Authorization: Bearer $accessToken"
+```
+
+Then,
+
+```shell
+# We create the client and get its id
+clientId=$(curl -v http://localhost/api/auth/clients -H "Authorization: Bearer $accessToken" -d '{"name": "myclient"}' -X POST | jq .data.id -r)
+
+# We add a secret to this client (a client can have 0 or more secrets)
+clientSecret=$(curl -v http://localhost/api/auth/clients/$clientId/secrets -H "Authorization: Bearer $accessToken" -d '{"name": "mysecret"}' -X POST | jq .data.clear -r)
+
+# We request a token using the client_credentials flow
+accessToken=$(curl -X POST $tokenUrl -d "client_id=$clientId&client_secret=$clientSecret&grant_type=client_credentials" -v | jq .access_token -r)
+
+# We verify our token by performing a simple call to the API
+curl -v http://localhost/api/ledger/quickstart/transactions -H "Authorization: Bearer $accessToken"
+```
+
+## M2M (Machine to Machine)
+
+The Formance Stack supports the [client_credentials](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/) flow for machine-to-machine authentication. This flow is used to authenticate a client application against the auth service, which then issues a JWT token that can be used to authenticate against the other services of the Formance Stack.
+
+Acquiring a token using the `client_credentials` flow is a two-step process:
+
+1. The client application requests a token from the auth service, using its client ID and secret.
+2. The auth service validates the client ID and secret, and issues a JWT token.
+
+```shell
+# We fetch the OIDC discovery endpoint URL
+tokenUrl=$(curl http://localhost/api/auth/.well-known/openid-configuration | jq .token_endpoint -r)
+
+# We request a token using the client_credentials flow
+CLIENT_ID=testing \
+CLIENT_SECRET=testing \
+curl -X POST $tokenUrl -d "client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&grant_type=client_credentials" -v \
+| jq .access_token -r
+```
+
+Once acquired, the JWT token can be used to authenticate against the other services of the Formance Stack.
+
+
+<!-- ## Three-legged Flows (User through third-party application) -->

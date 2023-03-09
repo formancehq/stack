@@ -1,0 +1,44 @@
+---
+title: Installation
+---
+import HomebrewInstall from '../partials/installation/_install_homebrew.mdx';
+import DockerInstall from '../partials/installation/_install_docker.mdx';
+import DockerComposeInstall from '../partials/installation/_install_docker_compose.mdx';
+import APTInstall from '../partials/installation/_install_apt.mdx';
+import RPMInstall from '../partials/installation/_install_rpm.mdx';
+
+Formance Ledger can be used either as a standalone microservice, or as part of the Formance Stack. The standalone versions is a good choice if you don't need yet the full Formance offering, and want to keep things simple. The installation instructions below will guide you through the process of installing Formance Ledger in a standalone mode.
+
+Formance Ledger is available as pre-compiled binaries for Linux, macOS and Windows. You can install it using the installers below, or download a release binary from the [releases page](https://github.com/formancehq/ledger/releases).
+
+:::info
+For historical reasons, the Formance Ledger packages and binaries are named `numary`. This name will change in the future, though the `numary` command will remain available for backwards compatibility.
+:::
+
+### Checking for potential existing installation
+
+It is always good measure to make sure you don't have an existing installation of Formance Ledger before installing a new one. You can check for an existing installation by running the following command:
+
+```shell
+numary version
+```
+
+### Homebrew
+<HomebrewInstall />
+
+### Docker
+<DockerInstall />
+
+### Docker Compose
+<DockerComposeInstall />
+
+### Install on APT Based
+<APTInstall />
+
+### Install on RPM based
+<RPMInstall />
+
+## Formance Cloud
+If you want to try Formance without installing it, you can sign-up for a Formance Cloud account.
+
+We're currently running an early-adopter program that will give you enough room to explore Formance for free and access to discounted credits should you want to target production usage. Please request your seat [here](https://airtable.com/shrFJDsRCJDxvrpD0).

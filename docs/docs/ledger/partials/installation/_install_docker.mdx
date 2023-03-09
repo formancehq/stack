@@ -1,0 +1,14 @@
+We provide the Formance Ledger as ready-to-use Docker container images. You can install the latest version of the CLI using the latest tag or a specific version passing the appropriate tag.
+
+```shell
+docker run -p 3068:3068 \
+-v $HOME/numary:/root/.numary \
+--env NUMARY_SERVER_HTTP_BIND_ADDRESS="0.0.0.0:3068" \
+ghcr.io/formancehq/ledger:latest
+```
+
+Once the container is up and running, check that the server is indeed running by calling the /_info endpoint:
+
+```shell
+curl -X GET http://127.0.0.1:3068/_info
+```
