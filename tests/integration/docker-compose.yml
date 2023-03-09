@@ -26,3 +26,13 @@ services:
     - "4222:4222"
     command:
     - -js
+
+  temporalite:
+    container_name: temporalite
+    build:
+      dockerfile: temporalite.Dockerfile
+    ports:
+    - 7233:7233
+    - 8233:8233
+    stdin_open: true
+    tty: true

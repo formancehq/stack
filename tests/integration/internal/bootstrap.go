@@ -1,3 +1,6 @@
+// TODO(gfyrag): The code of this file is pretty dirty. I have other priority when writing this.
+// I will clean this later.
+// It works as expected.
 package internal
 
 import (
@@ -11,10 +14,9 @@ import (
 	"time"
 
 	"github.com/docker/docker/client"
-	"github.com/egymgmbh/go-prefix-writer/prefixer"
 	authCmd "github.com/formancehq/auth/cmd"
 	auth "github.com/formancehq/auth/pkg"
-	"github.com/formancehq/ledger/cmd"
+	orchestrationCmd "github.com/formancehq/orchestration/cmd"
 	paymentsCmd "github.com/formancehq/payments/cmd"
 	searchCmd "github.com/formancehq/search/cmd"
 	"github.com/formancehq/search/pkg/searchengine"
@@ -24,17 +26,22 @@ import (
 	walletsCmd "github.com/formancehq/wallets/cmd"
 	webhooksCmd "github.com/formancehq/webhooks/cmd"
 	"github.com/google/uuid"
+	"github.com/opensearch-project/opensearch-go"
+	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
+
+	"github.com/egymgmbh/go-prefix-writer/prefixer"
+	"github.com/formancehq/ledger/cmd"
+	natsServer "github.com/nats-io/nats-server/v2/server"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/opensearch-project/opensearch-go"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v3"
 )
 
 var (
+	server       *natsServer.Server
 	actualTestID string
 	ctx          context.Context
 	dockerPool   *dockertest.Pool
@@ -82,10 +89,9 @@ var _ = BeforeEach(func() {
 		Addresses: []string{"http://" + getOpenSearchUrl()},
 		Transport: httpclient.NewDebugHTTPTransport(http.DefaultTransport),
 	})
-	Expect(err).To(BeNil())
 	Eventually(func() error {
 		return searchengine.CreateIndex(ctx, openSearchClient, actualTestID)
-	}).WithTimeout(10 * time.Second).Should(Not(HaveOccurred()))
+	}).WithTimeout(10 * time.Second).Should(BeNil())
 
 	createDatabases() // TODO: drop databases
 
@@ -97,34 +103,53 @@ var _ = BeforeEach(func() {
 	startWallets()
 	startPayments()
 	startWebhooks()
+	startOrchestration()
 
 	// TODO: Wait search has properly configured mapping before trying to ingest any data
 	startBenthosServer()
 
 	// Start the gateway
 	ledgerUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", ledgerPort))
-	Expect(err).To(BeNil())
+	if err != nil {
+		panic(err)
+	}
 	registerService("ledger", ledgerUrl)
 
 	searchUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", searchPort))
-	Expect(err).To(BeNil())
+	if err != nil {
+		panic(err)
+	}
 	registerService("search", searchUrl)
 
 	authUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", authPort))
-	Expect(err).To(BeNil())
+	if err != nil {
+		panic(err)
+	}
 	registerService("auth", authUrl)
 
 	walletsUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", walletsPort))
-	Expect(err).To(BeNil())
+	if err != nil {
+		panic(err)
+	}
 	registerService("wallets", walletsUrl)
 
 	paymentsUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", paymentsPort))
-	Expect(err).To(BeNil())
+	if err != nil {
+		panic(err)
+	}
 	registerService("payments", paymentsUrl)
 
 	webhooksUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", webhooksPort))
-	Expect(err).To(BeNil())
+	if err != nil {
+		panic(err)
+	}
 	registerService("webhooks", webhooksUrl)
+
+	orchestrationUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", orchestrationPort))
+	if err != nil {
+		panic(err)
+	}
+	registerService("orchestration", orchestrationUrl)
 
 	// Start services
 	// Configure the sdk with a preconfigured auth client
@@ -139,6 +164,7 @@ var _ = AfterEach(func() {
 	stopWallets()
 	stopPayments()
 	stopWebhooks()
+	stopOrchestration()
 	stopFakeGateway() // TODO: Wait for gateway to be shutdown
 })
 
@@ -186,7 +212,7 @@ var (
 )
 
 func startSearch() {
-	command := searchCmd.NewRootCommand()
+	searchCmd := searchCmd.NewRootCommand()
 	args := make([]string, 0)
 	args = append(args,
 		"serve",
@@ -198,8 +224,8 @@ func startSearch() {
 		fmt.Sprintf("--es-indices=%s", actualTestID),
 		"--mapping-init-disabled",
 	)
-	command.SetArgs(args)
-	searchPort, searchCancel, searchErrCh = runAndWaitPort("search", command)
+	searchCmd.SetArgs(args)
+	searchPort, searchCancel, searchErrCh = runAndWaitPort("search", searchCmd)
 }
 
 func stopSearch() {
@@ -222,10 +248,10 @@ func startPayments() {
 	Expect(err).To(BeNil())
 	dsn.Path = fmt.Sprintf("%s-payments", actualTestID)
 
-	command := paymentsCmd.NewRootCommand()
+	paymentsCmd := paymentsCmd.NewRootCommand()
 	if testing.Verbose() {
-		command.SetOut(os.Stdout)
-		command.SetErr(os.Stderr)
+		paymentsCmd.SetOut(os.Stdout)
+		paymentsCmd.SetErr(os.Stderr)
 	}
 
 	args := make([]string, 0)
@@ -240,8 +266,8 @@ func startPayments() {
 		"--listen=0.0.0.0:0",
 		"--auto-migrate",
 	)
-	command.SetArgs(args)
-	paymentsPort, paymentsCancel, paymentsErrCh = runAndWaitPort("payments", command)
+	paymentsCmd.SetArgs(args)
+	paymentsPort, paymentsCancel, paymentsErrCh = runAndWaitPort("payments", paymentsCmd)
 }
 
 func stopPayments() {
@@ -250,6 +276,48 @@ func stopPayments() {
 	case <-paymentsErrCh:
 	case <-time.After(5 * time.Second):
 		Fail("timeout waiting for payments stopped")
+	}
+}
+
+var (
+	orchestrationPort   int
+	orchestrationErrCh  chan error
+	orchestrationCancel func()
+)
+
+func startOrchestration() {
+	dsn, err := getPostgresDSN()
+	Expect(err).To(BeNil())
+	dsn.Path = fmt.Sprintf("%s-orchestration", actualTestID)
+
+	orchestrationCmd := orchestrationCmd.NewRootCommand()
+	if testing.Verbose() {
+		orchestrationCmd.SetOut(os.Stdout)
+		orchestrationCmd.SetErr(os.Stderr)
+	}
+
+	args := make([]string, 0)
+	args = append(args,
+		"serve",
+		"--listen=0.0.0.0:0",
+		"--postgres-dsn="+dsn.String(),
+		"--stack-client-id=global",
+		"--stack-client-secret=global",
+		"--stack-url="+gatewayServer.URL,
+		"--temporal-address="+getTemporalAddress(),
+		"--temporal-task-queue="+actualTestID,
+		"--worker",
+	)
+	orchestrationCmd.SetArgs(args)
+	orchestrationPort, orchestrationCancel, orchestrationErrCh = runAndWaitPort("orchestration", orchestrationCmd)
+}
+
+func stopOrchestration() {
+	orchestrationCancel()
+	select {
+	case <-orchestrationErrCh:
+	case <-time.After(5 * time.Second):
+		Fail("timeout waiting for orchestration stopped")
 	}
 }
 
@@ -264,14 +332,14 @@ func startAuth() {
 	Expect(err).To(BeNil())
 	dsn.Path = fmt.Sprintf("%s-auth", actualTestID)
 
-	command := authCmd.NewRootCommand()
+	authCmd := authCmd.NewRootCommand()
 	if testing.Verbose() {
-		command.SetOut(os.Stdout)
-		command.SetErr(os.Stderr)
+		authCmd.SetOut(os.Stdout)
+		authCmd.SetErr(os.Stderr)
 	}
 
 	authDir := filepath.Join(os.TempDir(), uuid.NewString())
-	Expect(os.MkdirAll(authDir, 0o777)).To(BeNil())
+	Expect(os.MkdirAll(authDir, 0777)).To(BeNil())
 	type configuration struct {
 		Clients []auth.StaticClient `yaml:"clients"`
 	}
@@ -290,7 +358,7 @@ func startAuth() {
 	Expect(err).To(BeNil())
 	Expect(yaml.NewEncoder(f).Encode(cfg)).To(BeNil())
 
-	Expect(os.Setenv("CAOS_OIDC_DEV", "1")).To(Succeed())
+	os.Setenv("CAOS_OIDC_DEV", "1")
 	args := make([]string, 0)
 	args = append(args,
 		"serve",
@@ -305,8 +373,8 @@ func startAuth() {
 	if testing.Verbose() {
 		args = append(args, "--debug")
 	}
-	command.SetArgs(args)
-	authPort, authCancel, authErrCh = runAndWaitPort("auth", command)
+	authCmd.SetArgs(args)
+	authPort, authCancel, authErrCh = runAndWaitPort("auth", authCmd)
 }
 
 func stopAuth() {
@@ -325,10 +393,10 @@ var (
 )
 
 func startWallets() {
-	command := walletsCmd.NewRootCommand()
+	walletCmd := walletsCmd.NewRootCommand()
 	if testing.Verbose() {
-		command.SetOut(os.Stdout)
-		command.SetErr(os.Stderr)
+		walletCmd.SetOut(os.Stdout)
+		walletCmd.SetErr(os.Stderr)
 	}
 
 	args := make([]string, 0)
@@ -342,8 +410,8 @@ func startWallets() {
 	if testing.Verbose() {
 		args = append(args, "--debug")
 	}
-	command.SetArgs(args)
-	walletsPort, walletsCancel, walletsErrCh = runAndWaitPort("wallets", command)
+	walletCmd.SetArgs(args)
+	walletsPort, walletsCancel, walletsErrCh = runAndWaitPort("wallets", walletCmd)
 }
 
 func stopWallets() {
@@ -362,14 +430,15 @@ var (
 )
 
 func startWebhooks() {
+
 	dsn, err := getPostgresDSN()
 	Expect(err).To(BeNil())
 	dsn.Path = fmt.Sprintf("%s-webhooks", actualTestID)
 
-	command := webhooksCmd.NewRootCommand()
+	webhooksCmd := webhooksCmd.NewRootCommand()
 	if testing.Verbose() {
-		command.SetOut(os.Stdout)
-		command.SetErr(os.Stderr)
+		webhooksCmd.SetOut(os.Stdout)
+		webhooksCmd.SetErr(os.Stderr)
 	}
 
 	args := make([]string, 0)
@@ -386,8 +455,8 @@ func startWebhooks() {
 	if testing.Verbose() {
 		args = append(args, "--debug")
 	}
-	command.SetArgs(args)
-	webhooksPort, webhooksCancel, webhooksErrCh = runAndWaitPort("webhooks", command)
+	webhooksCmd.SetArgs(args)
+	webhooksPort, webhooksCancel, webhooksErrCh = runAndWaitPort("webhooks", webhooksCmd)
 }
 
 func stopWebhooks() {
@@ -400,6 +469,7 @@ func stopWebhooks() {
 }
 
 func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc, chan error) {
+
 	writer := prefixer.New(GinkgoWriter, func() string {
 		return service + " | "
 	})

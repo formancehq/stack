@@ -6,7 +6,14 @@ import (
 )
 
 func NewModule(dsn string) fx.Option {
-	return fx.Provide(func() (storage.Store, error) {
-		return NewStore(dsn)
-	})
+	return fx.Options(
+		fx.Provide(func() (storage.Store, error) {
+			return NewStore(dsn)
+		}),
+		fx.Invoke(func(lc fx.Lifecycle, s storage.Store) {
+			lc.Append(fx.Hook{
+				OnStop: s.Close,
+			})
+		}),
+	)
 }
