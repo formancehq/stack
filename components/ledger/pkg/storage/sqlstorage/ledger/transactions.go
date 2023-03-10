@@ -13,7 +13,6 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
@@ -428,12 +427,7 @@ func (s *Store) UpdateTransactionMetadata(ctx context.Context, id uint64, metada
 		return err
 	}
 
-	lastLog, err := s.GetLastLog(ctx)
-	if err != nil {
-		return errors.Wrap(err, "reading last log")
-	}
-
-	return s.appendLog(ctx, core.NewSetMetadataLog(lastLog, at, core.SetMetadata{
+	return s.appendLog(ctx, core.NewSetMetadataLog(at, core.SetMetadata{
 		TargetType: core.MetaTargetTypeTransaction,
 		TargetID:   id,
 		Metadata:   metadata,

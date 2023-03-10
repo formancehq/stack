@@ -306,12 +306,7 @@ func (s *Store) UpdateAccountMetadata(ctx context.Context, address string, metad
 		return err
 	}
 
-	lastLog, err := s.GetLastLog(ctx)
-	if err != nil {
-		return errors.Wrap(err, "reading last log")
-	}
-
-	return s.appendLog(ctx, core.NewSetMetadataLog(lastLog, at, core.SetMetadata{
+	return s.appendLog(ctx, core.NewSetMetadataLog(at, core.SetMetadata{
 		TargetType: core.MetaTargetTypeAccount,
 		TargetID:   address,
 		Metadata:   metadata,
