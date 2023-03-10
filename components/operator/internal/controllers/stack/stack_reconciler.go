@@ -102,6 +102,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Resu
 	}()
 
 	if reconcileError != nil {
+		log.Info("reconcile failed with error", "error", reconcileError)
 		return ctrl.Result{
 			Requeue:      true,
 			RequeueAfter: time.Second,
