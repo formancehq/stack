@@ -74,7 +74,7 @@ spec:
                     - name: LEDGER_POSTGRES_HOST
                       value: localhost
                     - name: LEDGER_POSTGRES_PORT
-                      value: "33679"
+                      value: "33810"
                     - name: LEDGER_POSTGRES_DATABASE
                       value: stack1-ledger
                     - name: LEDGER_POSTGRES_USERNAME
