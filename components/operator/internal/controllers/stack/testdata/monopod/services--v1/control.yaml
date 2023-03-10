@@ -6,9 +6,9 @@ metadata:
     name: control
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.62
+    clusterIP: 10.0.0.123
     clusterIPs:
-        - 10.0.0.62
+        - 10.0.0.123
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 3000
     selector:
-        app.kubernetes.io/name: control
+        app.kubernetes.io/name: stack2
     sessionAffinity: None
     type: ClusterIP
 status:

@@ -6,9 +6,9 @@ metadata:
     name: search-benthos
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.116
+    clusterIP: 10.0.0.7
     clusterIPs:
-        - 10.0.0.116
+        - 10.0.0.7
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 4195
     selector:
-        app.kubernetes.io/name: search-benthos
+        app.kubernetes.io/name: stack2
     sessionAffinity: None
     type: ClusterIP
 status:

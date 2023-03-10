@@ -6,9 +6,9 @@ metadata:
     name: ledger
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.20
+    clusterIP: 10.0.0.252
     clusterIPs:
-        - 10.0.0.20
+        - 10.0.0.252
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 10002
     selector:
-        app.kubernetes.io/name: ledger
+        app.kubernetes.io/name: stack2
     sessionAffinity: None
     type: ClusterIP
 status:

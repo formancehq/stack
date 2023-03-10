@@ -6,9 +6,9 @@ metadata:
     name: auth
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.218
+    clusterIP: 10.0.0.129
     clusterIPs:
-        - 10.0.0.218
+        - 10.0.0.129
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 10001
     selector:
-        app.kubernetes.io/name: auth
+        app.kubernetes.io/name: stack2
     sessionAffinity: None
     type: ClusterIP
 status:

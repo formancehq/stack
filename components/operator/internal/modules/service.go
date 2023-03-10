@@ -313,6 +313,10 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 
 func (service Service) installService(ctx ServiceInstallContext, deployer Deployer, serviceName string) error {
 	return controllerutils.JustError(deployer.Services().CreateOrUpdate(ctx, serviceName, func(t *corev1.Service) {
+		selector := serviceName
+		if ctx.Configuration.Spec.LightMode {
+			selector = ctx.Stack.Name
+		}
 		t.Spec = corev1.ServiceSpec{
 			Ports: []corev1.ServicePort{{
 				Name:        "http",
@@ -321,7 +325,7 @@ func (service Service) installService(ctx ServiceInstallContext, deployer Deploy
 				AppProtocol: pointer.String("http"),
 				TargetPort:  intstr.FromInt(int(service.usedPort)),
 			}},
-			Selector: collectionutils.CreateMap("app.kubernetes.io/name", serviceName),
+			Selector: collectionutils.CreateMap("app.kubernetes.io/name", selector),
 		}
 	}))
 }

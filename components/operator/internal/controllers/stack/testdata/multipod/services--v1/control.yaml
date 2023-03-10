@@ -6,9 +6,9 @@ metadata:
     name: control
     namespace: stack1
 spec:
-    clusterIP: 10.0.0.89
+    clusterIP: 10.0.0.175
     clusterIPs:
-        - 10.0.0.89
+        - 10.0.0.175
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

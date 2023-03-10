@@ -6,9 +6,9 @@ metadata:
     name: payments
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.129
+    clusterIP: 10.0.0.71
     clusterIPs:
-        - 10.0.0.129
+        - 10.0.0.71
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 10003
     selector:
-        app.kubernetes.io/name: payments
+        app.kubernetes.io/name: stack2
     sessionAffinity: None
     type: ClusterIP
 status:

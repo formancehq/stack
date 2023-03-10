@@ -6,9 +6,9 @@ metadata:
     name: gateway
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.219
+    clusterIP: 10.0.0.124
     clusterIPs:
-        - 10.0.0.219
+        - 10.0.0.124
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 8000
     selector:
-        app.kubernetes.io/name: gateway
+        app.kubernetes.io/name: stack2
     sessionAffinity: None
     type: ClusterIP
 status:

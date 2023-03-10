@@ -6,9 +6,9 @@ metadata:
     name: webhooks
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.209
+    clusterIP: 10.0.0.215
     clusterIPs:
-        - 10.0.0.209
+        - 10.0.0.215
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 10006
     selector:
-        app.kubernetes.io/name: webhooks
+        app.kubernetes.io/name: stack2
     sessionAffinity: None
     type: ClusterIP
 status:

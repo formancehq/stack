@@ -6,9 +6,9 @@ metadata:
     name: wallets
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.122
+    clusterIP: 10.0.0.78
     clusterIPs:
-        - 10.0.0.122
+        - 10.0.0.78
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 10005
     selector:
-        app.kubernetes.io/name: wallets
+        app.kubernetes.io/name: stack2
     sessionAffinity: None
     type: ClusterIP
 status:
