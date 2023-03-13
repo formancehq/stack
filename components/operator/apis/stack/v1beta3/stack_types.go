@@ -117,6 +117,9 @@ type StackStatus struct {
 
 	// +optional
 	StaticAuthClients map[string]StaticClient `json:"staticAuthClients,omitempty"`
+
+	// +optional
+	LightMode bool `json:"light"`
 }
 
 //+kubebuilder:object:root=true

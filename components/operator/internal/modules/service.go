@@ -9,10 +9,8 @@ import (
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/common"
 	"github.com/formancehq/operator/internal/controllerutils"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/utils/pointer"
 )
@@ -22,7 +20,7 @@ type Config struct {
 	Mount bool
 }
 
-func (c Config) create(ctx InstallContext, deployer Deployer, serviceName, configName string) (*ConfigHandle, error) {
+func (c Config) create(ctx ServiceInstallContext, deployer Deployer, serviceName, configName string) (*ConfigHandle, error) {
 	configMap, err := deployer.
 		ConfigMaps().
 		CreateOrUpdate(ctx, serviceName+"-"+configName, func(t *corev1.ConfigMap) {
@@ -41,7 +39,7 @@ func (c Config) create(ctx InstallContext, deployer Deployer, serviceName, confi
 
 type Configs map[string]Config
 
-func (c Configs) create(ctx InstallContext, deployer Deployer, serviceName string) (ConfigHandles, error) {
+func (c Configs) create(ctx ServiceInstallContext, deployer Deployer, serviceName string) (ConfigHandles, error) {
 	configHandles := ConfigHandles{}
 	for configName, configDefinition := range c {
 		configHandle, err := configDefinition.create(ctx, deployer, serviceName, configName)
@@ -58,7 +56,7 @@ type Secret struct {
 	Mount bool
 }
 
-func (s Secret) create(ctx InstallContext, deployer *ComponentDeployer, serviceName, secretName string) (*SecretHandle, error) {
+func (s Secret) create(ctx ServiceInstallContext, deployer *ResourceDeployer, serviceName, secretName string) (*SecretHandle, error) {
 	secret, err := deployer.
 		Secrets().
 		CreateOrUpdate(ctx, serviceName+"-"+secretName, func(t *corev1.Secret) {
@@ -87,7 +85,7 @@ func (s Secret) create(ctx InstallContext, deployer *ComponentDeployer, serviceN
 
 type Secrets map[string]Secret
 
-func (s Secrets) create(ctx InstallContext, deployer *ComponentDeployer, serviceName string) (SecretHandles, error) {
+func (s Secrets) create(ctx ServiceInstallContext, deployer *ResourceDeployer, serviceName string) (SecretHandles, error) {
 	secretHandles := SecretHandles{}
 	for secretName, secretDefinition := range s {
 		secretHandle, err := secretDefinition.create(ctx, deployer, serviceName, secretName)
@@ -197,16 +195,6 @@ func (e ContainerEnv) ToCoreEnv() []corev1.EnvVar {
 	return ret
 }
 
-type Container struct {
-	Command              []string
-	Args                 []string
-	Env                  ContainerEnv
-	Image                string
-	Name                 string
-	Liveness             Liveness
-	DisableRollingUpdate bool
-}
-
 type SecretHandle struct {
 	MountPath string
 	Name      string
@@ -285,42 +273,64 @@ func (h SecretHandles) sort() []string {
 }
 
 type Service struct {
-	Name                    string
-	Secured                 bool
-	Port                    int32
+	Name string
+	// Secured indicate if the service is able to handle security
+	Secured bool
+	// ExposeHTTP indicate the service expose a http endpoint
+	ExposeHTTP bool
+	// ListenEnvVar indicate the flag used to configure the http service address
+	// TODO(gfyrag): Remove this in a future version when all services implements --listen
+	ListenEnvVar string
+	// Port indicate the listening port of the service.
+	// Deprecated
+	// All services should have the --listen flag to allow the operator to specify the port
+	Port int32
+	// Path indicates the path used to expose the service using an ingress
 	Path                    string
 	EnvPrefix               string
 	InjectPostgresVariables bool
 	HasVersionEndpoint      bool
 	AuthConfiguration       func(resolveContext PrepareContext) stackv1beta3.ClientConfiguration
-	Configs                 func(resolveContext InstallContext) Configs
-	Secrets                 func(resolveContext InstallContext) Secrets
+	Configs                 func(resolveContext ServiceInstallContext) Configs
+	Secrets                 func(resolveContext ServiceInstallContext) Secrets
 	Container               func(resolveContext ContainerResolutionContext) Container
 	InitContainer           func(resolveContext ContainerResolutionContext) []Container
+
+	usedPort int32
 }
 
-func (service Service) Prepare(ctx PrepareContext, serviceName string) {
+func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 	if service.AuthConfiguration != nil {
 		_ = ctx.Stack.GetOrCreateClient(serviceName, service.AuthConfiguration(ctx))
 	}
+	if service.ExposeHTTP {
+		service.usedPort = service.Port
+		if service.usedPort == 0 {
+			service.usedPort = ctx.PortAllocator.NextPort()
+		}
+	}
 }
 
-func (service Service) installService(ctx InstallContext, deployer Deployer, serviceName string) error {
+func (service Service) installService(ctx ServiceInstallContext, deployer Deployer, serviceName string) error {
 	return controllerutils.JustError(deployer.Services().CreateOrUpdate(ctx, serviceName, func(t *corev1.Service) {
+		selector := serviceName
+		if ctx.Configuration.Spec.LightMode {
+			selector = ctx.Stack.Name
+		}
 		t.Spec = corev1.ServiceSpec{
 			Ports: []corev1.ServicePort{{
 				Name:        "http",
-				Port:        service.Port,
+				Port:        service.usedPort,
 				Protocol:    "TCP",
 				AppProtocol: pointer.String("http"),
-				TargetPort:  intstr.FromInt(int(service.Port)),
+				TargetPort:  intstr.FromInt(int(service.usedPort)),
 			}},
-			Selector: collectionutils.CreateMap("app.kubernetes.io/name", serviceName),
+			Selector: collectionutils.CreateMap("app.kubernetes.io/name", selector),
 		}
 	}))
 }
 
-func (service Service) createIngress(ctx InstallContext, deployer *ComponentDeployer, serviceName string) error {
+func (service Service) createIngress(ctx ServiceInstallContext, deployer *ResourceDeployer, serviceName string) error {
 	return controllerutils.JustError(deployer.Ingresses().CreateOrUpdate(ctx, serviceName, func(ingress *networkingv1.Ingress) {
 		annotations := ctx.Configuration.Spec.Ingress.Annotations
 		if annotations == nil {
@@ -367,48 +377,29 @@ func (service Service) createIngress(ctx InstallContext, deployer *ComponentDepl
 	}))
 }
 
-func (service Service) installConfigs(ctx InstallContext, deployer Deployer, serviceName string) (ConfigHandles, error) {
+func (service Service) installConfigs(ctx ServiceInstallContext, deployer Deployer, serviceName string) (ConfigHandles, error) {
 	if service.Configs == nil {
 		return ConfigHandles{}, nil
 	}
 	return service.Configs(ctx).create(ctx, deployer, serviceName)
 }
 
-func (service Service) installSecrets(ctx InstallContext, deployer *ComponentDeployer, serviceName string) (SecretHandles, error) {
+func (service Service) installSecrets(ctx ServiceInstallContext, deployer *ResourceDeployer, serviceName string) (SecretHandles, error) {
 	if service.Secrets == nil {
 		return SecretHandles{}, nil
 	}
 	return service.Secrets(ctx).create(ctx, deployer, serviceName)
 }
 
-func (service Service) createDeployment(ctx ContainerResolutionContext, deployer *ComponentDeployer, serviceName string) error {
+func (service Service) createDeployment(ctx ContainerResolutionContext, serviceName string) error {
 	container := service.Container(ctx)
-	return controllerutils.JustError(deployer.
-		Deployments().
-		CreateOrUpdate(ctx, serviceName, func(t *appsv1.Deployment) {
-			matchLabels := collectionutils.CreateMap("app.kubernetes.io/name", serviceName)
-			strategy := appsv1.DeploymentStrategy{}
-			if container.DisableRollingUpdate {
-				strategy.Type = appsv1.RecreateDeploymentStrategyType
-			}
-			t.Spec = appsv1.DeploymentSpec{
-				Selector: &metav1.LabelSelector{
-					MatchLabels: matchLabels,
-				},
-				Strategy: strategy,
-				Template: corev1.PodTemplateSpec{
-					ObjectMeta: metav1.ObjectMeta{
-						Labels: matchLabels,
-					},
-					Spec: corev1.PodSpec{
-						Volumes:        ctx.volumes(serviceName),
-						InitContainers: service.initContainers(ctx, serviceName),
-						Containers:     service.containers(ctx, container, serviceName),
-					},
-				},
-			}
-		}),
-	)
+	return ctx.PodDeployer.deploy(ctx, pod{
+		name:                 serviceName,
+		volumes:              ctx.volumes(serviceName),
+		initContainers:       service.initContainers(ctx, serviceName),
+		containers:           service.containers(ctx, container, serviceName),
+		disableRollingUpdate: container.DisableRollingUpdate,
+	})
 }
 
 func (service Service) initContainers(ctx ContainerResolutionContext, serviceName string) []corev1.Container {
@@ -427,7 +418,7 @@ func (service Service) containers(ctx ContainerResolutionContext, container Cont
 	}
 }
 
-func (service Service) Install(ctx InstallContext, deployer *ComponentDeployer, serviceName string) error {
+func (service Service) Install(ctx ServiceInstallContext, deployer *ResourceDeployer, serviceName string) error {
 	configHandles, err := service.installConfigs(ctx, deployer, serviceName)
 	if err != nil {
 		return err
@@ -438,7 +429,7 @@ func (service Service) Install(ctx InstallContext, deployer *ComponentDeployer, 
 		return err
 	}
 
-	if service.Port != 0 {
+	if service.ExposeHTTP {
 		if err := service.installService(ctx, deployer, serviceName); err != nil {
 			return err
 		}
@@ -450,10 +441,10 @@ func (service Service) Install(ctx InstallContext, deployer *ComponentDeployer, 
 	}
 
 	err = service.createDeployment(ContainerResolutionContext{
-		InstallContext: ctx,
-		Configs:        configHandles,
-		Secrets:        secretHandles,
-	}, deployer, serviceName)
+		ServiceInstallContext: ctx,
+		Configs:               configHandles,
+		Secrets:               secretHandles,
+	}, serviceName)
 	if err != nil {
 		return err
 	}
@@ -479,6 +470,11 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 			DefaultPostgresEnvVarsWithPrefix(*ctx.Postgres, ctx.Stack.GetServiceName(ctx.Module), service.EnvPrefix)...,
 		)
 	}
+	if service.ListenEnvVar != "" {
+		env = env.Append(
+			Env(service.EnvPrefix+service.ListenEnvVar, fmt.Sprintf(":%d", service.usedPort)),
+		)
+	}
 
 	if ctx.Configuration.Spec.Monitoring != nil {
 		env = env.Append(
@@ -490,6 +486,8 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 		env = env.Append(
 			Env(service.EnvPrefix+"DEBUG", fmt.Sprintf("%v", ctx.Stack.Spec.Debug)),
 			Env(service.EnvPrefix+"DEV", fmt.Sprintf("%v", ctx.Stack.Spec.Dev)),
+			// TODO: the stack url is a full url, we can target the gateway. Need to find how to generalize this
+			// as the gateway is a component like another
 			Env(service.EnvPrefix+"STACK_URL", ctx.Stack.URL()),
 			Env(service.EnvPrefix+"OTEL_SERVICE_NAME", serviceName),
 		)
@@ -525,13 +523,17 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 
 		switch container.Liveness {
 		case LivenessDefault:
-			c.LivenessProbe = common.DefaultLiveness()
+			c.LivenessProbe = common.DefaultLiveness(service.GetUsedPort())
 		case LivenessLegacy:
-			c.LivenessProbe = common.LegacyLiveness()
+			c.LivenessProbe = common.LegacyLiveness(service.GetUsedPort())
 		}
-		if service.Port != 0 {
-			c.Ports = common.SinglePort("http", service.Port)
+		if service.usedPort != 0 {
+			c.Ports = common.SinglePort("http", service.usedPort)
 		}
 	}
 	return c
+}
+
+func (service Service) GetUsedPort() int32 {
+	return service.usedPort
 }

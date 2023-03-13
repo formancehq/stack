@@ -23,8 +23,9 @@ func init() {
 	modules.Register("search", modules.Module{
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{
-				modules.Service{
-					Port:               8080,
+				{
+					ListenEnvVar:       "BIND",
+					ExposeHTTP:         true,
 					HasVersionEndpoint: true,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						env := elasticSearchEnvVars(resolveContext.Stack, resolveContext.Configuration).
@@ -49,10 +50,11 @@ func init() {
 						}
 					},
 				},
-				modules.Service{
-					Name: "benthos",
-					Port: 4195,
-					Configs: func(resolveContext modules.InstallContext) modules.Configs {
+				{
+					Name:       "benthos",
+					Port:       4195,
+					ExposeHTTP: true,
+					Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
 						ret := modules.Configs{}
 
 						type directory struct {

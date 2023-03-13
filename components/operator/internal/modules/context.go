@@ -6,7 +6,7 @@ import (
 )
 
 type ContainerResolutionContext struct {
-	InstallContext
+	ServiceInstallContext
 	Configs ConfigHandles
 	Secrets SecretHandles
 }
@@ -57,8 +57,9 @@ func (ctx ContainerResolutionContext) volumes(serviceName string) []corev1.Volum
 
 type PrepareContext struct {
 	Context
-	Postgres *stackv1beta3.PostgresConfig
-	Module   string
+	PortAllocator PortAllocator
+	Postgres      *stackv1beta3.PostgresConfig
+	Module        string
 }
 
 type RegisteredModule struct {
@@ -68,7 +69,8 @@ type RegisteredModule struct {
 
 type RegisteredModules map[string]RegisteredModule
 
-type InstallContext struct {
+type ServiceInstallContext struct {
 	PrepareContext
 	RegisteredModules RegisteredModules
+	PodDeployer       PodDeployer
 }

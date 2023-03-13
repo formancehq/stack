@@ -21,26 +21,26 @@ type Deployer interface {
 	Ingresses(...controllerutils.ObjectMutator[*networkingv1.Ingress]) *controllerutils.ObjectFactory[*networkingv1.Ingress]
 }
 
-type StackWideDeployer struct {
+type ResourceDeployer struct {
 	client        client.Client
 	scheme        *runtime.Scheme
 	stack         *v1beta3.Stack
 	configuration *v1beta3.Configuration
 }
 
-func (d *StackWideDeployer) Ingresses(options ...controllerutils.ObjectMutator[*networkingv1.Ingress]) *controllerutils.ObjectFactory[*networkingv1.Ingress] {
+func (d *ResourceDeployer) Ingresses(options ...controllerutils.ObjectMutator[*networkingv1.Ingress]) *controllerutils.ObjectFactory[*networkingv1.Ingress] {
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, append(options,
 		CommonOptions[*networkingv1.Ingress](d.stack, d.scheme)...,
 	)...)
 }
 
-func (d *StackWideDeployer) Services(options ...controllerutils.ObjectMutator[*corev1.Service]) *controllerutils.ObjectFactory[*corev1.Service] {
+func (d *ResourceDeployer) Services(options ...controllerutils.ObjectMutator[*corev1.Service]) *controllerutils.ObjectFactory[*corev1.Service] {
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, append(options,
 		CommonOptions[*corev1.Service](d.stack, d.scheme)...,
 	)...)
 }
 
-func (d *StackWideDeployer) Deployments(options ...controllerutils.ObjectMutator[*appsv1.Deployment]) *controllerutils.ObjectFactory[*appsv1.Deployment] {
+func (d *ResourceDeployer) Deployments(options ...controllerutils.ObjectMutator[*appsv1.Deployment]) *controllerutils.ObjectFactory[*appsv1.Deployment] {
 	options = append(options,
 		CommonOptions[*appsv1.Deployment](d.stack, d.scheme)...,
 	)
@@ -48,56 +48,33 @@ func (d *StackWideDeployer) Deployments(options ...controllerutils.ObjectMutator
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, options...)
 }
 
-func (d *StackWideDeployer) ConfigMaps(options ...controllerutils.ObjectMutator[*corev1.ConfigMap]) *controllerutils.ObjectFactory[*corev1.ConfigMap] {
+func (d *ResourceDeployer) ConfigMaps(options ...controllerutils.ObjectMutator[*corev1.ConfigMap]) *controllerutils.ObjectFactory[*corev1.ConfigMap] {
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, append(options,
 		CommonOptions[*corev1.ConfigMap](d.stack, d.scheme)...,
 	)...)
 }
 
-func (d *StackWideDeployer) Secrets(options ...controllerutils.ObjectMutator[*corev1.Secret]) *controllerutils.ObjectFactory[*corev1.Secret] {
+func (d *ResourceDeployer) Secrets(options ...controllerutils.ObjectMutator[*corev1.Secret]) *controllerutils.ObjectFactory[*corev1.Secret] {
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, append(options,
 		CommonOptions[*corev1.Secret](d.stack, d.scheme)...,
 	)...)
 }
 
-func (d *StackWideDeployer) Middlewares(options ...controllerutils.ObjectMutator[*traefik.Middleware]) *controllerutils.ObjectFactory[*traefik.Middleware] {
+func (d *ResourceDeployer) Middlewares(options ...controllerutils.ObjectMutator[*traefik.Middleware]) *controllerutils.ObjectFactory[*traefik.Middleware] {
 	return controllerutils.NewObjectFactory(d.client, d.stack.Name, append(options,
 		CommonOptions[*traefik.Middleware](d.stack, d.scheme)...,
 	)...)
 }
 
-func (d *StackWideDeployer) ForService(service string) *ComponentDeployer {
-	return NewComponentDeployer(d.client, d.scheme, d.stack, d.configuration, service)
-}
-
-var _ Deployer = &StackWideDeployer{}
+var _ Deployer = &ResourceDeployer{}
 
 func NewDeployer(client client.Client, scheme *runtime.Scheme, stack *v1beta3.Stack,
-	configuration *v1beta3.Configuration) *StackWideDeployer {
-	return &StackWideDeployer{
+	configuration *v1beta3.Configuration) *ResourceDeployer {
+	return &ResourceDeployer{
 		client:        client,
 		scheme:        scheme,
 		stack:         stack,
 		configuration: configuration,
-	}
-}
-
-type ComponentDeployer struct {
-	StackWideDeployer
-	serviceName string
-}
-
-var _ Deployer = &ComponentDeployer{}
-
-func (d *ComponentDeployer) Deployments(options ...controllerutils.ObjectMutator[*appsv1.Deployment]) *controllerutils.ObjectFactory[*appsv1.Deployment] {
-	return d.StackWideDeployer.Deployments(options...)
-}
-
-func NewComponentDeployer(client client.Client, scheme *runtime.Scheme, stack *v1beta3.Stack,
-	configuration *v1beta3.Configuration, serviceName string) *ComponentDeployer {
-	return &ComponentDeployer{
-		StackWideDeployer: *NewDeployer(client, scheme, stack, configuration),
-		serviceName:       serviceName,
 	}
 }
 

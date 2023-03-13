@@ -14,10 +14,11 @@ func init() {
 		},
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{
-				modules.Service{
+				{
 					HasVersionEndpoint:      true,
-					Port:                    8080,
+					ExposeHTTP:              true,
 					InjectPostgresVariables: true,
+					ListenEnvVar:            "HTTP_BIND_ADDRESS_SERVER",
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
 							Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
@@ -25,9 +26,10 @@ func init() {
 						}
 					},
 				},
-				modules.Service{
+				{
 					Name:                    "worker",
 					InjectPostgresVariables: true,
+					ListenEnvVar:            "HTTP_BIND_ADDRESS_WORKER",
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
 							Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),

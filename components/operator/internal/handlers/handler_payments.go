@@ -20,9 +20,10 @@ func init() {
 		},
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{{
-				Port:                    8080,
 				InjectPostgresVariables: true,
 				HasVersionEndpoint:      true,
+				ListenEnvVar:            "LISTEN",
+				ExposeHTTP:              true,
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 					return modules.Container{
 						Env:      env(resolveContext),

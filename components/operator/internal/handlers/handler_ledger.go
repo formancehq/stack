@@ -13,12 +13,12 @@ func init() {
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{{
 				EnvPrefix:               "NUMARY_",
-				Port:                    8080,
+				ListenEnvVar:            "SERVER_HTTP_BIND_ADDRESS",
 				InjectPostgresVariables: true,
 				HasVersionEndpoint:      true,
+				ExposeHTTP:              true,
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 					env := modules.NewEnv().Append(
-						modules.Env("NUMARY_SERVER_HTTP_BIND_ADDRESS", "0.0.0.0:8080"),
 						modules.Env("NUMARY_STORAGE_DRIVER", "postgres"),
 						modules.Env("NUMARY_PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
 					).Append(modules.BrokerEnvVarsWithPrefix(resolveContext.Configuration.Spec.Broker, "ledger", "NUMARY_")...)

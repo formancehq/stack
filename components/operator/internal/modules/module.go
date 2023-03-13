@@ -1,15 +1,30 @@
 package modules
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"sort"
+	"strings"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	v1 "k8s.io/api/apps/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func HandleStack(ctx Context, deployer *StackWideDeployer) error {
+func HandleStack(ctx Context, deployer *ResourceDeployer) error {
+
+	var (
+		portAllocator PortAllocator = StaticPortAllocator(8080)
+		podDeployer   PodDeployer   = NewDefaultPodDeployer(deployer)
+	)
+
+	if ctx.Configuration.Spec.LightMode {
+		podDeployer = NewMonoPodDeployer(deployer, ctx.Stack.Name)
+		portAllocator = NewPortRangeAllocator(10000)
+	}
 
 	type servicesWithContext struct {
 		services       Services
@@ -17,17 +32,23 @@ func HandleStack(ctx Context, deployer *StackWideDeployer) error {
 	}
 
 	allServices := make(map[string]servicesWithContext)
-	for moduleName, module := range modules {
-		serviceContext, err := module.prepare(ctx, moduleName)
+	moduleNames := make([]string, 0)
+	for moduleName := range modules {
+		moduleNames = append(moduleNames, moduleName)
+	}
+	// Always process service in order to keep things idempotent
+	sort.Strings(moduleNames)
+
+	for _, moduleName := range moduleNames {
+		module := modules[moduleName]
+		prepareContext, services, err := module.prepare(ctx, portAllocator, moduleName)
 		if err != nil {
 			return err
 		}
 
-		services := module.Services(ctx)
-		services.prepare(*serviceContext, moduleName)
 		allServices[moduleName] = servicesWithContext{
 			services:       services,
-			prepareContext: *serviceContext,
+			prepareContext: *prepareContext,
 		}
 	}
 
@@ -39,20 +60,63 @@ func HandleStack(ctx Context, deployer *StackWideDeployer) error {
 		}
 	}
 
-	for moduleName, holder := range allServices {
-		err := holder.services.install(InstallContext{
+	for _, moduleName := range moduleNames {
+		holder := allServices[moduleName]
+		if err := holder.services.install(ServiceInstallContext{
 			PrepareContext:    holder.prepareContext,
 			RegisteredModules: registeredModules,
-		}, deployer, moduleName)
-		if err != nil {
+			PodDeployer:       podDeployer,
+		}, deployer, moduleName); err != nil {
 			return err
 		}
 	}
 
+	if finalizer, ok := podDeployer.(interface {
+		finalize(context.Context) error
+	}); ok {
+		if err := finalizer.finalize(ctx); err != nil {
+			return err
+		}
+	}
+
+	var matchingLabels client.MatchingLabels
+	switch {
+	case ctx.Stack.Status.LightMode && !ctx.Configuration.Spec.LightMode:
+		matchingLabels = map[string]string{
+			monopodLabel: "true",
+		}
+	case !ctx.Stack.Status.LightMode && ctx.Configuration.Spec.LightMode:
+		matchingLabels = map[string]string{
+			monopodLabel: "false",
+		}
+	}
+	if matchingLabels != nil {
+		if err := deployer.client.DeleteAllOf(ctx, &v1.Deployment{},
+			client.InNamespace(ctx.Stack.Name),
+			matchingLabels,
+		); err != nil {
+			return err
+		}
+	}
+
+	ctx.Stack.Status.LightMode = ctx.Configuration.Spec.LightMode
+
 	return nil
 }
 
-type Services []Service
+type Services []*Service
+
+func (services Services) Len() int {
+	return len(services)
+}
+
+func (services Services) Less(i, j int) bool {
+	return strings.Compare(services[i].Name, services[j].Name) < 0
+}
+
+func (services Services) Swap(i, j int) {
+	services[i], services[j] = services[j], services[i]
+}
 
 func (services Services) prepare(ctx PrepareContext, moduleName string) {
 	for _, service := range services {
@@ -65,7 +129,7 @@ func (services Services) prepare(ctx PrepareContext, moduleName string) {
 	}
 }
 
-func (services Services) install(ctx InstallContext, deployer *StackWideDeployer, moduleName string) error {
+func (services Services) install(ctx ServiceInstallContext, deployer *ResourceDeployer, moduleName string) error {
 	me := &serviceErrors{}
 	for _, service := range services {
 		serviceName := moduleName
@@ -73,7 +137,7 @@ func (services Services) install(ctx InstallContext, deployer *StackWideDeployer
 			serviceName = serviceName + "-" + service.Name
 		}
 
-		err := service.Install(ctx, deployer.ForService(serviceName), serviceName)
+		err := service.Install(ctx, deployer, serviceName)
 		if err != nil {
 			me.setError(serviceName, err)
 		}
@@ -89,30 +153,33 @@ type Module struct {
 	Services func(ctx Context) Services
 }
 
-func (module Module) prepare(ctx Context, moduleName string) (*PrepareContext, error) {
+func (module Module) prepare(ctx Context, portAllocator PortAllocator, moduleName string) (*PrepareContext, Services, error) {
+	prepareContext := PrepareContext{
+		Module:        moduleName,
+		Context:       ctx,
+		PortAllocator: portAllocator,
+	}
 	if module.Postgres != nil {
 		postgresConfig := module.Postgres(ctx)
 		conn, err := pgx.Connect(ctx, postgresConfig.DSN())
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		_, err = conn.Exec(ctx, fmt.Sprintf(`CREATE DATABASE "%s"`, ctx.Stack.GetServiceName(moduleName)))
 		if err != nil {
 			pgErr := &pgconn.PgError{}
 			if !errors.As(err, &pgErr) || pgErr.Code != "42P04" { // Database already exists error
-				return nil, err
+				return nil, nil, err
 			}
 		}
-		return &PrepareContext{
-			Context:  ctx,
-			Postgres: &postgresConfig,
-			Module:   moduleName,
-		}, nil
+		prepareContext.Postgres = &postgresConfig
 	}
-	return &PrepareContext{
-		Module:  moduleName,
-		Context: ctx,
-	}, nil
+
+	services := module.Services(ctx)
+	sort.Stable(services)
+	services.prepare(prepareContext, moduleName)
+
+	return &prepareContext, services, nil
 }
 
 var modules = map[string]Module{}

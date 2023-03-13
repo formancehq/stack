@@ -41,7 +41,10 @@ func newServer() *cobra.Command {
 		Use:          "server",
 		Short:        "Launch server",
 		SilenceUsage: true,
-		RunE:         runServer,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return viper.BindPFlags(cmd.Flags())
+		},
+		RunE: runServer,
 	}
 }
 

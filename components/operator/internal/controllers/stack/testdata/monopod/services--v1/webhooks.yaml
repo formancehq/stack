@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+    labels:
+        stack: "true"
+    name: webhooks
+    namespace: stack2
+spec:
+    clusterIP: 10.0.0.215
+    clusterIPs:
+        - 10.0.0.215
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+        - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+        - appProtocol: http
+          name: http
+          port: 10006
+          protocol: TCP
+          targetPort: 10006
+    selector:
+        app.kubernetes.io/name: stack2
+    sessionAffinity: None
+    type: ClusterIP
+status:
+    loadBalancer: {}

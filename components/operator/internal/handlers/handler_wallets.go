@@ -9,8 +9,9 @@ func init() {
 	modules.Register("wallets", modules.Module{
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{{
-				Port:               8080,
 				HasVersionEndpoint: true,
+				ExposeHTTP:         true,
+				ListenEnvVar:       "LISTEN",
 				AuthConfiguration: func(resolveContext modules.PrepareContext) stackv1beta3.ClientConfiguration {
 					return stackv1beta3.NewClientConfiguration()
 				},

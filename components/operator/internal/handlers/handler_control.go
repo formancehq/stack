@@ -11,8 +11,9 @@ func init() {
 	modules.Register("control", modules.Module{
 		Services: func(ctx modules.Context) modules.Services {
 			return modules.Services{{
-				Secured: true,
-				Port:    3000,
+				Secured:    true,
+				Port:       3000,
+				ExposeHTTP: true,
 				AuthConfiguration: func(resolveContext modules.PrepareContext) stackv1beta3.ClientConfiguration {
 					return stackv1beta3.NewClientConfiguration().
 						WithAdditionalScopes("profile", "email", "offline").
