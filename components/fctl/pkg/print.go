@@ -7,3 +7,7 @@ import (
 func Println(args ...any) {
 	pterm.Println(args...)
 }
+
+func Printfln(fmt string, args ...any) {
+	pterm.Printfln(fmt, args...)
+}
