@@ -317,11 +317,8 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 		topicName := fmt.Sprintf("%s-%s", ctx.Stack.GetServiceNamespacedName(serviceName), serviceName)
 		streamConfig := nats.StreamConfig{
 			Name:      topicName,
-			Subjects:  []string{topicName},
-			Retention: 1,
-			//MaxBytes: 1024,
-			//MaxMsgs:  10000,
-			//MaxAge:   4 * time.Hour, // 1 hour
+			Subjects:  []string{},
+			Retention: nats.InterestPolicy,
 		}
 		nc, _ := nats.Connect(ctx.Configuration.Spec.Broker.Nats.URL)
 		js, _ := nc.JetStream()
