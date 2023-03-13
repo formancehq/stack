@@ -200,6 +200,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /wallets/{id}/summary:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Get wallet summary
+      operationId: getWalletSummary
+      tags:
+      - Wallets
+      responses:
+        200:
+          description: Wallet summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetWalletSummaryResponse'
+        404:
+          description: Wallet not found
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /wallets/{id}/balances:
     parameters:
     - name: id
@@ -912,10 +940,42 @@ components:
       properties:
         name:
           type: string
+        expiresAt:
+          type: string
+          format: date-time
     BalanceWithAssets:
       allOf:
       - $ref: '#/components/schemas/Balance'
       - $ref: '#/components/schemas/AssetHolder'
+    GetWalletSummaryResponse:
+      type: object
+      required:
+      - balances
+      - availableFunds
+      - expiredFunds
+      - expirableFunds
+      - holdFunds
+      properties:
+        balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/BalanceWithAssets'
+        availableFunds:
+          type: object
+          additionalProperties:
+            type: integer
+        expiredFunds:
+          type: object
+          additionalProperties:
+            type: integer
+        expirableFunds:
+          type: object
+          additionalProperties:
+            type: integer
+        holdFunds:
+          type: object
+          additionalProperties:
+            type: integer
     ListBalancesResponse:
       type: object
       required:

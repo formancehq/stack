@@ -21,6 +21,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.time.OffsetDateTime;
 
 /**
  * Balance
@@ -30,6 +31,10 @@ public class Balance {
   public static final String SERIALIZED_NAME_NAME = "name";
   @SerializedName(SERIALIZED_NAME_NAME)
   private String name;
+
+  public static final String SERIALIZED_NAME_EXPIRES_AT = "expiresAt";
+  @SerializedName(SERIALIZED_NAME_EXPIRES_AT)
+  private OffsetDateTime expiresAt;
 
   public Balance() {
   }
@@ -56,6 +61,28 @@ public class Balance {
   }
 
 
+  public Balance expiresAt(OffsetDateTime expiresAt) {
+    
+    this.expiresAt = expiresAt;
+    return this;
+  }
+
+   /**
+   * Get expiresAt
+   * @return expiresAt
+  **/
+  @javax.annotation.Nullable
+
+  public OffsetDateTime getExpiresAt() {
+    return expiresAt;
+  }
+
+
+  public void setExpiresAt(OffsetDateTime expiresAt) {
+    this.expiresAt = expiresAt;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -65,12 +92,13 @@ public class Balance {
       return false;
     }
     Balance balance = (Balance) o;
-    return Objects.equals(this.name, balance.name);
+    return Objects.equals(this.name, balance.name) &&
+        Objects.equals(this.expiresAt, balance.expiresAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name);
+    return Objects.hash(name, expiresAt);
   }
 
   @Override
@@ -78,6 +106,7 @@ public class Balance {
     StringBuilder sb = new StringBuilder();
     sb.append("class Balance {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    expiresAt: ").append(toIndentedString(expiresAt)).append("\n");
     sb.append("}");
     return sb.toString();
   }

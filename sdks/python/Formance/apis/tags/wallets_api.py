@@ -20,6 +20,7 @@ from Formance.paths.api_wallets_holds_hold_id.get import GetHold
 from Formance.paths.api_wallets_holds.get import GetHolds
 from Formance.paths.api_wallets_transactions.get import GetTransactions
 from Formance.paths.api_wallets_wallets_id.get import GetWallet
+from Formance.paths.api_wallets_wallets_id_summary.get import GetWalletSummary
 from Formance.paths.api_wallets_wallets_id_balances.get import ListBalances
 from Formance.paths.api_wallets_wallets.get import ListWallets
 from Formance.paths.api_wallets_wallets_id.patch import UpdateWallet
@@ -38,6 +39,7 @@ class WalletsApi(
     GetHolds,
     GetTransactions,
     GetWallet,
+    GetWalletSummary,
     ListBalances,
     ListWallets,
     UpdateWallet,

@@ -2402,6 +2402,36 @@ paths:
       - Wallets
       x-content-type: application/json
       x-accepts: application/json
+  /api/wallets/wallets/{id}/summary:
+    get:
+      operationId: getWalletSummary
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetWalletSummaryResponse'
+          description: Wallet summary
+        "404":
+          description: Wallet not found
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/walletsErrorResponse'
+          description: Error
+      summary: Get wallet summary
+      tags:
+      - Wallets
+      x-accepts: application/json
   /api/wallets/wallets/{id}/balances:
     get:
       operationId: listBalances
@@ -5387,8 +5417,12 @@ components:
     Balance:
       example:
         name: name
+        expiresAt: 2000-01-23T04:56:07.000+00:00
       properties:
         name:
+          type: string
+        expiresAt:
+          format: date-time
           type: string
       required:
       - name
@@ -5397,6 +5431,47 @@ components:
       allOf:
       - $ref: '#/components/schemas/Balance'
       - $ref: '#/components/schemas/AssetHolder'
+    GetWalletSummaryResponse:
+      example:
+        availableFunds:
+          key: 0
+        balances:
+        - null
+        - null
+        expiredFunds:
+          key: 6
+        holdFunds:
+          key: 5
+        expirableFunds:
+          key: 1
+      properties:
+        balances:
+          items:
+            $ref: '#/components/schemas/BalanceWithAssets'
+          type: array
+        availableFunds:
+          additionalProperties:
+            type: integer
+          type: object
+        expiredFunds:
+          additionalProperties:
+            type: integer
+          type: object
+        expirableFunds:
+          additionalProperties:
+            type: integer
+          type: object
+        holdFunds:
+          additionalProperties:
+            type: integer
+          type: object
+      required:
+      - availableFunds
+      - balances
+      - expirableFunds
+      - expiredFunds
+      - holdFunds
+      type: object
     ListBalancesResponse:
       example:
         cursor: null
@@ -5421,6 +5496,7 @@ components:
       example:
         data:
           name: name
+          expiresAt: 2000-01-23T04:56:07.000+00:00
       properties:
         data:
           $ref: '#/components/schemas/Balance'

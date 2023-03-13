@@ -14,6 +14,7 @@ Method | HTTP request | Description
 [**GetHolds**](WalletsApi.md#GetHolds) | **Get** /api/wallets/holds | Get all holds for a wallet
 [**GetTransactions**](WalletsApi.md#GetTransactions) | **Get** /api/wallets/transactions | 
 [**GetWallet**](WalletsApi.md#GetWallet) | **Get** /api/wallets/wallets/{id} | Get a wallet
+[**GetWalletSummary**](WalletsApi.md#GetWalletSummary) | **Get** /api/wallets/wallets/{id}/summary | Get wallet summary
 [**ListBalances**](WalletsApi.md#ListBalances) | **Get** /api/wallets/wallets/{id}/balances | List balances of a wallet
 [**ListWallets**](WalletsApi.md#ListWallets) | **Get** /api/wallets/wallets | List all wallets
 [**UpdateWallet**](WalletsApi.md#UpdateWallet) | **Patch** /api/wallets/wallets/{id} | Update a wallet
@@ -692,6 +693,74 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**GetWalletResponse**](GetWalletResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetWalletSummary
+
+> GetWalletSummaryResponse GetWalletSummary(ctx, id).Execute()
+
+Get wallet summary
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    client "github.com/formancehq/formance-sdk-go"
+)
+
+func main() {
+    id := "id_example" // string | 
+
+    configuration := client.NewConfiguration()
+    apiClient := client.NewAPIClient(configuration)
+    resp, r, err := apiClient.WalletsApi.GetWalletSummary(context.Background(), id).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `WalletsApi.GetWalletSummary``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `GetWalletSummary`: GetWalletSummaryResponse
+    fmt.Fprintf(os.Stdout, "Response from `WalletsApi.GetWalletSummary`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**id** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetWalletSummaryRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+### Return type
+
+[**GetWalletSummaryResponse**](GetWalletSummaryResponse.md)
 
 ### Authorization
 

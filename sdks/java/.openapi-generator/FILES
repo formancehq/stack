@@ -89,6 +89,7 @@ docs/GetTransactionsResponse.md
 docs/GetTransactionsResponseCursor.md
 docs/GetTransactionsResponseCursorAllOf.md
 docs/GetWalletResponse.md
+docs/GetWalletSummaryResponse.md
 docs/GetWorkflowInstanceHistoryResponse.md
 docs/GetWorkflowInstanceHistoryStageResponse.md
 docs/GetWorkflowInstanceResponse.md
@@ -340,6 +341,7 @@ src/main/java/com/formance/formance/model/GetTransactionsResponse.java
 src/main/java/com/formance/formance/model/GetTransactionsResponseCursor.java
 src/main/java/com/formance/formance/model/GetTransactionsResponseCursorAllOf.java
 src/main/java/com/formance/formance/model/GetWalletResponse.java
+src/main/java/com/formance/formance/model/GetWalletSummaryResponse.java
 src/main/java/com/formance/formance/model/GetWorkflowInstanceHistoryResponse.java
 src/main/java/com/formance/formance/model/GetWorkflowInstanceHistoryStageResponse.java
 src/main/java/com/formance/formance/model/GetWorkflowInstanceResponse.java

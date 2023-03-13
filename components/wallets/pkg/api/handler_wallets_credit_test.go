@@ -143,7 +143,7 @@ func TestWalletsCredit(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			t.Parallel()
 			walletID := uuid.NewString()
-			secondaryBalance := wallet.NewBalance("secondary")
+			secondaryBalance := wallet.NewBalance("secondary", nil)
 
 			req := newRequest(t, http.MethodPost, "/wallets/"+walletID+"/credit", testCase.request)
 			rec := httptest.NewRecorder()

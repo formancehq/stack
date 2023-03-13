@@ -81,6 +81,7 @@ import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
 import { GetWalletResponse } from '../models/GetWalletResponse';
+import { GetWalletSummaryResponse } from '../models/GetWalletSummaryResponse';
 import { GetWorkflowInstanceHistoryResponse } from '../models/GetWorkflowInstanceHistoryResponse';
 import { GetWorkflowInstanceHistoryStageResponse } from '../models/GetWorkflowInstanceHistoryStageResponse';
 import { GetWorkflowInstanceResponse } from '../models/GetWorkflowInstanceResponse';
@@ -2277,6 +2278,29 @@ export class ObservableWalletsApi {
                     middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
                 }
                 return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getWallet(rsp)));
+            }));
+    }
+
+    /**
+     * Get wallet summary
+     * @param id 
+     */
+    public getWalletSummary(id: string, _options?: Configuration): Observable<GetWalletSummaryResponse> {
+        const requestContextPromise = this.requestFactory.getWalletSummary(id, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (let middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (let middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getWalletSummary(rsp)));
             }));
     }
 

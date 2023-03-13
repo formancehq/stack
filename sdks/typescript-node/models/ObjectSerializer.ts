@@ -77,6 +77,7 @@ export * from '../models/GetTransactionsResponse';
 export * from '../models/GetTransactionsResponseCursor';
 export * from '../models/GetTransactionsResponseCursorAllOf';
 export * from '../models/GetWalletResponse';
+export * from '../models/GetWalletSummaryResponse';
 export * from '../models/GetWorkflowInstanceHistoryResponse';
 export * from '../models/GetWorkflowInstanceHistoryStageResponse';
 export * from '../models/GetWorkflowInstanceResponse';
@@ -280,6 +281,7 @@ import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
 import { GetWalletResponse } from '../models/GetWalletResponse';
+import { GetWalletSummaryResponse } from '../models/GetWalletSummaryResponse';
 import { GetWorkflowInstanceHistoryResponse } from '../models/GetWorkflowInstanceHistoryResponse';
 import { GetWorkflowInstanceHistoryStageResponse } from '../models/GetWorkflowInstanceHistoryStageResponse';
 import { GetWorkflowInstanceResponse } from '../models/GetWorkflowInstanceResponse';
@@ -514,6 +516,7 @@ let typeMap: {[index: string]: any} = {
     "GetTransactionsResponseCursor": GetTransactionsResponseCursor,
     "GetTransactionsResponseCursorAllOf": GetTransactionsResponseCursorAllOf,
     "GetWalletResponse": GetWalletResponse,
+    "GetWalletSummaryResponse": GetWalletSummaryResponse,
     "GetWorkflowInstanceHistoryResponse": GetWorkflowInstanceHistoryResponse,
     "GetWorkflowInstanceHistoryStageResponse": GetWorkflowInstanceHistoryStageResponse,
     "GetWorkflowInstanceResponse": GetWorkflowInstanceResponse,

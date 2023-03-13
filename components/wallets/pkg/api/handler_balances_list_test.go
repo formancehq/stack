@@ -21,7 +21,7 @@ func TestBalancesList(t *testing.T) {
 	walletID := uuid.NewString()
 	var balances []wallet.Balance
 	for i := 0; i < 10; i++ {
-		balances = append(balances, wallet.NewBalance(uuid.NewString()))
+		balances = append(balances, wallet.NewBalance(uuid.NewString(), nil))
 	}
 	const pageSize = 2
 	numberOfPages := int64(len(balances) / pageSize)

@@ -181,6 +181,8 @@ Formance/model/get_transactions_response.py
 Formance/model/get_transactions_response.pyi
 Formance/model/get_wallet_response.py
 Formance/model/get_wallet_response.pyi
+Formance/model/get_wallet_summary_response.py
+Formance/model/get_wallet_summary_response.pyi
 Formance/model/get_workflow_instance_history_response.py
 Formance/model/get_workflow_instance_history_response.pyi
 Formance/model/get_workflow_instance_history_stage_response.py
@@ -492,6 +494,7 @@ docs/models/GetHoldsResponse.md
 docs/models/GetTransactionResponse.md
 docs/models/GetTransactionsResponse.md
 docs/models/GetWalletResponse.md
+docs/models/GetWalletSummaryResponse.md
 docs/models/GetWorkflowInstanceHistoryResponse.md
 docs/models/GetWorkflowInstanceHistoryStageResponse.md
 docs/models/GetWorkflowInstanceResponse.md

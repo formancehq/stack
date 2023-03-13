@@ -104,6 +104,7 @@ docs/GetTransactionsResponse.md
 docs/GetTransactionsResponseCursor.md
 docs/GetTransactionsResponseCursorAllOf.md
 docs/GetWalletResponse.md
+docs/GetWalletSummaryResponse.md
 docs/GetWorkflowInstanceHistoryResponse.md
 docs/GetWorkflowInstanceHistoryStageResponse.md
 docs/GetWorkflowInstanceResponse.md
@@ -321,6 +322,7 @@ model_get_transactions_response.go
 model_get_transactions_response_cursor.go
 model_get_transactions_response_cursor_all_of.go
 model_get_wallet_response.go
+model_get_wallet_summary_response.go
 model_get_workflow_instance_history_response.go
 model_get_workflow_instance_history_stage_response.go
 model_get_workflow_instance_response.go

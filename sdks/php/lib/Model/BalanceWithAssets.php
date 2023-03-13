@@ -59,6 +59,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
       */
     protected static $openAPITypes = [
         'name' => 'string',
+        'expires_at' => '\DateTime',
         'assets' => 'array<string,int>'
     ];
 
@@ -71,6 +72,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
       */
     protected static $openAPIFormats = [
         'name' => null,
+        'expires_at' => 'date-time',
         'assets' => 'int64'
     ];
 
@@ -81,6 +83,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
       */
     protected static array $openAPINullables = [
         'name' => false,
+		'expires_at' => false,
 		'assets' => false
     ];
 
@@ -171,6 +174,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     protected static $attributeMap = [
         'name' => 'name',
+        'expires_at' => 'expiresAt',
         'assets' => 'assets'
     ];
 
@@ -181,6 +185,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     protected static $setters = [
         'name' => 'setName',
+        'expires_at' => 'setExpiresAt',
         'assets' => 'setAssets'
     ];
 
@@ -191,6 +196,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
      */
     protected static $getters = [
         'name' => 'getName',
+        'expires_at' => 'getExpiresAt',
         'assets' => 'getAssets'
     ];
 
@@ -252,6 +258,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
     public function __construct(array $data = null)
     {
         $this->setIfExists('name', $data ?? [], null);
+        $this->setIfExists('expires_at', $data ?? [], null);
         $this->setIfExists('assets', $data ?? [], null);
     }
 
@@ -326,6 +333,33 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
             throw new \InvalidArgumentException('non-nullable name cannot be null');
         }
         $this->container['name'] = $name;
+
+        return $this;
+    }
+
+    /**
+     * Gets expires_at
+     *
+     * @return \DateTime|null
+     */
+    public function getExpiresAt()
+    {
+        return $this->container['expires_at'];
+    }
+
+    /**
+     * Sets expires_at
+     *
+     * @param \DateTime|null $expires_at expires_at
+     *
+     * @return self
+     */
+    public function setExpiresAt($expires_at)
+    {
+        if (is_null($expires_at)) {
+            throw new \InvalidArgumentException('non-nullable expires_at cannot be null');
+        }
+        $this->container['expires_at'] = $expires_at;
 
         return $this;
     }

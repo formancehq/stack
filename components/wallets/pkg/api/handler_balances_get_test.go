@@ -16,7 +16,7 @@ func TestGetBalance(t *testing.T) {
 	t.Parallel()
 
 	walletID := uuid.NewString()
-	balance := wallet.NewBalance(uuid.NewString())
+	balance := wallet.NewBalance(uuid.NewString(), nil)
 	assets := map[string]*big.Int{
 		"USD": big.NewInt(50),
 	}

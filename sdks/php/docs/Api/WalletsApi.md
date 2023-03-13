@@ -14,6 +14,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 | [**getHolds()**](WalletsApi.md#getHolds) | **GET** /api/wallets/holds | Get all holds for a wallet |
 | [**getTransactions()**](WalletsApi.md#getTransactions) | **GET** /api/wallets/transactions |  |
 | [**getWallet()**](WalletsApi.md#getWallet) | **GET** /api/wallets/wallets/{id} | Get a wallet |
+| [**getWalletSummary()**](WalletsApi.md#getWalletSummary) | **GET** /api/wallets/wallets/{id}/summary | Get wallet summary |
 | [**listBalances()**](WalletsApi.md#listBalances) | **GET** /api/wallets/wallets/{id}/balances | List balances of a wallet |
 | [**listWallets()**](WalletsApi.md#listWallets) | **GET** /api/wallets/wallets | List all wallets |
 | [**updateWallet()**](WalletsApi.md#updateWallet) | **PATCH** /api/wallets/wallets/{id} | Update a wallet |
@@ -605,6 +606,64 @@ try {
 ### Return type
 
 [**\Formance\Model\GetWalletResponse**](../Model/GetWalletResponse.md)
+
+### Authorization
+
+[Authorization](../../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: `application/json`
+
+[[Back to top]](#) [[Back to API list]](../../README.md#endpoints)
+[[Back to Model list]](../../README.md#models)
+[[Back to README]](../../README.md)
+
+## `getWalletSummary()`
+
+```php
+getWalletSummary($id): \Formance\Model\GetWalletSummaryResponse
+```
+
+Get wallet summary
+
+### Example
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
+
+$apiInstance = new Formance\Api\WalletsApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client(),
+    $config
+);
+$id = 'id_example'; // string
+
+try {
+    $result = $apiInstance->getWalletSummary($id);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling WalletsApi->getWalletSummary: ', $e->getMessage(), PHP_EOL;
+}
+```
+
+### Parameters
+
+| Name | Type | Description  | Notes |
+| ------------- | ------------- | ------------- | ------------- |
+| **id** | **string**|  | |
+
+### Return type
+
+[**\Formance\Model\GetWalletSummaryResponse**](../Model/GetWalletSummaryResponse.md)
 
 ### Authorization
 

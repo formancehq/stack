@@ -4,6 +4,7 @@ import (
 	"math/big"
 	"net/http"
 	"regexp"
+	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/go-chi/chi/v5"
@@ -12,8 +13,9 @@ import (
 var balanceNameRegex = regexp.MustCompile("[0-9A-Za-z_-]+")
 
 type CreateBalance struct {
-	WalletID string `json:"walletID"`
-	Name     string `json:"name"`
+	WalletID  string     `json:"walletID"`
+	Name      string     `json:"name"`
+	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
 }
 
 func (c *CreateBalance) Validate() error {
@@ -32,26 +34,67 @@ func (c *CreateBalance) Bind(r *http.Request) error {
 }
 
 type Balance struct {
-	Name string `json:"name,omitempty"`
+	Name      string     `json:"name,omitempty"`
+	ExpiresAt *time.Time `json:"expiresAt"`
 }
 
 func (b Balance) LedgerMetadata(walletID string) metadata.Metadata {
-	return metadata.Metadata{
-		MetadataKeyWalletID:      walletID,
-		MetadataKeyWalletBalance: TrueValue,
-		MetadataKeyBalanceName:   b.Name,
+	m := metadata.Metadata{
+		MetadataKeyWalletID:         walletID,
+		MetadataKeyWalletBalance:    TrueValue,
+		MetadataKeyBalanceName:      b.Name,
+		MetadataKeyBalanceExpiresAt: "",
+	}
+	if b.ExpiresAt != nil {
+		m[MetadataKeyBalanceExpiresAt] = b.ExpiresAt.Format(time.RFC3339Nano)
+	}
+	return m
+}
+
+func NewBalance(name string, expiresAt *time.Time) Balance {
+	return Balance{
+		Name:      name,
+		ExpiresAt: expiresAt,
 	}
 }
 
-func NewBalance(name string) Balance {
-	return Balance{
-		Name: name,
+type Balances []Balance
+
+func (b Balances) Len() int {
+	return len(b)
+}
+
+func (b Balances) Less(i, j int) bool {
+	switch {
+	case b[i].ExpiresAt == nil && b[j].ExpiresAt != nil:
+		return false
+	case b[i].ExpiresAt != nil && b[j].ExpiresAt == nil:
+		return true
+	case b[i].ExpiresAt != nil && b[j].ExpiresAt != nil:
+		return b[i].ExpiresAt.Before(*b[j].ExpiresAt)
+	case b[i].ExpiresAt == nil && b[j].ExpiresAt == nil:
+		return b[i].Name < b[j].Name
 	}
+	panic("Should not happen")
+}
+
+func (b Balances) Swap(i, j int) {
+	b[i], b[j] = b[j], b[i]
 }
 
 func BalanceFromAccount(account Account) Balance {
+	expiresAtRaw := GetMetadata(account, MetadataKeyBalanceExpiresAt)
+	var expiresAt *time.Time
+	if expiresAtRaw != "" {
+		parsedExpiresAt, err := time.Parse(time.RFC3339Nano, expiresAtRaw)
+		if err != nil {
+			panic(err)
+		}
+		expiresAt = &parsedExpiresAt
+	}
 	return Balance{
-		Name: GetMetadata(account, MetadataKeyBalanceName),
+		Name:      GetMetadata(account, MetadataKeyBalanceName),
+		ExpiresAt: expiresAt,
 	}
 }
 

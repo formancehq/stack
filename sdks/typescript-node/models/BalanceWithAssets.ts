@@ -14,6 +14,7 @@ import { HttpFile } from '../http/http';
 
 export class BalanceWithAssets {
     'name': string;
+    'expiresAt'?: Date;
     'assets': { [key: string]: number; };
 
     static readonly discriminator: string | undefined = undefined;
@@ -24,6 +25,12 @@ export class BalanceWithAssets {
             "baseName": "name",
             "type": "string",
             "format": ""
+        },
+        {
+            "name": "expiresAt",
+            "baseName": "expiresAt",
+            "type": "Date",
+            "format": "date-time"
         },
         {
             "name": "assets",

@@ -22,6 +22,7 @@ import com.formance.formance.model.GetHoldResponse;
 import com.formance.formance.model.GetHoldsResponse;
 import com.formance.formance.model.GetTransactionsResponse;
 import com.formance.formance.model.GetWalletResponse;
+import com.formance.formance.model.GetWalletSummaryResponse;
 import com.formance.formance.model.ListBalancesResponse;
 import com.formance.formance.model.ListWalletsResponse;
 import com.formance.formance.model.ServerInfo;
@@ -167,6 +168,17 @@ public interface WalletsApi {
    */
   @GET("api/wallets/wallets/{id}")
   Call<GetWalletResponse> getWallet(
+    @retrofit2.http.Path("id") String id
+  );
+
+  /**
+   * Get wallet summary
+   * 
+   * @param id  (required)
+   * @return Call&lt;GetWalletSummaryResponse&gt;
+   */
+  @GET("api/wallets/wallets/{id}/summary")
+  Call<GetWalletSummaryResponse> getWalletSummary(
     @retrofit2.http.Path("id") String id
   );
 

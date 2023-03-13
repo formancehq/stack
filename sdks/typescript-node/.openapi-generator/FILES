@@ -120,6 +120,7 @@ models/GetTransactionsResponse.ts
 models/GetTransactionsResponseCursor.ts
 models/GetTransactionsResponseCursorAllOf.ts
 models/GetWalletResponse.ts
+models/GetWalletSummaryResponse.ts
 models/GetWorkflowInstanceHistoryResponse.ts
 models/GetWorkflowInstanceHistoryStageResponse.ts
 models/GetWorkflowInstanceResponse.ts

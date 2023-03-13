@@ -23,6 +23,7 @@ import { GetHoldResponse } from '../models/GetHoldResponse';
 import { GetHoldsResponse } from '../models/GetHoldsResponse';
 import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetWalletResponse } from '../models/GetWalletResponse';
+import { GetWalletSummaryResponse } from '../models/GetWalletSummaryResponse';
 import { ListBalancesResponse } from '../models/ListBalancesResponse';
 import { ListWalletsResponse } from '../models/ListWalletsResponse';
 import { ServerInfo } from '../models/ServerInfo';
@@ -479,6 +480,43 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
         // Path Params
         const localVarPath = '/api/wallets/wallets/{id}'
+            .replace('{' + 'id' + '}', encodeURIComponent(String(id)));
+
+        // Make Request Context
+        const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.GET);
+        requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
+
+
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
+        
+        const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
+        if (defaultAuth?.applySecurityAuthentication) {
+            await defaultAuth?.applySecurityAuthentication(requestContext);
+        }
+
+        return requestContext;
+    }
+
+    /**
+     * Get wallet summary
+     * @param id 
+     */
+    public async getWalletSummary(id: string, _options?: Configuration): Promise<RequestContext> {
+        let _config = _options || this.configuration;
+
+        // verify required parameter 'id' is not null or undefined
+        if (id === null || id === undefined) {
+            throw new RequiredError("WalletsApi", "getWalletSummary", "id");
+        }
+
+
+        // Path Params
+        const localVarPath = '/api/wallets/wallets/{id}/summary'
             .replace('{' + 'id' + '}', encodeURIComponent(String(id)));
 
         // Make Request Context
@@ -1067,6 +1105,45 @@ export class WalletsApiResponseProcessor {
                 ObjectSerializer.parse(await response.body.text(), contentType),
                 "GetWalletResponse", ""
             ) as GetWalletResponse;
+            return body;
+        }
+
+        throw new ApiException<string | Buffer | undefined>(response.httpStatusCode, "Unknown API Status Code!", await response.getBodyAsAny(), response.headers);
+    }
+
+    /**
+     * Unwraps the actual response sent by the server from the response context and deserializes the response content
+     * to the expected objects
+     *
+     * @params response Response returned by the server for a request to getWalletSummary
+     * @throws ApiException if the response code was not in [200, 299]
+     */
+     public async getWalletSummary(response: ResponseContext): Promise<GetWalletSummaryResponse > {
+        const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
+        if (isCodeInRange("200", response.httpStatusCode)) {
+            const body: GetWalletSummaryResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "GetWalletSummaryResponse", ""
+            ) as GetWalletSummaryResponse;
+            return body;
+        }
+        if (isCodeInRange("404", response.httpStatusCode)) {
+            throw new ApiException<undefined>(response.httpStatusCode, "Wallet not found", undefined, response.headers);
+        }
+        if (isCodeInRange("0", response.httpStatusCode)) {
+            const body: WalletsErrorResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "WalletsErrorResponse", ""
+            ) as WalletsErrorResponse;
+            throw new ApiException<WalletsErrorResponse>(response.httpStatusCode, "Error", body, response.headers);
+        }
+
+        // Work around for missing responses in specification, e.g. for petstore.yaml
+        if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
+            const body: GetWalletSummaryResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "GetWalletSummaryResponse", ""
+            ) as GetWalletSummaryResponse;
             return body;
         }
 
