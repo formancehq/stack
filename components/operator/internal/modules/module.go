@@ -6,12 +6,10 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/nats-io/nats.go"
 	v1 "k8s.io/api/apps/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -175,31 +173,6 @@ func (module Module) prepare(ctx Context, portAllocator PortAllocator, moduleNam
 			}
 		}
 		prepareContext.Postgres = &postgresConfig
-	}
-
-	if ctx.Configuration.Spec.Broker.Nats != nil {
-		topicName := ctx.Stack.GetServiceName(moduleName)
-		streamConfig := nats.StreamConfig{
-			Name:     topicName,
-			Subjects: []string{topicName},
-			MaxBytes: 1024,
-			MaxMsgs:  10000,
-			MaxAge:   4 * time.Hour, // 1 hour
-		}
-		nc, _ := nats.Connect(ctx.Configuration.Spec.Broker.Nats.URL)
-		js, _ := nc.JetStream()
-		_, err := js.StreamInfo(topicName)
-		if err != nil {
-			_, err := js.AddStream(&streamConfig)
-			if err != nil {
-				return nil, nil, err
-			}
-		} else {
-			_, err = js.UpdateStream(&streamConfig)
-			if err != nil {
-				return nil, nil, err
-			}
-		}
 	}
 
 	services := module.Services(ctx)
