@@ -70,8 +70,8 @@ func (s *Store) batchLogs(ctx context.Context, logs []core.Log) error {
 	return s.error(err)
 }
 
-func (s *Store) appendLog(ctx context.Context, logs ...core.Log) error {
-	return <-s.logsBatchWorker.WriteModels(logs)
+func (s *Store) AppendLogs(ctx context.Context, logs ...core.Log) <-chan error {
+	return s.logsBatchWorker.WriteModels(ctx, logs)
 }
 
 func (s *Store) GetLastLog(ctx context.Context) (*core.Log, error) {

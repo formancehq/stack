@@ -412,7 +412,7 @@ func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTran
 	return nil
 }
 
-func (s *Store) UpdateTransactionMetadata(ctx context.Context, id uint64, metadata core.Metadata, at time.Time) error {
+func (s *Store) UpdateTransactionMetadata(ctx context.Context, id uint64, metadata core.Metadata) error {
 	metadataData, err := json.Marshal(metadata)
 	if err != nil {
 		return err
@@ -423,13 +423,11 @@ func (s *Store) UpdateTransactionMetadata(ctx context.Context, id uint64, metada
 		Set("metadata = metadata || ?", string(metadataData)).
 		Where("id = ?", id).
 		Exec(ctx)
-	if err != nil {
-		return err
-	}
+	return err
 
-	return s.appendLog(ctx, core.NewSetMetadataLog(at, core.SetMetadata{
-		TargetType: core.MetaTargetTypeTransaction,
-		TargetID:   id,
-		Metadata:   metadata,
-	}))
+	// return s.AppendLogs(ctx, core.NewSetMetadataLog(at, core.SetMetadata{
+	// 	TargetType: core.MetaTargetTypeTransaction,
+	// 	TargetID:   id,
+	// 	Metadata:   metadata,
+	// }))
 }
