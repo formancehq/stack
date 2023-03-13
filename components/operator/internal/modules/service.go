@@ -314,10 +314,10 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 	}
 
 	if ctx.Configuration.Spec.Broker.Nats != nil && service.NeedTopic {
-		topicName := fmt.Sprintf("%s-%s", ctx.Stack.GetServiceNamespacedName(serviceName), serviceName)
+		topicName := ctx.Stack.GetServiceNamespacedName(serviceName).Name
 		streamConfig := nats.StreamConfig{
 			Name:      topicName,
-			Subjects:  []string{topicName + ".*"},
+			Subjects:  []string{topicName},
 			Retention: nats.InterestPolicy,
 		}
 		nc, _ := nats.Connect(ctx.Configuration.Spec.Broker.Nats.URL)
