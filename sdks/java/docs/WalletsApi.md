@@ -14,6 +14,7 @@ All URIs are relative to *http://localhost*
 | [**getHolds**](WalletsApi.md#getHolds) | **GET** api/wallets/holds | Get all holds for a wallet |
 | [**getTransactions**](WalletsApi.md#getTransactions) | **GET** api/wallets/transactions |  |
 | [**getWallet**](WalletsApi.md#getWallet) | **GET** api/wallets/wallets/{id} | Get a wallet |
+| [**getWalletSummary**](WalletsApi.md#getWalletSummary) | **GET** api/wallets/wallets/{id}/summary | Get wallet summary |
 | [**listBalances**](WalletsApi.md#listBalances) | **GET** api/wallets/wallets/{id}/balances | List balances of a wallet |
 | [**listWallets**](WalletsApi.md#listWallets) | **GET** api/wallets/wallets | List all wallets |
 | [**updateWallet**](WalletsApi.md#updateWallet) | **PATCH** api/wallets/wallets/{id} | Update a wallet |
@@ -738,6 +739,77 @@ public class Example {
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Wallet |  -  |
+| **404** | Wallet not found |  -  |
+| **0** | Error |  -  |
+
+
+## getWalletSummary
+
+> GetWalletSummaryResponse getWalletSummary(id)
+
+Get wallet summary
+
+### Example
+
+```java
+// Import classes:
+import com.formance.formance.ApiClient;
+import com.formance.formance.ApiException;
+import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
+import com.formance.formance.models.*;
+import com.formance.formance.api.WalletsApi;
+
+public class Example {
+    public static void main(String[] args) {
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
+
+        WalletsApi apiInstance = new WalletsApi(defaultClient);
+        String id = "id_example"; // String | 
+        try {
+            GetWalletSummaryResponse result = apiInstance.getWalletSummary(id);
+            System.out.println(result);
+        } catch (ApiException e) {
+            System.err.println("Exception when calling WalletsApi#getWalletSummary");
+            System.err.println("Status code: " + e.getCode());
+            System.err.println("Reason: " + e.getResponseBody());
+            System.err.println("Response headers: " + e.getResponseHeaders());
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+### Parameters
+
+
+| Name | Type | Description  | Notes |
+|------------- | ------------- | ------------- | -------------|
+| **id** | **String**|  | |
+
+### Return type
+
+[**GetWalletSummaryResponse**](GetWalletSummaryResponse.md)
+
+### Authorization
+
+[Authorization](../README.md#Authorization)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+| **200** | Wallet summary |  -  |
 | **404** | Wallet not found |  -  |
 | **0** | Error |  -  |
 

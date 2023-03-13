@@ -2,6 +2,9 @@ package wallet
 
 import (
 	"context"
+	"math/big"
+	"sort"
+	"time"
 
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -105,14 +108,23 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 	}
 
 	sources := make([]string, 0)
-	var err error
 	switch {
 	case len(debit.Balances) == 0:
 		sources = append(sources, m.chart.GetMainBalanceAccount(debit.WalletID))
 	case len(debit.Balances) == 1 && debit.Balances[0] == "*":
-		sources, err = fetchAndMapAllAccounts[string](ctx, m, BalancesMetadataFilter(debit.WalletID), Account.GetAddress)
+		balancesRaw, err := fetchAndMapAllAccounts[Balance](ctx, m, BalancesMetadataFilter(debit.WalletID), BalanceFromAccount)
 		if err != nil {
 			return nil, err
+		}
+		balances := Balances(balancesRaw)
+		sort.Stable(balances)
+
+		// Filter expired and generate sources
+		for _, balance := range balances {
+			if balance.ExpiresAt != nil && balance.ExpiresAt.Before(time.Now()) {
+				continue
+			}
+			sources = append(sources, m.chart.GetBalanceAccount(debit.WalletID, balance.Name))
 		}
 	default:
 		for _, balance := range debit.Balances {
@@ -425,6 +437,88 @@ func (m *Manager) GetWallet(ctx context.Context, id string) (*WithBalances, erro
 	return Ptr(WithBalancesFromAccount(m.ledgerName, *account)), nil
 }
 
+type Summary struct {
+	Balances       []ExpandedBalance   `json:"balances"`
+	AvailableFunds map[string]*big.Int `json:"availableFunds"`
+	ExpiredFunds   map[string]*big.Int `json:"expiredFunds"`
+	ExpirableFunds map[string]*big.Int `json:"expirableFunds"`
+	HoldFunds      map[string]*big.Int `json:"holdFunds"`
+}
+
+func (m *Manager) GetWalletSummary(ctx context.Context, id string) (*Summary, error) {
+	balances, err := fetchAndMapAllAccounts(ctx, m, metadata.Metadata{
+		MetadataKeyWalletID: id,
+	}, func(src Account) ExpandedBalance {
+		account, err := m.client.GetAccount(ctx, m.ledgerName, src.GetAddress())
+		if err != nil {
+			// TODO: refine error handling
+			panic(errors.Wrap(err, "getting account"))
+		}
+		return ExpandedBalanceFromAccount(*account)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	s := &Summary{
+		Balances:       balances,
+		AvailableFunds: map[string]*big.Int{},
+		ExpiredFunds:   map[string]*big.Int{},
+		ExpirableFunds: map[string]*big.Int{},
+		HoldFunds:      map[string]*big.Int{},
+	}
+
+	for _, balance := range balances {
+		for asset, amount := range balance.Assets {
+			switch {
+			case balance.ExpiresAt != nil && balance.ExpiresAt.Before(time.Now()):
+				if s.ExpiredFunds[asset] == nil {
+					s.ExpiredFunds[asset] = new(big.Int)
+				}
+				s.ExpiredFunds[asset].Add(s.ExpiredFunds[asset], amount)
+			case balance.ExpiresAt != nil && !balance.ExpiresAt.Before(time.Now()):
+				if s.ExpirableFunds[asset] == nil {
+					s.ExpirableFunds[asset] = new(big.Int)
+				}
+				s.ExpirableFunds[asset].Add(s.ExpirableFunds[asset], amount)
+				if s.AvailableFunds[asset] == nil {
+					s.AvailableFunds[asset] = new(big.Int)
+				}
+				s.AvailableFunds[asset].Add(s.AvailableFunds[asset], amount)
+			case balance.ExpiresAt == nil:
+				if s.AvailableFunds[asset] == nil {
+					s.AvailableFunds[asset] = new(big.Int)
+				}
+				s.AvailableFunds[asset].Add(s.AvailableFunds[asset], amount)
+			}
+		}
+	}
+
+	holds, err := fetchAndMapAllAccounts(ctx, m, metadata.Metadata{
+		MetadataKeyHoldWalletID: id,
+	}, func(src Account) ExpandedDebitHold {
+		account, err := m.client.GetAccount(ctx, m.ledgerName, src.GetAddress())
+		if err != nil {
+			// TODO: refine error handling
+			panic(errors.Wrap(err, "getting account"))
+		}
+
+		return ExpandedDebitHoldFromLedgerAccount(*account)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, hold := range holds {
+		if s.HoldFunds[hold.Asset] == nil {
+			s.HoldFunds[hold.Asset] = new(big.Int)
+		}
+		s.HoldFunds[hold.Asset].Add(s.HoldFunds[hold.Asset], hold.Remaining)
+	}
+
+	return s, nil
+}
+
 func (m *Manager) GetHold(ctx context.Context, id string) (*ExpandedDebitHold, error) {
 	account, err := m.client.GetAccount(ctx, m.ledgerName, m.chart.GetHoldAccount(id))
 	if err != nil {
@@ -446,7 +540,7 @@ func (m *Manager) CreateBalance(ctx context.Context, data *CreateBalance) (*Bala
 		return nil, ErrBalanceAlreadyExists
 	}
 
-	balance := NewBalance(data.Name)
+	balance := NewBalance(data.Name, data.ExpiresAt)
 
 	if err := m.client.AddMetadataToAccount(
 		ctx,

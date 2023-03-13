@@ -99,6 +99,7 @@ docs/Model/GetTransactionsResponse.md
 docs/Model/GetTransactionsResponseCursor.md
 docs/Model/GetTransactionsResponseCursorAllOf.md
 docs/Model/GetWalletResponse.md
+docs/Model/GetWalletSummaryResponse.md
 docs/Model/GetWorkflowInstanceHistoryResponse.md
 docs/Model/GetWorkflowInstanceHistoryStageResponse.md
 docs/Model/GetWorkflowInstanceResponse.md
@@ -321,6 +322,7 @@ lib/Model/GetTransactionsResponse.php
 lib/Model/GetTransactionsResponseCursor.php
 lib/Model/GetTransactionsResponseCursorAllOf.php
 lib/Model/GetWalletResponse.php
+lib/Model/GetWalletSummaryResponse.php
 lib/Model/GetWorkflowInstanceHistoryResponse.php
 lib/Model/GetWorkflowInstanceHistoryStageResponse.php
 lib/Model/GetWorkflowInstanceResponse.php

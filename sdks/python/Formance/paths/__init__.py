@@ -56,6 +56,7 @@ class PathValues(str, enum.Enum):
     API_WALLETS_TRANSACTIONS = "/api/wallets/transactions"
     API_WALLETS_WALLETS = "/api/wallets/wallets"
     API_WALLETS_WALLETS_ID = "/api/wallets/wallets/{id}"
+    API_WALLETS_WALLETS_ID_SUMMARY = "/api/wallets/wallets/{id}/summary"
     API_WALLETS_WALLETS_ID_BALANCES = "/api/wallets/wallets/{id}/balances"
     API_WALLETS_WALLETS_ID_BALANCES_BALANCE_NAME = "/api/wallets/wallets/{id}/balances/{balanceName}"
     API_WALLETS_WALLETS_ID_DEBIT = "/api/wallets/wallets/{id}/debit"

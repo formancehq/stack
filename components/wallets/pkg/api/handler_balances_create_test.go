@@ -5,12 +5,17 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
+
+func ptr[V any](v V) *V {
+	return &v
+}
 
 type balanceCreateTestCase struct {
 	name               string
@@ -38,6 +43,15 @@ var balanceCreateTestCases = []balanceCreateTestCase{
 		name: "with reserved name",
 		request: wallet.CreateBalance{
 			Name: wallet.MainBalance,
+		},
+		expectedStatusCode: http.StatusBadRequest,
+		expectedErrorCode:  ErrorCodeValidation,
+	},
+	{
+		name: "with expiration",
+		request: wallet.CreateBalance{
+			Name:      wallet.MainBalance,
+			ExpiresAt: ptr(time.Now().Add(10 * time.Second)),
 		},
 		expectedStatusCode: http.StatusBadRequest,
 		expectedErrorCode:  ErrorCodeValidation,

@@ -164,6 +164,7 @@ Class | Method | HTTP request | Description
 *WalletsApi* | [**GetHolds**](docs/WalletsApi.md#getholds) | **Get** /api/wallets/holds | Get all holds for a wallet
 *WalletsApi* | [**GetTransactions**](docs/WalletsApi.md#gettransactions) | **Get** /api/wallets/transactions | 
 *WalletsApi* | [**GetWallet**](docs/WalletsApi.md#getwallet) | **Get** /api/wallets/wallets/{id} | Get a wallet
+*WalletsApi* | [**GetWalletSummary**](docs/WalletsApi.md#getwalletsummary) | **Get** /api/wallets/wallets/{id}/summary | Get wallet summary
 *WalletsApi* | [**ListBalances**](docs/WalletsApi.md#listbalances) | **Get** /api/wallets/wallets/{id}/balances | List balances of a wallet
 *WalletsApi* | [**ListWallets**](docs/WalletsApi.md#listwallets) | **Get** /api/wallets/wallets | List all wallets
 *WalletsApi* | [**UpdateWallet**](docs/WalletsApi.md#updatewallet) | **Patch** /api/wallets/wallets/{id} | Update a wallet
@@ -260,6 +261,7 @@ Class | Method | HTTP request | Description
  - [GetTransactionsResponseCursor](docs/GetTransactionsResponseCursor.md)
  - [GetTransactionsResponseCursorAllOf](docs/GetTransactionsResponseCursorAllOf.md)
  - [GetWalletResponse](docs/GetWalletResponse.md)
+ - [GetWalletSummaryResponse](docs/GetWalletSummaryResponse.md)
  - [GetWorkflowInstanceHistoryResponse](docs/GetWorkflowInstanceHistoryResponse.md)
  - [GetWorkflowInstanceHistoryStageResponse](docs/GetWorkflowInstanceHistoryStageResponse.md)
  - [GetWorkflowInstanceResponse](docs/GetWorkflowInstanceResponse.md)

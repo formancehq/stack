@@ -14,6 +14,7 @@ Method | HTTP request | Description
 [**getHolds**](WalletsApi.md#getHolds) | **GET** /api/wallets/holds | Get all holds for a wallet
 [**getTransactions**](WalletsApi.md#getTransactions) | **GET** /api/wallets/transactions | 
 [**getWallet**](WalletsApi.md#getWallet) | **GET** /api/wallets/wallets/{id} | Get a wallet
+[**getWalletSummary**](WalletsApi.md#getWalletSummary) | **GET** /api/wallets/wallets/{id}/summary | Get wallet summary
 [**listBalances**](WalletsApi.md#listBalances) | **GET** /api/wallets/wallets/{id}/balances | List balances of a wallet
 [**listWallets**](WalletsApi.md#listWallets) | **GET** /api/wallets/wallets | List all wallets
 [**updateWallet**](WalletsApi.md#updateWallet) | **PATCH** /api/wallets/wallets/{id} | Update a wallet
@@ -101,6 +102,7 @@ let body:WalletsApiCreateBalanceRequest = {
   // Balance (optional)
   body: {
     name: "name_example",
+    expiresAt: new Date('1970-01-01T00:00:00.00Z'),
   },
 };
 
@@ -627,6 +629,61 @@ Name | Type | Description  | Notes
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 **200** | Wallet |  -  |
+**404** | Wallet not found |  -  |
+**0** | Error |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **getWalletSummary**
+> GetWalletSummaryResponse getWalletSummary()
+
+
+### Example
+
+
+```typescript
+import { WalletsApi, createConfiguration } from '@formancehq/formance';
+import * as fs from 'fs';
+
+const configuration = createConfiguration();
+const apiInstance = new WalletsApi(configuration);
+
+let body:WalletsApiGetWalletSummaryRequest = {
+  // string
+  id: "id_example",
+};
+
+apiInstance.getWalletSummary(body).then((data:any) => {
+  console.log('API called successfully. Returned data: ' + data);
+}).catch((error:any) => console.error(error));
+```
+
+
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **id** | [**string**] |  | defaults to undefined
+
+
+### Return type
+
+**GetWalletSummaryResponse**
+
+### Authorization
+
+[Authorization](README.md#Authorization)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Wallet summary |  -  |
 **404** | Wallet not found |  -  |
 **0** | Error |  -  |
 

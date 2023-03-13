@@ -20,6 +20,7 @@ const (
 	MetadataKeyHoldVoidDestination   = "void_destination"
 	MetadataKeyHoldDestination       = "destination"
 	MetadataKeyBalanceName           = "wallets/balances/name"
+	MetadataKeyBalanceExpiresAt      = "wallets/balances/expiresAt"
 	MetadataKeyWalletBalance         = "wallets/balances"
 	MetadataKeyCreatedAt             = "wallets/createdAt"
 
