@@ -15,7 +15,6 @@ package com.formance.formance.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import com.formance.formance.model.Bool;
 import com.formance.formance.model.Stage;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
@@ -44,7 +43,7 @@ public class WorkflowInstanceHistory {
 
   public static final String SERIALIZED_NAME_TERMINATED = "terminated";
   @SerializedName(SERIALIZED_NAME_TERMINATED)
-  private Bool terminated = null;
+  private Boolean terminated;
 
   public static final String SERIALIZED_NAME_STARTED_AT = "startedAt";
   @SerializedName(SERIALIZED_NAME_STARTED_AT)
@@ -123,7 +122,7 @@ public class WorkflowInstanceHistory {
   }
 
 
-  public WorkflowInstanceHistory terminated(Bool terminated) {
+  public WorkflowInstanceHistory terminated(Boolean terminated) {
     
     this.terminated = terminated;
     return this;
@@ -135,12 +134,12 @@ public class WorkflowInstanceHistory {
   **/
   @javax.annotation.Nonnull
 
-  public Bool getTerminated() {
+  public Boolean getTerminated() {
     return terminated;
   }
 
 
-  public void setTerminated(Bool terminated) {
+  public void setTerminated(Boolean terminated) {
     this.terminated = terminated;
   }
 

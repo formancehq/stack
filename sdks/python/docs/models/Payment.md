@@ -11,7 +11,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **metadata** | [**PaymentMetadata**](PaymentMetadata.md) | [**PaymentMetadata**](PaymentMetadata.md) |  | 
 **[adjustments](#adjustments)** | list, tuple,  | tuple,  |  | 
 **scheme** | str,  | str,  |  | must be one of ["visa", "mastercard", "amex", "diners", "discover", "jcb", "unionpay", "sepa debit", "sepa credit", "sepa", "apple pay", "google pay", "a2a", "ach debit", "ach", "rtp", "unknown", "other", ] 
-**[raw](#raw)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+**[raw](#raw)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | 
 **type** | str,  | str,  |  | must be one of ["PAY-IN", "PAYOUT", "TRANSFER", "OTHER", ] 
 **reference** | str,  | str,  |  | 
 **accountID** | str,  | str,  |  | 
@@ -28,7 +28,7 @@ Key | Input Type | Accessed Type | Description | Notes
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | 
 
 # adjustments
 

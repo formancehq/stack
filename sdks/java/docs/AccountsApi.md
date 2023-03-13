@@ -24,7 +24,6 @@ Add metadata to an account
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.AccountsApi;
 
@@ -32,10 +31,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         AccountsApi apiInstance = new AccountsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
@@ -69,7 +64,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -97,7 +92,6 @@ Count the accounts from a ledger
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.AccountsApi;
 
@@ -105,10 +99,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         AccountsApi apiInstance = new AccountsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
@@ -142,7 +132,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -170,7 +160,6 @@ Get account by its address
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.AccountsApi;
 
@@ -178,10 +167,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         AccountsApi apiInstance = new AccountsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
@@ -214,7 +199,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -244,7 +229,6 @@ List accounts from a ledger, sorted by address in descending order.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.AccountsApi;
 
@@ -252,10 +236,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         AccountsApi apiInstance = new AccountsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
@@ -306,7 +286,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 

@@ -61,7 +61,7 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
         'name' => 'string',
         'input' => '\Formance\Model\Stage',
         'error' => 'string',
-        'terminated' => 'Bool',
+        'terminated' => 'bool',
         'started_at' => '\DateTime',
         'terminated_at' => '\DateTime'
     ];
@@ -421,7 +421,7 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Gets terminated
      *
-     * @return Bool
+     * @return bool
      */
     public function getTerminated()
     {
@@ -431,7 +431,7 @@ class WorkflowInstanceHistory implements ModelInterface, ArrayAccess, \JsonSeria
     /**
      * Sets terminated
      *
-     * @param Bool $terminated terminated
+     * @param bool $terminated terminated
      *
      * @return self
      */

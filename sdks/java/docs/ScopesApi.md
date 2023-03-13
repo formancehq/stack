@@ -29,7 +29,6 @@ Add a transient scope to a scope
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ScopesApi;
 
@@ -37,10 +36,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ScopesApi apiInstance = new ScopesApi(defaultClient);
         String scopeId = "scopeId_example"; // String | Scope ID
@@ -72,7 +67,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -101,7 +96,6 @@ Create scope
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ScopesApi;
 
@@ -109,10 +103,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ScopesApi apiInstance = new ScopesApi(defaultClient);
         ScopeOptions body = new ScopeOptions(); // ScopeOptions | 
@@ -143,7 +133,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -172,7 +162,6 @@ Delete scope
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ScopesApi;
 
@@ -180,10 +169,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ScopesApi apiInstance = new ScopesApi(defaultClient);
         String scopeId = "scopeId_example"; // String | Scope ID
@@ -213,7 +198,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -242,7 +227,6 @@ Delete a transient scope from a scope
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ScopesApi;
 
@@ -250,10 +234,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ScopesApi apiInstance = new ScopesApi(defaultClient);
         String scopeId = "scopeId_example"; // String | Scope ID
@@ -285,7 +265,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -314,7 +294,6 @@ List Scopes
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ScopesApi;
 
@@ -322,10 +301,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ScopesApi apiInstance = new ScopesApi(defaultClient);
         try {
@@ -352,7 +327,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -381,7 +356,6 @@ Read scope
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ScopesApi;
 
@@ -389,10 +363,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ScopesApi apiInstance = new ScopesApi(defaultClient);
         String scopeId = "scopeId_example"; // String | Scope ID
@@ -423,7 +393,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -452,7 +422,6 @@ Update scope
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ScopesApi;
 
@@ -460,10 +429,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ScopesApi apiInstance = new ScopesApi(defaultClient);
         String scopeId = "scopeId_example"; // String | Scope ID
@@ -496,7 +461,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 

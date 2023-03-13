@@ -16,10 +16,6 @@
   },
   "servers": [
     {
-      "url": "http://localhost",
-      "description": "local server"
-    },
-    {
       "url": "https://{organization}.sandbox.formance.cloud",
       "description": "sandbox server",
       "variables": {
@@ -28,11 +24,6 @@
           "default": ""
         }
       }
-    }
-  ],
-  "security": [
-    {
-      "Authorization": []
     }
   ],
   "paths": {
@@ -720,7 +711,14 @@
               "type": "object",
               "properties": {}
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": true,
+              "a": {
+                "nested": {
+                  "key": "value"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -821,7 +819,14 @@
               "type": "object",
               "properties": {}
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": true,
+              "a": {
+                "nested": {
+                  "key": "value"
+                }
+              }
+            }
           },
           {
             "name": "balance",
@@ -1224,7 +1229,14 @@
               "type": "object",
               "properties": {}
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": true,
+              "a": {
+                "nested": {
+                  "key": "value"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -1303,7 +1315,7 @@
             "description": "Pagination cursor, will return transactions after given txid (in descending order).",
             "schema": {
               "type": "string",
-              "example": 1234
+              "example": "1234"
             }
           },
           {
@@ -1409,7 +1421,14 @@
               "type": "object",
               "properties": {}
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": true,
+              "a": {
+                "nested": {
+                  "key": "value"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -1850,7 +1869,7 @@
             "description": "Pagination cursor, will return the logs after a given ID. (in descending order).",
             "schema": {
               "type": "string",
-              "example": 1234
+              "example": "1234"
             }
           },
           {
@@ -2693,7 +2712,14 @@
               "type": "object",
               "properties": {}
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": true,
+              "a": {
+                "nested": {
+                  "key": "value"
+                }
+              }
+            }
           },
           {
             "name": "pageSize",
@@ -3047,12 +3073,6 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CreditWalletRequest"
-              },
-              "example": {
-                "amount": {
-                  "asset": "USD/2",
-                  "amount": 100
-                }
               }
             }
           }
@@ -3113,7 +3133,14 @@
               "type": "object",
               "properties": {}
             },
-            "example": "metadata[key]=value1&metadata[a.nested.key]=value2"
+            "example": {
+              "admin": true,
+              "a": {
+                "nested": {
+                  "key": "value"
+                }
+              }
+            }
           },
           {
             "name": "cursor",
@@ -3466,7 +3493,7 @@
             "schema": {
               "type": "boolean"
             },
-            "example": "xxx",
+            "example": true,
             "required": false
           }
         ],
@@ -3690,18 +3717,6 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "Authorization": {
-        "type": "oauth2",
-        "flows": {
-          "clientCredentials": {
-            "tokenUrl": "",
-            "refreshUrl": "",
-            "scopes": {}
-          }
-        }
-      }
-    },
     "schemas": {
       "Metadata": {
         "type": "object",
@@ -5101,7 +5116,7 @@
         ]
       },
       "ConnectorConfig": {
-        "oneOf": [
+        "anyOf": [
           {
             "$ref": "#/components/schemas/StripeConfig"
           },
@@ -5341,7 +5356,8 @@
             "format": "date-time"
           },
           "raw": {
-            "type": "object"
+            "type": "object",
+            "nullable": true
           },
           "adjustments": {
             "type": "array",
@@ -5391,7 +5407,8 @@
           "key": {
             "type": "string"
           }
-        }
+        },
+        "nullable": true
       },
       "paymentsAccount": {
         "type": "object",
@@ -6516,6 +6533,13 @@
             "type": "string",
             "description": "The balance to credit"
           }
+        },
+        "example": {
+          "amount": {
+            "asset": "USD/2",
+            "amount": 100
+          },
+          "sources": []
         }
       },
       "DebitWalletRequest": {
@@ -6819,7 +6843,7 @@
             "type": "string"
           },
           "terminated": {
-            "type": "bool"
+            "type": "boolean"
           },
           "startedAt": {
             "type": "string",
@@ -6860,7 +6884,7 @@
             "type": "string"
           },
           "terminated": {
-            "type": "bool"
+            "type": "boolean"
           },
           "startedAt": {
             "type": "string",
@@ -7486,7 +7510,10 @@
           }
         },
         "description": "Fields used to sort payments (default is date:desc).",
-        "example": "date:asc,status:desc"
+        "example": [
+          "date:asc",
+          "status:desc"
+        ]
       },
       "PaymentId": {
         "name": "paymentId",
