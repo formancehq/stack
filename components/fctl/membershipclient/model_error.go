@@ -67,7 +67,7 @@ func (o *Error) SetErrorCode(v string) {
 
 // GetErrorMessage returns the ErrorMessage field value if set, zero value otherwise.
 func (o *Error) GetErrorMessage() string {
-	if o == nil || isNil(o.ErrorMessage) {
+	if o == nil || IsNil(o.ErrorMessage) {
 		var ret string
 		return ret
 	}
@@ -77,7 +77,7 @@ func (o *Error) GetErrorMessage() string {
 // GetErrorMessageOk returns a tuple with the ErrorMessage field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Error) GetErrorMessageOk() (*string, bool) {
-	if o == nil || isNil(o.ErrorMessage) {
+	if o == nil || IsNil(o.ErrorMessage) {
 		return nil, false
 	}
 	return o.ErrorMessage, true
@@ -85,7 +85,7 @@ func (o *Error) GetErrorMessageOk() (*string, bool) {
 
 // HasErrorMessage returns a boolean if a field has been set.
 func (o *Error) HasErrorMessage() bool {
-	if o != nil && !isNil(o.ErrorMessage) {
+	if o != nil && !IsNil(o.ErrorMessage) {
 		return true
 	}
 
@@ -108,7 +108,7 @@ func (o Error) MarshalJSON() ([]byte, error) {
 func (o Error) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["error_code"] = o.ErrorCode
-	if !isNil(o.ErrorMessage) {
+	if !IsNil(o.ErrorMessage) {
 		toSerialize["error_message"] = o.ErrorMessage
 	}
 	return toSerialize, nil

@@ -21,6 +21,7 @@ var _ MappedNullable = &ListOrganizationExpandedResponseDataInnerAllOf{}
 type ListOrganizationExpandedResponseDataInnerAllOf struct {
 	TotalStacks *int32 `json:"totalStacks,omitempty"`
 	TotalUsers  *int32 `json:"totalUsers,omitempty"`
+	Owner       *User  `json:"owner,omitempty"`
 }
 
 // NewListOrganizationExpandedResponseDataInnerAllOf instantiates a new ListOrganizationExpandedResponseDataInnerAllOf object
@@ -42,7 +43,7 @@ func NewListOrganizationExpandedResponseDataInnerAllOfWithDefaults() *ListOrgani
 
 // GetTotalStacks returns the TotalStacks field value if set, zero value otherwise.
 func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalStacks() int32 {
-	if o == nil || isNil(o.TotalStacks) {
+	if o == nil || IsNil(o.TotalStacks) {
 		var ret int32
 		return ret
 	}
@@ -52,7 +53,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalStacks() int32 
 // GetTotalStacksOk returns a tuple with the TotalStacks field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalStacksOk() (*int32, bool) {
-	if o == nil || isNil(o.TotalStacks) {
+	if o == nil || IsNil(o.TotalStacks) {
 		return nil, false
 	}
 	return o.TotalStacks, true
@@ -60,7 +61,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalStacksOk() (*in
 
 // HasTotalStacks returns a boolean if a field has been set.
 func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasTotalStacks() bool {
-	if o != nil && !isNil(o.TotalStacks) {
+	if o != nil && !IsNil(o.TotalStacks) {
 		return true
 	}
 
@@ -74,7 +75,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) SetTotalStacks(v int32)
 
 // GetTotalUsers returns the TotalUsers field value if set, zero value otherwise.
 func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalUsers() int32 {
-	if o == nil || isNil(o.TotalUsers) {
+	if o == nil || IsNil(o.TotalUsers) {
 		var ret int32
 		return ret
 	}
@@ -84,7 +85,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalUsers() int32 {
 // GetTotalUsersOk returns a tuple with the TotalUsers field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalUsersOk() (*int32, bool) {
-	if o == nil || isNil(o.TotalUsers) {
+	if o == nil || IsNil(o.TotalUsers) {
 		return nil, false
 	}
 	return o.TotalUsers, true
@@ -92,7 +93,7 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetTotalUsersOk() (*int
 
 // HasTotalUsers returns a boolean if a field has been set.
 func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasTotalUsers() bool {
-	if o != nil && !isNil(o.TotalUsers) {
+	if o != nil && !IsNil(o.TotalUsers) {
 		return true
 	}
 
@@ -102,6 +103,38 @@ func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasTotalUsers() bool {
 // SetTotalUsers gets a reference to the given int32 and assigns it to the TotalUsers field.
 func (o *ListOrganizationExpandedResponseDataInnerAllOf) SetTotalUsers(v int32) {
 	o.TotalUsers = &v
+}
+
+// GetOwner returns the Owner field value if set, zero value otherwise.
+func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetOwner() User {
+	if o == nil || IsNil(o.Owner) {
+		var ret User
+		return ret
+	}
+	return *o.Owner
+}
+
+// GetOwnerOk returns a tuple with the Owner field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ListOrganizationExpandedResponseDataInnerAllOf) GetOwnerOk() (*User, bool) {
+	if o == nil || IsNil(o.Owner) {
+		return nil, false
+	}
+	return o.Owner, true
+}
+
+// HasOwner returns a boolean if a field has been set.
+func (o *ListOrganizationExpandedResponseDataInnerAllOf) HasOwner() bool {
+	if o != nil && !IsNil(o.Owner) {
+		return true
+	}
+
+	return false
+}
+
+// SetOwner gets a reference to the given User and assigns it to the Owner field.
+func (o *ListOrganizationExpandedResponseDataInnerAllOf) SetOwner(v User) {
+	o.Owner = &v
 }
 
 func (o ListOrganizationExpandedResponseDataInnerAllOf) MarshalJSON() ([]byte, error) {
@@ -114,11 +147,14 @@ func (o ListOrganizationExpandedResponseDataInnerAllOf) MarshalJSON() ([]byte, e
 
 func (o ListOrganizationExpandedResponseDataInnerAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.TotalStacks) {
+	if !IsNil(o.TotalStacks) {
 		toSerialize["totalStacks"] = o.TotalStacks
 	}
-	if !isNil(o.TotalUsers) {
+	if !IsNil(o.TotalUsers) {
 		toSerialize["totalUsers"] = o.TotalUsers
+	}
+	if !IsNil(o.Owner) {
+		toSerialize["owner"] = o.Owner
 	}
 	return toSerialize, nil
 }

@@ -122,7 +122,7 @@ func (o *StackAllOf) SetUri(v string) {
 
 // GetBoundRegion returns the BoundRegion field value if set, zero value otherwise.
 func (o *StackAllOf) GetBoundRegion() Region {
-	if o == nil || isNil(o.BoundRegion) {
+	if o == nil || IsNil(o.BoundRegion) {
 		var ret Region
 		return ret
 	}
@@ -132,7 +132,7 @@ func (o *StackAllOf) GetBoundRegion() Region {
 // GetBoundRegionOk returns a tuple with the BoundRegion field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *StackAllOf) GetBoundRegionOk() (*Region, bool) {
-	if o == nil || isNil(o.BoundRegion) {
+	if o == nil || IsNil(o.BoundRegion) {
 		return nil, false
 	}
 	return o.BoundRegion, true
@@ -140,7 +140,7 @@ func (o *StackAllOf) GetBoundRegionOk() (*Region, bool) {
 
 // HasBoundRegion returns a boolean if a field has been set.
 func (o *StackAllOf) HasBoundRegion() bool {
-	if o != nil && !isNil(o.BoundRegion) {
+	if o != nil && !IsNil(o.BoundRegion) {
 		return true
 	}
 
@@ -165,7 +165,7 @@ func (o StackAllOf) ToMap() (map[string]interface{}, error) {
 	toSerialize["id"] = o.Id
 	toSerialize["organizationId"] = o.OrganizationId
 	toSerialize["uri"] = o.Uri
-	if !isNil(o.BoundRegion) {
+	if !IsNil(o.BoundRegion) {
 		toSerialize["boundRegion"] = o.BoundRegion
 	}
 	return toSerialize, nil

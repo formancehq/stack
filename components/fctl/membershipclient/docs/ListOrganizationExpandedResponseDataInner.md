@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **OwnerId** | **string** | Owner ID |
 **TotalStacks** | Pointer to **int32** |  | [optional]
 **TotalUsers** | Pointer to **int32** |  | [optional]
+**Owner** | Pointer to [**User**](User.md) |  | [optional]
 
 ## Methods
 
@@ -138,6 +139,31 @@ SetTotalUsers sets TotalUsers field to given value.
 `func (o *ListOrganizationExpandedResponseDataInner) HasTotalUsers() bool`
 
 HasTotalUsers returns a boolean if a field has been set.
+
+### GetOwner
+
+`func (o *ListOrganizationExpandedResponseDataInner) GetOwner() User`
+
+GetOwner returns the Owner field if non-nil, zero value otherwise.
+
+### GetOwnerOk
+
+`func (o *ListOrganizationExpandedResponseDataInner) GetOwnerOk() (*User, bool)`
+
+GetOwnerOk returns a tuple with the Owner field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetOwner
+
+`func (o *ListOrganizationExpandedResponseDataInner) SetOwner(v User)`
+
+SetOwner sets Owner field to given value.
+
+### HasOwner
+
+`func (o *ListOrganizationExpandedResponseDataInner) HasOwner() bool`
+
+HasOwner returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
