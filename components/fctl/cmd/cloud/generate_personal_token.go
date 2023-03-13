@@ -8,7 +8,7 @@ import (
 )
 
 func NewGeneratePersonalTokenCommand() *cobra.Command {
-	return fctl.NewCommand("generate-personal-token",
+	return fctl.NewStackCommand("generate-personal-token",
 		fctl.WithDescription("Generate a personal bearer token"),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
 			cfg, err := fctl.GetConfig(cmd)
