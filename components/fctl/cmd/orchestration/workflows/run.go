@@ -61,7 +61,7 @@ func NewRunCommand() *cobra.Command {
 				return errors.Wrap(err, "running workflow")
 			}
 
-			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow occurrence created with ID: %s", res.Data.Id)
+			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Workflow instance created with ID: %s", res.Data.Id)
 			if wait {
 				w, _, err := client.OrchestrationApi.GetWorkflow(cmd.Context(), args[0]).Execute()
 				if err != nil {
