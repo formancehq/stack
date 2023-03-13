@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	"time"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/collectionutils"
@@ -317,11 +316,12 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 	if ctx.Configuration.Spec.Broker.Nats != nil && service.NeedTopic {
 		topicName := fmt.Sprintf("%s-%s", ctx.Stack.GetServiceNamespacedName(serviceName), serviceName)
 		streamConfig := nats.StreamConfig{
-			Name:     topicName,
-			Subjects: []string{topicName},
-			MaxBytes: 1024,
-			MaxMsgs:  10000,
-			MaxAge:   4 * time.Hour, // 1 hour
+			Name:      topicName,
+			Subjects:  []string{topicName},
+			Retention: 1,
+			//MaxBytes: 1024,
+			//MaxMsgs:  10000,
+			//MaxAge:   4 * time.Hour, // 1 hour
 		}
 		nc, _ := nats.Connect(ctx.Configuration.Spec.Broker.Nats.URL)
 		js, _ := nc.JetStream()
