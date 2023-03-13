@@ -40,6 +40,11 @@ func Open(url string) error {
 	default: // "linux", "freebsd", "openbsd", "netbsd"
 		cmd = "xdg-open"
 	}
-	args = append(args, url)
-	return exec.Command(cmd, args...).Start()
+	_, err := exec.LookPath(cmd)
+	if err == nil {
+		args = append(args, url)
+		return exec.Command(cmd, args...).Start()
+	}
+	Printfln("Unable to find a browser, please open the following link: %s", url)
+	return nil
 }
