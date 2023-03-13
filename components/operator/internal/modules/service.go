@@ -317,7 +317,7 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 		topicName := fmt.Sprintf("%s-%s", ctx.Stack.GetServiceNamespacedName(serviceName), serviceName)
 		streamConfig := nats.StreamConfig{
 			Name:      topicName,
-			Subjects:  []string{},
+			Subjects:  []string{topicName + ".*"},
 			Retention: nats.InterestPolicy,
 		}
 		nc, _ := nats.Connect(ctx.Configuration.Spec.Broker.Nats.URL)
