@@ -56,9 +56,6 @@ request_path_hold_id = api_client.PathParameter(
     schema=HoldIDSchema,
     required=True,
 )
-_auth = [
-    'Authorization',
-]
 SchemaFor200ResponseBodyApplicationJson = GetHoldResponse
 
 
@@ -184,7 +181,6 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='get'.upper(),
             headers=_headers,
-            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

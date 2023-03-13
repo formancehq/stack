@@ -67,9 +67,6 @@ request_body_debit_wallet_request = api_client.RequestBody(
             schema=SchemaForRequestBodyApplicationJson),
     },
 )
-_auth = [
-    'Authorization',
-]
 SchemaFor201ResponseBodyApplicationJson = DebitWalletResponse
 
 
@@ -246,7 +243,6 @@ class BaseApi(api_client.Api):
             headers=_headers,
             fields=_fields,
             body=_body,
-            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

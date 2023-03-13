@@ -29,9 +29,6 @@ func (c contextKey) String() string {
 }
 
 var (
-	// ContextOAuth2 takes an oauth2.TokenSource as authentication for the request.
-	ContextOAuth2 = contextKey("token")
-
 	// ContextServerIndex uses a server configuration from the index.
 	ContextServerIndex = contextKey("serverIndex")
 
@@ -94,18 +91,8 @@ func NewConfiguration() *Configuration {
 		Debug:            false,
 		Servers:          ServerConfigurations{
 			{
-				URL: "http://localhost",
-				Description: "local server",
-			},
-			{
-				URL: "https://{organization}.sandbox.formance.cloud",
-				Description: "sandbox server",
-				Variables: map[string]ServerVariable{
-					"organization": ServerVariable{
-						Description: "The organization on which the ledger is located",
-						DefaultValue: "",
-					},
-				},
+				URL: "",
+				Description: "No description provided",
 			},
 		},
 		OperationServers: map[string]ServerConfigurations{

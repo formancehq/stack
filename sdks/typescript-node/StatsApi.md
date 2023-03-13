@@ -46,7 +46,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 

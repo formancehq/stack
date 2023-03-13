@@ -10,7 +10,6 @@
  * Do not edit the class manually.
  */
 
-import { Bool } from '../models/Bool';
 import { Stage } from '../models/Stage';
 import { HttpFile } from '../http/http';
 
@@ -18,7 +17,7 @@ export class WorkflowInstanceHistory {
     'name': string;
     'input': Stage;
     'error'?: string;
-    'terminated': Bool;
+    'terminated': boolean;
     'startedAt': Date;
     'terminatedAt'?: Date;
 
@@ -46,7 +45,7 @@ export class WorkflowInstanceHistory {
         {
             "name": "terminated",
             "baseName": "terminated",
-            "type": "Bool",
+            "type": "boolean",
             "format": ""
         },
         {

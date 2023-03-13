@@ -39,7 +39,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 

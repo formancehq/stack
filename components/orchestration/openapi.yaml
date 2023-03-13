@@ -137,7 +137,7 @@ paths:
         name: running
         schema:
           type: boolean
-        example: xxx
+        example: true
         required: false
       tags:
       - Orchestration
@@ -404,7 +404,7 @@ components:
         error:
           type: string
         terminated:
-          type: bool
+          type: boolean
         startedAt:
           type: string
           format: date-time
@@ -433,7 +433,7 @@ components:
         error:
           type: string
         terminated:
-          type: bool
+          type: boolean
         startedAt:
           type: string
           format: date-time

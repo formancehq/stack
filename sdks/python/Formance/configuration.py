@@ -77,7 +77,6 @@ class Configuration(object):
       string values to replace variables in templated server configuration.
       The validation of enums is performed for variables with defined enum values before.
 
-    :Example:
     """
 
     _default = None
@@ -91,7 +90,6 @@ class Configuration(object):
         server_variables=None,
         server_operation_index=None,
         server_operation_variables=None,
-        access_token=None,
     ):
         """Constructor
         """
@@ -111,9 +109,6 @@ class Configuration(object):
         """
         # Authentication Settings
         self.disabled_client_side_validations = disabled_client_side_validations
-        self.access_token = None
-        """access token for OAuth/Bearer
-        """
         self.logger = {}
         """Logging Settings
         """
@@ -351,13 +346,6 @@ class Configuration(object):
         :return: The Auth Settings information dict.
         """
         auth = {}
-        if self.access_token is not None:
-            auth['Authorization'] = {
-                'type': 'oauth2',
-                'in': 'header',
-                'key': 'Authorization',
-                'value': 'Bearer ' + self.access_token
-            }
         return auth
 
     def to_debug_report(self):
@@ -379,18 +367,8 @@ class Configuration(object):
         """
         return [
             {
-                'url': "http://localhost",
-                'description': "local server",
-            },
-            {
-                'url': "https://{organization}.sandbox.formance.cloud",
-                'description': "sandbox server",
-                'variables': {
-                    'organization': {
-                        'description': "The organization on which the ledger is located",
-                        'default_value': "",
-                        }
-                    }
+                'url': "",
+                'description': "No description provided",
             }
         ]
 

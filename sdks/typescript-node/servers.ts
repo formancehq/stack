@@ -50,7 +50,6 @@ export class ServerConfiguration<T extends { [key: string]: string }> implements
     }
 }
 
-export const server1 = new ServerConfiguration<{  }>("http://localhost", {  })
-export const server2 = new ServerConfiguration<{  "organization": string  }>("https://{organization}.sandbox.formance.cloud", {  "organization": ""  })
+export const server1 = new ServerConfiguration<{  }>("", {  })
 
-export const servers = [server1, server2];
+export const servers = [server1];
