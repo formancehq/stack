@@ -71,7 +71,7 @@ func (l *Ledger) ExecuteScript(ctx context.Context, preview bool, script core.Sc
 	}
 
 	if script.Reference != "" {
-		txs, err := l.GetTransactions(ctx, *NewTransactionsQuery().
+		txs, err := l.GetTransactions(ctx, *storage.NewTransactionsQuery().
 			WithReferenceFilter(script.Reference))
 		if err != nil {
 			return core.ExpandedTransaction{}, func(_ context.Context) error {

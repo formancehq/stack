@@ -7,6 +7,7 @@ import (
 
 	"github.com/dgraph-io/ristretto"
 	"github.com/formancehq/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 )
@@ -14,7 +15,7 @@ import (
 type waitLogsAndPostProcessing func(context.Context) error
 
 type Ledger struct {
-	store               Store
+	store               storage.LedgerStore
 	monitor             Monitor
 	allowPastTimestamps bool
 	cache               *ristretto.Cache
@@ -37,7 +38,7 @@ var defaultLedgerOptions = []LedgerOption{
 	WithLocker(NewInMemoryLocker()),
 }
 
-func NewLedger(store Store, monitor Monitor, cache *ristretto.Cache, options ...LedgerOption) (*Ledger, error) {
+func NewLedger(store storage.LedgerStore, monitor Monitor, cache *ristretto.Cache, options ...LedgerOption) (*Ledger, error) {
 	l := &Ledger{
 		store:   store,
 		monitor: monitor,
@@ -61,15 +62,15 @@ func (l *Ledger) Close(ctx context.Context) error {
 	return nil
 }
 
-func (l *Ledger) GetLedgerStore() Store {
+func (l *Ledger) GetLedgerStore() storage.LedgerStore {
 	return l.store
 }
 
-func (l *Ledger) GetTransactions(ctx context.Context, q TransactionsQuery) (api.Cursor[core.ExpandedTransaction], error) {
+func (l *Ledger) GetTransactions(ctx context.Context, q storage.TransactionsQuery) (api.Cursor[core.ExpandedTransaction], error) {
 	return l.store.GetTransactions(ctx, q)
 }
 
-func (l *Ledger) CountTransactions(ctx context.Context, q TransactionsQuery) (uint64, error) {
+func (l *Ledger) CountTransactions(ctx context.Context, q storage.TransactionsQuery) (uint64, error) {
 	return l.store.CountTransactions(ctx, q)
 }
 
@@ -159,11 +160,11 @@ func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.Expand
 	}
 }
 
-func (l *Ledger) CountAccounts(ctx context.Context, a AccountsQuery) (uint64, error) {
+func (l *Ledger) CountAccounts(ctx context.Context, a storage.AccountsQuery) (uint64, error) {
 	return l.store.CountAccounts(ctx, a)
 }
 
-func (l *Ledger) GetAccounts(ctx context.Context, a AccountsQuery) (api.Cursor[core.Account], error) {
+func (l *Ledger) GetAccounts(ctx context.Context, a storage.AccountsQuery) (api.Cursor[core.Account], error) {
 	return l.store.GetAccounts(ctx, a)
 }
 
@@ -171,11 +172,11 @@ func (l *Ledger) GetAccount(ctx context.Context, address string) (*core.AccountW
 	return l.store.GetAccountWithVolumes(ctx, address)
 }
 
-func (l *Ledger) GetBalances(ctx context.Context, q BalancesQuery) (api.Cursor[core.AccountsBalances], error) {
+func (l *Ledger) GetBalances(ctx context.Context, q storage.BalancesQuery) (api.Cursor[core.AccountsBalances], error) {
 	return l.store.GetBalances(ctx, q)
 }
 
-func (l *Ledger) GetBalancesAggregated(ctx context.Context, q BalancesQuery) (core.AssetsBalances, error) {
+func (l *Ledger) GetBalancesAggregated(ctx context.Context, q storage.BalancesQuery) (core.AssetsBalances, error) {
 	return l.store.GetBalancesAggregated(ctx, q)
 }
 
@@ -236,6 +237,6 @@ func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID inter
 	}
 }
 
-func (l *Ledger) GetLogs(ctx context.Context, q *LogsQuery) (api.Cursor[core.Log], error) {
+func (l *Ledger) GetLogs(ctx context.Context, q *storage.LogsQuery) (api.Cursor[core.Log], error) {
 	return l.store.GetLogs(ctx, q)
 }
