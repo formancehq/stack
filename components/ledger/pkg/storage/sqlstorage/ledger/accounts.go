@@ -17,8 +17,7 @@ import (
 )
 
 const (
-	accountsTableName     = "accounts"
-	cqrsAccountsTableName = "accounts2"
+	accountsTableName = "accounts"
 )
 
 type Accounts struct {
@@ -39,16 +38,7 @@ type AccountsPaginationToken struct {
 }
 
 func (s *Store) buildAccountsQuery(ctx context.Context, p storage.AccountsQuery) (*bun.SelectQuery, AccountsPaginationToken) {
-	var (
-		accountsTableName = accountsTableName
-		volumesTableName  = volumesTableName
-	)
-	if storage.IsCQRSContext(ctx) {
-		accountsTableName = cqrsAccountsTableName
-		volumesTableName = cqrsVolumesTableName
-	}
-	sb := s.schema.NewSelectWithAlias(accountsTableName, "accounts").
-		Model((*Accounts)(nil))
+	sb := s.schema.NewSelect(accountsTableName).Model((*Accounts)(nil))
 	t := AccountsPaginationToken{}
 
 	var (
@@ -194,7 +184,7 @@ func (s *Store) GetAccount(ctx context.Context, addr string) (*core.Account, err
 		String()
 
 	account := core.Account{
-		Address:  core.AccountAddress(addr),
+		Address:  addr,
 		Metadata: core.Metadata{},
 	}
 
@@ -213,32 +203,27 @@ func (s *Store) GetAccount(ctx context.Context, addr string) (*core.Account, err
 	return &account, nil
 }
 
-func (s *Store) GetAccountWithVolumes(ctx context.Context, account string) (*core.AccountWithVolumes, error) {
+func (s *Store) getAccountWithVolumes(ctx context.Context, exec interface {
+	QueryContext(
+		ctx context.Context, query string, args ...interface{},
+	) (*sql.Rows, error)
+}, account string) (*core.AccountWithVolumes, error) {
 
-	var (
-		accountsTableName = accountsTableName
-		volumesTableName  = volumesTableName
-	)
-	if storage.IsCQRSContext(ctx) {
-		accountsTableName = cqrsAccountsTableName
-		volumesTableName = cqrsVolumesTableName
-	}
-
-	query := s.schema.NewSelectWithAlias(accountsTableName, "accounts").
+	query := s.schema.NewSelect(accountsTableName).
 		Model((*Accounts)(nil)).
 		ColumnExpr("accounts.metadata, volumes.asset, volumes.input, volumes.output").
 		Join("LEFT OUTER JOIN "+s.schema.Table(volumesTableName)+" volumes").
 		JoinOn("accounts.address = volumes.account").
 		Where("accounts.address = ?", account).String()
 
-	rows, err := s.schema.QueryContext(ctx, query)
+	rows, err := exec.QueryContext(ctx, query)
 	if err != nil {
 		return nil, s.error(err)
 	}
 	defer rows.Close()
 
 	acc := core.Account{
-		Address:  core.AccountAddress(account),
+		Address:  account,
 		Metadata: core.Metadata{},
 	}
 	assetsVolumes := core.AssetsVolumes{}
@@ -291,6 +276,10 @@ func (s *Store) GetAccountWithVolumes(ctx context.Context, account string) (*cor
 	return res, nil
 }
 
+func (s *Store) GetAccountWithVolumes(ctx context.Context, account string) (*core.AccountWithVolumes, error) {
+	return s.getAccountWithVolumes(ctx, s.schema, account)
+}
+
 func (s *Store) CountAccounts(ctx context.Context, q storage.AccountsQuery) (uint64, error) {
 	sb, _ := s.buildAccountsQuery(ctx, q)
 	count, err := sb.Count(ctx)
@@ -301,13 +290,6 @@ func (s *Store) EnsureAccountExists(ctx context.Context, account string) error {
 	a := &Accounts{
 		Address:  account,
 		Metadata: make(map[string]interface{}),
-	}
-
-	var (
-		accountsTableName = accountsTableName
-	)
-	if storage.IsCQRSContext(ctx) {
-		accountsTableName = cqrsAccountsTableName
 	}
 
 	_, err := s.schema.NewInsert(accountsTableName).
@@ -324,18 +306,65 @@ func (s *Store) UpdateAccountMetadata(ctx context.Context, address string, metad
 		Metadata: metadata,
 	}
 
-	var (
-		accountsTableName = accountsTableName
-	)
-	if storage.IsCQRSContext(ctx) {
-		accountsTableName = cqrsAccountsTableName
-	}
-
-	_, err := s.schema.NewInsertWithAlias(accountsTableName, "accounts").
+	_, err := s.schema.NewInsert(accountsTableName).
 		Model(a).
 		On("CONFLICT (address) DO UPDATE").
 		Set("metadata = accounts.metadata || EXCLUDED.metadata").
 		Exec(ctx)
 	return err
 
+}
+
+func (s *Store) ComputeAccount(ctx context.Context, address string) (*core.AccountWithVolumes, error) {
+	tx, err := s.schema.BeginTx(ctx, &sql.TxOptions{
+		ReadOnly: true,
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	account, err := s.getAccountWithVolumes(ctx, tx, address)
+	if err != nil {
+		return nil, err
+	}
+
+	nextLogID, err := s.getNextLogID(ctx, tx)
+	if err != nil {
+		return nil, err
+	}
+
+	notReadLogs, err := s.readLogsStartingFromID(ctx, tx, nextLogID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, log := range notReadLogs {
+		switch log.Type {
+		case core.NewTransactionLogType:
+			for _, posting := range log.Data.(core.NewTransactionLogPayload).Transaction.Postings {
+				volumes, ok := account.Volumes[posting.Asset]
+				if !ok {
+					volumes.Input = core.NewMonetaryInt(0)
+					volumes.Output = core.NewMonetaryInt(0)
+				}
+				switch {
+				case posting.Source == address:
+					volumes.Output = volumes.Output.Add(posting.Amount)
+				case posting.Destination == address:
+					volumes.Input = volumes.Input.Add(posting.Amount)
+				}
+				account.Volumes[posting.Asset] = volumes
+				account.Balances[posting.Asset] = volumes.Input.Sub(volumes.Output)
+			}
+		case core.SetMetadataLogType:
+			if log.Data.(core.SetMetadataLogPayload).TargetID == address {
+				account.Metadata = account.Metadata.Merge(log.Data.(core.SetMetadataLogPayload).Metadata)
+			}
+		}
+	}
+
+	return account, nil
 }

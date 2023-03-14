@@ -35,7 +35,7 @@ func TestWorker(t *testing.T) {
 
 	worker := NewWorker(workerConfig{
 		Interval: 100 * time.Millisecond,
-	}, driver)
+	}, driver, NewNoOpMonitor())
 	go func() {
 		require.NoError(t, worker.Run(context.Background()))
 	}()
@@ -44,7 +44,7 @@ func TestWorker(t *testing.T) {
 	}()
 
 	var (
-		now = time.Now().Round(time.Second).UTC()
+		now = core.Now()
 	)
 
 	tx0 := core.Transaction{
@@ -80,19 +80,19 @@ func TestWorker(t *testing.T) {
 	}
 
 	logs := []core.Log{
-		core.NewTransactionLog(tx0),
-		core.NewTransactionLog(tx1),
-		core.NewSetMetadataLog(now, core.SetMetadata{
+		core.NewTransactionLog(tx0, nil),
+		core.NewTransactionLog(tx1, nil),
+		core.NewSetMetadataLog(now, core.SetMetadataLogPayload{
 			TargetType: core.MetaTargetTypeTransaction,
 			TargetID:   tx1.ID,
 			Metadata:   appliedMetadataOnTX1,
 		}),
-		core.NewSetMetadataLog(now, core.SetMetadata{
+		core.NewSetMetadataLog(now, core.SetMetadataLogPayload{
 			TargetType: core.MetaTargetTypeAccount,
 			TargetID:   "bank",
 			Metadata:   appliedMetadataOnAccount,
 		}),
-		core.NewSetMetadataLog(now, core.SetMetadata{
+		core.NewSetMetadataLog(now, core.SetMetadataLogPayload{
 			TargetType: core.MetaTargetTypeAccount,
 			TargetID:   "another:account",
 			Metadata:   appliedMetadataOnAccount,
@@ -115,33 +115,19 @@ func TestWorker(t *testing.T) {
 
 	count, err := ledgerStore.CountTransactions(context.Background(), *storage.NewTransactionsQuery())
 	require.NoError(t, err)
-	require.EqualValues(t, 0, count)
+	require.EqualValues(t, 2, count)
 
 	count, err = ledgerStore.CountAccounts(context.Background(), *storage.NewAccountsQuery())
 	require.NoError(t, err)
-	require.EqualValues(t, 0, count)
-
-	account, err := ledgerStore.GetAccountWithVolumes(context.Background(), "bank")
-	require.NoError(t, err)
-	require.Empty(t, account.Volumes)
-
-	cqrsContext := storage.NewCQRSContext(context.Background())
-
-	count, err = ledgerStore.CountTransactions(cqrsContext, *storage.NewTransactionsQuery())
-	require.NoError(t, err)
-	require.EqualValues(t, 2, count)
-
-	count, err = ledgerStore.CountAccounts(cqrsContext, *storage.NewAccountsQuery())
-	require.NoError(t, err)
 	require.EqualValues(t, 4, count)
 
-	account, err = ledgerStore.GetAccountWithVolumes(cqrsContext, "bank")
+	account, err := ledgerStore.GetAccountWithVolumes(context.Background(), "bank")
 	require.NoError(t, err)
 	require.NotEmpty(t, account.Volumes)
 	require.EqualValues(t, 100, account.Volumes["USD/2"].Input.Uint64())
 	require.EqualValues(t, 10, account.Volumes["USD/2"].Output.Uint64())
 
-	tx1FromDatabase, err := ledgerStore.GetTransaction(cqrsContext, 1)
+	tx1FromDatabase, err := ledgerStore.GetTransaction(context.Background(), 1)
 	tx1.Metadata = appliedMetadataOnTX1
 	require.NoError(t, err)
 	require.Equal(t, core.ExpandedTransaction{
@@ -176,7 +162,7 @@ func TestWorker(t *testing.T) {
 		},
 	}, *tx1FromDatabase)
 
-	accountWithVolumes, err := ledgerStore.GetAccountWithVolumes(cqrsContext, "bank")
+	accountWithVolumes, err := ledgerStore.GetAccountWithVolumes(context.Background(), "bank")
 	require.NoError(t, err)
 	require.Equal(t, &core.AccountWithVolumes{
 		Account: core.Account{
@@ -194,7 +180,7 @@ func TestWorker(t *testing.T) {
 		},
 	}, accountWithVolumes)
 
-	accountWithVolumes, err = ledgerStore.GetAccountWithVolumes(cqrsContext, "another:account")
+	accountWithVolumes, err = ledgerStore.GetAccountWithVolumes(context.Background(), "another:account")
 	require.NoError(t, err)
 	require.Equal(t, &core.AccountWithVolumes{
 		Account: core.Account{

@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/dgraph-io/ristretto"
+	"github.com/formancehq/ledger/pkg/cache"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/pkg/errors"
 	"go.uber.org/fx"
@@ -19,39 +19,28 @@ func (fn ResolveOptionFn) apply(r *Resolver) error {
 	return fn(r)
 }
 
-func WithMonitor(monitor Monitor) ResolveOptionFn {
-	return func(r *Resolver) error {
-		r.monitor = monitor
-		return nil
-	}
-}
-
-var DefaultResolverOptions = []ResolverOption{
-	WithMonitor(&noOpMonitor{}),
-}
+var DefaultResolverOptions = []ResolverOption{}
 
 type Resolver struct {
 	storageDriver     storage.Driver
 	lock              sync.RWMutex
 	initializedStores map[string]struct{}
-	monitor           Monitor
-	ledgerOptions     []LedgerOption
-	cache             *ristretto.Cache
+	ledgerOptions     []Option
 	locker            Locker
+	dbCache           *cache.Cache
 }
 
 func NewResolver(
 	storageDriver storage.Driver,
-	ledgerOptions []LedgerOption,
-	cacheBytesCapacity, cacheMaxNumKeys int64,
+	ledgerOptions []Option,
 	locker Locker,
 	options ...ResolverOption,
 ) *Resolver {
 	options = append(DefaultResolverOptions, options...)
 	r := &Resolver{
 		storageDriver:     storageDriver,
+		dbCache:           cache.NewCache(storageDriver),
 		initializedStores: map[string]struct{}{},
-		cache:             NewCache(cacheBytesCapacity, cacheMaxNumKeys, false),
 		locker:            locker,
 	}
 	for _, opt := range options {
@@ -74,7 +63,7 @@ func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) 
 	_, ok := r.initializedStores[name]
 	r.lock.RUnlock()
 	if ok {
-		return NewLedger(store, r.monitor, r.cache, r.ledgerOptions...)
+		return NewLedger(store, r.dbCache.ForLedger(name), r.ledgerOptions...)
 	}
 
 	r.lock.Lock()
@@ -88,11 +77,8 @@ func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) 
 		r.initializedStores[name] = struct{}{}
 	}
 
-	return NewLedger(store, r.monitor, r.cache, append(r.ledgerOptions, WithLocker(r.locker))...)
-}
-
-func (r *Resolver) Close() {
-	r.cache.Close()
+	return NewLedger(store, r.dbCache.ForLedger(name),
+		append(r.ledgerOptions, WithLocker(r.locker))...)
 }
 
 const ResolverOptionsKey = `group:"_ledgerResolverOptions"`
@@ -104,23 +90,15 @@ func ProvideResolverOption(provider interface{}) fx.Option {
 	)
 }
 
-func ResolveModule(cacheBytesCapacity, cacheMaxNumKeys int64) fx.Option {
+func ResolveModule() fx.Option {
 	return fx.Options(
 		fx.Provide(
-			fx.Annotate(func(storageFactory storage.Driver, ledgerOptions []LedgerOption, locker Locker, options ...ResolverOption) *Resolver {
-				return NewResolver(storageFactory, ledgerOptions, cacheBytesCapacity, cacheMaxNumKeys, locker, options...)
+			fx.Annotate(func(storageFactory storage.Driver, ledgerOptions []Option, locker Locker, options ...ResolverOption) *Resolver {
+				return NewResolver(storageFactory, ledgerOptions, locker, options...)
 			}, fx.ParamTags("", ResolverLedgerOptionsKey, "", ResolverOptionsKey)),
 		),
 		fx.Provide(func() Locker {
 			return NewInMemoryLocker()
-		}),
-		fx.Invoke(func(lc fx.Lifecycle, r *Resolver) {
-			lc.Append(fx.Hook{
-				OnStop: func(ctx context.Context) error {
-					r.Close()
-					return nil
-				},
-			})
 		}),
 	)
 }

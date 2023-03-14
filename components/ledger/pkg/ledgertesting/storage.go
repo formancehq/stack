@@ -10,6 +10,7 @@ import (
 	"go.uber.org/fx"
 )
 
+// TODO(gfyrag): Remove second return
 func StorageDriver(t pgtesting.TestingT) (*sqlstorage.Driver, func(), error) {
 	pgServer := pgtesting.NewPostgresDatabase(t)
 

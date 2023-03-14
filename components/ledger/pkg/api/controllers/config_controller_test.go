@@ -1,7 +1,6 @@
 package controllers_test
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"testing"
@@ -10,34 +9,27 @@ import (
 	"github.com/formancehq/ledger/pkg/api/controllers"
 	"github.com/formancehq/ledger/pkg/api/internal"
 	"github.com/formancehq/ledger/pkg/storage"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/fx"
 )
 
 func TestGetInfo(t *testing.T) {
-	internal.RunTest(t, fx.Invoke(func(lc fx.Lifecycle, h *api.API, driver storage.Driver) {
-		lc.Append(fx.Hook{
-			OnStart: func(ctx context.Context) error {
-				rsp := internal.GetInfo(h)
-				assert.Equal(t, http.StatusOK, rsp.Result().StatusCode)
+	internal.RunTest(t, func(h *api.API, driver storage.Driver) {
+		rsp := internal.GetInfo(h)
+		require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
 
-				info := controllers.ConfigInfo{}
-				require.NoError(t, json.NewDecoder(rsp.Body).Decode(&info))
+		info := controllers.ConfigInfo{}
+		require.NoError(t, json.NewDecoder(rsp.Body).Decode(&info))
 
-				info.Config.LedgerStorage.Ledgers = []string{}
-				assert.EqualValues(t, controllers.ConfigInfo{
-					Server:  "ledger",
-					Version: "latest",
-					Config: &controllers.Config{
-						LedgerStorage: &controllers.LedgerStorage{
-							Driver:  driver.Name(),
-							Ledgers: []string{},
-						},
-					},
-				}, info)
-				return nil
+		info.Config.LedgerStorage.Ledgers = []string{}
+		require.EqualValues(t, controllers.ConfigInfo{
+			Server:  "ledger",
+			Version: "latest",
+			Config: &controllers.Config{
+				LedgerStorage: &controllers.LedgerStorage{
+					Driver:  driver.Name(),
+					Ledgers: []string{},
+				},
 			},
-		})
-	}))
+		}, info)
+	})
 }

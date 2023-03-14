@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/machine"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
@@ -56,11 +57,12 @@ func coreErrorToErrorCode(err error) (int, string, string) {
 		return http.StatusBadRequest, ErrValidation, ""
 	case ledger.IsNotFoundError(err):
 		return http.StatusNotFound, ErrNotFound, ""
-	case ledger.IsScriptErrorWithCode(err, ErrScriptNoScript),
-		ledger.IsScriptErrorWithCode(err, ErrInsufficientFund),
-		ledger.IsScriptErrorWithCode(err, ErrScriptCompilationFailed),
-		ledger.IsScriptErrorWithCode(err, ErrScriptMetadataOverride):
-		scriptErr := err.(*ledger.ScriptError)
+	case machine.IsScriptErrorWithCode(err, ErrScriptNoScript),
+		machine.IsScriptErrorWithCode(err, ErrInsufficientFund),
+		machine.IsScriptErrorWithCode(err, ErrScriptCompilationFailed),
+		machine.IsScriptErrorWithCode(err, ErrScriptMetadataOverride):
+		scriptErr := &machine.ScriptError{}
+		_ = errors.As(err, &scriptErr)
 		return http.StatusBadRequest, scriptErr.Code, EncodeLink(scriptErr.Message)
 	case errors.Is(err, context.Canceled):
 		return http.StatusInternalServerError, ErrContextCancelled, ""

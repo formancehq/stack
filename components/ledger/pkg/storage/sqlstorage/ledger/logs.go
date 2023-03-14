@@ -6,7 +6,6 @@ import (
 	"database/sql/driver"
 	"encoding/base64"
 	"encoding/json"
-	"time"
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
@@ -27,15 +26,15 @@ type Log struct {
 	ID   uint64          `bun:"id,unique,type:bigint"`
 	Type string          `bun:"type,type:varchar"`
 	Hash string          `bun:"hash,type:varchar"`
-	Date time.Time       `bun:"date,type:timestamptz"`
+	Date core.Time       `bun:"date,type:timestamptz"`
 	Data json.RawMessage `bun:"data,type:jsonb"`
 }
 
 type LogsPaginationToken struct {
 	AfterID   uint64    `json:"after"`
 	PageSize  uint      `json:"pageSize,omitempty"`
-	StartTime time.Time `json:"startTime,omitempty"`
-	EndTime   time.Time `json:"endTime,omitempty"`
+	StartTime core.Time `json:"startTime,omitempty"`
+	EndTime   core.Time `json:"endTime,omitempty"`
 }
 
 type RawMessage json.RawMessage
@@ -80,11 +79,11 @@ func (s *Store) batchLogs(ctx context.Context, logs []core.Log) error {
 			id = previousLog.ID + 1
 		}
 		logs[i].ID = id
-		logs[i].Hash = core.Hash(previousLog, &l)
+		logs[i].Hash = core.Hash(previousLog, &logs[i])
 
 		ls[i].ID = id
 		ls[i].Type = l.Type
-		ls[i].Hash = l.Hash
+		ls[i].Hash = logs[i].Hash
 		ls[i].Date = l.Date
 		ls[i].Data = data
 
@@ -126,14 +125,14 @@ func (s *Store) GetLastLog(ctx context.Context) (*core.Log, error) {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}
-		return nil, err
+		return nil, errors.Wrap(err, "scanning log")
 	}
 	l.Date = l.Date.UTC()
 
 	var err error
 	l.Data, err = core.HydrateLog(l.Type, data.String)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "hydrating log")
 	}
 	l.Date = l.Date.UTC()
 
@@ -237,9 +236,11 @@ func (s *Store) buildLogsQuery(q *storage.LogsQuery) (*bun.SelectQuery, LogsPagi
 	return sb, t
 }
 
-func (s *Store) GetNextLogID(ctx context.Context) (uint64, error) {
+func (s *Store) getNextLogID(ctx context.Context, sq interface {
+	NewSelect(string) *bun.SelectQuery
+}) (uint64, error) {
 	var logID uint64
-	err := s.schema.
+	err := sq.
 		NewSelect(LogIngestionTableName).
 		Column("log_id").
 		Limit(1).
@@ -253,10 +254,20 @@ func (s *Store) GetNextLogID(ctx context.Context) (uint64, error) {
 	return logID, nil
 }
 
+func (s *Store) GetNextLogID(ctx context.Context) (uint64, error) {
+	return s.getNextLogID(ctx, &s.schema)
+}
+
 func (s *Store) ReadLogsStartingFromID(ctx context.Context, id uint64) ([]core.Log, error) {
+	return s.readLogsStartingFromID(ctx, &s.schema, id)
+}
+
+func (s *Store) readLogsStartingFromID(ctx context.Context, exec interface {
+	NewSelect(tableName string) *bun.SelectQuery
+}, id uint64) ([]core.Log, error) {
 
 	rawLogs := make([]Log, 0)
-	err := s.schema.
+	err := exec.
 		NewSelect(LogTableName).
 		Where("id >= ?", id).
 		Model(&rawLogs).

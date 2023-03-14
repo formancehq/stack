@@ -2,14 +2,13 @@ package core
 
 import (
 	"encoding/json"
-	"time"
 )
 
 type ScriptData struct {
 	Script
-	Timestamp time.Time `json:"timestamp"`
-	Reference string    `json:"reference"`
-	Metadata  Metadata  `json:"metadata"`
+	Timestamp Time     `json:"timestamp"`
+	Reference string   `json:"reference"`
+	Metadata  Metadata `json:"metadata"`
 }
 
 type Script struct {

@@ -3,8 +3,8 @@ package _17_optimized_segments
 import (
 	"context"
 	"testing"
-	"time"
 
+	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/migrations"
@@ -36,7 +36,7 @@ func TestMigrate17(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, modified)
 
-	now := time.Now().UTC().Truncate(time.Second)
+	now := core.Now()
 
 	tr := &ledgerstore.Transactions{
 		ID:        0,

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"testing"
-	"time"
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
@@ -43,7 +42,7 @@ func TestMigrate(t *testing.T) {
 			ID:   0,
 			Type: core.NewTransactionLogType,
 			Hash: "",
-			Date: time.Now(),
+			Date: core.Now(),
 			Data: []byte(`{
 				"txid": 0,
 				"postings": [],
@@ -54,7 +53,7 @@ func TestMigrate(t *testing.T) {
 			ID:   1,
 			Type: core.NewTransactionLogType,
 			Hash: "",
-			Date: time.Now(),
+			Date: core.Now(),
 			Data: []byte(`{
 				"txid": 1,
 				"postings": [],

@@ -2,8 +2,10 @@ package query
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/formancehq/ledger/pkg/aggregator"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
@@ -19,22 +21,26 @@ type Worker struct {
 	workerConfig
 	stopChan chan chan struct{}
 	driver   *sqlstorage.Driver
+	monitor  Monitor
 }
 
 func (w *Worker) Run(ctx context.Context) error {
+	logging.FromContext(ctx).Infof("Start CQRS worker")
 	for {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		case stopChan := <-w.stopChan:
+			logging.FromContext(ctx).Infof("CQRS worker stopped")
 			close(stopChan)
 			return nil
 		case <-time.After(w.Interval):
 			if err := w.run(ctx); err != nil {
 				if err == context.Canceled {
+					logging.FromContext(ctx).Infof("CQRS worker canceled")
 					return err
 				}
-				logging.FromContext(ctx).Error(err)
+				logging.FromContext(ctx).Errorf("CQRS worker error: %s", err)
 			}
 		}
 	}
@@ -58,8 +64,6 @@ func (w *Worker) Stop(ctx context.Context) error {
 }
 
 func (w *Worker) run(ctx context.Context) error {
-
-	ctx = storage.NewCQRSContext(ctx)
 
 	ledgers, err := w.driver.GetSystemStore().ListLedgers(ctx)
 	if err != nil {
@@ -111,26 +115,34 @@ func (w *Worker) processLedger(ctx context.Context, ledger string) error {
 }
 
 func (w *Worker) processLogs(ctx context.Context, store storage.LedgerStore, logs ...core.Log) error {
-	volumeAggregator := newVolumeAggregator(store)
+	volumeAggregator := aggregator.Volumes(store)
 	for _, log := range logs {
 		var err error
 		switch log.Type {
 		case core.NewTransactionLogType:
-			tx := log.Data.(core.Transaction)
+			payload := log.Data.(core.NewTransactionLogPayload)
 			txVolumeAggregator := volumeAggregator.NextTx()
-			for _, posting := range tx.Postings {
+
+			for _, posting := range payload.Transaction.Postings {
 				if err := txVolumeAggregator.Transfer(ctx, posting.Source, posting.Destination, posting.Asset, posting.Amount); err != nil {
 					return errors.Wrap(err, "aggregating volumes")
 				}
 			}
 
-			//TODO(gfyrag): when all the mess will be cleaned, the InsertTransactions method should be rewrite to ignore potential conflict
-			// This way, we don't need any sql transactions
-			if err := store.InsertTransactions(ctx, core.ExpandedTransaction{
-				Transaction:       tx,
+			if payload.AccountMetadata != nil {
+				for account, metadata := range payload.AccountMetadata {
+					if err := store.UpdateAccountMetadata(ctx, account, metadata); err != nil {
+						return errors.Wrap(err, "updating account metadata")
+					}
+				}
+			}
+
+			expandedTx := core.ExpandedTransaction{
+				Transaction:       payload.Transaction,
 				PreCommitVolumes:  txVolumeAggregator.PreCommitVolumes,
 				PostCommitVolumes: txVolumeAggregator.PostCommitVolumes,
-			}); err != nil {
+			}
+			if err := store.InsertTransactions(ctx, expandedTx); err != nil {
 				return errors.Wrap(err, "inserting transactions")
 			}
 
@@ -144,8 +156,16 @@ func (w *Worker) processLogs(ctx context.Context, store storage.LedgerStore, log
 				return errors.Wrap(err, "updating volumes")
 			}
 
+			if w.monitor != nil {
+				w.monitor.CommittedTransactions(ctx, store.Name(), expandedTx)
+				for account, metadata := range payload.AccountMetadata {
+					w.monitor.SavedMetadata(ctx, store.Name(), core.MetaTargetTypeAccount, account, metadata)
+				}
+			}
+
 		case core.SetMetadataLogType:
-			switch setMetadata := log.Data.(core.SetMetadata); setMetadata.TargetType {
+			setMetadata := log.Data.(core.SetMetadataLogPayload)
+			switch setMetadata.TargetType {
 			case core.MetaTargetTypeAccount:
 				if err := store.UpdateAccountMetadata(ctx, setMetadata.TargetID.(string), setMetadata.Metadata); err != nil {
 					return errors.Wrap(err, "updating account metadata")
@@ -154,6 +174,37 @@ func (w *Worker) processLogs(ctx context.Context, store storage.LedgerStore, log
 				if err := store.UpdateTransactionMetadata(ctx, setMetadata.TargetID.(uint64), setMetadata.Metadata); err != nil {
 					return errors.Wrap(err, "updating transactions metadata")
 				}
+			}
+			if w.monitor != nil {
+				w.monitor.SavedMetadata(ctx, store.Name(), store.Name(), fmt.Sprint(setMetadata.TargetID), setMetadata.Metadata)
+			}
+		case core.RevertedTransactionLogType:
+			payload := log.Data.(core.RevertedTransactionLogPayload)
+			if err := store.UpdateTransactionMetadata(ctx, payload.RevertedTransactionID,
+				core.RevertedMetadata(payload.RevertTransaction.ID)); err != nil {
+				return errors.Wrap(err, "updating metadata")
+			}
+			txVolumeAggregator := volumeAggregator.NextTx()
+			for _, posting := range payload.RevertTransaction.Postings {
+				if err := txVolumeAggregator.Transfer(ctx, posting.Source, posting.Destination, posting.Asset, posting.Amount); err != nil {
+					return errors.Wrap(err, "aggregating volumes")
+				}
+			}
+			expandedTx := core.ExpandedTransaction{
+				Transaction:       payload.RevertTransaction,
+				PreCommitVolumes:  txVolumeAggregator.PreCommitVolumes,
+				PostCommitVolumes: txVolumeAggregator.PostCommitVolumes,
+			}
+			if err := store.InsertTransactions(ctx, expandedTx); err != nil {
+				return errors.Wrap(err, "inserting transaction")
+			}
+
+			if w.monitor != nil {
+				revertedTx, err := store.GetTransaction(ctx, payload.RevertedTransactionID)
+				if err != nil {
+					return err
+				}
+				w.monitor.RevertedTransaction(ctx, store.Name(), revertedTx, &expandedTx)
 			}
 		}
 		if err != nil {
@@ -164,10 +215,11 @@ func (w *Worker) processLogs(ctx context.Context, store storage.LedgerStore, log
 	return nil
 }
 
-func NewWorker(config workerConfig, driver *sqlstorage.Driver) *Worker {
+func NewWorker(config workerConfig, driver *sqlstorage.Driver, monitor Monitor) *Worker {
 	return &Worker{
 		stopChan:     make(chan chan struct{}),
 		workerConfig: config,
 		driver:       driver,
+		monitor:      monitor,
 	}
 }

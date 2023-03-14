@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/core"
@@ -108,9 +107,9 @@ func (ctl *LedgerController) GetLogs(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		var startTimeParsed, endTimeParsed time.Time
+		var startTimeParsed, endTimeParsed core.Time
 		if r.URL.Query().Get(QueryKeyStartTime) != "" {
-			startTimeParsed, err = time.Parse(time.RFC3339, r.URL.Query().Get(QueryKeyStartTime))
+			startTimeParsed, err = core.ParseTime(r.URL.Query().Get(QueryKeyStartTime))
 			if err != nil {
 				apierrors.ResponseError(w, r, ErrInvalidStartTime)
 				return
@@ -118,7 +117,7 @@ func (ctl *LedgerController) GetLogs(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if r.URL.Query().Get(QueryKeyEndTime) != "" {
-			endTimeParsed, err = time.Parse(time.RFC3339, r.URL.Query().Get(QueryKeyEndTime))
+			endTimeParsed, err = core.ParseTime(r.URL.Query().Get(QueryKeyEndTime))
 			if err != nil {
 				apierrors.ResponseError(w, r, ErrInvalidEndTime)
 				return

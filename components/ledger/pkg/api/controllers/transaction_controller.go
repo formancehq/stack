@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/core"
@@ -28,10 +27,10 @@ func NewTransactionController() TransactionController {
 func (ctl *TransactionController) CountTransactions(w http.ResponseWriter, r *http.Request) {
 	l := LedgerFromContext(r.Context())
 
-	var startTimeParsed, endTimeParsed time.Time
+	var startTimeParsed, endTimeParsed core.Time
 	var err error
 	if r.URL.Query().Get(QueryKeyStartTime) != "" {
-		startTimeParsed, err = time.Parse(time.RFC3339, r.URL.Query().Get(QueryKeyStartTime))
+		startTimeParsed, err = core.ParseTime(r.URL.Query().Get(QueryKeyStartTime))
 		if err != nil {
 			apierrors.ResponseError(w, r, ErrInvalidStartTime)
 			return
@@ -39,7 +38,7 @@ func (ctl *TransactionController) CountTransactions(w http.ResponseWriter, r *ht
 	}
 
 	if r.URL.Query().Get(QueryKeyEndTime) != "" {
-		endTimeParsed, err = time.Parse(time.RFC3339, r.URL.Query().Get(QueryKeyEndTime))
+		endTimeParsed, err = core.ParseTime(r.URL.Query().Get(QueryKeyEndTime))
 		if err != nil {
 			apierrors.ResponseError(w, r, ErrInvalidEndTime)
 			return
@@ -119,9 +118,9 @@ func (ctl *TransactionController) GetTransactions(w http.ResponseWriter, r *http
 			}
 		}
 
-		var startTimeParsed, endTimeParsed time.Time
+		var startTimeParsed, endTimeParsed core.Time
 		if r.URL.Query().Get(QueryKeyStartTime) != "" {
-			startTimeParsed, err = time.Parse(time.RFC3339, r.URL.Query().Get(QueryKeyStartTime))
+			startTimeParsed, err = core.ParseTime(r.URL.Query().Get(QueryKeyStartTime))
 			if err != nil {
 				apierrors.ResponseError(w, r, ErrInvalidStartTime)
 				return
@@ -129,7 +128,7 @@ func (ctl *TransactionController) GetTransactions(w http.ResponseWriter, r *http
 		}
 
 		if r.URL.Query().Get(QueryKeyEndTime) != "" {
-			endTimeParsed, err = time.Parse(time.RFC3339, r.URL.Query().Get(QueryKeyEndTime))
+			endTimeParsed, err = core.ParseTime(r.URL.Query().Get(QueryKeyEndTime))
 			if err != nil {
 				apierrors.ResponseError(w, r, ErrInvalidEndTime)
 				return
@@ -166,7 +165,7 @@ func (ctl *TransactionController) GetTransactions(w http.ResponseWriter, r *http
 type PostTransaction struct {
 	Postings  core.Postings `json:"postings"`
 	Script    core.Script   `json:"script"`
-	Timestamp time.Time     `json:"timestamp"`
+	Timestamp core.Time     `json:"timestamp"`
 	Reference string        `json:"reference"`
 	Metadata  core.Metadata `json:"metadata" swaggertype:"object"`
 }
@@ -201,7 +200,7 @@ func (ctl *TransactionController) PostTransaction(w http.ResponseWriter, r *http
 			Reference: payload.Reference,
 			Metadata:  payload.Metadata,
 		}
-		res, logs, err := l.ProcessScript(r.Context(), true, preview, core.TxToScriptData(txData))
+		res, logs, err := l.CreateTransaction(r.Context(), preview, core.TxToScriptData(txData))
 		if err != nil {
 			apierrors.ResponseError(w, r, err)
 			return
@@ -223,7 +222,7 @@ func (ctl *TransactionController) PostTransaction(w http.ResponseWriter, r *http
 		Metadata:  payload.Metadata,
 	}
 
-	res, logs, err := l.ProcessScript(r.Context(), true, preview, script)
+	res, logs, err := l.CreateTransaction(r.Context(), preview, script)
 	if err != nil {
 		apierrors.ResponseError(w, r, err)
 		return

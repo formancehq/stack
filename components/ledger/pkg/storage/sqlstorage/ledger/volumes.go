@@ -4,13 +4,11 @@ import (
 	"context"
 
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/uptrace/bun"
 )
 
 const (
-	volumesTableName     = "volumes"
-	cqrsVolumesTableName = "volumes2"
+	volumesTableName = "volumes"
 )
 
 type Volumes struct {
@@ -23,12 +21,6 @@ type Volumes struct {
 }
 
 func (s *Store) UpdateVolumes(ctx context.Context, volumes core.AccountsAssetsVolumes) error {
-	var (
-		volumesTableName = volumesTableName
-	)
-	if storage.IsCQRSContext(ctx) {
-		volumesTableName = cqrsVolumesTableName
-	}
 	for account, accountVolumes := range volumes {
 		for asset, volumes := range accountVolumes {
 			v := &Volumes{

@@ -26,6 +26,7 @@ const ServiceName = "ledger"
 func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 
 	options := make([]fx.Option, 0)
+	options = append(options, fx.NopLogger)
 
 	debug := v.GetBool(service.DebugFlag)
 	if debug {
@@ -57,8 +58,8 @@ func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 	options = append(options, internal.NewAnalyticsModule(v, Version))
 
 	options = append(options, fx.Provide(
-		fx.Annotate(func() []ledger.LedgerOption {
-			ledgerOptions := make([]ledger.LedgerOption, 0)
+		fx.Annotate(func() []ledger.Option {
+			ledgerOptions := make([]ledger.Option, 0)
 
 			if v.GetString(commitPolicyFlag) == "allow-past-timestamps" {
 				ledgerOptions = append(ledgerOptions, ledger.WithPastTimestamps)
@@ -69,8 +70,7 @@ func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 	))
 
 	// Handle resolver
-	options = append(options, ledger.ResolveModule(
-		v.GetInt64(cacheCapacityBytes), v.GetInt64(cacheMaxNumKeys)))
+	options = append(options, ledger.ResolveModule())
 
 	options = append(options, routes.ProvideMiddlewares(func(logger logging.Logger) []func(handler http.Handler) http.Handler {
 		res := make([]func(handler http.Handler) http.Handler, 0)

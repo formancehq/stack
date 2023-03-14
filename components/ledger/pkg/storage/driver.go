@@ -49,7 +49,7 @@ type LedgerStore interface {
 	AppendLogs(context.Context, ...core.Log) <-chan error
 	GetMigrationsAvailable() ([]core.MigrationInfo, error)
 	GetMigrationsDone(context.Context) ([]core.MigrationInfo, error)
-	Commit(ctx context.Context, txs ...core.ExpandedTransaction) error
+	ComputeAccount(ctx context.Context, account string) (*core.AccountWithVolumes, error)
 }
 
 type Driver interface {

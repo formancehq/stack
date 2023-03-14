@@ -3,9 +3,8 @@ package ledger
 import (
 	"context"
 	"fmt"
-	"time"
 
-	"github.com/dgraph-io/ristretto"
+	"github.com/formancehq/ledger/pkg/cache"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -14,33 +13,31 @@ import (
 
 type Ledger struct {
 	store               storage.LedgerStore
-	monitor             Monitor
 	allowPastTimestamps bool
-	cache               *ristretto.Cache
 	locker              Locker
+	dbCache             *cache.Ledger
 }
 
-type LedgerOption = func(*Ledger)
+type Option = func(*Ledger)
 
 func WithPastTimestamps(l *Ledger) {
 	l.allowPastTimestamps = true
 }
 
-func WithLocker(locker Locker) LedgerOption {
+func WithLocker(locker Locker) Option {
 	return func(ledger *Ledger) {
 		ledger.locker = locker
 	}
 }
 
-var defaultLedgerOptions = []LedgerOption{
+var defaultLedgerOptions = []Option{
 	WithLocker(NewInMemoryLocker()),
 }
 
-func NewLedger(store storage.LedgerStore, monitor Monitor, cache *ristretto.Cache, options ...LedgerOption) (*Ledger, error) {
+func NewLedger(store storage.LedgerStore, dbCache *cache.Ledger, options ...Option) (*Ledger, error) {
 	l := &Ledger{
 		store:   store,
-		monitor: monitor,
-		cache:   cache,
+		dbCache: dbCache,
 	}
 
 	for _, option := range append(
@@ -51,6 +48,10 @@ func NewLedger(store storage.LedgerStore, monitor Monitor, cache *ristretto.Cach
 	}
 
 	return l, nil
+}
+
+func (l *Ledger) GetDBCache() *cache.Ledger {
+	return l.dbCache
 }
 
 func (l *Ledger) Close(ctx context.Context) error {
@@ -84,7 +85,14 @@ func (l *Ledger) GetTransaction(ctx context.Context, id uint64) (*core.ExpandedT
 	return tx, nil
 }
 
-func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.ExpandedTransaction, *Logs, error) {
+func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.ExpandedTransaction, *LogHandler, error) {
+	// TODO: Add LockWithContext with multi lock level accounts and reference check
+	unlock, err := l.locker.Lock(ctx, l.store.Name())
+	if err != nil {
+		panic(err)
+	}
+	defer unlock(context.Background()) // Use a background context instead of the request one as it could have been cancelled
+
 	revertedTx, err := l.store.GetTransaction(ctx, id)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, fmt.Sprintf("getting transaction %d", id))
@@ -93,8 +101,7 @@ func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.Expand
 		return nil, nil, NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
 	}
 	if revertedTx.IsReverted() {
-		return nil, nil,
-			NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
+		return nil, nil, NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
 	}
 
 	rt := revertedTx.Reverse()
@@ -103,47 +110,27 @@ func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.Expand
 
 	scriptData := core.TxsToScriptsData(core.TransactionData{
 		Postings:  rt.Postings,
-		Timestamp: rt.Timestamp,
 		Reference: rt.Reference,
 		Metadata:  rt.Metadata,
 	})
 
-	revertTx, logs, err := l.ProcessScript(ctx, false, false, scriptData[0])
+	revertTx, _, err := l.runScript(ctx, scriptData[0])
 	if err != nil {
-		return nil, nil, errors.Wrap(err, fmt.Sprintf(
-			"updating transaction %d metadata while reverting", id))
+		return nil, nil, errors.Wrap(err, fmt.Sprintf("updating transaction %d metadata while reverting", id))
 	}
 
-	if err := l.store.UpdateTransactionMetadata(ctx,
-		revertedTx.ID, core.RevertedMetadata(revertTx.ID)); err != nil {
-		return nil, nil,
-			errors.Wrap(err, fmt.Sprintf(
-				"updating transaction %d metadata while reverting", id))
-	}
-
-	// TODO(polo/gfyrag): combine both logs into one (maybe protobuf)
-	logs.AddLog(core.NewSetMetadataLog(revertTx.Timestamp, core.SetMetadata{
-		TargetType: core.MetaTargetTypeTransaction,
-		TargetID:   revertedTx.ID,
-		Metadata:   core.RevertedMetadata(revertTx.ID),
-	}))
-
-	logs.AddPostProcessing(func(ctx context.Context) error {
-		if revertedTx.Metadata == nil {
-			revertedTx.Metadata = core.Metadata{}
-		}
-		revertedTx.Metadata.Merge(core.RevertedMetadata(revertTx.ID))
-
-		l.monitor.RevertedTransaction(ctx, l.store.Name(), revertedTx, &revertTx)
-
-		return nil
-	})
-
-	if err := logs.Write(ctx); err != nil {
+	logHandler, err := writeLog(ctx, l.store.AppendLogs,
+		core.NewRevertedTransactionLog(revertTx.Timestamp, revertedTx.ID, revertTx.Transaction))
+	if err != nil {
 		return nil, nil, errors.Wrap(err, "writing logs")
 	}
 
-	return &revertTx, logs, nil
+	l.dbCache.Update(ctx, &cache.TxInfo{
+		Date: revertTx.Timestamp,
+		ID:   revertTx.ID,
+	}, revertTx.PostCommitVolumes)
+
+	return revertTx, logHandler, nil
 }
 
 func (l *Ledger) CountAccounts(ctx context.Context, a storage.AccountsQuery) (uint64, error) {
@@ -166,7 +153,8 @@ func (l *Ledger) GetBalancesAggregated(ctx context.Context, q storage.BalancesQu
 	return l.store.GetBalancesAggregated(ctx, q)
 }
 
-func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID interface{}, m core.Metadata) (*Logs, error) {
+// TODO(gfyrag): maybe we should check transaction exists before set a metadata ? (accounts always exists even if never used)
+func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID interface{}, m core.Metadata) (*LogHandler, error) {
 
 	if targetType == "" {
 		return nil, NewValidationError("empty target type")
@@ -176,43 +164,41 @@ func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID inter
 		return nil, NewValidationError("empty target id")
 	}
 
-	logs := NewLogs(l.store.AppendLogs, nil, nil)
-	var err error
+	// TODO(gfyrag): Stop round dates for v2
+	at := core.Now()
+
+	var (
+		err error
+		log core.Log
+	)
 	switch targetType {
 	case core.MetaTargetTypeTransaction:
-		at := time.Now().Round(time.Second).UTC()
-		err = l.store.UpdateTransactionMetadata(ctx, targetID.(uint64), m)
-		logs.AddLog(core.NewSetMetadataLog(at, core.SetMetadata{
+		log = core.NewSetMetadataLog(at, core.SetMetadataLogPayload{
 			TargetType: core.MetaTargetTypeTransaction,
 			TargetID:   targetID.(uint64),
 			Metadata:   m,
-		}))
+		})
 	case core.MetaTargetTypeAccount:
-		at := time.Now().Round(time.Second).UTC()
-		err = l.store.UpdateAccountMetadata(ctx, targetID.(string), m)
-		logs.AddLog(core.NewSetMetadataLog(at, core.SetMetadata{
+		// Machine can access account metadata, so store the metadata until CQRS compute final of the account
+		// The cache can still evict the account entry before CQRS part compute the view
+		err = l.dbCache.UpdateAccountMetadata(ctx, targetID.(string), m)
+		if err != nil {
+			return nil, err
+		}
+
+		log = core.NewSetMetadataLog(at, core.SetMetadataLogPayload{
 			TargetType: core.MetaTargetTypeAccount,
 			TargetID:   targetID.(string),
 			Metadata:   m,
-		}))
+		})
 	default:
-		return nil,
-			NewValidationError(fmt.Sprintf("unknown target type '%s'", targetType))
+		return nil, NewValidationError(fmt.Sprintf("unknown target type '%s'", targetType))
 	}
 	if err != nil {
 		return nil, err
 	}
 
-	logs.AddPostProcessing(func(ctx context.Context) error {
-		l.monitor.SavedMetadata(ctx, l.store.Name(), targetType, fmt.Sprint(targetID), m)
-		return nil
-	})
-
-	if err := logs.Write(ctx); err != nil {
-		return nil, err
-	}
-
-	return logs, nil
+	return writeLog(ctx, l.store.AppendLogs, log)
 }
 
 func (l *Ledger) GetLogs(ctx context.Context, q *storage.LogsQuery) (api.Cursor[core.Log], error) {

@@ -1,10 +1,9 @@
-package query
+package aggregator
 
 import (
 	"context"
 
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/pkg/errors"
 )
 
@@ -57,7 +56,7 @@ func (tva *TxVolumeAggregator) Transfer(
 
 type VolumeAggregator struct {
 	txs   []*TxVolumeAggregator
-	store storage.LedgerStore
+	store Store
 }
 
 func (agg *VolumeAggregator) NextTx() *TxVolumeAggregator {
@@ -73,7 +72,7 @@ func (agg *VolumeAggregator) NextTx() *TxVolumeAggregator {
 	return tva
 }
 
-func newVolumeAggregator(store storage.LedgerStore) *VolumeAggregator {
+func Volumes(store Store) *VolumeAggregator {
 	return &VolumeAggregator{
 		store: store,
 	}

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"testing"
-	"time"
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
@@ -238,11 +237,11 @@ func TestMigrate9(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, modified)
 
-	now := time.Now()
+	now := core.Now()
 	for i, tc := range testCases {
 		txData, err := json.Marshal(struct {
 			add_pre_post_volumes.Transaction
-			Date time.Time `json:"timestamp"`
+			Date core.Time `json:"timestamp"`
 		}{
 			Transaction: add_pre_post_volumes.Transaction{
 				ID:       uint64(i),
@@ -273,7 +272,7 @@ func TestMigrate9(t *testing.T) {
 	sqlTx, err := schema.BeginTx(context.Background(), &sql.TxOptions{})
 	require.NoError(t, err)
 
-	require.NoError(t, add_pre_post_volumes.Upgrade(context.Background(), schema, &sqlTx))
+	require.NoError(t, add_pre_post_volumes.Upgrade(context.Background(), schema, sqlTx))
 	require.NoError(t, sqlTx.Commit())
 
 	for i, tc := range testCases {
