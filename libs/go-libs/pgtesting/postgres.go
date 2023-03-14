@@ -2,16 +2,19 @@ package pgtesting
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strconv"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
+	_ "github.com/lib/pq"
 	"github.com/ory/dockertest/v3"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/pgdialect"
 )
 
 type TestingT interface {
@@ -30,7 +33,7 @@ func (s *pgDatabase) ConnString() string {
 type pgServer struct {
 	destroy func() error
 	lock    sync.Mutex
-	conn    *pgx.Conn
+	db      *bun.DB
 	port    string
 	config  config
 }
@@ -69,14 +72,14 @@ func (s *pgServer) NewDatabase(t TestingT) *pgDatabase {
 	defer s.lock.Unlock()
 
 	databaseName := uuid.NewString()
-	_, err := s.conn.Exec(context.Background(), fmt.Sprintf(`CREATE DATABASE "%s"`, databaseName))
+	_, err := s.db.ExecContext(context.Background(), fmt.Sprintf(`CREATE DATABASE "%s"`, databaseName))
 	require.NoError(t, err)
 
 	t.Cleanup(func() {
 		s.lock.Lock()
 		defer s.lock.Unlock()
 
-		_, _ = s.conn.Exec(context.Background(), fmt.Sprintf(`DROP DATABASE "%s"`, databaseName))
+		_, _ = s.db.ExecContext(context.Background(), fmt.Sprintf(`DROP DATABASE "%s"`, databaseName))
 	})
 
 	return &pgDatabase{
@@ -85,10 +88,10 @@ func (s *pgServer) NewDatabase(t TestingT) *pgDatabase {
 }
 
 func (s *pgServer) Close() error {
-	if s.conn == nil {
+	if s.db == nil {
 		return nil
 	}
-	if err := s.conn.Close(context.Background()); err != nil {
+	if err := s.db.Close(); err != nil {
 		return err
 	}
 	if err := s.destroy(); err != nil {
@@ -178,7 +181,6 @@ var defaultOptions = []option{
 }
 
 func CreatePostgresServer(opts ...option) error {
-
 	cfg := config{}
 	for _, opt := range append(defaultOptions, opts...) {
 		opt(&cfg)
@@ -217,8 +219,13 @@ func CreatePostgresServer(opts ...option) error {
 	}
 
 	try := time.Duration(0)
+	sqldb, err := sql.Open("postgres", srv.GetDatabaseDSN(cfg.initialDatabaseName))
+	if err != nil {
+		return err
+	}
+	srv.db = bun.NewDB(sqldb, pgdialect.New())
 	for try*cfg.statusCheckInterval < cfg.maximumWaitingTime {
-		srv.conn, err = pgx.Connect(context.Background(), srv.GetDatabaseDSN(cfg.initialDatabaseName))
+		err := srv.db.Ping()
 		if err != nil {
 			try++
 			select {
@@ -228,6 +235,7 @@ func CreatePostgresServer(opts ...option) error {
 			}
 			continue
 		}
+
 		return nil
 	}
 

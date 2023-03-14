@@ -13,6 +13,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/imdario/mergo v0.3.13
 	github.com/jackc/pgx/v5 v5.3.0
+	github.com/lib/pq v1.10.7
 	github.com/nats-io/nats-server/v2 v2.9.8
 	github.com/nats-io/nats.go v1.23.0
 	github.com/ory/dockertest/v3 v3.9.1
@@ -93,7 +94,6 @@ require (
 	github.com/jcmturner/rpc/v2 v2.0.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.15 // indirect
-	github.com/lib/pq v1.10.7 // indirect
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
