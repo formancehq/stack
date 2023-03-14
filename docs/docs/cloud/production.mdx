@@ -40,13 +40,26 @@ fctl cloud billing portal
 
 Once you have set up a billing account, your quota of available production deployments will be increased. You can then create a production deployment by using the `--production` flag when creating a new stack.
 
-```
+```shell
 fctl stack create my-stack --production
 ```
 
 :::info
-Unless you reached out to us to request a specific region and/or enterprise plan, your production deployment will be created in the `aws-eu-west-1-production` region on the Startup Cloud plan.
+The default region is aws-eu-west-1-production, but you can specify a different region by using the `--tag provider=eu-west-1` flag.
 :::
+
+Run the following command to list all available regions:
+
+```shell
+fctl cloud regions ls
+```
+
+If you need to have more informations about a specific region, run the following command:
+
+```shell
+fctl cloud regions show aws-eu-west-1-hosting
+```
+
 
 ## Information and requests
 
