@@ -25,7 +25,7 @@ func Upgrade(ctx context.Context, schema schema.Schema, sqlTx *bun.Tx) error {
 	sb := schema.NewSelect(ledger.LogTableName).
 		Model((*ledger.Log)(nil)).
 		Column("data").
-		Where("type = ?", core.NewTransactionType).
+		Where("type = ?", core.NewTransactionLogType).
 		Order("id ASC")
 
 	rows, err := sqlTx.QueryContext(ctx, sb.String())

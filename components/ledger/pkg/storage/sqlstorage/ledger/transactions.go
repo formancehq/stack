@@ -16,8 +16,14 @@ import (
 	"github.com/uptrace/bun"
 )
 
-const TransactionsTableName = "transactions"
-const PostingsTableName = "postings"
+const (
+	TransactionsTableName = "transactions"
+	PostingsTableName     = "postings"
+
+	// TODO(gfyrag): Temporary table
+	CQRSTransactionsTableName = "transactions2"
+	CQRSPostingsTableName     = "postings2"
+)
 
 // this regexp is used to distinguish between deprecated regex queries for
 // source, destination and account params and the new wildcard query
@@ -58,8 +64,18 @@ type TxsPaginationToken struct {
 	PageSize          uint              `json:"pageSize,omitempty"`
 }
 
-func (s *Store) buildTransactionsQuery(p storage.TransactionsQuery) (*bun.SelectQuery, TxsPaginationToken) {
-	sb := s.schema.NewSelect(TransactionsTableName).
+func (s *Store) buildTransactionsQuery(ctx context.Context, p storage.TransactionsQuery) (*bun.SelectQuery, TxsPaginationToken) {
+
+	var (
+		transactionsTableName = TransactionsTableName
+		postingsTableName     = PostingsTableName
+	)
+	if storage.IsCQRSContext(ctx) {
+		transactionsTableName = CQRSTransactionsTableName
+		postingsTableName = CQRSPostingsTableName
+	}
+
+	sb := s.schema.NewSelectWithAlias(transactionsTableName, "transactions").
 		Model((*Transactions)(nil))
 	t := TxsPaginationToken{}
 
@@ -79,8 +95,8 @@ func (s *Store) buildTransactionsQuery(p storage.TransactionsQuery) (*bun.Select
 		// new wildcard handling
 		sb.Join(fmt.Sprintf(
 			"JOIN %s postings",
-			s.schema.Table("postings"),
-		)).JoinOn("postings.txid = transactions.id")
+			s.schema.Table(postingsTableName),
+		)).JoinOn(fmt.Sprintf("postings.txid = %s.id", transactionsTableName))
 	}
 	if source != "" {
 		if !addressQueryRegexp.MatchString(source) {
@@ -162,13 +178,14 @@ func (s *Store) buildTransactionsQuery(p storage.TransactionsQuery) (*bun.Select
 }
 
 func (s *Store) GetTransactions(ctx context.Context, q storage.TransactionsQuery) (api.Cursor[core.ExpandedTransaction], error) {
+
 	txs := make([]core.ExpandedTransaction, 0)
 
 	if q.PageSize == 0 {
 		return api.Cursor[core.ExpandedTransaction]{Data: txs}, nil
 	}
 
-	sb, t := s.buildTransactionsQuery(q)
+	sb, t := s.buildTransactionsQuery(ctx, q)
 	sb.OrderExpr("id DESC")
 	if q.AfterTxID > 0 {
 		sb.Where("id <= ?", q.AfterTxID)
@@ -244,13 +261,19 @@ func (s *Store) GetTransactions(ctx context.Context, q storage.TransactionsQuery
 }
 
 func (s *Store) CountTransactions(ctx context.Context, q storage.TransactionsQuery) (uint64, error) {
-	sb, _ := s.buildTransactionsQuery(q)
+	sb, _ := s.buildTransactionsQuery(ctx, q)
 	count, err := sb.Count(ctx)
 	return uint64(count), s.error(err)
 }
 
 func (s *Store) GetTransaction(ctx context.Context, txId uint64) (*core.ExpandedTransaction, error) {
-	sb := s.schema.NewSelect(TransactionsTableName).
+	var (
+		transactionsTableName = TransactionsTableName
+	)
+	if storage.IsCQRSContext(ctx) {
+		transactionsTableName = CQRSTransactionsTableName
+	}
+	sb := s.schema.NewSelectWithAlias(transactionsTableName, "transactions").
 		Model((*Transactions)(nil)).
 		Column("id", "timestamp", "reference", "metadata", "postings", "pre_commit_volumes", "post_commit_volumes").
 		Where("id = ?", txId).
@@ -294,7 +317,13 @@ func (s *Store) GetTransaction(ctx context.Context, txId uint64) (*core.Expanded
 }
 
 func (s *Store) GetLastTransaction(ctx context.Context) (*core.ExpandedTransaction, error) {
-	sb := s.schema.NewSelect(TransactionsTableName).
+	var (
+		transactionsTableName = TransactionsTableName
+	)
+	if storage.IsCQRSContext(ctx) {
+		transactionsTableName = CQRSTransactionsTableName
+	}
+	sb := s.schema.NewSelect(transactionsTableName).
 		Model((*Transactions)(nil)).
 		Column("id", "timestamp", "reference", "metadata", "postings", "pre_commit_volumes", "post_commit_volumes").
 		OrderExpr("id DESC").
@@ -338,6 +367,15 @@ func (s *Store) GetLastTransaction(ctx context.Context) (*core.ExpandedTransacti
 }
 
 func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTransaction) error {
+	var (
+		transactionsTableName = TransactionsTableName
+		postingsTableName     = PostingsTableName
+	)
+	if storage.IsCQRSContext(ctx) {
+		transactionsTableName = CQRSTransactionsTableName
+		postingsTableName = CQRSPostingsTableName
+	}
+
 	ts := make([]Transactions, len(txs))
 	ps := []Postings{}
 
@@ -395,14 +433,14 @@ func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTran
 		}
 	}
 
-	_, err := s.schema.NewInsert(PostingsTableName).
+	_, err := s.schema.NewInsert(postingsTableName).
 		Model(&ps).
 		Exec(ctx)
 	if err != nil {
 		return s.error(err)
 	}
 
-	_, err = s.schema.NewInsert(TransactionsTableName).
+	_, err = s.schema.NewInsert(transactionsTableName).
 		Model(&ts).
 		Exec(ctx)
 	if err != nil {
@@ -412,22 +450,27 @@ func (s *Store) insertTransactions(ctx context.Context, txs ...core.ExpandedTran
 	return nil
 }
 
+func (s *Store) InsertTransactions(ctx context.Context, txs ...core.ExpandedTransaction) error {
+	return s.insertTransactions(ctx, txs...)
+}
+
 func (s *Store) UpdateTransactionMetadata(ctx context.Context, id uint64, metadata core.Metadata) error {
 	metadataData, err := json.Marshal(metadata)
 	if err != nil {
 		return err
 	}
 
-	_, err = s.schema.NewUpdate(TransactionsTableName).
+	var (
+		transactionsTableName = TransactionsTableName
+	)
+	if storage.IsCQRSContext(ctx) {
+		transactionsTableName = CQRSTransactionsTableName
+	}
+
+	_, err = s.schema.NewUpdate(transactionsTableName).
 		Model((*Transactions)(nil)).
 		Set("metadata = metadata || ?", string(metadataData)).
 		Where("id = ?", id).
 		Exec(ctx)
 	return err
-
-	// return s.AppendLogs(ctx, core.NewSetMetadataLog(at, core.SetMetadata{
-	// 	TargetType: core.MetaTargetTypeTransaction,
-	// 	TargetID:   id,
-	// 	Metadata:   metadata,
-	// }))
 }

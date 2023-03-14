@@ -41,7 +41,7 @@ func TestMigrate(t *testing.T) {
 	ls := []ledgerstore.Log{
 		{
 			ID:   0,
-			Type: core.NewTransactionType,
+			Type: core.NewTransactionLogType,
 			Hash: "",
 			Date: time.Now(),
 			Data: []byte(`{
@@ -52,7 +52,7 @@ func TestMigrate(t *testing.T) {
 		},
 		{
 			ID:   1,
-			Type: core.NewTransactionType,
+			Type: core.NewTransactionLogType,
 			Hash: "",
 			Date: time.Now(),
 			Data: []byte(`{

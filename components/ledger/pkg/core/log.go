@@ -7,8 +7,10 @@ import (
 	"time"
 )
 
-const SetMetadataType = "SET_METADATA"
-const NewTransactionType = "NEW_TRANSACTION"
+const (
+	SetMetadataLogType    = "SET_METADATA"
+	NewTransactionLogType = "NEW_TRANSACTION"
+)
 
 // TODO(polo): create Log struct and extended Log struct
 type Log struct {
@@ -23,7 +25,7 @@ func NewTransactionLogWithDate(tx Transaction, time time.Time) Log {
 	// Since the id is unique and the hash is a hash of the previous log, they
 	// will be filled at insertion time during the batch process.
 	return Log{
-		Type: NewTransactionType,
+		Type: NewTransactionLogType,
 		Date: time,
 		Data: tx,
 	}
@@ -76,7 +78,7 @@ func NewSetMetadataLog(at time.Time, metadata SetMetadata) Log {
 	// Since the id is unique and the hash is a hash of the previous log, they
 	// will be filled at insertion time during the batch process.
 	return Log{
-		Type: SetMetadataType,
+		Type: SetMetadataLogType,
 		Date: at,
 		Data: metadata,
 	}
@@ -84,7 +86,7 @@ func NewSetMetadataLog(at time.Time, metadata SetMetadata) Log {
 
 func HydrateLog(_type string, data string) (interface{}, error) {
 	switch _type {
-	case NewTransactionType:
+	case NewTransactionLogType:
 		tx := Transaction{}
 		err := json.Unmarshal([]byte(data), &tx)
 		if err != nil {
@@ -92,7 +94,7 @@ func HydrateLog(_type string, data string) (interface{}, error) {
 		}
 
 		return tx, nil
-	case SetMetadataType:
+	case SetMetadataLogType:
 		sm := SetMetadata{}
 		err := json.Unmarshal([]byte(data), &sm)
 		if err != nil {
@@ -127,7 +129,7 @@ type LogProcessor struct {
 func (m *LogProcessor) ProcessNextLog(logs ...Log) {
 	for _, log := range logs {
 		switch log.Type {
-		case NewTransactionType:
+		case NewTransactionLogType:
 			tx := ExpandedTransaction{
 				Transaction:       log.Data.(Transaction),
 				PreCommitVolumes:  AccountsAssetsVolumes{},
@@ -147,7 +149,7 @@ func (m *LogProcessor) ProcessNextLog(logs ...Log) {
 				tx.PostCommitVolumes.SetVolumes(posting.Source, posting.Asset, m.Volumes.GetVolumes(posting.Source, posting.Asset))
 				tx.PostCommitVolumes.SetVolumes(posting.Destination, posting.Asset, m.Volumes.GetVolumes(posting.Destination, posting.Asset))
 			}
-		case SetMetadataType:
+		case SetMetadataLogType:
 			setMetadata := log.Data.(SetMetadata)
 			switch setMetadata.TargetType {
 			case MetaTargetTypeAccount:

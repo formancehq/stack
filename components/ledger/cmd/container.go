@@ -9,6 +9,7 @@ import (
 	"github.com/formancehq/ledger/pkg/api/routes"
 	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/query"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -32,6 +33,9 @@ func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 	}
 
 	options = append(options, publish.CLIPublisherModule(v, ServiceName), bus.LedgerMonitorModule())
+
+	// Add CQRS worker
+	options = append(options, query.Module())
 
 	// Handle OpenTelemetry
 	options = append(options, otlptraces.CLITracesModule(v))

@@ -4,10 +4,14 @@ import (
 	"context"
 
 	"github.com/formancehq/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/uptrace/bun"
 )
 
-const volumesTableName = "volumes"
+const (
+	volumesTableName     = "volumes"
+	cqrsVolumesTableName = "volumes2"
+)
 
 type Volumes struct {
 	bun.BaseModel `bun:"volumes,alias:volumes"`
@@ -18,7 +22,13 @@ type Volumes struct {
 	Output  uint64 `bun:"output,type:numeric"`
 }
 
-func (s *Store) updateVolumes(ctx context.Context, volumes core.AccountsAssetsVolumes) error {
+func (s *Store) UpdateVolumes(ctx context.Context, volumes core.AccountsAssetsVolumes) error {
+	var (
+		volumesTableName = volumesTableName
+	)
+	if storage.IsCQRSContext(ctx) {
+		volumesTableName = cqrsVolumesTableName
+	}
 	for account, accountVolumes := range volumes {
 		for asset, volumes := range accountVolumes {
 			v := &Volumes{

@@ -255,7 +255,7 @@ func TestMigrate9(t *testing.T) {
 		l := &ledgerstore.Log{
 			ID:   uint64(i),
 			Data: txData,
-			Type: core.NewTransactionType,
+			Type: core.NewTransactionLogType,
 			Date: now,
 		}
 		_, err = schema.NewInsert(ledgerstore.LogTableName).

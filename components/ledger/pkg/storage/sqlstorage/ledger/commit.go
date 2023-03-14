@@ -8,20 +8,20 @@ import (
 )
 
 func (s *Store) commit(ctx context.Context, txs ...core.ExpandedTransaction) error {
-	if err := s.insertTransactions(ctx, txs...); err != nil {
+	if err := s.InsertTransactions(ctx, txs...); err != nil {
 		return errors.Wrap(err, "inserting transactions")
 	}
 
 	postCommitVolumes := core.AggregatePostCommitVolumes(txs...)
 
 	for account := range postCommitVolumes {
-		err := s.ensureAccountExists(ctx, account)
+		err := s.EnsureAccountExists(ctx, account)
 		if err != nil {
 			return errors.Wrap(err, "ensuring account exists")
 		}
 	}
 
-	if err := s.updateVolumes(ctx, postCommitVolumes); err != nil {
+	if err := s.UpdateVolumes(ctx, postCommitVolumes); err != nil {
 		return errors.Wrap(err, "updating volumes")
 	}
 

@@ -53,12 +53,20 @@ func (s *Schema) NewInsert(tableName string) *bun.InsertQuery {
 	return s.DB.NewInsert().ModelTableExpr("?0.?1", bun.Ident(s.Name()), bun.Ident(tableName))
 }
 
+func (s *Schema) NewInsertWithAlias(tableName, alias string) *bun.InsertQuery {
+	return s.DB.NewInsert().ModelTableExpr("?0.?1 as ?2", bun.Ident(s.Name()), bun.Ident(tableName), bun.Ident(alias))
+}
+
 func (s *Schema) NewUpdate(tableName string) *bun.UpdateQuery {
 	return s.DB.NewUpdate().ModelTableExpr("?0.?1", bun.Ident(s.Name()), bun.Ident(tableName))
 }
 
 func (s *Schema) NewSelect(tableName string) *bun.SelectQuery {
 	return s.DB.NewSelect().ModelTableExpr("?0.?1 as ?1", bun.Ident(s.Name()), bun.Ident(tableName))
+}
+
+func (s *Schema) NewSelectWithAlias(tableName, alias string) *bun.SelectQuery {
+	return s.DB.NewSelect().ModelTableExpr("?0.?1 as ?2", bun.Ident(s.Name()), bun.Ident(tableName), bun.Ident(alias))
 }
 
 func (s *Schema) NewCreateTable(tableName string) *bun.CreateTableQuery {

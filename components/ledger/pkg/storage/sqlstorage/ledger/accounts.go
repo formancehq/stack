@@ -16,7 +16,10 @@ import (
 	"github.com/uptrace/bun"
 )
 
-const accountsTableName = "accounts"
+const (
+	accountsTableName     = "accounts"
+	cqrsAccountsTableName = "accounts2"
+)
 
 type Accounts struct {
 	bun.BaseModel `bun:"accounts,alias:accounts"`
@@ -35,8 +38,16 @@ type AccountsPaginationToken struct {
 	BalanceOperatorFilter storage.BalanceOperator `json:"balanceOperator,omitempty"`
 }
 
-func (s *Store) buildAccountsQuery(p storage.AccountsQuery) (*bun.SelectQuery, AccountsPaginationToken) {
-	sb := s.schema.NewSelect(accountsTableName).
+func (s *Store) buildAccountsQuery(ctx context.Context, p storage.AccountsQuery) (*bun.SelectQuery, AccountsPaginationToken) {
+	var (
+		accountsTableName = accountsTableName
+		volumesTableName  = volumesTableName
+	)
+	if storage.IsCQRSContext(ctx) {
+		accountsTableName = cqrsAccountsTableName
+		volumesTableName = cqrsVolumesTableName
+	}
+	sb := s.schema.NewSelectWithAlias(accountsTableName, "accounts").
 		Model((*Accounts)(nil))
 	t := AccountsPaginationToken{}
 
@@ -62,7 +73,7 @@ func (s *Store) buildAccountsQuery(p storage.AccountsQuery) (*bun.SelectQuery, A
 	t.MetadataFilter = metadata
 
 	if balance != "" {
-		sb.Join("JOIN " + s.schema.Table("volumes")).
+		sb.Join("JOIN " + s.schema.Table(volumesTableName)).
 			JoinOn("accounts.address = volumes.account")
 		balanceOperation := "volumes.input - volumes.output"
 
@@ -108,7 +119,7 @@ func (s *Store) GetAccounts(ctx context.Context, q storage.AccountsQuery) (api.C
 		return api.Cursor[core.Account]{Data: accounts}, nil
 	}
 
-	sb, t := s.buildAccountsQuery(q)
+	sb, t := s.buildAccountsQuery(ctx, q)
 	sb.OrderExpr("address desc")
 
 	if q.AfterAddress != "" {
@@ -203,10 +214,20 @@ func (s *Store) GetAccount(ctx context.Context, addr string) (*core.Account, err
 }
 
 func (s *Store) GetAccountWithVolumes(ctx context.Context, account string) (*core.AccountWithVolumes, error) {
-	query := s.schema.NewSelect(accountsTableName).
+
+	var (
+		accountsTableName = accountsTableName
+		volumesTableName  = volumesTableName
+	)
+	if storage.IsCQRSContext(ctx) {
+		accountsTableName = cqrsAccountsTableName
+		volumesTableName = cqrsVolumesTableName
+	}
+
+	query := s.schema.NewSelectWithAlias(accountsTableName, "accounts").
 		Model((*Accounts)(nil)).
 		ColumnExpr("accounts.metadata, volumes.asset, volumes.input, volumes.output").
-		Join("LEFT OUTER JOIN "+s.schema.Table("volumes")).
+		Join("LEFT OUTER JOIN "+s.schema.Table(volumesTableName)+" volumes").
 		JoinOn("accounts.address = volumes.account").
 		Where("accounts.address = ?", account).String()
 
@@ -271,15 +292,22 @@ func (s *Store) GetAccountWithVolumes(ctx context.Context, account string) (*cor
 }
 
 func (s *Store) CountAccounts(ctx context.Context, q storage.AccountsQuery) (uint64, error) {
-	sb, _ := s.buildAccountsQuery(q)
+	sb, _ := s.buildAccountsQuery(ctx, q)
 	count, err := sb.Count(ctx)
 	return uint64(count), s.error(err)
 }
 
-func (s *Store) ensureAccountExists(ctx context.Context, account string) error {
+func (s *Store) EnsureAccountExists(ctx context.Context, account string) error {
 	a := &Accounts{
 		Address:  account,
 		Metadata: make(map[string]interface{}),
+	}
+
+	var (
+		accountsTableName = accountsTableName
+	)
+	if storage.IsCQRSContext(ctx) {
+		accountsTableName = cqrsAccountsTableName
 	}
 
 	_, err := s.schema.NewInsert(accountsTableName).
@@ -296,16 +324,18 @@ func (s *Store) UpdateAccountMetadata(ctx context.Context, address string, metad
 		Metadata: metadata,
 	}
 
-	_, err := s.schema.NewInsert(accountsTableName).
+	var (
+		accountsTableName = accountsTableName
+	)
+	if storage.IsCQRSContext(ctx) {
+		accountsTableName = cqrsAccountsTableName
+	}
+
+	_, err := s.schema.NewInsertWithAlias(accountsTableName, "accounts").
 		Model(a).
 		On("CONFLICT (address) DO UPDATE").
 		Set("metadata = accounts.metadata || EXCLUDED.metadata").
 		Exec(ctx)
 	return err
 
-	// return s.appendLog(ctx, core.NewSetMetadataLog(at, core.SetMetadata{
-	// 	TargetType: core.MetaTargetTypeAccount,
-	// 	TargetID:   address,
-	// 	Metadata:   metadata,
-	// }))
 }

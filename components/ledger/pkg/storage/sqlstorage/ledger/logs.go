@@ -6,17 +6,20 @@ import (
 	"database/sql/driver"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
 
-const LogTableName = "log"
+const (
+	LogTableName          = "log"
+	LogIngestionTableName = "logs_ingestion"
+)
 
 type Log struct {
 	bun.BaseModel `bun:"log,alias:log"`
@@ -56,7 +59,11 @@ func (s *Store) batchLogs(ctx context.Context, logs []core.Log) error {
 	}
 
 	// Beware: COPY query is not supported by bun if the pgx driver is used.
-	stmt, err := txn.Prepare(fmt.Sprintf("COPY \"%s\".log (id, type, hash, date, data) FROM STDIN", s.schema.Name()))
+	stmt, err := txn.Prepare(pq.CopyInSchema(
+		s.schema.Name(),
+		"log",
+		"id", "type", "hash", "date", "data",
+	))
 	if err != nil {
 		return err
 	}
@@ -228,4 +235,62 @@ func (s *Store) buildLogsQuery(q *storage.LogsQuery) (*bun.SelectQuery, LogsPagi
 	t.PageSize = q.PageSize
 
 	return sb, t
+}
+
+func (s *Store) GetNextLogID(ctx context.Context) (uint64, error) {
+	var logID uint64
+	err := s.schema.
+		NewSelect(LogIngestionTableName).
+		Column("log_id").
+		Limit(1).
+		Scan(ctx, &logID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, nil
+		}
+		return 0, err
+	}
+	return logID, nil
+}
+
+func (s *Store) ReadLogsStartingFromID(ctx context.Context, id uint64) ([]core.Log, error) {
+
+	rawLogs := make([]Log, 0)
+	err := s.schema.
+		NewSelect(LogTableName).
+		Where("id >= ?", id).
+		Model(&rawLogs).
+		Scan(ctx)
+	if err != nil {
+		return nil, err
+	}
+	logs := make([]core.Log, len(rawLogs))
+	for index, rawLog := range rawLogs {
+		payload, err := core.HydrateLog(rawLog.Type, string(rawLog.Data))
+		if err != nil {
+			return nil, errors.Wrap(err, "hydrating log")
+		}
+		logs[index] = core.Log{
+			ID:   rawLog.ID,
+			Type: rawLog.Type,
+			Hash: rawLog.Hash,
+			Date: rawLog.Date,
+			Data: payload,
+		}
+	}
+
+	return logs, nil
+}
+
+func (s *Store) UpdateNextLogID(ctx context.Context, id uint64) error {
+	_, err := s.schema.
+		NewInsert(LogIngestionTableName).
+		Model(&struct {
+			LogID uint64
+		}{}).
+		Value("log_id", "?", id).
+		On("CONFLICT (log_id) DO UPDATE").
+		Set("log_id = EXCLUDED.log_id").
+		Exec(ctx)
+	return err
 }
