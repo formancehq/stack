@@ -25,10 +25,10 @@ func TestNoScript(t *testing.T) {
 	runOnLedger(t, func(l *ledger.Ledger) {
 		script := core.ScriptData{}
 
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-		err := waitAndPostProcess(context.Background())
+		_, logs, err := l.ProcessScript(context.Background(), true, false, script)
 		assert.IsType(t, &ledger.ScriptError{}, err)
 		assert.Equal(t, ledger.ScriptErrorNoScript, err.(*ledger.ScriptError).Code)
+		require.Nil(t, logs)
 	})
 }
 
@@ -38,10 +38,10 @@ func TestCompilationError(t *testing.T) {
 			Script: core.Script{Plain: "willnotcompile"},
 		}
 
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-		err := waitAndPostProcess(context.Background())
+		_, logs, err := l.ProcessScript(context.Background(), true, false, script)
 		assert.IsType(t, &ledger.ScriptError{}, err)
 		assert.Equal(t, ledger.ScriptErrorCompilationFailed, err.(*ledger.ScriptError).Code)
+		require.Nil(t, logs)
 	})
 }
 
@@ -57,8 +57,10 @@ func TestSend(t *testing.T) {
 					)`,
 				},
 			}
-			_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-			require.NoError(t, waitAndPostProcess(context.Background()))
+			_, logs, err := l.ProcessScript(context.Background(), true, false, script)
+			require.NoError(t, err)
+			require.NotNil(t, logs)
+			require.NoError(t, logs.Wait(context.Background()))
 
 			assertBalance(t, l, "user:001",
 				"USD/2", core.NewMonetaryInt(99))
@@ -74,11 +76,11 @@ func TestSend(t *testing.T) {
 					)`,
 				},
 			}
-			_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-			err := waitAndPostProcess(context.Background())
+			_, logs, err := l.ProcessScript(context.Background(), true, false, script)
 			require.Error(t, err)
 			require.True(t, ledger.IsValidationError(err))
 			require.ErrorContains(t, err, "transaction has no postings")
+			require.Nil(t, logs)
 		})
 
 		t.Run("one send with monetary all should fail", func(t *testing.T) {
@@ -91,11 +93,11 @@ func TestSend(t *testing.T) {
 					)`,
 				},
 			}
-			_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-			err := waitAndPostProcess(context.Background())
+			_, logs, err := l.ProcessScript(context.Background(), true, false, script)
 			require.Error(t, err)
 			require.True(t, ledger.IsValidationError(err))
 			require.ErrorContains(t, err, "transaction has no postings")
+			require.Nil(t, logs)
 		})
 
 		t.Run("one send with zero amount and another with positive amount should succeed", func(t *testing.T) {
@@ -112,8 +114,9 @@ func TestSend(t *testing.T) {
 					)`,
 				},
 			}
-			res, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-			require.NoError(t, waitAndPostProcess(context.Background()))
+			res, logs, err := l.ProcessScript(context.Background(), true, false, script)
+			require.NoError(t, err)
+			require.NoError(t, logs.Wait(context.Background()))
 			require.Equal(t, 1, len(res.Postings))
 
 			assertBalance(t, l, "user:001",
@@ -134,8 +137,9 @@ func TestSend(t *testing.T) {
 					)`,
 				},
 			}
-			res, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-			require.NoError(t, waitAndPostProcess(context.Background()))
+			res, logs, err := l.ProcessScript(context.Background(), true, false, script)
+			require.NoError(t, err)
+			require.NoError(t, logs.Wait(context.Background()))
 			require.Equal(t, 1, len(res.Postings))
 
 			assertBalance(t, l, "user:001",
@@ -161,8 +165,9 @@ func TestNoVariables(t *testing.T) {
 			},
 		}
 
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-		assert.Error(t, waitAndPostProcess(context.Background()))
+		_, logs, err := l.ProcessScript(context.Background(), true, false, script)
+		assert.Error(t, err)
+		require.Nil(t, logs)
 	})
 }
 
@@ -185,8 +190,9 @@ func TestVariables(t *testing.T) {
 			},
 		}
 
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		_, logs, err := l.ProcessScript(context.Background(), true, false, script)
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
 		assertBalance(t, l, "user:042",
 			"CAD/2", core.NewMonetaryInt(42))
@@ -204,8 +210,9 @@ func TestVariablesEmptyAccount(t *testing.T) {
 					)`,
 			},
 		}
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		_, logs, err := l.ProcessScript(context.Background(), true, false, script)
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
 		script = core.ScriptData{
 			Script: core.Script{
@@ -226,8 +233,9 @@ func TestVariablesEmptyAccount(t *testing.T) {
 				},
 			},
 		}
-		_, waitAndPostProcess = l.ExecuteScript(context.Background(), false, script)
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		_, logs, err = l.ProcessScript(context.Background(), true, false, script)
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
 		assertBalance(t, l, "alice", "EUR", core.NewMonetaryInt(1))
 		assertBalance(t, l, "bob", "EUR", core.NewMonetaryInt(0))
@@ -236,7 +244,7 @@ func TestVariablesEmptyAccount(t *testing.T) {
 
 func TestEnoughFunds(t *testing.T) {
 	runOnLedger(t, func(l *ledger.Ledger) {
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, core.ScriptData{
+		_, logs, err := l.ProcessScript(context.Background(), true, false, core.ScriptData{
 			Script: core.Script{
 				Plain: `send [COIN 100] (
 	source = @world
@@ -245,7 +253,8 @@ func TestEnoughFunds(t *testing.T) {
 			},
 			Timestamp: time.Time{},
 		})
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
 		script := core.ScriptData{
 			Script: core.Script{
@@ -257,15 +266,16 @@ func TestEnoughFunds(t *testing.T) {
 			},
 		}
 
-		_, waitAndPostProcess = l.ExecuteScript(context.Background(), false, script)
-		assert.NoError(t, waitAndPostProcess(context.Background()))
+		_, logs, err = l.ProcessScript(context.Background(), true, false, script)
+		assert.NoError(t, err)
+		assert.NoError(t, logs.Wait(context.Background()))
 	})
 }
 
 func TestNotEnoughFunds(t *testing.T) {
 	runOnLedger(t, func(l *ledger.Ledger) {
 
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, core.ScriptData{
+		_, logs, err := l.ProcessScript(context.Background(), true, false, core.ScriptData{
 			Script: core.Script{
 				Plain: `send [COIN 100] (
 	source = @world
@@ -274,7 +284,8 @@ func TestNotEnoughFunds(t *testing.T) {
 			},
 			Timestamp: time.Time{},
 		})
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
 		script := core.ScriptData{
 			Script: core.Script{
@@ -286,8 +297,9 @@ func TestNotEnoughFunds(t *testing.T) {
 			},
 		}
 
-		_, waitAndPostProcess = l.ExecuteScript(context.Background(), false, script)
-		assert.True(t, ledger.IsScriptErrorWithCode(waitAndPostProcess(context.Background()), apierrors.ErrInsufficientFund))
+		_, logs, err = l.ProcessScript(context.Background(), true, false, script)
+		assert.True(t, ledger.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund))
+		require.Nil(t, logs)
 	})
 }
 
@@ -312,14 +324,15 @@ func TestMissingMetadata(t *testing.T) {
 			},
 		}
 
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-		assert.True(t, ledger.IsScriptErrorWithCode(waitAndPostProcess(context.Background()), ledger.ScriptErrorCompilationFailed))
+		_, logs, err := l.ProcessScript(context.Background(), true, false, script)
+		assert.True(t, ledger.IsScriptErrorWithCode(err, ledger.ScriptErrorCompilationFailed))
+		require.Nil(t, logs)
 	})
 }
 
 func TestMetadata(t *testing.T) {
 	runOnLedger(t, func(l *ledger.Ledger) {
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, core.ScriptData{
+		_, logs, err := l.ProcessScript(context.Background(), true, false, core.ScriptData{
 			Script: core.Script{
 				Plain: `send [COIN 100] (
 	source = @world
@@ -328,9 +341,10 @@ func TestMetadata(t *testing.T) {
 			},
 			Timestamp: time.Time{},
 		})
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
-		waitAndPostProcess = l.SaveMeta(context.Background(), core.MetaTargetTypeAccount,
+		logs, err = l.SaveMeta(context.Background(), core.MetaTargetTypeAccount,
 			"sales:042",
 			core.Metadata{
 				"seller": json.RawMessage(`{
@@ -338,9 +352,10 @@ func TestMetadata(t *testing.T) {
  					"value": "users:053"
  				}`),
 			})
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
-		waitAndPostProcess = l.SaveMeta(context.Background(), core.MetaTargetTypeAccount,
+		logs, err = l.SaveMeta(context.Background(), core.MetaTargetTypeAccount,
 			"users:053",
 			core.Metadata{
 				"commission": json.RawMessage(`{
@@ -348,7 +363,8 @@ func TestMetadata(t *testing.T) {
  					"value": "15.5%"
  				}`),
 			})
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
 		plain := `
  			vars {
@@ -375,8 +391,9 @@ func TestMetadata(t *testing.T) {
 			},
 		}
 
-		_, waitAndPostProcess = l.ExecuteScript(context.Background(), false, script)
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		_, logs, err = l.ProcessScript(context.Background(), true, false, script)
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
 		assertBalance(t, l, "sales:042", "COIN", core.NewMonetaryInt(0))
 		assertBalance(t, l, "users:053", "COIN", core.NewMonetaryInt(85))
@@ -448,8 +465,10 @@ func TestSetTxMeta(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			runOnLedger(t, func(l *ledger.Ledger) {
-				_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, tc.script)
-				err := waitAndPostProcess(context.Background())
+				_, logs, err := l.ProcessScript(context.Background(), true, false, tc.script)
+				if err == nil {
+					err = logs.Wait(context.Background())
+				}
 
 				if tc.expectedErrorCode != "" {
 					require.Error(t, err)
@@ -481,8 +500,9 @@ func TestScriptSetReference(t *testing.T) {
 			Reference: "tx_ref",
 		}
 
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		_, logs, err := l.ProcessScript(context.Background(), true, false, script)
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
 		last, err := l.GetLedgerStore().GetLastTransaction(context.Background())
 		require.NoError(t, err)
@@ -493,7 +513,7 @@ func TestScriptSetReference(t *testing.T) {
 
 func TestScriptReferenceConflict(t *testing.T) {
 	runOnLedger(t, func(l *ledger.Ledger) {
-		_, waitAndPostProcess := l.ExecuteScript(context.Background(), false,
+		_, logs, err := l.ProcessScript(context.Background(), true, false,
 			core.ScriptData{
 				Script: core.Script{
 					Plain: `
@@ -505,9 +525,10 @@ func TestScriptReferenceConflict(t *testing.T) {
 				},
 				Reference: "tx_ref",
 			})
-		require.NoError(t, waitAndPostProcess(context.Background()))
+		require.NoError(t, err)
+		require.NoError(t, logs.Wait(context.Background()))
 
-		_, waitAndPostProcess = l.ExecuteScript(context.Background(), false,
+		_, logs, err = l.ProcessScript(context.Background(), true, false,
 			core.ScriptData{
 				Script: core.Script{
 					Plain: `
@@ -519,7 +540,11 @@ func TestScriptReferenceConflict(t *testing.T) {
 				},
 				Reference: "tx_ref",
 			})
-		err := waitAndPostProcess(context.Background())
+		if err == nil {
+			err = logs.Wait(context.Background())
+		} else {
+			require.Nil(t, logs)
+		}
 		require.Error(t, err)
 		require.True(t, ledger.IsConflictError(err))
 	})
@@ -528,7 +553,7 @@ func TestScriptReferenceConflict(t *testing.T) {
 func TestSetAccountMeta(t *testing.T) {
 	runOnLedger(t, func(l *ledger.Ledger) {
 		t.Run("valid", func(t *testing.T) {
-			_, waitAndPostProcess := l.ExecuteScript(context.Background(), false,
+			_, logs, err := l.ProcessScript(context.Background(), true, false,
 				core.ScriptData{
 					Script: core.Script{Plain: `
 						send [USD/2 99] (
@@ -542,7 +567,8 @@ func TestSetAccountMeta(t *testing.T) {
 						set_account_meta(@alice, "eee", @bob)
   					`},
 				})
-			require.NoError(t, waitAndPostProcess(context.Background()))
+			require.NoError(t, err)
+			require.NoError(t, logs.Wait(context.Background()))
 
 			acc, err := l.GetAccount(context.Background(), "alice")
 			require.NoError(t, err)
@@ -557,7 +583,7 @@ func TestSetAccountMeta(t *testing.T) {
 		})
 
 		t.Run("invalid syntax", func(t *testing.T) {
-			_, waitAndPostProcess := l.ExecuteScript(context.Background(), false,
+			_, logs, err := l.ProcessScript(context.Background(), true, false,
 				core.ScriptData{
 					Script: core.Script{Plain: `
 						send [USD/2 99] (
@@ -567,8 +593,8 @@ func TestSetAccountMeta(t *testing.T) {
 						set_account_meta(@bob, "is")
 					`},
 				})
-			require.True(t, ledger.IsScriptErrorWithCode(waitAndPostProcess(context.Background()),
-				ledger.ScriptErrorCompilationFailed))
+			require.True(t, ledger.IsScriptErrorWithCode(err, ledger.ScriptErrorCompilationFailed))
+			require.Nil(t, logs)
 		})
 	})
 }
@@ -576,7 +602,7 @@ func TestSetAccountMeta(t *testing.T) {
 func TestMonetaryVariableBalance(t *testing.T) {
 	t.Run("simple", func(t *testing.T) {
 		runOnLedger(t, func(l *ledger.Ledger) {
-			_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, core.ScriptData{
+			_, logs, err := l.ProcessScript(context.Background(), true, false, core.ScriptData{
 				Script: core.Script{
 					Plain: `send [COIN 100] (
 	source = @world
@@ -585,7 +611,8 @@ func TestMonetaryVariableBalance(t *testing.T) {
 				},
 				Timestamp: time.Time{},
 			})
-			require.NoError(t, waitAndPostProcess(context.Background()))
+			require.NoError(t, err)
+			require.NoError(t, logs.Wait(context.Background()))
 
 			script := core.ScriptData{
 				Script: core.Script{
@@ -600,8 +627,9 @@ func TestMonetaryVariableBalance(t *testing.T) {
 				},
 			}
 
-			_, waitAndPostProcess = l.ExecuteScript(context.Background(), false, script)
-			require.NoError(t, waitAndPostProcess(context.Background()))
+			_, logs, err = l.ProcessScript(context.Background(), true, false, script)
+			require.NoError(t, err)
+			require.NoError(t, logs.Wait(context.Background()))
 			assertBalance(t, l, "world", "COIN", core.NewMonetaryInt(0))
 			assertBalance(t, l, "users:001", "COIN", core.NewMonetaryInt(0))
 		})
@@ -609,7 +637,7 @@ func TestMonetaryVariableBalance(t *testing.T) {
 
 	t.Run("complex", func(t *testing.T) {
 		runOnLedger(t, func(l *ledger.Ledger) {
-			_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, core.ScriptData{
+			_, logs, err := l.ProcessScript(context.Background(), true, false, core.ScriptData{
 				Script: core.Script{
 					Plain: `
 send [USD/2 40] (
@@ -624,7 +652,8 @@ send [USD/2 90] (
 				},
 				Timestamp: time.Time{},
 			})
-			require.NoError(t, waitAndPostProcess(context.Background()))
+			require.NoError(t, err)
+			require.NoError(t, logs.Wait(context.Background()))
 
 			script := core.ScriptData{
 				Script: core.Script{
@@ -645,8 +674,9 @@ send [USD/2 90] (
 				},
 			}
 
-			_, waitAndPostProcess = l.ExecuteScript(context.Background(), false, script)
-			require.NoError(t, waitAndPostProcess(context.Background()))
+			_, logs, err = l.ProcessScript(context.Background(), true, false, script)
+			require.NoError(t, err)
+			require.NoError(t, logs.Wait(context.Background()))
 			assertBalance(t, l, "B", "USD/2", core.NewMonetaryInt(40))
 			assertBalance(t, l, "D", "USD/2", core.NewMonetaryInt(60))
 		})
@@ -654,7 +684,7 @@ send [USD/2 90] (
 
 	t.Run("error insufficient funds", func(t *testing.T) {
 		runOnLedger(t, func(l *ledger.Ledger) {
-			_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, core.ScriptData{
+			_, logs, err := l.ProcessScript(context.Background(), true, false, core.ScriptData{
 				Script: core.Script{
 					Plain: `send [COIN 100] (
 	source = @world
@@ -663,7 +693,8 @@ send [USD/2 90] (
 				},
 				Timestamp: time.Time{},
 			})
-			require.NoError(t, waitAndPostProcess(context.Background()))
+			require.NoError(t, err)
+			require.NoError(t, logs.Wait(context.Background()))
 
 			script := core.ScriptData{
 				Script: core.Script{
@@ -681,14 +712,15 @@ send [USD/2 90] (
  					)`,
 				},
 			}
-			_, waitAndPostProcess = l.ExecuteScript(context.Background(), false, script)
-			assert.True(t, ledger.IsScriptErrorWithCode(waitAndPostProcess(context.Background()), apierrors.ErrInsufficientFund))
+			_, logs, err = l.ProcessScript(context.Background(), true, false, script)
+			assert.True(t, ledger.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund))
+			require.Nil(t, logs)
 		})
 	})
 
 	t.Run("error negative balance", func(t *testing.T) {
 		runOnLedger(t, func(l *ledger.Ledger) {
-			_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, core.ScriptData{
+			_, logs, err := l.ProcessScript(context.Background(), true, false, core.ScriptData{
 				Script: core.Script{
 					Plain: `send [COIN 100] (
 	source = @world
@@ -697,7 +729,8 @@ send [USD/2 90] (
 				},
 				Timestamp: time.Time{},
 			})
-			require.NoError(t, waitAndPostProcess(context.Background()))
+			require.NoError(t, err)
+			require.NoError(t, logs.Wait(context.Background()))
 
 			script := core.ScriptData{
 				Script: core.Script{
@@ -712,10 +745,10 @@ send [USD/2 90] (
 				},
 			}
 
-			_, waitAndPostProcess = l.ExecuteScript(context.Background(), false, script)
-			err := waitAndPostProcess(context.Background())
+			_, logs, err = l.ProcessScript(context.Background(), true, false, script)
 			assert.True(t, ledger.IsScriptErrorWithCode(err, ledger.ScriptErrorCompilationFailed))
 			assert.ErrorContains(t, err, "must be non-negative")
+			require.Nil(t, logs)
 		})
 	})
 
@@ -733,8 +766,9 @@ send [USD/2 90] (
  					)`,
 				},
 			}
-			_, waitAndPostProcess := l.ExecuteScript(context.Background(), false, script)
-			assert.True(t, ledger.IsScriptErrorWithCode(waitAndPostProcess(context.Background()), apierrors.ErrScriptCompilationFailed))
+			_, logs, err := l.ProcessScript(context.Background(), true, false, script)
+			assert.True(t, ledger.IsScriptErrorWithCode(err, apierrors.ErrScriptCompilationFailed))
+			require.Nil(t, logs)
 		})
 	})
 }
