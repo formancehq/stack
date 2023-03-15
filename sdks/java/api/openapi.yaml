@@ -573,7 +573,11 @@ paths:
         style: form
       - description: Filter accounts by metadata key value pairs. Nested objects can
           be used as seen in the example below.
-        example: "metadata[key]=value1&metadata[a.nested.key]=value2"
+        example:
+          admin: true
+          a:
+            nested:
+              key: value
         explode: true
         in: query
         name: metadata
@@ -697,7 +701,11 @@ paths:
         style: form
       - description: "Filter accounts by metadata key value pairs. The filter can\
           \ be used like this metadata[key]=value1&metadata[a.nested.key]=value2"
-        example: "metadata[key]=value1&metadata[a.nested.key]=value2"
+        example:
+          admin: true
+          a:
+            nested:
+              key: value
         explode: true
         in: query
         name: metadata
@@ -1072,7 +1080,11 @@ paths:
         style: form
       - description: Filter transactions by metadata key value pairs. Nested objects
           can be used as seen in the example below.
-        example: "metadata[key]=value1&metadata[a.nested.key]=value2"
+        example:
+          admin: true
+          a:
+            nested:
+              key: value
         explode: true
         in: query
         name: metadata
@@ -1199,7 +1211,11 @@ paths:
         style: form
       - description: Filter transactions by metadata key value pairs. Nested objects
           can be used as seen in the example below.
-        example: "metadata[key]=value1&metadata[a.nested.key]=value2"
+        example:
+          admin: true
+          a:
+            nested:
+              key: value
         explode: true
         in: query
         name: metadata
@@ -1714,7 +1730,9 @@ paths:
           type: string
         style: form
       - description: Fields used to sort payments (default is date:desc).
-        example: "date:asc,status:desc"
+        example:
+        - date:asc
+        - status:desc
         explode: true
         in: query
         name: sort
@@ -1814,7 +1832,9 @@ paths:
           type: string
         style: form
       - description: Fields used to sort payments (default is date:desc).
-        example: "date:asc,status:desc"
+        example:
+        - date:asc
+        - status:desc
         explode: true
         in: query
         name: sort
@@ -2442,7 +2462,11 @@ paths:
         style: form
       - description: Filter wallets by metadata key value pairs. Nested objects can
           be used as seen in the example below.
-        example: "metadata[key]=value1&metadata[a.nested.key]=value2"
+        example:
+          admin: true
+          a:
+            nested:
+              key: value
         explode: true
         in: query
         name: metadata
@@ -2711,10 +2735,6 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              amount:
-                asset: USD/2
-                amount: 100
             schema:
               $ref: '#/components/schemas/CreditWalletRequest'
       responses:
@@ -2758,7 +2778,11 @@ paths:
         style: form
       - description: Filter holds by metadata key value pairs. Nested objects can
           be used as seen in the example below.
-        example: "metadata[key]=value1&metadata[a.nested.key]=value2"
+        example:
+          admin: true
+          a:
+            nested:
+              key: value
         explode: true
         in: query
         name: metadata
@@ -3038,7 +3062,7 @@ paths:
           type: string
         style: form
       - description: Filter running instances
-        example: xxx
+        example: true
         explode: true
         in: query
         name: running
@@ -3258,7 +3282,9 @@ components:
       style: form
     Sort:
       description: Fields used to sort payments (default is date:desc).
-      example: "date:asc,status:desc"
+      example:
+      - date:asc
+      - status:desc
       explode: true
       in: query
       name: sort
@@ -4699,7 +4725,7 @@ components:
       - BANKING-CIRCLE
       type: string
     ConnectorConfig:
-      oneOf:
+      anyOf:
       - $ref: '#/components/schemas/StripeConfig'
       - $ref: '#/components/schemas/DummyPayConfig'
       - $ref: '#/components/schemas/WiseConfig'
@@ -4890,6 +4916,7 @@ components:
           format: date-time
           type: string
         raw:
+          nullable: true
           type: object
         adjustments:
           items:
@@ -4944,6 +4971,7 @@ components:
     PaymentMetadata:
       example:
         key: key
+      nullable: true
       properties:
         key:
           type: string
@@ -5357,9 +5385,6 @@ components:
           format: date-time
           type: string
     Monetary:
-      example:
-        amount: 0
-        asset: asset
       properties:
         asset:
           description: The asset of the monetary value.
@@ -5717,16 +5742,10 @@ components:
         propertyName: type
     CreditWalletRequest:
       example:
-        reference: reference
         amount:
-          amount: 0
-          asset: asset
-        metadata:
-          key: ""
-        sources:
-        - null
-        - null
-        balance: balance
+          asset: USD/2
+          amount: 100
+        sources: []
       properties:
         amount:
           $ref: '#/components/schemas/Monetary'
@@ -6155,16 +6174,10 @@ components:
             id: id
           CreditWallet:
             data:
-              reference: reference
               amount:
-                amount: 0
-                asset: asset
-              metadata:
-                key: ""
-              sources:
-              - null
-              - null
-              balance: balance
+                asset: USD/2
+                amount: 100
+              sources: []
             id: id
           VoidHold:
             id: id
@@ -6191,7 +6204,7 @@ components:
         error: error
         nextExecution: 2000-01-23T04:56:07.000+00:00
         attempt: 0
-        terminated: ""
+        terminated: true
         lastFailure: lastFailure
       properties:
         name:
@@ -6203,7 +6216,7 @@ components:
         error:
           type: string
         terminated:
-          type: bool
+          type: boolean
         startedAt:
           format: date-time
           type: string
@@ -6231,7 +6244,7 @@ components:
         name: name
         startedAt: 2000-01-23T04:56:07.000+00:00
         error: error
-        terminated: ""
+        terminated: true
       properties:
         name:
           type: string
@@ -6240,7 +6253,7 @@ components:
         error:
           type: string
         terminated:
-          type: bool
+          type: boolean
         startedAt:
           format: date-time
           type: string
@@ -6443,13 +6456,13 @@ components:
           name: name
           startedAt: 2000-01-23T04:56:07.000+00:00
           error: error
-          terminated: ""
+          terminated: true
         - input: null
           terminatedAt: 2000-01-23T04:56:07.000+00:00
           name: name
           startedAt: 2000-01-23T04:56:07.000+00:00
           error: error
-          terminated: ""
+          terminated: true
       properties:
         data:
           items:
@@ -6640,16 +6653,10 @@ components:
               id: id
             CreditWallet:
               data:
-                reference: reference
                 amount:
-                  amount: 0
-                  asset: asset
-                metadata:
-                  key: ""
-                sources:
-                - null
-                - null
-                balance: balance
+                  asset: USD/2
+                  amount: 100
+                sources: []
               id: id
             VoidHold:
               id: id
@@ -6676,7 +6683,7 @@ components:
           error: error
           nextExecution: 2000-01-23T04:56:07.000+00:00
           attempt: 0
-          terminated: ""
+          terminated: true
           lastFailure: lastFailure
         - output:
             CreateTransaction:
@@ -6857,16 +6864,10 @@ components:
               id: id
             CreditWallet:
               data:
-                reference: reference
                 amount:
-                  amount: 0
-                  asset: asset
-                metadata:
-                  key: ""
-                sources:
-                - null
-                - null
-                balance: balance
+                  asset: USD/2
+                  amount: 100
+                sources: []
               id: id
             VoidHold:
               id: id
@@ -6893,7 +6894,7 @@ components:
           error: error
           nextExecution: 2000-01-23T04:56:07.000+00:00
           attempt: 0
-          terminated: ""
+          terminated: true
           lastFailure: lastFailure
       properties:
         data:
@@ -7066,16 +7067,10 @@ components:
     ActivityCreditWallet:
       example:
         data:
-          reference: reference
           amount:
-            amount: 0
-            asset: asset
-          metadata:
-            key: ""
-          sources:
-          - null
-          - null
-          balance: balance
+            asset: USD/2
+            amount: 100
+          sources: []
         id: id
       properties:
         id:
@@ -7163,16 +7158,10 @@ components:
           id: id
         CreditWallet:
           data:
-            reference: reference
             amount:
-              amount: 0
-              asset: asset
-            metadata:
-              key: ""
-            sources:
-            - null
-            - null
-            balance: balance
+              asset: USD/2
+              amount: 100
+            sources: []
           id: id
         VoidHold:
           id: id

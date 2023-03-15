@@ -107,7 +107,7 @@ $start_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter 
 $start_time2 = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute). Deprecated, please use `startTime` instead.
 $end_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).
 $end_time2 = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute). Deprecated, please use `endTime` instead.
-$metadata = metadata[key]=value1&metadata[a.nested.key]=value2; // object | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+$metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
 
 try {
     $apiInstance->countTransactions($ledger, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $metadata);
@@ -311,7 +311,7 @@ $end_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter tr
 $end_time2 = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute). Deprecated, please use `endTime` instead.
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
 $pagination_token = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use `cursor` instead.
-$metadata = metadata[key]=value1&metadata[a.nested.key]=value2; // object | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+$metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
 
 try {
     $result = $apiInstance->listTransactions($ledger, $page_size, $page_size2, $after, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $metadata);

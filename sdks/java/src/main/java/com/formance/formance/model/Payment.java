@@ -450,7 +450,7 @@ public class Payment {
    * Get raw
    * @return raw
   **/
-  @javax.annotation.Nonnull
+  @javax.annotation.Nullable
 
   public Object getRaw() {
     return raw;
@@ -499,7 +499,7 @@ public class Payment {
    * Get metadata
    * @return metadata
   **/
-  @javax.annotation.Nonnull
+  @javax.annotation.Nullable
 
   public PaymentMetadata getMetadata() {
     return metadata;

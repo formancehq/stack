@@ -589,7 +589,7 @@ $apiInstance = new Formance\Api\PaymentsApi(
 );
 $page_size = 100; // int | The maximum number of results to return per page.
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
-$sort = date:asc,status:desc; // string[] | Fields used to sort payments (default is date:desc).
+$sort = ["date:asc","status:desc"]; // string[] | Fields used to sort payments (default is date:desc).
 
 try {
     $result = $apiInstance->listPayments($page_size, $cursor, $sort);
@@ -651,7 +651,7 @@ $apiInstance = new Formance\Api\PaymentsApi(
 );
 $page_size = 100; // int | The maximum number of results to return per page.
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
-$sort = date:asc,status:desc; // string[] | Fields used to sort payments (default is date:desc).
+$sort = ["date:asc","status:desc"]; // string[] | Fields used to sort payments (default is date:desc).
 
 try {
     $result = $apiInstance->paymentslistAccounts($page_size, $cursor, $sort);

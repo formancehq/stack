@@ -16,13 +16,13 @@ Name | Type | Description | Notes
 **CreatedAt** | **time.Time** |  | 
 **Raw** | **map[string]interface{}** |  | 
 **Adjustments** | [**[]PaymentAdjustment**](PaymentAdjustment.md) |  | 
-**Metadata** | [**PaymentMetadata**](PaymentMetadata.md) |  | 
+**Metadata** | [**NullablePaymentMetadata**](PaymentMetadata.md) |  | 
 
 ## Methods
 
 ### NewPayment
 
-`func NewPayment(id string, reference string, accountID string, type_ string, provider Connector, status PaymentStatus, initialAmount int64, scheme string, asset string, createdAt time.Time, raw map[string]interface{}, adjustments []PaymentAdjustment, metadata PaymentMetadata, ) *Payment`
+`func NewPayment(id string, reference string, accountID string, type_ string, provider Connector, status PaymentStatus, initialAmount int64, scheme string, asset string, createdAt time.Time, raw map[string]interface{}, adjustments []PaymentAdjustment, metadata NullablePaymentMetadata, ) *Payment`
 
 NewPayment instantiates a new Payment object
 This constructor will assign default values to properties that have it defined,
@@ -257,6 +257,16 @@ and a boolean to check if the value has been set.
 SetRaw sets Raw field to given value.
 
 
+### SetRawNil
+
+`func (o *Payment) SetRawNil(b bool)`
+
+ SetRawNil sets the value for Raw to be an explicit nil
+
+### UnsetRaw
+`func (o *Payment) UnsetRaw()`
+
+UnsetRaw ensures that no value is present for Raw, not even an explicit nil
 ### GetAdjustments
 
 `func (o *Payment) GetAdjustments() []PaymentAdjustment`
@@ -297,6 +307,16 @@ and a boolean to check if the value has been set.
 SetMetadata sets Metadata field to given value.
 
 
+### SetMetadataNil
+
+`func (o *Payment) SetMetadataNil(b bool)`
+
+ SetMetadataNil sets the value for Metadata to be an explicit nil
+
+### UnsetMetadata
+`func (o *Payment) UnsetMetadata()`
+
+UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 
