@@ -10,7 +10,7 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/ledger/pkg/storage"
-	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
+	"github.com/formancehq/stack/libs/go-libs/sqlstorage/sqlerrors"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -246,7 +246,7 @@ func testCommit(t *testing.T, store storage.LedgerStore) {
 
 	err = store.Commit(context.Background(), tx)
 	require.Error(t, err)
-	require.True(t, apierrors.IsErrorCode(err, apierrors.ConstraintFailed))
+	require.True(t, sqlerrors.IsErrorCode(err, sqlerrors.ConstraintFailed))
 
 	cursor, err := store.GetLogs(context.Background(), storage.NewLogsQuery())
 	require.NoError(t, err)

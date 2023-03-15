@@ -6,11 +6,11 @@ import (
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
-	sqlerrors "github.com/formancehq/ledger/pkg/storage/sqlstorage/errors"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/migrations"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/worker"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/sqlstorage/sqlerrors"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pkg/errors"
 )
@@ -35,9 +35,6 @@ type Store struct {
 }
 
 func (s *Store) error(err error) error {
-	if err == nil {
-		return nil
-	}
 	return sqlerrors.PostgresError(err)
 }
 

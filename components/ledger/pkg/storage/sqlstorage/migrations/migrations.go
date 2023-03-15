@@ -15,9 +15,9 @@ import (
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/opentelemetry"
-	sqlerrors "github.com/formancehq/ledger/pkg/storage/sqlstorage/errors"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/sqlstorage/sqlerrors"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )

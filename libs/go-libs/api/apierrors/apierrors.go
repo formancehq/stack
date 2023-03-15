@@ -10,6 +10,7 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/sqlstorage/sqlerrors"
 	"github.com/pkg/errors"
 )
 
@@ -62,7 +63,7 @@ func coreErrorToErrorCode(err error) (int, string, string) {
 		return http.StatusBadRequest, scriptErr.Code, EncodeLink(scriptErr.Message)
 	case errors.Is(err, context.Canceled):
 		return http.StatusInternalServerError, ErrContextCancelled, ""
-	case IsStorageError(err):
+	case sqlerrors.IsError(err):
 		return http.StatusServiceUnavailable, ErrStore, ""
 	default:
 		return http.StatusInternalServerError, ErrInternal, ""
@@ -202,52 +203,4 @@ func NewNotFoundError(msg string) *NotFoundError {
 
 func IsNotFoundError(err error) bool {
 	return errors.Is(err, &NotFoundError{})
-}
-
-var (
-	ErrConfigurationNotFound = errors.New("configuration not found")
-)
-
-type StorageErrorCode string
-
-const (
-	ConstraintFailed StorageErrorCode = "CONSTRAINT_FAILED"
-	TooManyClient    StorageErrorCode = "TOO_MANY_CLIENT"
-)
-
-type StorageError struct {
-	Code          StorageErrorCode
-	OriginalError error
-}
-
-func (e StorageError) Is(err error) bool {
-	storageErr, ok := err.(*StorageError)
-	if !ok {
-		return false
-	}
-	if storageErr.Code == "" {
-		return true
-	}
-	return storageErr.Code == e.Code
-}
-
-func (e StorageError) Error() string {
-	return fmt.Sprintf("%s [%s]", e.OriginalError, e.Code)
-}
-
-func NewStorageError(code StorageErrorCode, originalError error) *StorageError {
-	return &StorageError{
-		Code:          code,
-		OriginalError: originalError,
-	}
-}
-
-func IsStorageError(err error) bool {
-	return IsErrorCode(err, "")
-}
-
-func IsErrorCode(err error, code StorageErrorCode) bool {
-	return errors.Is(err, &StorageError{
-		Code: code,
-	})
 }

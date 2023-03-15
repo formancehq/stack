@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/formancehq/ledger/pkg/storage"
-	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/stack/libs/go-libs/sqlstorage/sqlerrors"
 	"github.com/pbnjay/memory"
 	"github.com/pborman/uuid"
 	"go.uber.org/fx"
@@ -45,10 +45,10 @@ func FromStorageAppIdProvider(driver storage.Driver) AppIdProvider {
 		var err error
 		if appId == "" {
 			appId, err = driver.GetSystemStore().GetConfiguration(ctx, "appId")
-			if err != nil && err != apierrors.ErrConfigurationNotFound {
+			if err != nil && err != sqlerrors.ErrConfigurationNotFound {
 				return "", err
 			}
-			if err == apierrors.ErrConfigurationNotFound {
+			if err == sqlerrors.ErrConfigurationNotFound {
 				appId = uuid.New()
 				if err := driver.GetSystemStore().InsertConfiguration(ctx, "appId", appId); err != nil {
 					return "", err

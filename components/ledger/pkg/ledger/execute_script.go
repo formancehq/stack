@@ -16,6 +16,7 @@ import (
 	"github.com/formancehq/ledger/pkg/opentelemetry"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
+	"github.com/formancehq/stack/libs/go-libs/sqlstorage/sqlerrors"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -290,7 +291,7 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 
 	if err := l.store.Commit(ctx, tx); err != nil {
 		switch {
-		case apierrors.IsErrorCode(err, apierrors.ConstraintFailed):
+		case sqlerrors.IsErrorCode(err, sqlerrors.ConstraintFailed):
 			return core.ExpandedTransaction{}, nil, apierrors.NewConflictError()
 		default:
 			return core.ExpandedTransaction{}, nil,
