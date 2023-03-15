@@ -55,9 +55,6 @@ request_path_hold_id = api_client.PathParameter(
     schema=HoldIdSchema,
     required=True,
 )
-_auth = [
-    'Authorization',
-]
 
 
 @dataclass
@@ -176,7 +173,6 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='post'.upper(),
             headers=_headers,
-            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

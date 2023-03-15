@@ -88,9 +88,6 @@ request_query_cursor = api_client.QueryParameter(
     schema=CursorSchema,
     explode=True,
 )
-_auth = [
-    'Authorization',
-]
 SchemaFor200ResponseBodyApplicationJson = ListWalletsResponse
 
 
@@ -197,7 +194,6 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='get'.upper(),
             headers=_headers,
-            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

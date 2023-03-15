@@ -163,16 +163,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
@@ -475,14 +465,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Authorization
 
- Authentication schemes defined for the API:
-## Authorization
-
-- **Type**: OAuth
-- **Flow**: application
-- **Authorization URL**: 
-- **Scopes**: N/A
-
+ All endpoints do not require authorization.
 
 ## Author
 

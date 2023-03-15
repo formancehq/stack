@@ -64,9 +64,6 @@ request_path_balance_name = api_client.PathParameter(
     schema=BalanceNameSchema,
     required=True,
 )
-_auth = [
-    'Authorization',
-]
 SchemaFor200ResponseBodyApplicationJson = GetBalanceResponse
 
 
@@ -193,7 +190,6 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='get'.upper(),
             headers=_headers,
-            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

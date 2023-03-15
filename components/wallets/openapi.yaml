@@ -89,7 +89,7 @@ paths:
         schema:
           type: object
           properties: { }
-        example: metadata[key]=value1&metadata[a.nested.key]=value2
+        example: { admin: true, a: { nested: { key: value}} }
       - name: pageSize
         in: query
         description: 'The maximum number of results to return per page'
@@ -319,10 +319,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreditWalletRequest'
-            example:
-              amount:
-                asset: USD/2
-                amount: 100
       responses:
         204:
           description: Wallet successfully credited
@@ -363,7 +359,7 @@ paths:
         schema:
           type: object
           properties: { }
-        example: metadata[key]=value1&metadata[a.nested.key]=value2
+        example: { admin: true, a: { nested: { key: value}} }
       - name: cursor
         in: query
         description: |
@@ -834,6 +830,12 @@ components:
         balance:
           type: string
           description: The balance to credit
+      example:
+        amount:
+          asset: USD/2
+          amount: 100
+        sources: []
+
     DebitWalletRequest:
       type: object
       required:

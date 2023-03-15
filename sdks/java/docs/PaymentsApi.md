@@ -37,7 +37,6 @@ Execute a transfer between two Stripe accounts.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -45,10 +44,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         StripeTransferRequest stripeTransferRequest = new StripeTransferRequest(); // StripeTransferRequest | 
@@ -79,7 +74,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -108,7 +103,6 @@ Execute a transfer between two accounts.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -116,10 +110,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
@@ -152,7 +142,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -181,7 +171,6 @@ Get a specific task associated to the connector.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -189,10 +178,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
@@ -225,7 +210,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -252,7 +237,6 @@ Get a payment
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -260,10 +244,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         String paymentId = "XXX"; // String | The payment ID.
@@ -294,7 +274,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -323,7 +303,6 @@ Install a connector by its name and config.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -331,10 +310,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
@@ -366,7 +341,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -395,7 +370,6 @@ List all installed connectors.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -403,10 +377,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         try {
@@ -433,7 +403,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -462,7 +432,6 @@ List the configs of each available connector.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -470,10 +439,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         try {
@@ -500,7 +465,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -529,7 +494,6 @@ List all tasks associated with this connector.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -537,10 +501,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
@@ -575,7 +535,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -604,7 +564,6 @@ List transfers
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -612,10 +571,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
@@ -646,7 +601,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -673,7 +628,6 @@ List payments
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -681,10 +635,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         Long pageSize = 15L; // Long | The maximum number of results to return per page. 
@@ -719,7 +669,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -746,7 +696,6 @@ List accounts
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -754,10 +703,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         Long pageSize = 15L; // Long | The maximum number of results to return per page. 
@@ -792,7 +737,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -821,7 +766,6 @@ Read connector config
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -829,10 +773,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
@@ -863,7 +803,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -892,7 +832,6 @@ Reset a connector by its name. It will remove the connector and ALL PAYMENTS gen
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -900,10 +839,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
@@ -933,7 +868,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -962,7 +897,6 @@ Uninstall a connector by its name.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -970,10 +904,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         Connector connector = Connector.fromValue("STRIPE"); // Connector | The name of the connector.
@@ -1003,7 +933,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -1030,7 +960,6 @@ Update metadata
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.PaymentsApi;
 
@@ -1038,10 +967,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         PaymentsApi apiInstance = new PaymentsApi(defaultClient);
         String paymentId = "XXX"; // String | The payment ID.
@@ -1073,7 +998,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
