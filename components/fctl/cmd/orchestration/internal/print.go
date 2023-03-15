@@ -25,6 +25,7 @@ func PrintWorkflowInstance(out io.Writer, w formance.Workflow, instance formance
 						var name string
 						for name = range stage {
 						}
+						ind = ind + 1
 						return []string{
 							name,
 							src.StartedAt.Format(time.RFC3339),
