@@ -8,7 +8,7 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run --fix
+      - golangci-lint run -v --fix
 
   tests:
     cmds:

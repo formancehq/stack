@@ -34,14 +34,6 @@ type DefaultLedger struct {
 	client *sdk.APIClient
 }
 
-func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, postTransaction sdk.PostTransaction) (*sdk.TransactionResponse, error) {
-	//nolint:bodyclose
-	ret, _, err := d.client.TransactionsApi.CreateTransaction(ctx, ledger).
-		PostTransaction(postTransaction).
-		Execute()
-	return ret, err
-}
-
 func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error) {
 	var (
 		ret *sdk.TransactionsCursorResponse
@@ -67,6 +59,15 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, quer
 	}
 
 	return &ret.Cursor, nil
+}
+
+func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+	//nolint:bodyclose
+	ret, _, err := d.client.TransactionsApi.
+		CreateTransaction(ctx, ledger).
+		PostTransaction(transaction).
+		Execute()
+	return ret, err
 }
 
 func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error {

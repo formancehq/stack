@@ -32,7 +32,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32947"
+                      value: "32768"
                     - name: POSTGRES_DATABASE
                       value: stack1-ledger
                     - name: POSTGRES_USERNAME
@@ -43,8 +43,6 @@ spec:
                       value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
-                    - name: BIND
-                      value: :8080
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
