@@ -55,11 +55,9 @@ public class TransactionsApiTest {
         String source = null;
         String destination = null;
         OffsetDateTime startTime = null;
-        OffsetDateTime startTime2 = null;
         OffsetDateTime endTime = null;
-        OffsetDateTime endTime2 = null;
         Object metadata = null;
-        // api.countTransactions(ledger, reference, account, source, destination, startTime, startTime2, endTime, endTime2, metadata);
+        // api.countTransactions(ledger, reference, account, source, destination, startTime, endTime, metadata);
 
         // TODO: test validations
     }
@@ -99,20 +97,16 @@ public class TransactionsApiTest {
     public void listTransactionsTest() {
         String ledger = null;
         Long pageSize = null;
-        Long pageSize2 = null;
         String after = null;
         String reference = null;
         String account = null;
         String source = null;
         String destination = null;
         OffsetDateTime startTime = null;
-        OffsetDateTime startTime2 = null;
         OffsetDateTime endTime = null;
-        OffsetDateTime endTime2 = null;
         String cursor = null;
-        String paginationToken = null;
         Object metadata = null;
-        // TransactionsCursorResponse response = api.listTransactions(ledger, pageSize, pageSize2, after, reference, account, source, destination, startTime, startTime2, endTime, endTime2, cursor, paginationToken, metadata);
+        // TransactionsCursorResponse response = api.listTransactions(ledger, pageSize, after, reference, account, source, destination, startTime, endTime, cursor, metadata);
 
         // TODO: test validations
     }

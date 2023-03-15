@@ -68,7 +68,6 @@ with Formance.ApiClient(configuration) as api_client:
         'address': "users:001",
         'after': "users:003",
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-        'pagination_token': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
     }
     try:
         # Get the balances from a ledger's account
@@ -99,7 +98,6 @@ Name | Type | Description  | Notes
 address | AddressSchema | | optional
 after | AfterSchema | | optional
 cursor | CursorSchema | | optional
-pagination_token | PaginationTokenSchema | | optional
 
 
 # AddressSchema
@@ -117,13 +115,6 @@ Input Type | Accessed Type | Description | Notes
 str,  | str,  |  | 
 
 # CursorSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | 
-
-# PaginationTokenSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

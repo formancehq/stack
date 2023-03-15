@@ -12,7 +12,6 @@ docs/Api/LogsApi.md
 docs/Api/OrchestrationApi.md
 docs/Api/PaymentsApi.md
 docs/Api/ScopesApi.md
-docs/Api/ScriptApi.md
 docs/Api/SearchApi.md
 docs/Api/ServerApi.md
 docs/Api/StatsApi.md
@@ -144,8 +143,6 @@ docs/Model/RunWorkflowResponse.md
 docs/Model/Scope.md
 docs/Model/ScopeAllOf.md
 docs/Model/ScopeOptions.md
-docs/Model/Script.md
-docs/Model/ScriptResponse.md
 docs/Model/Secret.md
 docs/Model/SecretAllOf.md
 docs/Model/SecretOptions.md
@@ -193,9 +190,7 @@ docs/Model/TasksCursorCursorAllOf.md
 docs/Model/TasksCursorCursorAllOfDataInner.md
 docs/Model/Total.md
 docs/Model/Transaction.md
-docs/Model/TransactionData.md
 docs/Model/TransactionResponse.md
-docs/Model/Transactions.md
 docs/Model/TransactionsCursorResponse.md
 docs/Model/TransactionsCursorResponseCursor.md
 docs/Model/TransferRequest.md
@@ -232,7 +227,6 @@ lib/Api/LogsApi.php
 lib/Api/OrchestrationApi.php
 lib/Api/PaymentsApi.php
 lib/Api/ScopesApi.php
-lib/Api/ScriptApi.php
 lib/Api/SearchApi.php
 lib/Api/ServerApi.php
 lib/Api/StatsApi.php
@@ -368,8 +362,6 @@ lib/Model/RunWorkflowResponse.php
 lib/Model/Scope.php
 lib/Model/ScopeAllOf.php
 lib/Model/ScopeOptions.php
-lib/Model/Script.php
-lib/Model/ScriptResponse.php
 lib/Model/Secret.php
 lib/Model/SecretAllOf.php
 lib/Model/SecretOptions.php
@@ -417,9 +409,7 @@ lib/Model/TasksCursorCursorAllOf.php
 lib/Model/TasksCursorCursorAllOfDataInner.php
 lib/Model/Total.php
 lib/Model/Transaction.php
-lib/Model/TransactionData.php
 lib/Model/TransactionResponse.php
-lib/Model/Transactions.php
 lib/Model/TransactionsCursorResponse.php
 lib/Model/TransactionsCursorResponseCursor.php
 lib/Model/TransferRequest.php

@@ -67,14 +67,10 @@ with Formance.ApiClient(configuration) as api_client:
     }
     query_params = {
         'pageSize': 100,
-        'page_size': 100,
         'after': "1234",
         'startTime': "1970-01-01T00:00:00.00Z",
-        'start_time': "1970-01-01T00:00:00.00Z",
         'endTime': "1970-01-01T00:00:00.00Z",
-        'end_time': "1970-01-01T00:00:00.00Z",
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-        'pagination_token': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
     }
     try:
         # List the logs from a ledger
@@ -103,22 +99,11 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 pageSize | PageSizeSchema | | optional
-page_size | PageSizeSchema | | optional
 after | AfterSchema | | optional
 startTime | StartTimeSchema | | optional
-start_time | StartTimeSchema | | optional
 endTime | EndTimeSchema | | optional
-end_time | EndTimeSchema | | optional
 cursor | CursorSchema | | optional
-pagination_token | PaginationTokenSchema | | optional
 
-
-# PageSizeSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | if omitted the server will use the default value of 15value must be a 64 bit integer
 
 # PageSizeSchema
 
@@ -141,20 +126,6 @@ Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
 
-# StartTimeSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
-
-# EndTimeSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
-
 # EndTimeSchema
 
 ## Model Type Info
@@ -163,13 +134,6 @@ Input Type | Accessed Type | Description | Notes
 str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
 
 # CursorSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | 
-
-# PaginationTokenSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

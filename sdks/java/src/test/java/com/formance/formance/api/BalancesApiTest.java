@@ -37,8 +37,7 @@ public class BalancesApiTest {
         String address = null;
         String after = null;
         String cursor = null;
-        String paginationToken = null;
-        // BalancesCursorResponse response = api.getBalances(ledger, address, after, cursor, paginationToken);
+        // BalancesCursorResponse response = api.getBalances(ledger, address, after, cursor);
 
         // TODO: test validations
     }
