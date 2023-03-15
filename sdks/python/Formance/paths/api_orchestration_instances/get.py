@@ -64,9 +64,6 @@ request_query_running = api_client.QueryParameter(
     schema=RunningSchema,
     explode=True,
 )
-_auth = [
-    'Authorization',
-]
 SchemaFor200ResponseBodyApplicationJson = ListRunsResponse
 
 
@@ -193,7 +190,6 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='get'.upper(),
             headers=_headers,
-            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

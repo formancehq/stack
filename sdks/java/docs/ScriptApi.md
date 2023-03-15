@@ -23,7 +23,6 @@ This route is deprecated, and has been merged into &#x60;POST /{ledger}/transact
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ScriptApi;
 
@@ -31,10 +30,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ScriptApi apiInstance = new ScriptApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
@@ -69,7 +64,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 

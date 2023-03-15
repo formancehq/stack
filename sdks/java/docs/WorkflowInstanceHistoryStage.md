@@ -11,7 +11,7 @@
 |**input** | [**WorkflowInstanceHistoryStageInput**](WorkflowInstanceHistoryStageInput.md) |  |  |
 |**output** | [**WorkflowInstanceHistoryStageOutput**](WorkflowInstanceHistoryStageOutput.md) |  |  [optional] |
 |**error** | **String** |  |  [optional] |
-|**terminated** | **Bool** |  |  |
+|**terminated** | **Boolean** |  |  |
 |**startedAt** | **OffsetDateTime** |  |  |
 |**terminatedAt** | **OffsetDateTime** |  |  [optional] |
 |**lastFailure** | **String** |  |  [optional] |

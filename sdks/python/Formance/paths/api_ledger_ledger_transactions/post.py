@@ -94,9 +94,6 @@ request_body_post_transaction = api_client.RequestBody(
     },
     required=True,
 )
-_auth = [
-    'Authorization',
-]
 SchemaFor200ResponseBodyApplicationJson = TransactionResponse
 
 
@@ -278,7 +275,6 @@ class BaseApi(api_client.Api):
             headers=_headers,
             fields=_fields,
             body=_body,
-            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )
