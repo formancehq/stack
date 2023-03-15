@@ -35,7 +35,7 @@ class PageSizeSchema(
     schemas.IntSchema
 ):
     pass
-WalletIdSchema = schemas.StrSchema
+WalletIDSchema = schemas.StrSchema
 CursorSchema = schemas.StrSchema
 RequestRequiredQueryParams = typing_extensions.TypedDict(
     'RequestRequiredQueryParams',
@@ -46,7 +46,7 @@ RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
         'pageSize': typing.Union[PageSizeSchema, decimal.Decimal, int, ],
-        'wallet_id': typing.Union[WalletIdSchema, str, ],
+        'walletID': typing.Union[WalletIDSchema, str, ],
         'cursor': typing.Union[CursorSchema, str, ],
     },
     total=False
@@ -64,9 +64,9 @@ request_query_page_size = api_client.QueryParameter(
     explode=True,
 )
 request_query_wallet_id = api_client.QueryParameter(
-    name="wallet_id",
+    name="walletID",
     style=api_client.ParameterStyle.FORM,
-    schema=WalletIdSchema,
+    schema=WalletIDSchema,
     explode=True,
 )
 request_query_cursor = api_client.QueryParameter(

@@ -2771,7 +2771,7 @@
             }
           },
           {
-            "name": "wallet_id",
+            "name": "walletID",
             "in": "query",
             "description": "A wallet ID to filter on",
             "example": "wallet1",

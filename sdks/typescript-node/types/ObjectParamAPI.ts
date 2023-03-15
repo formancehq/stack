@@ -2172,7 +2172,7 @@ export interface WalletsApiGetTransactionsRequest {
      * @type string
      * @memberof WalletsApigetTransactions
      */
-    walletId?: string
+    walletID?: string
     /**
      * Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set. 
      * @type string
@@ -2328,7 +2328,7 @@ export class ObjectWalletsApi {
      * @param param the request object
      */
     public getTransactions(param: WalletsApiGetTransactionsRequest = {}, options?: Configuration): Promise<GetTransactionsResponse> {
-        return this.api.getTransactions(param.pageSize, param.walletId, param.cursor,  options).toPromise();
+        return this.api.getTransactions(param.pageSize, param.walletID, param.cursor,  options).toPromise();
     }
 
     /**

@@ -1144,7 +1144,7 @@ type ApiGetTransactionsRequest struct {
 	ctx context.Context
 	ApiService WalletsApi
 	pageSize *int32
-	walletId *string
+	walletID *string
 	cursor *string
 }
 
@@ -1155,8 +1155,8 @@ func (r ApiGetTransactionsRequest) PageSize(pageSize int32) ApiGetTransactionsRe
 }
 
 // A wallet ID to filter on
-func (r ApiGetTransactionsRequest) WalletId(walletId string) ApiGetTransactionsRequest {
-	r.walletId = &walletId
+func (r ApiGetTransactionsRequest) WalletID(walletID string) ApiGetTransactionsRequest {
+	r.walletID = &walletID
 	return r
 }
 
@@ -1207,8 +1207,8 @@ func (a *WalletsApiService) GetTransactionsExecute(r ApiGetTransactionsRequest) 
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
-	if r.walletId != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "wallet_id", r.walletId, "")
+	if r.walletID != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "walletID", r.walletID, "")
 	}
 	if r.cursor != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "cursor", r.cursor, "")
