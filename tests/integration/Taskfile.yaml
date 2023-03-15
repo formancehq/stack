@@ -4,9 +4,9 @@ vars:
   PKG: "./suite"
   RUN: ".*"
   VERBOSE: "false"
-  PARALLEL: "false"
-  FAILFAST: "false"
-  DEBUG: "false"
+  PARALLEL: "true"
+  FAILFAST: "true"
+  DEBUG: "true"
   REPEAT: 0
 
 tasks:
@@ -17,7 +17,7 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run --fix {{if eq .VERBOSE "true"}}-v{{end}}
+      - golangci-lint run -v --fix
 
   tests:
     deps: [run-docker-compose]

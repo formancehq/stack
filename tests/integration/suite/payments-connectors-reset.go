@@ -26,7 +26,7 @@ var _ = Given("some environment with dummy pay connector", func() {
 		cancelSubscription, msgs = SubscribePayments()
 
 		paymentsDir := filepath.Join(os.TempDir(), uuid.NewString())
-		Expect(os.MkdirAll(paymentsDir, 0777)).To(BeNil())
+		Expect(os.MkdirAll(paymentsDir, 0o777)).To(Succeed())
 		_, err := Client().PaymentsApi.
 			InstallConnector(TestContext(), formance.DUMMY_PAY).
 			ConnectorConfig(formance.ConnectorConfig{
@@ -37,7 +37,7 @@ var _ = Given("some environment with dummy pay connector", func() {
 				},
 			}).
 			Execute()
-		Expect(err).To(BeNil())
+		Expect(err).ToNot(HaveOccurred())
 
 		Eventually(func(g Gomega) bool {
 			response, _, err := Client().SearchApi.
@@ -46,7 +46,7 @@ var _ = Given("some environment with dummy pay connector", func() {
 					Target: formance.PtrString("PAYMENT"),
 				}).
 				Execute()
-			g.Expect(err).To(BeNil())
+			g.Expect(err).ToNot(HaveOccurred())
 			if len(response.Cursor.Data) == 0 {
 				return false
 			}
@@ -58,14 +58,12 @@ var _ = Given("some environment with dummy pay connector", func() {
 		cancelSubscription()
 	})
 	When("resetting connector", func() {
-		var (
-			err error
-		)
+		var err error
 		BeforeEach(func() {
 			_, err = Client().PaymentsApi.
 				ResetConnector(TestContext(), formance.DUMMY_PAY).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 		It("should trigger some events", func() {
 			var msg *nats.Msg
@@ -75,11 +73,11 @@ var _ = Given("some environment with dummy pay connector", func() {
 					Type string `json:"type"`
 				}
 				tm := &typedMessage{}
-				g.Expect(json.Unmarshal(msg.Data, tm)).To(BeNil())
+				g.Expect(json.Unmarshal(msg.Data, tm)).To(Succeed())
 				return tm.Type == paymentEvents.EventTypeConnectorReset
 			}).Should(BeTrue())
 
-			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeConnectorReset)).Should(BeNil())
+			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeConnectorReset)).Should(Succeed())
 		})
 		It("should delete payments on search service", func() {
 			Eventually(func(g Gomega) []any {
@@ -90,7 +88,7 @@ var _ = Given("some environment with dummy pay connector", func() {
 						Terms:  []string{"id=" + existingPaymentID},
 					}).
 					Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).ToNot(HaveOccurred())
 				return ret.Cursor.Data
 			}).Should(BeEmpty())
 		})
