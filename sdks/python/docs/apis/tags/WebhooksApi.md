@@ -27,6 +27,7 @@ Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
+from Formance.model.error_response import ErrorResponse
 from Formance.model.config_response import ConfigResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
@@ -93,7 +94,7 @@ Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
 200 | [ApiResponseFor200](#activate_config.ApiResponseFor200) | Config successfully activated.
-304 | [ApiResponseFor304](#activate_config.ApiResponseFor304) | Config not modified, was already activated.
+default | [ApiResponseForDefault](#activate_config.ApiResponseForDefault) | Error
 
 #### activate_config.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -108,12 +109,18 @@ Type | Description  | Notes
 [**ConfigResponse**](../../models/ConfigResponse.md) |  | 
 
 
-#### activate_config.ApiResponseFor304
+#### activate_config.ApiResponseForDefault
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[] |  |
+body | typing.Union[SchemaFor0ResponseBodyApplicationJson, ] |  |
 headers | Unset | headers were not defined |
+
+# SchemaFor0ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**ErrorResponse**](../../models/ErrorResponse.md) |  | 
+
 
 ### Authorization
 
@@ -135,6 +142,7 @@ Change the signing secret of the endpoint of a webhooks config.  If not passed o
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
+from Formance.model.error_response import ErrorResponse
 from Formance.model.config_response import ConfigResponse
 from Formance.model.config_change_secret import ConfigChangeSecret
 from pprint import pprint
@@ -229,6 +237,7 @@ Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
 200 | [ApiResponseFor200](#change_config_secret.ApiResponseFor200) | Secret successfully changed.
+default | [ApiResponseForDefault](#change_config_secret.ApiResponseForDefault) | Error
 
 #### change_config_secret.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -241,6 +250,19 @@ headers | Unset | headers were not defined |
 Type | Description  | Notes
 ------------- | ------------- | -------------
 [**ConfigResponse**](../../models/ConfigResponse.md) |  | 
+
+
+#### change_config_secret.ApiResponseForDefault
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor0ResponseBodyApplicationJson, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor0ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**ErrorResponse**](../../models/ErrorResponse.md) |  | 
 
 
 ### Authorization
@@ -263,6 +285,7 @@ Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
+from Formance.model.error_response import ErrorResponse
 from Formance.model.config_response import ConfigResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
@@ -329,7 +352,7 @@ Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
 200 | [ApiResponseFor200](#deactivate_config.ApiResponseFor200) | Config successfully deactivated.
-304 | [ApiResponseFor304](#deactivate_config.ApiResponseFor304) | Config not modified, was already deactivated.
+default | [ApiResponseForDefault](#deactivate_config.ApiResponseForDefault) | Error
 
 #### deactivate_config.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -344,12 +367,18 @@ Type | Description  | Notes
 [**ConfigResponse**](../../models/ConfigResponse.md) |  | 
 
 
-#### deactivate_config.ApiResponseFor304
+#### deactivate_config.ApiResponseForDefault
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[] |  |
+body | typing.Union[SchemaFor0ResponseBodyApplicationJson, ] |  |
 headers | Unset | headers were not defined |
+
+# SchemaFor0ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**ErrorResponse**](../../models/ErrorResponse.md) |  | 
+
 
 ### Authorization
 
@@ -371,6 +400,7 @@ Delete a webhooks config by ID.
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
+from Formance.model.error_response import ErrorResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -410,6 +440,7 @@ with Formance.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 path_params | RequestPathParams | |
+accept_content_types | typing.Tuple[str] | default is ('application/json', ) | Tells the server the content type(s) that are accepted by the client
 stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
 timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
 skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
@@ -434,13 +465,27 @@ Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
 200 | [ApiResponseFor200](#delete_config.ApiResponseFor200) | Config successfully deleted.
+default | [ApiResponseForDefault](#delete_config.ApiResponseForDefault) | Error
 
 #### delete_config.ApiResponseFor200
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[] |  |
+body | Unset | body was not defined |
 headers | Unset | headers were not defined |
+
+#### delete_config.ApiResponseForDefault
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor0ResponseBodyApplicationJson, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor0ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**ErrorResponse**](../../models/ErrorResponse.md) |  | 
+
 
 ### Authorization
 
@@ -462,6 +507,7 @@ Sorted by updated date descending
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
+from Formance.model.error_response import ErrorResponse
 from Formance.model.configs_response import ConfigsResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
@@ -538,6 +584,7 @@ Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
 200 | [ApiResponseFor200](#get_many_configs.ApiResponseFor200) | OK
+default | [ApiResponseForDefault](#get_many_configs.ApiResponseForDefault) | Error
 
 #### get_many_configs.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -550,6 +597,19 @@ headers | Unset | headers were not defined |
 Type | Description  | Notes
 ------------- | ------------- | -------------
 [**ConfigsResponse**](../../models/ConfigsResponse.md) |  | 
+
+
+#### get_many_configs.ApiResponseForDefault
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor0ResponseBodyApplicationJson, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor0ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**ErrorResponse**](../../models/ErrorResponse.md) |  | 
 
 
 ### Authorization
@@ -572,6 +632,7 @@ Insert a new webhooks config.  The endpoint should be a valid https URL and be u
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
+from Formance.model.error_response import ErrorResponse
 from Formance.model.config_user import ConfigUser
 from Formance.model.config_response import ConfigResponse
 from pprint import pprint
@@ -617,7 +678,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 body | typing.Union[SchemaForRequestBodyApplicationJson] | required |
 content_type | str | optional, default is 'application/json' | Selects the schema and serialization of the request body
-accept_content_types | typing.Tuple[str] | default is ('application/json', 'text/plain', ) | Tells the server the content type(s) that are accepted by the client
+accept_content_types | typing.Tuple[str] | default is ('application/json', ) | Tells the server the content type(s) that are accepted by the client
 stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
 timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
 skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
@@ -636,7 +697,7 @@ Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
 200 | [ApiResponseFor200](#insert_config.ApiResponseFor200) | Config created successfully.
-400 | [ApiResponseFor400](#insert_config.ApiResponseFor400) | Bad Request
+default | [ApiResponseForDefault](#insert_config.ApiResponseForDefault) | Error
 
 #### insert_config.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -651,19 +712,18 @@ Type | Description  | Notes
 [**ConfigResponse**](../../models/ConfigResponse.md) |  | 
 
 
-#### insert_config.ApiResponseFor400
+#### insert_config.ApiResponseForDefault
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[SchemaFor400ResponseBodyTextPlain, ] |  |
+body | typing.Union[SchemaFor0ResponseBodyApplicationJson, ] |  |
 headers | Unset | headers were not defined |
 
-# SchemaFor400ResponseBodyTextPlain
+# SchemaFor0ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**ErrorResponse**](../../models/ErrorResponse.md) |  | 
 
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | 
 
 ### Authorization
 
@@ -685,6 +745,7 @@ Test a config by sending a webhook to its endpoint.
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
+from Formance.model.error_response import ErrorResponse
 from Formance.model.attempt_response import AttemptResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
@@ -751,6 +812,7 @@ Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
 200 | [ApiResponseFor200](#test_config.ApiResponseFor200) | OK
+default | [ApiResponseForDefault](#test_config.ApiResponseForDefault) | Error
 
 #### test_config.ApiResponseFor200
 Name | Type | Description  | Notes
@@ -763,6 +825,19 @@ headers | Unset | headers were not defined |
 Type | Description  | Notes
 ------------- | ------------- | -------------
 [**AttemptResponse**](../../models/AttemptResponse.md) |  | 
+
+
+#### test_config.ApiResponseForDefault
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor0ResponseBodyApplicationJson, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor0ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**ErrorResponse**](../../models/ErrorResponse.md) |  | 
 
 
 ### Authorization

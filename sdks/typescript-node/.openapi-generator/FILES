@@ -9,7 +9,6 @@ OrchestrationApi.md
 PaymentsApi.md
 README.md
 ScopesApi.md
-ScriptApi.md
 SearchApi.md
 ServerApi.md
 StatsApi.md
@@ -26,7 +25,6 @@ apis/LogsApi.ts
 apis/OrchestrationApi.ts
 apis/PaymentsApi.ts
 apis/ScopesApi.ts
-apis/ScriptApi.ts
 apis/SearchApi.ts
 apis/ServerApi.ts
 apis/StatsApi.ts
@@ -168,8 +166,6 @@ models/RunWorkflowResponse.ts
 models/Scope.ts
 models/ScopeAllOf.ts
 models/ScopeOptions.ts
-models/Script.ts
-models/ScriptResponse.ts
 models/Secret.ts
 models/SecretAllOf.ts
 models/SecretOptions.ts
@@ -217,9 +213,7 @@ models/TasksCursorCursorAllOf.ts
 models/TasksCursorCursorAllOfDataInner.ts
 models/Total.ts
 models/Transaction.ts
-models/TransactionData.ts
 models/TransactionResponse.ts
-models/Transactions.ts
 models/TransactionsCursorResponse.ts
 models/TransactionsCursorResponseCursor.ts
 models/TransferRequest.ts

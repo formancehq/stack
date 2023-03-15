@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 )
@@ -14,14 +15,14 @@ import (
 func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Request) {
 	filter, err := buildQueryFilter(r.URL.Query())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		apierrors.ResponseError(w, r, apierrors.NewValidationError(err.Error()))
 		return
 	}
 
 	cfgs, err := h.store.FindManyConfigs(r.Context(), filter)
 	if err != nil {
 		logging.FromContext(r.Context()).Errorf("storage.store.FindManyConfigs: %s", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		apierrors.ResponseError(w, r, err)
 		return
 	}
 
@@ -33,7 +34,7 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		logging.FromContext(r.Context()).Errorf("json.Encoder.Encode: %s", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		apierrors.ResponseError(w, r, err)
 		return
 	}
 

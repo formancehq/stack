@@ -43,28 +43,24 @@ var _ = Given("An empty environment", func() {
 					},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 		Then("executing it", func() {
-			var (
-				runWorkflowResponse *formance.RunWorkflowResponse
-			)
+			var runWorkflowResponse *formance.RunWorkflowResponse
 			BeforeEach(func() {
 				runWorkflowResponse, _, err = Client().OrchestrationApi.
 					RunWorkflow(TestContext(), createWorkflowResponse.Data.Id).
 					Execute()
-				Expect(err).To(BeNil())
+				Expect(err).ToNot(HaveOccurred())
 			})
 			Then("waiting for first stage retried at least once", func() {
-				var (
-					getWorkflowInstanceHistoryStageResponse *formance.GetWorkflowInstanceHistoryStageResponse
-				)
+				var getWorkflowInstanceHistoryStageResponse *formance.GetWorkflowInstanceHistoryStageResponse
 				BeforeEach(func() {
 					Eventually(func(g Gomega) int32 {
 						getWorkflowInstanceHistoryStageResponse, _, err = Client().OrchestrationApi.
 							GetInstanceStageHistory(TestContext(), runWorkflowResponse.Data.Id, 0).
 							Execute()
-						g.Expect(err).To(BeNil())
+						g.Expect(err).ToNot(HaveOccurred())
 						g.Expect(getWorkflowInstanceHistoryStageResponse.Data).To(HaveLen(1))
 						return getWorkflowInstanceHistoryStageResponse.Data[0].Attempt
 					}).Should(BeNumerically(">", 2))

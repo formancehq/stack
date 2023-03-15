@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/mitchellh/mapstructure"
 	"github.com/pborman/uuid"
@@ -165,7 +166,7 @@ func TestTransactionBatchWithConflictingReference(t *testing.T) {
 				}
 
 				if i == 2 {
-					require.IsType(t, new(ledger.ConflictError), err)
+					require.IsType(t, new(apierrors.ConflictError), err)
 				} else {
 					require.NoError(t, err)
 				}
@@ -194,7 +195,7 @@ func TestTransactionBatchWithConflictingReference(t *testing.T) {
 				err = logs.Wait(context.Background())
 			}
 			require.Error(t, err)
-			require.IsType(t, new(ledger.ConflictError), err)
+			require.IsType(t, new(apierrors.ConflictError), err)
 		})
 	})
 }
@@ -240,7 +241,7 @@ func TestTransactionBatchTimestamps(t *testing.T) {
 				}
 
 				if i == 1 {
-					require.True(t, ledger.IsValidationError(err), err)
+					require.True(t, apierrors.IsValidationError(err), err)
 					require.ErrorContains(t, err, "cannot pass a timestamp prior to the last transaction")
 				} else {
 					require.NoError(t, err)
@@ -312,7 +313,7 @@ func TestTransactionBatchTimestamps(t *testing.T) {
 				}
 
 				if i == 0 {
-					require.True(t, ledger.IsValidationError(err))
+					require.True(t, apierrors.IsValidationError(err))
 					require.ErrorContains(t, err, "cannot pass a timestamp prior to the last transaction")
 				} else {
 					require.NoError(t, err)

@@ -43,7 +43,7 @@ var _ = Given("An empty environment", func() {
 					},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 		It("should be ok", func() {
 			Expect(createWorkflowResponse.Data.Id).NotTo(BeEmpty())

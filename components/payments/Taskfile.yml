@@ -19,7 +19,7 @@ tasks:
 
   tests:
     cmds:
-      - go test {{.FAILFAST}} -coverpkg {{.PKG}} -coverprofile {{.COVERAGE_FILE}} -covermode atomic -timeout {{.TIMEOUT}} {{.PKG}}
+      - go test {{.FAILFAST}} -coverpkg {{.PKG}} -coverprofile {{.COVERAGE_FILE}} -timeout {{.TIMEOUT}} {{.PKG}}
 
   build:
     cmds:

@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/go-chi/chi/v5"
@@ -16,9 +17,9 @@ func (h *serverHandler) deleteOneConfigHandle(w http.ResponseWriter, r *http.Req
 		logging.FromContext(r.Context()).Debugf("DELETE %s/%s", PathConfigs, id)
 	} else if errors.Is(err, storage.ErrConfigNotFound) {
 		logging.FromContext(r.Context()).Debugf("DELETE %s/%s: %s", PathConfigs, id, storage.ErrConfigNotFound)
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		apierrors.ResponseError(w, r, apierrors.NewNotFoundError(storage.ErrConfigNotFound.Error()))
 	} else {
 		logging.FromContext(r.Context()).Errorf("DELETE %s/%s: %s", PathConfigs, id, err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		apierrors.ResponseError(w, r, err)
 	}
 }

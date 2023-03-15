@@ -33,6 +33,7 @@ class TestApiLedgerLedgerTransactionsTxidMetadata(ApiTestMixin, unittest.TestCas
         pass
 
     response_status = 204
+    response_body = ''
 
 
 if __name__ == '__main__':

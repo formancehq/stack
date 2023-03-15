@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -14,7 +13,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var retriesSchedule []time.Duration
+var ErrScheduleInvalid = errors.New("the retry schedule should only contain durations of at least 1 second")
 
 func NewRootCommand() *cobra.Command {
 	root := &cobra.Command{
@@ -24,11 +23,9 @@ func NewRootCommand() *cobra.Command {
 		},
 	}
 
-	var err error
 	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
 	publish.InitCLIFlags(root)
-	retriesSchedule, err = flag.Init(root.PersistentFlags())
-	cobra.CheckErr(err)
+	flag.Init(root.PersistentFlags())
 
 	root.AddCommand(newServeCommand())
 	root.AddCommand(newWorkerCommand())

@@ -151,7 +151,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ConfigResponse
+     * @return \Formance\Model\ConfigResponse|\Formance\Model\ErrorResponse
      */
     public function activateConfig($id, string $contentType = self::contentTypes['activateConfig'][0])
     {
@@ -169,7 +169,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ConfigResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\ConfigResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function activateConfigWithHttpInfo($id, string $contentType = self::contentTypes['activateConfig'][0])
     {
@@ -226,6 +226,21 @@ class WebhooksApi
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
+                default:
+                    if ('\Formance\Model\ErrorResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\ErrorResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ErrorResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
             }
 
             $returnType = '\Formance\Model\ConfigResponse';
@@ -250,6 +265,14 @@ class WebhooksApi
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Formance\Model\ConfigResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\ErrorResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -439,7 +462,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ConfigResponse
+     * @return \Formance\Model\ConfigResponse|\Formance\Model\ErrorResponse
      */
     public function changeConfigSecret($id, $config_change_secret = null, string $contentType = self::contentTypes['changeConfigSecret'][0])
     {
@@ -458,7 +481,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ConfigResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\ConfigResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function changeConfigSecretWithHttpInfo($id, $config_change_secret = null, string $contentType = self::contentTypes['changeConfigSecret'][0])
     {
@@ -515,6 +538,21 @@ class WebhooksApi
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
+                default:
+                    if ('\Formance\Model\ErrorResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\ErrorResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ErrorResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
             }
 
             $returnType = '\Formance\Model\ConfigResponse';
@@ -539,6 +577,14 @@ class WebhooksApi
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Formance\Model\ConfigResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\ErrorResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -738,7 +784,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ConfigResponse
+     * @return \Formance\Model\ConfigResponse|\Formance\Model\ErrorResponse
      */
     public function deactivateConfig($id, string $contentType = self::contentTypes['deactivateConfig'][0])
     {
@@ -756,7 +802,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ConfigResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\ConfigResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function deactivateConfigWithHttpInfo($id, string $contentType = self::contentTypes['deactivateConfig'][0])
     {
@@ -813,6 +859,21 @@ class WebhooksApi
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
+                default:
+                    if ('\Formance\Model\ErrorResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\ErrorResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ErrorResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
             }
 
             $returnType = '\Formance\Model\ConfigResponse';
@@ -837,6 +898,14 @@ class WebhooksApi
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Formance\Model\ConfigResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\ErrorResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -1087,6 +1156,14 @@ class WebhooksApi
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\ErrorResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -1192,7 +1269,7 @@ class WebhooksApi
 
 
         $headers = $this->headerSelector->selectHeaders(
-            [],
+            ['application/json', ],
             $contentType,
             $multipart
         );
@@ -1259,7 +1336,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ConfigsResponse
+     * @return \Formance\Model\ConfigsResponse|\Formance\Model\ErrorResponse
      */
     public function getManyConfigs($id = null, $endpoint = null, string $contentType = self::contentTypes['getManyConfigs'][0])
     {
@@ -1278,7 +1355,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ConfigsResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\ConfigsResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function getManyConfigsWithHttpInfo($id = null, $endpoint = null, string $contentType = self::contentTypes['getManyConfigs'][0])
     {
@@ -1335,6 +1412,21 @@ class WebhooksApi
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
+                default:
+                    if ('\Formance\Model\ErrorResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\ErrorResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ErrorResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
             }
 
             $returnType = '\Formance\Model\ConfigsResponse';
@@ -1359,6 +1451,14 @@ class WebhooksApi
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Formance\Model\ConfigsResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\ErrorResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -1555,7 +1655,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\ConfigResponse|string
+     * @return \Formance\Model\ConfigResponse|\Formance\Model\ErrorResponse
      */
     public function insertConfig($config_user, string $contentType = self::contentTypes['insertConfig'][0])
     {
@@ -1573,7 +1673,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\ConfigResponse|string, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\ConfigResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function insertConfigWithHttpInfo($config_user, string $contentType = self::contentTypes['insertConfig'][0])
     {
@@ -1630,18 +1730,18 @@ class WebhooksApi
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
-                case 400:
-                    if ('string' === '\SplFileObject') {
+                default:
+                    if ('\Formance\Model\ErrorResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('string' !== 'string') {
+                        if ('\Formance\Model\ErrorResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'string', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ErrorResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -1673,10 +1773,10 @@ class WebhooksApi
                     );
                     $e->setResponseObject($data);
                     break;
-                case 400:
+                default:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'string',
+                        '\Formance\Model\ErrorResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -1791,7 +1891,7 @@ class WebhooksApi
 
 
         $headers = $this->headerSelector->selectHeaders(
-            ['application/json', 'text/plain', ],
+            ['application/json', ],
             $contentType,
             $multipart
         );
@@ -1864,7 +1964,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\AttemptResponse
+     * @return \Formance\Model\AttemptResponse|\Formance\Model\ErrorResponse
      */
     public function testConfig($id, string $contentType = self::contentTypes['testConfig'][0])
     {
@@ -1882,7 +1982,7 @@ class WebhooksApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\AttemptResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\AttemptResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function testConfigWithHttpInfo($id, string $contentType = self::contentTypes['testConfig'][0])
     {
@@ -1939,6 +2039,21 @@ class WebhooksApi
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
+                default:
+                    if ('\Formance\Model\ErrorResponse' === '\SplFileObject') {
+                        $content = $response->getBody(); //stream goes to serializer
+                    } else {
+                        $content = (string) $response->getBody();
+                        if ('\Formance\Model\ErrorResponse' !== 'string') {
+                            $content = json_decode($content);
+                        }
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, '\Formance\Model\ErrorResponse', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
             }
 
             $returnType = '\Formance\Model\AttemptResponse';
@@ -1963,6 +2078,14 @@ class WebhooksApi
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Formance\Model\AttemptResponse',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
+                default:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        '\Formance\Model\ErrorResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);

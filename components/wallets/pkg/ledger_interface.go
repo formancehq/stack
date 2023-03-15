@@ -27,11 +27,19 @@ type Ledger interface {
 	GetAccount(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error)
 	ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error)
 	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error)
-	RunScript(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResponse, error)
+	CreateTransaction(ctx context.Context, ledger string, postTransaction sdk.PostTransaction) (*sdk.TransactionResponse, error)
 }
 
 type DefaultLedger struct {
 	client *sdk.APIClient
+}
+
+func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, postTransaction sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+	//nolint:bodyclose
+	ret, _, err := d.client.TransactionsApi.CreateTransaction(ctx, ledger).
+		PostTransaction(postTransaction).
+		Execute()
+	return ret, err
 }
 
 func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error) {
@@ -95,21 +103,6 @@ func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, query Li
 	}
 
 	return &ret.Cursor, nil
-}
-
-func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction sdk.PostTransaction) error {
-	//nolint:bodyclose
-	_, _, err := d.client.TransactionsApi.
-		CreateTransaction(ctx, ledger).
-		PostTransaction(transaction).
-		Execute()
-	return err
-}
-
-func (d DefaultLedger) RunScript(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResponse, error) {
-	//nolint:bodyclose
-	ret, _, err := d.client.ScriptApi.RunScript(ctx, ledger).Script(script).Execute()
-	return ret, err
 }
 
 var _ Ledger = &DefaultLedger{}

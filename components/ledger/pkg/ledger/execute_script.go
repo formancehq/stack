@@ -15,6 +15,7 @@ import (
 	"github.com/formancehq/ledger/pkg/machine/vm/program"
 	"github.com/formancehq/ledger/pkg/opentelemetry"
 	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -59,12 +60,11 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 		past = true
 	}
 	if past && !l.allowPastTimestamps {
-		return core.ExpandedTransaction{}, nil,
-			NewValidationError(fmt.Sprintf(
-				"cannot pass a timestamp prior to the last transaction: %s (passed) is %s before %s (last)",
-				script.Timestamp.Format(time.RFC3339Nano),
-				lastTx.Timestamp.Sub(script.Timestamp),
-				lastTx.Timestamp.Format(time.RFC3339Nano)))
+		return core.ExpandedTransaction{}, nil, apierrors.NewValidationError(fmt.Sprintf(
+			"cannot pass a timestamp prior to the last transaction: %s (passed) is %s before %s (last)",
+			script.Timestamp.Format(time.RFC3339Nano),
+			lastTx.Timestamp.Sub(script.Timestamp),
+			lastTx.Timestamp.Format(time.RFC3339Nano)))
 	}
 
 	if script.Reference != "" {
@@ -76,25 +76,24 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 					"get transactions with reference")
 		}
 		if len(txs.Data) > 0 {
-			return core.ExpandedTransaction{}, nil, NewConflictError()
+			return core.ExpandedTransaction{}, nil, apierrors.NewConflictError()
 		}
 	}
 
 	if script.Plain == "" {
-		return core.ExpandedTransaction{}, nil,
-			NewScriptError(ScriptErrorNoScript, "no script to execute")
+		return core.ExpandedTransaction{}, nil, apierrors.NewScriptError(apierrors.ScriptErrorNoScript,
+			"no script to execute")
 	}
 
 	m, err := NewMachineFromScript(script.Plain, l.cache, span)
 	if err != nil {
 		return core.ExpandedTransaction{}, nil,
-			NewScriptError(ScriptErrorCompilationFailed,
-				err.Error())
+			apierrors.NewScriptError(apierrors.ScriptErrorCompilationFailed, err.Error())
 	}
 
 	if err := m.SetVarsFromJSON(script.Vars); err != nil {
 		return core.ExpandedTransaction{}, nil,
-			NewScriptError(ScriptErrorCompilationFailed,
+			apierrors.NewScriptError(apierrors.ScriptErrorCompilationFailed,
 				errors.Wrap(err, "could not set variables").Error())
 	}
 
@@ -106,7 +105,7 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 	for req := range resourcesChan {
 		if req.Error != nil {
 			return core.ExpandedTransaction{}, nil,
-				NewScriptError(ScriptErrorCompilationFailed,
+				apierrors.NewScriptError(apierrors.ScriptErrorCompilationFailed,
 					errors.Wrap(req.Error, "could not resolve program resources").Error())
 		}
 		if _, ok := accs[req.Account]; !ok {
@@ -121,7 +120,7 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 			entry, ok := accs[req.Account].Metadata[req.Key]
 			if !ok {
 				return core.ExpandedTransaction{}, nil,
-					NewScriptError(ScriptErrorCompilationFailed,
+					apierrors.NewScriptError(apierrors.ScriptErrorCompilationFailed,
 						fmt.Sprintf("missing key %v in metadata for account %v", req.Key, req.Account))
 			}
 			data, err := json.Marshal(entry)
@@ -131,7 +130,7 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 			value, err := core.NewValueFromTypedJSON(data)
 			if err != nil {
 				return core.ExpandedTransaction{}, nil,
-					NewScriptError(ScriptErrorCompilationFailed,
+					apierrors.NewScriptError(apierrors.ScriptErrorCompilationFailed,
 						errors.Wrap(err, fmt.Sprintf(
 							"invalid format for metadata at key %v for account %v",
 							req.Key, req.Account)).Error())
@@ -143,7 +142,7 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 			req.Response <- &resp
 		} else {
 			return core.ExpandedTransaction{}, nil,
-				NewScriptError(ScriptErrorCompilationFailed,
+				apierrors.NewScriptError(apierrors.ScriptErrorCompilationFailed,
 					errors.Wrap(err, fmt.Sprintf("invalid ResourceRequest: %+v", req)).Error())
 		}
 	}
@@ -156,7 +155,7 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 	for req := range balanceCh {
 		if req.Error != nil {
 			return core.ExpandedTransaction{}, nil,
-				NewScriptError(ScriptErrorCompilationFailed,
+				apierrors.NewScriptError(apierrors.ScriptErrorCompilationFailed,
 					errors.Wrap(req.Error, "could not resolve program balances").Error())
 		}
 		var amt *core.MonetaryInt
@@ -191,7 +190,7 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 			// TODO: If the machine can provide the asset which is failing
 			// we should be able to use InsufficientFundError{} instead of error code
 			return core.ExpandedTransaction{}, nil,
-				NewScriptError(ScriptErrorInsufficientFund,
+				apierrors.NewScriptError(apierrors.ScriptErrorInsufficientFund,
 					"account had insufficient funds")
 		default:
 			return core.ExpandedTransaction{}, nil,
@@ -201,7 +200,7 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 
 	if len(m.Postings) == 0 {
 		return core.ExpandedTransaction{}, nil,
-			NewValidationError("transaction has no postings")
+			apierrors.NewValidationError("transaction has no postings")
 	}
 
 	txVolumeAggr := vAggr.NextTx()
@@ -245,7 +244,7 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 		_, ok := metadata[k]
 		if ok {
 			return core.ExpandedTransaction{}, nil,
-				NewScriptError(ScriptErrorMetadataOverride,
+				apierrors.NewScriptError(apierrors.ScriptErrorMetadataOverride,
 					"cannot override metadata from script")
 		}
 		metadata[k] = v
@@ -291,8 +290,8 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 
 	if err := l.store.Commit(ctx, tx); err != nil {
 		switch {
-		case storage.IsErrorCode(err, storage.ConstraintFailed):
-			return core.ExpandedTransaction{}, nil, NewConflictError()
+		case apierrors.IsErrorCode(err, apierrors.ConstraintFailed):
+			return core.ExpandedTransaction{}, nil, apierrors.NewConflictError()
 		default:
 			return core.ExpandedTransaction{}, nil,
 				errors.Wrap(err, "committing transactions")

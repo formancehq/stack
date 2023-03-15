@@ -76,16 +76,13 @@ public class AccountsApiTest {
     public void listAccountsTest() {
         String ledger = null;
         Long pageSize = null;
-        Long pageSize2 = null;
         String after = null;
         String address = null;
         Object metadata = null;
         Long balance = null;
         String balanceOperator = null;
-        String balanceOperator2 = null;
         String cursor = null;
-        String paginationToken = null;
-        // AccountsCursorResponse response = api.listAccounts(ledger, pageSize, pageSize2, after, address, metadata, balance, balanceOperator, balanceOperator2, cursor, paginationToken);
+        // AccountsCursorResponse response = api.listAccounts(ledger, pageSize, after, address, metadata, balance, balanceOperator, cursor);
 
         // TODO: test validations
     }

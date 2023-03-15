@@ -45,34 +45,30 @@ var _ = Given("An empty environment", func() {
 					},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 		It("should be ok", func() {
 			Expect(createWorkflowResponse.Data.Id).NotTo(BeEmpty())
 		})
 		Then("executing it", func() {
-			var (
-				runWorkflowResponse *formance.RunWorkflowResponse
-			)
+			var runWorkflowResponse *formance.RunWorkflowResponse
 			BeforeEach(func() {
 				runWorkflowResponse, _, err = Client().OrchestrationApi.
 					RunWorkflow(TestContext(), createWorkflowResponse.Data.Id).
 					Execute()
-				Expect(err).To(BeNil())
+				Expect(err).ToNot(HaveOccurred())
 			})
 			It("should be ok", func() {
 				Expect(runWorkflowResponse.Data.Id).NotTo(BeEmpty())
 			})
 			Then("waiting for termination", func() {
-				var (
-					instanceResponse *formance.GetWorkflowInstanceResponse
-				)
+				var instanceResponse *formance.GetWorkflowInstanceResponse
 				BeforeEach(func() {
 					Eventually(func() bool {
 						instanceResponse, _, err = Client().OrchestrationApi.
 							GetInstance(TestContext(), runWorkflowResponse.Data.Id).
 							Execute()
-						Expect(err).To(BeNil())
+						Expect(err).ToNot(HaveOccurred())
 						return instanceResponse.Data.Terminated
 					}).Should(BeTrue())
 				})
@@ -88,15 +84,13 @@ var _ = Given("An empty environment", func() {
 					Expect(instanceResponse.Data.Status).To(HaveLen(1))
 				})
 				Then("checking ledger account balance", func() {
-					var (
-						balancesCursorResponse *formance.BalancesCursorResponse
-					)
+					var balancesCursorResponse *formance.BalancesCursorResponse
 					BeforeEach(func() {
 						balancesCursorResponse, _, err = Client().BalancesApi.
 							GetBalances(TestContext(), "default").
 							Address("bank").
 							Execute()
-						Expect(err).To(BeNil())
+						Expect(err).ToNot(HaveOccurred())
 					})
 					It("should return 100 USD/2 available", func() {
 						Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(1))
@@ -106,9 +100,7 @@ var _ = Given("An empty environment", func() {
 					})
 				})
 				Then("reading history", func() {
-					var (
-						getWorkflowInstanceHistoryResponse *formance.GetWorkflowInstanceHistoryResponse
-					)
+					var getWorkflowInstanceHistoryResponse *formance.GetWorkflowInstanceHistoryResponse
 					BeforeEach(func() {
 						getWorkflowInstanceHistoryResponse, _, err = Client().OrchestrationApi.
 							GetInstanceHistory(TestContext(), runWorkflowResponse.Data.Id).
@@ -141,14 +133,12 @@ var _ = Given("An empty environment", func() {
 							}))
 					})
 					Then("reading first stage history", func() {
-						var (
-							getWorkflowInstanceHistoryStageResponse *formance.GetWorkflowInstanceHistoryStageResponse
-						)
+						var getWorkflowInstanceHistoryStageResponse *formance.GetWorkflowInstanceHistoryStageResponse
 						BeforeEach(func() {
 							getWorkflowInstanceHistoryStageResponse, _, err = Client().OrchestrationApi.
 								GetInstanceStageHistory(TestContext(), runWorkflowResponse.Data.Id, 0).
 								Execute()
-							Expect(err).To(BeNil())
+							Expect(err).ToNot(HaveOccurred())
 						})
 						It("should be properly terminated", func() {
 							Expect(getWorkflowInstanceHistoryStageResponse.Data).To(HaveLen(1))

@@ -118,8 +118,8 @@ func unwrapOpenAPIError(err error) *formance.ErrorResponse {
 			if errResponse.ErrorCode != "" {
 				errorCode := formance.ErrorsEnum(errResponse.ErrorCode)
 				return &formance.ErrorResponse{
-					ErrorCode:    &errorCode,
-					ErrorMessage: &errResponse.ErrorMessage,
+					ErrorCode:    errorCode,
+					ErrorMessage: errResponse.ErrorMessage,
 					Details:      &errResponse.Details,
 				}
 			}

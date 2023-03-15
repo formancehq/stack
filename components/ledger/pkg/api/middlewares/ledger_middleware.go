@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/api/controllers"
 	"github.com/formancehq/ledger/pkg/contextlogger"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/opentelemetry"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/go-chi/chi/v5"
 )
 

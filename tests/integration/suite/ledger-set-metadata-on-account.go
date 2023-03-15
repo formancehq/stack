@@ -29,7 +29,7 @@ var _ = Given("some empty environment", func() {
 				AddMetadataToAccount(TestContext(), "default", "foo").
 				RequestBody(metadata).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 		AfterEach(func() {
 			cancelSubscription()
@@ -37,14 +37,14 @@ var _ = Given("some empty environment", func() {
 
 		It("should trigger a new event", func() {
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			Expect(events.Check(msg.Data, "ledger", bus.EventTypeSavedMetadata)).Should(BeNil())
+			Expect(events.Check(msg.Data, "ledger", bus.EventTypeSavedMetadata)).Should(Succeed())
 		})
 		It("should pop an account with the correct metadata on search service", func() {
 			Eventually(func(g Gomega) bool {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("ACCOUNT"),
 				}).Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).ToNot(HaveOccurred())
 				g.Expect(res.Cursor.Data).To(HaveLen(1))
 				g.Expect(res.Cursor.Data[0]).To(Equal(map[string]any{
 					"ledger":   "default",

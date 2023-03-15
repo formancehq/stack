@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"strings"
 	"syscall"
+	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/service"
@@ -26,8 +28,25 @@ func newServeCommand() *cobra.Command {
 
 func serve(cmd *cobra.Command, _ []string) error {
 	logging.FromContext(cmd.Context()).Debugf(
-		"starting webhooks server module: env variables: %+v viper keys: %+v",
-		syscall.Environ(), viper.AllKeys())
+		"starting webhooks server module: env variables: %+v viper settings: %+v",
+		syscall.Environ(), viper.AllSettings())
+
+	retriesSchedule := make([]time.Duration, 0)
+	rs := viper.GetString(flag.RetriesSchedule)
+	if len(rs) > 2 {
+		rs = rs[1 : len(rs)-1]
+		ss := strings.Split(rs, ",")
+		for _, s := range ss {
+			d, err := time.ParseDuration(s)
+			if err != nil {
+				return errors.Wrap(err, "parsing retries schedule duration")
+			}
+			if d < time.Second {
+				return ErrScheduleInvalid
+			}
+			retriesSchedule = append(retriesSchedule, d)
+		}
+	}
 
 	options := []fx.Option{
 		postgres.NewModule(viper.GetString(flag.StoragePostgresConnString)),
@@ -39,8 +58,11 @@ func serve(cmd *cobra.Command, _ []string) error {
 		options = append(options, worker.StartModule(
 			ServiceName,
 			viper.GetDuration(flag.RetriesCron),
-			retriesSchedule))
+			retriesSchedule,
+		))
 	}
 
-	return errors.Wrap(service.New(cmd.OutOrStdout(), options...).Run(cmd.Context()), "staging service")
+	return errors.Wrap(
+		service.New(cmd.OutOrStdout(), options...).
+			Run(cmd.Context()), "staging service")
 }

@@ -3,6 +3,7 @@ linters:
     - gofmt
     - gci
     - goimports
+    - ginkgolinter
 
   presets:
     - bugs

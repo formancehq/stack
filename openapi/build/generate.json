@@ -787,20 +787,6 @@
             }
           },
           {
-            "name": "page_size",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            },
-            "deprecated": true
-          },
-          {
             "name": "after",
             "in": "query",
             "description": "Pagination cursor, will return accounts after given address, in descending order.",
@@ -866,24 +852,6 @@
             }
           },
           {
-            "name": "balance_operator",
-            "in": "query",
-            "description": "Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.\nDeprecated, please use `balanceOperator` instead.\n",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "gte",
-                "lte",
-                "gt",
-                "lt",
-                "e",
-                "ne"
-              ],
-              "example": "gte"
-            },
-            "deprecated": true
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -891,16 +859,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           }
         ],
         "responses": {
@@ -1022,8 +980,7 @@
         },
         "responses": {
           "204": {
-            "description": "No Content",
-            "content": {}
+            "description": "No Content"
           },
           "default": {
             "description": "Error",
@@ -1031,60 +988,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/ledger/{ledger}/script": {
-      "post": {
-        "deprecated": true,
-        "tags": [
-          "Script"
-        ],
-        "operationId": "runScript",
-        "summary": "Execute a Numscript",
-        "description": "This route is deprecated, and has been merged into `POST /{ledger}/transactions`.\n",
-        "parameters": [
-          {
-            "name": "ledger",
-            "in": "path",
-            "description": "Name of the ledger.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "example": "ledger001"
-            }
-          },
-          {
-            "name": "preview",
-            "in": "query",
-            "description": "Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.",
-            "schema": {
-              "type": "boolean",
-              "example": true
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Script"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "On success, it will return a 200 status code, and the resulting transaction under the `transaction` field.\n\nOn failure, it will also return a 200 status code, and the following fields:\n  - `details`: contains a URL. When there is an error parsing Numscript, the result can be difficult to read—the provided URL will render the error in an easy-to-read format.\n  - `errorCode` and `error_code` (deprecated): contains the string code of the error\n  - `errorMessage` and `error_message` (deprecated): contains a human-readable indication of what went wrong, for example that an account had insufficient funds, or that there was an error in the provided Numscript.\n",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ScriptResponse"
                 }
               }
             }
@@ -1200,16 +1103,6 @@
             }
           },
           {
-            "name": "start_time",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "endTime",
             "in": "query",
             "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
@@ -1217,16 +1110,6 @@
               "type": "string",
               "format": "date-time"
             }
-          },
-          {
-            "name": "end_time",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
           },
           {
             "name": "metadata",
@@ -1305,20 +1188,6 @@
             }
           },
           {
-            "name": "page_size",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            },
-            "deprecated": true
-          },
-          {
             "name": "after",
             "in": "query",
             "description": "Pagination cursor, will return transactions after given txid (in descending order).",
@@ -1373,16 +1242,6 @@
             }
           },
           {
-            "name": "start_time",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "endTime",
             "in": "query",
             "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
@@ -1392,16 +1251,6 @@
             }
           },
           {
-            "name": "end_time",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -1409,16 +1258,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           },
           {
             "name": "metadata",
@@ -1623,8 +1462,7 @@
         },
         "responses": {
           "204": {
-            "description": "No Content",
-            "content": {}
+            "description": "No Content"
           },
           "default": {
             "description": "Error",
@@ -1738,16 +1576,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nDeprecated, please use `cursor` instead.",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           }
         ],
         "responses": {
@@ -1859,20 +1687,6 @@
             }
           },
           {
-            "name": "page_size",
-            "in": "query",
-            "description": "The maximum number of results to return per page.\nDeprecated, please use `pageSize` instead.\n",
-            "example": 100,
-            "schema": {
-              "type": "integer",
-              "format": "int64",
-              "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            },
-            "deprecated": true
-          },
-          {
             "name": "after",
             "in": "query",
             "description": "Pagination cursor, will return the logs after a given ID. (in descending order).",
@@ -1891,16 +1705,6 @@
             }
           },
           {
-            "name": "start_time",
-            "in": "query",
-            "description": "Filter transactions that occurred after this timestamp.\nThe format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).\nDeprecated, please use `startTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "endTime",
             "in": "query",
             "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\n",
@@ -1910,16 +1714,6 @@
             }
           },
           {
-            "name": "end_time",
-            "in": "query",
-            "description": "Filter transactions that occurred before this timestamp.\nThe format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).\nDeprecated, please use `endTime` instead.\n",
-            "schema": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "deprecated": true
-          },
-          {
             "name": "cursor",
             "in": "query",
             "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\n",
@@ -1927,16 +1721,6 @@
               "type": "string",
               "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
             }
-          },
-          {
-            "name": "pagination_token",
-            "in": "query",
-            "description": "Parameter used in pagination requests. Maximum page size is set to 15.\nSet to the value of next for the next page of results.\nSet to the value of previous for the previous page of results.\nNo other parameters can be set when this parameter is set.\nDeprecated, please use `cursor` instead.\n",
-            "schema": {
-              "type": "string",
-              "example": "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="
-            },
-            "deprecated": true
           }
         ],
         "responses": {
@@ -2378,6 +2162,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       },
@@ -2409,13 +2203,12 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "example": "endpoints should be valid urls"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2445,8 +2238,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Config successfully deleted.",
-            "content": {}
+            "description": "Config successfully deleted."
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2478,6 +2280,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AttemptResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2516,9 +2328,15 @@
               }
             }
           },
-          "304": {
-            "description": "Config not modified, was already activated.",
-            "content": {}
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2554,9 +2372,15 @@
               }
             }
           },
-          "304": {
-            "description": "Config not modified, was already deactivated.",
-            "content": {}
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2597,6 +2421,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ConfigResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -4288,25 +4122,6 @@
           "version"
         ]
       },
-      "ScriptResponse": {
-        "type": "object",
-        "properties": {
-          "errorCode": {
-            "$ref": "#/components/schemas/ErrorsEnum"
-          },
-          "errorMessage": {
-            "type": "string",
-            "example": "account had insufficient funds"
-          },
-          "details": {
-            "type": "string",
-            "example": "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
-          },
-          "transaction": {
-            "$ref": "#/components/schemas/Transaction"
-          }
-        }
-      },
       "Account": {
         "type": "object",
         "required": [
@@ -4448,35 +4263,6 @@
           "source"
         ]
       },
-      "Script": {
-        "type": "object",
-        "properties": {
-          "plain": {
-            "type": "string",
-            "example": "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\tdestination = $user\n)\n"
-          },
-          "vars": {
-            "type": "object",
-            "properties": {},
-            "example": {
-              "vars": {
-                "user": "users:042"
-              }
-            }
-          },
-          "reference": {
-            "type": "string",
-            "example": "order_1234",
-            "description": "Reference to attach to the generated transaction"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/ledgerMetadata"
-          }
-        },
-        "required": [
-          "plain"
-        ]
-      },
       "Transaction": {
         "type": "object",
         "properties": {
@@ -4514,45 +4300,6 @@
           "timestamp",
           "txid"
         ]
-      },
-      "TransactionData": {
-        "type": "object",
-        "required": [
-          "postings"
-        ],
-        "properties": {
-          "postings": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Posting"
-            }
-          },
-          "reference": {
-            "type": "string",
-            "example": "ref:001"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/ledgerMetadata"
-          },
-          "timestamp": {
-            "type": "string",
-            "format": "date-time"
-          }
-        }
-      },
-      "Transactions": {
-        "required": [
-          "transactions"
-        ],
-        "type": "object",
-        "properties": {
-          "transactions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/TransactionData"
-            }
-          }
-        }
       },
       "PostTransaction": {
         "type": "object",
@@ -4747,7 +4494,8 @@
       "ErrorResponse": {
         "type": "object",
         "required": [
-          "error_code"
+          "errorCode",
+          "errorMessage"
         ],
         "properties": {
           "errorCode": {
@@ -4755,7 +4503,7 @@
           },
           "errorMessage": {
             "type": "string",
-            "example": "[INSUFFICIENT_FUND] account had insufficient funds"
+            "example": "[VALIDATION] invalid 'cursor' query param"
           },
           "details": {
             "type": "string",
@@ -4772,9 +4520,12 @@
           "CONFLICT",
           "NO_SCRIPT",
           "COMPILATION_FAILED",
-          "METADATA_OVERRIDE"
+          "METADATA_OVERRIDE",
+          "NOT_FOUND",
+          "CONTEXT_CANCELLED",
+          "STORE"
         ],
-        "example": "INSUFFICIENT_FUND"
+        "example": "VALIDATION"
       },
       "LedgerInfoResponse": {
         "properties": {

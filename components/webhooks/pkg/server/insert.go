@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/pkg/errors"
@@ -14,19 +15,14 @@ func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Req
 	cfg := webhooks.ConfigUser{}
 	if err := decodeJSONBody(r, &cfg, false); err != nil {
 		logging.FromContext(r.Context()).Errorf("decodeJSONBody: %s", err)
-		var errIB *errInvalidBody
-		if errors.As(err, &errIB) {
-			http.Error(w, errIB.Error(), errIB.status)
-		} else {
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
+		apierrors.ResponseError(w, r, apierrors.NewValidationError(err.Error()))
 		return
 	}
 
 	if err := cfg.Validate(); err != nil {
 		err := errors.Wrap(err, "invalid config")
 		logging.FromContext(r.Context()).Errorf(err.Error())
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		apierrors.ResponseError(w, r, apierrors.NewValidationError(err.Error()))
 		return
 	}
 
@@ -39,11 +35,11 @@ func (h *serverHandler) insertOneConfigHandle(w http.ResponseWriter, r *http.Req
 
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			logging.FromContext(r.Context()).Errorf("json.Encoder.Encode: %s", err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			apierrors.ResponseError(w, r, err)
 			return
 		}
 	} else {
 		logging.FromContext(r.Context()).Errorf("POST %s: %s", PathConfigs, err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		apierrors.ResponseError(w, r, err)
 	}
 }

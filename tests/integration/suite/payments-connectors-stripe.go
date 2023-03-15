@@ -35,7 +35,7 @@ var _ = Given("some empty environment", func() {
 					},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 		AfterEach(func() {
 			if cancelSubscription != nil {
@@ -44,14 +44,14 @@ var _ = Given("some empty environment", func() {
 		})
 		It("should trigger some events", func() {
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeSavedPayments)).Should(BeNil())
+			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeSavedPayments)).Should(Succeed())
 		})
 		It("should generate some payments", func() {
 			Eventually(func(g Gomega) []formance.Payment {
 				res, _, err := Client().PaymentsApi.
 					ListPayments(TestContext()).
 					Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).ToNot(HaveOccurred())
 				return res.Cursor.Data
 			}).ShouldNot(BeEmpty()) // TODO: Check other fields
 		})
@@ -60,7 +60,7 @@ var _ = Given("some empty environment", func() {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("PAYMENT"),
 				}).Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).ToNot(HaveOccurred())
 				g.Expect(res.Cursor.Data).NotTo(BeEmpty())
 
 				return true

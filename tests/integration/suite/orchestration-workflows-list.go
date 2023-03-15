@@ -17,7 +17,7 @@ var _ = Given("An empty environment", func() {
 			ret, _, err = Client().OrchestrationApi.
 				ListWorkflows(TestContext()).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 		It("should respond with an empty list", func() {
 			Expect(ret.Data).To(BeEmpty())

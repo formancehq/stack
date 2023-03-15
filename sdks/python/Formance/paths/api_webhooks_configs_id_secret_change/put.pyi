@@ -25,6 +25,7 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
+from Formance.model.error_response import ErrorResponse
 from Formance.model.config_response import ConfigResponse
 from Formance.model.config_change_secret import ConfigChangeSecret
 
@@ -83,6 +84,25 @@ _response_for_200 = api_client.OpenApiResponse(
             schema=SchemaFor200ResponseBodyApplicationJson),
     },
 )
+SchemaFor0ResponseBodyApplicationJson = ErrorResponse
+
+
+@dataclass
+class ApiResponseForDefault(api_client.ApiResponse):
+    response: urllib3.HTTPResponse
+    body: typing.Union[
+        SchemaFor0ResponseBodyApplicationJson,
+    ]
+    headers: schemas.Unset = schemas.unset
+
+
+_response_for_default = api_client.OpenApiResponse(
+    response_cls=ApiResponseForDefault,
+    content={
+        'application/json': api_client.MediaType(
+            schema=SchemaFor0ResponseBodyApplicationJson),
+    },
+)
 _all_accept_content_types = (
     'application/json',
 )
@@ -101,6 +121,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
     ]: ...
 
     @typing.overload
@@ -115,6 +136,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
     ]: ...
 
 
@@ -142,6 +164,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: bool = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
 
@@ -210,7 +233,11 @@ class BaseApi(api_client.Api):
             if response_for_status:
                 api_response = response_for_status.deserialize(response, self.api_client.configuration)
             else:
-                api_response = api_client.ApiResponseWithoutDeserialization(response=response)
+                default_response = _status_code_to_response.get('default')
+                if default_response:
+                    api_response = default_response.deserialize(response, self.api_client.configuration)
+                else:
+                    api_response = api_client.ApiResponseWithoutDeserialization(response=response)
 
         if not 200 <= response.status <= 299:
             raise exceptions.ApiException(
@@ -237,6 +264,7 @@ class ChangeConfigSecret(BaseApi):
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
     ]: ...
 
     @typing.overload
@@ -251,6 +279,7 @@ class ChangeConfigSecret(BaseApi):
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
     ]: ...
 
 
@@ -278,6 +307,7 @@ class ChangeConfigSecret(BaseApi):
         skip_deserialization: bool = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
 
@@ -317,6 +347,7 @@ class ApiForput(BaseApi):
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
     ]: ...
 
     @typing.overload
@@ -331,6 +362,7 @@ class ApiForput(BaseApi):
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
     ]: ...
 
 
@@ -358,6 +390,7 @@ class ApiForput(BaseApi):
         skip_deserialization: bool = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
 

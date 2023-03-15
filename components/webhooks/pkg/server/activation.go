@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/storage"
@@ -22,15 +23,15 @@ func (h *serverHandler) activateOneConfigHandle(w http.ResponseWriter, r *http.R
 		}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			logging.FromContext(r.Context()).Errorf("json.Encoder.Encode: %s", err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			apierrors.ResponseError(w, r, err)
 			return
 		}
 	} else if errors.Is(err, storage.ErrConfigNotFound) {
 		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s: %s", PathConfigs, id, PathActivate, storage.ErrConfigNotFound)
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		apierrors.ResponseError(w, r, apierrors.NewNotFoundError(storage.ErrConfigNotFound.Error()))
 	} else {
 		logging.FromContext(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, id, PathActivate, err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		apierrors.ResponseError(w, r, err)
 	}
 }
 
@@ -44,14 +45,14 @@ func (h *serverHandler) deactivateOneConfigHandle(w http.ResponseWriter, r *http
 		}
 		if err := json.NewEncoder(w).Encode(resp); err != nil {
 			logging.FromContext(r.Context()).Errorf("json.Encoder.Encode: %s", err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			apierrors.ResponseError(w, r, err)
 			return
 		}
 	} else if errors.Is(err, storage.ErrConfigNotFound) {
 		logging.FromContext(r.Context()).Debugf("PUT %s/%s%s: %s", PathConfigs, id, PathDeactivate, storage.ErrConfigNotFound)
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		apierrors.ResponseError(w, r, apierrors.NewNotFoundError(storage.ErrConfigNotFound.Error()))
 	} else {
 		logging.FromContext(r.Context()).Errorf("PUT %s/%s%s: %s", PathConfigs, id, PathDeactivate, err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		apierrors.ResponseError(w, r, err)
 	}
 }

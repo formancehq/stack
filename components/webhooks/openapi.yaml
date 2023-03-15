@@ -34,6 +34,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConfigsResponse'
 
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
     post:
       summary: Insert a new config
       description: |
@@ -63,13 +70,12 @@ paths:
                 schema:
                   $ref: '#/components/schemas/ConfigResponse'
 
-        "400":
-          description: Bad Request
+        default:
+          description: Error
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example: endpoints should be valid urls
+                $ref: '#/components/schemas/ErrorResponse'
 
   /configs/{id}:
     delete:
@@ -89,7 +95,13 @@ paths:
       responses:
         "200":
           description: Config successfully deleted.
-          content: {}
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /configs/{id}/test:
     get:
@@ -114,6 +126,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/AttemptResponse'
 
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /configs/{id}/activate:
     put:
       summary: Activate one config
@@ -136,9 +155,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-        "304":
-          description: Config not modified, was already activated.
-          content: {}
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 
   /configs/{id}/deactivate:
     put:
@@ -162,9 +186,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-        "304":
-          description: Config not modified, was already deactivated.
-          content: {}
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /configs/{id}/secret/change:
     put:
@@ -197,6 +225,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -351,3 +386,33 @@ components:
         - statusCode
         - retryAttempt
         - status
+
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - errorMessage
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/ErrorsEnum'
+        errorMessage:
+          type: string
+          example: "[VALIDATION] invalid 'cursor' query param"
+        details:
+          type: string
+          example: "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
+
+    ErrorsEnum:
+      type: string
+      enum:
+        - INTERNAL
+        - INSUFFICIENT_FUND
+        - VALIDATION
+        - CONFLICT
+        - NO_SCRIPT
+        - COMPILATION_FAILED
+        - METADATA_OVERRIDE
+        - NOT_FOUND
+        - CONTEXT_CANCELLED
+        - STORE
+      example: VALIDATION

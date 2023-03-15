@@ -6,10 +6,10 @@ tasks:
   default:
     deps: [lint, tests]
 
-  tests:
-    cmds:
-      - go test -v -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
-
   lint:
     cmds:
-      - golangci-lint -v run --fix
+      - golangci-lint run --fix
+
+  tests:
+    cmds:
+      - go test -race -coverpkg ./... -coverprofile coverage.out ./...

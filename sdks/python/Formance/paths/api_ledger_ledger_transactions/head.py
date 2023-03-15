@@ -35,8 +35,6 @@ AccountSchema = schemas.StrSchema
 SourceSchema = schemas.StrSchema
 DestinationSchema = schemas.StrSchema
 StartTimeSchema = schemas.DateTimeSchema
-StartTimeSchema = schemas.DateTimeSchema
-EndTimeSchema = schemas.DateTimeSchema
 EndTimeSchema = schemas.DateTimeSchema
 MetadataSchema = schemas.DictSchema
 RequestRequiredQueryParams = typing_extensions.TypedDict(
@@ -52,9 +50,7 @@ RequestOptionalQueryParams = typing_extensions.TypedDict(
         'source': typing.Union[SourceSchema, str, ],
         'destination': typing.Union[DestinationSchema, str, ],
         'startTime': typing.Union[StartTimeSchema, str, datetime, ],
-        'start_time': typing.Union[StartTimeSchema, str, datetime, ],
         'endTime': typing.Union[EndTimeSchema, str, datetime, ],
-        'end_time': typing.Union[EndTimeSchema, str, datetime, ],
         'metadata': typing.Union[MetadataSchema, dict, frozendict.frozendict, ],
     },
     total=False
@@ -95,20 +91,8 @@ request_query_start_time = api_client.QueryParameter(
     schema=StartTimeSchema,
     explode=True,
 )
-request_query_start_time2 = api_client.QueryParameter(
-    name="start_time",
-    style=api_client.ParameterStyle.FORM,
-    schema=StartTimeSchema,
-    explode=True,
-)
 request_query_end_time = api_client.QueryParameter(
     name="endTime",
-    style=api_client.ParameterStyle.FORM,
-    schema=EndTimeSchema,
-    explode=True,
-)
-request_query_end_time2 = api_client.QueryParameter(
-    name="end_time",
     style=api_client.ParameterStyle.FORM,
     schema=EndTimeSchema,
     explode=True,
@@ -292,9 +276,7 @@ class BaseApi(api_client.Api):
             request_query_source,
             request_query_destination,
             request_query_start_time,
-            request_query_start_time2,
             request_query_end_time,
-            request_query_end_time2,
             request_query_metadata,
         ):
             parameter_data = query_params.get(parameter.name, schemas.unset)

@@ -4,8 +4,9 @@ vars:
   PKG: "./suite"
   RUN: ".*"
   VERBOSE: "false"
-  PARALLEL: "true"
+  PARALLEL: "false"
   FAILFAST: "false"
+  DEBUG: "false"
   REPEAT: 0
 
 tasks:
@@ -28,6 +29,7 @@ tasks:
         {{if eq .FAILFAST "true"}}--fail-fast{{end}}
         --focus-file "{{.RUN}}"
         --repeat {{.REPEAT}}
+        {{if eq .DEBUG "true"}}--output-interceptor-mode=none{{end}}
         {{.PKG}}
 
   run-docker-compose:
