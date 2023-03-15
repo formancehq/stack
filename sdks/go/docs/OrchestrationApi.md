@@ -457,7 +457,7 @@ import (
 
 func main() {
     workflowID := "xxx" // string | A workflow id (optional)
-    running := false // bool | Filter running instances (optional)
+    running := true // bool | Filter running instances (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)

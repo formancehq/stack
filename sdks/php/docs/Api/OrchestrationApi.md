@@ -406,7 +406,7 @@ $apiInstance = new Formance\Api\OrchestrationApi(
     $config
 );
 $workflow_id = xxx; // string | A workflow id
-$running = xxx; // bool | Filter running instances
+$running = true; // bool | Filter running instances
 
 try {
     $result = $apiInstance->listInstances($workflow_id, $running);

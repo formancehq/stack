@@ -981,9 +981,7 @@ with Formance.ApiClient(configuration) as api_client:
     query_params = {
         'pageSize': 100,
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-        'sort': [
-        "date:asc,status:desc"
-    ],
+        'sort': ["date:asc","status:desc"],
     }
     try:
         # List payments
@@ -1105,9 +1103,7 @@ with Formance.ApiClient(configuration) as api_client:
     query_params = {
         'pageSize': 100,
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-        'sort': [
-        "date:asc,status:desc"
-    ],
+        'sort': ["date:asc","status:desc"],
     }
     try:
         # List accounts

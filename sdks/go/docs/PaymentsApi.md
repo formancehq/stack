@@ -323,7 +323,7 @@ import (
 
 func main() {
     connector := client.Connector("STRIPE") // Connector | The name of the connector.
-    connectorConfig := client.ConnectorConfig{BankingCircleConfig: client.NewBankingCircleConfig("XXX", "XXX", "XXX", "XXX")} // ConnectorConfig | 
+    connectorConfig := *client.NewConnectorConfig("XXX", "/tmp/dummypay", "XXX", "XXX", "XXX", "XXX", "XXX", "XXX") // ConnectorConfig | 
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)

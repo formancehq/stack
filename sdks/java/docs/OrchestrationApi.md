@@ -481,7 +481,7 @@ public class Example {
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         String workflowID = "xxx"; // String | A workflow id
-        Boolean running = xxx; // Boolean | Filter running instances
+        Boolean running = true; // Boolean | Filter running instances
         try {
             ListRunsResponse result = apiInstance.listInstances(workflowID, running);
             System.out.println(result);

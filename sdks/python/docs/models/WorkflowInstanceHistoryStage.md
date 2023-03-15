@@ -12,7 +12,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **name** | str,  | str,  |  | 
 **startedAt** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
 **attempt** | decimal.Decimal, int,  | decimal.Decimal,  |  | 
-**terminated** | [**ModelBool**](ModelBool.md) | [**ModelBool**](ModelBool.md) |  | 
+**terminated** | bool,  | BoolClass,  |  | 
 **output** | [**WorkflowInstanceHistoryStageOutput**](WorkflowInstanceHistoryStageOutput.md) | [**WorkflowInstanceHistoryStageOutput**](WorkflowInstanceHistoryStageOutput.md) |  | [optional] 
 **error** | str,  | str,  |  | [optional] 
 **terminatedAt** | str, datetime,  | str,  |  | [optional] value must conform to RFC-3339 date-time
