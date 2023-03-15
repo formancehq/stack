@@ -33,7 +33,6 @@ Cancel a running workflow
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -41,10 +40,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         String instanceID = "xxx"; // String | The instance id
@@ -74,7 +69,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -104,7 +99,6 @@ Create a workflow
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -112,10 +106,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         WorkflowConfig body = new WorkflowConfig(); // WorkflowConfig | 
@@ -146,7 +136,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -176,7 +166,6 @@ Get a workflow instance by id
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -184,10 +173,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         String instanceID = "xxx"; // String | The instance id
@@ -218,7 +203,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -248,7 +233,6 @@ Get a workflow instance history by id
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -256,10 +240,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         String instanceID = "xxx"; // String | The instance id
@@ -290,7 +270,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -320,7 +300,6 @@ Get a workflow instance stage history
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -328,10 +307,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         String instanceID = "xxx"; // String | The instance id
@@ -364,7 +339,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -394,7 +369,6 @@ Get a flow by id
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -402,10 +376,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         String flowId = "xxx"; // String | The flow id
@@ -436,7 +406,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -466,7 +436,6 @@ List instances of a workflow
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -474,14 +443,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         String workflowID = "xxx"; // String | A workflow id
-        Boolean running = xxx; // Boolean | Filter running instances
+        Boolean running = true; // Boolean | Filter running instances
         try {
             ListRunsResponse result = apiInstance.listInstances(workflowID, running);
             System.out.println(result);
@@ -510,7 +475,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -540,7 +505,6 @@ List registered workflows
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -548,10 +512,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         try {
@@ -578,7 +538,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -606,7 +566,6 @@ Get server info
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -614,10 +573,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         try {
@@ -644,7 +599,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -674,7 +629,6 @@ Run workflow
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -682,10 +636,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         String workflowID = "xxx"; // String | The flow id
@@ -720,7 +670,7 @@ public class Example {
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -750,7 +700,6 @@ Send an event to a running workflow
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
-import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.OrchestrationApi;
 
@@ -758,10 +707,6 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
-        
-        // Configure OAuth2 access token for authorization: Authorization
-        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
-        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         OrchestrationApi apiInstance = new OrchestrationApi(defaultClient);
         String instanceID = "xxx"; // String | The instance id
@@ -793,7 +738,7 @@ null (empty response body)
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 

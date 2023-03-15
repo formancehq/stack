@@ -16,7 +16,7 @@ import (
 	"fmt"
 )
 
-// ConnectorConfig - struct for ConnectorConfig
+// ConnectorConfig struct for ConnectorConfig
 type ConnectorConfig struct {
 	BankingCircleConfig *BankingCircleConfig
 	CurrencyCloudConfig *CurrencyCloudConfig
@@ -26,150 +26,92 @@ type ConnectorConfig struct {
 	WiseConfig *WiseConfig
 }
 
-// BankingCircleConfigAsConnectorConfig is a convenience function that returns BankingCircleConfig wrapped in ConnectorConfig
-func BankingCircleConfigAsConnectorConfig(v *BankingCircleConfig) ConnectorConfig {
-	return ConnectorConfig{
-		BankingCircleConfig: v,
-	}
-}
-
-// CurrencyCloudConfigAsConnectorConfig is a convenience function that returns CurrencyCloudConfig wrapped in ConnectorConfig
-func CurrencyCloudConfigAsConnectorConfig(v *CurrencyCloudConfig) ConnectorConfig {
-	return ConnectorConfig{
-		CurrencyCloudConfig: v,
-	}
-}
-
-// DummyPayConfigAsConnectorConfig is a convenience function that returns DummyPayConfig wrapped in ConnectorConfig
-func DummyPayConfigAsConnectorConfig(v *DummyPayConfig) ConnectorConfig {
-	return ConnectorConfig{
-		DummyPayConfig: v,
-	}
-}
-
-// ModulrConfigAsConnectorConfig is a convenience function that returns ModulrConfig wrapped in ConnectorConfig
-func ModulrConfigAsConnectorConfig(v *ModulrConfig) ConnectorConfig {
-	return ConnectorConfig{
-		ModulrConfig: v,
-	}
-}
-
-// StripeConfigAsConnectorConfig is a convenience function that returns StripeConfig wrapped in ConnectorConfig
-func StripeConfigAsConnectorConfig(v *StripeConfig) ConnectorConfig {
-	return ConnectorConfig{
-		StripeConfig: v,
-	}
-}
-
-// WiseConfigAsConnectorConfig is a convenience function that returns WiseConfig wrapped in ConnectorConfig
-func WiseConfigAsConnectorConfig(v *WiseConfig) ConnectorConfig {
-	return ConnectorConfig{
-		WiseConfig: v,
-	}
-}
-
-
-// Unmarshal JSON data into one of the pointers in the struct
+// Unmarshal JSON data into any of the pointers in the struct
 func (dst *ConnectorConfig) UnmarshalJSON(data []byte) error {
 	var err error
-	match := 0
-	// try to unmarshal data into BankingCircleConfig
-	err = newStrictDecoder(data).Decode(&dst.BankingCircleConfig)
+	// try to unmarshal JSON data into BankingCircleConfig
+	err = json.Unmarshal(data, &dst.BankingCircleConfig);
 	if err == nil {
 		jsonBankingCircleConfig, _ := json.Marshal(dst.BankingCircleConfig)
 		if string(jsonBankingCircleConfig) == "{}" { // empty struct
 			dst.BankingCircleConfig = nil
 		} else {
-			match++
+			return nil // data stored in dst.BankingCircleConfig, return on the first match
 		}
 	} else {
 		dst.BankingCircleConfig = nil
 	}
 
-	// try to unmarshal data into CurrencyCloudConfig
-	err = newStrictDecoder(data).Decode(&dst.CurrencyCloudConfig)
+	// try to unmarshal JSON data into CurrencyCloudConfig
+	err = json.Unmarshal(data, &dst.CurrencyCloudConfig);
 	if err == nil {
 		jsonCurrencyCloudConfig, _ := json.Marshal(dst.CurrencyCloudConfig)
 		if string(jsonCurrencyCloudConfig) == "{}" { // empty struct
 			dst.CurrencyCloudConfig = nil
 		} else {
-			match++
+			return nil // data stored in dst.CurrencyCloudConfig, return on the first match
 		}
 	} else {
 		dst.CurrencyCloudConfig = nil
 	}
 
-	// try to unmarshal data into DummyPayConfig
-	err = newStrictDecoder(data).Decode(&dst.DummyPayConfig)
+	// try to unmarshal JSON data into DummyPayConfig
+	err = json.Unmarshal(data, &dst.DummyPayConfig);
 	if err == nil {
 		jsonDummyPayConfig, _ := json.Marshal(dst.DummyPayConfig)
 		if string(jsonDummyPayConfig) == "{}" { // empty struct
 			dst.DummyPayConfig = nil
 		} else {
-			match++
+			return nil // data stored in dst.DummyPayConfig, return on the first match
 		}
 	} else {
 		dst.DummyPayConfig = nil
 	}
 
-	// try to unmarshal data into ModulrConfig
-	err = newStrictDecoder(data).Decode(&dst.ModulrConfig)
+	// try to unmarshal JSON data into ModulrConfig
+	err = json.Unmarshal(data, &dst.ModulrConfig);
 	if err == nil {
 		jsonModulrConfig, _ := json.Marshal(dst.ModulrConfig)
 		if string(jsonModulrConfig) == "{}" { // empty struct
 			dst.ModulrConfig = nil
 		} else {
-			match++
+			return nil // data stored in dst.ModulrConfig, return on the first match
 		}
 	} else {
 		dst.ModulrConfig = nil
 	}
 
-	// try to unmarshal data into StripeConfig
-	err = newStrictDecoder(data).Decode(&dst.StripeConfig)
+	// try to unmarshal JSON data into StripeConfig
+	err = json.Unmarshal(data, &dst.StripeConfig);
 	if err == nil {
 		jsonStripeConfig, _ := json.Marshal(dst.StripeConfig)
 		if string(jsonStripeConfig) == "{}" { // empty struct
 			dst.StripeConfig = nil
 		} else {
-			match++
+			return nil // data stored in dst.StripeConfig, return on the first match
 		}
 	} else {
 		dst.StripeConfig = nil
 	}
 
-	// try to unmarshal data into WiseConfig
-	err = newStrictDecoder(data).Decode(&dst.WiseConfig)
+	// try to unmarshal JSON data into WiseConfig
+	err = json.Unmarshal(data, &dst.WiseConfig);
 	if err == nil {
 		jsonWiseConfig, _ := json.Marshal(dst.WiseConfig)
 		if string(jsonWiseConfig) == "{}" { // empty struct
 			dst.WiseConfig = nil
 		} else {
-			match++
+			return nil // data stored in dst.WiseConfig, return on the first match
 		}
 	} else {
 		dst.WiseConfig = nil
 	}
 
-	if match > 1 { // more than 1 match
-		// reset to nil
-		dst.BankingCircleConfig = nil
-		dst.CurrencyCloudConfig = nil
-		dst.DummyPayConfig = nil
-		dst.ModulrConfig = nil
-		dst.StripeConfig = nil
-		dst.WiseConfig = nil
-
-		return fmt.Errorf("data matches more than one schema in oneOf(ConnectorConfig)")
-	} else if match == 1 {
-		return nil // exactly one match
-	} else { // no match
-		return fmt.Errorf("data failed to match schemas in oneOf(ConnectorConfig)")
-	}
+	return fmt.Errorf("data failed to match schemas in anyOf(ConnectorConfig)")
 }
 
 // Marshal data from the first non-nil pointers in the struct to JSON
-func (src ConnectorConfig) MarshalJSON() ([]byte, error) {
+func (src *ConnectorConfig) MarshalJSON() ([]byte, error) {
 	if src.BankingCircleConfig != nil {
 		return json.Marshal(&src.BankingCircleConfig)
 	}
@@ -194,40 +136,7 @@ func (src ConnectorConfig) MarshalJSON() ([]byte, error) {
 		return json.Marshal(&src.WiseConfig)
 	}
 
-	return nil, nil // no data in oneOf schemas
-}
-
-// Get the actual instance
-func (obj *ConnectorConfig) GetActualInstance() (interface{}) {
-	if obj == nil {
-		return nil
-	}
-	if obj.BankingCircleConfig != nil {
-		return obj.BankingCircleConfig
-	}
-
-	if obj.CurrencyCloudConfig != nil {
-		return obj.CurrencyCloudConfig
-	}
-
-	if obj.DummyPayConfig != nil {
-		return obj.DummyPayConfig
-	}
-
-	if obj.ModulrConfig != nil {
-		return obj.ModulrConfig
-	}
-
-	if obj.StripeConfig != nil {
-		return obj.StripeConfig
-	}
-
-	if obj.WiseConfig != nil {
-		return obj.WiseConfig
-	}
-
-	// all schemas are nil
-	return nil
+	return nil, nil // no data in anyOf schemas
 }
 
 type NullableConnectorConfig struct {

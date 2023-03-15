@@ -57,7 +57,7 @@ Other parameters are passed through a pointer to a apiGetServerInfoRequest struc
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -116,7 +116,7 @@ Other parameters are passed through a pointer to a apiPaymentsgetServerInfoReque
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -175,7 +175,7 @@ Other parameters are passed through a pointer to a apiSearchgetServerInfoRequest
 
 ### Authorization
 
-[Authorization](../README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 

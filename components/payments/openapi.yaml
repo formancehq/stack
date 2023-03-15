@@ -233,7 +233,9 @@ components:
         items:
           type: string
       description: Fields used to sort payments (default is date:desc).
-      example: date:asc,status:desc
+      example:
+      - date:asc
+      - status:desc
     PaymentId:
       name: paymentId
       in: path
@@ -551,7 +553,7 @@ components:
         - CURRENCY-CLOUD
         - BANKING-CIRCLE
     ConnectorConfig:
-      oneOf:
+      anyOf:
         - $ref: '#/components/schemas/StripeConfig'
         - $ref: '#/components/schemas/DummyPayConfig'
         - $ref: '#/components/schemas/WiseConfig'
@@ -731,6 +733,7 @@ components:
           format: date-time
         raw:
           type: object
+          nullable: true
         adjustments:
           type: array
           items:
@@ -765,6 +768,7 @@ components:
       properties:
         key:
           type: string
+      nullable: true
     Account:
       type: object
       required:

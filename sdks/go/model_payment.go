@@ -33,14 +33,14 @@ type Payment struct {
 	CreatedAt time.Time `json:"createdAt"`
 	Raw map[string]interface{} `json:"raw"`
 	Adjustments []PaymentAdjustment `json:"adjustments"`
-	Metadata PaymentMetadata `json:"metadata"`
+	Metadata NullablePaymentMetadata `json:"metadata"`
 }
 
 // NewPayment instantiates a new Payment object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPayment(id string, reference string, accountID string, type_ string, provider Connector, status PaymentStatus, initialAmount int64, scheme string, asset string, createdAt time.Time, raw map[string]interface{}, adjustments []PaymentAdjustment, metadata PaymentMetadata) *Payment {
+func NewPayment(id string, reference string, accountID string, type_ string, provider Connector, status PaymentStatus, initialAmount int64, scheme string, asset string, createdAt time.Time, raw map[string]interface{}, adjustments []PaymentAdjustment, metadata NullablePaymentMetadata) *Payment {
 	this := Payment{}
 	this.Id = id
 	this.Reference = reference
@@ -307,6 +307,7 @@ func (o *Payment) SetCreatedAt(v time.Time) {
 }
 
 // GetRaw returns the Raw field value
+// If the value is explicit nil, the zero value for map[string]interface{} will be returned
 func (o *Payment) GetRaw() map[string]interface{} {
 	if o == nil {
 		var ret map[string]interface{}
@@ -318,8 +319,9 @@ func (o *Payment) GetRaw() map[string]interface{} {
 
 // GetRawOk returns a tuple with the Raw field value
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *Payment) GetRawOk() (map[string]interface{}, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Raw) {
 		return map[string]interface{}{}, false
 	}
 	return o.Raw, true
@@ -355,27 +357,29 @@ func (o *Payment) SetAdjustments(v []PaymentAdjustment) {
 }
 
 // GetMetadata returns the Metadata field value
+// If the value is explicit nil, the zero value for PaymentMetadata will be returned
 func (o *Payment) GetMetadata() PaymentMetadata {
-	if o == nil {
+	if o == nil || o.Metadata.Get() == nil {
 		var ret PaymentMetadata
 		return ret
 	}
 
-	return o.Metadata
+	return *o.Metadata.Get()
 }
 
 // GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *Payment) GetMetadataOk() (*PaymentMetadata, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.Metadata, true
+	return o.Metadata.Get(), o.Metadata.IsSet()
 }
 
 // SetMetadata sets field value
 func (o *Payment) SetMetadata(v PaymentMetadata) {
-	o.Metadata = v
+	o.Metadata.Set(&v)
 }
 
 func (o Payment) MarshalJSON() ([]byte, error) {
@@ -398,9 +402,11 @@ func (o Payment) ToMap() (map[string]interface{}, error) {
 	toSerialize["scheme"] = o.Scheme
 	toSerialize["asset"] = o.Asset
 	toSerialize["createdAt"] = o.CreatedAt
-	toSerialize["raw"] = o.Raw
+	if o.Raw != nil {
+		toSerialize["raw"] = o.Raw
+	}
 	toSerialize["adjustments"] = o.Adjustments
-	toSerialize["metadata"] = o.Metadata
+	toSerialize["metadata"] = o.Metadata.Get()
 	return toSerialize, nil
 }
 
