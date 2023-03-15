@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package events.ledger;
+
+option go_package = "github.com/formancehq/stack/libs/events/ledger";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+import "ledger/volumes.proto";
+
+message TransactionsCommitted {
+  string ledger = 1;
+  repeated ExpandedTransaction transactions = 2;
+  AccountsAssetsVolumes pre_commit_volumes = 3;
+  AccountsAssetsVolumes post_commit_volumes = 4;
+}
+
+message MetadataSaved {
+  string ledger = 1;
+  TargetType target_type = 2;
+  string target_id = 3;
+  google.protobuf.Value metadata = 4;
+}
+
+message TransactionReverted {
+  string ledger = 1;
+  ExpandedTransaction reverted_transaction = 2;
+  ExpandedTransaction revert_transaction = 3;
+}
+
+enum TargetType {
+  TARGET_TYPE_UNKNOWN = 0;
+  TARGET_TYPE_ACCOUNT = 1;
+  TARGET_TYPE_TRANSACTION = 2;
+}
+
+message Posting {
+  string source = 1;
+  string destination = 2;
+  bytes amount = 3;
+  string asset = 4;
+}
+
+message Transaction {
+  uint64 id = 1;
+
+  repeated Posting postings = 2;
+  string reference = 3;
+  google.protobuf.Value metadata = 4;
+  google.protobuf.Timestamp timestamp = 5;
+}
+
+message ExpandedTransaction {
+  Transaction transaction = 1;
+  AccountsAssetsVolumes pre_commit_volumes = 2;
+  AccountsAssetsVolumes post_commit_volumes = 3;
+}

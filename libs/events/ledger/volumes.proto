@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package events.ledger;
+
+option go_package = "github.com/formancehq/stack/libs/events/ledger";
+
+message VolumeWithBalance {
+  bytes Input = 1;
+  bytes Output = 2;
+  bytes Balance = 3;
+}
+
+message AssetsVolumes { map<string, VolumeWithBalance> assets = 1; }
+
+message AccountsAssetsVolumes { map<string, AssetsVolumes> accounts = 1; }

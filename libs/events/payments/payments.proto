@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package events.payments;
+
+option go_package = "github.com/formancehq/stack/libs/events/payments";
+
+import "google/protobuf/timestamp.proto";
+
+message PaymentSaved {
+  string id = 1;
+  string reference = 2;
+  google.protobuf.Timestamp created_at = 3;
+
+  // NOTE: Since we do not want to modify the models in the payments service,
+  // we have to use string for the next 4 fields instead of enums to not add
+  // complexity to the code.
+  string provider = 4;
+  string type = 5;
+  string status = 6;
+  string scheme = 7;
+
+  string asset = 8;
+  int64 amount = 9;
+}

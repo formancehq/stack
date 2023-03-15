@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package events;
+
+option go_package = "github.com/formancehq/stack/libs/events";
+
+import "google/protobuf/timestamp.proto";
+
+import "payments/payments.proto";
+import "payments/connector.proto";
+import "payments/account.proto";
+import "ledger/transactions.proto";
+
+message Event {
+  google.protobuf.Timestamp created_at = 1;
+
+  // TODO(backend): Do we really need to pass the app name?
+  string app = 2;
+
+  oneof event {
+    events.payments.PaymentSaved payment_saved = 100;
+    events.payments.ResetConnector reset_connector = 101;
+    events.payments.AccountSaved account_saved = 102;
+    events.ledger.TransactionsCommitted transactions_committed = 103;
+    events.ledger.TransactionReverted transaction_reverted = 104;
+    events.ledger.MetadataSaved metadata_saved = 105;
+  }
+}

@@ -26,11 +26,13 @@ repos:
     description: "Runs `go fmt`, requires golang"
     language: script
     files: \.go$
+    exclude: libs/events
     require_serial: true
   - id: goimports
     name: goimports
     entry: ./scripts/goimports.sh
     files: \.go$
+    exclude: libs/events
     description: "Runs `goimports`, requires golang"
     language: script
     require_serial: true
@@ -39,6 +41,7 @@ repos:
     entry: ./scripts/gomodtidy.sh
     language: script
     files: \.go$
+    exclude: libs/events
     description: "Runs `go mod tidy`, requires golang"
     require_serial: true
   - id: golangci-lint
@@ -46,6 +49,7 @@ repos:
     entry: ./scripts/golangci-lint.sh
     language: script
     files: \.go$
+    exclude: libs/events
     description: "Runs `golangci-lint`, requires golangci-lint"
     require_serial: true
   - id: gotests
@@ -56,7 +60,7 @@ repos:
     description: "Runs `go test`, requires golang"
     require_serial: true
     # Test requires to start a docker compose, we need to remove this need or find a generic way to start/stop dependencies
-    exclude: components/webhooks
+    exclude: components/webhooks libs/events
   - id: commitlint
     name: commitlint
     description: Commitlint hook
