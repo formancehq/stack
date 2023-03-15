@@ -29,9 +29,6 @@ from Formance.model.list_scopes_response import ListScopesResponse
 
 from . import path
 
-_auth = [
-    'Authorization',
-]
 SchemaFor200ResponseBodyApplicationJson = ListScopesResponse
 
 
@@ -117,7 +114,6 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='get'.upper(),
             headers=_headers,
-            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

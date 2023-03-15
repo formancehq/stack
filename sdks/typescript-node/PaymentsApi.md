@@ -65,7 +65,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -127,7 +127,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -184,7 +184,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -237,7 +237,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -294,7 +294,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -342,7 +342,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -390,7 +390,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -450,7 +450,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -504,7 +504,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -539,9 +539,7 @@ let body:PaymentsApiListPaymentsRequest = {
   // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   // Array<string> | Fields used to sort payments (default is date:desc). (optional)
-  sort: [
-    "date:asc,status:desc",
-  ],
+  sort: ["date:asc","status:desc"],
 };
 
 apiInstance.listPayments(body).then((data:any) => {
@@ -565,7 +563,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -600,9 +598,7 @@ let body:PaymentsApiPaymentslistAccountsRequest = {
   // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
   // Array<string> | Fields used to sort payments (default is date:desc). (optional)
-  sort: [
-    "date:asc,status:desc",
-  ],
+  sort: ["date:asc","status:desc"],
 };
 
 apiInstance.paymentslistAccounts(body).then((data:any) => {
@@ -626,7 +622,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -680,7 +676,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -734,7 +730,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -788,7 +784,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 
@@ -846,7 +842,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](README.md#Authorization)
+No authorization required
 
 ### HTTP request headers
 

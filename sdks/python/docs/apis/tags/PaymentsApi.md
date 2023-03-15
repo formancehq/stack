@@ -31,7 +31,6 @@ Execute a transfer between two Stripe accounts.
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -43,16 +42,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -116,7 +105,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -130,7 +119,6 @@ Execute a transfer between two accounts.
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -144,16 +132,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -234,7 +212,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -248,7 +226,6 @@ Get a specific task associated to the connector.
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -261,16 +238,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -343,7 +310,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -355,7 +322,6 @@ Get a payment
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -367,16 +333,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -441,7 +397,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -455,7 +411,6 @@ Install a connector by its name and config.
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -468,16 +423,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -545,7 +490,7 @@ headers | Unset | headers were not defined |
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -559,7 +504,6 @@ List all installed connectors.
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -571,16 +515,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -619,7 +553,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -633,7 +567,6 @@ List the configs of each available connector.
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -645,16 +578,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -693,7 +616,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -707,7 +630,6 @@ List all tasks associated with this connector.
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -720,16 +642,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -838,7 +750,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -852,7 +764,6 @@ List transfers
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -865,16 +776,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -938,7 +839,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -950,7 +851,6 @@ List payments
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -962,16 +862,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -981,9 +871,7 @@ with Formance.ApiClient(configuration) as api_client:
     query_params = {
         'pageSize': 100,
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-        'sort': [
-        "date:asc,status:desc"
-    ],
+        'sort': ["date:asc","status:desc"],
     }
     try:
         # List payments
@@ -1062,7 +950,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -1074,7 +962,6 @@ List accounts
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -1086,16 +973,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -1105,9 +982,7 @@ with Formance.ApiClient(configuration) as api_client:
     query_params = {
         'pageSize': 100,
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-        'sort': [
-        "date:asc,status:desc"
-    ],
+        'sort': ["date:asc","status:desc"],
     }
     try:
         # List accounts
@@ -1186,7 +1061,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -1200,7 +1075,6 @@ Read connector config
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -1213,16 +1087,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -1286,7 +1150,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -1300,7 +1164,6 @@ Reset a connector by its name. It will remove the connector and ALL PAYMENTS gen
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -1312,16 +1175,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -1377,7 +1230,7 @@ headers | Unset | headers were not defined |
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -1391,7 +1244,6 @@ Uninstall a connector by its name.
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -1403,16 +1255,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -1468,7 +1310,7 @@ headers | Unset | headers were not defined |
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -1480,7 +1322,6 @@ Update metadata
 
 ### Example
 
-* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import payments_api
@@ -1492,16 +1333,6 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure OAuth2 access token for authorization: Authorization
-configuration = Formance.Configuration(
-    host = "http://localhost",
-    access_token = 'YOUR_ACCESS_TOKEN'
-)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -1572,7 +1403,7 @@ headers | Unset | headers were not defined |
 
 ### Authorization
 
-[Authorization](../../../README.md#Authorization)
+No authorization required
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 

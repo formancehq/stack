@@ -112,9 +112,9 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
 		'scheme' => false,
 		'asset' => false,
 		'created_at' => false,
-		'raw' => false,
+		'raw' => true,
 		'adjustments' => false,
-		'metadata' => false
+		'metadata' => true
     ];
 
     /**
@@ -816,7 +816,14 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     public function setRaw($raw)
     {
         if (is_null($raw)) {
-            throw new \InvalidArgumentException('non-nullable raw cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'raw');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('raw', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
         }
         $this->container['raw'] = $raw;
 
@@ -870,7 +877,14 @@ class Payment implements ModelInterface, ArrayAccess, \JsonSerializable
     public function setMetadata($metadata)
     {
         if (is_null($metadata)) {
-            throw new \InvalidArgumentException('non-nullable metadata cannot be null');
+            array_push($this->openAPINullablesSetToNull, 'metadata');
+        } else {
+            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
+            $index = array_search('metadata', $nullablesSetToNull);
+            if ($index !== FALSE) {
+                unset($nullablesSetToNull[$index]);
+                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
+            }
         }
         $this->container['metadata'] = $metadata;
 

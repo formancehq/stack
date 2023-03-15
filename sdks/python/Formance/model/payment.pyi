@@ -171,7 +171,28 @@ class Payment(
                     return cls("other")
             asset = schemas.StrSchema
             createdAt = schemas.DateTimeSchema
-            raw = schemas.DictSchema
+            
+            
+            class raw(
+                schemas.DictBase,
+                schemas.NoneBase,
+                schemas.Schema,
+                schemas.NoneFrozenDictMixin
+            ):
+            
+            
+                def __new__(
+                    cls,
+                    *_args: typing.Union[dict, frozendict.frozendict, None, ],
+                    _configuration: typing.Optional[schemas.Configuration] = None,
+                    **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
+                ) -> 'raw':
+                    return super().__new__(
+                        cls,
+                        *_args,
+                        _configuration=_configuration,
+                        **kwargs,
+                    )
             
             
             class adjustments(
@@ -331,7 +352,7 @@ class Payment(
         metadata: 'PaymentMetadata',
         adjustments: typing.Union[MetaOapg.properties.adjustments, list, tuple, ],
         scheme: typing.Union[MetaOapg.properties.scheme, str, ],
-        raw: typing.Union[MetaOapg.properties.raw, dict, frozendict.frozendict, ],
+        raw: typing.Union[MetaOapg.properties.raw, dict, frozendict.frozendict, None, ],
         type: typing.Union[MetaOapg.properties.type, str, ],
         reference: typing.Union[MetaOapg.properties.reference, str, ],
         accountID: typing.Union[MetaOapg.properties.accountID, str, ],
