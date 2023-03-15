@@ -130,23 +130,19 @@ class LogsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listLogs'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \Formance\Model\LogsCursorResponse|\Formance\Model\ErrorResponse
      */
-    public function listLogs($ledger, $page_size = 15, $page_size2 = 15, $after = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['listLogs'][0])
+    public function listLogs($ledger, $page_size = 15, $after = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
     {
-        list($response) = $this->listLogsWithHttpInfo($ledger, $page_size, $page_size2, $after, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $contentType);
+        list($response) = $this->listLogsWithHttpInfo($ledger, $page_size, $after, $start_time, $end_time, $cursor, $contentType);
         return $response;
     }
 
@@ -157,23 +153,19 @@ class LogsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listLogs'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\LogsCursorResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listLogsWithHttpInfo($ledger, $page_size = 15, $page_size2 = 15, $after = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['listLogs'][0])
+    public function listLogsWithHttpInfo($ledger, $page_size = 15, $after = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
     {
-        $request = $this->listLogsRequest($ledger, $page_size, $page_size2, $after, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $contentType);
+        $request = $this->listLogsRequest($ledger, $page_size, $after, $start_time, $end_time, $cursor, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -289,22 +281,18 @@ class LogsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listLogs'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listLogsAsync($ledger, $page_size = 15, $page_size2 = 15, $after = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['listLogs'][0])
+    public function listLogsAsync($ledger, $page_size = 15, $after = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
     {
-        return $this->listLogsAsyncWithHttpInfo($ledger, $page_size, $page_size2, $after, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $contentType)
+        return $this->listLogsAsyncWithHttpInfo($ledger, $page_size, $after, $start_time, $end_time, $cursor, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -319,23 +307,19 @@ class LogsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listLogs'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listLogsAsyncWithHttpInfo($ledger, $page_size = 15, $page_size2 = 15, $after = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['listLogs'][0])
+    public function listLogsAsyncWithHttpInfo($ledger, $page_size = 15, $after = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
     {
         $returnType = '\Formance\Model\LogsCursorResponse';
-        $request = $this->listLogsRequest($ledger, $page_size, $page_size2, $after, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $contentType);
+        $request = $this->listLogsRequest($ledger, $page_size, $after, $start_time, $end_time, $cursor, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -378,20 +362,16 @@ class LogsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listLogs'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listLogsRequest($ledger, $page_size = 15, $page_size2 = 15, $after = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['listLogs'][0])
+    public function listLogsRequest($ledger, $page_size = 15, $after = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -408,16 +388,6 @@ class LogsApi
             throw new \InvalidArgumentException('invalid value for "$page_size" when calling LogsApi.listLogs, must be bigger than or equal to 1.');
         }
         
-        if ($page_size2 !== null && $page_size2 > 1000) {
-            throw new \InvalidArgumentException('invalid value for "$page_size2" when calling LogsApi.listLogs, must be smaller than or equal to 1000.');
-        }
-        if ($page_size2 !== null && $page_size2 < 1) {
-            throw new \InvalidArgumentException('invalid value for "$page_size2" when calling LogsApi.listLogs, must be bigger than or equal to 1.');
-        }
-        
-
-
-
 
 
 
@@ -434,15 +404,6 @@ class LogsApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $page_size,
             'pageSize', // param base name
-            'integer', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $page_size2,
-            'page_size', // param base name
             'integer', // openApiType
             'form', // style
             true, // explode
@@ -468,15 +429,6 @@ class LogsApi
         ) ?? []);
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $start_time2,
-            'start_time', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $end_time,
             'endTime', // param base name
             'string', // openApiType
@@ -486,26 +438,8 @@ class LogsApi
         ) ?? []);
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $end_time2,
-            'end_time', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $cursor,
             'cursor', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $pagination_token,
-            'pagination_token', // param base name
             'string', // openApiType
             'form', // style
             true, // explode
@@ -554,6 +488,10 @@ class LogsApi
             }
         }
 
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
         $defaultHeaders = [];
         if ($this->config->getUserAgent()) {

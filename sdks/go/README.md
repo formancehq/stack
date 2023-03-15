@@ -27,6 +27,7 @@ Install the following dependencies:
 
 ```shell
 go get github.com/stretchr/testify/assert
+go get golang.org/x/oauth2
 go get golang.org/x/net/context
 ```
 
@@ -142,7 +143,6 @@ Class | Method | HTTP request | Description
 *ScopesApi* | [**ListScopes**](docs/ScopesApi.md#listscopes) | **Get** /api/auth/scopes | List scopes
 *ScopesApi* | [**ReadScope**](docs/ScopesApi.md#readscope) | **Get** /api/auth/scopes/{scopeId} | Read scope
 *ScopesApi* | [**UpdateScope**](docs/ScopesApi.md#updatescope) | **Put** /api/auth/scopes/{scopeId} | Update scope
-*ScriptApi* | [**RunScript**](docs/ScriptApi.md#runscript) | **Post** /api/ledger/{ledger}/script | Execute a Numscript
 *SearchApi* | [**Search**](docs/SearchApi.md#search) | **Post** /api/search/ | Search
 *ServerApi* | [**GetInfo**](docs/ServerApi.md#getinfo) | **Get** /api/ledger/_info | Show server information
 *StatsApi* | [**ReadStats**](docs/StatsApi.md#readstats) | **Get** /api/ledger/{ledger}/stats | Get statistics from a ledger
@@ -304,8 +304,6 @@ Class | Method | HTTP request | Description
  - [Scope](docs/Scope.md)
  - [ScopeAllOf](docs/ScopeAllOf.md)
  - [ScopeOptions](docs/ScopeOptions.md)
- - [Script](docs/Script.md)
- - [ScriptResponse](docs/ScriptResponse.md)
  - [Secret](docs/Secret.md)
  - [SecretAllOf](docs/SecretAllOf.md)
  - [SecretOptions](docs/SecretOptions.md)
@@ -353,9 +351,7 @@ Class | Method | HTTP request | Description
  - [TasksCursorCursorAllOfDataInner](docs/TasksCursorCursorAllOfDataInner.md)
  - [Total](docs/Total.md)
  - [Transaction](docs/Transaction.md)
- - [TransactionData](docs/TransactionData.md)
  - [TransactionResponse](docs/TransactionResponse.md)
- - [Transactions](docs/Transactions.md)
  - [TransactionsCursorResponse](docs/TransactionsCursorResponse.md)
  - [TransactionsCursorResponseCursor](docs/TransactionsCursorResponseCursor.md)
  - [TransferRequest](docs/TransferRequest.md)
@@ -386,7 +382,34 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Authorization
 
- Endpoints do not require authorization.
+
+
+### Authorization
+
+
+- **Type**: OAuth
+- **Flow**: application
+- **Authorization URL**: 
+- **Scopes**: N/A
+
+Example
+
+```golang
+auth := context.WithValue(context.Background(), sw.ContextAccessToken, "ACCESSTOKENSTRING")
+r, err := client.Service.Operation(auth, args)
+```
+
+Or via OAuth2 module to automatically refresh tokens and perform user authentication.
+
+```golang
+import "golang.org/x/oauth2"
+
+/* Perform OAuth2 round trip request and obtain a token */
+
+tokenSource := oauth2cfg.TokenSource(createContext(httpClient), &token)
+auth := context.WithValue(oauth2.NoContext, sw.ContextOAuth2, tokenSource)
+r, err := client.Service.Operation(auth, args)
+```
 
 
 ## Documentation for Utility Methods

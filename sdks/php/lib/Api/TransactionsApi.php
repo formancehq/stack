@@ -389,6 +389,10 @@ class TransactionsApi
             }
         }
 
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
         $defaultHeaders = [];
         if ($this->config->getUserAgent()) {
@@ -422,9 +426,7 @@ class TransactionsApi
      * @param  string $source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countTransactions'] to see the possible values for this operation
      *
@@ -432,9 +434,9 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function countTransactions($ledger, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $metadata = null, string $contentType = self::contentTypes['countTransactions'][0])
+    public function countTransactions($ledger, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $metadata = null, string $contentType = self::contentTypes['countTransactions'][0])
     {
-        $this->countTransactionsWithHttpInfo($ledger, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $metadata, $contentType);
+        $this->countTransactionsWithHttpInfo($ledger, $reference, $account, $source, $destination, $start_time, $end_time, $metadata, $contentType);
     }
 
     /**
@@ -448,9 +450,7 @@ class TransactionsApi
      * @param  string $source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countTransactions'] to see the possible values for this operation
      *
@@ -458,9 +458,9 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
-    public function countTransactionsWithHttpInfo($ledger, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $metadata = null, string $contentType = self::contentTypes['countTransactions'][0])
+    public function countTransactionsWithHttpInfo($ledger, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $metadata = null, string $contentType = self::contentTypes['countTransactions'][0])
     {
-        $request = $this->countTransactionsRequest($ledger, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $metadata, $contentType);
+        $request = $this->countTransactionsRequest($ledger, $reference, $account, $source, $destination, $start_time, $end_time, $metadata, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -525,18 +525,16 @@ class TransactionsApi
      * @param  string $source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function countTransactionsAsync($ledger, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $metadata = null, string $contentType = self::contentTypes['countTransactions'][0])
+    public function countTransactionsAsync($ledger, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $metadata = null, string $contentType = self::contentTypes['countTransactions'][0])
     {
-        return $this->countTransactionsAsyncWithHttpInfo($ledger, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $metadata, $contentType)
+        return $this->countTransactionsAsyncWithHttpInfo($ledger, $reference, $account, $source, $destination, $start_time, $end_time, $metadata, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -555,19 +553,17 @@ class TransactionsApi
      * @param  string $source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function countTransactionsAsyncWithHttpInfo($ledger, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $metadata = null, string $contentType = self::contentTypes['countTransactions'][0])
+    public function countTransactionsAsyncWithHttpInfo($ledger, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $metadata = null, string $contentType = self::contentTypes['countTransactions'][0])
     {
         $returnType = '';
-        $request = $this->countTransactionsRequest($ledger, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $metadata, $contentType);
+        $request = $this->countTransactionsRequest($ledger, $reference, $account, $source, $destination, $start_time, $end_time, $metadata, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -601,16 +597,14 @@ class TransactionsApi
      * @param  string $source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function countTransactionsRequest($ledger, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $metadata = null, string $contentType = self::contentTypes['countTransactions'][0])
+    public function countTransactionsRequest($ledger, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $metadata = null, string $contentType = self::contentTypes['countTransactions'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -619,8 +613,6 @@ class TransactionsApi
                 'Missing the required parameter $ledger when calling countTransactions'
             );
         }
-
-
 
 
 
@@ -684,26 +676,8 @@ class TransactionsApi
         ) ?? []);
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $start_time2,
-            'start_time', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $end_time,
             'endTime', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $end_time2,
-            'end_time', // param base name
             'string', // openApiType
             'form', // style
             true, // explode
@@ -761,6 +735,10 @@ class TransactionsApi
             }
         }
 
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
         $defaultHeaders = [];
         if ($this->config->getUserAgent()) {
@@ -1101,6 +1079,10 @@ class TransactionsApi
             }
         }
 
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
         $defaultHeaders = [];
         if ($this->config->getUserAgent()) {
@@ -1430,6 +1412,10 @@ class TransactionsApi
             }
         }
 
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
         $defaultHeaders = [];
         if ($this->config->getUserAgent()) {
@@ -1459,18 +1445,14 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return transactions after given txid (in descending order). (optional)
      * @param  string $reference Find transactions by reference field. (optional)
      * @param  string $account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
      * @param  string $source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listTransactions'] to see the possible values for this operation
      *
@@ -1478,9 +1460,9 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return \Formance\Model\TransactionsCursorResponse|\Formance\Model\ErrorResponse
      */
-    public function listTransactions($ledger, $page_size = 15, $page_size2 = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $cursor = null, $pagination_token = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
+    public function listTransactions($ledger, $page_size = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
     {
-        list($response) = $this->listTransactionsWithHttpInfo($ledger, $page_size, $page_size2, $after, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $metadata, $contentType);
+        list($response) = $this->listTransactionsWithHttpInfo($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata, $contentType);
         return $response;
     }
 
@@ -1491,18 +1473,14 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return transactions after given txid (in descending order). (optional)
      * @param  string $reference Find transactions by reference field. (optional)
      * @param  string $account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
      * @param  string $source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listTransactions'] to see the possible values for this operation
      *
@@ -1510,9 +1488,9 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\TransactionsCursorResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listTransactionsWithHttpInfo($ledger, $page_size = 15, $page_size2 = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $cursor = null, $pagination_token = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
+    public function listTransactionsWithHttpInfo($ledger, $page_size = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
     {
-        $request = $this->listTransactionsRequest($ledger, $page_size, $page_size2, $after, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $metadata, $contentType);
+        $request = $this->listTransactionsRequest($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1628,27 +1606,23 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return transactions after given txid (in descending order). (optional)
      * @param  string $reference Find transactions by reference field. (optional)
      * @param  string $account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
      * @param  string $source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listTransactionsAsync($ledger, $page_size = 15, $page_size2 = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $cursor = null, $pagination_token = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
+    public function listTransactionsAsync($ledger, $page_size = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
     {
-        return $this->listTransactionsAsyncWithHttpInfo($ledger, $page_size, $page_size2, $after, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $metadata, $contentType)
+        return $this->listTransactionsAsyncWithHttpInfo($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1663,28 +1637,24 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return transactions after given txid (in descending order). (optional)
      * @param  string $reference Find transactions by reference field. (optional)
      * @param  string $account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
      * @param  string $source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listTransactionsAsyncWithHttpInfo($ledger, $page_size = 15, $page_size2 = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $cursor = null, $pagination_token = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
+    public function listTransactionsAsyncWithHttpInfo($ledger, $page_size = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
     {
         $returnType = '\Formance\Model\TransactionsCursorResponse';
-        $request = $this->listTransactionsRequest($ledger, $page_size, $page_size2, $after, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $metadata, $contentType);
+        $request = $this->listTransactionsRequest($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1727,25 +1697,21 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return transactions after given txid (in descending order). (optional)
      * @param  string $reference Find transactions by reference field. (optional)
      * @param  string $account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
      * @param  string $source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
-     * @param  \DateTime $start_time2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. (optional) (deprecated)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  \DateTime $end_time2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listTransactionsRequest($ledger, $page_size = 15, $page_size2 = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $start_time2 = null, $end_time = null, $end_time2 = null, $cursor = null, $pagination_token = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
+    public function listTransactionsRequest($ledger, $page_size = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -1762,16 +1728,6 @@ class TransactionsApi
             throw new \InvalidArgumentException('invalid value for "$page_size" when calling TransactionsApi.listTransactions, must be bigger than or equal to 1.');
         }
         
-        if ($page_size2 !== null && $page_size2 > 1000) {
-            throw new \InvalidArgumentException('invalid value for "$page_size2" when calling TransactionsApi.listTransactions, must be smaller than or equal to 1000.');
-        }
-        if ($page_size2 !== null && $page_size2 < 1) {
-            throw new \InvalidArgumentException('invalid value for "$page_size2" when calling TransactionsApi.listTransactions, must be bigger than or equal to 1.');
-        }
-        
-
-
-
 
 
 
@@ -1793,15 +1749,6 @@ class TransactionsApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $page_size,
             'pageSize', // param base name
-            'integer', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $page_size2,
-            'page_size', // param base name
             'integer', // openApiType
             'form', // style
             true, // explode
@@ -1863,15 +1810,6 @@ class TransactionsApi
         ) ?? []);
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $start_time2,
-            'start_time', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $end_time,
             'endTime', // param base name
             'string', // openApiType
@@ -1881,26 +1819,8 @@ class TransactionsApi
         ) ?? []);
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $end_time2,
-            'end_time', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $cursor,
             'cursor', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $pagination_token,
-            'pagination_token', // param base name
             'string', // openApiType
             'form', // style
             true, // explode
@@ -1958,6 +1878,10 @@ class TransactionsApi
             }
         }
 
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
         $defaultHeaders = [];
         if ($this->config->getUserAgent()) {
@@ -2287,6 +2211,10 @@ class TransactionsApi
             }
         }
 
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
         $defaultHeaders = [];
         if ($this->config->getUserAgent()) {

@@ -431,27 +431,17 @@ type ApiListAccountsRequest struct {
 	ApiService AccountsApi
 	ledger string
 	pageSize *int64
-	pageSize2 *int64
 	after *string
 	address *string
 	metadata *map[string]interface{}
 	balance *int64
 	balanceOperator *string
-	balanceOperator2 *string
 	cursor *string
-	paginationToken *string
 }
 
 // The maximum number of results to return per page. 
 func (r ApiListAccountsRequest) PageSize(pageSize int64) ApiListAccountsRequest {
 	r.pageSize = &pageSize
-	return r
-}
-
-// The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. 
-// Deprecated
-func (r ApiListAccountsRequest) PageSize2(pageSize2 int64) ApiListAccountsRequest {
-	r.pageSize2 = &pageSize2
 	return r
 }
 
@@ -485,23 +475,9 @@ func (r ApiListAccountsRequest) BalanceOperator(balanceOperator string) ApiListA
 	return r
 }
 
-// Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. Deprecated, please use &#x60;balanceOperator&#x60; instead. 
-// Deprecated
-func (r ApiListAccountsRequest) BalanceOperator2(balanceOperator2 string) ApiListAccountsRequest {
-	r.balanceOperator2 = &balanceOperator2
-	return r
-}
-
 // Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
 func (r ApiListAccountsRequest) Cursor(cursor string) ApiListAccountsRequest {
 	r.cursor = &cursor
-	return r
-}
-
-// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. 
-// Deprecated
-func (r ApiListAccountsRequest) PaginationToken(paginationToken string) ApiListAccountsRequest {
-	r.paginationToken = &paginationToken
 	return r
 }
 
@@ -551,9 +527,6 @@ func (a *AccountsApiService) ListAccountsExecute(r ApiListAccountsRequest) (*Acc
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
-	if r.pageSize2 != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "page_size", r.pageSize2, "")
-	}
 	if r.after != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "")
 	}
@@ -569,14 +542,8 @@ func (a *AccountsApiService) ListAccountsExecute(r ApiListAccountsRequest) (*Acc
 	if r.balanceOperator != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "balanceOperator", r.balanceOperator, "")
 	}
-	if r.balanceOperator2 != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "balance_operator", r.balanceOperator2, "")
-	}
 	if r.cursor != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "cursor", r.cursor, "")
-	}
-	if r.paginationToken != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

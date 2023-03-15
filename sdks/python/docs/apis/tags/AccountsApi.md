@@ -18,6 +18,7 @@ Add metadata to an account
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import accounts_api
@@ -30,6 +31,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -124,7 +135,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -136,6 +147,7 @@ Count the accounts from a ledger
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import accounts_api
@@ -147,6 +159,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -275,7 +297,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -287,6 +309,7 @@ Get account by its address
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import accounts_api
@@ -299,6 +322,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -386,7 +419,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -400,6 +433,7 @@ List accounts from a ledger, sorted by address in descending order.
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import accounts_api
@@ -412,6 +446,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -439,15 +483,12 @@ with Formance.ApiClient(configuration) as api_client:
     }
     query_params = {
         'pageSize': 100,
-        'page_size': 100,
         'after': "users:003",
         'address': "users:.+",
         'metadata': dict(),
         'balance': 2400,
         'balanceOperator': "gte",
-        'balance_operator': "gte",
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-        'pagination_token': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
     }
     try:
         # List accounts from a ledger
@@ -476,23 +517,13 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 pageSize | PageSizeSchema | | optional
-page_size | PageSizeSchema | | optional
 after | AfterSchema | | optional
 address | AddressSchema | | optional
 metadata | MetadataSchema | | optional
 balance | BalanceSchema | | optional
 balanceOperator | BalanceOperatorSchema | | optional
-balance_operator | BalanceOperatorSchema | | optional
 cursor | CursorSchema | | optional
-pagination_token | PaginationTokenSchema | | optional
 
-
-# PageSizeSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | if omitted the server will use the default value of 15value must be a 64 bit integer
 
 # PageSizeSchema
 
@@ -536,21 +567,7 @@ Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 str,  | str,  |  | must be one of ["gte", "lte", "gt", "lt", "e", "ne", ] 
 
-# BalanceOperatorSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | must be one of ["gte", "lte", "gt", "lt", "e", "ne", ] 
-
 # CursorSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | 
-
-# PaginationTokenSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
@@ -607,7 +624,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 

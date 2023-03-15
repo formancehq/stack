@@ -163,6 +163,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
@@ -237,7 +247,6 @@ Class | Method | HTTP request | Description
 *ScopesApi* | [**list_scopes**](docs/apis/tags/ScopesApi.md#list_scopes) | **get** /api/auth/scopes | List scopes
 *ScopesApi* | [**read_scope**](docs/apis/tags/ScopesApi.md#read_scope) | **get** /api/auth/scopes/{scopeId} | Read scope
 *ScopesApi* | [**update_scope**](docs/apis/tags/ScopesApi.md#update_scope) | **put** /api/auth/scopes/{scopeId} | Update scope
-*ScriptApi* | [**run_script**](docs/apis/tags/ScriptApi.md#run_script) | **post** /api/ledger/{ledger}/script | Execute a Numscript
 *SearchApi* | [**search**](docs/apis/tags/SearchApi.md#search) | **post** /api/search/ | Search
 *ServerApi* | [**get_info**](docs/apis/tags/ServerApi.md#get_info) | **get** /api/ledger/_info | Show server information
 *StatsApi* | [**read_stats**](docs/apis/tags/StatsApi.md#read_stats) | **get** /api/ledger/{ledger}/stats | Get statistics from a ledger
@@ -395,8 +404,6 @@ Class | Method | HTTP request | Description
  - [RunWorkflowResponse](docs/models/RunWorkflowResponse.md)
  - [Scope](docs/models/Scope.md)
  - [ScopeOptions](docs/models/ScopeOptions.md)
- - [Script](docs/models/Script.md)
- - [ScriptResponse](docs/models/ScriptResponse.md)
  - [Secret](docs/models/Secret.md)
  - [SecretOptions](docs/models/SecretOptions.md)
  - [ServerInfo](docs/models/ServerInfo.md)
@@ -428,9 +435,7 @@ Class | Method | HTTP request | Description
  - [TaskWise](docs/models/TaskWise.md)
  - [TasksCursor](docs/models/TasksCursor.md)
  - [Transaction](docs/models/Transaction.md)
- - [TransactionData](docs/models/TransactionData.md)
  - [TransactionResponse](docs/models/TransactionResponse.md)
- - [Transactions](docs/models/Transactions.md)
  - [TransactionsCursorResponse](docs/models/TransactionsCursorResponse.md)
  - [TransferRequest](docs/models/TransferRequest.md)
  - [TransferResponse](docs/models/TransferResponse.md)
@@ -465,11 +470,17 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Authorization
 
- All endpoints do not require authorization.
+ Authentication schemes defined for the API:
+## Authorization
+
+- **Type**: OAuth
+- **Flow**: application
+- **Authorization URL**: 
+- **Scopes**: N/A
+
 
 ## Author
 
-support@formance.com
 support@formance.com
 support@formance.com
 support@formance.com

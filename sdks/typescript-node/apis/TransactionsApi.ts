@@ -63,6 +63,12 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         );
         requestContext.setBody(serializedBody);
 
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
         
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
@@ -80,20 +86,16 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * @param source Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
      * @param destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
      * @param startTime Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). 
-     * @param startTime2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. 
      * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
-     * @param endTime2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. 
      * @param metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
-    public async countTransactions(ledger: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, startTime2?: Date, endTime?: Date, endTime2?: Date, metadata?: any, _options?: Configuration): Promise<RequestContext> {
+    public async countTransactions(ledger: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, metadata?: any, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
         if (ledger === null || ledger === undefined) {
             throw new RequiredError("TransactionsApi", "countTransactions", "ledger");
         }
-
-
 
 
 
@@ -137,18 +139,8 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         }
 
         // Query Params
-        if (startTime2 !== undefined) {
-            requestContext.setQueryParam("start_time", ObjectSerializer.serialize(startTime2, "Date", "date-time"));
-        }
-
-        // Query Params
         if (endTime !== undefined) {
             requestContext.setQueryParam("endTime", ObjectSerializer.serialize(endTime, "Date", "date-time"));
-        }
-
-        // Query Params
-        if (endTime2 !== undefined) {
-            requestContext.setQueryParam("end_time", ObjectSerializer.serialize(endTime2, "Date", "date-time"));
         }
 
         // Query Params
@@ -157,6 +149,12 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         }
 
 
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
         
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
@@ -213,6 +211,12 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         );
         requestContext.setBody(serializedBody);
 
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
         
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
@@ -252,6 +256,12 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
 
 
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
         
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
@@ -266,31 +276,23 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * List transactions from a ledger
      * @param ledger Name of the ledger.
      * @param pageSize The maximum number of results to return per page. 
-     * @param pageSize2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. 
      * @param after Pagination cursor, will return transactions after given txid (in descending order).
      * @param reference Find transactions by reference field.
      * @param account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
      * @param source Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
      * @param destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
      * @param startTime Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). 
-     * @param startTime2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. 
      * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
-     * @param endTime2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
-     * @param paginationToken Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. 
      * @param metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
-    public async listTransactions(ledger: string, pageSize?: number, pageSize2?: number, after?: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, startTime2?: Date, endTime?: Date, endTime2?: Date, cursor?: string, paginationToken?: string, metadata?: any, _options?: Configuration): Promise<RequestContext> {
+    public async listTransactions(ledger: string, pageSize?: number, after?: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, cursor?: string, metadata?: any, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
         if (ledger === null || ledger === undefined) {
             throw new RequiredError("TransactionsApi", "listTransactions", "ledger");
         }
-
-
-
-
 
 
 
@@ -314,11 +316,6 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         // Query Params
         if (pageSize !== undefined) {
             requestContext.setQueryParam("pageSize", ObjectSerializer.serialize(pageSize, "number", "int64"));
-        }
-
-        // Query Params
-        if (pageSize2 !== undefined) {
-            requestContext.setQueryParam("page_size", ObjectSerializer.serialize(pageSize2, "number", "int64"));
         }
 
         // Query Params
@@ -352,18 +349,8 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         }
 
         // Query Params
-        if (startTime2 !== undefined) {
-            requestContext.setQueryParam("start_time", ObjectSerializer.serialize(startTime2, "Date", "date-time"));
-        }
-
-        // Query Params
         if (endTime !== undefined) {
             requestContext.setQueryParam("endTime", ObjectSerializer.serialize(endTime, "Date", "date-time"));
-        }
-
-        // Query Params
-        if (endTime2 !== undefined) {
-            requestContext.setQueryParam("end_time", ObjectSerializer.serialize(endTime2, "Date", "date-time"));
         }
 
         // Query Params
@@ -372,16 +359,17 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         }
 
         // Query Params
-        if (paginationToken !== undefined) {
-            requestContext.setQueryParam("pagination_token", ObjectSerializer.serialize(paginationToken, "string", ""));
-        }
-
-        // Query Params
         if (metadata !== undefined) {
             requestContext.setQueryParam("metadata", ObjectSerializer.serialize(metadata, "any", ""));
         }
 
 
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
         
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
@@ -421,6 +409,12 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
 
 
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["Authorization"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
         
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {

@@ -77,8 +77,7 @@ _response_for_200 = api_client.OpenApiResponse(
 @dataclass
 class ApiResponseFor304(api_client.ApiResponse):
     response: urllib3.HTTPResponse
-    body: typing.Union[
-    ]
+    body: schemas.Unset = schemas.unset
     headers: schemas.Unset = schemas.unset
 
 
@@ -166,6 +165,7 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='put'.upper(),
             headers=_headers,
+            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

@@ -36,7 +36,8 @@ class ErrorResponse(
 
     class MetaOapg:
         required = {
-            "error_code",
+            "errorMessage",
+            "errorCode",
         }
         
         class properties:
@@ -52,7 +53,8 @@ class ErrorResponse(
                 "details": details,
             }
     
-    error_code: schemas.AnyTypeSchema
+    errorMessage: MetaOapg.properties.errorMessage
+    errorCode: 'ErrorsEnum'
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["errorCode"]) -> 'ErrorsEnum': ...
@@ -72,10 +74,10 @@ class ErrorResponse(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["errorCode"]) -> typing.Union['ErrorsEnum', schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["errorCode"]) -> 'ErrorsEnum': ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["errorMessage"]) -> typing.Union[MetaOapg.properties.errorMessage, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["errorMessage"]) -> MetaOapg.properties.errorMessage: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["details"]) -> typing.Union[MetaOapg.properties.details, schemas.Unset]: ...
@@ -90,8 +92,8 @@ class ErrorResponse(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        errorCode: typing.Union['ErrorsEnum', schemas.Unset] = schemas.unset,
-        errorMessage: typing.Union[MetaOapg.properties.errorMessage, str, schemas.Unset] = schemas.unset,
+        errorMessage: typing.Union[MetaOapg.properties.errorMessage, str, ],
+        errorCode: 'ErrorsEnum',
         details: typing.Union[MetaOapg.properties.details, str, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
@@ -99,8 +101,8 @@ class ErrorResponse(
         return super().__new__(
             cls,
             *_args,
-            errorCode=errorCode,
             errorMessage=errorMessage,
+            errorCode=errorCode,
             details=details,
             _configuration=_configuration,
             **kwargs,

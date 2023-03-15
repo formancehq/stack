@@ -14,8 +14,8 @@ import { ErrorsEnum } from '../models/ErrorsEnum';
 import { HttpFile } from '../http/http';
 
 export class ErrorResponse {
-    'errorCode'?: ErrorsEnum;
-    'errorMessage'?: string;
+    'errorCode': ErrorsEnum;
+    'errorMessage': string;
     'details'?: string;
 
     static readonly discriminator: string | undefined = undefined;

@@ -32,7 +32,6 @@ from Formance.model.balances_cursor_response import BalancesCursorResponse
 AddressSchema = schemas.StrSchema
 AfterSchema = schemas.StrSchema
 CursorSchema = schemas.StrSchema
-PaginationTokenSchema = schemas.StrSchema
 RequestRequiredQueryParams = typing_extensions.TypedDict(
     'RequestRequiredQueryParams',
     {
@@ -44,7 +43,6 @@ RequestOptionalQueryParams = typing_extensions.TypedDict(
         'address': typing.Union[AddressSchema, str, ],
         'after': typing.Union[AfterSchema, str, ],
         'cursor': typing.Union[CursorSchema, str, ],
-        'pagination_token': typing.Union[PaginationTokenSchema, str, ],
     },
     total=False
 )
@@ -70,12 +68,6 @@ request_query_cursor = api_client.QueryParameter(
     name="cursor",
     style=api_client.ParameterStyle.FORM,
     schema=CursorSchema,
-    explode=True,
-)
-request_query_pagination_token = api_client.QueryParameter(
-    name="pagination_token",
-    style=api_client.ParameterStyle.FORM,
-    schema=PaginationTokenSchema,
     explode=True,
 )
 # Path params
@@ -225,7 +217,6 @@ class BaseApi(api_client.Api):
             request_query_address,
             request_query_after,
             request_query_cursor,
-            request_query_pagination_token,
         ):
             parameter_data = query_params.get(parameter.name, schemas.unset)
             if parameter_data is schemas.unset:
@@ -246,6 +237,7 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='get'.upper(),
             headers=_headers,
+            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

@@ -135,16 +135,15 @@ class BalancesApi
      * @param  string $address Filter balances involving given account, either as source or destination. (optional)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getBalances'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \Formance\Model\BalancesCursorResponse|\Formance\Model\ErrorResponse
      */
-    public function getBalances($ledger, $address = null, $after = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['getBalances'][0])
+    public function getBalances($ledger, $address = null, $after = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
     {
-        list($response) = $this->getBalancesWithHttpInfo($ledger, $address, $after, $cursor, $pagination_token, $contentType);
+        list($response) = $this->getBalancesWithHttpInfo($ledger, $address, $after, $cursor, $contentType);
         return $response;
     }
 
@@ -157,16 +156,15 @@ class BalancesApi
      * @param  string $address Filter balances involving given account, either as source or destination. (optional)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getBalances'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\BalancesCursorResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getBalancesWithHttpInfo($ledger, $address = null, $after = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['getBalances'][0])
+    public function getBalancesWithHttpInfo($ledger, $address = null, $after = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
     {
-        $request = $this->getBalancesRequest($ledger, $address, $after, $cursor, $pagination_token, $contentType);
+        $request = $this->getBalancesRequest($ledger, $address, $after, $cursor, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -284,15 +282,14 @@ class BalancesApi
      * @param  string $address Filter balances involving given account, either as source or destination. (optional)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getBalances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getBalancesAsync($ledger, $address = null, $after = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['getBalances'][0])
+    public function getBalancesAsync($ledger, $address = null, $after = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
     {
-        return $this->getBalancesAsyncWithHttpInfo($ledger, $address, $after, $cursor, $pagination_token, $contentType)
+        return $this->getBalancesAsyncWithHttpInfo($ledger, $address, $after, $cursor, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -309,16 +306,15 @@ class BalancesApi
      * @param  string $address Filter balances involving given account, either as source or destination. (optional)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getBalances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getBalancesAsyncWithHttpInfo($ledger, $address = null, $after = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['getBalances'][0])
+    public function getBalancesAsyncWithHttpInfo($ledger, $address = null, $after = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
     {
         $returnType = '\Formance\Model\BalancesCursorResponse';
-        $request = $this->getBalancesRequest($ledger, $address, $after, $cursor, $pagination_token, $contentType);
+        $request = $this->getBalancesRequest($ledger, $address, $after, $cursor, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -363,13 +359,12 @@ class BalancesApi
      * @param  string $address Filter balances involving given account, either as source or destination. (optional)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getBalances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function getBalancesRequest($ledger, $address = null, $after = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['getBalances'][0])
+    public function getBalancesRequest($ledger, $address = null, $after = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -378,7 +373,6 @@ class BalancesApi
                 'Missing the required parameter $ledger when calling getBalances'
             );
         }
-
 
 
 
@@ -413,15 +407,6 @@ class BalancesApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $cursor,
             'cursor', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $pagination_token,
-            'pagination_token', // param base name
             'string', // openApiType
             'form', // style
             true, // explode
@@ -470,6 +455,10 @@ class BalancesApi
             }
         }
 
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
         $defaultHeaders = [];
         if ($this->config->getUserAgent()) {
@@ -791,6 +780,10 @@ class BalancesApi
             }
         }
 
+        // this endpoint requires OAuth (access token)
+        if (!empty($this->config->getAccessToken())) {
+            $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
+        }
 
         $defaultHeaders = [];
         if ($this->config->getUserAgent()) {

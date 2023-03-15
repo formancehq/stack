@@ -23,6 +23,7 @@ Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
@@ -34,6 +35,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -101,12 +112,12 @@ Type | Description  | Notes
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[] |  |
+body | Unset | body was not defined |
 headers | Unset | headers were not defined |
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -120,6 +131,7 @@ Change the signing secret of the endpoint of a webhooks config.  If not passed o
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
@@ -132,6 +144,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -223,7 +245,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -237,6 +259,7 @@ Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
@@ -248,6 +271,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -315,12 +348,12 @@ Type | Description  | Notes
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[] |  |
+body | Unset | body was not defined |
 headers | Unset | headers were not defined |
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -334,6 +367,7 @@ Delete a webhooks config by ID.
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
@@ -344,6 +378,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -400,7 +444,7 @@ headers | Unset | headers were not defined |
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -414,6 +458,7 @@ Sorted by updated date descending
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
@@ -425,6 +470,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -499,7 +554,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -513,6 +568,7 @@ Insert a new webhooks config.  The endpoint should be a valid https URL and be u
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
@@ -525,6 +581,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -601,7 +667,7 @@ str,  | str,  |  |
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -615,6 +681,7 @@ Test a config by sending a webhook to its endpoint.
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import webhooks_api
@@ -626,6 +693,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -690,7 +767,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 

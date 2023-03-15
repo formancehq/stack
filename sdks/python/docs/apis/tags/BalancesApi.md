@@ -16,6 +16,7 @@ Get the balances from a ledger's account
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import balances_api
@@ -28,6 +29,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -57,7 +68,6 @@ with Formance.ApiClient(configuration) as api_client:
         'address': "users:001",
         'after': "users:003",
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-        'pagination_token': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
     }
     try:
         # Get the balances from a ledger's account
@@ -88,7 +98,6 @@ Name | Type | Description  | Notes
 address | AddressSchema | | optional
 after | AfterSchema | | optional
 cursor | CursorSchema | | optional
-pagination_token | PaginationTokenSchema | | optional
 
 
 # AddressSchema
@@ -106,13 +115,6 @@ Input Type | Accessed Type | Description | Notes
 str,  | str,  |  | 
 
 # CursorSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | 
-
-# PaginationTokenSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
@@ -169,7 +171,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
@@ -181,6 +183,7 @@ Get the aggregated balances from selected accounts
 
 ### Example
 
+* OAuth Authentication (Authorization):
 ```python
 import Formance
 from Formance.apis.tags import balances_api
@@ -193,6 +196,16 @@ configuration = Formance.Configuration(
     host = "http://localhost"
 )
 
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure OAuth2 access token for authorization: Authorization
+configuration = Formance.Configuration(
+    host = "http://localhost",
+    access_token = 'YOUR_ACCESS_TOKEN'
+)
 # Enter a context with an instance of the API client
 with Formance.ApiClient(configuration) as api_client:
     # Create an instance of the API class
@@ -307,7 +320,7 @@ Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](../../../README.md#Authorization)
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 

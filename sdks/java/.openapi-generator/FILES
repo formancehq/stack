@@ -138,9 +138,6 @@ docs/Scope.md
 docs/ScopeAllOf.md
 docs/ScopeOptions.md
 docs/ScopesApi.md
-docs/Script.md
-docs/ScriptApi.md
-docs/ScriptResponse.md
 docs/SearchApi.md
 docs/Secret.md
 docs/SecretAllOf.md
@@ -191,9 +188,7 @@ docs/TasksCursorCursorAllOf.md
 docs/TasksCursorCursorAllOfDataInner.md
 docs/Total.md
 docs/Transaction.md
-docs/TransactionData.md
 docs/TransactionResponse.md
-docs/Transactions.md
 docs/TransactionsApi.md
 docs/TransactionsCursorResponse.md
 docs/TransactionsCursorResponseCursor.md
@@ -248,7 +243,6 @@ src/main/java/com/formance/formance/api/LogsApi.java
 src/main/java/com/formance/formance/api/OrchestrationApi.java
 src/main/java/com/formance/formance/api/PaymentsApi.java
 src/main/java/com/formance/formance/api/ScopesApi.java
-src/main/java/com/formance/formance/api/ScriptApi.java
 src/main/java/com/formance/formance/api/SearchApi.java
 src/main/java/com/formance/formance/api/ServerApi.java
 src/main/java/com/formance/formance/api/StatsApi.java
@@ -259,6 +253,8 @@ src/main/java/com/formance/formance/api/WebhooksApi.java
 src/main/java/com/formance/formance/auth/ApiKeyAuth.java
 src/main/java/com/formance/formance/auth/HttpBasicAuth.java
 src/main/java/com/formance/formance/auth/HttpBearerAuth.java
+src/main/java/com/formance/formance/auth/OAuth.java
+src/main/java/com/formance/formance/auth/OAuthFlow.java
 src/main/java/com/formance/formance/auth/OAuthOkHttpClient.java
 src/main/java/com/formance/formance/model/Account.java
 src/main/java/com/formance/formance/model/AccountResponse.java
@@ -384,8 +380,6 @@ src/main/java/com/formance/formance/model/RunWorkflowResponse.java
 src/main/java/com/formance/formance/model/Scope.java
 src/main/java/com/formance/formance/model/ScopeAllOf.java
 src/main/java/com/formance/formance/model/ScopeOptions.java
-src/main/java/com/formance/formance/model/Script.java
-src/main/java/com/formance/formance/model/ScriptResponse.java
 src/main/java/com/formance/formance/model/Secret.java
 src/main/java/com/formance/formance/model/SecretAllOf.java
 src/main/java/com/formance/formance/model/SecretOptions.java
@@ -433,9 +427,7 @@ src/main/java/com/formance/formance/model/TasksCursorCursorAllOf.java
 src/main/java/com/formance/formance/model/TasksCursorCursorAllOfDataInner.java
 src/main/java/com/formance/formance/model/Total.java
 src/main/java/com/formance/formance/model/Transaction.java
-src/main/java/com/formance/formance/model/TransactionData.java
 src/main/java/com/formance/formance/model/TransactionResponse.java
-src/main/java/com/formance/formance/model/Transactions.java
 src/main/java/com/formance/formance/model/TransactionsCursorResponse.java
 src/main/java/com/formance/formance/model/TransactionsCursorResponseCursor.java
 src/main/java/com/formance/formance/model/TransferRequest.java

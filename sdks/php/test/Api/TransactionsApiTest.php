@@ -109,18 +109,6 @@ class TransactionsApiTest extends TestCase
     }
 
     /**
-     * Test case for createTransactions
-     *
-     * Create a new batch of transactions to a ledger.
-     *
-     */
-    public function testCreateTransactions()
-    {
-        // TODO: implement
-        $this->markTestIncomplete('Not implemented');
-    }
-
-    /**
      * Test case for getTransaction
      *
      * Get transaction from a ledger by its ID.
