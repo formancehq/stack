@@ -10,7 +10,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/api/controllers"
 	"github.com/formancehq/ledger/pkg/api/internal"
 	"github.com/formancehq/ledger/pkg/core"
@@ -19,6 +18,7 @@ import (
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/migrations"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"

@@ -1,7 +1,7 @@
 package errors
 
 import (
-	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/stack/libs/go-libs/sqlstorage/sqlerrors"
 	"github.com/lib/pq"
 )
 
@@ -12,9 +12,9 @@ func PostgresError(err error) error {
 		case *pq.Error:
 			switch pge.Code {
 			case "23505":
-				return storage.NewError(storage.ConstraintFailed, err)
+				return sqlerrors.NewError(sqlerrors.ConstraintFailed, err)
 			case "53300":
-				return storage.NewError(storage.TooManyClient, err)
+				return sqlerrors.NewError(sqlerrors.TooManyClient, err)
 			}
 		}
 	}

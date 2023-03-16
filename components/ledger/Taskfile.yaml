@@ -28,7 +28,7 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run --fix {{if eq .VERBOSE "true"}}-v{{end}}
+      - golangci-lint run -v --fix
 
   tests:
     deps: [postgres]
