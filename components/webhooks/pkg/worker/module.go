@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
@@ -22,6 +23,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
+	"google.golang.org/protobuf/proto"
 )
 
 func StartModule(addr, serviceName string, retriesCron time.Duration, retriesSchedule []time.Duration) fx.Option {
@@ -85,24 +87,50 @@ func configureMessageRouter(r *message.Router, subscriber message.Subscriber, to
 	}
 }
 
+const (
+	EventTypeCommittedTransactions = "committed_transactions"
+	EventTypeSavedMetadata         = "saved_metadata"
+	EventTypeRevertedTransaction   = "reverted_transaction"
+	EventTypeSavedPayments         = "saved_payment"
+	EventTypeSavedAccounts         = "saved_account"
+	EventTypeConnectorReset        = "connector_reset"
+)
+
 func processMessages(store storage.Store, httpClient *http.Client, retriesSchedule []time.Duration) func(msg *message.Message) error {
 	return func(msg *message.Message) error {
-		var ev webhooks.EventMessage
-		if err := json.Unmarshal(msg.Payload, &ev); err != nil {
-			return errors.Wrap(err, "json.Unmarshal event message")
+		var event events.Event
+		if err := proto.Unmarshal(msg.Payload, &event); err != nil {
+			return errors.Wrap(err, "proto.Unmarshal event message")
 		}
 
-		eventApp := strings.ToLower(ev.App)
-		eventType := strings.ToLower(ev.Type)
+		eventApp := strings.ToLower(event.App)
+		var eventType string
+		switch event.Event.(type) {
+		case *events.Event_AccountSaved:
+			eventType = EventTypeCommittedTransactions
+		case *events.Event_MetadataSaved:
+			eventType = EventTypeSavedMetadata
+		case *events.Event_PaymentSaved:
+			eventType = EventTypeSavedPayments
+		case *events.Event_ResetConnector:
+			eventType = EventTypeConnectorReset
+		case *events.Event_TransactionReverted:
+			eventType = EventTypeRevertedTransaction
+		case *events.Event_TransactionsCommitted:
+			eventType = EventTypeCommittedTransactions
+		default:
+			return errors.New("unknown event type")
+		}
 
+		evType := ""
 		if eventApp == "" {
-			ev.Type = eventType
+			evType = eventType
 		} else {
-			ev.Type = strings.Join([]string{eventApp, eventType}, ".")
+			evType = strings.Join([]string{eventApp, eventType}, ".")
 		}
 
 		filter := map[string]any{
-			"event_types": ev.Type,
+			"event_types": evType,
 			"active":      true,
 		}
 		logging.FromContext(msg.Context()).Debugf("searching configs with filter: %+v", filter)
@@ -111,9 +139,10 @@ func processMessages(store storage.Store, httpClient *http.Client, retriesSchedu
 			return errors.Wrap(err, "storage.store.FindManyConfigs")
 		}
 
+		response := webhooks.BuildResponseFromMessage(&event)
 		for _, cfg := range cfgs {
 			logging.FromContext(msg.Context()).Debugf("found one config: %+v", cfg)
-			data, err := json.Marshal(ev)
+			data, err := json.Marshal(response)
 			if err != nil {
 				return errors.Wrap(err, "json.Marshal event message")
 			}
@@ -127,7 +156,7 @@ func processMessages(store storage.Store, httpClient *http.Client, retriesSchedu
 			if attempt.Status == webhooks.StatusAttemptSuccess {
 				logging.FromContext(msg.Context()).Infof(
 					"webhook sent with ID %s to %s of type %s",
-					attempt.WebhookID, cfg.Endpoint, ev.Type)
+					attempt.WebhookID, cfg.Endpoint, eventType)
 			}
 
 			if err := store.InsertOneAttempt(msg.Context(), attempt); err != nil {

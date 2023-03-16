@@ -3,7 +3,6 @@ package test_test
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,6 +28,7 @@ import (
 	"github.com/uptrace/bun/driver/pgdriver"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestWorkerMessages(t *testing.T) {
@@ -111,9 +111,9 @@ func TestWorkerMessages(t *testing.T) {
 		kafkaClient, kafkaTopics, err := kafka.NewClient()
 		require.NoError(t, err)
 
-		by1, err := json.Marshal(event1)
+		by1, err := proto.Marshal(event1)
 		require.NoError(t, err)
-		by3, err := json.Marshal(event3)
+		by3, err := proto.Marshal(event3)
 		require.NoError(t, err)
 
 		records := []*kgo.Record{
@@ -171,9 +171,9 @@ func TestWorkerMessages(t *testing.T) {
 		kafkaClient, kafkaTopics, err := kafka.NewClient()
 		require.NoError(t, err)
 
-		by2, err := json.Marshal(event2)
+		by2, err := proto.Marshal(event2)
 		require.NoError(t, err)
-		by3, err := json.Marshal(event3)
+		by3, err := proto.Marshal(event3)
 		require.NoError(t, err)
 
 		records := []*kgo.Record{
@@ -240,7 +240,7 @@ func TestWorkerMessages(t *testing.T) {
 		kafkaClient, kafkaTopics, err := kafka.NewClient()
 		require.NoError(t, err)
 
-		by1, err := json.Marshal(event1)
+		by1, err := proto.Marshal(event1)
 		require.NoError(t, err)
 
 		records := []*kgo.Record{
