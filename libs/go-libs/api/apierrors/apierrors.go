@@ -49,8 +49,6 @@ func coreErrorToErrorCode(err error) (int, string, string) {
 	switch {
 	case IsConflictError(err):
 		return http.StatusConflict, ErrConflict, ""
-	case IsInsufficientFundError(err):
-		return http.StatusBadRequest, ErrInsufficientFund, ""
 	case IsValidationError(err):
 		return http.StatusBadRequest, ErrValidation, ""
 	case IsNotFoundError(err):
@@ -84,23 +82,6 @@ func EncodeLink(errStr string) string {
 	}
 	payloadB64 := base64.StdEncoding.EncodeToString(payload)
 	return fmt.Sprintf("https://play.numscript.org/?payload=%v", payloadB64)
-}
-
-type InsufficientFundError struct {
-	Asset string
-}
-
-func (e InsufficientFundError) Error() string {
-	return fmt.Sprintf("balance.insufficient.%s", e.Asset)
-}
-
-func (e InsufficientFundError) Is(err error) bool {
-	_, ok := err.(*InsufficientFundError)
-	return ok
-}
-
-func IsInsufficientFundError(err error) bool {
-	return errors.Is(err, &InsufficientFundError{})
 }
 
 type ValidationError struct {

@@ -82,8 +82,8 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 	}
 
 	if script.Plain == "" {
-		return core.ExpandedTransaction{}, nil, apierrors.NewScriptError(apierrors.ScriptErrorNoScript,
-			"no script to execute")
+		return core.ExpandedTransaction{}, nil,
+			apierrors.NewScriptError(apierrors.ScriptErrorNoScript, "no script to execute")
 	}
 
 	m, err := NewMachineFromScript(script.Plain, l.cache, span)

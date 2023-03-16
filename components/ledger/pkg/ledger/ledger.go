@@ -79,7 +79,7 @@ func (l *Ledger) GetTransaction(ctx context.Context, id uint64) (*core.ExpandedT
 		return nil, err
 	}
 	if tx == nil {
-		return nil, apierrors.NewNotFoundError("transaction not found")
+		return nil, apierrors.NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
 	}
 
 	return tx, nil
@@ -94,7 +94,8 @@ func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.Expand
 		return nil, nil, apierrors.NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
 	}
 	if revertedTx.IsReverted() {
-		return nil, nil, apierrors.NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
+		return nil, nil,
+			apierrors.NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
 	}
 
 	rt := revertedTx.Reverse()

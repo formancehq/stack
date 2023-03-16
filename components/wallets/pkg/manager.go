@@ -146,7 +146,7 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 	}
 
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
-		if apierrors.IsInsufficientFundError(err) || apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
+		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
 			return nil, ErrInsufficientFundError
 		}
 		return nil, errors.Wrap(err, "creating transaction")
@@ -189,7 +189,7 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 	}
 
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
-		if apierrors.IsInsufficientFundError(err) || apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
+		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
 			return ErrInsufficientFundError
 		}
 		return errors.Wrap(err, "creating transaction")
@@ -220,7 +220,7 @@ func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
 	}
 
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
-		if apierrors.IsInsufficientFundError(err) || apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
+		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
 			return ErrInsufficientFundError
 		}
 		return errors.Wrap(err, "creating transaction")
@@ -259,7 +259,7 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 	}
 
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
-		if apierrors.IsInsufficientFundError(err) || apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
+		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
 			return ErrInsufficientFundError
 		}
 		return errors.Wrap(err, "creating transaction")

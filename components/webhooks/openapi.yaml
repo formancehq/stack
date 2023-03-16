@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Webhooks server
+  title: Webhooks
   version: "WEBHOOKS_VERSION"
 
 paths:
@@ -162,7 +162,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
 
   /configs/{id}/deactivate:
     put:
