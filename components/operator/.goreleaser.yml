@@ -101,3 +101,11 @@ docker_manifests:
     image_templates:
       - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64
       - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64
+after:
+  hooks:
+  - cmd: make manifests
+    dir: ./components/operator/
+  - cmd: cp -pr ./config/crd/bases ./helm/operator/templates/
+    dir: ./components/operator/
+  - cmd: cp -pr ./config/rbac ./helm/operator/templates/
+    dir: ./components/operator/
