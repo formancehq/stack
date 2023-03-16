@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pkg/errors"
 )
@@ -123,25 +124,35 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 		}
 	}
 
-	script := sdk.Script{
-		Plain: BuildDebitWalletScript(sources...),
-		Vars: map[string]interface{}{
-			"destination": dest.getAccount(m.chart),
-			"amount": map[string]any{
-				// @todo: upgrade this to proper int after sdk is updated
-				"amount": debit.Amount.Amount.Uint64(),
-				"asset":  debit.Amount.Asset,
+	postTransaction := sdk.PostTransaction{
+		Script: &sdk.PostTransactionScript{
+			Plain: BuildDebitWalletScript(sources...),
+			Vars: map[string]interface{}{
+				"destination": dest.getAccount(m.chart),
+				"amount": map[string]any{
+					// @todo: upgrade this to proper int after sdk is updated
+					"amount": debit.Amount.Amount.Uint64(),
+					"asset":  debit.Amount.Asset,
+				},
 			},
 		},
 		Metadata: TransactionMetadata(debit.Metadata),
 		//nolint:godox
 		// TODO: Add set account metadata for hold when released on ledger (v1.9)
 	}
+
 	if debit.Reference != "" {
-		script.Reference = &debit.Reference
+		postTransaction.Reference = &debit.Reference
 	}
 
-	return hold, m.runScript(ctx, script)
+	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
+		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
+			return nil, ErrInsufficientFundError
+		}
+		return nil, errors.Wrap(err, "creating transaction")
+	}
+
+	return hold, nil
 }
 
 func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
@@ -163,9 +174,8 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 		return err
 	}
 
-	return m.runScript(
-		ctx,
-		sdk.Script{
+	postTransaction := sdk.PostTransaction{
+		Script: &sdk.PostTransactionScript{
 			Plain: BuildConfirmHoldScript(debit.Final, hold.Asset),
 			Vars: map[string]interface{}{
 				"hold": m.chart.GetHoldAccount(debit.HoldID),
@@ -174,9 +184,18 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 					"asset":  hold.Asset,
 				},
 			},
-			Metadata: TransactionMetadata(metadata.Metadata{}),
 		},
-	)
+		Metadata: TransactionMetadata(metadata.Metadata{}),
+	}
+
+	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
+		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
+			return ErrInsufficientFundError
+		}
+		return errors.Wrap(err, "creating transaction")
+	}
+
+	return nil
 }
 
 func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
@@ -190,13 +209,24 @@ func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
 		return ErrClosedHold
 	}
 
-	return m.runScript(ctx, sdk.Script{
-		Plain: BuildCancelHoldScript(hold.Asset),
-		Vars: map[string]interface{}{
-			"hold": m.chart.GetHoldAccount(void.HoldID),
+	postTransaction := sdk.PostTransaction{
+		Script: &sdk.PostTransactionScript{
+			Plain: BuildCancelHoldScript(hold.Asset),
+			Vars: map[string]interface{}{
+				"hold": m.chart.GetHoldAccount(void.HoldID),
+			},
 		},
 		Metadata: TransactionMetadata(metadata.Metadata{}),
-	})
+	}
+
+	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
+		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
+			return ErrInsufficientFundError
+		}
+		return errors.Wrap(err, "creating transaction")
+	}
+
+	return nil
 }
 
 func (m *Manager) Credit(ctx context.Context, credit Credit) error {
@@ -210,40 +240,32 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 		}
 	}
 
-	script := sdk.Script{
-		Plain: BuildCreditWalletScript(credit.Sources.ResolveAccounts(m.chart)...),
-		Vars: map[string]interface{}{
-			"destination": credit.destinationAccount(m.chart),
-			"amount": map[string]any{
-				// @todo: upgrade this to proper int after sdk is updated
-				"amount": credit.Amount.Amount.Uint64(),
-				"asset":  credit.Amount.Asset,
+	postTransaction := sdk.PostTransaction{
+		Script: &sdk.PostTransactionScript{
+			Plain: BuildCreditWalletScript(credit.Sources.ResolveAccounts(m.chart)...),
+			Vars: map[string]interface{}{
+				"destination": credit.destinationAccount(m.chart),
+				"amount": map[string]any{
+					// @todo: upgrade this to proper int after sdk is updated
+					"amount": credit.Amount.Amount.Uint64(),
+					"asset":  credit.Amount.Asset,
+				},
 			},
 		},
 		Metadata: TransactionMetadata(credit.Metadata),
 	}
 	if credit.Reference != "" {
-		script.Reference = &credit.Reference
+		postTransaction.Reference = &credit.Reference
 	}
 
-	return m.runScript(ctx, script)
-}
+	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
+		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
+			return ErrInsufficientFundError
+		}
+		return errors.Wrap(err, "creating transaction")
+	}
 
-func (m *Manager) runScript(ctx context.Context, script sdk.Script) error {
-	ret, err := m.client.RunScript(ctx, m.ledgerName, script)
-	if err != nil {
-		return err
-	}
-	if ret.ErrorCode == nil {
-		return nil
-	}
-	if *ret.ErrorCode == sdk.INSUFFICIENT_FUND {
-		return ErrInsufficientFundError
-	}
-	if ret.ErrorMessage != nil {
-		return errors.New(*ret.ErrorMessage)
-	}
-	return errors.New(string(*ret.ErrorCode))
+	return nil
 }
 
 func (m *Manager) ListWallets(ctx context.Context, query ListQuery[ListWallets]) (*ListResponse[Wallet], error) {

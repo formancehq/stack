@@ -12,11 +12,11 @@ import (
 	"time"
 
 	"github.com/DmitriyVTitov/size"
-	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/machine/script/compiler"
 	"github.com/formancehq/ledger/pkg/opentelemetry"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -26,8 +26,8 @@ func TestNoScript(t *testing.T) {
 		script := core.ScriptData{}
 
 		_, logs, err := l.ProcessScript(context.Background(), true, false, script)
-		assert.IsType(t, &ledger.ScriptError{}, err)
-		assert.Equal(t, ledger.ScriptErrorNoScript, err.(*ledger.ScriptError).Code)
+		assert.IsType(t, &apierrors.ScriptError{}, err)
+		assert.Equal(t, apierrors.ScriptErrorNoScript, err.(*apierrors.ScriptError).Code)
 		require.Nil(t, logs)
 	})
 }
@@ -39,8 +39,8 @@ func TestCompilationError(t *testing.T) {
 		}
 
 		_, logs, err := l.ProcessScript(context.Background(), true, false, script)
-		assert.IsType(t, &ledger.ScriptError{}, err)
-		assert.Equal(t, ledger.ScriptErrorCompilationFailed, err.(*ledger.ScriptError).Code)
+		assert.IsType(t, &apierrors.ScriptError{}, err)
+		assert.Equal(t, apierrors.ScriptErrorCompilationFailed, err.(*apierrors.ScriptError).Code)
 		require.Nil(t, logs)
 	})
 }
@@ -78,7 +78,7 @@ func TestSend(t *testing.T) {
 			}
 			_, logs, err := l.ProcessScript(context.Background(), true, false, script)
 			require.Error(t, err)
-			require.True(t, ledger.IsValidationError(err))
+			require.True(t, apierrors.IsValidationError(err))
 			require.ErrorContains(t, err, "transaction has no postings")
 			require.Nil(t, logs)
 		})
@@ -95,7 +95,7 @@ func TestSend(t *testing.T) {
 			}
 			_, logs, err := l.ProcessScript(context.Background(), true, false, script)
 			require.Error(t, err)
-			require.True(t, ledger.IsValidationError(err))
+			require.True(t, apierrors.IsValidationError(err))
 			require.ErrorContains(t, err, "transaction has no postings")
 			require.Nil(t, logs)
 		})
@@ -298,7 +298,7 @@ func TestNotEnoughFunds(t *testing.T) {
 		}
 
 		_, logs, err = l.ProcessScript(context.Background(), true, false, script)
-		assert.True(t, ledger.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund))
+		assert.True(t, apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund))
 		require.Nil(t, logs)
 	})
 }
@@ -325,7 +325,7 @@ func TestMissingMetadata(t *testing.T) {
 		}
 
 		_, logs, err := l.ProcessScript(context.Background(), true, false, script)
-		assert.True(t, ledger.IsScriptErrorWithCode(err, ledger.ScriptErrorCompilationFailed))
+		assert.True(t, apierrors.IsScriptErrorWithCode(err, apierrors.ScriptErrorCompilationFailed))
 		require.Nil(t, logs)
 	})
 }
@@ -460,7 +460,7 @@ func TestSetTxMeta(t *testing.T) {
 					"priority": "high",
 				},
 			},
-			expectedErrorCode: ledger.ScriptErrorMetadataOverride,
+			expectedErrorCode: apierrors.ScriptErrorMetadataOverride,
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -472,7 +472,7 @@ func TestSetTxMeta(t *testing.T) {
 
 				if tc.expectedErrorCode != "" {
 					require.Error(t, err)
-					require.True(t, ledger.IsScriptErrorWithCode(err, tc.expectedErrorCode))
+					require.True(t, apierrors.IsScriptErrorWithCode(err, tc.expectedErrorCode))
 				} else {
 					require.NoError(t, err)
 					last, err := l.GetLedgerStore().GetLastTransaction(context.Background())
@@ -546,7 +546,7 @@ func TestScriptReferenceConflict(t *testing.T) {
 			require.Nil(t, logs)
 		}
 		require.Error(t, err)
-		require.True(t, ledger.IsConflictError(err))
+		require.True(t, apierrors.IsConflictError(err))
 	})
 }
 
@@ -593,7 +593,7 @@ func TestSetAccountMeta(t *testing.T) {
 						set_account_meta(@bob, "is")
 					`},
 				})
-			require.True(t, ledger.IsScriptErrorWithCode(err, ledger.ScriptErrorCompilationFailed))
+			require.True(t, apierrors.IsScriptErrorWithCode(err, apierrors.ScriptErrorCompilationFailed))
 			require.Nil(t, logs)
 		})
 	})
@@ -713,7 +713,7 @@ send [USD/2 90] (
 				},
 			}
 			_, logs, err = l.ProcessScript(context.Background(), true, false, script)
-			assert.True(t, ledger.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund))
+			assert.True(t, apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund))
 			require.Nil(t, logs)
 		})
 	})
@@ -746,7 +746,7 @@ send [USD/2 90] (
 			}
 
 			_, logs, err = l.ProcessScript(context.Background(), true, false, script)
-			assert.True(t, ledger.IsScriptErrorWithCode(err, ledger.ScriptErrorCompilationFailed))
+			assert.True(t, apierrors.IsScriptErrorWithCode(err, apierrors.ScriptErrorCompilationFailed))
 			assert.ErrorContains(t, err, "must be non-negative")
 			require.Nil(t, logs)
 		})
@@ -767,7 +767,7 @@ send [USD/2 90] (
 				},
 			}
 			_, logs, err := l.ProcessScript(context.Background(), true, false, script)
-			assert.True(t, ledger.IsScriptErrorWithCode(err, apierrors.ErrScriptCompilationFailed))
+			assert.True(t, apierrors.IsScriptErrorWithCode(err, apierrors.ErrScriptCompilationFailed))
 			require.Nil(t, logs)
 		})
 	})

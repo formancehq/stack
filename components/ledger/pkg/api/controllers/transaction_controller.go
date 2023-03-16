@@ -9,12 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/storage"
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/go-chi/chi/v5"
 	"github.com/pkg/errors"
 )
@@ -77,21 +76,21 @@ func (ctl *TransactionController) GetTransactions(w http.ResponseWriter, r *http
 			r.URL.Query().Get(QueryKeyStartTime) != "" ||
 			r.URL.Query().Get(QueryKeyEndTime) != "" ||
 			r.URL.Query().Get(QueryKeyPageSize) != "" {
-			apierrors.ResponseError(w, r, ledger.NewValidationError(
+			apierrors.ResponseError(w, r, apierrors.NewValidationError(
 				fmt.Sprintf("no other query params can be set with '%s'", QueryKeyCursor)))
 			return
 		}
 
 		res, err := base64.RawURLEncoding.DecodeString(r.URL.Query().Get(QueryKeyCursor))
 		if err != nil {
-			apierrors.ResponseError(w, r, ledger.NewValidationError(
+			apierrors.ResponseError(w, r, apierrors.NewValidationError(
 				fmt.Sprintf("invalid '%s' query param", QueryKeyCursor)))
 			return
 		}
 
 		token := ledgerstore.TxsPaginationToken{}
 		if err = json.Unmarshal(res, &token); err != nil {
-			apierrors.ResponseError(w, r, ledger.NewValidationError(
+			apierrors.ResponseError(w, r, apierrors.NewValidationError(
 				fmt.Sprintf("invalid '%s' query param", QueryKeyCursor)))
 			return
 		}
@@ -113,7 +112,7 @@ func (ctl *TransactionController) GetTransactions(w http.ResponseWriter, r *http
 		if r.URL.Query().Get("after") != "" {
 			afterTxIDParsed, err = strconv.ParseUint(r.URL.Query().Get("after"), 10, 64)
 			if err != nil {
-				apierrors.ResponseError(w, r, ledger.NewValidationError(
+				apierrors.ResponseError(w, r, apierrors.NewValidationError(
 					"invalid 'after' query param"))
 				return
 			}
@@ -180,18 +179,18 @@ func (ctl *TransactionController) PostTransaction(w http.ResponseWriter, r *http
 	payload := PostTransaction{}
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		apierrors.ResponseError(w, r,
-			ledger.NewValidationError("invalid transaction format"))
+			apierrors.NewValidationError("invalid transaction format"))
 		return
 	}
 
 	if len(payload.Postings) > 0 && payload.Script.Plain != "" ||
 		len(payload.Postings) == 0 && payload.Script.Plain == "" {
-		apierrors.ResponseError(w, r, ledger.NewValidationError(
+		apierrors.ResponseError(w, r, apierrors.NewValidationError(
 			"invalid payload: should contain either postings or script"))
 		return
 	} else if len(payload.Postings) > 0 {
 		if i, err := payload.Postings.Validate(); err != nil {
-			apierrors.ResponseError(w, r, ledger.NewValidationError(errors.Wrap(err,
+			apierrors.ResponseError(w, r, apierrors.NewValidationError(errors.Wrap(err,
 				fmt.Sprintf("invalid posting %d", i)).Error()))
 			return
 		}
@@ -242,7 +241,7 @@ func (ctl *TransactionController) GetTransaction(w http.ResponseWriter, r *http.
 
 	txId, err := strconv.ParseUint(chi.URLParam(r, "txid"), 10, 64)
 	if err != nil {
-		apierrors.ResponseError(w, r, ledger.NewValidationError("invalid transaction ID"))
+		apierrors.ResponseError(w, r, apierrors.NewValidationError("invalid transaction ID"))
 		return
 	}
 
@@ -260,7 +259,7 @@ func (ctl *TransactionController) RevertTransaction(w http.ResponseWriter, r *ht
 
 	txId, err := strconv.ParseUint(chi.URLParam(r, "txid"), 10, 64)
 	if err != nil {
-		apierrors.ResponseError(w, r, ledger.NewValidationError("invalid transaction ID"))
+		apierrors.ResponseError(w, r, apierrors.NewValidationError("invalid transaction ID"))
 		return
 	}
 
@@ -283,13 +282,13 @@ func (ctl *TransactionController) PostTransactionMetadata(w http.ResponseWriter,
 
 	var m core.Metadata
 	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
-		apierrors.ResponseError(w, r, ledger.NewValidationError("invalid metadata format"))
+		apierrors.ResponseError(w, r, apierrors.NewValidationError("invalid metadata format"))
 		return
 	}
 
 	txId, err := strconv.ParseUint(chi.URLParam(r, "txid"), 10, 64)
 	if err != nil {
-		apierrors.ResponseError(w, r, ledger.NewValidationError("invalid transaction ID"))
+		apierrors.ResponseError(w, r, apierrors.NewValidationError("invalid transaction ID"))
 		return
 	}
 

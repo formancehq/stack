@@ -7,12 +7,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/storage"
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -50,21 +49,21 @@ func (ctl *AccountController) GetAccounts(w http.ResponseWriter, r *http.Request
 			r.URL.Query().Get("balance") != "" ||
 			r.URL.Query().Get(QueryKeyBalanceOperator) != "" ||
 			r.URL.Query().Get(QueryKeyPageSize) != "" {
-			apierrors.ResponseError(w, r, ledger.NewValidationError(
+			apierrors.ResponseError(w, r, apierrors.NewValidationError(
 				fmt.Sprintf("no other query params can be set with '%s'", QueryKeyCursor)))
 			return
 		}
 
 		res, err := base64.RawURLEncoding.DecodeString(r.URL.Query().Get(QueryKeyCursor))
 		if err != nil {
-			apierrors.ResponseError(w, r, ledger.NewValidationError(
+			apierrors.ResponseError(w, r, apierrors.NewValidationError(
 				fmt.Sprintf("invalid '%s' query param", QueryKeyCursor)))
 			return
 		}
 
 		token := ledgerstore.AccountsPaginationToken{}
 		if err := json.Unmarshal(res, &token); err != nil {
-			apierrors.ResponseError(w, r, ledger.NewValidationError(
+			apierrors.ResponseError(w, r, apierrors.NewValidationError(
 				fmt.Sprintf("invalid '%s' query param", QueryKeyCursor)))
 			return
 		}
@@ -82,7 +81,7 @@ func (ctl *AccountController) GetAccounts(w http.ResponseWriter, r *http.Request
 		balance := r.URL.Query().Get("balance")
 		if balance != "" {
 			if _, err := strconv.ParseInt(balance, 10, 64); err != nil {
-				apierrors.ResponseError(w, r, ledger.NewValidationError(
+				apierrors.ResponseError(w, r, apierrors.NewValidationError(
 					"invalid parameter 'balance', should be a number"))
 				return
 			}
@@ -122,7 +121,7 @@ func (ctl *AccountController) GetAccount(w http.ResponseWriter, r *http.Request)
 	l := LedgerFromContext(r.Context())
 
 	if !core.ValidateAddress(chi.URLParam(r, "address")) {
-		apierrors.ResponseError(w, r, ledger.NewValidationError("invalid account address format"))
+		apierrors.ResponseError(w, r, apierrors.NewValidationError("invalid account address format"))
 		return
 	}
 
@@ -141,13 +140,13 @@ func (ctl *AccountController) PostAccountMetadata(w http.ResponseWriter, r *http
 	l := LedgerFromContext(r.Context())
 
 	if !core.ValidateAddress(chi.URLParam(r, "address")) {
-		apierrors.ResponseError(w, r, ledger.NewValidationError("invalid account address format"))
+		apierrors.ResponseError(w, r, apierrors.NewValidationError("invalid account address format"))
 		return
 	}
 
 	var m core.Metadata
 	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
-		apierrors.ResponseError(w, r, ledger.NewValidationError("invalid metadata format"))
+		apierrors.ResponseError(w, r, apierrors.NewValidationError("invalid metadata format"))
 		return
 	}
 

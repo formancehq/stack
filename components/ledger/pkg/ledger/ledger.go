@@ -9,6 +9,7 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/pkg/errors"
 )
 
@@ -78,7 +79,7 @@ func (l *Ledger) GetTransaction(ctx context.Context, id uint64) (*core.ExpandedT
 		return nil, err
 	}
 	if tx == nil {
-		return nil, NewNotFoundError("transaction not found")
+		return nil, apierrors.NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
 	}
 
 	return tx, nil
@@ -90,11 +91,11 @@ func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.Expand
 		return nil, nil, errors.Wrap(err, fmt.Sprintf("getting transaction %d", id))
 	}
 	if revertedTx == nil {
-		return nil, nil, NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
+		return nil, nil, apierrors.NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
 	}
 	if revertedTx.IsReverted() {
 		return nil, nil,
-			NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
+			apierrors.NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
 	}
 
 	rt := revertedTx.Reverse()
@@ -169,11 +170,11 @@ func (l *Ledger) GetBalancesAggregated(ctx context.Context, q storage.BalancesQu
 func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID interface{}, m core.Metadata) (*Logs, error) {
 
 	if targetType == "" {
-		return nil, NewValidationError("empty target type")
+		return nil, apierrors.NewValidationError("empty target type")
 	}
 
 	if targetID == "" {
-		return nil, NewValidationError("empty target id")
+		return nil, apierrors.NewValidationError("empty target id")
 	}
 
 	logs := NewLogs(l.store.AppendLogs, nil, nil)
@@ -197,7 +198,7 @@ func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID inter
 		}))
 	default:
 		return nil,
-			NewValidationError(fmt.Sprintf("unknown target type '%s'", targetType))
+			apierrors.NewValidationError(fmt.Sprintf("unknown target type '%s'", targetType))
 	}
 	if err != nil {
 		return nil, err

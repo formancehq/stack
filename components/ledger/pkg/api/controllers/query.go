@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 )
 
 const (
@@ -20,11 +20,11 @@ const (
 )
 
 var (
-	ErrInvalidPageSize        = ledger.NewValidationError("invalid 'pageSize' query param")
-	ErrInvalidBalanceOperator = ledger.NewValidationError(
+	ErrInvalidPageSize        = apierrors.NewValidationError("invalid 'pageSize' query param")
+	ErrInvalidBalanceOperator = apierrors.NewValidationError(
 		"invalid parameter 'balanceOperator', should be one of 'e, ne, gt, gte, lt, lte'")
-	ErrInvalidStartTime = ledger.NewValidationError("invalid 'startTime' query param")
-	ErrInvalidEndTime   = ledger.NewValidationError("invalid 'endTime' query param")
+	ErrInvalidStartTime = apierrors.NewValidationError("invalid 'startTime' query param")
+	ErrInvalidEndTime   = apierrors.NewValidationError("invalid 'endTime' query param")
 )
 
 func getPageSize(w http.ResponseWriter, r *http.Request) (uint, error) {
