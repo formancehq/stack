@@ -103,9 +103,7 @@ docker_manifests:
       - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64
 after:
   hooks:
-  - cmd: make manifests
+  - cmd: make helm-update
     dir: ./components/operator/
-  - cmd: cp -pr ./config/crd/bases ./helm/operator/templates/
-    dir: ./components/operator/
-  - cmd: cp -pr ./config/rbac ./helm/operator/templates/
-    dir: ./components/operator/
+  
+  
