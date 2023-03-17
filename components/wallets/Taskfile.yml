@@ -21,8 +21,8 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run -v --fix
+      - golangci-lint run --fix
 
   tests:
     cmds:
-      - go test -p 1 -race -coverpkg {{.PKG}} -coverprofile coverage.out {{.PKG}}
+      - go test -race -coverpkg {{.PKG}} -coverprofile coverage.out {{.PKG}}

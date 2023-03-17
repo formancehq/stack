@@ -1,4 +1,4 @@
-package sqlerrors
+package storage
 
 import (
 	"errors"
