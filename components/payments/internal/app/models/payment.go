@@ -83,12 +83,52 @@ func (t PaymentType) String() string {
 	return string(t)
 }
 
+func (t PaymentType) IsValid() bool {
+	switch t {
+	case PaymentTypePayIn, PaymentTypePayOut,
+		PaymentTypeTransfer, PaymentTypeOther:
+	default:
+		return false
+	}
+
+	return true
+}
+
 func (t PaymentStatus) String() string {
 	return string(t)
 }
 
+func (t PaymentStatus) IsValid() bool {
+	switch t {
+	case PaymentStatusPending, PaymentStatusSucceeded,
+		PaymentStatusCancelled, PaymentStatusFailed, PaymentStatusOther:
+	default:
+		return false
+	}
+
+	return true
+}
+
 func (t PaymentScheme) String() string {
 	return string(t)
+}
+
+func (t PaymentScheme) IsValid() bool {
+	switch t {
+	case PaymentSchemeUnknown, PaymentSchemeOther,
+		PaymentSchemeCardVisa, PaymentSchemeCardMasterCard,
+		PaymentSchemeCardAmex, PaymentSchemeCardDiners,
+		PaymentSchemeCardDiscover, PaymentSchemeCardJCB,
+		PaymentSchemeCardUnionPay, PaymentSchemeSepaDebit,
+		PaymentSchemeSepaCredit, PaymentSchemeSepa,
+		PaymentSchemeApplePay, PaymentSchemeGooglePay,
+		PaymentSchemeA2A, PaymentSchemeACHDebit,
+		PaymentSchemeACH, PaymentSchemeRTP:
+	default:
+		return false
+	}
+
+	return true
 }
 
 func (t PaymentAsset) String() string {

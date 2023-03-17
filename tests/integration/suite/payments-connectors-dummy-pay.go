@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
-	paymentEvents "github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"google.golang.org/protobuf/proto"
 )
 
 var _ = Given("some empty environment", func() {
@@ -43,7 +43,20 @@ var _ = Given("some empty environment", func() {
 		})
 		It("should trigger some events", func() {
 			msg := WaitOnChanWithTimeout(msgs, 10*time.Second)
-			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeSavedPayments)).Should(BeNil())
+
+			ev := events.Event{}
+			err := proto.Unmarshal(msg.Data, &ev)
+			Expect(err).To(BeNil())
+
+			switch ev.Event.(type) {
+			case *events.Event_PaymentSaved:
+				//Expect(models.PaymentType(paymentSaved.PaymentSaved.Type).IsValid()).Should(BeTrue())
+				//Expect(models.PaymentStatus(paymentSaved.PaymentSaved.Status).IsValid()).Should(BeTrue())
+				//Expect(models.PaymentScheme(paymentSaved.PaymentSaved.Scheme).IsValid()).Should(BeTrue())
+			default:
+				Expect(false).Should(BeTrue(), "Unexpected event type: %T", ev.Event)
+			}
+
 		})
 		It("should generate some payments", func() {
 			Eventually(func(g Gomega) []formance.Payment {

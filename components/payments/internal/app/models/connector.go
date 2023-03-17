@@ -53,6 +53,20 @@ func (p ConnectorProvider) String() string {
 	return string(p)
 }
 
+func (p ConnectorProvider) IsValid() bool {
+	switch p {
+	case ConnectorProviderBankingCircle,
+		ConnectorProviderCurrencyCloud,
+		ConnectorProviderDummyPay,
+		ConnectorProviderModulr,
+		ConnectorProviderStripe,
+		ConnectorProviderWise:
+		return true
+	}
+
+	return false
+}
+
 func (p ConnectorProvider) StringLower() string {
 	return strings.ToLower(string(p))
 }

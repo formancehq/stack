@@ -4,12 +4,12 @@ import (
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"google.golang.org/protobuf/proto"
 )
 
 var _ = Given("some empty environment", func() {
@@ -37,7 +37,16 @@ var _ = Given("some empty environment", func() {
 
 		It("should trigger a new event", func() {
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			Expect(events.Check(msg.Data, "ledger", bus.EventTypeSavedMetadata)).Should(BeNil())
+
+			ev := events.Event{}
+			err := proto.Unmarshal(msg.Data, &ev)
+			Expect(err).To(BeNil())
+
+			switch ev.Event.(type) {
+			case *events.Event_MetadataSaved:
+			default:
+				Expect(false).Should(BeTrue(), "Unexpected event type: %T", ev.Event)
+			}
 		})
 		It("should pop an account with the correct metadata on search service", func() {
 			Eventually(func(g Gomega) bool {

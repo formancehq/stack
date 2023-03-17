@@ -52,7 +52,7 @@ func newEventSavedMetadata(ledgerName, targetID string, targetType core.TargetTy
 		tt = ledger.TargetType_TARGET_TYPE_TRANSACTION
 	}
 
-	md, err := structpb.NewValue(metadata)
+	md, err := structpb.NewValue(map[string]any(metadata))
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +127,7 @@ func buildTransactionProto(tx *core.ExpandedTransaction) (*ledger.ExpandedTransa
 		}
 	}
 
-	metadata, err := structpb.NewValue(tx.Metadata)
+	metadata, err := structpb.NewValue(map[string]any(tx.Metadata))
 	if err != nil {
 		return nil, err
 	}

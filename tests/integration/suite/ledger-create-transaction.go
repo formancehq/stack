@@ -1,15 +1,16 @@
 package suite
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"google.golang.org/protobuf/proto"
 )
 
 var _ = Given("some empty environment", func() {
@@ -45,7 +46,17 @@ var _ = Given("some empty environment", func() {
 		It("should trigger a new event", func() {
 			// Wait for created transaction event
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			Expect(events.Check(msg.Data, "ledger", bus.EventTypeCommittedTransactions)).Should(BeNil())
+
+			ev := events.Event{}
+			err := proto.Unmarshal(msg.Data, &ev)
+			Expect(err).To(BeNil())
+
+			fmt.Println("TOTOTOTOT", ev)
+			switch ev.Event.(type) {
+			case *events.Event_TransactionsCommitted:
+			default:
+				Expect(false).Should(BeTrue(), "Unexpected event type: %T", ev.Event)
+			}
 		})
 		It("should pop a transaction, two accounts and two assets entries on search service", func() {
 			expectedTx := map[string]any{

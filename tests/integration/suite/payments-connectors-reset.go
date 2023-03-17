@@ -1,19 +1,18 @@
 package suite
 
 import (
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
-	paymentEvents "github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"google.golang.org/protobuf/proto"
 )
 
 var _ = Given("some environment with dummy pay connector", func() {
@@ -71,15 +70,19 @@ var _ = Given("some environment with dummy pay connector", func() {
 			var msg *nats.Msg
 			Eventually(func(g Gomega) bool {
 				msg = WaitOnChanWithTimeout(msgs, 5*time.Second)
-				type typedMessage struct {
-					Type string `json:"type"`
-				}
-				tm := &typedMessage{}
-				g.Expect(json.Unmarshal(msg.Data, tm)).To(BeNil())
-				return tm.Type == paymentEvents.EventTypeConnectorReset
-			}).Should(BeTrue())
 
-			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeConnectorReset)).Should(BeNil())
+				ev := events.Event{}
+				err := proto.Unmarshal(msg.Data, &ev)
+				Expect(err).To(BeNil())
+
+				switch resetConnector := ev.Event.(type) {
+				case *events.Event_ResetConnector:
+					Expect(resetConnector.ResetConnector.Provider).To(Equal(formance.DUMMY_PAY))
+					return true
+				default:
+					return false
+				}
+			}).Should(BeTrue())
 		})
 		It("should delete payments on search service", func() {
 			Eventually(func(g Gomega) []any {
