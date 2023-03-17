@@ -396,8 +396,8 @@ func TestPostTransactions(t *testing.T) {
 			expectedStatusCode: http.StatusBadRequest,
 			expectedErr: sharedapi.ErrorResponse{
 				ErrorCode:    apierrors.ErrScriptCompilationFailed,
-				ErrorMessage: "[COMPILATION_FAILED] could not set variables: invalid JSON value for variable $acc of type account: value invalid-acc: accounts should respect pattern ^[a-zA-Z_]+[a-zA-Z0-9_:]*$",
-				Details:      apierrors.EncodeLink("could not set variables: invalid JSON value for variable $acc of type account: value invalid-acc: accounts should respect pattern ^[a-zA-Z_]+[a-zA-Z0-9_:]*$"),
+				ErrorMessage: "[COMPILATION_FAILED] value invalid-acc: accounts should respect pattern ^[a-zA-Z_]+[a-zA-Z0-9_:]*$",
+				Details:      apierrors.EncodeLink("value invalid-acc: accounts should respect pattern ^[a-zA-Z_]+[a-zA-Z0-9_:]*$"),
 			},
 		},
 		{

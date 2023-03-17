@@ -36,7 +36,7 @@ func IsScriptErrorWithCode(err error, code string) bool {
 	})
 }
 
-func newScriptError(code string, message string) *ScriptError {
+func NewScriptError(code string, message string) *ScriptError {
 	return &ScriptError{
 		Code:    code,
 		Message: message,

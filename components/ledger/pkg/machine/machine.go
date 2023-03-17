@@ -7,8 +7,8 @@ import (
 
 	"github.com/formancehq/ledger/pkg/cache"
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/machine/script/compiler"
 	"github.com/formancehq/ledger/pkg/machine/vm"
+	"github.com/formancehq/ledger/pkg/machine/vm/program"
 	"github.com/pkg/errors"
 )
 
@@ -18,21 +18,12 @@ type Result struct {
 	AccountMetadata map[string]core.Metadata
 }
 
-func Run(ctx context.Context, dbCache *cache.Ledger, script core.ScriptData) (*Result, error) {
-
-	if script.Plain == "" {
-		return nil, newScriptError(ScriptErrorNoScript, "no script to execute")
-	}
-
-	prog, err := compiler.Compile(script.Plain)
-	if err != nil {
-		return nil, newScriptError(ScriptErrorCompilationFailed, errors.Wrap(err, "compiling numscript").Error())
-	}
+func Run(ctx context.Context, dbCache *cache.Ledger, prog *program.Program, script core.ScriptData) (*Result, error) {
 
 	m := vm.NewMachine(*prog)
 
 	if err := m.SetVarsFromJSON(script.Vars); err != nil {
-		return nil, newScriptError(ScriptErrorCompilationFailed,
+		return nil, NewScriptError(ScriptErrorCompilationFailed,
 			errors.Wrap(err, "could not set variables").Error())
 	}
 
@@ -42,7 +33,7 @@ func Run(ctx context.Context, dbCache *cache.Ledger, script core.ScriptData) (*R
 	}
 	for req := range resourcesChan {
 		if req.Error != nil {
-			return nil, newScriptError(ScriptErrorCompilationFailed,
+			return nil, NewScriptError(ScriptErrorCompilationFailed,
 				errors.Wrap(req.Error, "could not resolve program resources").Error())
 		}
 		account, err := dbCache.GetAccountWithVolumes(ctx, req.Account)
@@ -52,7 +43,7 @@ func Run(ctx context.Context, dbCache *cache.Ledger, script core.ScriptData) (*R
 		if req.Key != "" {
 			entry, ok := account.Metadata[req.Key]
 			if !ok {
-				return nil, newScriptError(ScriptErrorCompilationFailed,
+				return nil, NewScriptError(ScriptErrorCompilationFailed,
 					fmt.Sprintf("missing key %v in metadata for account %v", req.Key, req.Account))
 			}
 			data, err := json.Marshal(entry)
@@ -61,7 +52,7 @@ func Run(ctx context.Context, dbCache *cache.Ledger, script core.ScriptData) (*R
 			}
 			value, err := core.NewValueFromTypedJSON(data)
 			if err != nil {
-				return nil, newScriptError(ScriptErrorCompilationFailed,
+				return nil, NewScriptError(ScriptErrorCompilationFailed,
 					errors.Wrap(err, fmt.Sprintf("invalid format for metadata at key %v for account %v",
 						req.Key, req.Account)).Error())
 			}
@@ -71,7 +62,7 @@ func Run(ctx context.Context, dbCache *cache.Ledger, script core.ScriptData) (*R
 			resp := *amt
 			req.Response <- &resp
 		} else {
-			return nil, newScriptError(ScriptErrorCompilationFailed,
+			return nil, NewScriptError(ScriptErrorCompilationFailed,
 				errors.Wrap(err, fmt.Sprintf("invalid ResourceRequest: %+v", req)).Error())
 		}
 	}
@@ -82,7 +73,7 @@ func Run(ctx context.Context, dbCache *cache.Ledger, script core.ScriptData) (*R
 	}
 	for req := range balanceCh {
 		if req.Error != nil {
-			return nil, newScriptError(ScriptErrorCompilationFailed,
+			return nil, NewScriptError(ScriptErrorCompilationFailed,
 				errors.Wrap(req.Error, "could not resolve program balances").Error())
 		}
 		var amt *core.MonetaryInt
@@ -109,7 +100,7 @@ func Run(ctx context.Context, dbCache *cache.Ledger, script core.ScriptData) (*R
 		case vm.EXIT_FAIL_INSUFFICIENT_FUNDS:
 			// TODO: If the machine can provide the asset which is failing
 			// we should be able to use InsufficientFundError{} instead of error code
-			return nil, newScriptError(ScriptErrorInsufficientFund,
+			return nil, NewScriptError(ScriptErrorInsufficientFund,
 				"account had insufficient funds")
 		default:
 			return nil, errors.New("script execution failed")
@@ -142,7 +133,7 @@ func Run(ctx context.Context, dbCache *cache.Ledger, script core.ScriptData) (*R
 	for k, v := range script.Metadata {
 		_, ok := result.Metadata[k]
 		if ok {
-			return nil, newScriptError(ScriptErrorMetadataOverride, "cannot override metadata from script")
+			return nil, NewScriptError(ScriptErrorMetadataOverride, "cannot override metadata from script")
 		}
 		result.Metadata[k] = v
 	}

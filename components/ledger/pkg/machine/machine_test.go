@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/ledger/pkg/cache"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
+	"github.com/formancehq/ledger/pkg/machine/script/compiler"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/google/uuid"
@@ -48,15 +49,6 @@ var testCases = []testCase{
 				destination = @user:001
 			)`,
 		expectErrorCode: ScriptErrorInsufficientFund,
-	},
-	{
-		name:            "no script",
-		expectErrorCode: ScriptErrorNoScript,
-	},
-	{
-		name:            "compilation error",
-		script:          "XXX",
-		expectErrorCode: ScriptErrorCompilationFailed,
 	},
 	{
 		name: "send 0$",
@@ -406,7 +398,10 @@ func TestMachine(t *testing.T) {
 				tc.setup(t, store)
 			}
 
-			result, err := Run(context.Background(), cache.ForLedger(ledger), core.ScriptData{
+			prog, err := compiler.Compile(tc.script)
+			require.NoError(t, err)
+
+			result, err := Run(context.Background(), cache.ForLedger(ledger), prog, core.ScriptData{
 				Script: core.Script{
 					Plain: tc.script,
 					Vars:  tc.vars,

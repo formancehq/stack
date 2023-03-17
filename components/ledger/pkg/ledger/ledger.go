@@ -86,12 +86,6 @@ func (l *Ledger) GetTransaction(ctx context.Context, id uint64) (*core.ExpandedT
 }
 
 func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.ExpandedTransaction, *LogHandler, error) {
-	// TODO: Add LockWithContext with multi lock level accounts and reference check
-	unlock, err := l.locker.Lock(ctx, l.store.Name())
-	if err != nil {
-		panic(err)
-	}
-	defer unlock(context.Background()) // Use a background context instead of the request one as it could have been cancelled
 
 	revertedTx, err := l.store.GetTransaction(ctx, id)
 	if err != nil {
@@ -114,23 +108,9 @@ func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.Expand
 		Metadata:  rt.Metadata,
 	})
 
-	revertTx, _, err := l.runScript(ctx, scriptData[0])
-	if err != nil {
-		return nil, nil, errors.Wrap(err, fmt.Sprintf("updating transaction %d metadata while reverting", id))
-	}
-
-	logHandler, err := writeLog(ctx, l.store.AppendLogs,
-		core.NewRevertedTransactionLog(revertTx.Timestamp, revertedTx.ID, revertTx.Transaction))
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "writing logs")
-	}
-
-	l.dbCache.Update(ctx, &cache.TxInfo{
-		Date: revertTx.Timestamp,
-		ID:   revertTx.ID,
-	}, revertTx.PostCommitVolumes)
-
-	return revertTx, logHandler, nil
+	return l.runScript(ctx, scriptData[0], false, func(expandedTx core.ExpandedTransaction, accountMetadata map[string]core.Metadata) core.Log {
+		return core.NewRevertedTransactionLog(expandedTx.Timestamp, revertedTx.ID, expandedTx.Transaction)
+	})
 }
 
 func (l *Ledger) CountAccounts(ctx context.Context, a storage.AccountsQuery) (uint64, error) {

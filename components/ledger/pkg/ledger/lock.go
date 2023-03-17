@@ -8,15 +8,15 @@ import (
 type Unlock func(ctx context.Context)
 
 type Locker interface {
-	Lock(ctx context.Context, name string) (Unlock, error)
+	Lock(ctx context.Context, ledger string, accounts ...string) (Unlock, error)
 }
-type LockerFn func(ctx context.Context, name string) (Unlock, error)
+type LockerFn func(ctx context.Context, ledger string, accounts ...string) (Unlock, error)
 
-func (fn LockerFn) Lock(ctx context.Context, name string) (Unlock, error) {
-	return fn(ctx, name)
+func (fn LockerFn) Lock(ctx context.Context, ledger string, accounts ...string) (Unlock, error) {
+	return fn(ctx, ledger, accounts...)
 }
 
-var NoOpLocker = LockerFn(func(ctx context.Context, name string) (Unlock, error) {
+var NoOpLocker = LockerFn(func(ctx context.Context, ledger string, accounts ...string) (Unlock, error) {
 	return func(ctx context.Context) {}, nil
 })
 
@@ -25,7 +25,7 @@ type InMemoryLocker struct {
 	locks      map[string]*sync.Mutex
 }
 
-func (d *InMemoryLocker) Lock(ctx context.Context, ledger string) (Unlock, error) {
+func (d *InMemoryLocker) Lock(ctx context.Context, ledger string, accounts ...string) (Unlock, error) {
 	d.globalLock.RLock()
 	lock, ok := d.locks[ledger]
 	d.globalLock.RUnlock()

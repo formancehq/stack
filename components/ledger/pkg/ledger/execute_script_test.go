@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/ledger/pkg/cache"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/machine"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
@@ -70,6 +71,16 @@ var testCases = []testCase{
 				},
 			},
 		},
+	},
+	{
+		name:          "no script",
+		script:        ``,
+		expectedError: machine.NewScriptError(machine.ScriptErrorNoScript, ""),
+	},
+	{
+		name:          "invalid script",
+		script:        `XXX`,
+		expectedError: machine.NewScriptError(machine.ScriptErrorCompilationFailed, ""),
 	},
 	{
 		name: "set reference conflict",

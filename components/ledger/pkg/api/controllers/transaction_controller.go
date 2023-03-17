@@ -200,15 +200,17 @@ func (ctl *TransactionController) PostTransaction(w http.ResponseWriter, r *http
 			Reference: payload.Reference,
 			Metadata:  payload.Metadata,
 		}
-		res, logs, err := l.CreateTransaction(r.Context(), preview, core.TxToScriptData(txData))
+		res, logHandler, err := l.CreateTransaction(r.Context(), preview, core.TxToScriptData(txData))
 		if err != nil {
 			apierrors.ResponseError(w, r, err)
 			return
 		}
 
-		if err := logs.Wait(r.Context()); err != nil {
-			apierrors.ResponseError(w, r, err)
-			return
+		if !preview {
+			if err := logHandler.Wait(r.Context()); err != nil {
+				apierrors.ResponseError(w, r, err)
+				return
+			}
 		}
 
 		sharedapi.Ok(w, res)
@@ -222,15 +224,17 @@ func (ctl *TransactionController) PostTransaction(w http.ResponseWriter, r *http
 		Metadata:  payload.Metadata,
 	}
 
-	res, logs, err := l.CreateTransaction(r.Context(), preview, script)
+	res, logHandler, err := l.CreateTransaction(r.Context(), preview, script)
 	if err != nil {
 		apierrors.ResponseError(w, r, err)
 		return
 	}
 
-	if err := logs.Wait(r.Context()); err != nil {
-		apierrors.ResponseError(w, r, err)
-		return
+	if !preview {
+		if err := logHandler.Wait(r.Context()); err != nil {
+			apierrors.ResponseError(w, r, err)
+			return
+		}
 	}
 
 	sharedapi.Ok(w, res)

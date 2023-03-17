@@ -9,11 +9,33 @@ import (
 	"github.com/formancehq/ledger/pkg/cache"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/machine"
+	"github.com/formancehq/ledger/pkg/machine/script/compiler"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/pkg/errors"
 )
 
-func (l *Ledger) runScript(ctx context.Context, script core.ScriptData) (*core.ExpandedTransaction, map[string]core.Metadata, error) {
+func (l *Ledger) runScript(ctx context.Context, script core.ScriptData, dryRun bool,
+	logComputer func(expandedTx core.ExpandedTransaction, accountMetadata map[string]core.Metadata) core.Log) (*core.ExpandedTransaction, *LogHandler, error) {
+
+	if script.Plain == "" {
+		return nil, nil, machine.NewScriptError(machine.ScriptErrorNoScript, "no script to execute")
+	}
+
+	prog, err := compiler.Compile(script.Plain)
+	if err != nil {
+		return nil, nil, machine.NewScriptError(machine.ScriptErrorCompilationFailed, errors.Wrap(err, "compiling numscript").Error())
+	}
+
+	involvedAccounts, err := prog.GetInvolvedAccounts(script.Vars)
+	if err != nil {
+		return nil, nil, machine.NewScriptError(machine.ScriptErrorCompilationFailed, err.Error())
+	}
+
+	unlock, err := l.locker.Lock(ctx, l.store.Name(), involvedAccounts...)
+	if err != nil {
+		panic(err)
+	}
+	defer unlock(context.Background()) // Use a background context instead of the request one as it could have been cancelled
 
 	if script.Timestamp.IsZero() {
 		script.Timestamp = core.Now()
@@ -38,7 +60,7 @@ func (l *Ledger) runScript(ctx context.Context, script core.ScriptData) (*core.E
 			lastTx.Date.Format(time.RFC3339Nano)))
 	}
 
-	result, err := machine.Run(ctx, l.dbCache, script)
+	result, err := machine.Run(ctx, l.dbCache, prog, script)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -65,24 +87,17 @@ func (l *Ledger) runScript(ctx context.Context, script core.ScriptData) (*core.E
 	}
 	vAggr := aggregator.Volumes(l.dbCache)
 	txVolumeAggr := vAggr.NextTx()
-	postings := make([]core.Posting, len(result.Postings))
-	for j, posting := range result.Postings {
+	for _, posting := range result.Postings {
 		if err := txVolumeAggr.Transfer(ctx,
 			posting.Source, posting.Destination, posting.Asset, posting.Amount); err != nil {
 			return nil, nil, errors.Wrap(err, "transferring volumes")
 		}
-		postings[j] = core.Posting{
-			Source:      posting.Source,
-			Destination: posting.Destination,
-			Amount:      posting.Amount,
-			Asset:       posting.Asset,
-		}
 	}
 
-	return &core.ExpandedTransaction{
+	expandedTx := &core.ExpandedTransaction{
 		Transaction: core.Transaction{
 			TransactionData: core.TransactionData{
-				Postings:  postings,
+				Postings:  result.Postings,
 				Reference: script.Reference,
 				Metadata:  result.Metadata,
 				Timestamp: script.Timestamp,
@@ -91,7 +106,22 @@ func (l *Ledger) runScript(ctx context.Context, script core.ScriptData) (*core.E
 		},
 		PreCommitVolumes:  txVolumeAggr.PreCommitVolumes,
 		PostCommitVolumes: txVolumeAggr.PostCommitVolumes,
-	}, result.AccountMetadata, nil
+	}
+	if dryRun {
+		return expandedTx, nil, nil
+	}
+
+	logHandler, err := writeLog(ctx, l.store.AppendLogs, logComputer(*expandedTx, result.AccountMetadata))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	l.dbCache.Update(ctx, &cache.TxInfo{
+		Date: expandedTx.Timestamp,
+		ID:   expandedTx.ID,
+	}, expandedTx.PostCommitVolumes)
+
+	return expandedTx, logHandler, nil
 }
 
 func (l *Ledger) CreateTransactionAndWait(ctx context.Context, preview bool, script core.ScriptData) (*core.ExpandedTransaction, *LogHandler, error) {
@@ -105,32 +135,8 @@ func (l *Ledger) CreateTransactionAndWait(ctx context.Context, preview bool, scr
 	return ret, logs, nil
 }
 
-func (l *Ledger) CreateTransaction(ctx context.Context, preview bool, script core.ScriptData) (*core.ExpandedTransaction, *LogHandler, error) {
-
-	// TODO: Add LockWithContext with multi lock level accounts and reference check
-	unlock, err := l.locker.Lock(ctx, l.store.Name())
-	if err != nil {
-		panic(err)
-	}
-	defer unlock(context.Background()) // Use a background context instead of the request one as it could have been cancelled
-
-	expandedTx, accountMetadata, err := l.runScript(ctx, script)
-	if err != nil {
-		return nil, nil, err
-	}
-	if preview {
-		return expandedTx, &LogHandler{}, nil
-	}
-
-	logHandler, err := writeLog(ctx, l.store.AppendLogs, core.NewTransactionLog(expandedTx.Transaction, accountMetadata))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	l.dbCache.Update(ctx, &cache.TxInfo{
-		Date: expandedTx.Timestamp,
-		ID:   expandedTx.ID,
-	}, expandedTx.PostCommitVolumes)
-
-	return expandedTx, logHandler, nil
+func (l *Ledger) CreateTransaction(ctx context.Context, dryRun bool, script core.ScriptData) (*core.ExpandedTransaction, *LogHandler, error) {
+	return l.runScript(ctx, script, dryRun, func(expandedTx core.ExpandedTransaction, accountMetadata map[string]core.Metadata) core.Log {
+		return core.NewTransactionLog(expandedTx.Transaction, accountMetadata)
+	})
 }
