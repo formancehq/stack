@@ -166,7 +166,7 @@ func (l *Ledger) GetBalancesAggregated(ctx context.Context, q storage.BalancesQu
 	return l.store.GetBalancesAggregated(ctx, q)
 }
 
-func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID interface{}, m core.Metadata) (*Logs, error) {
+func (l *Ledger) SaveMeta(ctx context.Context, targetType core.TargetType, targetID interface{}, m core.Metadata) (*Logs, error) {
 
 	if targetType == "" {
 		return nil, NewValidationError("empty target type")
@@ -204,7 +204,7 @@ func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID inter
 	}
 
 	logs.AddPostProcessing(func(ctx context.Context) error {
-		l.monitor.SavedMetadata(ctx, l.store.Name(), targetType, fmt.Sprint(targetID), m)
+		l.monitor.SavedMetadata(ctx, l.store.Name(), fmt.Sprint(targetID), targetType, m)
 		return nil
 	})
 

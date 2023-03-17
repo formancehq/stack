@@ -10,6 +10,7 @@ import (
 
 	"github.com/Shopify/sarama"
 	"github.com/ThreeDotsLabs/watermill/message"
+	prototesting "github.com/formancehq/stack/libs/events/testing"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	natsServer "github.com/nats-io/nats-server/v2/server"
 	"github.com/ory/dockertest/v3"
@@ -17,6 +18,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxtest"
+	"google.golang.org/protobuf/proto"
 )
 
 func createRedpandaServer(t *testing.T) string {
@@ -160,7 +162,10 @@ func TestModule(t *testing.T) {
 				fx.Supply(fx.Annotate(logging.Testing(), fx.As(new(logging.Logger)))),
 				fx.Invoke(func(r *message.Router, subscriber message.Subscriber) {
 					r.AddNoPublisherHandler("testing", tc.topic, subscriber, func(msg *message.Message) error {
-						require.Equal(t, "\"baz\"", string(msg.Payload))
+						tm := prototesting.TestMessage{}
+						require.NoError(t, proto.Unmarshal(msg.Payload, &tm))
+						require.Equal(t, "foo", tm.Key)
+						require.Equal(t, "bar", tm.Value)
 						close(messageHandled)
 						return nil
 					})
@@ -177,7 +182,10 @@ func TestModule(t *testing.T) {
 
 			<-router.Running()
 
-			msg := NewMessage(context.TODO(), "baz")
+			msg := NewMessage(context.TODO(), &prototesting.TestMessage{
+				Key:   "foo",
+				Value: "bar",
+			})
 			require.NoError(t, publisher.Publish(tc.topic, msg))
 
 			select {

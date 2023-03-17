@@ -8,6 +8,7 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.2.0
 	github.com/antlr/antlr4/runtime/Go/antlr v1.4.10
 	github.com/dgraph-io/ristretto v0.1.1
+	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230222164357-55840b21a337
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/cors v1.2.1
@@ -34,6 +35,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.13.0
 	go.uber.org/fx v1.19.2
 	golang.org/x/sync v0.1.0
+	google.golang.org/protobuf v1.30.0
 	gopkg.in/segmentio/analytics-go.v3 v3.1.0
 )
 
@@ -142,10 +144,11 @@ require (
 	golang.org/x/tools v0.5.0 // indirect
 	google.golang.org/genproto v0.0.0-20230221151758-ace64dc21148 // indirect
 	google.golang.org/grpc v1.53.0 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
 replace github.com/formancehq/stack/libs/go-libs => ../../libs/go-libs
+
+replace github.com/formancehq/stack/libs/events => ../../libs/events

@@ -10,6 +10,7 @@ require (
 	github.com/ThreeDotsLabs/watermill-nats/v2 v2.0.0
 	github.com/coreos/go-semver v0.3.0
 	github.com/dgraph-io/ristretto v0.1.1
+	github.com/formancehq/stack/libs/events v0.0.0-00010101000000-000000000000
 	github.com/google/uuid v1.3.0
 	github.com/imdario/mergo v0.3.13
 	github.com/jackc/pgx/v5 v5.3.0
@@ -41,6 +42,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.13.0
 	go.opentelemetry.io/otel/trace v1.13.0
 	go.uber.org/fx v1.19.1
+	google.golang.org/protobuf v1.30.0
 )
 
 require (
@@ -139,8 +141,9 @@ require (
 	golang.org/x/tools v0.5.0 // indirect
 	google.golang.org/genproto v0.0.0-20230202175211-008b39050e57 // indirect
 	google.golang.org/grpc v1.52.3 // indirect
-	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/formancehq/stack/libs/events => ../events

@@ -9,6 +9,13 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"go.uber.org/fx"
+	"google.golang.org/protobuf/proto"
+)
+
+const (
+	RevertedTransactionTopic  = "ledger.reverted_transaction"
+	SavedMetadataTopic        = "ledger.saved_metadata"
+	CommittedTransactionTopic = "ledger.committed_transaction"
 )
 
 type ledgerMonitor struct {
@@ -39,37 +46,35 @@ func LedgerMonitorModule() fx.Option {
 }
 
 func (l *ledgerMonitor) CommittedTransactions(ctx context.Context, ledger string, txs ...core.ExpandedTransaction) {
-	postCommitVolumes := core.AggregatePostCommitVolumes(txs...)
-	l.publish(ctx, EventTypeCommittedTransactions,
-		newEventCommittedTransactions(CommittedTransactions{
-			Ledger:            ledger,
-			Transactions:      txs,
-			Volumes:           postCommitVolumes,
-			PostCommitVolumes: postCommitVolumes,
-			PreCommitVolumes:  core.AggregatePreCommitVolumes(txs...),
-		}))
+	committedTransactions, err := newEventCommittedTransactions(ledger, txs...)
+	if err != nil {
+		// TODO(polo): add metrics
+		logging.FromContext(ctx).Errorf("building committed transactions event: %s", err)
+	}
+
+	l.publish(ctx, CommittedTransactionTopic, committedTransactions)
 }
 
-func (l *ledgerMonitor) SavedMetadata(ctx context.Context, ledger, targetType, targetID string, metadata core.Metadata) {
-	l.publish(ctx, EventTypeSavedMetadata,
-		newEventSavedMetadata(SavedMetadata{
-			Ledger:     ledger,
-			TargetType: targetType,
-			TargetID:   targetID,
-			Metadata:   metadata,
-		}))
+func (l *ledgerMonitor) SavedMetadata(ctx context.Context, ledger, targetID string, targetType core.TargetType, metadata core.Metadata) {
+	savedMetadata, err := newEventSavedMetadata(ledger, targetID, targetType, metadata)
+	if err != nil {
+		// TODO(polo): add metrics
+		logging.FromContext(ctx).Errorf("building saved metadata event: %s", err)
+	}
+
+	l.publish(ctx, SavedMetadataTopic, savedMetadata)
 }
 
 func (l *ledgerMonitor) RevertedTransaction(ctx context.Context, ledger string, reverted, revert *core.ExpandedTransaction) {
-	l.publish(ctx, EventTypeRevertedTransaction,
-		newEventRevertedTransaction(RevertedTransaction{
-			Ledger:              ledger,
-			RevertedTransaction: *reverted,
-			RevertTransaction:   *revert,
-		}))
+	revertedTransactions, err := newEventRevertedTransaction(ledger, reverted, revert)
+	if err != nil {
+		// TODO(polo): add metrics
+		logging.FromContext(ctx).Errorf("building reverted transaction event: %s", err)
+	}
+	l.publish(ctx, RevertedTransactionTopic, revertedTransactions)
 }
 
-func (l *ledgerMonitor) publish(ctx context.Context, topic string, ev EventMessage) {
+func (l *ledgerMonitor) publish(ctx context.Context, topic string, ev proto.Message) {
 	if err := l.publisher.Publish(topic, publish.NewMessage(ctx, ev)); err != nil {
 		logging.FromContext(ctx).Errorf("publishing message: %s", err)
 		return

@@ -322,7 +322,7 @@ func (l *Ledger) ProcessScript(ctx context.Context, writeLogs, preview bool, scr
 		if addOps != nil && addOps.SetAccountMeta != nil {
 			for addr, m := range addOps.SetAccountMeta {
 				l.monitor.SavedMetadata(ctx,
-					l.store.Name(), core.MetaTargetTypeAccount, addr, m)
+					l.store.Name(), addr, core.MetaTargetTypeAccount, m)
 			}
 		}
 

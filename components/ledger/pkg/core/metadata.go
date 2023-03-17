@@ -7,12 +7,17 @@ import (
 	"reflect"
 )
 
+type TargetType string
+
 const (
-	formanceNamespace         = "com.formance.spec/"
-	revertKey                 = "state/reverts"
-	revertedKey               = "state/reverted"
-	MetaTargetTypeAccount     = "ACCOUNT"
-	MetaTargetTypeTransaction = "TRANSACTION"
+	MetaTargetTypeAccount     TargetType = "ACCOUNT"
+	MetaTargetTypeTransaction TargetType = "TRANSACTION"
+)
+
+const (
+	formanceNamespace = "com.formance.spec/"
+	revertKey         = "state/reverts"
+	revertedKey       = "state/reverted"
 )
 
 func SpecMetadata(name string) string {

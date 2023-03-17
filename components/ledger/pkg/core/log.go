@@ -34,14 +34,14 @@ func NewTransactionLog(tx Transaction) Log {
 }
 
 type SetMetadata struct {
-	TargetType string      `json:"targetType"`
+	TargetType TargetType  `json:"targetType"`
 	TargetID   interface{} `json:"targetId"`
 	Metadata   Metadata    `json:"metadata"`
 }
 
 func (s *SetMetadata) UnmarshalJSON(data []byte) error {
 	type X struct {
-		TargetType string          `json:"targetType"`
+		TargetType TargetType      `json:"targetType"`
 		TargetID   json.RawMessage `json:"targetId"`
 		Metadata   Metadata        `json:"metadata"`
 	}
@@ -51,11 +51,11 @@ func (s *SetMetadata) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	var id interface{}
-	switch strings.ToUpper(x.TargetType) {
-	case strings.ToUpper(MetaTargetTypeAccount):
+	switch strings.ToUpper(string(x.TargetType)) {
+	case strings.ToUpper(string(MetaTargetTypeAccount)):
 		id = ""
 		err = json.Unmarshal(x.TargetID, &id)
-	case strings.ToUpper(MetaTargetTypeTransaction):
+	case strings.ToUpper(string(MetaTargetTypeTransaction)):
 		id, err = strconv.ParseUint(string(x.TargetID), 10, 64)
 	default:
 		panic("unknown type")

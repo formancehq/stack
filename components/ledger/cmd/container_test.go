@@ -151,7 +151,7 @@ func TestContainers(t *testing.T) {
 				fx.Invoke(func(lc fx.Lifecycle, ch *gochannel.GoChannel, resolver *ledger.Resolver) {
 					lc.Append(fx.Hook{
 						OnStart: func(ctx context.Context) error {
-							messages, err := ch.Subscribe(ctx, bus.EventTypeSavedMetadata)
+							messages, err := ch.Subscribe(ctx, bus.SavedMetadataTopic)
 							if err != nil {
 								return err
 							}
