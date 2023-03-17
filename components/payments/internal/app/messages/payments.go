@@ -1,46 +1,35 @@
 package messages
 
 import (
-	"time"
-
 	"github.com/formancehq/payments/internal/app/models"
-	"github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/events"
+	"github.com/formancehq/stack/libs/events/payments"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type paymentMessagePayload struct {
-	ID        string               `json:"id"`
-	Reference string               `json:"reference"`
-	CreatedAt time.Time            `json:"createdAt"`
-	Provider  string               `json:"provider"`
-	Type      models.PaymentType   `json:"type"`
-	Status    models.PaymentStatus `json:"status"`
-	Scheme    models.PaymentScheme `json:"scheme"`
-	Asset     models.PaymentAsset  `json:"asset"`
+const (
+	TopicPayments   = "payments"
+	TopicConnectors = "connectors"
 
-	// TODO: Remove 'initialAmount' once frontend has switched to 'amount
-	InitialAmount int64 `json:"initialAmount"`
-	Amount        int64 `json:"amount"`
-}
+	EventApp = "payments"
+)
 
-func NewEventSavedPayments(payment *models.Payment, provider models.ConnectorProvider) events.EventMessage {
-	payload := paymentMessagePayload{
-		ID:            payment.ID.String(),
-		Reference:     payment.Reference,
-		Type:          payment.Type,
-		Status:        payment.Status,
-		InitialAmount: payment.Amount,
-		Scheme:        payment.Scheme,
-		Asset:         payment.Asset,
-		CreatedAt:     payment.CreatedAt,
-		Amount:        payment.Amount,
-		Provider:      provider.String(),
-	}
-
-	return events.EventMessage{
-		Date:    time.Now().UTC(),
-		App:     events.EventApp,
-		Version: events.EventVersion,
-		Type:    events.EventTypeSavedPayments,
-		Payload: payload,
-	}
+func NewEventSavedPayments(payment *models.Payment, provider models.ConnectorProvider) (*events.Event, error) {
+	return &events.Event{
+		CreatedAt: timestamppb.New(payment.CreatedAt),
+		App:       EventApp,
+		Event: &events.Event_PaymentSaved{
+			PaymentSaved: &payments.PaymentSaved{
+				Id:        payment.ID.String(),
+				Reference: payment.Reference,
+				CreatedAt: timestamppb.New(payment.CreatedAt),
+				Provider:  provider.String(),
+				Type:      payment.Type.String(),
+				Status:    payment.Status.String(),
+				Scheme:    payment.Scheme.String(),
+				Asset:     payment.Asset.String(),
+				Amount:    payment.Amount,
+			},
+		},
+	}, nil
 }

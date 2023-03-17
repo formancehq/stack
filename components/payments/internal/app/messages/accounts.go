@@ -4,35 +4,32 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
-	"github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/events"
+	"github.com/formancehq/stack/libs/events/payments"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type accountMessagePayload struct {
-	ID        string             `json:"id"`
-	CreatedAt time.Time          `json:"createdAt"`
-	Reference string             `json:"reference"`
-	Provider  string             `json:"provider"`
-	Type      models.AccountType `json:"type"`
-}
-
-func NewEventSavedAccounts(accounts []models.Account) events.EventMessage {
-	payload := make([]accountMessagePayload, len(accounts))
-
-	for accountIdx, account := range accounts {
-		payload[accountIdx] = accountMessagePayload{
-			ID:        account.ID.String(),
-			CreatedAt: account.CreatedAt,
+func NewEventSavedAccounts(accounts []models.Account) (*events.Event, error) {
+	accs := make([]*payments.Account, len(accounts))
+	for i, account := range accounts {
+		accs[i] = &payments.Account{
+			Id:        account.ID.String(),
+			CreatedAt: timestamppb.New(account.CreatedAt),
 			Reference: account.Reference,
 			Provider:  account.Provider,
-			Type:      account.Type,
+			Type:      account.Type.String(),
 		}
 	}
 
-	return events.EventMessage{
-		Date:    time.Now().UTC(),
-		App:     events.EventApp,
-		Version: events.EventVersion,
-		Type:    events.EventTypeSavedAccounts,
-		Payload: payload,
-	}
+	now := time.Now().UTC()
+
+	return &events.Event{
+		CreatedAt: timestamppb.New(now),
+		App:       EventApp,
+		Event: &events.Event_AccountSaved{
+			AccountSaved: &payments.AccountSaved{
+				Accounts: accs,
+			},
+		},
+	}, nil
 }

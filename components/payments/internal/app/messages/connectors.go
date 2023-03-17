@@ -4,23 +4,22 @@ import (
 	"time"
 
 	"github.com/formancehq/payments/internal/app/models"
-	"github.com/formancehq/payments/pkg/events"
+	"github.com/formancehq/stack/libs/events"
+	"github.com/formancehq/stack/libs/events/payments"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type connectorMessagePayload struct {
-	CreatedAt time.Time                `json:"createdAt"`
-	Connector models.ConnectorProvider `json:"connector"`
-}
+func NewEventResetConnector(connector models.ConnectorProvider) (*events.Event, error) {
+	now := time.Now().UTC()
 
-func NewEventResetConnector(connector models.ConnectorProvider) events.EventMessage {
-	return events.EventMessage{
-		Date:    time.Now().UTC(),
-		App:     events.EventApp,
-		Version: events.EventVersion,
-		Type:    events.EventTypeConnectorReset,
-		Payload: connectorMessagePayload{
-			CreatedAt: time.Now().UTC(),
-			Connector: connector,
+	return &events.Event{
+		CreatedAt: timestamppb.New(now),
+		App:       EventApp,
+		Event: &events.Event_ResetConnector{
+			ResetConnector: &payments.ResetConnector{
+				CreatedAt: timestamppb.New(now),
+				Provider:  connector.String(),
+			},
 		},
-	}
+	}, nil
 }

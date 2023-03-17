@@ -26,3 +26,7 @@ const (
 	AccountTypeTarget  AccountType = "TARGET"
 	AccountTypeUnknown AccountType = "UNKNOWN"
 )
+
+func (a AccountType) String() string {
+	return string(a)
+}
