@@ -1,4 +1,4 @@
-package ledger
+package lock
 
 import (
 	"context"
@@ -20,12 +20,12 @@ var NoOpLocker = LockerFn(func(ctx context.Context, ledger string, accounts ...s
 	return func(ctx context.Context) {}, nil
 })
 
-type InMemoryLocker struct {
+type InMemory struct {
 	globalLock sync.RWMutex
 	locks      map[string]*sync.Mutex
 }
 
-func (d *InMemoryLocker) Lock(ctx context.Context, ledger string, accounts ...string) (Unlock, error) {
+func (d *InMemory) Lock(ctx context.Context, ledger string, accounts ...string) (Unlock, error) {
 	d.globalLock.RLock()
 	lock, ok := d.locks[ledger]
 	d.globalLock.RUnlock()
@@ -41,14 +41,19 @@ func (d *InMemoryLocker) Lock(ctx context.Context, ledger string, accounts ...st
 	}
 	d.globalLock.Unlock()
 ret:
+	unlocked := false
 	lock.Lock()
 	return func(ctx context.Context) {
+		if unlocked {
+			return
+		}
 		lock.Unlock()
+		unlocked = true
 	}, nil
 }
 
-func NewInMemoryLocker() *InMemoryLocker {
-	return &InMemoryLocker{
+func NewInMemory() *InMemory {
+	return &InMemory{
 		locks: map[string]*sync.Mutex{},
 	}
 }

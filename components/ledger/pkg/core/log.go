@@ -15,11 +15,12 @@ const (
 
 // TODO(polo): create Log struct and extended Log struct
 type Log struct {
-	ID   uint64      `json:"id"`
-	Type string      `json:"type"`
-	Data interface{} `json:"data"`
-	Hash string      `json:"hash"`
-	Date Time        `json:"date"`
+	ID        uint64      `json:"id"`
+	Type      string      `json:"type"`
+	Data      interface{} `json:"data"`
+	Hash      string      `json:"hash"`
+	Date      Time        `json:"date"`
+	Reference string      `json:"reference"`
 }
 
 func (l Log) ComputeHash(previous *Log) Log {
@@ -29,6 +30,11 @@ func (l Log) ComputeHash(previous *Log) Log {
 
 func (l Log) WithDate(date Time) Log {
 	l.Date = date
+	return l
+}
+
+func (l Log) WithReference(reference string) Log {
+	l.Reference = reference
 	return l
 }
 
@@ -51,7 +57,7 @@ func NewTransactionLogWithDate(tx Transaction, accountMetadata map[string]Metada
 }
 
 func NewTransactionLog(tx Transaction, accountMetadata map[string]Metadata) Log {
-	return NewTransactionLogWithDate(tx, accountMetadata, tx.Timestamp)
+	return NewTransactionLogWithDate(tx, accountMetadata, tx.Timestamp).WithReference(tx.Reference)
 }
 
 type SetMetadataLogPayload struct {

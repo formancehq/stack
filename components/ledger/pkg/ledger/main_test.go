@@ -1,12 +1,13 @@
-package ledger_test
+package ledger
 
 import (
 	"context"
 	"os"
 	"testing"
 
-	"github.com/formancehq/ledger/pkg/cache"
-	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/ledger/cache"
+	"github.com/formancehq/ledger/pkg/ledger/lock"
+	"github.com/formancehq/ledger/pkg/ledger/runner"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
@@ -29,14 +30,11 @@ func TestMain(t *testing.M) {
 func runOnLedger(t interface {
 	pgtesting.TestingT
 	Parallel()
-}, f func(l *ledger.Ledger), ledgerOptions ...ledger.Option) {
+}, f func(l *Ledger)) {
 
 	t.Parallel()
 
-	storageDriver, close, err := ledgertesting.StorageDriver(t)
-	require.NoError(t, err)
-	defer close()
-
+	storageDriver := ledgertesting.StorageDriver(t)
 	require.NoError(t, storageDriver.Initialize(context.Background()))
 
 	name := uuid.New()
@@ -46,13 +44,13 @@ func runOnLedger(t interface {
 	_, err = store.Initialize(context.Background())
 	require.NoError(t, err)
 
-	dbCache := cache.NewCache(storageDriver)
-
-	// 100 000 000 is 100MB
-	l, err := ledger.NewLedger(store,
-		dbCache.ForLedger(name),
-		ledgerOptions...)
+	cacheManager := cache.NewManager(storageDriver)
+	ledgerCache, err := cacheManager.ForLedger(context.Background(), name)
 	require.NoError(t, err)
+	runner, err := runner.New(store, lock.NewInMemory(), ledgerCache, false)
+	require.NoError(t, err)
+
+	l := New(store, ledgerCache, runner, lock.NewInMemory())
 	defer l.Close(context.Background())
 
 	f(l)

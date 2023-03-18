@@ -54,6 +54,15 @@ func (tva *TxVolumeAggregator) Transfer(
 	return nil
 }
 
+func (agg *TxVolumeAggregator) AddPostings(ctx context.Context, postings ...core.Posting) error {
+	for _, posting := range postings {
+		if err := agg.Transfer(ctx, posting.Source, posting.Destination, posting.Asset, posting.Amount); err != nil {
+			return errors.Wrap(err, "aggregating volumes")
+		}
+	}
+	return nil
+}
+
 type VolumeAggregator struct {
 	txs   []*TxVolumeAggregator
 	store Store
@@ -70,6 +79,14 @@ func (agg *VolumeAggregator) NextTx() *TxVolumeAggregator {
 	}
 	agg.txs = append(agg.txs, tva)
 	return tva
+}
+
+func (agg *VolumeAggregator) NextTxWithPostings(ctx context.Context, postings ...core.Posting) (*TxVolumeAggregator, error) {
+	tva := agg.NextTx()
+	if err := tva.AddPostings(ctx, postings...); err != nil {
+		return nil, err
+	}
+	return tva, nil
 }
 
 func Volumes(store Store) *VolumeAggregator {

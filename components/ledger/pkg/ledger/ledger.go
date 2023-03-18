@@ -4,54 +4,29 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/formancehq/ledger/pkg/cache"
 	"github.com/formancehq/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/ledger/cache"
+	"github.com/formancehq/ledger/pkg/ledger/lock"
+	runner2 "github.com/formancehq/ledger/pkg/ledger/runner"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 )
 
 type Ledger struct {
-	store               storage.LedgerStore
-	allowPastTimestamps bool
-	locker              Locker
-	dbCache             *cache.Ledger
+	runner  *runner2.Runner
+	store   storage.LedgerStore
+	locker  lock.Locker
+	dbCache *cache.Cache
 }
 
-type Option = func(*Ledger)
-
-func WithPastTimestamps(l *Ledger) {
-	l.allowPastTimestamps = true
-}
-
-func WithLocker(locker Locker) Option {
-	return func(ledger *Ledger) {
-		ledger.locker = locker
-	}
-}
-
-var defaultLedgerOptions = []Option{
-	WithLocker(NewInMemoryLocker()),
-}
-
-func NewLedger(store storage.LedgerStore, dbCache *cache.Ledger, options ...Option) (*Ledger, error) {
-	l := &Ledger{
+func New(store storage.LedgerStore, dbCache *cache.Cache, runner *runner2.Runner, locker lock.Locker) *Ledger {
+	return &Ledger{
 		store:   store,
 		dbCache: dbCache,
+		runner:  runner,
+		locker:  locker,
 	}
-
-	for _, option := range append(
-		defaultLedgerOptions,
-		options...,
-	) {
-		option(l)
-	}
-
-	return l, nil
-}
-
-func (l *Ledger) GetDBCache() *cache.Ledger {
-	return l.dbCache
 }
 
 func (l *Ledger) Close(ctx context.Context) error {
@@ -63,6 +38,12 @@ func (l *Ledger) Close(ctx context.Context) error {
 
 func (l *Ledger) GetLedgerStore() storage.LedgerStore {
 	return l.store
+}
+
+func (l *Ledger) CreateTransaction(ctx context.Context, dryRun bool, script core.RunScript) (*core.ExpandedTransaction, error) {
+	return l.runner.Execute(ctx, script, dryRun, func(expandedTx core.ExpandedTransaction, accountMetadata map[string]core.Metadata) core.Log {
+		return core.NewTransactionLog(expandedTx.Transaction, accountMetadata)
+	})
 }
 
 func (l *Ledger) GetTransactions(ctx context.Context, q storage.TransactionsQuery) (api.Cursor[core.ExpandedTransaction], error) {
@@ -79,23 +60,23 @@ func (l *Ledger) GetTransaction(ctx context.Context, id uint64) (*core.ExpandedT
 		return nil, err
 	}
 	if tx == nil {
-		return nil, NewNotFoundError("transaction not found")
+		return nil, runner2.NewNotFoundError("transaction not found")
 	}
 
 	return tx, nil
 }
 
-func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.ExpandedTransaction, *LogHandler, error) {
+func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.ExpandedTransaction, error) {
 
 	revertedTx, err := l.store.GetTransaction(ctx, id)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, fmt.Sprintf("getting transaction %d", id))
+		return nil, errors.Wrap(err, fmt.Sprintf("getting transaction %d", id))
 	}
 	if revertedTx == nil {
-		return nil, nil, NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
+		return nil, runner2.NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
 	}
 	if revertedTx.IsReverted() {
-		return nil, nil, NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
+		return nil, runner2.NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
 	}
 
 	rt := revertedTx.Reverse()
@@ -107,8 +88,7 @@ func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.Expand
 		Reference: rt.Reference,
 		Metadata:  rt.Metadata,
 	})
-
-	return l.runScript(ctx, scriptData[0], false, func(expandedTx core.ExpandedTransaction, accountMetadata map[string]core.Metadata) core.Log {
+	return l.runner.Execute(ctx, scriptData[0], false, func(expandedTx core.ExpandedTransaction, accountMetadata map[string]core.Metadata) core.Log {
 		return core.NewRevertedTransactionLog(expandedTx.Timestamp, revertedTx.ID, expandedTx.Transaction)
 	})
 }
@@ -133,20 +113,18 @@ func (l *Ledger) GetBalancesAggregated(ctx context.Context, q storage.BalancesQu
 	return l.store.GetBalancesAggregated(ctx, q)
 }
 
-// TODO(gfyrag): maybe we should check transaction exists before set a metadata ? (accounts always exists even if never used)
-func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID interface{}, m core.Metadata) (*LogHandler, error) {
+// TODO(gfyrag): maybe we should check transaction exists on the log store before set a metadata ? (accounts always exists even if never used)
+func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID interface{}, m core.Metadata) error {
 
 	if targetType == "" {
-		return nil, NewValidationError("empty target type")
+		return runner2.NewValidationError("empty target type")
 	}
 
 	if targetID == "" {
-		return nil, NewValidationError("empty target id")
+		return runner2.NewValidationError("empty target id")
 	}
 
-	// TODO(gfyrag): Stop round dates for v2
 	at := core.Now()
-
 	var (
 		err error
 		log core.Log
@@ -161,10 +139,18 @@ func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID inter
 	case core.MetaTargetTypeAccount:
 		// Machine can access account metadata, so store the metadata until CQRS compute final of the account
 		// The cache can still evict the account entry before CQRS part compute the view
+		unlock, err := l.locker.Lock(ctx, l.store.Name(), targetID.(string))
+		if err != nil {
+			return err
+		}
+		defer unlock(context.Background())
+
 		err = l.dbCache.UpdateAccountMetadata(ctx, targetID.(string), m)
 		if err != nil {
-			return nil, err
+			return err
 		}
+
+		unlock(context.Background())
 
 		log = core.NewSetMetadataLog(at, core.SetMetadataLogPayload{
 			TargetType: core.MetaTargetTypeAccount,
@@ -172,13 +158,13 @@ func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID inter
 			Metadata:   m,
 		})
 	default:
-		return nil, NewValidationError(fmt.Sprintf("unknown target type '%s'", targetType))
+		return runner2.NewValidationError(fmt.Sprintf("unknown target type '%s'", targetType))
 	}
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return writeLog(ctx, l.store.AppendLogs, log)
+	return l.store.AppendLog(ctx, log)
 }
 
 func (l *Ledger) GetLogs(ctx context.Context, q *storage.LogsQuery) (api.Cursor[core.Log], error) {

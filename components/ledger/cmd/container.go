@@ -1,22 +1,14 @@
 package cmd
 
 import (
-	"net/http"
-
 	"github.com/formancehq/ledger/cmd/internal"
 	"github.com/formancehq/ledger/pkg/api"
-	"github.com/formancehq/ledger/pkg/api/middlewares"
-	"github.com/formancehq/ledger/pkg/api/routes"
 	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/ledger/pkg/ledger"
-	"github.com/formancehq/ledger/pkg/query"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
-	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/stack/libs/go-libs/service"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
@@ -33,68 +25,23 @@ func resolveOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option {
 		sqlstorage.InstrumentalizeSQLDriver()
 	}
 
-	options = append(options, publish.CLIPublisherModule(v, ServiceName), bus.LedgerMonitorModule())
-
-	// Add CQRS worker
-	options = append(options, query.Module())
-
-	// Handle OpenTelemetry
-	options = append(options, otlptraces.CLITracesModule(v))
-
-	// Handle api part
-	options = append(options, api.Module(api.Config{
-		Version: Version,
-	}))
-
-	// Handle storage driver
-	options = append(options, sqlstorage.DriverModule(sqlstorage.ModuleConfig{
-		PostgresConfig: func() *sqlstorage.PostgresConfig {
-			return &sqlstorage.PostgresConfig{
-				ConnString: v.GetString(storagePostgresConnectionStringFlag),
-			}
-		}(),
-	}))
-
-	options = append(options, internal.NewAnalyticsModule(v, Version))
-
-	options = append(options, fx.Provide(
-		fx.Annotate(func() []ledger.Option {
-			ledgerOptions := make([]ledger.Option, 0)
-
-			if v.GetString(commitPolicyFlag) == "allow-past-timestamps" {
-				ledgerOptions = append(ledgerOptions, ledger.WithPastTimestamps)
-			}
-
-			return ledgerOptions
-		}, fx.ResultTags(ledger.ResolverLedgerOptionsKey)),
-	))
-
-	// Handle resolver
-	options = append(options, ledger.ResolveModule())
-
-	options = append(options, routes.ProvideMiddlewares(func(logger logging.Logger) []func(handler http.Handler) http.Handler {
-		res := make([]func(handler http.Handler) http.Handler, 0)
-		res = append(res, cors.New(cors.Options{
-			AllowOriginFunc: func(r *http.Request, origin string) bool {
-				return true
-			},
-			AllowCredentials: true,
-		}).Handler)
-		res = append(res, func(handler http.Handler) http.Handler {
-			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				handler.ServeHTTP(w, r.WithContext(
-					logging.ContextWithLogger(r.Context(), logger),
-				))
-			})
-		})
-		res = append(res, middlewares.Log())
-		res = append(res, middleware.Recoverer)
-		return res
-	}))
+	options = append(options,
+		publish.CLIPublisherModule(v, ServiceName),
+		bus.LedgerMonitorModule(),
+		otlptraces.CLITracesModule(v),
+		api.Module(api.Config{
+			Version: Version,
+		}),
+		sqlstorage.DriverModule(sqlstorage.ModuleConfig{
+			PostgresConfig: func() *sqlstorage.PostgresConfig {
+				return &sqlstorage.PostgresConfig{
+					ConnString: v.GetString(storagePostgresConnectionStringFlag),
+				}
+			}(),
+		}),
+		internal.NewAnalyticsModule(v, Version),
+		ledger.Module(v.GetString(commitPolicyFlag) == "allow-past-timestamps"),
+	)
 
 	return append(options, userOptions...)
-}
-
-func NewContainer(v *viper.Viper, userOptions ...fx.Option) *fx.App {
-	return fx.New(resolveOptions(v, userOptions...)...)
 }

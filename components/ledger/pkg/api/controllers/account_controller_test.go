@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/formancehq/ledger/pkg/api"
 	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/api/controllers"
 	"github.com/formancehq/ledger/pkg/api/internal"
@@ -17,12 +16,15 @@ import (
 	"github.com/formancehq/ledger/pkg/storage"
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetAccounts(t *testing.T) {
-	internal.RunTest(t, func(api *api.API, storageDriver storage.Driver) {
+	internal.RunTest(t, func(api chi.Router, storageDriver storage.Driver) {
 		store, _, err := storageDriver.GetLedgerStore(context.Background(), internal.TestingLedger, true)
+		require.NoError(t, err)
+		_, err = store.Initialize(context.Background())
 		require.NoError(t, err)
 		require.NoError(t, store.EnsureAccountExists(context.Background(), "world"))
 		require.NoError(t, store.EnsureAccountExists(context.Background(), "alice"))
@@ -341,8 +343,11 @@ func TestGetAccounts(t *testing.T) {
 }
 
 func TestGetAccountsWithPageSize(t *testing.T) {
-	internal.RunTest(t, func(api *api.API, driver storage.Driver) {
+	internal.RunTest(t, func(api chi.Router, driver storage.Driver) {
 		store := internal.GetLedgerStore(t, driver, context.Background())
+
+		_, err := store.Initialize(context.Background())
+		require.NoError(t, err)
 
 		for i := 0; i < 3*controllers.MaxPageSize; i++ {
 			require.NoError(t, store.UpdateAccountMetadata(context.Background(), fmt.Sprintf("accounts:%06d", i), core.Metadata{
@@ -404,9 +409,13 @@ func TestGetAccountsWithPageSize(t *testing.T) {
 }
 
 func TestGetAccount(t *testing.T) {
-	internal.RunTest(t, func(api *api.API, storageDriver storage.Driver) {
+	internal.RunTest(t, func(api chi.Router, storageDriver storage.Driver) {
 		store, _, err := storageDriver.GetLedgerStore(context.Background(), internal.TestingLedger, true)
 		require.NoError(t, err)
+
+		_, err = store.Initialize(context.Background())
+		require.NoError(t, err)
+
 		require.NoError(t, store.UpdateAccountMetadata(context.Background(), "alice", core.Metadata{
 			"foo": json.RawMessage(`"bar"`),
 		}))
@@ -469,9 +478,13 @@ func TestGetAccount(t *testing.T) {
 }
 
 func TestPostAccountMetadata(t *testing.T) {
-	internal.RunTest(t, func(api *api.API, storageDriver storage.Driver) {
+	internal.RunTest(t, func(api chi.Router, storageDriver storage.Driver) {
 		store, _, err := storageDriver.GetLedgerStore(context.Background(), internal.TestingLedger, true)
 		require.NoError(t, err)
+
+		_, err = store.Initialize(context.Background())
+		require.NoError(t, err)
+
 		require.NoError(t, store.EnsureAccountExists(context.Background(), "alice"))
 
 		t.Run("valid request", func(t *testing.T) {

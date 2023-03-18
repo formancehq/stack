@@ -3,7 +3,6 @@ package cache
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
@@ -18,23 +17,14 @@ func TestCache(t *testing.T) {
 		require.NoError(t, pgtesting.DestroyPostgresServer())
 	}()
 
-	driver, close, err := ledgertesting.StorageDriver(t)
-	require.NoError(t, err)
-	defer close()
+	driver := ledgertesting.StorageDriver(t)
 
 	require.NoError(t, driver.Initialize(context.Background()))
 
-	dbCache := NewCache(driver)
+	manager := NewManager(driver)
 	ledger := uuid.NewString()
-	cache := dbCache.ForLedger(ledger)
-
-	lastInsertedTransactionID, err := cache.GetLastTransaction(context.Background())
+	cache, err := manager.ForLedger(context.Background(), ledger)
 	require.NoError(t, err)
-	require.Nil(t, lastInsertedTransactionID)
-
-	account, err := cache.GetAccountWithVolumes(context.Background(), "world")
-	require.NoError(t, err)
-	require.Nil(t, account)
 
 	ledgerStore, _, err := driver.GetLedgerStore(context.Background(), ledger, true)
 	require.NoError(t, err)
@@ -52,7 +42,7 @@ func TestCache(t *testing.T) {
 		},
 	}))
 
-	account, err = cache.GetAccountWithVolumes(context.Background(), "world")
+	account, err := cache.GetAccountWithVolumes(context.Background(), "world")
 	require.NoError(t, err)
 	require.NotNil(t, account)
 	require.Equal(t, core.AccountWithVolumes{
@@ -76,7 +66,7 @@ func TestCache(t *testing.T) {
 	account.Volumes["USD/2"] = volumes
 	account.Balances["USD/2"] = core.NewMonetaryInt(90)
 
-	errChan := ledgerStore.AppendLogs(
+	require.NoError(t, ledgerStore.AppendLog(
 		context.Background(),
 		core.NewTransactionLog(core.Transaction{
 			TransactionData: core.TransactionData{
@@ -88,6 +78,9 @@ func TestCache(t *testing.T) {
 				}},
 			},
 		}, nil),
+	))
+	require.NoError(t, ledgerStore.AppendLog(
+		context.Background(),
 		core.NewSetMetadataLog(core.Now(), core.SetMetadataLogPayload{
 			TargetType: core.MetaTargetTypeAccount,
 			TargetID:   "bank",
@@ -95,13 +88,7 @@ func TestCache(t *testing.T) {
 				"category": "gold",
 			},
 		}),
-	)
-	select {
-	case err := <-errChan:
-		require.NoError(t, err)
-	case <-time.After(time.Second):
-		require.Fail(t, "timeout waiting for log insertion")
-	}
+	))
 
 	account, err = cache.GetAccountWithVolumes(context.Background(), "bank")
 	require.NoError(t, err)

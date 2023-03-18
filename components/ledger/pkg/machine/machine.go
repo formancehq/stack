@@ -5,12 +5,15 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/formancehq/ledger/pkg/cache"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/machine/vm"
 	"github.com/formancehq/ledger/pkg/machine/vm/program"
 	"github.com/pkg/errors"
 )
+
+type Store interface {
+	GetAccountWithVolumes(ctx context.Context, address string) (*core.AccountWithVolumes, error)
+}
 
 type Result struct {
 	Postings        core.Postings
@@ -18,7 +21,7 @@ type Result struct {
 	AccountMetadata map[string]core.Metadata
 }
 
-func Run(ctx context.Context, dbCache *cache.Ledger, prog *program.Program, script core.ScriptData) (*Result, error) {
+func Run(ctx context.Context, store Store, prog *program.Program, script core.RunScript) (*Result, error) {
 
 	m := vm.NewMachine(*prog)
 
@@ -36,7 +39,7 @@ func Run(ctx context.Context, dbCache *cache.Ledger, prog *program.Program, scri
 			return nil, NewScriptError(ScriptErrorCompilationFailed,
 				errors.Wrap(req.Error, "could not resolve program resources").Error())
 		}
-		account, err := dbCache.GetAccountWithVolumes(ctx, req.Account)
+		account, err := store.GetAccountWithVolumes(ctx, req.Account)
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("could not get account %q", req.Account))
 		}
@@ -77,7 +80,7 @@ func Run(ctx context.Context, dbCache *cache.Ledger, prog *program.Program, scri
 				errors.Wrap(req.Error, "could not resolve program balances").Error())
 		}
 		var amt *core.MonetaryInt
-		account, err := dbCache.GetAccountWithVolumes(ctx, req.Account)
+		account, err := store.GetAccountWithVolumes(ctx, req.Account)
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("could not get account %q", req.Account))
 		}

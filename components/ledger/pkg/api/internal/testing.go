@@ -11,17 +11,22 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/formancehq/ledger/pkg/api"
 	"github.com/formancehq/ledger/pkg/api/controllers"
+	"github.com/formancehq/ledger/pkg/api/routes"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/ledger/cache"
+	"github.com/formancehq/ledger/pkg/ledger/lock"
+	"github.com/formancehq/ledger/pkg/ledger/runner"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/ledger/pkg/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/go-chi/chi/v5"
 	"github.com/pborman/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/fx"
 )
 
 var TestingLedger string
@@ -64,7 +69,7 @@ func NewRequest(method, path string, body io.Reader) (*http.Request, *httptest.R
 	return req, rec
 }
 
-func PostTransaction(t *testing.T, handler http.Handler, payload controllers.PostTransaction, preview bool) *httptest.ResponseRecorder {
+func PostTransaction(t *testing.T, handler http.Handler, payload controllers.PostTransactionRequest, preview bool) *httptest.ResponseRecorder {
 	path := fmt.Sprintf("/%s/transactions", TestingLedger)
 	if preview {
 		path += "?preview=true"
@@ -195,47 +200,20 @@ func GetLedgerStore(t *testing.T, driver storage.Driver, ctx context.Context) st
 	return store
 }
 
-func RunTest(t *testing.T, callback func(api *api.API, storageDriver storage.Driver)) {
+func RunTest(t *testing.T, callback func(api chi.Router, storageDriver storage.Driver)) {
 	TestingLedger = uuid.New()
+	t.Parallel()
 
-	var (
-		_api          *api.API
-		storageDriver storage.Driver
-	)
+	storageDriver := ledgertesting.StorageDriver(t)
+	require.NoError(t, storageDriver.Initialize(context.Background()))
 
-	options := []fx.Option{
-		api.Module(api.Config{Version: "latest"}),
-		ledger.ResolveModule(),
-		ledgertesting.ProvideLedgerStorageDriver(t),
-		fx.Invoke(func(driver storage.Driver, lc fx.Lifecycle) {
-			lc.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					store, _, err := driver.GetLedgerStore(ctx, TestingLedger, true)
-					if err != nil {
-						return err
-					}
-					defer func(store storage.LedgerStore, ctx context.Context) {
-						require.NoError(t, store.Close(ctx))
-					}(store, ctx)
+	cacheManager := cache.NewManager(storageDriver)
+	lock := lock.NewInMemory()
+	runnerManager := runner.NewManager(storageDriver, lock, cacheManager, false)
+	resolver := ledger.NewResolver(storageDriver, lock, cacheManager, runnerManager)
 
-					_, err = store.Initialize(ctx)
-					return err
-				},
-			})
-		}),
-		fx.NopLogger,
-		fx.Provide(
-			fx.Annotate(func() []ledger.Option {
-				ledgerOptions := []ledger.Option{}
+	router := routes.NewRouter(storageDriver, "latest", resolver,
+		logging.FromContext(context.Background()), &health.HealthController{})
 
-				return ledgerOptions
-			}, fx.ResultTags(ledger.ResolverLedgerOptionsKey)),
-		),
-		fx.Populate(&storageDriver, &_api),
-	}
-
-	app := fx.New(options...)
-	assert.NoError(t, app.Start(context.Background()))
-
-	callback(_api, storageDriver)
+	callback(router, storageDriver)
 }

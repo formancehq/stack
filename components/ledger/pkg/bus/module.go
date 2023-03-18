@@ -1,7 +1,7 @@
 package bus
 
 import (
-	"github.com/formancehq/ledger/pkg/query"
+	"github.com/formancehq/ledger/pkg/ledger/query"
 	"go.uber.org/fx"
 )
 

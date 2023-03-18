@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/formancehq/ledger/pkg/cache"
 	"github.com/formancehq/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/ledger/cache"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/ledger/pkg/machine/script/compiler"
 	"github.com/formancehq/ledger/pkg/storage"
@@ -377,16 +377,18 @@ func TestMachine(t *testing.T) {
 		_ = pgtesting.DestroyPostgresServer()
 	}()
 
-	storageDriver, _, err := ledgertesting.StorageDriver(t)
-	require.NoError(t, err)
+	storageDriver := ledgertesting.StorageDriver(t)
 	require.NoError(t, storageDriver.Initialize(context.Background()))
 
-	cache := cache.NewCache(storageDriver)
+	cacheManager := cache.NewManager(storageDriver)
 
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			ledger := uuid.NewString()
+
+			cache, err := cacheManager.ForLedger(context.Background(), ledger)
+			require.NoError(t, err)
 
 			store, _, err := storageDriver.GetLedgerStore(context.Background(), ledger, true)
 			require.NoError(t, err)
@@ -401,7 +403,7 @@ func TestMachine(t *testing.T) {
 			prog, err := compiler.Compile(tc.script)
 			require.NoError(t, err)
 
-			result, err := Run(context.Background(), cache.ForLedger(ledger), prog, core.ScriptData{
+			result, err := Run(context.Background(), cache, prog, core.RunScript{
 				Script: core.Script{
 					Plain: tc.script,
 					Vars:  tc.vars,

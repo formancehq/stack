@@ -10,12 +10,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/ledger/pkg/api"
 	"github.com/formancehq/ledger/pkg/api/controllers"
 	"github.com/formancehq/ledger/pkg/api/internal"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 )
 
@@ -30,7 +30,7 @@ func TestGetPagination(t *testing.T) {
 	for txsPages := 0; txsPages <= maxTxsPages; txsPages++ {
 		for additionalTxs := 0; additionalTxs <= maxAdditionalTxs; additionalTxs++ {
 			t.Run(fmt.Sprintf("%d-pages-%d-additional", txsPages, additionalTxs), func(t *testing.T) {
-				internal.RunTest(t, func(api *api.API, storageDriver storage.Driver) {
+				internal.RunTest(t, func(api chi.Router, storageDriver storage.Driver) {
 					testGetPagination(t, api, storageDriver, txsPages, additionalTxs)
 				})
 			})
@@ -38,7 +38,7 @@ func TestGetPagination(t *testing.T) {
 	}
 }
 
-func testGetPagination(t *testing.T, api *api.API, storageDriver storage.Driver, txsPages, additionalTxs int) func(ctx context.Context) error {
+func testGetPagination(t *testing.T, api chi.Router, storageDriver storage.Driver, txsPages, additionalTxs int) func(ctx context.Context) error {
 	return func(ctx context.Context) error {
 		store, _, err := storageDriver.GetLedgerStore(ctx, internal.TestingLedger, true)
 		require.NoError(t, err)
@@ -432,11 +432,14 @@ func testGetPagination(t *testing.T, api *api.API, storageDriver storage.Driver,
 }
 
 func TestCursor(t *testing.T) {
-	internal.RunTest(t, func(api *api.API, storageDriver storage.Driver) {
+	internal.RunTest(t, func(api chi.Router, storageDriver storage.Driver) {
 		timestamp, err := core.ParseTime("2023-01-01T00:00:00Z")
 		require.NoError(t, err)
 
 		store, _, err := storageDriver.GetLedgerStore(context.Background(), internal.TestingLedger, true)
+		require.NoError(t, err)
+
+		_, err = store.Initialize(context.Background())
 		require.NoError(t, err)
 
 		for i := 0; i < 30; i++ {
@@ -448,12 +451,7 @@ func TestCursor(t *testing.T) {
 				WithTimestamp(date).
 				WithID(uint64(i))
 			require.NoError(t, store.InsertTransactions(context.Background(), core.ExpandTransactionFromEmptyPreCommitVolumes(tx)))
-			logs := store.AppendLogs(context.Background(), core.NewTransactionLog(tx, nil).WithDate(date))
-			select {
-			case <-logs:
-			case <-time.After(time.Second):
-				require.Fail(t, "timeout")
-			}
+			require.NoError(t, store.AppendLog(context.Background(), core.NewTransactionLog(tx, nil).WithDate(date)))
 			require.NoError(t, store.EnsureAccountExists(context.Background(), fmt.Sprintf("accounts:%02d", i)))
 			require.NoError(t, store.UpdateAccountMetadata(context.Background(), fmt.Sprintf("accounts:%02d", i), core.Metadata{
 				"foo": json.RawMessage(`"bar"`),

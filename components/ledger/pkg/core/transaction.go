@@ -36,6 +36,7 @@ func (t *TransactionData) Reverse() TransactionData {
 	ret := TransactionData{
 		Postings: postings,
 	}
+	//TODO(gfyra): Do we keep this for v2?
 	if t.Reference != "" {
 		ret.Reference = "revert_" + t.Reference
 	}

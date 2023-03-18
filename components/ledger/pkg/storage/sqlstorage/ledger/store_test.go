@@ -543,14 +543,12 @@ func testGetTransaction(t *testing.T, store storage.LedgerStore) {
 }
 
 func TestInitializeStore(t *testing.T) {
-	driver, stopFn, err := ledgertesting.StorageDriver(t)
-	require.NoError(t, err)
-	defer stopFn()
+	driver := ledgertesting.StorageDriver(t)
 	defer func(driver storage.Driver, ctx context.Context) {
 		require.NoError(t, driver.Close(ctx))
 	}(driver, context.Background())
 
-	err = driver.Initialize(context.Background())
+	err := driver.Initialize(context.Background())
 	require.NoError(t, err)
 
 	store, _, err := driver.GetLedgerStore(context.Background(), uuid.NewString(), true)
@@ -566,10 +564,7 @@ func TestInitializeStore(t *testing.T) {
 }
 
 func testGetLastLog(t *testing.T, store storage.LedgerStore) {
-	logs := make([]core.Log, 0)
-	logs = append(logs, core.NewTransactionLog(tx1.Transaction, nil))
-	errChan := store.AppendLogs(context.Background(), logs...)
-	require.NoError(t, <-errChan)
+	require.NoError(t, store.AppendLog(context.Background(), core.NewTransactionLog(tx1.Transaction, nil)))
 
 	lastLog, err := store.GetLastLog(context.Background())
 	require.NoError(t, err)
@@ -581,12 +576,9 @@ func testGetLastLog(t *testing.T, store storage.LedgerStore) {
 }
 
 func testGetLogs(t *testing.T, store storage.LedgerStore) {
-	logs := make([]core.Log, 0)
 	for _, tx := range []core.ExpandedTransaction{tx1, tx2, tx3} {
-		logs = append(logs, core.NewTransactionLog(tx.Transaction, nil))
+		require.NoError(t, store.AppendLog(context.Background(), core.NewTransactionLog(tx.Transaction, nil)))
 	}
-	errChan := store.AppendLogs(context.Background(), logs...)
-	require.NoError(t, <-errChan)
 
 	cursor, err := store.GetLogs(context.Background(), storage.NewLogsQuery())
 	require.NoError(t, err)

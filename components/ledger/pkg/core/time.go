@@ -49,6 +49,10 @@ func (t Time) Before(t2 Time) bool {
 	return t.Time.Before(t2.Time)
 }
 
+func (t Time) After(t2 Time) bool {
+	return t.Time.After(t2.Time)
+}
+
 func (t Time) Sub(t2 Time) time.Duration {
 	return t.Time.Sub(t2.Time)
 }

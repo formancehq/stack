@@ -1,21 +1,23 @@
-package ledger_test
+package runner
 
 import (
 	"context"
 	"testing"
-	"time"
 
-	"github.com/formancehq/ledger/pkg/cache"
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/ledger/cache"
+	"github.com/formancehq/ledger/pkg/ledger/lock"
+	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/ledger/pkg/machine"
+	"github.com/formancehq/stack/libs/go-libs/pgtesting"
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
 type testCase struct {
 	name             string
-	setup            func(t *testing.T, l *ledger.Ledger)
+	setup            func(t *testing.T, r *Runner)
 	script           string
 	reference        string
 	expectedError    error
@@ -84,12 +86,14 @@ var testCases = []testCase{
 	},
 	{
 		name: "set reference conflict",
-		setup: func(t *testing.T, l *ledger.Ledger) {
-			require.NoError(t, l.GetLedgerStore().InsertTransactions(context.Background(), core.ExpandedTransaction{
-				Transaction: core.NewTransaction().
-					WithPostings(core.NewPosting("world", "mint", "GEM", core.NewMonetaryInt(100))).
-					WithReference("tx_ref"),
-			}))
+		setup: func(t *testing.T, l *Runner) {
+			tx := core.NewTransaction().
+				WithPostings(core.NewPosting("world", "mint", "GEM", core.NewMonetaryInt(100))).
+				WithReference("tx_ref")
+			require.NoError(t, l.store.AppendLog(
+				context.Background(),
+				core.NewTransactionLog(tx, nil).WithReference("tx_ref"),
+			))
 		},
 		script: `
 			send [GEM 100] (
@@ -97,7 +101,7 @@ var testCases = []testCase{
 				destination = @mint
 			)`,
 		reference:     "tx_ref",
-		expectedError: ledger.NewConflictError(),
+		expectedError: NewConflictError(""),
 	},
 	{
 		name: "set reference",
@@ -138,7 +142,7 @@ var testCases = []testCase{
 					).
 					WithReference("tx_ref"),
 				map[string]core.Metadata{},
-			),
+			).WithReference("tx_ref"),
 		},
 		expectedAccounts: map[string]core.AccountWithVolumes{
 			"mint": {
@@ -158,63 +162,78 @@ func TestExecuteScript(t *testing.T) {
 	t.Parallel()
 	now := core.Now()
 
+	require.NoError(t, pgtesting.CreatePostgresServer())
+	defer func() {
+		require.NoError(t, pgtesting.DestroyPostgresServer())
+	}()
+
+	storageDriver := ledgertesting.StorageDriver(t)
+	require.NoError(t, storageDriver.Initialize(context.Background()))
+
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			runOnLedger(t, func(l *ledger.Ledger) {
 
-				if tc.setup != nil {
-					tc.setup(t, l)
-				}
+			ledger := uuid.NewString()
 
-				ret, _, err := l.CreateTransactionAndWait(context.Background(), false, core.ScriptData{
-					Script: core.Script{
-						Plain: tc.script,
-					},
-					Timestamp: now,
-					Reference: tc.reference,
-				})
-				if tc.expectedError != nil {
-					require.True(t, errors.Is(err, tc.expectedError))
-				} else {
-					require.NoError(t, err)
-					tc.expectedTx.Timestamp = now
-					require.Equal(t, tc.expectedTx, *ret)
+			store, _, err := storageDriver.GetLedgerStore(context.Background(), ledger, true)
+			require.NoError(t, err)
 
-					logs, err := l.GetLedgerStore().ReadLogsStartingFromID(context.Background(), 0)
-					require.NoError(t, err)
-					require.Len(t, logs, len(tc.expectedLogs))
-					for ind := range tc.expectedLogs {
-						var previous *core.Log
-						if ind > 0 {
-							previous = &tc.expectedLogs[ind-1]
-						}
-						expectedLog := tc.expectedLogs[ind]
-						switch v := expectedLog.Data.(type) {
-						case core.NewTransactionLogPayload:
-							v.Transaction.Timestamp = now
-							expectedLog.Data = v
-						}
-						expectedLog.Date = now
-						require.Equal(t, expectedLog.ComputeHash(previous), logs[ind])
-					}
+			_, err = store.Initialize(context.Background())
+			require.NoError(t, err)
 
-					lastTXInfo, err := l.GetDBCache().GetLastTransaction(context.Background())
-					require.NoError(t, err)
-					require.NotNil(t, lastTXInfo)
-					require.Equal(t, cache.TxInfo{
-						Date: tc.expectedTx.Timestamp,
-					}, *lastTXInfo)
+			cache := cache.New(store)
+			runner, err := New(store, lock.NewInMemory(), cache, false)
+			require.NoError(t, err)
 
-					<-time.After(2 * time.Second)
-					for address, account := range tc.expectedAccounts {
-						accountFromCache, err := l.GetDBCache().GetAccountWithVolumes(context.Background(), address)
-						require.NoError(t, err)
-						require.NotNil(t, accountFromCache)
-						require.Equal(t, account, *accountFromCache)
-					}
-				}
+			if tc.setup != nil {
+				tc.setup(t, runner)
+			}
+			ret, err := runner.Execute(context.Background(), core.RunScript{
+				Script: core.Script{
+					Plain: tc.script,
+				},
+				Timestamp: now,
+				Reference: tc.reference,
+			}, false, func(transaction core.ExpandedTransaction, accountMetadata map[string]core.Metadata) core.Log {
+				return core.NewTransactionLog(transaction.Transaction, accountMetadata)
 			})
+
+			if tc.expectedError != nil {
+				require.True(t, errors.Is(err, tc.expectedError))
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, ret)
+				tc.expectedTx.Timestamp = now
+				require.Equal(t, tc.expectedTx, *ret)
+
+				logs, err := store.ReadLogsStartingFromID(context.Background(), 0)
+				require.NoError(t, err)
+				require.Len(t, logs, len(tc.expectedLogs))
+				for ind := range tc.expectedLogs {
+					var previous *core.Log
+					if ind > 0 {
+						previous = &tc.expectedLogs[ind-1]
+					}
+					expectedLog := tc.expectedLogs[ind]
+					switch v := expectedLog.Data.(type) {
+					case core.NewTransactionLogPayload:
+						v.Transaction.Timestamp = now
+						expectedLog.Data = v
+					}
+					expectedLog.Date = now
+					require.Equal(t, expectedLog.ComputeHash(previous), logs[ind])
+				}
+
+				require.Equal(t, tc.expectedTx.Timestamp, runner.lastTransactionDate)
+
+				for address, account := range tc.expectedAccounts {
+					accountFromCache, err := runner.cache.GetAccountWithVolumes(context.Background(), address)
+					require.NoError(t, err)
+					require.NotNil(t, accountFromCache)
+					require.Equal(t, account, *accountFromCache)
+				}
+			}
 		})
 	}
 }

@@ -9,19 +9,23 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/formancehq/ledger/pkg/api"
 	"github.com/formancehq/ledger/pkg/api/controllers"
 	"github.com/formancehq/ledger/pkg/api/internal"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
+	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetBalancesAggregated(t *testing.T) {
-	internal.RunTest(t, func(api *api.API, storageDriver storage.Driver) {
+	internal.RunTest(t, func(api chi.Router, storageDriver storage.Driver) {
 		store, _, err := storageDriver.GetLedgerStore(context.Background(), internal.TestingLedger, true)
 		require.NoError(t, err)
+
+		_, err = store.Initialize(context.Background())
+		require.NoError(t, err)
+
 		require.NoError(t, store.UpdateVolumes(context.Background(), core.AccountsAssetsVolumes{
 			"world": {
 				"USD": core.NewEmptyVolumes().WithOutput(core.NewMonetaryInt(250)),
@@ -64,9 +68,13 @@ func TestGetBalancesAggregated(t *testing.T) {
 }
 
 func TestGetBalances(t *testing.T) {
-	internal.RunTest(t, func(api *api.API, storageDriver storage.Driver) {
+	internal.RunTest(t, func(api chi.Router, storageDriver storage.Driver) {
 		store, _, err := storageDriver.GetLedgerStore(context.Background(), internal.TestingLedger, true)
 		require.NoError(t, err)
+
+		_, err = store.Initialize(context.Background())
+		require.NoError(t, err)
+
 		require.NoError(t, store.UpdateVolumes(context.Background(), core.AccountsAssetsVolumes{
 			"world": {
 				"USD": core.NewEmptyVolumes().WithOutput(core.NewMonetaryInt(250)),

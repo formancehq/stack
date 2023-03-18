@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/ledger/pkg/aggregator"
 	"github.com/formancehq/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/ledger/aggregator"
 	"github.com/formancehq/ledger/pkg/storage"
-	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 )
@@ -20,24 +19,24 @@ type workerConfig struct {
 type Worker struct {
 	workerConfig
 	stopChan chan chan struct{}
-	driver   *sqlstorage.Driver
+	driver   storage.Driver
 	monitor  Monitor
 }
 
 func (w *Worker) Run(ctx context.Context) error {
-	logging.FromContext(ctx).Infof("Start CQRS worker")
+	logging.FromContext(ctx).Debugf("Start CQRS worker")
 	for {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		case stopChan := <-w.stopChan:
-			logging.FromContext(ctx).Infof("CQRS worker stopped")
+			logging.FromContext(ctx).Debugf("CQRS worker stopped")
 			close(stopChan)
 			return nil
 		case <-time.After(w.Interval):
 			if err := w.run(ctx); err != nil {
 				if err == context.Canceled {
-					logging.FromContext(ctx).Infof("CQRS worker canceled")
+					logging.FromContext(ctx).Debugf("CQRS worker canceled")
 					return err
 				}
 				logging.FromContext(ctx).Errorf("CQRS worker error: %s", err)
@@ -116,17 +115,27 @@ func (w *Worker) processLedger(ctx context.Context, ledger string) error {
 
 func (w *Worker) processLogs(ctx context.Context, store storage.LedgerStore, logs ...core.Log) error {
 	volumeAggregator := aggregator.Volumes(store)
+	var nextTxID *uint64
+	lastTx, err := store.GetLastTransaction(ctx)
+	if err != nil {
+		return err
+	}
+	if lastTx != nil {
+		v := lastTx.ID + 1
+		nextTxID = &v
+	} else {
+		v := uint64(0)
+		nextTxID = &v
+	}
+
 	for _, log := range logs {
 		var err error
 		switch log.Type {
 		case core.NewTransactionLogType:
 			payload := log.Data.(core.NewTransactionLogPayload)
-			txVolumeAggregator := volumeAggregator.NextTx()
-
-			for _, posting := range payload.Transaction.Postings {
-				if err := txVolumeAggregator.Transfer(ctx, posting.Source, posting.Destination, posting.Asset, posting.Amount); err != nil {
-					return errors.Wrap(err, "aggregating volumes")
-				}
+			txVolumeAggregator, err := volumeAggregator.NextTxWithPostings(ctx, payload.Transaction.Postings...)
+			if err != nil {
+				return err
 			}
 
 			if payload.AccountMetadata != nil {
@@ -142,6 +151,8 @@ func (w *Worker) processLogs(ctx context.Context, store storage.LedgerStore, log
 				PreCommitVolumes:  txVolumeAggregator.PreCommitVolumes,
 				PostCommitVolumes: txVolumeAggregator.PostCommitVolumes,
 			}
+			expandedTx.ID = *nextTxID
+			*nextTxID = *nextTxID + 1
 			if err := store.InsertTransactions(ctx, expandedTx); err != nil {
 				return errors.Wrap(err, "inserting transactions")
 			}
@@ -184,12 +195,11 @@ func (w *Worker) processLogs(ctx context.Context, store storage.LedgerStore, log
 				core.RevertedMetadata(payload.RevertTransaction.ID)); err != nil {
 				return errors.Wrap(err, "updating metadata")
 			}
-			txVolumeAggregator := volumeAggregator.NextTx()
-			for _, posting := range payload.RevertTransaction.Postings {
-				if err := txVolumeAggregator.Transfer(ctx, posting.Source, posting.Destination, posting.Asset, posting.Amount); err != nil {
-					return errors.Wrap(err, "aggregating volumes")
-				}
+			txVolumeAggregator, err := volumeAggregator.NextTxWithPostings(ctx, payload.RevertTransaction.Postings...)
+			if err != nil {
+				return errors.Wrap(err, "aggregating volumes")
 			}
+
 			expandedTx := core.ExpandedTransaction{
 				Transaction:       payload.RevertTransaction,
 				PreCommitVolumes:  txVolumeAggregator.PreCommitVolumes,
@@ -215,7 +225,7 @@ func (w *Worker) processLogs(ctx context.Context, store storage.LedgerStore, log
 	return nil
 }
 
-func NewWorker(config workerConfig, driver *sqlstorage.Driver, monitor Monitor) *Worker {
+func NewWorker(config workerConfig, driver storage.Driver, monitor Monitor) *Worker {
 	return &Worker{
 		stopChan:     make(chan chan struct{}),
 		workerConfig: config,

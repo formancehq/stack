@@ -5,15 +5,15 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/formancehq/ledger/pkg/api"
 	"github.com/formancehq/ledger/pkg/api/controllers"
 	"github.com/formancehq/ledger/pkg/api/internal"
 	"github.com/formancehq/ledger/pkg/storage"
+	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetInfo(t *testing.T) {
-	internal.RunTest(t, func(h *api.API, driver storage.Driver) {
+	internal.RunTest(t, func(h chi.Router, driver storage.Driver) {
 		rsp := internal.GetInfo(h)
 		require.Equal(t, http.StatusOK, rsp.Result().StatusCode)
 

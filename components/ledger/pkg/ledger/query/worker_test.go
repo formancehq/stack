@@ -21,9 +21,7 @@ func TestWorker(t *testing.T) {
 		require.NoError(t, pgtesting.DestroyPostgresServer())
 	}()
 
-	driver, close, err := ledgertesting.StorageDriver(t)
-	require.NoError(t, err)
-	defer close()
+	driver := ledgertesting.StorageDriver(t)
 	require.NoError(t, driver.Initialize(context.Background()))
 
 	ledgerStore, _, err := driver.GetLedgerStore(context.Background(), uuid.New(), true)
@@ -98,15 +96,9 @@ func TestWorker(t *testing.T) {
 			Metadata:   appliedMetadataOnAccount,
 		}),
 	}
-	errChan := ledgerStore.AppendLogs(context.Background(), logs...)
-
-	select {
-	case <-time.After(time.Second):
-		require.Fail(t, "timeout waiting for logs writes")
-	case err := <-errChan:
-		require.NoError(t, err)
+	for _, log := range logs {
+		require.NoError(t, ledgerStore.AppendLog(context.Background(), log))
 	}
-
 	require.Eventually(t, func() bool {
 		nextLogID, err := ledgerStore.GetNextLogID(context.Background())
 		require.NoError(t, err)

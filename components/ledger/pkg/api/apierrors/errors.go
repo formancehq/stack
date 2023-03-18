@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/formancehq/ledger/pkg/ledger"
+	"github.com/formancehq/ledger/pkg/ledger/runner"
 	"github.com/formancehq/ledger/pkg/machine"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
@@ -49,13 +49,13 @@ func ResponseError(w http.ResponseWriter, r *http.Request, err error) {
 
 func coreErrorToErrorCode(err error) (int, string, string) {
 	switch {
-	case ledger.IsConflictError(err):
+	case runner.IsConflictError(err):
 		return http.StatusConflict, ErrConflict, ""
-	case ledger.IsInsufficientFundError(err):
+	case runner.IsInsufficientFundError(err):
 		return http.StatusBadRequest, ErrInsufficientFund, ""
-	case ledger.IsValidationError(err):
+	case runner.IsValidationError(err):
 		return http.StatusBadRequest, ErrValidation, ""
-	case ledger.IsNotFoundError(err):
+	case runner.IsNotFoundError(err):
 		return http.StatusNotFound, ErrNotFound, ""
 	case machine.IsScriptErrorWithCode(err, ErrScriptNoScript),
 		machine.IsScriptErrorWithCode(err, ErrInsufficientFund),

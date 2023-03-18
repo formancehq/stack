@@ -10,7 +10,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/formancehq/ledger/pkg/api"
 	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/api/controllers"
 	"github.com/formancehq/ledger/pkg/api/internal"
@@ -20,12 +19,13 @@ import (
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/migrations"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetLedgerInfo(t *testing.T) {
-	internal.RunTest(t, func(h *api.API, driver storage.Driver) {
+	internal.RunTest(t, func(h chi.Router, driver storage.Driver) {
 		availableMigrations, err := migrations.CollectMigrationFiles(ledgerstore.MigrationsFS)
 		require.NoError(t, err)
 
@@ -48,9 +48,13 @@ func TestGetLedgerInfo(t *testing.T) {
 }
 
 func TestGetStats(t *testing.T) {
-	internal.RunTest(t, func(h *api.API, storageDriver storage.Driver) {
+	internal.RunTest(t, func(h chi.Router, storageDriver storage.Driver) {
 		store, _, err := storageDriver.GetLedgerStore(context.Background(), internal.TestingLedger, true)
 		require.NoError(t, err)
+
+		_, err = store.Initialize(context.Background())
+		require.NoError(t, err)
+
 		require.NoError(t, store.InsertTransactions(context.Background(), core.ExpandTransactionFromEmptyPreCommitVolumes(
 			core.NewTransaction().WithPostings(
 				core.NewPosting("world", "alice", "USD", core.NewMonetaryInt(100)),
@@ -78,7 +82,7 @@ func TestGetStats(t *testing.T) {
 }
 
 func TestGetLogs(t *testing.T) {
-	internal.RunTest(t, func(api *api.API, driver storage.Driver) {
+	internal.RunTest(t, func(api chi.Router, driver storage.Driver) {
 		now := core.Now()
 		tx1 := core.ExpandedTransaction{
 			Transaction: core.Transaction{
@@ -113,39 +117,33 @@ func TestGetLogs(t *testing.T) {
 			},
 		}
 		store := internal.GetLedgerStore(t, driver, context.Background())
+		_, err := store.Initialize(context.Background())
+		require.NoError(t, err)
+
 		require.NoError(t, store.InsertTransactions(context.Background(), tx1, tx2))
-		logs := make([]core.Log, 0)
+
 		for _, tx := range []core.ExpandedTransaction{tx1, tx2} {
-			logs = append(logs, core.NewTransactionLog(tx.Transaction, nil))
+			require.NoError(t, store.AppendLog(context.Background(), core.NewTransactionLog(tx.Transaction, nil)))
 		}
-		errChan := store.AppendLogs(context.Background(), logs...)
-		require.NoError(t, <-errChan)
 
 		at := core.Now()
 		require.NoError(t, store.UpdateTransactionMetadata(context.Background(),
 			0, core.Metadata{"key": "value"}))
 
-		logs = nil
-		logs = append(logs, core.NewSetMetadataLog(at, core.SetMetadataLogPayload{
+		require.NoError(t, store.AppendLog(context.Background(), core.NewSetMetadataLog(at, core.SetMetadataLogPayload{
 			TargetType: core.MetaTargetTypeTransaction,
 			TargetID:   0,
 			Metadata:   core.Metadata{"key": "value"},
-		}))
-		errChan = store.AppendLogs(context.Background(), logs...)
-		require.NoError(t, <-errChan)
+		})))
 
 		at2 := core.Now()
-		require.NoError(t, store.UpdateAccountMetadata(context.Background(),
-			"alice", core.Metadata{"key": "value"}))
+		require.NoError(t, store.UpdateAccountMetadata(context.Background(), "alice", core.Metadata{"key": "value"}))
 
-		logs = nil
-		logs = append(logs, core.NewSetMetadataLog(at2, core.SetMetadataLogPayload{
+		require.NoError(t, store.AppendLog(context.Background(), core.NewSetMetadataLog(at2, core.SetMetadataLogPayload{
 			TargetType: core.MetaTargetTypeAccount,
 			TargetID:   "alice",
 			Metadata:   core.Metadata{"key": "value"},
-		}))
-		errChan = store.AppendLogs(context.Background(), logs...)
-		require.NoError(t, <-errChan)
+		})))
 
 		var log0Timestamp, log1Timestamp core.Time
 		t.Run("all", func(t *testing.T) {

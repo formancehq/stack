@@ -19,9 +19,7 @@ func TestMigrate17(t *testing.T) {
 		require.NoError(t, pgtesting.DestroyPostgresServer())
 	}()
 
-	driver, closeFunc, err := ledgertesting.StorageDriver(t)
-	require.NoError(t, err)
-	defer closeFunc()
+	driver := ledgertesting.StorageDriver(t)
 
 	require.NoError(t, driver.Initialize(context.Background()))
 	store, _, err := driver.GetLedgerStore(context.Background(), uuid.New(), true)

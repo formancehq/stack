@@ -1,4 +1,4 @@
-package ledger
+package runner
 
 import (
 	"fmt"
@@ -81,10 +81,12 @@ func IsValidationError(err error) bool {
 	return errors.Is(err, &ValidationError{})
 }
 
-type ConflictError struct{}
+type ConflictError struct {
+	msg string
+}
 
 func (e ConflictError) Error() string {
-	return "conflict error on reference"
+	return fmt.Sprintf("conflict error: %s", e.msg)
 }
 
 func (e ConflictError) Is(err error) bool {
@@ -92,8 +94,10 @@ func (e ConflictError) Is(err error) bool {
 	return ok
 }
 
-func NewConflictError() *ConflictError {
-	return &ConflictError{}
+func NewConflictError(msg string) *ConflictError {
+	return &ConflictError{
+		msg: msg,
+	}
 }
 
 func IsConflictError(err error) bool {
