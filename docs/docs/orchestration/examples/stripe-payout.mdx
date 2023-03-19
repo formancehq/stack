@@ -1,0 +1,71 @@
+---
+title: Ledger to Stripe Payout
+---
+
+import { PostingsGraph } from '@site/src/components/Graphviz';
+
+In this example, we're going to create a workflow that will transfer funds from a ledger account to a Stripe Connect account by leveraging the `send` stage.
+
+:::info
+To initiate a transfer from a ledger account to a Stripe Connect account, you must have set the `stripeConnectID` metadata key on the ledger account metadata to identify the Stripe Connect account to initiate the transfer to.
+:::
+
+## What's happening in this example?
+
+Before we dive into the workflow definition, let's take a look at what's happening in this example. As you may imagine, when we say "transfer funds from a ledger account to a Stripe Connect account", we don't mean that funds are actually being teleported from our own ledger account to our Stripe Connect account balance. Instead, we'll be doing two things:
+
+1. Recycle the funds we previously introduced in the ledger by transferring them to the `@world` account
+2. Transfer the funds from our main Stripe balance to the target Stripe Connect account
+
+<PostingsGraph postings={[
+  {
+    source: 'payouts:1234',
+    destination: 'world',
+    asset: 'USD/2',
+    amount: 100,
+  },
+  {
+    source: 'stripe main balance',
+    destination: 'stripe connect account (acct_xxx)',
+    asset: 'USD/2',
+    amount: 100,
+    shape: 'box',
+  },
+]} additionnals={[
+  {
+    from: 'payouts:1234',
+    to: 'stripe connect account (acct_xxx)',
+    color: 'blue',
+  },
+]} caption="Ledger transaction (top, rounded) and Stripe Connect transfer (bottom, squared)" />
+
+The Flows service will be taking care of the sequencing for us.
+
+## Prerequisites
+
+Prior to creating and executing this workflow, you'll need to have the following:
+
+* The Stripe connector set up and configured with a write-able API key
+* A ledger account provisioned with funds,
+* and a `stripeConnectID` metadata key set on it - corresponding to the Stripe Connect account you want to transfer funds to
+
+## Workflow definition
+
+Unceremoniously, here's the workflow definition we'll be using in this example:
+
+```yaml
+---
+name: "ledger-to-stripe-payout-demo"
+stages:
+  - send:
+      source:
+        account:
+          id: "payouts:1234"
+          ledger: "flows-demo-001"
+      destination:
+        payment:
+          psp: "stripe"
+      amount:
+        amount: "${amount.amount}"
+        asset: "${amount.asset}"
+```
