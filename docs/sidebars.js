@@ -357,6 +357,73 @@ const sidebars = {
             }
           ]
         },
+        {
+          label: 'Flows (beta)',
+          type: 'category',
+          collapsible: true,
+          collapsed: true,
+          items: [
+            {
+              type: 'doc',
+              id: 'orchestration/index',
+              label: 'Introduction',
+            },
+            {
+              type: 'doc',
+              id: 'orchestration/definition',
+              label: 'Workflows definition',
+            },
+            {
+              type: 'doc',
+              id: 'orchestration/execution',
+              label: 'Workflows execution',
+            },
+            {
+              type: 'category',
+              label: 'Stages reference',
+              collapsible: true,
+              collapsed: false,
+              items: [
+                {
+                  type: 'doc',
+                  id: 'orchestration/stages/send',
+                  label: 'Send',
+                },
+                {
+                  type: 'doc',
+                  id: 'orchestration/stages/wait-event',
+                  label: 'Waiting for events',
+                },
+                {
+                  type: 'doc',
+                  id: 'orchestration/stages/wait-delay',
+                  label: 'Waiting for a delay',
+                }
+              ],
+            },
+            {
+              type: 'category',
+              label: 'Examples',
+              items: [
+                {
+                  type: 'doc',
+                  id: 'orchestration/examples/ledger-to-ledger',
+                  label: 'Ledger to Ledger',
+                },
+                {
+                  type: 'doc',
+                  id: 'orchestration/examples/payment-to-wallet',
+                  label: 'Payment to Wallet',
+                },
+                {
+                  type: 'doc',
+                  id: 'orchestration/examples/stripe-payout',
+                  label: 'Ledger to Payout',
+                }
+              ],
+            }
+          ],
+        }
       ]
     },
     {

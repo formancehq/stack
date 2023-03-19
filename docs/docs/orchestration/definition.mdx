@@ -1,0 +1,50 @@
+---
+title: What's a Workflow?
+---
+
+Within the Flows service, a _Workflow_ refers to a template that defines an ordered sequence of actions, called _stages_, to be executed as a Workflow _Instance_.
+
+## Workflow Definition Syntax
+
+A workflow definition is a YAML file, with the following structure:
+
+```yaml
+---
+name: "my-workflow"
+stages:
+  - send:
+    # ...
+  - wait_event:
+      event: deposit.confirmed
+  - delay:
+      seconds: 7d
+  - send:
+    # ...
+```
+
+## Available stages
+
+As of today, the following stages are supported:
+
+| Stage      | Description                                                                                                     |
+|------------|-----------------------------------------------------------------------------------------------------------------|
+| `send`       | Transfers value from a source to a destination. This stage is compatible with ledgers, payments, and wallets. |
+| `wait_event` | Makes the workflow instance wait for an event to be emitted by an external system.                            |
+| `delay`      | Makes the workflow instance wait for a given amount of time.                                                  |
+
+To learn more about each stage, please refer to the dedicated documentation page in the following section.
+
+## Using variables
+
+Variables can be used in the workflow definition, by using the `${}` syntax. Variables will then be expanded according to the values passed at workflow execution time.
+
+```yaml
+---
+stages:
+  - wait_event:
+      event: "${event}"
+```
+
+## Lifecycle
+
+Workflows have a lifecycle of their own, and need to be created before they can be executed as instances - follow on to the next section to learn more and create your first workflow.
