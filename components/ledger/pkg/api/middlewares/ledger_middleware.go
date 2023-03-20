@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/ledger/pkg/opentelemetry"
 	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type LedgerMiddleware struct {
@@ -45,6 +46,8 @@ func (m *LedgerMiddleware) LedgerMiddleware() func(handler http.Handler) http.Ha
 			defer l.Close(context.Background())
 
 			r = r.WithContext(controllers.ContextWithLedger(r.Context(), l))
+
+			middleware.SetHeader("Content-Type", "application/json")(handler).ServeHTTP(w, r)
 
 			handler.ServeHTTP(w, r)
 		})
