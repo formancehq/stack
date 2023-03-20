@@ -320,9 +320,15 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 			Subjects:  []string{topicName},
 			Retention: nats.InterestPolicy,
 		}
-		nc, _ := nats.Connect(ctx.Configuration.Spec.Broker.Nats.URL)
-		js, _ := nc.JetStream()
-		_, err := js.StreamInfo(topicName)
+		nc, err := nats.Connect(ctx.Configuration.Spec.Broker.Nats.URL)
+		if err != nil {
+			logging.Error(err)
+		}
+		js, err := nc.JetStream()
+		if err != nil {
+			logging.Error(err)
+		}
+		_, err = js.StreamInfo(topicName)
 		if err != nil {
 			_, err := js.AddStream(&streamConfig)
 			if err != nil {
