@@ -5,7 +5,7 @@ input:
 pipeline:
   processors:
   - bloblang: |
-      meta ledger = this.ledger
+      meta ledger = this.payload.ledger
       meta batchSize = 100
   - postgres_query:
       service: ledger

@@ -24,6 +24,7 @@ func init() {
 				HasVersionEndpoint:      true,
 				ListenEnvVar:            "LISTEN",
 				ExposeHTTP:              true,
+				NeedTopic:               true,
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 					return modules.Container{
 						Env:      env(resolveContext),

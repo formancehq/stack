@@ -9,6 +9,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/jackc/pgx/v5 v5.3.0
+	github.com/nats-io/nats.go v1.24.0
 	github.com/numary/auth/authclient v0.0.0-20220811153653-6335dd9658f2
 	github.com/onsi/ginkgo/v2 v2.6.0
 	github.com/onsi/gomega v1.24.1
@@ -16,7 +17,6 @@ require (
 	github.com/traefik/traefik/v2 v2.9.8
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.26.1
-	k8s.io/apiextensions-apiserver v0.26.1
 	k8s.io/apimachinery v0.26.1
 	k8s.io/client-go v0.26.1
 	k8s.io/utils v0.0.0-20230220204549-a5ecb0141aa5
@@ -72,6 +72,8 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/nats-io/nkeys v0.3.0 // indirect
+	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/opencontainers/runc v1.1.4 // indirect
@@ -110,6 +112,7 @@ require (
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	k8s.io/apiextensions-apiserver v0.26.1 // indirect
 	k8s.io/component-base v0.26.1 // indirect
 	k8s.io/klog/v2 v2.90.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20230217203603-ff9a8e8fa21d // indirect
