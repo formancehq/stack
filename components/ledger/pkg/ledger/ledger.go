@@ -7,20 +7,20 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger/cache"
 	"github.com/formancehq/ledger/pkg/ledger/lock"
-	runner2 "github.com/formancehq/ledger/pkg/ledger/runner"
+	"github.com/formancehq/ledger/pkg/ledger/runner"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 )
 
 type Ledger struct {
-	runner  *runner2.Runner
+	runner  *runner.Runner
 	store   storage.LedgerStore
 	locker  lock.Locker
 	dbCache *cache.Cache
 }
 
-func New(store storage.LedgerStore, dbCache *cache.Cache, runner *runner2.Runner, locker lock.Locker) *Ledger {
+func New(store storage.LedgerStore, dbCache *cache.Cache, runner *runner.Runner, locker lock.Locker) *Ledger {
 	return &Ledger{
 		store:   store,
 		dbCache: dbCache,
@@ -60,7 +60,7 @@ func (l *Ledger) GetTransaction(ctx context.Context, id uint64) (*core.ExpandedT
 		return nil, err
 	}
 	if tx == nil {
-		return nil, runner2.NewNotFoundError("transaction not found")
+		return nil, runner.NewNotFoundError("transaction not found")
 	}
 
 	return tx, nil
@@ -73,10 +73,10 @@ func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.Expand
 		return nil, errors.Wrap(err, fmt.Sprintf("getting transaction %d", id))
 	}
 	if revertedTx == nil {
-		return nil, runner2.NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
+		return nil, runner.NewNotFoundError(fmt.Sprintf("transaction %d not found", id))
 	}
 	if revertedTx.IsReverted() {
-		return nil, runner2.NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
+		return nil, runner.NewValidationError(fmt.Sprintf("transaction %d already reverted", id))
 	}
 
 	rt := revertedTx.Reverse()
@@ -117,11 +117,11 @@ func (l *Ledger) GetBalancesAggregated(ctx context.Context, q storage.BalancesQu
 func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID interface{}, m core.Metadata) error {
 
 	if targetType == "" {
-		return runner2.NewValidationError("empty target type")
+		return runner.NewValidationError("empty target type")
 	}
 
 	if targetID == "" {
-		return runner2.NewValidationError("empty target id")
+		return runner.NewValidationError("empty target id")
 	}
 
 	at := core.Now()
@@ -158,7 +158,7 @@ func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID inter
 			Metadata:   m,
 		})
 	default:
-		return runner2.NewValidationError(fmt.Sprintf("unknown target type '%s'", targetType))
+		return runner.NewValidationError(fmt.Sprintf("unknown target type '%s'", targetType))
 	}
 	if err != nil {
 		return err

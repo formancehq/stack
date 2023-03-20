@@ -70,6 +70,7 @@ func (c *Cache) accountKey(address string) string {
 func New(store storage.LedgerStore) *Cache {
 	return &Cache{
 		store: store,
+		//TODO(gfyrag): Make configurable
 		cache: gcache.New(1000).LFU().Build(),
 	}
 }
