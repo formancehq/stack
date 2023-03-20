@@ -9,8 +9,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/davecgh/go-spew/spew"
-
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/httpclient"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -49,17 +47,16 @@ func (c *openapiCheckerRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 	Expect(errors.Wrap(openapi3filter.ValidateRequest(req.Context(), input), "validating request")).
 		WithOffset(8).To(Succeed())
 
-	data, err := httputil.DumpRequest(req, true)
+	_, err = httputil.DumpRequest(req, true)
 	Expect(err).To(BeNil())
 
 	rsp, err := c.underlying.RoundTrip(req)
 	Expect(err).WithOffset(8).To(Succeed())
 
-	data, err = io.ReadAll(rsp.Body)
+	data, err := io.ReadAll(rsp.Body)
 	Expect(err).WithOffset(8).To(Succeed())
 	rsp.Body = io.NopCloser(bytes.NewBuffer(data))
 
-	spew.Dump("RESPTOVALID", rsp)
 	err = openapi3filter.ValidateResponse(req.Context(), &openapi3filter.ResponseValidationInput{
 		RequestValidationInput: input,
 		Status:                 rsp.StatusCode,

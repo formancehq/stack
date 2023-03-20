@@ -10,7 +10,6 @@ import (
 	"github.com/formancehq/ledger/pkg/opentelemetry"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -38,8 +37,6 @@ func LedgerMiddleware(resolver *ledger.Resolver) func(handler http.Handler) http
 			defer l.Close(context.Background())
 
 			r = r.WithContext(controllers.ContextWithLedger(r.Context(), l))
-
-			middleware.SetHeader("Content-Type", "application/json")(handler).ServeHTTP(w, r)
 
 			handler.ServeHTTP(w, r)
 		})

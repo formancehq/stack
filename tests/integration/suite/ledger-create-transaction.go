@@ -130,3 +130,24 @@ var _ = Given("some empty environment", func() {
 		})
 	})
 })
+
+var _ = Given("some empty environment", func() {
+	When("creating a transaction on a ledger with insufficient funds", func() {
+		It("should fail", func() {
+			resp, httpResp, err := Client().TransactionsApi.
+				CreateTransaction(TestContext(), "default").
+				PostTransaction(formance.PostTransaction{
+					Postings: []formance.Posting{{
+						Amount:      100,
+						Asset:       "USD",
+						Source:      "bob",
+						Destination: "alice",
+					}},
+				}).
+				Execute()
+			Expect(err).To(HaveOccurred())
+			Expect(httpResp.StatusCode).To(Equal(400))
+			Expect(resp).To(BeNil())
+		})
+	})
+})
