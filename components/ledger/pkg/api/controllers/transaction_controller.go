@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger/runner"
@@ -176,6 +177,8 @@ func PostTransaction(w http.ResponseWriter, r *http.Request) {
 			runner.NewValidationError("invalid transaction format"))
 		return
 	}
+
+	spew.Dump("POSTTXS", payload)
 
 	if len(payload.Postings) > 0 && payload.Script.Plain != "" ||
 		len(payload.Postings) == 0 && payload.Script.Plain == "" {
