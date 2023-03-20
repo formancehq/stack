@@ -23,7 +23,7 @@ var _ = Given("some empty environment", func() {
 				}).
 				Execute()
 			Expect(err).To(HaveOccurred())
-			spew.Dump(resp, httpResp, err)
+			spew.Dump("TXRESP", resp, "HTTPRESP", httpResp, "TXERR", err)
 		})
 	})
 })

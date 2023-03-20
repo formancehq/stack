@@ -3,9 +3,9 @@ version: "3"
 vars:
   PKG: "./suite"
   RUN: ".*"
-  VERBOSE: "false"
-  PARALLEL: "true"
-  FAILFAST: "true"
+  VERBOSE: "true"
+  PARALLEL: "false"
+  FAILFAST: "false"
   DEBUG: "true"
   REPEAT: 0
 
@@ -24,7 +24,7 @@ tasks:
     cmds:
       - >
         ginkgo --race --vet ""
-        {{if eq .VERBOSE "true"}}--vv{{end}}
+        {{if eq .VERBOSE "true"}}-v{{end}}
         {{if eq .PARALLEL "true"}}-p{{end}}
         {{if eq .FAILFAST "true"}}--fail-fast{{end}}
         --focus-file "{{.RUN}}"
