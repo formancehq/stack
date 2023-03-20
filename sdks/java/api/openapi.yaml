@@ -2497,7 +2497,7 @@ paths:
         example: wallet1
         explode: true
         in: query
-        name: wallet_id
+        name: walletID
         required: false
         schema:
           type: string

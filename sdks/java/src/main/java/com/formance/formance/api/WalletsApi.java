@@ -150,13 +150,13 @@ public interface WalletsApi {
    * 
    * 
    * @param pageSize The maximum number of results to return per page (optional, default to 15)
-   * @param walletId A wallet ID to filter on (optional)
+   * @param walletID A wallet ID to filter on (optional)
    * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.  (optional)
    * @return Call&lt;GetTransactionsResponse&gt;
    */
   @GET("api/wallets/transactions")
   Call<GetTransactionsResponse> getTransactions(
-    @retrofit2.http.Query("pageSize") Integer pageSize, @retrofit2.http.Query("wallet_id") String walletId, @retrofit2.http.Query("cursor") String cursor
+    @retrofit2.http.Query("pageSize") Integer pageSize, @retrofit2.http.Query("walletID") String walletID, @retrofit2.http.Query("cursor") String cursor
   );
 
   /**
