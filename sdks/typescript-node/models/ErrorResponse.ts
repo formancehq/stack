@@ -14,7 +14,7 @@ import { ErrorsEnum } from '../models/ErrorsEnum';
 import { HttpFile } from '../http/http';
 
 export class ErrorResponse {
-    'errorCode'?: ErrorsEnum;
+    'errorCode': ErrorsEnum;
     'errorMessage'?: string;
     'details'?: string;
 
