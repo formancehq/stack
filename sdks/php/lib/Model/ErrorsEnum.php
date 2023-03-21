@@ -57,6 +57,8 @@ class ErrorsEnum
 
     public const METADATA_OVERRIDE = 'METADATA_OVERRIDE';
 
+    public const NOT_FOUND = 'NOT_FOUND';
+
     /**
      * Gets allowable values of the enum
      * @return string[]
@@ -70,7 +72,8 @@ class ErrorsEnum
             self::CONFLICT,
             self::NO_SCRIPT,
             self::COMPILATION_FAILED,
-            self::METADATA_OVERRIDE
+            self::METADATA_OVERRIDE,
+            self::NOT_FOUND
         ];
     }
 }

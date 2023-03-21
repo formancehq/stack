@@ -35,6 +35,7 @@ Confirm a hold
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -42,6 +43,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String holdId = "holdId_example"; // String | 
@@ -73,7 +78,7 @@ null (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -101,6 +106,7 @@ Create a balance
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -108,6 +114,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String id = "id_example"; // String | 
@@ -140,7 +150,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -168,6 +178,7 @@ Create a new wallet
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -175,6 +186,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         CreateWalletRequest createWalletRequest = new CreateWalletRequest(); // CreateWalletRequest | 
@@ -205,7 +220,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -233,6 +248,7 @@ Credit a wallet
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -240,6 +256,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String id = "id_example"; // String | 
@@ -271,7 +291,7 @@ null (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -299,6 +319,7 @@ Debit a wallet
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -306,6 +327,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String id = "id_example"; // String | 
@@ -338,7 +363,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -367,6 +392,7 @@ Get detailed balance
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -374,6 +400,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String id = "id_example"; // String | 
@@ -406,7 +436,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -434,6 +464,7 @@ Get a hold
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -441,6 +472,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String holdID = "holdID_example"; // String | The hold ID
@@ -471,7 +506,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -499,6 +534,7 @@ Get all holds for a wallet
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -506,6 +542,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         Integer pageSize = 15; // Integer | The maximum number of results to return per page
@@ -542,7 +582,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -570,6 +610,7 @@ No authorization required
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -577,6 +618,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         Integer pageSize = 15; // Integer | The maximum number of results to return per page
@@ -611,7 +656,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -639,6 +684,7 @@ Get a wallet
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -646,6 +692,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String id = "id_example"; // String | 
@@ -676,7 +726,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -705,6 +755,7 @@ List balances of a wallet
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -712,6 +763,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String id = "id_example"; // String | 
@@ -742,7 +797,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -769,6 +824,7 @@ List all wallets
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -776,6 +832,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String name = "wallet1"; // String | Filter on wallet name
@@ -812,7 +872,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -839,6 +899,7 @@ Update a wallet
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -846,6 +907,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String id = "id_example"; // String | 
@@ -877,7 +942,7 @@ null (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -905,6 +970,7 @@ Cancel a hold
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -912,6 +978,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String holdId = "holdId_example"; // String | 
@@ -941,7 +1011,7 @@ null (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -969,6 +1039,7 @@ Get server info
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WalletsApi;
 
@@ -976,6 +1047,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         try {
@@ -1002,7 +1077,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 

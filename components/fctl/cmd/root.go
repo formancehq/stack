@@ -26,10 +26,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	MaxVersionShift = 2
-)
-
 func NewRootCommand() *cobra.Command {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
@@ -118,7 +114,7 @@ func unwrapOpenAPIError(err error) *formance.ErrorResponse {
 			if errResponse.ErrorCode != "" {
 				errorCode := formance.ErrorsEnum(errResponse.ErrorCode)
 				return &formance.ErrorResponse{
-					ErrorCode:    &errorCode,
+					ErrorCode:    errorCode,
 					ErrorMessage: &errResponse.ErrorMessage,
 					Details:      &errResponse.Details,
 				}

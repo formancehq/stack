@@ -23,6 +23,7 @@ Get statistics from a ledger. (aggregate metrics on accounts and transactions)
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.StatsApi;
 
@@ -30,6 +31,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         StatsApi apiInstance = new StatsApi(defaultClient);
         String ledger = "ledger001"; // String | name of the ledger
@@ -60,7 +65,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 

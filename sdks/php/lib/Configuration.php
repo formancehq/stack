@@ -473,8 +473,18 @@ class Configuration
     {
         return [
             [
-                "url" => "",
-                "description" => "No description provided",
+                "url" => "http://localhost",
+                "description" => "local server",
+            ],
+            [
+                "url" => "https://{organization}.sandbox.formance.cloud",
+                "description" => "sandbox server",
+                "variables" => [
+                    "organization" => [
+                        "description" => "The organization on which the ledger is located",
+                        "default_value" => "",
+                    ]
+                ]
             ]
         ];
     }
