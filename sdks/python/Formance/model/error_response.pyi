@@ -36,7 +36,7 @@ class ErrorResponse(
 
     class MetaOapg:
         required = {
-            "error_code",
+            "errorCode",
         }
         
         class properties:
@@ -52,7 +52,7 @@ class ErrorResponse(
                 "details": details,
             }
     
-    error_code: schemas.AnyTypeSchema
+    errorCode: 'ErrorsEnum'
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["errorCode"]) -> 'ErrorsEnum': ...
@@ -72,7 +72,7 @@ class ErrorResponse(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["errorCode"]) -> typing.Union['ErrorsEnum', schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["errorCode"]) -> 'ErrorsEnum': ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["errorMessage"]) -> typing.Union[MetaOapg.properties.errorMessage, schemas.Unset]: ...
@@ -90,7 +90,7 @@ class ErrorResponse(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        errorCode: typing.Union['ErrorsEnum', schemas.Unset] = schemas.unset,
+        errorCode: 'ErrorsEnum',
         errorMessage: typing.Union[MetaOapg.properties.errorMessage, str, schemas.Unset] = schemas.unset,
         details: typing.Union[MetaOapg.properties.details, str, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,

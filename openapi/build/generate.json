@@ -4740,7 +4740,7 @@
       "ErrorResponse": {
         "type": "object",
         "required": [
-          "error_code"
+          "errorCode"
         ],
         "properties": {
           "errorCode": {
@@ -4765,7 +4765,8 @@
           "CONFLICT",
           "NO_SCRIPT",
           "COMPILATION_FAILED",
-          "METADATA_OVERRIDE"
+          "METADATA_OVERRIDE",
+          "NOT_FOUND"
         ],
         "example": "INSUFFICIENT_FUND"
       },

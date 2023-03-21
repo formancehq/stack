@@ -61,3 +61,7 @@ class ErrorsEnum(
     @schemas.classproperty
     def METADATA_OVERRIDE(cls):
         return cls("METADATA_OVERRIDE")
+    
+    @schemas.classproperty
+    def NOT_FOUND(cls):
+        return cls("NOT_FOUND")
