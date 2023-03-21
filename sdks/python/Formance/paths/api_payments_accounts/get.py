@@ -103,6 +103,9 @@ request_query_sort = api_client.QueryParameter(
     schema=SortSchema,
     explode=True,
 )
+_auth = [
+    'Authorization',
+]
 SchemaFor200ResponseBodyApplicationJson = AccountsCursor
 
 
@@ -208,6 +211,7 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='get'.upper(),
             headers=_headers,
+            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

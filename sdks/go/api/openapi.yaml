@@ -22,7 +22,16 @@ info:
     url: https://avatars.githubusercontent.com/u/84325077?s=200&v=4
     altText: Formance
 servers:
-- url: /
+- description: local server
+  url: http://localhost
+- description: sandbox server
+  url: "https://{organization}.sandbox.formance.cloud"
+  variables:
+    organization:
+      default: ""
+      description: The organization on which the ledger is located
+security:
+- Authorization: []
 paths:
   /api/auth/_info:
     get:
@@ -4367,7 +4376,7 @@ components:
           example: https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9
           type: string
       required:
-      - error_code
+      - errorCode
       type: object
     ErrorsEnum:
       enum:
@@ -4378,6 +4387,7 @@ components:
       - NO_SCRIPT
       - COMPILATION_FAILED
       - METADATA_OVERRIDE
+      - NOT_FOUND
       example: INSUFFICIENT_FUND
       type: string
     LedgerInfoResponse:
@@ -7963,6 +7973,14 @@ components:
       allOf:
       - $ref: '#/components/schemas/walletsCursor'
       - $ref: '#/components/schemas/ListBalancesResponse_cursor_allOf'
+  securitySchemes:
+    Authorization:
+      flows:
+        clientCredentials:
+          refreshUrl: ""
+          scopes: {}
+          tokenUrl: ""
+      type: oauth2
 x-tagGroups:
 - name: Auth
   tags:

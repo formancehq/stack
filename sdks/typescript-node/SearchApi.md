@@ -62,7 +62,7 @@ Name | Type | Description  | Notes
 
 ### Authorization
 
-No authorization required
+[Authorization](README.md#Authorization)
 
 ### HTTP request headers
 

@@ -55,7 +55,7 @@ Other parameters are passed through a pointer to a apiGetInfoRequest struct via 
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
