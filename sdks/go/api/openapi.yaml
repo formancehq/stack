@@ -4369,7 +4369,7 @@ components:
           example: https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9
           type: string
       required:
-      - error_code
+      - errorCode
       type: object
     ErrorsEnum:
       enum:
@@ -4380,6 +4380,7 @@ components:
       - NO_SCRIPT
       - COMPILATION_FAILED
       - METADATA_OVERRIDE
+      - NOT_FOUND
       example: INSUFFICIENT_FUND
       type: string
     LedgerInfoResponse:

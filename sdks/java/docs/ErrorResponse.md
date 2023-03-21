@@ -7,7 +7,7 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**errorCode** | **ErrorsEnum** |  |  [optional] |
+|**errorCode** | **ErrorsEnum** |  |  |
 |**errorMessage** | **String** |  |  [optional] |
 |**details** | **String** |  |  [optional] |
 

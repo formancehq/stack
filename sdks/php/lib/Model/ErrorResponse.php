@@ -289,6 +289,9 @@ class ErrorResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
+        if ($this->container['error_code'] === null) {
+            $invalidProperties[] = "'error_code' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -307,7 +310,7 @@ class ErrorResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets error_code
      *
-     * @return \Formance\Model\ErrorsEnum|null
+     * @return \Formance\Model\ErrorsEnum
      */
     public function getErrorCode()
     {
@@ -317,7 +320,7 @@ class ErrorResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets error_code
      *
-     * @param \Formance\Model\ErrorsEnum|null $error_code error_code
+     * @param \Formance\Model\ErrorsEnum $error_code error_code
      *
      * @return self
      */
