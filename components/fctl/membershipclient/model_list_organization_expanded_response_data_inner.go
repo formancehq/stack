@@ -27,6 +27,7 @@ type ListOrganizationExpandedResponseDataInner struct {
 	OwnerId     string `json:"ownerId"`
 	TotalStacks *int32 `json:"totalStacks,omitempty"`
 	TotalUsers  *int32 `json:"totalUsers,omitempty"`
+	Owner       *User  `json:"owner,omitempty"`
 }
 
 // NewListOrganizationExpandedResponseDataInner instantiates a new ListOrganizationExpandedResponseDataInner object
@@ -123,7 +124,7 @@ func (o *ListOrganizationExpandedResponseDataInner) SetOwnerId(v string) {
 
 // GetTotalStacks returns the TotalStacks field value if set, zero value otherwise.
 func (o *ListOrganizationExpandedResponseDataInner) GetTotalStacks() int32 {
-	if o == nil || isNil(o.TotalStacks) {
+	if o == nil || IsNil(o.TotalStacks) {
 		var ret int32
 		return ret
 	}
@@ -133,7 +134,7 @@ func (o *ListOrganizationExpandedResponseDataInner) GetTotalStacks() int32 {
 // GetTotalStacksOk returns a tuple with the TotalStacks field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ListOrganizationExpandedResponseDataInner) GetTotalStacksOk() (*int32, bool) {
-	if o == nil || isNil(o.TotalStacks) {
+	if o == nil || IsNil(o.TotalStacks) {
 		return nil, false
 	}
 	return o.TotalStacks, true
@@ -141,7 +142,7 @@ func (o *ListOrganizationExpandedResponseDataInner) GetTotalStacksOk() (*int32, 
 
 // HasTotalStacks returns a boolean if a field has been set.
 func (o *ListOrganizationExpandedResponseDataInner) HasTotalStacks() bool {
-	if o != nil && !isNil(o.TotalStacks) {
+	if o != nil && !IsNil(o.TotalStacks) {
 		return true
 	}
 
@@ -155,7 +156,7 @@ func (o *ListOrganizationExpandedResponseDataInner) SetTotalStacks(v int32) {
 
 // GetTotalUsers returns the TotalUsers field value if set, zero value otherwise.
 func (o *ListOrganizationExpandedResponseDataInner) GetTotalUsers() int32 {
-	if o == nil || isNil(o.TotalUsers) {
+	if o == nil || IsNil(o.TotalUsers) {
 		var ret int32
 		return ret
 	}
@@ -165,7 +166,7 @@ func (o *ListOrganizationExpandedResponseDataInner) GetTotalUsers() int32 {
 // GetTotalUsersOk returns a tuple with the TotalUsers field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ListOrganizationExpandedResponseDataInner) GetTotalUsersOk() (*int32, bool) {
-	if o == nil || isNil(o.TotalUsers) {
+	if o == nil || IsNil(o.TotalUsers) {
 		return nil, false
 	}
 	return o.TotalUsers, true
@@ -173,7 +174,7 @@ func (o *ListOrganizationExpandedResponseDataInner) GetTotalUsersOk() (*int32, b
 
 // HasTotalUsers returns a boolean if a field has been set.
 func (o *ListOrganizationExpandedResponseDataInner) HasTotalUsers() bool {
-	if o != nil && !isNil(o.TotalUsers) {
+	if o != nil && !IsNil(o.TotalUsers) {
 		return true
 	}
 
@@ -183,6 +184,38 @@ func (o *ListOrganizationExpandedResponseDataInner) HasTotalUsers() bool {
 // SetTotalUsers gets a reference to the given int32 and assigns it to the TotalUsers field.
 func (o *ListOrganizationExpandedResponseDataInner) SetTotalUsers(v int32) {
 	o.TotalUsers = &v
+}
+
+// GetOwner returns the Owner field value if set, zero value otherwise.
+func (o *ListOrganizationExpandedResponseDataInner) GetOwner() User {
+	if o == nil || IsNil(o.Owner) {
+		var ret User
+		return ret
+	}
+	return *o.Owner
+}
+
+// GetOwnerOk returns a tuple with the Owner field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ListOrganizationExpandedResponseDataInner) GetOwnerOk() (*User, bool) {
+	if o == nil || IsNil(o.Owner) {
+		return nil, false
+	}
+	return o.Owner, true
+}
+
+// HasOwner returns a boolean if a field has been set.
+func (o *ListOrganizationExpandedResponseDataInner) HasOwner() bool {
+	if o != nil && !IsNil(o.Owner) {
+		return true
+	}
+
+	return false
+}
+
+// SetOwner gets a reference to the given User and assigns it to the Owner field.
+func (o *ListOrganizationExpandedResponseDataInner) SetOwner(v User) {
+	o.Owner = &v
 }
 
 func (o ListOrganizationExpandedResponseDataInner) MarshalJSON() ([]byte, error) {
@@ -198,11 +231,14 @@ func (o ListOrganizationExpandedResponseDataInner) ToMap() (map[string]interface
 	toSerialize["name"] = o.Name
 	toSerialize["id"] = o.Id
 	toSerialize["ownerId"] = o.OwnerId
-	if !isNil(o.TotalStacks) {
+	if !IsNil(o.TotalStacks) {
 		toSerialize["totalStacks"] = o.TotalStacks
 	}
-	if !isNil(o.TotalUsers) {
+	if !IsNil(o.TotalUsers) {
 		toSerialize["totalUsers"] = o.TotalUsers
+	}
+	if !IsNil(o.Owner) {
+		toSerialize["owner"] = o.Owner
 	}
 	return toSerialize, nil
 }

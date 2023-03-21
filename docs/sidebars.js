@@ -156,6 +156,13 @@ const sidebars = {
                           // icon: '🍕',
                         },
                     },
+                    {
+                      type:'doc',
+                      id: 'ledger/numscript/overdraft/index',
+                      customProps: {
+                        // icon: '📌',
+                      },
+                  },
                   ],
                 }
               ],

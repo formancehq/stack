@@ -1330,11 +1330,11 @@ export class PromiseWalletsApi {
 
     /**
      * @param pageSize The maximum number of results to return per page
-     * @param walletId A wallet ID to filter on
+     * @param walletID A wallet ID to filter on
      * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set. 
      */
-    public getTransactions(pageSize?: number, walletId?: string, cursor?: string, _options?: Configuration): Promise<GetTransactionsResponse> {
-        const result = this.api.getTransactions(pageSize, walletId, cursor, _options);
+    public getTransactions(pageSize?: number, walletID?: string, cursor?: string, _options?: Configuration): Promise<GetTransactionsResponse> {
+        const result = this.api.getTransactions(pageSize, walletID, cursor, _options);
         return result.toPromise();
     }
 

@@ -599,7 +599,7 @@ public class Example {
 
 ## getTransactions
 
-> GetTransactionsResponse getTransactions(pageSize, walletId, cursor)
+> GetTransactionsResponse getTransactions(pageSize, walletID, cursor)
 
 
 
@@ -625,10 +625,10 @@ public class Example {
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         Integer pageSize = 15; // Integer | The maximum number of results to return per page
-        String walletId = "wallet1"; // String | A wallet ID to filter on
+        String walletID = "wallet1"; // String | A wallet ID to filter on
         String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set. 
         try {
-            GetTransactionsResponse result = apiInstance.getTransactions(pageSize, walletId, cursor);
+            GetTransactionsResponse result = apiInstance.getTransactions(pageSize, walletID, cursor);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling WalletsApi#getTransactions");
@@ -647,7 +647,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **pageSize** | **Integer**| The maximum number of results to return per page | [optional] [default to 15] |
-| **walletId** | **String**| A wallet ID to filter on | [optional] |
+| **walletID** | **String**| A wallet ID to filter on | [optional] |
 | **cursor** | **String**| Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.  | [optional] |
 
 ### Return type

@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	benthosImage = "jeffail/benthos:4.10.0"
+	benthosImage = "jeffail/benthos:4.12.1"
 )
 
 func init() {

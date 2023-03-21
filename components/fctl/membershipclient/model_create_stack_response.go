@@ -41,7 +41,7 @@ func NewCreateStackResponseWithDefaults() *CreateStackResponse {
 
 // GetData returns the Data field value if set, zero value otherwise.
 func (o *CreateStackResponse) GetData() Stack {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		var ret Stack
 		return ret
 	}
@@ -51,7 +51,7 @@ func (o *CreateStackResponse) GetData() Stack {
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *CreateStackResponse) GetDataOk() (*Stack, bool) {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
 	return o.Data, true
@@ -59,7 +59,7 @@ func (o *CreateStackResponse) GetDataOk() (*Stack, bool) {
 
 // HasData returns a boolean if a field has been set.
 func (o *CreateStackResponse) HasData() bool {
-	if o != nil && !isNil(o.Data) {
+	if o != nil && !IsNil(o.Data) {
 		return true
 	}
 
@@ -81,7 +81,7 @@ func (o CreateStackResponse) MarshalJSON() ([]byte, error) {
 
 func (o CreateStackResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Data) {
+	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
 	return toSerialize, nil

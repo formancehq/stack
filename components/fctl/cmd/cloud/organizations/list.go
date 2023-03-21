@@ -23,17 +23,29 @@ func NewListCommand() *cobra.Command {
 				return err
 			}
 
-			organizations, _, err := apiClient.DefaultApi.ListOrganizations(cmd.Context()).Execute()
+			organizations, _, err := apiClient.DefaultApi.ListOrganizationsExpanded(cmd.Context()).Execute()
 			if err != nil {
 				return err
 			}
 
-			tableData := fctl.Map(organizations.Data, func(o membershipclient.Organization) []string {
+			currentProfile := fctl.GetCurrentProfile(cmd, cfg)
+			claims, err := currentProfile.GetClaims()
+			if err != nil {
+				return err
+			}
+
+			tableData := fctl.Map(organizations.Data, func(o membershipclient.ListOrganizationExpandedResponseDataInner) []string {
+				isMine := fctl.BoolToString(o.OwnerId == claims["sub"].(string))
+				if isMine == "yes" {
+					isMine = pterm.LightMagenta(isMine)
+				} else {
+					isMine = pterm.LightGreen(isMine)
+				}
 				return []string{
-					o.Id, o.Name, o.OwnerId,
+					o.Id, o.Name, o.OwnerId, o.Owner.Email, isMine,
 				}
 			})
-			tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Owner ID"})
+			tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Owner ID", "Owner email", "Is mine?"})
 			return pterm.DefaultTable.
 				WithHasHeader().
 				WithWriter(cmd.OutOrStdout()).

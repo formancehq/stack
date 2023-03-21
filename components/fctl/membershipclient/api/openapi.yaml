@@ -739,6 +739,8 @@ components:
           type: integer
         totalUsers:
           type: integer
+        owner:
+          $ref: '#/components/schemas/User'
       type: object
     ListOrganizationExpandedResponse_data_inner:
       allOf:

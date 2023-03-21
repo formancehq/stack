@@ -573,7 +573,7 @@ Name | Type | Description  | Notes
 
 ## GetTransactions
 
-> GetTransactionsResponse GetTransactions(ctx).PageSize(pageSize).WalletId(walletId).Cursor(cursor).Execute()
+> GetTransactionsResponse GetTransactions(ctx).PageSize(pageSize).WalletID(walletID).Cursor(cursor).Execute()
 
 
 
@@ -591,12 +591,12 @@ import (
 
 func main() {
     pageSize := int32(100) // int32 | The maximum number of results to return per page (optional) (default to 15)
-    walletId := "wallet1" // string | A wallet ID to filter on (optional)
+    walletID := "wallet1" // string | A wallet ID to filter on (optional)
     cursor := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.  (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.WalletsApi.GetTransactions(context.Background()).PageSize(pageSize).WalletId(walletId).Cursor(cursor).Execute()
+    resp, r, err := apiClient.WalletsApi.GetTransactions(context.Background()).PageSize(pageSize).WalletID(walletID).Cursor(cursor).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `WalletsApi.GetTransactions``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -618,7 +618,7 @@ Other parameters are passed through a pointer to a apiGetTransactionsRequest str
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **pageSize** | **int32** | The maximum number of results to return per page | [default to 15]
- **walletId** | **string** | A wallet ID to filter on | 
+ **walletID** | **string** | A wallet ID to filter on | 
  **cursor** | **string** | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.  | 
 
 ### Return type

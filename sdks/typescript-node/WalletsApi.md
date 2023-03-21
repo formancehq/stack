@@ -533,7 +533,7 @@ let body:WalletsApiGetTransactionsRequest = {
   // number | The maximum number of results to return per page (optional)
   pageSize: 100,
   // string | A wallet ID to filter on (optional)
-  walletId: "wallet1",
+  walletID: "wallet1",
   // string | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.  (optional)
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
 };
@@ -549,7 +549,7 @@ apiInstance.getTransactions(body).then((data:any) => {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **pageSize** | [**number**] | The maximum number of results to return per page | (optional) defaults to 15
- **walletId** | [**string**] | A wallet ID to filter on | (optional) defaults to undefined
+ **walletID** | [**string**] | A wallet ID to filter on | (optional) defaults to undefined
  **cursor** | [**string**] | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set.  | (optional) defaults to undefined
 
 

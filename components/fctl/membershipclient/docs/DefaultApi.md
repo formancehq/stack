@@ -42,7 +42,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -50,7 +50,7 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.AcceptInvitation(context.Background(), invitationId).Execute()
+    r, err := apiClient.DefaultApi.AcceptInvitation(context.Background(), invitationId).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.AcceptInvitation``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -108,7 +108,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -176,7 +176,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -244,7 +244,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -314,7 +314,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -378,7 +378,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -448,7 +448,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -456,7 +456,7 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.DeclineInvitation(context.Background(), invitationId).Execute()
+    r, err := apiClient.DefaultApi.DeclineInvitation(context.Background(), invitationId).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeclineInvitation``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -514,7 +514,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -522,7 +522,7 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.DeleteOrganization(context.Background(), organizationId).Execute()
+    r, err := apiClient.DefaultApi.DeleteOrganization(context.Background(), organizationId).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeleteOrganization``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -580,7 +580,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -589,7 +589,7 @@ func main() {
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.DeleteStack(context.Background(), organizationId, stackId).Execute()
+    r, err := apiClient.DefaultApi.DeleteStack(context.Background(), organizationId, stackId).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.DeleteStack``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -649,7 +649,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -708,7 +708,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -774,7 +774,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -844,7 +844,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -903,7 +903,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -962,7 +962,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -1021,7 +1021,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -1089,7 +1089,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -1157,7 +1157,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -1225,7 +1225,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {
@@ -1296,7 +1296,7 @@ import (
     "context"
     "fmt"
     "os"
-    openapiclient "./openapi"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
 )
 
 func main() {

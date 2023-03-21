@@ -2,7 +2,6 @@ output_resources:
 - label: elasticsearch
   broker:
     outputs:
-    - stdout: {}
     - elasticsearch:
         urls:
         - ${OPENSEARCH_URL}

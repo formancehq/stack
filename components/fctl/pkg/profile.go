@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/formancehq/fctl/membershipclient"
+	"github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/zitadel/oidc/pkg/client"
@@ -114,6 +115,16 @@ func (p *Profile) GetToken(ctx context.Context, httpClient *http.Client) (*oauth
 		}
 	}
 	return p.token, nil
+}
+
+func (p *Profile) GetClaims() (jwt.MapClaims, error) {
+	claims := jwt.MapClaims{}
+	parser := jwt.Parser{}
+	_, _, err := parser.ParseUnverified(p.token.AccessToken, claims)
+	if err != nil {
+		return nil, err
+	}
+	return claims, nil
 }
 
 func (p *Profile) GetUserInfo(cmd *cobra.Command) (oidc.UserInfo, error) {

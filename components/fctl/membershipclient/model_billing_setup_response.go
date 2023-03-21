@@ -41,7 +41,7 @@ func NewBillingSetupResponseWithDefaults() *BillingSetupResponse {
 
 // GetData returns the Data field value if set, zero value otherwise.
 func (o *BillingSetupResponse) GetData() BillingSetup {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		var ret BillingSetup
 		return ret
 	}
@@ -51,7 +51,7 @@ func (o *BillingSetupResponse) GetData() BillingSetup {
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *BillingSetupResponse) GetDataOk() (*BillingSetup, bool) {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
 	return o.Data, true
@@ -59,7 +59,7 @@ func (o *BillingSetupResponse) GetDataOk() (*BillingSetup, bool) {
 
 // HasData returns a boolean if a field has been set.
 func (o *BillingSetupResponse) HasData() bool {
-	if o != nil && !isNil(o.Data) {
+	if o != nil && !IsNil(o.Data) {
 		return true
 	}
 
@@ -81,7 +81,7 @@ func (o BillingSetupResponse) MarshalJSON() ([]byte, error) {
 
 func (o BillingSetupResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Data) {
+	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
 	return toSerialize, nil

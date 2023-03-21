@@ -1126,7 +1126,7 @@ with Formance.ApiClient(configuration) as api_client:
     # example passing only optional values
     query_params = {
         'pageSize': 100,
-        'wallet_id': "wallet1",
+        'walletID': "wallet1",
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
     }
     try:
@@ -1153,7 +1153,7 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 pageSize | PageSizeSchema | | optional
-wallet_id | WalletIdSchema | | optional
+walletID | WalletIDSchema | | optional
 cursor | CursorSchema | | optional
 
 
@@ -1164,7 +1164,7 @@ Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 decimal.Decimal, int,  | decimal.Decimal,  |  | if omitted the server will use the default value of 15
 
-# WalletIdSchema
+# WalletIDSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

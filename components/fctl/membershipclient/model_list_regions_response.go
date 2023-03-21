@@ -41,7 +41,7 @@ func NewListRegionsResponseWithDefaults() *ListRegionsResponse {
 
 // GetData returns the Data field value if set, zero value otherwise.
 func (o *ListRegionsResponse) GetData() []Region {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		var ret []Region
 		return ret
 	}
@@ -51,7 +51,7 @@ func (o *ListRegionsResponse) GetData() []Region {
 // GetDataOk returns a tuple with the Data field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *ListRegionsResponse) GetDataOk() ([]Region, bool) {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
 	return o.Data, true
@@ -59,7 +59,7 @@ func (o *ListRegionsResponse) GetDataOk() ([]Region, bool) {
 
 // HasData returns a boolean if a field has been set.
 func (o *ListRegionsResponse) HasData() bool {
-	if o != nil && !isNil(o.Data) {
+	if o != nil && !IsNil(o.Data) {
 		return true
 	}
 
@@ -81,7 +81,7 @@ func (o ListRegionsResponse) MarshalJSON() ([]byte, error) {
 
 func (o ListRegionsResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !isNil(o.Data) {
+	if !IsNil(o.Data) {
 		toSerialize["data"] = o.Data
 	}
 	return toSerialize, nil
