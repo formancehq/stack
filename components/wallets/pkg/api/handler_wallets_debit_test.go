@@ -33,7 +33,7 @@ func (a *apiErrorMock) Model() any {
 	if a == nil {
 		return nil
 	}
-	return &sdk.ErrorResponse{
+	return sdk.ErrorResponse{
 		ErrorCode:    a.ErrorCode,
 		ErrorMessage: a.ErrorMessage,
 		Details:      a.Details,
