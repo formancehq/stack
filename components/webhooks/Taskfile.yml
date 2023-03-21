@@ -22,7 +22,7 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run --fix
+      - golangci-lint run --fix {{if eq .VERBOSE "true"}}-v{{end}}
 
   tests:local:
     cmds:

@@ -8,7 +8,7 @@ tasks:
 
   tests:
     cmds:
-      - go test -v -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
+      - go test -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
 
   lint:
     cmds:

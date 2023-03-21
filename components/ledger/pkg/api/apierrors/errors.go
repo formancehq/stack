@@ -60,7 +60,8 @@ func coreErrorToErrorCode(err error) (int, string, string) {
 		machine.IsScriptErrorWithCode(err, ErrInsufficientFund),
 		machine.IsScriptErrorWithCode(err, ErrScriptCompilationFailed),
 		machine.IsScriptErrorWithCode(err, ErrScriptMetadataOverride):
-		scriptErr := err.(*machine.ScriptError)
+		scriptErr := &machine.ScriptError{}
+		_ = errors.As(err, &scriptErr)
 		return http.StatusBadRequest, scriptErr.Code, EncodeLink(scriptErr.Message)
 	case errors.Is(err, context.Canceled):
 		return http.StatusInternalServerError, ErrContextCancelled, ""
