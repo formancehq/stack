@@ -4114,7 +4114,8 @@ components:
       - NO_SCRIPT
       - COMPILATION_FAILED
       - METADATA_OVERRIDE
-      example: VALIDATION
+      - NOT_FOUND
+      example: INSUFFICIENT_FUND
       type: string
     LedgerInfoResponse:
       example:

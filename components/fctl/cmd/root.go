@@ -26,10 +26,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	MaxVersionShift = 2
-)
-
 func NewRootCommand() *cobra.Command {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
