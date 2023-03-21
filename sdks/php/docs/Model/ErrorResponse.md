@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**error_code** | [**\Formance\Model\ErrorsEnum**](ErrorsEnum.md) |  | [optional]
+**error_code** | [**\Formance\Model\ErrorsEnum**](ErrorsEnum.md) |  |
 **error_message** | **string** |  | [optional]
 **details** | **string** |  | [optional]
 

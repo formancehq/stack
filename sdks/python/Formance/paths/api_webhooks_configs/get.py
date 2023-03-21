@@ -63,6 +63,9 @@ request_query_endpoint = api_client.QueryParameter(
     schema=EndpointSchema,
     explode=True,
 )
+_auth = [
+    'Authorization',
+]
 SchemaFor200ResponseBodyApplicationJson = ConfigsResponse
 
 
@@ -167,6 +170,7 @@ class BaseApi(api_client.Api):
             resource_path=used_path,
             method='get'.upper(),
             headers=_headers,
+            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

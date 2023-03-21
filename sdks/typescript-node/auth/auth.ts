@@ -21,9 +21,30 @@ export interface TokenProvider {
   getToken(): Promise<string> | string;
 }
 
+/**
+ * Applies oauth2 authentication to the request context.
+ */
+export class AuthorizationAuthentication implements SecurityAuthentication {
+    /**
+     * Configures OAuth2 with the necessary properties
+     *
+     * @param accessToken: The access token to be used for every request
+     */
+    public constructor(private accessToken: string) {}
+
+    public getName(): string {
+        return "Authorization";
+    }
+
+    public applySecurityAuthentication(context: RequestContext) {
+        context.setHeaderParam("Authorization", "Bearer " + this.accessToken);
+    }
+}
+
 
 export type AuthMethods = {
     "default"?: SecurityAuthentication,
+    "Authorization"?: SecurityAuthentication
 }
 
 export type ApiKeyConfiguration = string;
@@ -33,6 +54,7 @@ export type OAuth2Configuration = { accessToken: string };
 
 export type AuthMethodsConfiguration = {
     "default"?: SecurityAuthentication,
+    "Authorization"?: OAuth2Configuration
 }
 
 /**
@@ -46,6 +68,12 @@ export function configureAuthMethods(config: AuthMethodsConfiguration | undefine
         return authMethods;
     }
     authMethods["default"] = config["default"]
+
+    if (config["Authorization"]) {
+        authMethods["Authorization"] = new AuthorizationAuthentication(
+            config["Authorization"]["accessToken"]
+        );
+    }
 
     return authMethods;
 }

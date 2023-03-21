@@ -53,7 +53,7 @@ public class ErrorResponse {
    * Get errorCode
    * @return errorCode
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public ErrorsEnum getErrorCode() {
     return errorCode;

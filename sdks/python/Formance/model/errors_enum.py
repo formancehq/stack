@@ -44,6 +44,7 @@ class ErrorsEnum(
             "NO_SCRIPT": "NO_SCRIPT",
             "COMPILATION_FAILED": "COMPILATION_FAILED",
             "METADATA_OVERRIDE": "METADATA_OVERRIDE",
+            "NOT_FOUND": "NOT_FOUND",
         }
     
     @schemas.classproperty
@@ -73,3 +74,7 @@ class ErrorsEnum(
     @schemas.classproperty
     def METADATA_OVERRIDE(cls):
         return cls("METADATA_OVERRIDE")
+    
+    @schemas.classproperty
+    def NOT_FOUND(cls):
+        return cls("NOT_FOUND")
