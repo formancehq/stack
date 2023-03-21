@@ -53,18 +53,18 @@ spec:
             {{- end }}
           ports:
             - name: probe
-              containerPort: "{{ regexReplaceAll ":" .Values.operator.probeAddr "" | default "8081" }}"
+              containerPort: {{ regexReplaceAll ":" .Values.operator.probeAddr "" | default "8081" }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz
-              port: "{{ regexReplaceAll ":" .Values.operator.probeAddr "" | default "8081" }}"
+              port: {{ regexReplaceAll ":" .Values.operator.probeAddr "" | default "8081" }}
             initialDelaySeconds: 15
             periodSeconds: 20
           readinessProbe:
             httpGet:
               path: /readyz
-              port: "{{ regexReplaceAll ":" .Values.operator.probeAddr "" | default "8081" }}"
+              port: {{ regexReplaceAll ":" .Values.operator.probeAddr "" | default "8081" }}
             initialDelaySeconds: 5
             periodSeconds: 10
           resources:
