@@ -36,11 +36,15 @@ Confirm a hold
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $hold_id = 'hold_id_example'; // string
 $confirm_hold_request = new \Formance\Model\ConfirmHoldRequest(); // \Formance\Model\ConfirmHoldRequest
@@ -65,7 +69,7 @@ void (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -91,11 +95,15 @@ Create a balance
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $id = 'id_example'; // string
 $body = new \Formance\Model\Balance(); // \Formance\Model\Balance
@@ -121,7 +129,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -147,11 +155,15 @@ Create a new wallet
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $create_wallet_request = new \Formance\Model\CreateWalletRequest(); // \Formance\Model\CreateWalletRequest
 
@@ -175,7 +187,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -201,11 +213,15 @@ Credit a wallet
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $id = 'id_example'; // string
 $credit_wallet_request = new \Formance\Model\CreditWalletRequest(); // \Formance\Model\CreditWalletRequest
@@ -230,7 +246,7 @@ void (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -256,11 +272,15 @@ Debit a wallet
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $id = 'id_example'; // string
 $debit_wallet_request = new \Formance\Model\DebitWalletRequest(); // \Formance\Model\DebitWalletRequest
@@ -286,7 +306,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -312,11 +332,15 @@ Get detailed balance
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $id = 'id_example'; // string
 $balance_name = 'balance_name_example'; // string
@@ -342,7 +366,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -368,11 +392,15 @@ Get a hold
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $hold_id = 'hold_id_example'; // string | The hold ID
 
@@ -396,7 +424,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -422,11 +450,15 @@ Get all holds for a wallet
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $page_size = 100; // int | The maximum number of results to return per page
 $wallet_id = wallet1; // string | The wallet to filter on
@@ -456,7 +488,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -482,11 +514,15 @@ getTransactions($page_size, $wallet_id, $cursor): \Formance\Model\GetTransaction
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $page_size = 100; // int | The maximum number of results to return per page
 $wallet_id = wallet1; // string | A wallet ID to filter on
@@ -514,7 +550,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -540,11 +576,15 @@ Get a wallet
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $id = 'id_example'; // string
 
@@ -568,7 +608,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -594,11 +634,15 @@ List balances of a wallet
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $id = 'id_example'; // string
 
@@ -622,7 +666,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -648,11 +692,15 @@ List all wallets
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $name = wallet1; // string | Filter on wallet name
 $metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.
@@ -682,7 +730,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -708,11 +756,15 @@ Update a wallet
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $id = 'id_example'; // string
 $update_wallet_request = new \Formance\Model\UpdateWalletRequest(); // \Formance\Model\UpdateWalletRequest
@@ -737,7 +789,7 @@ void (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -763,11 +815,15 @@ Cancel a hold
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $hold_id = 'hold_id_example'; // string
 
@@ -790,7 +846,7 @@ void (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -816,11 +872,15 @@ Get server info
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\WalletsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 
 try {
@@ -841,7 +901,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 

@@ -66,6 +66,9 @@ request_body_config_change_secret = api_client.RequestBody(
             schema=SchemaForRequestBodyApplicationJson),
     },
 )
+_auth = [
+    'Authorization',
+]
 SchemaFor200ResponseBodyApplicationJson = ConfigResponse
 
 
@@ -203,6 +206,7 @@ class BaseApi(api_client.Api):
             headers=_headers,
             fields=_fields,
             body=_body,
+            auth_settings=_auth,
             stream=stream,
             timeout=timeout,
         )

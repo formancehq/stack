@@ -25,11 +25,15 @@ List users
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\UsersApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 
 try {
@@ -50,7 +54,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -78,11 +82,15 @@ Read user
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
+// Configure OAuth2 access token for authorization: Authorization
+$config = Formance\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+
 
 $apiInstance = new Formance\Api\UsersApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
-    new GuzzleHttp\Client()
+    new GuzzleHttp\Client(),
+    $config
 );
 $user_id = 'user_id_example'; // string | User ID
 
@@ -106,7 +114,7 @@ try {
 
 ### Authorization
 
-No authorization required
+[Authorization](../../README.md#Authorization)
 
 ### HTTP request headers
 

@@ -29,6 +29,7 @@ Add scope to client
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ClientsApi;
 
@@ -36,6 +37,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ClientsApi apiInstance = new ClientsApi(defaultClient);
         String clientId = "clientId_example"; // String | Client ID
@@ -67,7 +72,7 @@ null (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -94,6 +99,7 @@ Create client
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ClientsApi;
 
@@ -101,6 +107,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ClientsApi apiInstance = new ClientsApi(defaultClient);
         ClientOptions body = new ClientOptions(); // ClientOptions | 
@@ -131,7 +141,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -158,6 +168,7 @@ Add a secret to a client
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ClientsApi;
 
@@ -165,6 +176,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ClientsApi apiInstance = new ClientsApi(defaultClient);
         String clientId = "clientId_example"; // String | Client ID
@@ -197,7 +212,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -224,6 +239,7 @@ Delete client
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ClientsApi;
 
@@ -231,6 +247,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ClientsApi apiInstance = new ClientsApi(defaultClient);
         String clientId = "clientId_example"; // String | Client ID
@@ -260,7 +280,7 @@ null (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -287,6 +307,7 @@ Delete scope from client
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ClientsApi;
 
@@ -294,6 +315,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ClientsApi apiInstance = new ClientsApi(defaultClient);
         String clientId = "clientId_example"; // String | Client ID
@@ -325,7 +350,7 @@ null (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -352,6 +377,7 @@ Delete a secret from a client
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ClientsApi;
 
@@ -359,6 +385,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ClientsApi apiInstance = new ClientsApi(defaultClient);
         String clientId = "clientId_example"; // String | Client ID
@@ -390,7 +420,7 @@ null (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -417,6 +447,7 @@ List clients
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ClientsApi;
 
@@ -424,6 +455,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ClientsApi apiInstance = new ClientsApi(defaultClient);
         try {
@@ -450,7 +485,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -477,6 +512,7 @@ Read client
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ClientsApi;
 
@@ -484,6 +520,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ClientsApi apiInstance = new ClientsApi(defaultClient);
         String clientId = "clientId_example"; // String | Client ID
@@ -514,7 +554,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -541,6 +581,7 @@ Update client
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.ClientsApi;
 
@@ -548,6 +589,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         ClientsApi apiInstance = new ClientsApi(defaultClient);
         String clientId = "clientId_example"; // String | Client ID
@@ -580,7 +625,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 

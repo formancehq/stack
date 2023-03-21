@@ -29,6 +29,7 @@ Activate a webhooks config by ID, to start receiving webhooks to its endpoint.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WebhooksApi;
 
@@ -36,6 +37,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WebhooksApi apiInstance = new WebhooksApi(defaultClient);
         String id = "4997257d-dfb6-445b-929c-cbe2ab182818"; // String | Config ID
@@ -66,7 +71,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -96,6 +101,7 @@ Change the signing secret of the endpoint of a webhooks config.  If not passed o
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WebhooksApi;
 
@@ -103,6 +109,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WebhooksApi apiInstance = new WebhooksApi(defaultClient);
         String id = "4997257d-dfb6-445b-929c-cbe2ab182818"; // String | Config ID
@@ -135,7 +145,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -164,6 +174,7 @@ Deactivate a webhooks config by ID, to stop receiving webhooks to its endpoint.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WebhooksApi;
 
@@ -171,6 +182,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WebhooksApi apiInstance = new WebhooksApi(defaultClient);
         String id = "4997257d-dfb6-445b-929c-cbe2ab182818"; // String | Config ID
@@ -201,7 +216,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -231,6 +246,7 @@ Delete a webhooks config by ID.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WebhooksApi;
 
@@ -238,6 +254,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WebhooksApi apiInstance = new WebhooksApi(defaultClient);
         String id = "4997257d-dfb6-445b-929c-cbe2ab182818"; // String | Config ID
@@ -267,7 +287,7 @@ null (empty response body)
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -296,6 +316,7 @@ Sorted by updated date descending
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WebhooksApi;
 
@@ -303,6 +324,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WebhooksApi apiInstance = new WebhooksApi(defaultClient);
         String id = "4997257d-dfb6-445b-929c-cbe2ab182818"; // String | Optional filter by Config ID
@@ -335,7 +360,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -364,6 +389,7 @@ Insert a new webhooks config.  The endpoint should be a valid https URL and be u
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WebhooksApi;
 
@@ -371,6 +397,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WebhooksApi apiInstance = new WebhooksApi(defaultClient);
         ConfigUser configUser = new ConfigUser(); // ConfigUser | 
@@ -401,7 +431,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
@@ -431,6 +461,7 @@ Test a config by sending a webhook to its endpoint.
 import com.formance.formance.ApiClient;
 import com.formance.formance.ApiException;
 import com.formance.formance.Configuration;
+import com.formance.formance.auth.*;
 import com.formance.formance.models.*;
 import com.formance.formance.api.WebhooksApi;
 
@@ -438,6 +469,10 @@ public class Example {
     public static void main(String[] args) {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setBasePath("http://localhost");
+        
+        // Configure OAuth2 access token for authorization: Authorization
+        OAuth Authorization = (OAuth) defaultClient.getAuthentication("Authorization");
+        Authorization.setAccessToken("YOUR ACCESS TOKEN");
 
         WebhooksApi apiInstance = new WebhooksApi(defaultClient);
         String id = "4997257d-dfb6-445b-929c-cbe2ab182818"; // String | Config ID
@@ -468,7 +503,7 @@ public class Example {
 
 ### Authorization
 
-No authorization required
+[Authorization](../README.md#Authorization)
 
 ### HTTP request headers
 
