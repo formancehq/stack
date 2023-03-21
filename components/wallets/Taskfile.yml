@@ -12,6 +12,7 @@ vars:
   FAILFAST: "-failfast"
   TIMEOUT: "1m"
   RUN: "''"
+  VERBOSE: "false"
 
 tasks:
   default:
@@ -21,8 +22,8 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run --fix
+      - golangci-lint run --fix {{if eq .VERBOSE "true"}}-v{{end}}
 
   tests:
     cmds:
-      - go test -race -coverpkg {{.PKG}} -coverprofile coverage.out {{.PKG}}
+      - go test {{if eq .VERBOSE "true"}}-v{{end}} -race -coverpkg {{.PKG}} -coverprofile coverage.out {{.PKG}}

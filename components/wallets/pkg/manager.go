@@ -145,6 +145,16 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 	}
 
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
+		apiErr, ok := err.(GenericOpenAPIError)
+		if ok {
+			respErr, ok := apiErr.Model().(*sdk.ErrorResponse)
+			if ok {
+				switch respErr.ErrorCode {
+				case sdk.INSUFFICIENT_FUND:
+					return nil, ErrInsufficientFundError
+				}
+			}
+		}
 		return nil, errors.Wrap(err, "creating transaction")
 	}
 
@@ -185,6 +195,16 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 	}
 
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
+		apiErr, ok := err.(GenericOpenAPIError)
+		if ok {
+			respErr, ok := apiErr.Model().(sdk.ErrorResponse)
+			if ok {
+				switch respErr.ErrorCode {
+				case sdk.INSUFFICIENT_FUND:
+					return ErrInsufficientFundError
+				}
+			}
+		}
 		return errors.Wrap(err, "creating transaction")
 	}
 
@@ -213,6 +233,16 @@ func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
 	}
 
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
+		apiErr, ok := err.(GenericOpenAPIError)
+		if ok {
+			respErr, ok := apiErr.Model().(sdk.ErrorResponse)
+			if ok {
+				switch respErr.ErrorCode {
+				case sdk.INSUFFICIENT_FUND:
+					return ErrInsufficientFundError
+				}
+			}
+		}
 		return errors.Wrap(err, "creating transaction")
 	}
 
@@ -249,6 +279,16 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 	}
 
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
+		apiErr, ok := err.(GenericOpenAPIError)
+		if ok {
+			respErr, ok := apiErr.Model().(sdk.ErrorResponse)
+			if ok {
+				switch respErr.ErrorCode {
+				case sdk.INSUFFICIENT_FUND:
+					return ErrInsufficientFundError
+				}
+			}
+		}
 		return errors.Wrap(err, "creating transaction")
 	}
 
