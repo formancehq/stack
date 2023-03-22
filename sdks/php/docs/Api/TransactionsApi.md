@@ -76,7 +76,7 @@ void (empty response body)
 ## `countTransactions()`
 
 ```php
-countTransactions($ledger, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $metadata)
+countTransactions($ledger, $reference, $account, $source, $destination, $start_time, $end_time, $metadata)
 ```
 
 Count the transactions from a ledger
@@ -104,13 +104,11 @@ $account = users:001; // string | Filter transactions with postings involving gi
 $source = users:001; // string | Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
 $destination = users:001; // string | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
 $start_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).
-$start_time2 = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute). Deprecated, please use `startTime` instead.
 $end_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).
-$end_time2 = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute). Deprecated, please use `endTime` instead.
 $metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
 
 try {
-    $apiInstance->countTransactions($ledger, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $metadata);
+    $apiInstance->countTransactions($ledger, $reference, $account, $source, $destination, $start_time, $end_time, $metadata);
 } catch (Exception $e) {
     echo 'Exception when calling TransactionsApi->countTransactions: ', $e->getMessage(), PHP_EOL;
 }
@@ -126,9 +124,7 @@ try {
 | **source** | **string**| Filter transactions with postings involving given account at source (regular expression placed between ^ and $). | [optional] |
 | **destination** | **string**| Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). | [optional] |
 | **start_time** | **\DateTime**| Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). | [optional] |
-| **start_time2** | **\DateTime**| Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. | [optional] |
 | **end_time** | **\DateTime**| Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). | [optional] |
-| **end_time2** | **\DateTime**| Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. | [optional] |
 | **metadata** | [**object**](../Model/.md)| Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 
 ### Return type
@@ -273,7 +269,7 @@ try {
 ## `listTransactions()`
 
 ```php
-listTransactions($ledger, $page_size, $page_size2, $after, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $metadata): \Formance\Model\TransactionsCursorResponse
+listTransactions($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata): \Formance\Model\TransactionsCursorResponse
 ```
 
 List transactions from a ledger
@@ -299,22 +295,18 @@ $apiInstance = new Formance\Api\TransactionsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $page_size = 100; // int | The maximum number of results to return per page.
-$page_size2 = 100; // int | The maximum number of results to return per page. Deprecated, please use `pageSize` instead.
 $after = 1234; // string | Pagination cursor, will return transactions after given txid (in descending order).
 $reference = ref:001; // string | Find transactions by reference field.
 $account = users:001; // string | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
 $source = users:001; // string | Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
 $destination = users:001; // string | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
 $start_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).
-$start_time2 = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute). Deprecated, please use `startTime` instead.
 $end_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).
-$end_time2 = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute). Deprecated, please use `endTime` instead.
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
-$pagination_token = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use `cursor` instead.
 $metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
 
 try {
-    $result = $apiInstance->listTransactions($ledger, $page_size, $page_size2, $after, $reference, $account, $source, $destination, $start_time, $start_time2, $end_time, $end_time2, $cursor, $pagination_token, $metadata);
+    $result = $apiInstance->listTransactions($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling TransactionsApi->listTransactions: ', $e->getMessage(), PHP_EOL;
@@ -327,18 +319,14 @@ try {
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
 | **page_size** | **int**| The maximum number of results to return per page. | [optional] [default to 15] |
-| **page_size2** | **int**| The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. | [optional] [default to 15] |
 | **after** | **string**| Pagination cursor, will return transactions after given txid (in descending order). | [optional] |
 | **reference** | **string**| Find transactions by reference field. | [optional] |
 | **account** | **string**| Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). | [optional] |
 | **source** | **string**| Filter transactions with postings involving given account at source (regular expression placed between ^ and $). | [optional] |
 | **destination** | **string**| Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). | [optional] |
 | **start_time** | **\DateTime**| Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). | [optional] |
-| **start_time2** | **\DateTime**| Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. | [optional] |
 | **end_time** | **\DateTime**| Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). | [optional] |
-| **end_time2** | **\DateTime**| Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. | [optional] |
 | **cursor** | **string**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. | [optional] |
-| **pagination_token** | **string**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. | [optional] |
 | **metadata** | [**object**](../Model/.md)| Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 
 ### Return type

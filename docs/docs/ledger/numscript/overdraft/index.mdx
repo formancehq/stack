@@ -15,7 +15,7 @@ Another situation likely to happen is linked to refunds, penalties or even coupo
 
 <NumscriptBlock script={`send [COIN 15] (
   source = @player:leslieknope allowing unbounded overdraft
-  destination = @player:annperkins 
+  destination = @player:annperkins
 )`}></NumscriptBlock>
 
 ## Allow an account to go into overdraft up to a certain amount
@@ -24,7 +24,7 @@ This is a great way to handle a simple case where we need to allow overdraft on 
 
 <NumscriptBlock script={`send [COIN 100] (
   source = @player:leslieknope allowing overdraft up to [COIN 5]
-  destination = @player:annperkins 
+  destination = @player:annperkins
 )`}></NumscriptBlock>
 
-The user `annperkins` will receive 5 coins in total, even if leslieknope only has 3 coins available. This would put her account balance at a negative 2 coins. 
+The user `annperkins` will receive 5 coins in total, even if leslieknope only has 3 coins available. This would put her account balance at a negative 2 coins.

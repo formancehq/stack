@@ -82,5 +82,5 @@ func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
 		return nil, errors.New("missing config encryption key")
 	}
 
-	return storage.Module(postgresURI, configEncryptionKey, output), nil
+	return storage.Module(postgresURI, configEncryptionKey, viper.GetBool(service.DebugFlag), output), nil
 }

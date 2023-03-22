@@ -105,29 +105,20 @@ func NewCommand() *cobra.Command {
 			}
 
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
-			response, _, err := client.ScriptApi.
-				RunScript(cmd.Context(), ledger).
-				Script(formance.Script{
-					Plain:     script,
+			response, _, err := client.TransactionsApi.CreateTransaction(cmd.Context(), ledger).
+				PostTransaction(formance.PostTransaction{
+					Script: &formance.PostTransactionScript{
+						Plain: script,
+						Vars:  vars,
+					},
 					Metadata:  metadata,
-					Vars:      vars,
 					Reference: &reference,
-				}).
-				Execute()
-			if err != nil {
-				return err
-			}
+				}).Execute()
 			if err != nil {
 				return errors.Wrapf(err, "executing numscript")
 			}
-			if response.ErrorCode != nil && *response.ErrorCode != "" {
-				if response.ErrorMessage != nil {
-					return errors.New(*response.ErrorMessage)
-				}
-				return errors.New(string(*response.ErrorCode))
-			}
 
-			return internal.PrintTransaction(cmd.OutOrStdout(), *response.Transaction)
+			return internal.PrintTransaction(cmd.OutOrStdout(), response.Data)
 		}),
 	)
 }

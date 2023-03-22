@@ -13,7 +13,6 @@ Formance/apis/tags/logs_api.py
 Formance/apis/tags/orchestration_api.py
 Formance/apis/tags/payments_api.py
 Formance/apis/tags/scopes_api.py
-Formance/apis/tags/script_api.py
 Formance/apis/tags/search_api.py
 Formance/apis/tags/server_api.py
 Formance/apis/tags/stats_api.py
@@ -260,10 +259,6 @@ Formance/model/scope.py
 Formance/model/scope.pyi
 Formance/model/scope_options.py
 Formance/model/scope_options.pyi
-Formance/model/script.py
-Formance/model/script.pyi
-Formance/model/script_response.py
-Formance/model/script_response.pyi
 Formance/model/secret.py
 Formance/model/secret.pyi
 Formance/model/secret_options.py
@@ -326,12 +321,8 @@ Formance/model/tasks_cursor.py
 Formance/model/tasks_cursor.pyi
 Formance/model/transaction.py
 Formance/model/transaction.pyi
-Formance/model/transaction_data.py
-Formance/model/transaction_data.pyi
 Formance/model/transaction_response.py
 Formance/model/transaction_response.pyi
-Formance/model/transactions.py
-Formance/model/transactions.pyi
 Formance/model/transactions_cursor_response.py
 Formance/model/transactions_cursor_response.pyi
 Formance/model/transfer_request.py
@@ -407,7 +398,6 @@ docs/apis/tags/LogsApi.md
 docs/apis/tags/OrchestrationApi.md
 docs/apis/tags/PaymentsApi.md
 docs/apis/tags/ScopesApi.md
-docs/apis/tags/ScriptApi.md
 docs/apis/tags/SearchApi.md
 docs/apis/tags/ServerApi.md
 docs/apis/tags/StatsApi.md
@@ -533,8 +523,6 @@ docs/models/RunWorkflowRequest.md
 docs/models/RunWorkflowResponse.md
 docs/models/Scope.md
 docs/models/ScopeOptions.md
-docs/models/Script.md
-docs/models/ScriptResponse.md
 docs/models/Secret.md
 docs/models/SecretOptions.md
 docs/models/ServerInfo.md
@@ -566,9 +554,7 @@ docs/models/TaskStripe.md
 docs/models/TaskWise.md
 docs/models/TasksCursor.md
 docs/models/Transaction.md
-docs/models/TransactionData.md
 docs/models/TransactionResponse.md
-docs/models/Transactions.md
 docs/models/TransactionsCursorResponse.md
 docs/models/TransferRequest.md
 docs/models/TransferResponse.md

@@ -5,14 +5,14 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **ErrorCode** | [**ErrorsEnum**](ErrorsEnum.md) |  | 
-**ErrorMessage** | Pointer to **string** |  | [optional] 
+**ErrorMessage** | **string** |  | 
 **Details** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
 ### NewErrorResponse
 
-`func NewErrorResponse(errorCode ErrorsEnum, ) *ErrorResponse`
+`func NewErrorResponse(errorCode ErrorsEnum, errorMessage string, ) *ErrorResponse`
 
 NewErrorResponse instantiates a new ErrorResponse object
 This constructor will assign default values to properties that have it defined,
@@ -66,11 +66,6 @@ and a boolean to check if the value has been set.
 
 SetErrorMessage sets ErrorMessage field to given value.
 
-### HasErrorMessage
-
-`func (o *ErrorResponse) HasErrorMessage() bool`
-
-HasErrorMessage returns a boolean if a field has been set.
 
 ### GetDetails
 
