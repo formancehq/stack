@@ -21,7 +21,7 @@ var _ MappedNullable = &ErrorResponse{}
 // ErrorResponse struct for ErrorResponse
 type ErrorResponse struct {
 	ErrorCode ErrorsEnum `json:"errorCode"`
-	ErrorMessage *string `json:"errorMessage,omitempty"`
+	ErrorMessage string `json:"errorMessage"`
 	Details *string `json:"details,omitempty"`
 }
 
@@ -29,9 +29,10 @@ type ErrorResponse struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewErrorResponse(errorCode ErrorsEnum) *ErrorResponse {
+func NewErrorResponse(errorCode ErrorsEnum, errorMessage string) *ErrorResponse {
 	this := ErrorResponse{}
 	this.ErrorCode = errorCode
+	this.ErrorMessage = errorMessage
 	return &this
 }
 
@@ -67,36 +68,28 @@ func (o *ErrorResponse) SetErrorCode(v ErrorsEnum) {
 	o.ErrorCode = v
 }
 
-// GetErrorMessage returns the ErrorMessage field value if set, zero value otherwise.
+// GetErrorMessage returns the ErrorMessage field value
 func (o *ErrorResponse) GetErrorMessage() string {
-	if o == nil || IsNil(o.ErrorMessage) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.ErrorMessage
+
+	return o.ErrorMessage
 }
 
-// GetErrorMessageOk returns a tuple with the ErrorMessage field value if set, nil otherwise
+// GetErrorMessageOk returns a tuple with the ErrorMessage field value
 // and a boolean to check if the value has been set.
 func (o *ErrorResponse) GetErrorMessageOk() (*string, bool) {
-	if o == nil || IsNil(o.ErrorMessage) {
+	if o == nil {
 		return nil, false
 	}
-	return o.ErrorMessage, true
+	return &o.ErrorMessage, true
 }
 
-// HasErrorMessage returns a boolean if a field has been set.
-func (o *ErrorResponse) HasErrorMessage() bool {
-	if o != nil && !IsNil(o.ErrorMessage) {
-		return true
-	}
-
-	return false
-}
-
-// SetErrorMessage gets a reference to the given string and assigns it to the ErrorMessage field.
+// SetErrorMessage sets field value
 func (o *ErrorResponse) SetErrorMessage(v string) {
-	o.ErrorMessage = &v
+	o.ErrorMessage = v
 }
 
 // GetDetails returns the Details field value if set, zero value otherwise.
@@ -142,9 +135,7 @@ func (o ErrorResponse) MarshalJSON() ([]byte, error) {
 func (o ErrorResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["errorCode"] = o.ErrorCode
-	if !IsNil(o.ErrorMessage) {
-		toSerialize["errorMessage"] = o.ErrorMessage
-	}
+	toSerialize["errorMessage"] = o.ErrorMessage
 	if !IsNil(o.Details) {
 		toSerialize["details"] = o.Details
 	}

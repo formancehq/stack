@@ -76,7 +76,7 @@ func CursorFromListResponse[T any, V any](w http.ResponseWriter, query ListQuery
 }
 
 func ParsePaginationToken(r *http.Request) string {
-	return r.URL.Query().Get("RenderCursor")
+	return r.URL.Query().Get("paginationToken")
 }
 
 func ParsePageSize(r *http.Request) int {

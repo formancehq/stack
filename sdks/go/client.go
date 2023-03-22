@@ -69,8 +69,6 @@ type APIClient struct {
 
 	ScopesApi ScopesApi
 
-	ScriptApi ScriptApi
-
 	SearchApi SearchApi
 
 	ServerApi ServerApi
@@ -111,7 +109,6 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.OrchestrationApi = (*OrchestrationApiService)(&c.common)
 	c.PaymentsApi = (*PaymentsApiService)(&c.common)
 	c.ScopesApi = (*ScopesApiService)(&c.common)
-	c.ScriptApi = (*ScriptApiService)(&c.common)
 	c.SearchApi = (*SearchApiService)(&c.common)
 	c.ServerApi = (*ServerApiService)(&c.common)
 	c.StatsApi = (*StatsApiService)(&c.common)

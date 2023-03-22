@@ -29,7 +29,7 @@ public class BalancesApiTest {
     /**
      * Get the balances from a ledger&#39;s account
      *
-     *
+     * 
      */
     @Test
     public void getBalancesTest() {
@@ -37,15 +37,14 @@ public class BalancesApiTest {
         String address = null;
         String after = null;
         String cursor = null;
-        String paginationToken = null;
-        // BalancesCursorResponse response = api.getBalances(ledger, address, after, cursor, paginationToken);
+        // BalancesCursorResponse response = api.getBalances(ledger, address, after, cursor);
 
         // TODO: test validations
     }
     /**
      * Get the aggregated balances from selected accounts
      *
-     *
+     * 
      */
     @Test
     public void getBalancesAggregatedTest() {

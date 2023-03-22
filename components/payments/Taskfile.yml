@@ -15,7 +15,7 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run -v --fix {{.PKG}}
+      - golangci-lint run --fix
 
   tests:
     cmds:

@@ -11,7 +11,6 @@ api_logs.go
 api_orchestration.go
 api_payments.go
 api_scopes.go
-api_script.go
 api_search.go
 api_server.go
 api_stats.go
@@ -155,8 +154,6 @@ docs/ScopeAllOf.md
 docs/ScopeOptions.md
 docs/ScopesApi.md
 docs/Script.md
-docs/ScriptApi.md
-docs/ScriptResponse.md
 docs/SearchApi.md
 docs/Secret.md
 docs/SecretAllOf.md
@@ -207,9 +204,7 @@ docs/TasksCursorCursorAllOf.md
 docs/TasksCursorCursorAllOfDataInner.md
 docs/Total.md
 docs/Transaction.md
-docs/TransactionData.md
 docs/TransactionResponse.md
-docs/Transactions.md
 docs/TransactionsApi.md
 docs/TransactionsCursorResponse.md
 docs/TransactionsCursorResponseCursor.md
@@ -368,7 +363,6 @@ model_scope.go
 model_scope_all_of.go
 model_scope_options.go
 model_script.go
-model_script_response.go
 model_secret.go
 model_secret_all_of.go
 model_secret_options.go
@@ -416,9 +410,7 @@ model_tasks_cursor_cursor_all_of.go
 model_tasks_cursor_cursor_all_of_data_inner.go
 model_total.go
 model_transaction.go
-model_transaction_data.go
 model_transaction_response.go
-model_transactions.go
 model_transactions_cursor_response.go
 model_transactions_cursor_response_cursor.go
 model_transfer_request.go

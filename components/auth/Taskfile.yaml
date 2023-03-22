@@ -8,6 +8,7 @@ vars:
   FAILFAST: "-failfast"
   TIMEOUT: "1m"
   RUN: "''"
+  VERBOSE: "false"
 
 env:
   VERSION: "develop"
@@ -20,12 +21,12 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run -v --fix
+      - golangci-lint run --fix {{if eq .VERBOSE "true"}}-v{{end}}
 
   tests:local:
     cmds:
       - >
-        go test -v {{.FAILFAST}} -race -coverpkg {{.PKG}} -coverprofile coverage.out
+        go test {{if eq .VERBOSE "true"}}-v{{end}} {{.FAILFAST}} -race -coverpkg {{.PKG}} -coverprofile coverage.out
         -run {{.RUN}} -timeout {{.TIMEOUT}} {{.PKG}} |
         sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' |
         sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/'' |

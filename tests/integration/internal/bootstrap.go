@@ -27,7 +27,6 @@ import (
 
 	"github.com/egymgmbh/go-prefix-writer/prefixer"
 	"github.com/formancehq/ledger/cmd"
-	natsServer "github.com/nats-io/nats-server/v2/server"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/ory/dockertest/v3"
@@ -36,7 +35,6 @@ import (
 )
 
 var (
-	server       *natsServer.Server
 	actualTestID string
 	ctx          context.Context
 	dockerPool   *dockertest.Pool
@@ -84,6 +82,7 @@ var _ = BeforeEach(func() {
 		Addresses: []string{"http://" + getOpenSearchUrl()},
 		Transport: httpclient.NewDebugHTTPTransport(http.DefaultTransport),
 	})
+	Expect(err).To(BeNil())
 	Eventually(func() error {
 		return searchengine.CreateIndex(ctx, openSearchClient, actualTestID)
 	}).WithTimeout(10 * time.Second).Should(BeNil())

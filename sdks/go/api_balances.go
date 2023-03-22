@@ -60,7 +60,6 @@ type ApiGetBalancesRequest struct {
 	address *string
 	after *string
 	cursor *string
-	paginationToken *string
 }
 
 // Filter balances involving given account, either as source or destination.
@@ -78,13 +77,6 @@ func (r ApiGetBalancesRequest) After(after string) ApiGetBalancesRequest {
 // Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
 func (r ApiGetBalancesRequest) Cursor(cursor string) ApiGetBalancesRequest {
 	r.cursor = &cursor
-	return r
-}
-
-// Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use &#x60;cursor&#x60; instead.
-// Deprecated
-func (r ApiGetBalancesRequest) PaginationToken(paginationToken string) ApiGetBalancesRequest {
-	r.paginationToken = &paginationToken
 	return r
 }
 
@@ -137,9 +129,6 @@ func (a *BalancesApiService) GetBalancesExecute(r ApiGetBalancesRequest) (*Balan
 	}
 	if r.cursor != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "cursor", r.cursor, "")
-	}
-	if r.paginationToken != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

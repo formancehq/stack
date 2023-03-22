@@ -15,7 +15,7 @@ import { HttpFile } from '../http/http';
 
 export class ErrorResponse {
     'errorCode': ErrorsEnum;
-    'errorMessage'?: string;
+    'errorMessage': string;
     'details'?: string;
 
     static readonly discriminator: string | undefined = undefined;

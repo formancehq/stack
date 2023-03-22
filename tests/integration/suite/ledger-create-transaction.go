@@ -164,3 +164,37 @@ var _ = Given("some empty environment", func() {
 		})
 	})
 })
+
+type GenericOpenAPIError interface {
+	Model() any
+}
+
+var _ = Given("some empty environment", func() {
+	When("creating a transaction on a ledger with insufficient funds", func() {
+		It("should fail", func() {
+			resp, httpResp, err := Client().TransactionsApi.
+				CreateTransaction(TestContext(), "default").
+				PostTransaction(formance.PostTransaction{
+					Postings: []formance.Posting{{
+						Amount:      100,
+						Asset:       "USD",
+						Source:      "bob",
+						Destination: "alice",
+					}},
+				}).Execute()
+			Expect(err).To(HaveOccurred())
+			Expect(httpResp.StatusCode).To(Equal(400))
+			Expect(resp).To(BeNil())
+
+			apiErr, ok := err.(GenericOpenAPIError)
+			Expect(ok).To(BeTrue())
+
+			details := "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
+			Expect(apiErr.Model()).Should(Equal(formance.ErrorResponse{
+				ErrorCode:    formance.INSUFFICIENT_FUND,
+				ErrorMessage: "[INSUFFICIENT_FUND] account had insufficient funds",
+				Details:      &details,
+			}))
+		})
+	})
+})

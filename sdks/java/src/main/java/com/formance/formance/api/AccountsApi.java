@@ -66,20 +66,17 @@ public interface AccountsApi {
    * List accounts from a ledger, sorted by address in descending order.
    * @param ledger Name of the ledger. (required)
    * @param pageSize The maximum number of results to return per page.  (optional, default to 15)
-   * @param pageSize2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead.  (optional, default to 15)
    * @param after Pagination cursor, will return accounts after given address, in descending order. (optional)
    * @param address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
    * @param metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
    * @param balance Filter accounts by their balance (default operator is gte) (optional)
    * @param balanceOperator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.  (optional)
-   * @param balanceOperator2 Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. Deprecated, please use &#x60;balanceOperator&#x60; instead.  (optional)
    * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
-   * @param paginationToken Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead.  (optional)
    * @return Call&lt;AccountsCursorResponse&gt;
    */
   @GET("api/ledger/{ledger}/accounts")
   Call<AccountsCursorResponse> listAccounts(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("page_size") Long pageSize2, @retrofit2.http.Query("after") String after, @retrofit2.http.Query("address") String address, @retrofit2.http.Query("metadata") Object metadata, @retrofit2.http.Query("balance") Long balance, @retrofit2.http.Query("balanceOperator") String balanceOperator, @retrofit2.http.Query("balance_operator") String balanceOperator2, @retrofit2.http.Query("cursor") String cursor, @retrofit2.http.Query("pagination_token") String paginationToken
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("after") String after, @retrofit2.http.Query("address") String address, @retrofit2.http.Query("metadata") Object metadata, @retrofit2.http.Query("balance") Long balance, @retrofit2.http.Query("balanceOperator") String balanceOperator, @retrofit2.http.Query("cursor") String cursor
   );
 
 }
