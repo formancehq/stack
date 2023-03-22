@@ -42,17 +42,6 @@ class PageSizeSchema(
         format = 'int64'
         inclusive_maximum = 1000
         inclusive_minimum = 1
-
-
-class PageSizeSchema(
-    schemas.Int64Schema
-):
-
-
-    class MetaOapg:
-        format = 'int64'
-        inclusive_maximum = 1000
-        inclusive_minimum = 1
 AfterSchema = schemas.StrSchema
 AddressSchema = schemas.StrSchema
 MetadataSchema = schemas.DictSchema
@@ -98,49 +87,7 @@ class BalanceOperatorSchema(
     @schemas.classproperty
     def NE(cls):
         return cls("ne")
-
-
-class BalanceOperatorSchema(
-    schemas.EnumBase,
-    schemas.StrSchema
-):
-
-
-    class MetaOapg:
-        enum_value_to_name = {
-            "gte": "GTE",
-            "lte": "LTE",
-            "gt": "GT",
-            "lt": "LT",
-            "e": "E",
-            "ne": "NE",
-        }
-    
-    @schemas.classproperty
-    def GTE(cls):
-        return cls("gte")
-    
-    @schemas.classproperty
-    def LTE(cls):
-        return cls("lte")
-    
-    @schemas.classproperty
-    def GT(cls):
-        return cls("gt")
-    
-    @schemas.classproperty
-    def LT(cls):
-        return cls("lt")
-    
-    @schemas.classproperty
-    def E(cls):
-        return cls("e")
-    
-    @schemas.classproperty
-    def NE(cls):
-        return cls("ne")
 CursorSchema = schemas.StrSchema
-PaginationTokenSchema = schemas.StrSchema
 RequestRequiredQueryParams = typing_extensions.TypedDict(
     'RequestRequiredQueryParams',
     {
@@ -150,15 +97,12 @@ RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
         'pageSize': typing.Union[PageSizeSchema, decimal.Decimal, int, ],
-        'page_size': typing.Union[PageSizeSchema, decimal.Decimal, int, ],
         'after': typing.Union[AfterSchema, str, ],
         'address': typing.Union[AddressSchema, str, ],
         'metadata': typing.Union[MetadataSchema, dict, frozendict.frozendict, ],
         'balance': typing.Union[BalanceSchema, decimal.Decimal, int, ],
         'balanceOperator': typing.Union[BalanceOperatorSchema, str, ],
-        'balance_operator': typing.Union[BalanceOperatorSchema, str, ],
         'cursor': typing.Union[CursorSchema, str, ],
-        'pagination_token': typing.Union[PaginationTokenSchema, str, ],
     },
     total=False
 )
@@ -170,12 +114,6 @@ class RequestQueryParams(RequestRequiredQueryParams, RequestOptionalQueryParams)
 
 request_query_page_size = api_client.QueryParameter(
     name="pageSize",
-    style=api_client.ParameterStyle.FORM,
-    schema=PageSizeSchema,
-    explode=True,
-)
-request_query_page_size2 = api_client.QueryParameter(
-    name="page_size",
     style=api_client.ParameterStyle.FORM,
     schema=PageSizeSchema,
     explode=True,
@@ -210,22 +148,10 @@ request_query_balance_operator = api_client.QueryParameter(
     schema=BalanceOperatorSchema,
     explode=True,
 )
-request_query_balance_operator2 = api_client.QueryParameter(
-    name="balance_operator",
-    style=api_client.ParameterStyle.FORM,
-    schema=BalanceOperatorSchema,
-    explode=True,
-)
 request_query_cursor = api_client.QueryParameter(
     name="cursor",
     style=api_client.ParameterStyle.FORM,
     schema=CursorSchema,
-    explode=True,
-)
-request_query_pagination_token = api_client.QueryParameter(
-    name="pagination_token",
-    style=api_client.ParameterStyle.FORM,
-    schema=PaginationTokenSchema,
     explode=True,
 )
 # Path params
@@ -380,15 +306,12 @@ class BaseApi(api_client.Api):
         prefix_separator_iterator = None
         for parameter in (
             request_query_page_size,
-            request_query_page_size2,
             request_query_after,
             request_query_address,
             request_query_metadata,
             request_query_balance,
             request_query_balance_operator,
-            request_query_balance_operator2,
             request_query_cursor,
-            request_query_pagination_token,
         ):
             parameter_data = query_params.get(parameter.name, schemas.unset)
             if parameter_data is schemas.unset:

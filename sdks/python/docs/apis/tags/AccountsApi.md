@@ -483,15 +483,12 @@ with Formance.ApiClient(configuration) as api_client:
     }
     query_params = {
         'pageSize': 100,
-        'page_size': 100,
         'after': "users:003",
         'address': "users:.+",
         'metadata': dict(),
         'balance': 2400,
         'balanceOperator': "gte",
-        'balance_operator': "gte",
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-        'pagination_token': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
     }
     try:
         # List accounts from a ledger
@@ -520,23 +517,13 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 pageSize | PageSizeSchema | | optional
-page_size | PageSizeSchema | | optional
 after | AfterSchema | | optional
 address | AddressSchema | | optional
 metadata | MetadataSchema | | optional
 balance | BalanceSchema | | optional
 balanceOperator | BalanceOperatorSchema | | optional
-balance_operator | BalanceOperatorSchema | | optional
 cursor | CursorSchema | | optional
-pagination_token | PaginationTokenSchema | | optional
 
-
-# PageSizeSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | if omitted the server will use the default value of 15value must be a 64 bit integer
 
 # PageSizeSchema
 
@@ -580,21 +567,7 @@ Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 str,  | str,  |  | must be one of ["gte", "lte", "gt", "lt", "e", "ne", ] 
 
-# BalanceOperatorSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | must be one of ["gte", "lte", "gt", "lt", "e", "ne", ] 
-
 # CursorSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | 
-
-# PaginationTokenSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

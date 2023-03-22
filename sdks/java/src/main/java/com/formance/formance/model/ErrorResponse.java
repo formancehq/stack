@@ -75,7 +75,7 @@ public class ErrorResponse {
    * Get errorMessage
    * @return errorMessage
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public String getErrorMessage() {
     return errorMessage;

@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Webhooks server
+  title: Webhooks
   version: "WEBHOOKS_VERSION"
 
 paths:
@@ -138,7 +138,6 @@ paths:
                 $ref: '#/components/schemas/ConfigResponse'
         "304":
           description: Config not modified, was already activated.
-          content: {}
 
   /configs/{id}/deactivate:
     put:
@@ -164,7 +163,6 @@ paths:
                 $ref: '#/components/schemas/ConfigResponse'
         "304":
           description: Config not modified, was already deactivated.
-          content: {}
 
   /configs/{id}/secret/change:
     put:

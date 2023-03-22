@@ -232,9 +232,7 @@ type ApiCountTransactionsRequest struct {
 	source *string
 	destination *string
 	startTime *time.Time
-	startTime2 *time.Time
 	endTime *time.Time
-	endTime2 *time.Time
 	metadata *map[string]interface{}
 }
 
@@ -268,23 +266,9 @@ func (r ApiCountTransactionsRequest) StartTime(startTime time.Time) ApiCountTran
 	return r
 }
 
-// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. 
-// Deprecated
-func (r ApiCountTransactionsRequest) StartTime2(startTime2 time.Time) ApiCountTransactionsRequest {
-	r.startTime2 = &startTime2
-	return r
-}
-
 // Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
 func (r ApiCountTransactionsRequest) EndTime(endTime time.Time) ApiCountTransactionsRequest {
 	r.endTime = &endTime
-	return r
-}
-
-// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. 
-// Deprecated
-func (r ApiCountTransactionsRequest) EndTime2(endTime2 time.Time) ApiCountTransactionsRequest {
-	r.endTime2 = &endTime2
 	return r
 }
 
@@ -348,14 +332,8 @@ func (a *TransactionsApiService) CountTransactionsExecute(r ApiCountTransactions
 	if r.startTime != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "startTime", r.startTime, "")
 	}
-	if r.startTime2 != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "start_time", r.startTime2, "")
-	}
 	if r.endTime != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "endTime", r.endTime, "")
-	}
-	if r.endTime2 != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "end_time", r.endTime2, "")
 	}
 	if r.metadata != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "metadata", r.metadata, "")
@@ -665,31 +643,20 @@ type ApiListTransactionsRequest struct {
 	ApiService TransactionsApi
 	ledger string
 	pageSize *int64
-	pageSize2 *int64
 	after *string
 	reference *string
 	account *string
 	source *string
 	destination *string
 	startTime *time.Time
-	startTime2 *time.Time
 	endTime *time.Time
-	endTime2 *time.Time
 	cursor *string
-	paginationToken *string
 	metadata *map[string]interface{}
 }
 
 // The maximum number of results to return per page. 
 func (r ApiListTransactionsRequest) PageSize(pageSize int64) ApiListTransactionsRequest {
 	r.pageSize = &pageSize
-	return r
-}
-
-// The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. 
-// Deprecated
-func (r ApiListTransactionsRequest) PageSize2(pageSize2 int64) ApiListTransactionsRequest {
-	r.pageSize2 = &pageSize2
 	return r
 }
 
@@ -729,36 +696,15 @@ func (r ApiListTransactionsRequest) StartTime(startTime time.Time) ApiListTransa
 	return r
 }
 
-// Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. 
-// Deprecated
-func (r ApiListTransactionsRequest) StartTime2(startTime2 time.Time) ApiListTransactionsRequest {
-	r.startTime2 = &startTime2
-	return r
-}
-
 // Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
 func (r ApiListTransactionsRequest) EndTime(endTime time.Time) ApiListTransactionsRequest {
 	r.endTime = &endTime
 	return r
 }
 
-// Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. 
-// Deprecated
-func (r ApiListTransactionsRequest) EndTime2(endTime2 time.Time) ApiListTransactionsRequest {
-	r.endTime2 = &endTime2
-	return r
-}
-
 // Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
 func (r ApiListTransactionsRequest) Cursor(cursor string) ApiListTransactionsRequest {
 	r.cursor = &cursor
-	return r
-}
-
-// Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. 
-// Deprecated
-func (r ApiListTransactionsRequest) PaginationToken(paginationToken string) ApiListTransactionsRequest {
-	r.paginationToken = &paginationToken
 	return r
 }
 
@@ -814,9 +760,6 @@ func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRe
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
-	if r.pageSize2 != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "page_size", r.pageSize2, "")
-	}
 	if r.after != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "")
 	}
@@ -835,20 +778,11 @@ func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRe
 	if r.startTime != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "startTime", r.startTime, "")
 	}
-	if r.startTime2 != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "start_time", r.startTime2, "")
-	}
 	if r.endTime != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "endTime", r.endTime, "")
 	}
-	if r.endTime2 != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "end_time", r.endTime2, "")
-	}
 	if r.cursor != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "cursor", r.cursor, "")
-	}
-	if r.paginationToken != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "pagination_token", r.paginationToken, "")
 	}
 	if r.metadata != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "metadata", r.metadata, "")

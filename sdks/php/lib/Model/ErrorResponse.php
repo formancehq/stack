@@ -292,6 +292,9 @@ class ErrorResponse implements ModelInterface, ArrayAccess, \JsonSerializable
         if ($this->container['error_code'] === null) {
             $invalidProperties[] = "'error_code' can't be null";
         }
+        if ($this->container['error_message'] === null) {
+            $invalidProperties[] = "'error_message' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -337,7 +340,7 @@ class ErrorResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets error_message
      *
-     * @return string|null
+     * @return string
      */
     public function getErrorMessage()
     {
@@ -347,7 +350,7 @@ class ErrorResponse implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets error_message
      *
-     * @param string|null $error_message error_message
+     * @param string $error_message error_message
      *
      * @return self
      */

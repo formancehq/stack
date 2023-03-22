@@ -93,7 +93,7 @@ type (
 	getAccountFn           func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error)
 	listAccountsFn         func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error)
 	listTransactionsFn     func(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error)
-	runScriptFn            func(ctx context.Context, ledger string, script sdk.Script) (*sdk.ScriptResponse, error)
+	createTransactionFn    func(ctx context.Context, ledger string, postTransaction sdk.PostTransaction) (*sdk.TransactionResponse, error)
 )
 
 type LedgerMock struct {
@@ -101,7 +101,7 @@ type LedgerMock struct {
 	getAccount           getAccountFn
 	listAccounts         listAccountsFn
 	listTransactions     listTransactionsFn
-	runScript            runScriptFn
+	createTransaction    createTransactionFn
 }
 
 func (l *LedgerMock) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error {
@@ -116,8 +116,8 @@ func (l *LedgerMock) ListAccounts(ctx context.Context, ledger string, query wall
 	return l.listAccounts(ctx, ledger, query)
 }
 
-func (l *LedgerMock) RunScript(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResponse, error) {
-	return l.runScript(ctx, name, script)
+func (l *LedgerMock) CreateTransaction(ctx context.Context, name string, postTransaction sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+	return l.createTransaction(ctx, name, postTransaction)
 }
 
 func (l *LedgerMock) ListTransactions(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error) {
@@ -128,9 +128,9 @@ var _ wallet.Ledger = &LedgerMock{}
 
 type Option func(mock *LedgerMock)
 
-func WithRunScript(fn runScriptFn) Option {
+func WithCreateTransaction(fn createTransactionFn) Option {
 	return func(mock *LedgerMock) {
-		mock.runScript = fn
+		mock.createTransaction = fn
 	}
 }
 

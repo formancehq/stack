@@ -143,7 +143,6 @@ Class | Method | HTTP request | Description
 *ScopesApi* | [**ListScopes**](docs/ScopesApi.md#listscopes) | **Get** /api/auth/scopes | List scopes
 *ScopesApi* | [**ReadScope**](docs/ScopesApi.md#readscope) | **Get** /api/auth/scopes/{scopeId} | Read scope
 *ScopesApi* | [**UpdateScope**](docs/ScopesApi.md#updatescope) | **Put** /api/auth/scopes/{scopeId} | Update scope
-*ScriptApi* | [**RunScript**](docs/ScriptApi.md#runscript) | **Post** /api/ledger/{ledger}/script | Execute a Numscript
 *SearchApi* | [**Search**](docs/SearchApi.md#search) | **Post** /api/search/ | Search
 *ServerApi* | [**GetInfo**](docs/ServerApi.md#getinfo) | **Get** /api/ledger/_info | Show server information
 *StatsApi* | [**ReadStats**](docs/StatsApi.md#readstats) | **Get** /api/ledger/{ledger}/stats | Get statistics from a ledger
@@ -306,7 +305,6 @@ Class | Method | HTTP request | Description
  - [ScopeAllOf](docs/ScopeAllOf.md)
  - [ScopeOptions](docs/ScopeOptions.md)
  - [Script](docs/Script.md)
- - [ScriptResponse](docs/ScriptResponse.md)
  - [Secret](docs/Secret.md)
  - [SecretAllOf](docs/SecretAllOf.md)
  - [SecretOptions](docs/SecretOptions.md)
@@ -354,9 +352,7 @@ Class | Method | HTTP request | Description
  - [TasksCursorCursorAllOfDataInner](docs/TasksCursorCursorAllOfDataInner.md)
  - [Total](docs/Total.md)
  - [Transaction](docs/Transaction.md)
- - [TransactionData](docs/TransactionData.md)
  - [TransactionResponse](docs/TransactionResponse.md)
- - [Transactions](docs/Transactions.md)
  - [TransactionsCursorResponse](docs/TransactionsCursorResponse.md)
  - [TransactionsCursorResponseCursor](docs/TransactionsCursorResponseCursor.md)
  - [TransferRequest](docs/TransferRequest.md)

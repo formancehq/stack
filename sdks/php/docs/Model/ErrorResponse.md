@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **error_code** | [**\Formance\Model\ErrorsEnum**](ErrorsEnum.md) |  |
-**error_message** | **string** |  | [optional]
+**error_message** | **string** |  |
 **details** | **string** |  | [optional]
 
 [[Back to Model list]](../../README.md#models) [[Back to API list]](../../README.md#endpoints) [[Back to README]](../../README.md)
