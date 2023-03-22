@@ -97,7 +97,7 @@ func (p *Program) ParseVariablesJSON(vars map[string]json.RawMessage) (map[strin
 					"invalid JSON value for variable $%s of type %v: %w",
 					param.Name, param.Typ, err)
 			}
-			variables[param.Name] = *val
+			variables[param.Name] = val
 			delete(vars, param.Name)
 		}
 	}
@@ -123,7 +123,7 @@ func (p *Program) GetInvolvedAccounts(vars map[string]json.RawMessage) ([]string
 				if err != nil {
 					return nil, err
 				}
-				involvedAccountsMap[string((*value).(core.AccountAddress))] = struct{}{}
+				involvedAccountsMap[string((value).(core.AccountAddress))] = struct{}{}
 			}
 		}
 	}
@@ -152,7 +152,7 @@ func (p *Program) GetInvolvedSources(vars map[string]json.RawMessage) ([]string,
 				if err != nil {
 					return nil, err
 				}
-				involvedSourcesMap[string((*value).(core.AccountAddress))] = struct{}{}
+				involvedSourcesMap[string((value).(core.AccountAddress))] = struct{}{}
 			}
 		}
 	}
