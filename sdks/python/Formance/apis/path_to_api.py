@@ -17,7 +17,6 @@ from Formance.apis.paths.api_ledger_ledger__info import ApiLedgerLedgerInfo
 from Formance.apis.paths.api_ledger_ledger_accounts import ApiLedgerLedgerAccounts
 from Formance.apis.paths.api_ledger_ledger_accounts_address import ApiLedgerLedgerAccountsAddress
 from Formance.apis.paths.api_ledger_ledger_accounts_address_metadata import ApiLedgerLedgerAccountsAddressMetadata
-from Formance.apis.paths.api_ledger_ledger_script import ApiLedgerLedgerScript
 from Formance.apis.paths.api_ledger_ledger_stats import ApiLedgerLedgerStats
 from Formance.apis.paths.api_ledger_ledger_transactions import ApiLedgerLedgerTransactions
 from Formance.apis.paths.api_ledger_ledger_transactions_txid import ApiLedgerLedgerTransactionsTxid
@@ -90,7 +89,6 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.API_LEDGER_LEDGER_ACCOUNTS: ApiLedgerLedgerAccounts,
         PathValues.API_LEDGER_LEDGER_ACCOUNTS_ADDRESS: ApiLedgerLedgerAccountsAddress,
         PathValues.API_LEDGER_LEDGER_ACCOUNTS_ADDRESS_METADATA: ApiLedgerLedgerAccountsAddressMetadata,
-        PathValues.API_LEDGER_LEDGER_SCRIPT: ApiLedgerLedgerScript,
         PathValues.API_LEDGER_LEDGER_STATS: ApiLedgerLedgerStats,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS: ApiLedgerLedgerTransactions,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS_TXID: ApiLedgerLedgerTransactionsTxid,
@@ -164,7 +162,6 @@ path_to_api = PathToApi(
         PathValues.API_LEDGER_LEDGER_ACCOUNTS: ApiLedgerLedgerAccounts,
         PathValues.API_LEDGER_LEDGER_ACCOUNTS_ADDRESS: ApiLedgerLedgerAccountsAddress,
         PathValues.API_LEDGER_LEDGER_ACCOUNTS_ADDRESS_METADATA: ApiLedgerLedgerAccountsAddressMetadata,
-        PathValues.API_LEDGER_LEDGER_SCRIPT: ApiLedgerLedgerScript,
         PathValues.API_LEDGER_LEDGER_STATS: ApiLedgerLedgerStats,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS: ApiLedgerLedgerTransactions,
         PathValues.API_LEDGER_LEDGER_TRANSACTIONS_TXID: ApiLedgerLedgerTransactionsTxid,

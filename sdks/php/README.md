@@ -142,7 +142,6 @@ Class | Method | HTTP request | Description
 *ScopesApi* | [**listScopes**](docs/Api/ScopesApi.md#listscopes) | **GET** /api/auth/scopes | List scopes
 *ScopesApi* | [**readScope**](docs/Api/ScopesApi.md#readscope) | **GET** /api/auth/scopes/{scopeId} | Read scope
 *ScopesApi* | [**updateScope**](docs/Api/ScopesApi.md#updatescope) | **PUT** /api/auth/scopes/{scopeId} | Update scope
-*ScriptApi* | [**runScript**](docs/Api/ScriptApi.md#runscript) | **POST** /api/ledger/{ledger}/script | Execute a Numscript
 *SearchApi* | [**search**](docs/Api/SearchApi.md#search) | **POST** /api/search/ | Search
 *ServerApi* | [**getInfo**](docs/Api/ServerApi.md#getinfo) | **GET** /api/ledger/_info | Show server information
 *StatsApi* | [**readStats**](docs/Api/StatsApi.md#readstats) | **GET** /api/ledger/{ledger}/stats | Get statistics from a ledger
@@ -303,8 +302,6 @@ Class | Method | HTTP request | Description
 - [Scope](docs/Model/Scope.md)
 - [ScopeAllOf](docs/Model/ScopeAllOf.md)
 - [ScopeOptions](docs/Model/ScopeOptions.md)
-- [Script](docs/Model/Script.md)
-- [ScriptResponse](docs/Model/ScriptResponse.md)
 - [Secret](docs/Model/Secret.md)
 - [SecretAllOf](docs/Model/SecretAllOf.md)
 - [SecretOptions](docs/Model/SecretOptions.md)
@@ -352,9 +349,7 @@ Class | Method | HTTP request | Description
 - [TasksCursorCursorAllOfDataInner](docs/Model/TasksCursorCursorAllOfDataInner.md)
 - [Total](docs/Model/Total.md)
 - [Transaction](docs/Model/Transaction.md)
-- [TransactionData](docs/Model/TransactionData.md)
 - [TransactionResponse](docs/Model/TransactionResponse.md)
-- [Transactions](docs/Model/Transactions.md)
 - [TransactionsCursorResponse](docs/Model/TransactionsCursorResponse.md)
 - [TransactionsCursorResponseCursor](docs/Model/TransactionsCursorResponseCursor.md)
 - [TransferRequest](docs/Model/TransferRequest.md)

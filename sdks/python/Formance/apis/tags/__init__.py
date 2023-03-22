@@ -14,7 +14,6 @@ class TagValues(str, enum.Enum):
     ORCHESTRATION = "Orchestration"
     PAYMENTS = "Payments"
     SCOPES = "Scopes"
-    SCRIPT = "Script"
     SEARCH = "Search"
     SERVER = "Server"
     STATS = "Stats"

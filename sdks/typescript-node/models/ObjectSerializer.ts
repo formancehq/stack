@@ -122,8 +122,6 @@ export * from '../models/RunWorkflowResponse';
 export * from '../models/Scope';
 export * from '../models/ScopeAllOf';
 export * from '../models/ScopeOptions';
-export * from '../models/Script';
-export * from '../models/ScriptResponse';
 export * from '../models/Secret';
 export * from '../models/SecretAllOf';
 export * from '../models/SecretOptions';
@@ -171,9 +169,7 @@ export * from '../models/TasksCursorCursorAllOf';
 export * from '../models/TasksCursorCursorAllOfDataInner';
 export * from '../models/Total';
 export * from '../models/Transaction';
-export * from '../models/TransactionData';
 export * from '../models/TransactionResponse';
-export * from '../models/Transactions';
 export * from '../models/TransactionsCursorResponse';
 export * from '../models/TransactionsCursorResponseCursor';
 export * from '../models/TransferRequest';
@@ -325,8 +321,6 @@ import { RunWorkflowResponse } from '../models/RunWorkflowResponse';
 import { Scope } from '../models/Scope';
 import { ScopeAllOf } from '../models/ScopeAllOf';
 import { ScopeOptions } from '../models/ScopeOptions';
-import { Script } from '../models/Script';
-import { ScriptResponse     } from '../models/ScriptResponse';
 import { Secret } from '../models/Secret';
 import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
@@ -374,9 +368,7 @@ import { TasksCursorCursorAllOf } from '../models/TasksCursorCursorAllOf';
 import { TasksCursorCursorAllOfDataInner         } from '../models/TasksCursorCursorAllOfDataInner';
 import { Total } from '../models/Total';
 import { Transaction } from '../models/Transaction';
-import { TransactionData } from '../models/TransactionData';
 import { TransactionResponse } from '../models/TransactionResponse';
-import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
 import { TransferRequest } from '../models/TransferRequest';
@@ -558,8 +550,6 @@ let typeMap: {[index: string]: any} = {
     "Scope": Scope,
     "ScopeAllOf": ScopeAllOf,
     "ScopeOptions": ScopeOptions,
-    "Script": Script,
-    "ScriptResponse": ScriptResponse,
     "Secret": Secret,
     "SecretAllOf": SecretAllOf,
     "SecretOptions": SecretOptions,
@@ -607,9 +597,7 @@ let typeMap: {[index: string]: any} = {
     "TasksCursorCursorAllOfDataInner": TasksCursorCursorAllOfDataInner,
     "Total": Total,
     "Transaction": Transaction,
-    "TransactionData": TransactionData,
     "TransactionResponse": TransactionResponse,
-    "Transactions": Transactions,
     "TransactionsCursorResponse": TransactionsCursorResponse,
     "TransactionsCursorResponseCursor": TransactionsCursorResponseCursor,
     "TransferRequest": TransferRequest,
