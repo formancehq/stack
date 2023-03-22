@@ -11,10 +11,10 @@ package formance
 
 import (
 	"context"
-	client "github.com/formancehq/formance-sdk-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
+	client "github.com/formancehq/formance-sdk-go"
 )
 
 func Test_formance_AccountsApiService(t *testing.T) {
@@ -24,7 +24,7 @@ func Test_formance_AccountsApiService(t *testing.T) {
 
 	t.Run("Test AccountsApiService AddMetadataToAccount", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 		var address string
@@ -38,7 +38,7 @@ func Test_formance_AccountsApiService(t *testing.T) {
 
 	t.Run("Test AccountsApiService CountAccounts", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 
@@ -51,7 +51,7 @@ func Test_formance_AccountsApiService(t *testing.T) {
 
 	t.Run("Test AccountsApiService GetAccount", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 		var address string
@@ -66,7 +66,7 @@ func Test_formance_AccountsApiService(t *testing.T) {
 
 	t.Run("Test AccountsApiService ListAccounts", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var ledger string
 

@@ -22,7 +22,6 @@ class PathValues(str, enum.Enum):
     API_LEDGER_LEDGER_ACCOUNTS = "/api/ledger/{ledger}/accounts"
     API_LEDGER_LEDGER_ACCOUNTS_ADDRESS = "/api/ledger/{ledger}/accounts/{address}"
     API_LEDGER_LEDGER_ACCOUNTS_ADDRESS_METADATA = "/api/ledger/{ledger}/accounts/{address}/metadata"
-    API_LEDGER_LEDGER_SCRIPT = "/api/ledger/{ledger}/script"
     API_LEDGER_LEDGER_STATS = "/api/ledger/{ledger}/stats"
     API_LEDGER_LEDGER_TRANSACTIONS = "/api/ledger/{ledger}/transactions"
     API_LEDGER_LEDGER_TRANSACTIONS_TXID = "/api/ledger/{ledger}/transactions/{txid}"

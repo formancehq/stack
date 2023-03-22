@@ -47,13 +47,13 @@ func (c *openapiCheckerRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 	Expect(errors.Wrap(openapi3filter.ValidateRequest(req.Context(), input), "validating request")).
 		WithOffset(8).To(Succeed())
 
-	data, err := httputil.DumpRequest(req, true)
+	_, err = httputil.DumpRequest(req, true)
 	Expect(err).To(BeNil())
 
 	rsp, err := c.underlying.RoundTrip(req)
 	Expect(err).WithOffset(8).To(Succeed())
 
-	data, err = io.ReadAll(rsp.Body)
+	data, err := io.ReadAll(rsp.Body)
 	Expect(err).WithOffset(8).To(Succeed())
 	rsp.Body = io.NopCloser(bytes.NewBuffer(data))
 

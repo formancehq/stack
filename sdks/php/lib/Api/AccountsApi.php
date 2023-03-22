@@ -1020,24 +1020,21 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
      * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
      * @param  string $balance_operator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. (optional)
-     * @param  string $balance_operator2 Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. Deprecated, please use &#x60;balanceOperator&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAccounts'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \Formance\Model\AccountsCursorResponse|\Formance\Model\ErrorResponse
      */
-    public function listAccounts($ledger, $page_size = 15, $page_size2 = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $balance_operator2 = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['listAccounts'][0])
+    public function listAccounts($ledger, $page_size = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
     {
-        list($response) = $this->listAccountsWithHttpInfo($ledger, $page_size, $page_size2, $after, $address, $metadata, $balance, $balance_operator, $balance_operator2, $cursor, $pagination_token, $contentType);
+        list($response) = $this->listAccountsWithHttpInfo($ledger, $page_size, $after, $address, $metadata, $balance, $balance_operator, $cursor, $contentType);
         return $response;
     }
 
@@ -1048,24 +1045,21 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
      * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
      * @param  string $balance_operator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. (optional)
-     * @param  string $balance_operator2 Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. Deprecated, please use &#x60;balanceOperator&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAccounts'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\AccountsCursorResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listAccountsWithHttpInfo($ledger, $page_size = 15, $page_size2 = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $balance_operator2 = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['listAccounts'][0])
+    public function listAccountsWithHttpInfo($ledger, $page_size = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
     {
-        $request = $this->listAccountsRequest($ledger, $page_size, $page_size2, $after, $address, $metadata, $balance, $balance_operator, $balance_operator2, $cursor, $pagination_token, $contentType);
+        $request = $this->listAccountsRequest($ledger, $page_size, $after, $address, $metadata, $balance, $balance_operator, $cursor, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1181,23 +1175,20 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
      * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
      * @param  string $balance_operator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. (optional)
-     * @param  string $balance_operator2 Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. Deprecated, please use &#x60;balanceOperator&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAccounts'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listAccountsAsync($ledger, $page_size = 15, $page_size2 = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $balance_operator2 = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['listAccounts'][0])
+    public function listAccountsAsync($ledger, $page_size = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
     {
-        return $this->listAccountsAsyncWithHttpInfo($ledger, $page_size, $page_size2, $after, $address, $metadata, $balance, $balance_operator, $balance_operator2, $cursor, $pagination_token, $contentType)
+        return $this->listAccountsAsyncWithHttpInfo($ledger, $page_size, $after, $address, $metadata, $balance, $balance_operator, $cursor, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1212,24 +1203,21 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
      * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
      * @param  string $balance_operator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. (optional)
-     * @param  string $balance_operator2 Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. Deprecated, please use &#x60;balanceOperator&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAccounts'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listAccountsAsyncWithHttpInfo($ledger, $page_size = 15, $page_size2 = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $balance_operator2 = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['listAccounts'][0])
+    public function listAccountsAsyncWithHttpInfo($ledger, $page_size = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
     {
         $returnType = '\Formance\Model\AccountsCursorResponse';
-        $request = $this->listAccountsRequest($ledger, $page_size, $page_size2, $after, $address, $metadata, $balance, $balance_operator, $balance_operator2, $cursor, $pagination_token, $contentType);
+        $request = $this->listAccountsRequest($ledger, $page_size, $after, $address, $metadata, $balance, $balance_operator, $cursor, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1272,21 +1260,18 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  int $page_size2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. (optional, default to 15) (deprecated)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
      * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
      * @param  string $balance_operator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. (optional)
-     * @param  string $balance_operator2 Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. Deprecated, please use &#x60;balanceOperator&#x60; instead. (optional) (deprecated)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  string $pagination_token Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. (optional) (deprecated)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listAccounts'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listAccountsRequest($ledger, $page_size = 15, $page_size2 = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $balance_operator2 = null, $cursor = null, $pagination_token = null, string $contentType = self::contentTypes['listAccounts'][0])
+    public function listAccountsRequest($ledger, $page_size = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -1303,15 +1288,6 @@ class AccountsApi
             throw new \InvalidArgumentException('invalid value for "$page_size" when calling AccountsApi.listAccounts, must be bigger than or equal to 1.');
         }
         
-        if ($page_size2 !== null && $page_size2 > 1000) {
-            throw new \InvalidArgumentException('invalid value for "$page_size2" when calling AccountsApi.listAccounts, must be smaller than or equal to 1000.');
-        }
-        if ($page_size2 !== null && $page_size2 < 1) {
-            throw new \InvalidArgumentException('invalid value for "$page_size2" when calling AccountsApi.listAccounts, must be bigger than or equal to 1.');
-        }
-        
-
-
 
 
 
@@ -1330,15 +1306,6 @@ class AccountsApi
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $page_size,
             'pageSize', // param base name
-            'integer', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $page_size2,
-            'page_size', // param base name
             'integer', // openApiType
             'form', // style
             true, // explode
@@ -1391,26 +1358,8 @@ class AccountsApi
         ) ?? []);
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $balance_operator2,
-            'balance_operator', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $cursor,
             'cursor', // param base name
-            'string', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $pagination_token,
-            'pagination_token', // param base name
             'string', // openApiType
             'form', // style
             true, // explode

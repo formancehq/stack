@@ -8,8 +8,8 @@ tasks:
 
   tests:
     cmds:
-      - go test -v -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
+      - go test -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
 
   lint:
     cmds:
-      - golangci-lint -v run --fix
+      - golangci-lint run --fix

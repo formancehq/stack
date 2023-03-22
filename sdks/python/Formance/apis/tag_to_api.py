@@ -9,7 +9,6 @@ from Formance.apis.tags.logs_api import LogsApi
 from Formance.apis.tags.orchestration_api import OrchestrationApi
 from Formance.apis.tags.payments_api import PaymentsApi
 from Formance.apis.tags.scopes_api import ScopesApi
-from Formance.apis.tags.script_api import ScriptApi
 from Formance.apis.tags.search_api import SearchApi
 from Formance.apis.tags.server_api import ServerApi
 from Formance.apis.tags.stats_api import StatsApi
@@ -30,7 +29,6 @@ TagToApi = typing_extensions.TypedDict(
         TagValues.ORCHESTRATION: OrchestrationApi,
         TagValues.PAYMENTS: PaymentsApi,
         TagValues.SCOPES: ScopesApi,
-        TagValues.SCRIPT: ScriptApi,
         TagValues.SEARCH: SearchApi,
         TagValues.SERVER: ServerApi,
         TagValues.STATS: StatsApi,
@@ -52,7 +50,6 @@ tag_to_api = TagToApi(
         TagValues.ORCHESTRATION: OrchestrationApi,
         TagValues.PAYMENTS: PaymentsApi,
         TagValues.SCOPES: ScopesApi,
-        TagValues.SCRIPT: ScriptApi,
         TagValues.SEARCH: SearchApi,
         TagValues.SERVER: ServerApi,
         TagValues.STATS: StatsApi,

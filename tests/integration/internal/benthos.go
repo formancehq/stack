@@ -64,7 +64,7 @@ func startBenthosServer() {
 			Details:    false,
 		})
 		if reader != nil {
-			io.Copy(prefixer.New(GinkgoWriter, func() string {
+			_, _ = io.Copy(prefixer.New(GinkgoWriter, func() string {
 				return "benthos | "
 			}), reader)
 		}

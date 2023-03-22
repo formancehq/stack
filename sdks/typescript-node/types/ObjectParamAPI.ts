@@ -126,7 +126,6 @@ import { Scope } from '../models/Scope';
 import { ScopeAllOf } from '../models/ScopeAllOf';
 import { ScopeOptions } from '../models/ScopeOptions';
 import { Script } from '../models/Script';
-import { ScriptResponse } from '../models/ScriptResponse';
 import { Secret } from '../models/Secret';
 import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
@@ -174,9 +173,7 @@ import { TasksCursorCursorAllOf } from '../models/TasksCursorCursorAllOf';
 import { TasksCursorCursorAllOfDataInner } from '../models/TasksCursorCursorAllOfDataInner';
 import { Total } from '../models/Total';
 import { Transaction } from '../models/Transaction';
-import { TransactionData } from '../models/TransactionData';
 import { TransactionResponse } from '../models/TransactionResponse';
-import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
 import { TransferRequest } from '../models/TransferRequest';
@@ -278,12 +275,6 @@ export interface AccountsApiListAccountsRequest {
      */
     pageSize?: number
     /**
-     * The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. 
-     * @type number
-     * @memberof AccountsApilistAccounts
-     */
-    pageSize2?: number
-    /**
      * Pagination cursor, will return accounts after given address, in descending order.
      * @type string
      * @memberof AccountsApilistAccounts
@@ -314,23 +305,11 @@ export interface AccountsApiListAccountsRequest {
      */
     balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne'
     /**
-     * Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. Deprecated, please use &#x60;balanceOperator&#x60; instead. 
-     * @type &#39;gte&#39; | &#39;lte&#39; | &#39;gt&#39; | &#39;lt&#39; | &#39;e&#39; | &#39;ne&#39;
-     * @memberof AccountsApilistAccounts
-     */
-    balanceOperator2?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne'
-    /**
      * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      * @type string
      * @memberof AccountsApilistAccounts
      */
     cursor?: string
-    /**
-     * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. 
-     * @type string
-     * @memberof AccountsApilistAccounts
-     */
-    paginationToken?: string
 }
 
 export class ObjectAccountsApi {
@@ -370,7 +349,7 @@ export class ObjectAccountsApi {
      * @param param the request object
      */
     public listAccounts(param: AccountsApiListAccountsRequest, options?: Configuration): Promise<AccountsCursorResponse> {
-        return this.api.listAccounts(param.ledger, param.pageSize, param.pageSize2, param.after, param.address, param.metadata, param.balance, param.balanceOperator, param.balanceOperator2, param.cursor, param.paginationToken,  options).toPromise();
+        return this.api.listAccounts(param.ledger, param.pageSize, param.after, param.address, param.metadata, param.balance, param.balanceOperator, param.cursor,  options).toPromise();
     }
 
 }
@@ -403,12 +382,6 @@ export interface BalancesApiGetBalancesRequest {
      * @memberof BalancesApigetBalances
      */
     cursor?: string
-    /**
-     * Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use &#x60;cursor&#x60; instead.
-     * @type string
-     * @memberof BalancesApigetBalances
-     */
-    paginationToken?: string
 }
 
 export interface BalancesApiGetBalancesAggregatedRequest {
@@ -438,7 +411,7 @@ export class ObjectBalancesApi {
      * @param param the request object
      */
     public getBalances(param: BalancesApiGetBalancesRequest, options?: Configuration): Promise<BalancesCursorResponse> {
-        return this.api.getBalances(param.ledger, param.address, param.after, param.cursor, param.paginationToken,  options).toPromise();
+        return this.api.getBalances(param.ledger, param.address, param.after, param.cursor,  options).toPromise();
     }
 
     /**
@@ -731,12 +704,6 @@ export interface LogsApiListLogsRequest {
      */
     pageSize?: number
     /**
-     * The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. 
-     * @type number
-     * @memberof LogsApilistLogs
-     */
-    pageSize2?: number
-    /**
      * Pagination cursor, will return the logs after a given ID. (in descending order).
      * @type string
      * @memberof LogsApilistLogs
@@ -749,35 +716,17 @@ export interface LogsApiListLogsRequest {
      */
     startTime?: Date
     /**
-     * Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. 
-     * @type Date
-     * @memberof LogsApilistLogs
-     */
-    startTime2?: Date
-    /**
      * Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
      * @type Date
      * @memberof LogsApilistLogs
      */
     endTime?: Date
     /**
-     * Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. 
-     * @type Date
-     * @memberof LogsApilistLogs
-     */
-    endTime2?: Date
-    /**
      * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      * @type string
      * @memberof LogsApilistLogs
      */
     cursor?: string
-    /**
-     * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. 
-     * @type string
-     * @memberof LogsApilistLogs
-     */
-    paginationToken?: string
 }
 
 export class ObjectLogsApi {
@@ -793,7 +742,7 @@ export class ObjectLogsApi {
      * @param param the request object
      */
     public listLogs(param: LogsApiListLogsRequest, options?: Configuration): Promise<LogsCursorResponse> {
-        return this.api.listLogs(param.ledger, param.pageSize, param.pageSize2, param.after, param.startTime, param.startTime2, param.endTime, param.endTime2, param.cursor, param.paginationToken,  options).toPromise();
+        return this.api.listLogs(param.ledger, param.pageSize, param.after, param.startTime, param.endTime, param.cursor,  options).toPromise();
     }
 
 }
@@ -1501,48 +1450,6 @@ export class ObjectScopesApi {
 
 }
 
-import { ObservableScriptApi } from "./ObservableAPI";
-import { ScriptApiRequestFactory, ScriptApiResponseProcessor} from "../apis/ScriptApi";
-
-export interface ScriptApiRunScriptRequest {
-    /**
-     * Name of the ledger.
-     * @type string
-     * @memberof ScriptApirunScript
-     */
-    ledger: string
-    /**
-     * 
-     * @type Script
-     * @memberof ScriptApirunScript
-     */
-    script: Script
-    /**
-     * Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
-     * @type boolean
-     * @memberof ScriptApirunScript
-     */
-    preview?: boolean
-}
-
-export class ObjectScriptApi {
-    private api: ObservableScriptApi
-
-    public constructor(configuration: Configuration, requestFactory?: ScriptApiRequestFactory, responseProcessor?: ScriptApiResponseProcessor) {
-        this.api = new ObservableScriptApi(configuration, requestFactory, responseProcessor);
-    }
-
-    /**
-     * This route is deprecated, and has been merged into `POST /{ledger}/transactions`. 
-     * Execute a Numscript
-     * @param param the request object
-     */
-    public runScript(param: ScriptApiRunScriptRequest, options?: Configuration): Promise<ScriptResponse> {
-        return this.api.runScript(param.ledger, param.script, param.preview,  options).toPromise();
-    }
-
-}
-
 import { ObservableSearchApi } from "./ObservableAPI";
 import { SearchApiRequestFactory, SearchApiResponseProcessor} from "../apis/SearchApi";
 
@@ -1688,23 +1595,11 @@ export interface TransactionsApiCountTransactionsRequest {
      */
     startTime?: Date
     /**
-     * Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. 
-     * @type Date
-     * @memberof TransactionsApicountTransactions
-     */
-    startTime2?: Date
-    /**
      * Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
      * @type Date
      * @memberof TransactionsApicountTransactions
      */
     endTime?: Date
-    /**
-     * Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. 
-     * @type Date
-     * @memberof TransactionsApicountTransactions
-     */
-    endTime2?: Date
     /**
      * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      * @type any
@@ -1763,12 +1658,6 @@ export interface TransactionsApiListTransactionsRequest {
      */
     pageSize?: number
     /**
-     * The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. 
-     * @type number
-     * @memberof TransactionsApilistTransactions
-     */
-    pageSize2?: number
-    /**
      * Pagination cursor, will return transactions after given txid (in descending order).
      * @type string
      * @memberof TransactionsApilistTransactions
@@ -1805,35 +1694,17 @@ export interface TransactionsApiListTransactionsRequest {
      */
     startTime?: Date
     /**
-     * Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. 
-     * @type Date
-     * @memberof TransactionsApilistTransactions
-     */
-    startTime2?: Date
-    /**
      * Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
      * @type Date
      * @memberof TransactionsApilistTransactions
      */
     endTime?: Date
     /**
-     * Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. 
-     * @type Date
-     * @memberof TransactionsApilistTransactions
-     */
-    endTime2?: Date
-    /**
      * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      * @type string
      * @memberof TransactionsApilistTransactions
      */
     cursor?: string
-    /**
-     * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. 
-     * @type string
-     * @memberof TransactionsApilistTransactions
-     */
-    paginationToken?: string
     /**
      * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      * @type any
@@ -1877,7 +1748,7 @@ export class ObjectTransactionsApi {
      * @param param the request object
      */
     public countTransactions(param: TransactionsApiCountTransactionsRequest, options?: Configuration): Promise<void> {
-        return this.api.countTransactions(param.ledger, param.reference, param.account, param.source, param.destination, param.startTime, param.startTime2, param.endTime, param.endTime2, param.metadata,  options).toPromise();
+        return this.api.countTransactions(param.ledger, param.reference, param.account, param.source, param.destination, param.startTime, param.endTime, param.metadata,  options).toPromise();
     }
 
     /**
@@ -1902,7 +1773,7 @@ export class ObjectTransactionsApi {
      * @param param the request object
      */
     public listTransactions(param: TransactionsApiListTransactionsRequest, options?: Configuration): Promise<TransactionsCursorResponse> {
-        return this.api.listTransactions(param.ledger, param.pageSize, param.pageSize2, param.after, param.reference, param.account, param.source, param.destination, param.startTime, param.startTime2, param.endTime, param.endTime2, param.cursor, param.paginationToken, param.metadata,  options).toPromise();
+        return this.api.listTransactions(param.ledger, param.pageSize, param.after, param.reference, param.account, param.source, param.destination, param.startTime, param.endTime, param.cursor, param.metadata,  options).toPromise();
     }
 
     /**
