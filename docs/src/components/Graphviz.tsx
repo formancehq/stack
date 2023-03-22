@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import Graphviz from 'graphviz-react';
 import React from 'react';
 
-const PostingsGraph = ({ postings, caption, additionnals }) => {
+const PostingsGraph = ({ postings, caption, additionnals =[] }) => {
   const graph : string[] = [];
 
   postings.map((posting) => {
