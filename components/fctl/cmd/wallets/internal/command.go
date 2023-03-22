@@ -5,6 +5,7 @@ import (
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -26,21 +27,29 @@ func WithTargetingWalletByID() fctl.CommandOptionFn {
 	return fctl.WithStringFlag(walletIDFlag, "", "Wallet ID to use")
 }
 
-func DiscoverWalletIDFromName(cmd *cobra.Command, client *formance.APIClient, walletName string) (string, error) {
-	wallets, _, err := client.WalletsApi.ListWallets(cmd.Context()).Name(walletName).Execute()
+func DiscoverWalletIDFromName(cmd *cobra.Command, client *formance.Formance, walletName string) (string, error) {
+	request := operations.ListWalletsRequest{
+		Name: &walletName,
+	}
+	wallets, err := client.Wallets.ListWallets(cmd.Context(), request)
 	if err != nil {
 		return "", errors.Wrap(err, "listing wallets to retrieve wallet by name")
 	}
-	if len(wallets.Cursor.Data) > 1 {
+
+	if wallets.StatusCode >= 300 {
+		return "", fmt.Errorf("unexpected status code: %d", wallets.StatusCode)
+	}
+
+	if len(wallets.ListWalletsResponse.Cursor.Data) > 1 {
 		return "", fmt.Errorf("found multiple wallets with name: %s", walletName)
 	}
-	if len(wallets.Cursor.Data) == 0 {
+	if len(wallets.ListWalletsResponse.Cursor.Data) == 0 {
 		return "", fmt.Errorf("wallet with name '%s' not found", walletName)
 	}
-	return wallets.Cursor.Data[0].Id, nil
+	return wallets.ListWalletsResponse.Cursor.Data[0].ID, nil
 }
 
-func RetrieveWalletIDFromName(cmd *cobra.Command, client *formance.APIClient) (string, error) {
+func RetrieveWalletIDFromName(cmd *cobra.Command, client *formance.Formance) (string, error) {
 	walletName := fctl.GetString(cmd, walletNameFlag)
 	if walletName == "" {
 		return "", ErrUndefinedName
@@ -48,7 +57,7 @@ func RetrieveWalletIDFromName(cmd *cobra.Command, client *formance.APIClient) (s
 	return DiscoverWalletIDFromName(cmd, client, walletName)
 }
 
-func RetrieveWalletID(cmd *cobra.Command, client *formance.APIClient) (string, error) {
+func RetrieveWalletID(cmd *cobra.Command, client *formance.Formance) (string, error) {
 	walletID, err := RetrieveWalletIDFromName(cmd, client)
 	if err != nil && err != ErrUndefinedName {
 		return "", err
@@ -59,7 +68,7 @@ func RetrieveWalletID(cmd *cobra.Command, client *formance.APIClient) (string, e
 	return walletID, nil
 }
 
-func RequireWalletID(cmd *cobra.Command, client *formance.APIClient) (string, error) {
+func RequireWalletID(cmd *cobra.Command, client *formance.Formance) (string, error) {
 	walletID, err := RetrieveWalletID(cmd, client)
 	if err != nil {
 		return "", err

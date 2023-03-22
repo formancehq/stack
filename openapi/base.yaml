@@ -53,7 +53,7 @@ components:
         version:
           type: string
         health:
-          type: bool
+          type: boolean
       required:
       - name
       - version

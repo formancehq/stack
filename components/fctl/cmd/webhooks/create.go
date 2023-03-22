@@ -1,10 +1,11 @@
 package webhooks
 
 import (
+	"fmt"
 	"net/url"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -51,18 +52,25 @@ func NewCreateCommand() *cobra.Command {
 
 			secret := fctl.GetString(cmd, secretFlag)
 
-			res, _, err := client.WebhooksApi.InsertConfig(cmd.Context()).
-				ConfigUser(formance.ConfigUser{
-					Endpoint:   args[0],
-					EventTypes: args[1:],
-					Secret:     &secret,
-				}).Execute()
+			response, err := client.Webhooks.InsertConfig(cmd.Context(), shared.ConfigUser{
+				Endpoint:   args[0],
+				EventTypes: args[1:],
+				Secret:     &secret,
+			})
 			if err != nil {
-				return errors.Wrap(err, "inserting config")
+				return errors.Wrap(err, "creating config")
+			}
+
+			if response.ErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
 			}
 
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln(
-				"Config created successfully with ID: %s", res.Data.Id)
+				"Config created successfully with ID: %s", response.ConfigResponse.Data.ID)
 			return nil
 		}),
 	)

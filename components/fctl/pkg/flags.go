@@ -62,3 +62,7 @@ func GetInt(cmd *cobra.Command, flagName string) int {
 	}
 	return v
 }
+
+func Ptr[T any](t T) *T {
+	return &t
+}

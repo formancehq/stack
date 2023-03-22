@@ -6,7 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	paymentEvents "github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
@@ -27,30 +28,33 @@ var _ = Given("some environment with dummy pay connector", func() {
 
 		paymentsDir := filepath.Join(os.TempDir(), uuid.NewString())
 		Expect(os.MkdirAll(paymentsDir, 0o777)).To(Succeed())
-		_, err := Client().PaymentsApi.
-			InstallConnector(TestContext(), formance.DUMMY_PAY).
-			ConnectorConfig(formance.ConnectorConfig{
-				DummyPayConfig: &formance.DummyPayConfig{
-					FilePollingPeriod:    formance.PtrString("1s"),
+		response, err := Client().Payments.InstallConnector(
+			TestContext(),
+			operations.InstallConnectorRequest{
+				RequestBody: shared.DummyPayConfig{
+					FilePollingPeriod:    ptr("1s"),
 					Directory:            paymentsDir,
-					FileGenerationPeriod: formance.PtrString("1s"),
+					FileGenerationPeriod: ptr("1s"),
 				},
-			}).
-			Execute()
+				Connector: shared.ConnectorDummyPay,
+			},
+		)
 		Expect(err).ToNot(HaveOccurred())
+		Expect(response.StatusCode).To(Equal(204))
 
 		Eventually(func(g Gomega) bool {
-			response, _, err := Client().SearchApi.
-				Search(TestContext()).
-				Query(formance.Query{
-					Target: formance.PtrString("PAYMENT"),
-				}).
-				Execute()
+			response, err := Client().Search.Search(
+				TestContext(),
+				shared.Query{
+					Target: ptr("PAYMENT"),
+				},
+			)
 			g.Expect(err).ToNot(HaveOccurred())
-			if len(response.Cursor.Data) == 0 {
+			g.Expect(response.StatusCode).To(Equal(200))
+			if len(response.Response.Cursor.Data) == 0 {
 				return false
 			}
-			existingPaymentID = response.Cursor.Data[0].(map[string]any)["id"].(string)
+			existingPaymentID = response.Response.Cursor.Data[0]["id"].(string)
 			return true
 		}).Should(BeTrue())
 	})
@@ -58,12 +62,15 @@ var _ = Given("some environment with dummy pay connector", func() {
 		cancelSubscription()
 	})
 	When("resetting connector", func() {
-		var err error
 		BeforeEach(func() {
-			_, err = Client().PaymentsApi.
-				ResetConnector(TestContext(), formance.DUMMY_PAY).
-				Execute()
+			response, err := Client().Payments.ResetConnector(
+				TestContext(),
+				operations.ResetConnectorRequest{
+					Connector: shared.ConnectorDummyPay,
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(204))
 		})
 		It("should trigger some events", func() {
 			var msg *nats.Msg
@@ -80,16 +87,17 @@ var _ = Given("some environment with dummy pay connector", func() {
 			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeConnectorReset)).Should(Succeed())
 		})
 		It("should delete payments on search service", func() {
-			Eventually(func(g Gomega) []any {
-				ret, _, err := Client().SearchApi.
-					Search(TestContext()).
-					Query(formance.Query{
-						Target: formance.PtrString("PAYMENT"),
+			Eventually(func(g Gomega) []map[string]any {
+				response, err := Client().Search.Search(
+					TestContext(),
+					shared.Query{
+						Target: ptr("PAYMENT"),
 						Terms:  []string{"id=" + existingPaymentID},
-					}).
-					Execute()
+					},
+				)
 				g.Expect(err).ToNot(HaveOccurred())
-				return ret.Cursor.Data
+				g.Expect(response.StatusCode).To(Equal(200))
+				return response.Response.Cursor.Data
 			}).Should(BeEmpty())
 		})
 	})

@@ -1,9 +1,12 @@
 package accounts
 
 import (
+	"fmt"
+
 	internal "github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -44,16 +47,24 @@ func NewListCommand() *cobra.Command {
 				return err
 			}
 
-			ledger := fctl.GetString(cmd, internal.LedgerFlag)
-			rsp, _, err := ledgerClient.AccountsApi.
-				ListAccounts(cmd.Context(), ledger).
-				Metadata(metadata).
-				Execute()
+			request := operations.ListAccountsRequest{
+				Ledger:   fctl.GetString(cmd, internal.LedgerFlag),
+				Metadata: metadata,
+			}
+			rsp, err := ledgerClient.Accounts.ListAccounts(cmd.Context(), request)
 			if err != nil {
 				return err
 			}
 
-			tableData := fctl.Map(rsp.Cursor.Data, func(account formance.Account) []string {
+			if rsp.ErrorResponse != nil {
+				return fmt.Errorf("%s: %s", rsp.ErrorResponse.ErrorCode, rsp.ErrorResponse.ErrorMessage)
+			}
+
+			if rsp.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", rsp.StatusCode)
+			}
+
+			tableData := fctl.Map(rsp.AccountsCursorResponse.Cursor.Data, func(account shared.Account) []string {
 				return []string{
 					account.Address,
 					fctl.MetadataAsShortString(account.Metadata),

@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pkg/errors"
 )
@@ -271,10 +271,10 @@ func (m *Manager) CreateTransaction(ctx context.Context, postTransaction PostTra
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
 		apiErr, ok := err.(GenericOpenAPIError)
 		if ok {
-			respErr, ok := apiErr.Model().(sdk.ErrorResponse)
+			respErr, ok := apiErr.Model().(shared.ErrorResponse)
 			if ok {
 				switch respErr.ErrorCode {
-				case sdk.INSUFFICIENT_FUND:
+				case shared.ErrorsEnumInsufficientFund:
 					return ErrInsufficientFundError
 				}
 			}

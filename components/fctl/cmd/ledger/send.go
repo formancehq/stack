@@ -5,7 +5,8 @@ import (
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/spf13/cobra"
 )
 
@@ -70,15 +71,20 @@ func NewSendCommand() *cobra.Command {
 			}
 
 			reference := fctl.GetString(cmd, referenceFlag)
-			tx, err := internal.CreateTransaction(ledgerClient, cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag), formance.PostTransaction{
-				Postings: []formance.Posting{{
-					Amount:      amount,
-					Asset:       asset,
-					Destination: destination,
-					Source:      source,
-				}},
-				Reference: &reference,
-				Metadata:  metadata,
+			tx, err := internal.CreateTransaction(ledgerClient, cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag), operations.CreateTransactionRequest{
+				PostTransaction: shared.PostTransaction{
+					Metadata: metadata,
+					Postings: []shared.Posting{
+						{
+							Amount:      amount,
+							Asset:       asset,
+							Destination: destination,
+							Source:      source,
+						},
+					},
+					Reference: &reference,
+				},
+				Ledger: fctl.GetString(cmd, internal.LedgerFlag),
 			})
 			if err != nil {
 				return err

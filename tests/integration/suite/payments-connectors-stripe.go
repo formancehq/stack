@@ -4,7 +4,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	paymentEvents "github.com/formancehq/payments/pkg/events"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
@@ -27,15 +28,17 @@ var _ = Given("some empty environment", func() {
 
 			cancelSubscription, msgs = SubscribePayments()
 
-			_, err := Client().PaymentsApi.
-				InstallConnector(TestContext(), formance.STRIPE).
-				ConnectorConfig(formance.ConnectorConfig{
-					StripeConfig: &formance.StripeConfig{
-						ApiKey: apiKey,
+			response, err := Client().Payments.InstallConnector(
+				TestContext(),
+				operations.InstallConnectorRequest{
+					RequestBody: shared.StripeConfig{
+						APIKey: apiKey,
 					},
-				}).
-				Execute()
+					Connector: shared.ConnectorStripe,
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(204))
 		})
 		AfterEach(func() {
 			cancelSubscription()
@@ -45,21 +48,27 @@ var _ = Given("some empty environment", func() {
 			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeSavedPayments)).Should(Succeed())
 		})
 		It("should generate some payments", func() {
-			Eventually(func(g Gomega) []formance.Payment {
-				res, _, err := Client().PaymentsApi.
-					ListPayments(TestContext()).
-					Execute()
+			Eventually(func(g Gomega) []shared.Payment {
+				response, err := Client().Payments.ListPayments(
+					TestContext(),
+					operations.ListPaymentsRequest{},
+				)
 				g.Expect(err).ToNot(HaveOccurred())
-				return res.Cursor.Data
+				g.Expect(response.StatusCode).To(Equal(200))
+				return response.PaymentsCursor.Cursor.Data
 			}).ShouldNot(BeEmpty()) // TODO: Check other fields
 		})
 		It("should be ingested on search", func() {
 			Eventually(func(g Gomega) bool {
-				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
-					Target: formance.PtrString("PAYMENT"),
-				}).Execute()
+				response, err := Client().Search.Search(
+					TestContext(),
+					shared.Query{
+						Target: ptr("PAYMENT"),
+					},
+				)
 				g.Expect(err).ToNot(HaveOccurred())
-				g.Expect(res.Cursor.Data).NotTo(BeEmpty())
+				g.Expect(response.StatusCode).To(Equal(200))
+				g.Expect(response.Response.Cursor.Data).NotTo(BeEmpty())
 
 				return true
 			}).Should(BeTrue())

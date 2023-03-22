@@ -1,9 +1,12 @@
 package balances
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -43,15 +46,27 @@ func NewCreateCommand() *cobra.Command {
 				return err
 			}
 
-			res, _, err := client.WalletsApi.CreateBalance(cmd.Context(), walletID).Body(formance.Balance{
-				Name: args[0],
-			}).Execute()
+			request := operations.CreateBalanceRequest{
+				ID: walletID,
+				CreateBalanceRequest: &shared.CreateBalanceRequest{
+					Name: args[0],
+				},
+			}
+			response, err := client.Wallets.CreateBalance(cmd.Context(), request)
 			if err != nil {
-				return errors.Wrap(err, "Creating wallets")
+				return errors.Wrap(err, "creating balance")
+			}
+
+			if response.WalletsErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
 			}
 
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln(
-				"Balance created successfully with name: %s", res.Data.Name)
+				"Balance created successfully with name: %s", response.CreateBalanceResponse.Data.Name)
 			return nil
 		}),
 	)

@@ -6,21 +6,22 @@ import (
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 )
 
-func printCommonInformation(out io.Writer, transaction interface {
-	GetTxid() int64
-	GetReference() string
-	GetPostings() []formance.Posting
-	GetTimestamp() time.Time
-}) error {
+func printCommonInformation(
+	out io.Writer,
+	txID int64,
+	reference string,
+	postings []shared.Posting,
+	timestamp time.Time,
+) error {
 	fctl.Section.WithWriter(out).Println("Information")
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(transaction.GetTxid())})
-	tableData = append(tableData, []string{pterm.LightCyan("Reference"), transaction.GetReference()})
-	tableData = append(tableData, []string{pterm.LightCyan("Date"), transaction.GetTimestamp().Format(time.RFC3339)})
+	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(txID)})
+	tableData = append(tableData, []string{pterm.LightCyan("Reference"), reference})
+	tableData = append(tableData, []string{pterm.LightCyan("Date"), timestamp.Format(time.RFC3339)})
 
 	if err := pterm.DefaultTable.
 		WithWriter(out).
@@ -32,7 +33,7 @@ func printCommonInformation(out io.Writer, transaction interface {
 	fctl.Section.WithWriter(out).Println("Postings")
 	tableData = pterm.TableData{}
 	tableData = append(tableData, []string{"Source", "Destination", "Asset", "Amount"})
-	for _, posting := range transaction.GetPostings() {
+	for _, posting := range postings {
 		tableData = append(tableData, []string{
 			posting.Source, posting.Destination, posting.Asset, fmt.Sprint(posting.Amount),
 		})
@@ -50,9 +51,15 @@ func printCommonInformation(out io.Writer, transaction interface {
 	return nil
 }
 
-func PrintExpandedTransaction(out io.Writer, transaction formance.ExpandedTransaction) error {
+func PrintExpandedTransaction(out io.Writer, transaction shared.ExpandedTransaction) error {
 
-	if err := printCommonInformation(out, &transaction); err != nil {
+	if err := printCommonInformation(
+		out,
+		transaction.Txid,
+		*transaction.Reference,
+		transaction.Postings,
+		transaction.Timestamp,
+	); err != nil {
 		return err
 	}
 
@@ -86,9 +93,15 @@ func PrintExpandedTransaction(out io.Writer, transaction formance.ExpandedTransa
 	return nil
 }
 
-func PrintTransaction(out io.Writer, transaction formance.Transaction) error {
+func PrintTransaction(out io.Writer, transaction shared.Transaction) error {
 
-	if err := printCommonInformation(out, &transaction); err != nil {
+	if err := printCommonInformation(
+		out,
+		transaction.Txid,
+		*transaction.Reference,
+		transaction.Postings,
+		transaction.Timestamp,
+	); err != nil {
 		return err
 	}
 

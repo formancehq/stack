@@ -15,7 +15,7 @@ import (
 	"go.uber.org/fx"
 )
 
-func NewWorker(c client.Client, db *bun.DB, apiClient *sdk.APIClient, taskQueue string) worker.Worker {
+func NewWorker(c client.Client, db *bun.DB, apiClient *sdk.Formance, taskQueue string) worker.Worker {
 	w := worker.New(c, taskQueue, worker.Options{})
 
 	workflow := workflow.NewWorkflows(db)
@@ -43,7 +43,7 @@ func RegisterWorkflows(workflows *workflow.Workflows, w interface {
 
 func NewWorkerModule(taskQueue string) fx.Option {
 	return fx.Options(
-		fx.Provide(func(c client.Client, db *bun.DB, apiClient *sdk.APIClient) worker.Worker {
+		fx.Provide(func(c client.Client, db *bun.DB, apiClient *sdk.Formance) worker.Worker {
 			return NewWorker(c, db, apiClient, taskQueue)
 		}),
 		fx.Invoke(func(lc fx.Lifecycle, w worker.Worker) {

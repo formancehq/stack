@@ -1,7 +1,8 @@
 package suite
 
 import (
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
@@ -12,14 +13,13 @@ import (
 var _ = Given("An empty environment", func() {
 	When("creating a new workflow which will fail with insufficient fund error", func() {
 		var (
-			createWorkflowResponse *formance.CreateWorkflowResponse
-			err                    error
+			createWorkflowResponse *shared.CreateWorkflowResponse
 		)
 		BeforeEach(func() {
-			createWorkflowResponse, _, err = Client().OrchestrationApi.
-				CreateWorkflow(TestContext()).
-				Body(formance.WorkflowConfig{
-					Name: formance.PtrString(uuid.New()),
+			response, err := Client().Orchestration.CreateWorkflow(
+				TestContext(),
+				shared.CreateWorkflowRequest{
+					Name: ptr(uuid.New()),
 					Stages: []map[string]interface{}{
 						{
 							"send": map[string]any{
@@ -42,31 +42,49 @@ var _ = Given("An empty environment", func() {
 							},
 						},
 					},
-				}).
-				Execute()
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(201))
+
+			createWorkflowResponse = response.CreateWorkflowResponse
 		})
 		Then("executing it", func() {
-			var runWorkflowResponse *formance.RunWorkflowResponse
+			var runWorkflowResponse *shared.RunWorkflowResponse
 			BeforeEach(func() {
-				runWorkflowResponse, _, err = Client().OrchestrationApi.
-					RunWorkflow(TestContext(), createWorkflowResponse.Data.Id).
-					RequestBody(map[string]string{}).
-					Execute()
+				response, err := Client().Orchestration.RunWorkflow(
+					TestContext(),
+					operations.RunWorkflowRequest{
+						RequestBody: map[string]string{},
+						WorkflowID:  createWorkflowResponse.Data.ID,
+					},
+				)
 				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(201))
+
+				runWorkflowResponse = response.RunWorkflowResponse
 			})
 			Then("waiting for first stage retried at least once", func() {
-				var getWorkflowInstanceHistoryStageResponse *formance.GetWorkflowInstanceHistoryStageResponse
+				var getWorkflowInstanceHistoryStageResponse *shared.GetWorkflowInstanceHistoryStageResponse
 				BeforeEach(func() {
-					Eventually(func(g Gomega) int32 {
+					Eventually(func(g Gomega) int64 {
 
 						//TODO: error EOF response
-						getWorkflowInstanceHistoryStageResponse, _, err = Client().OrchestrationApi.
-							GetInstanceStageHistory(TestContext(), runWorkflowResponse.Data.Id, 0).
-							Execute()
+						response, err := Client().Orchestration.GetInstanceStageHistory(
+							TestContext(),
+							operations.GetInstanceStageHistoryRequest{
+								InstanceID: runWorkflowResponse.Data.ID,
+								Number:     0,
+							},
+						)
 						if err != nil {
 							return 0
 						}
+						if response.StatusCode != 200 {
+							return 0
+						}
+
+						getWorkflowInstanceHistoryStageResponse = response.GetWorkflowInstanceHistoryStageResponse
 						g.Expect(getWorkflowInstanceHistoryStageResponse.Data).To(HaveLen(1))
 						return getWorkflowInstanceHistoryStageResponse.Data[0].Attempt
 					}).Should(BeNumerically(">", 2))
@@ -75,13 +93,13 @@ var _ = Given("An empty environment", func() {
 					Expect(getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt).NotTo(BeZero())
 					Expect(getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution).NotTo(BeNil())
 					Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Attempt).To(BeNumerically(">", 2))
-					Expect(getWorkflowInstanceHistoryStageResponse.Data[0]).To(Equal(formance.WorkflowInstanceHistoryStage{
+					Expect(getWorkflowInstanceHistoryStageResponse.Data[0]).To(Equal(shared.WorkflowInstanceHistoryStage{
 						Name: "CreateTransaction",
-						Input: formance.WorkflowInstanceHistoryStageInput{
-							CreateTransaction: &formance.ActivityCreateTransaction{
-								Ledger: formance.PtrString("default"),
-								Data: &formance.PostTransaction{
-									Postings: []formance.Posting{{
+						Input: shared.WorkflowInstanceHistoryStageInput{
+							CreateTransaction: &shared.ActivityCreateTransaction{
+								Ledger: ptr("default"),
+								Data: &shared.PostTransaction{
+									Postings: []shared.Posting{{
 										Amount:      100,
 										Asset:       "EUR/2",
 										Destination: "bank",
@@ -91,7 +109,7 @@ var _ = Given("An empty environment", func() {
 								},
 							},
 						},
-						LastFailure:   formance.PtrString("account had insufficient funds"),
+						LastFailure:   ptr("account had insufficient funds"),
 						Attempt:       getWorkflowInstanceHistoryStageResponse.Data[0].Attempt,
 						NextExecution: getWorkflowInstanceHistoryStageResponse.Data[0].NextExecution,
 						StartedAt:     getWorkflowInstanceHistoryStageResponse.Data[0].StartedAt,

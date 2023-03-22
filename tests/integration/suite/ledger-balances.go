@@ -5,8 +5,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -19,64 +19,86 @@ var _ = Given("some empty environment", func() {
 			timestamp2 = time.Now().Add(-9 * time.Hour).Round(time.Second).UTC()
 		)
 		BeforeEach(func() {
-			_, _, err := Client().TransactionsApi.
-				CreateTransaction(TestContext(), "default").
-				PostTransaction(formance.PostTransaction{
-					Timestamp: &timestamp1,
-					Postings: []formance.Posting{{
-						Amount:      100,
-						Asset:       "USD",
-						Source:      "world",
-						Destination: "foo:foo",
-					}},
-					Metadata: metadata.Metadata{},
-				}).
-				Execute()
+			response, err := Client().Transactions.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.Posting{
+							{
+								Amount:      100,
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "foo:foo",
+							},
+						},
+						Timestamp: &timestamp1,
+					},
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
 
-			_, _, err = Client().TransactionsApi.
-				CreateTransaction(TestContext(), "default").
-				PostTransaction(formance.PostTransaction{
-					Timestamp: &timestamp2,
-					Postings: []formance.Posting{{
-						Amount:      200,
-						Asset:       "USD",
-						Source:      "world",
-						Destination: "foo:bar",
-					}},
-					Metadata: metadata.Metadata{},
-				}).
-				Execute()
+			response, err = Client().Transactions.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.Posting{
+							{
+								Amount:      200,
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "foo:bar",
+							},
+						},
+						Timestamp: &timestamp2,
+					},
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
 		})
 		It("should be listed on api with GetBalances", func() {
-			balancesCursorResponse, _, err := Client().BalancesApi.
-				GetBalances(TestContext(), "default").
-				Execute()
+			response, err := Client().Balances.GetBalances(
+				TestContext(),
+				operations.GetBalancesRequest{
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(3))
-			Expect(balancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]int64{
+			Expect(response.StatusCode).To(Equal(200))
+			Expect(response.BalancesCursorResponse.Cursor.Data).To(HaveLen(3))
+			Expect(response.BalancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]int64{
 				"world": {
 					"USD": -300,
 				},
 			}))
-			Expect(balancesCursorResponse.Cursor.Data[1]).To(Equal(map[string]map[string]int64{
+			Expect(response.BalancesCursorResponse.Cursor.Data[1]).To(Equal(map[string]map[string]int64{
 				"foo:foo": {
 					"USD": 100,
 				},
 			}))
-			Expect(balancesCursorResponse.Cursor.Data[2]).To(Equal(map[string]map[string]int64{
+			Expect(response.BalancesCursorResponse.Cursor.Data[2]).To(Equal(map[string]map[string]int64{
 				"foo:bar": {
 					"USD": 200,
 				},
 			}))
 		})
 		It("should be listed on api with GetBalances using accounts filter", func() {
-			balancesCursorResponse, _, err := Client().BalancesApi.
-				GetBalances(TestContext(), "default").
-				Address("foo:.*").
-				Execute()
+			response, err := Client().Balances.GetBalances(
+				TestContext(),
+				operations.GetBalancesRequest{
+					Address: ptr("foo:.*"),
+					Ledger:  "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			balancesCursorResponse := response.BalancesCursorResponse
 			Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(2))
 			Expect(balancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]int64{
 				"foo:foo": {
@@ -89,11 +111,17 @@ var _ = Given("some empty environment", func() {
 				},
 			}))
 
-			balancesCursorResponse, _, err = Client().BalancesApi.
-				GetBalances(TestContext(), "default").
-				Address("foo:f.*").
-				Execute()
+			response, err = Client().Balances.GetBalances(
+				TestContext(),
+				operations.GetBalancesRequest{
+					Address: ptr("foo:f.*"),
+					Ledger:  "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			balancesCursorResponse = response.BalancesCursorResponse
 			Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(1))
 			Expect(balancesCursorResponse.Cursor.Data[0]).To(Equal(map[string]map[string]int64{
 				"foo:foo": {
@@ -102,20 +130,32 @@ var _ = Given("some empty environment", func() {
 			}))
 		})
 		It("should be listed on api with GetBalancesAggregated", func() {
-			balances, _, err := Client().BalancesApi.
-				GetBalancesAggregated(TestContext(), "default").
-				Execute()
+			response, err := Client().Balances.GetBalancesAggregated(
+				TestContext(),
+				operations.GetBalancesAggregatedRequest{
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			balances := response.AggregateBalancesResponse
 			Expect(balances.Data).To(Equal(map[string]int64{
 				"USD": 0,
 			}))
 		})
 		It("should be listed on api with GetBalancesAggregated using accounts filter", func() {
-			balances, _, err := Client().BalancesApi.
-				GetBalancesAggregated(TestContext(), "default").
-				Address("foo:.*").
-				Execute()
+			response, err := Client().Balances.GetBalancesAggregated(
+				TestContext(),
+				operations.GetBalancesAggregatedRequest{
+					Address: ptr("foo:.*"),
+					Ledger:  "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			balances := response.AggregateBalancesResponse
 			Expect(balances.Data).To(Equal(map[string]int64{
 				// Should be the sum of the two accounts foo:foo and foo:bar
 				"USD": 300,
@@ -127,17 +167,29 @@ var _ = Given("some empty environment", func() {
 var _ = Given("some empty environment", func() {
 	When("get balances and aggregate balances emtpy", func() {
 		It("should be listed on api with GetBalances even if empty", func() {
-			balancesCursorResponse, _, err := Client().BalancesApi.
-				GetBalances(TestContext(), "default").
-				Execute()
+			response, err := Client().Balances.GetBalances(
+				TestContext(),
+				operations.GetBalancesRequest{
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			balancesCursorResponse := response.BalancesCursorResponse
 			Expect(balancesCursorResponse.Cursor.Data).To(HaveLen(0))
 		})
 		It("should be listed on api with GetBalancesAggregated", func() {
-			balances, _, err := Client().BalancesApi.
-				GetBalancesAggregated(TestContext(), "default").
-				Execute()
+			response, err := Client().Balances.GetBalancesAggregated(
+				TestContext(),
+				operations.GetBalancesAggregatedRequest{
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			balances := response.AggregateBalancesResponse
 			Expect(balances.Data).To(Equal(map[string]int64{}))
 		})
 	})
@@ -160,19 +212,24 @@ var _ = Given("some environment with accounts and transactions", func() {
 					asset = "EUR"
 				}
 
-				_, _, err := Client().TransactionsApi.
-					CreateTransaction(TestContext(), "default").
-					PostTransaction(formance.PostTransaction{
-						Timestamp: &now,
-						Postings: []formance.Posting{{
-							Amount:      100,
-							Asset:       asset,
-							Source:      "world",
-							Destination: fmt.Sprintf("foo:%d", i),
-						}},
-						Metadata: metadata.Metadata{},
-					}).
-					Execute()
+				_, err := Client().Transactions.CreateTransaction(
+					TestContext(),
+					operations.CreateTransactionRequest{
+						PostTransaction: shared.PostTransaction{
+							Metadata: map[string]string{},
+							Postings: []shared.Posting{
+								{
+									Amount:      100,
+									Asset:       asset,
+									Source:      "world",
+									Destination: fmt.Sprintf("foo:%d", i),
+								},
+							},
+							Timestamp: &now,
+						},
+						Ledger: "default",
+					},
+				)
 				Expect(err).ToNot(HaveOccurred())
 
 				balances = append(balances, map[string]map[string]int64{
@@ -210,15 +267,20 @@ var _ = Given("some environment with accounts and transactions", func() {
 		})
 		Then(fmt.Sprintf("listing balances using page size of %d", pageSize), func() {
 			var (
-				rsp *formance.BalancesCursorResponse
-				err error
+				rsp *shared.BalancesCursorResponse
 			)
 			BeforeEach(func() {
-				rsp, _, err = Client().BalancesApi.
-					GetBalances(TestContext(), "default").
-					PageSize(pageSize).
-					Execute()
+				response, err := Client().Balances.GetBalances(
+					TestContext(),
+					operations.GetBalancesRequest{
+						Ledger:   "default",
+						PageSize: ptr(pageSize),
+					},
+				)
 				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(200))
+
+				rsp = response.BalancesCursorResponse
 				Expect(rsp.Cursor.HasMore).To(BeTrue())
 				Expect(rsp.Cursor.Previous).To(BeNil())
 				Expect(rsp.Cursor.Next).NotTo(BeNil())
@@ -229,11 +291,17 @@ var _ = Given("some environment with accounts and transactions", func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					rsp, _, err = Client().BalancesApi.
-						GetBalances(TestContext(), "default").
-						Cursor(*rsp.Cursor.Next).
-						Execute()
+					response, err := Client().Balances.GetBalances(
+						TestContext(),
+						operations.GetBalancesRequest{
+							Cursor: rsp.Cursor.Next,
+							Ledger: "default",
+						},
+					)
 					Expect(err).ToNot(HaveOccurred())
+					Expect(response.StatusCode).To(Equal(200))
+
+					rsp = response.BalancesCursorResponse
 				})
 				It("should return next page", func() {
 					Expect(rsp.Cursor.PageSize).To(Equal(pageSize))
@@ -241,11 +309,17 @@ var _ = Given("some environment with accounts and transactions", func() {
 				})
 				Then("following next cursor", func() {
 					BeforeEach(func() {
-						rsp, _, err = Client().BalancesApi.
-							GetBalances(TestContext(), "default").
-							Cursor(*rsp.Cursor.Next).
-							Execute()
+						response, err := Client().Balances.GetBalances(
+							TestContext(),
+							operations.GetBalancesRequest{
+								Cursor: rsp.Cursor.Next,
+								Ledger: "default",
+							},
+						)
 						Expect(err).ToNot(HaveOccurred())
+						Expect(response.StatusCode).To(Equal(200))
+
+						rsp = response.BalancesCursorResponse
 					})
 					It("should return next page", func() {
 						Expect(rsp.Cursor.PageSize).To(Equal(pageSize))
@@ -254,11 +328,17 @@ var _ = Given("some environment with accounts and transactions", func() {
 					})
 					Then("following previous cursor", func() {
 						BeforeEach(func() {
-							rsp, _, err = Client().BalancesApi.
-								GetBalances(TestContext(), "default").
-								Cursor(*rsp.Cursor.Previous).
-								Execute()
+							response, err := Client().Balances.GetBalances(
+								TestContext(),
+								operations.GetBalancesRequest{
+									Cursor: rsp.Cursor.Previous,
+									Ledger: "default",
+								},
+							)
 							Expect(err).ToNot(HaveOccurred())
+							Expect(response.StatusCode).To(Equal(200))
+
+							rsp = response.BalancesCursorResponse
 						})
 						It("should return first page", func() {
 							Expect(rsp.Cursor.PageSize).To(Equal(pageSize))

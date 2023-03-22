@@ -3,11 +3,11 @@ package suite
 import (
 	"time"
 
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/stack/libs/events"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
@@ -20,8 +20,7 @@ var _ = Given("some empty environment", func() {
 			msgs                      chan *nats.Msg
 			cancelSubscription        func()
 			timestamp                 = time.Now().Round(time.Second).UTC()
-			err                       error
-			createTransactionResponse *formance.CreateTransactionResponse
+			createTransactionResponse *shared.CreateTransactionResponse
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
@@ -29,20 +28,28 @@ var _ = Given("some empty environment", func() {
 			_ = msgs
 
 			// Create a transaction
-			createTransactionResponse, _, err = Client().TransactionsApi.
-				CreateTransaction(TestContext(), "default").
-				PostTransaction(formance.PostTransaction{
-					Timestamp: &timestamp,
-					Postings: []formance.Posting{{
-						Amount:      100,
-						Asset:       "USD",
-						Source:      "world",
-						Destination: "alice",
-					}},
-					Metadata: metadata.Metadata{},
-				}).
-				Execute()
+			response, err := Client().Transactions.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.Posting{
+							{
+								Amount:      100,
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "alice",
+							},
+						},
+						Timestamp: &timestamp,
+					},
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			createTransactionResponse = response.CreateTransactionResponse
 
 			// Wait for created transaction event to drain events
 			WaitOnChanWithTimeout(msgs, 5*time.Second)
@@ -52,10 +59,15 @@ var _ = Given("some empty environment", func() {
 		})
 		Then("reverting it", func() {
 			BeforeEach(func() {
-				_, _, err = Client().TransactionsApi.
-					RevertTransaction(TestContext(), "default", createTransactionResponse.Data.Txid).
-					Execute()
+				response, err := Client().Transactions.RevertTransaction(
+					TestContext(),
+					operations.RevertTransactionRequest{
+						Ledger: "default",
+						Txid:   createTransactionResponse.Data.Txid,
+					},
+				)
 				Expect(err).To(Succeed())
+				Expect(response.StatusCode).To(Equal(201))
 			})
 			It("should trigger a new event", func() {
 				// Wait for created transaction event
@@ -63,18 +75,29 @@ var _ = Given("some empty environment", func() {
 				Expect(events.Check(msg.Data, "ledger", bus.EventTypeRevertedTransaction)).Should(Succeed())
 			})
 			It("should set a metadata on the original transaction", func() {
-				rsp, _, err := Client().TransactionsApi.
-					GetTransaction(TestContext(), "default", createTransactionResponse.Data.Txid).
-					Execute()
+				response, err := Client().Transactions.GetTransaction(
+					TestContext(),
+					operations.GetTransactionRequest{
+						Ledger: "default",
+						Txid:   createTransactionResponse.Data.Txid,
+					},
+				)
 				Expect(err).To(Succeed())
-				Expect(core.IsReverted(rsp.Data.Metadata)).To(BeTrue())
+				Expect(response.StatusCode).To(Equal(200))
+
+				Expect(core.IsReverted(response.GetTransactionResponse.Data.Metadata)).To(BeTrue())
 			})
 			Then("trying to revert again", func() {
 				It("should be rejected", func() {
-					_, _, err = Client().TransactionsApi.
-						RevertTransaction(TestContext(), "default", createTransactionResponse.Data.Txid).
-						Execute()
-					Expect(err).NotTo(BeNil())
+					response, err := Client().Transactions.RevertTransaction(
+						TestContext(),
+						operations.RevertTransactionRequest{
+							Ledger: "default",
+							Txid:   createTransactionResponse.Data.Txid,
+						},
+					)
+					Expect(err).To(BeNil())
+					Expect(response.StatusCode).To(Equal(400))
 				})
 			})
 		})

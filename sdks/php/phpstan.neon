@@ -1,0 +1,4 @@
+parameters:
+	ignoreErrors:
+		- '#Property .*? is never read, only written.#'
+		- '#.*?class ReflectionProperty constructor expects object\|string.*?#'

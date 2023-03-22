@@ -1,9 +1,11 @@
 package transactions
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/pkg/errors"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/spf13/cobra"
 )
 
@@ -40,12 +42,26 @@ func NewShowCommand() *cobra.Command {
 				return err
 			}
 
-			rsp, _, err := ledgerClient.TransactionsApi.GetTransaction(cmd.Context(), ledger, txId).Execute()
+			response, err := ledgerClient.Transactions.GetTransaction(
+				cmd.Context(),
+				operations.GetTransactionRequest{
+					Ledger: ledger,
+					Txid:   txId,
+				},
+			)
 			if err != nil {
-				return errors.Wrapf(err, "retrieving transaction")
+				return err
 			}
 
-			return internal.PrintExpandedTransaction(cmd.OutOrStdout(), rsp.Data)
+			if response.ErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			return internal.PrintExpandedTransaction(cmd.OutOrStdout(), response.GetTransactionResponse.Data)
 		}),
 	)
 }

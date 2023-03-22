@@ -5,8 +5,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -26,53 +26,76 @@ var _ = Given("some empty environment", func() {
 			}
 		)
 		BeforeEach(func() {
-			_, _, err := Client().TransactionsApi.
-				CreateTransaction(TestContext(), "default").
-				PostTransaction(formance.PostTransaction{
-					Timestamp: &timestamp1,
-					Postings: []formance.Posting{{
-						Amount:      100,
-						Asset:       "USD",
-						Source:      "world",
-						Destination: "foo:foo",
-					}},
-					Metadata: metadata.Metadata{},
-				}).
-				Execute()
+			response, err := Client().Transactions.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.Posting{
+							{
+								Amount:      100,
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "foo:foo",
+							},
+						},
+						Timestamp: &timestamp1,
+					},
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
 
-			_, _, err = Client().TransactionsApi.
-				CreateTransaction(TestContext(), "default").
-				PostTransaction(formance.PostTransaction{
-					Timestamp: &timestamp2,
-					Postings: []formance.Posting{{
-						Amount:      200,
-						Asset:       "USD",
-						Source:      "world",
-						Destination: "foo:bar",
-					}},
-					Metadata: m1,
-				}).
-				Execute()
+			response, err = Client().Transactions.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					PostTransaction: shared.PostTransaction{
+						Metadata: m1,
+						Postings: []shared.Posting{
+							{
+								Amount:      200,
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "foo:bar",
+							},
+						},
+						Timestamp: &timestamp2,
+					},
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
 
-			_, err = Client().AccountsApi.
-				AddMetadataToAccount(TestContext(), "default", "foo:baz").
-				RequestBody(m2).
-				Execute()
+			addMetadataResponse, err := Client().Accounts.AddMetadataToAccount(
+				TestContext(),
+				operations.AddMetadataToAccountRequest{
+					RequestBody: m2,
+					Address:     "foo:baz",
+					Ledger:      "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(addMetadataResponse.StatusCode).To(Equal(204))
 		})
 		It("should be listed on api with ListLogs", func() {
-			logsCursorResponse, _, err := Client().LogsApi.
-				ListLogs(TestContext(), "default").
-				Execute()
+			response, err := Client().Logs.ListLogs(
+				TestContext(),
+				operations.ListLogsRequest{
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			logsCursorResponse := response.LogsCursorResponse
 			Expect(logsCursorResponse.Cursor.Data).To(HaveLen(3))
 
 			// Cannot check the date and the hash since they are changing at
 			// every run
-			Expect(logsCursorResponse.Cursor.Data[0].Id).To(Equal(int64(2)))
-			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal("SET_METADATA"))
+			Expect(logsCursorResponse.Cursor.Data[0].ID).To(Equal(int64(2)))
+			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal(shared.LogTypeSetMetadata))
 			Expect(logsCursorResponse.Cursor.Data[0].Data).To(Equal(map[string]any{
 				"targetType": "ACCOUNT",
 				"metadata": map[string]any{
@@ -81,8 +104,8 @@ var _ = Given("some empty environment", func() {
 				"targetId": "foo:baz",
 			}))
 
-			Expect(logsCursorResponse.Cursor.Data[1].Id).To(Equal(int64(1)))
-			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal("NEW_TRANSACTION"))
+			Expect(logsCursorResponse.Cursor.Data[1].ID).To(Equal(int64(1)))
+			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal(shared.LogTypeNewTransaction))
 			// Cannot check date and txid inside Data since they are changing at
 			// every run
 			Expect(logsCursorResponse.Cursor.Data[1].Date).To(Equal(timestamp2))
@@ -103,8 +126,8 @@ var _ = Given("some empty environment", func() {
 				},
 			}))
 
-			Expect(logsCursorResponse.Cursor.Data[2].Id).To(Equal(int64(0)))
-			Expect(logsCursorResponse.Cursor.Data[2].Type).To(Equal("NEW_TRANSACTION"))
+			Expect(logsCursorResponse.Cursor.Data[2].ID).To(Equal(int64(0)))
+			Expect(logsCursorResponse.Cursor.Data[2].Type).To(Equal(shared.LogTypeNewTransaction))
 			// Cannot check date and txid inside Data since they are changing at
 			// every run
 			Expect(logsCursorResponse.Cursor.Data[2].Date).To(Equal(timestamp1))
@@ -125,15 +148,21 @@ var _ = Given("some empty environment", func() {
 		})
 		It("should be listed on api with ListLogs using time filters", func() {
 			st := time.Date(2023, 4, 11, 12, 0, 0, 0, time.UTC)
-			logsCursorResponse, _, err := Client().LogsApi.
-				ListLogs(TestContext(), "default").
-				StartTime(st).
-				Execute()
+			response, err := Client().Logs.ListLogs(
+				TestContext(),
+				operations.ListLogsRequest{
+					Ledger:    "default",
+					StartTime: &st,
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			logsCursorResponse := response.LogsCursorResponse
 			Expect(logsCursorResponse.Cursor.Data).To(HaveLen(2))
 
-			Expect(logsCursorResponse.Cursor.Data[0].Id).To(Equal(int64(2)))
-			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal("SET_METADATA"))
+			Expect(logsCursorResponse.Cursor.Data[0].ID).To(Equal(int64(2)))
+			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal(shared.LogTypeSetMetadata))
 			Expect(logsCursorResponse.Cursor.Data[0].Data).To(Equal(map[string]any{
 				"targetType": "ACCOUNT",
 				"metadata": map[string]any{
@@ -142,8 +171,8 @@ var _ = Given("some empty environment", func() {
 				"targetId": "foo:baz",
 			}))
 
-			Expect(logsCursorResponse.Cursor.Data[1].Id).To(Equal(int64(1)))
-			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal("NEW_TRANSACTION"))
+			Expect(logsCursorResponse.Cursor.Data[1].ID).To(Equal(int64(1)))
+			Expect(logsCursorResponse.Cursor.Data[1].Type).To(Equal(shared.LogTypeNewTransaction))
 			Expect(logsCursorResponse.Cursor.Data[1].Date).To(Equal(timestamp2))
 			Expect(logsCursorResponse.Cursor.Data[1].Data["accountMetadata"]).To(Equal(map[string]any{}))
 			Expect(logsCursorResponse.Cursor.Data[1].Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
@@ -163,15 +192,21 @@ var _ = Given("some empty environment", func() {
 			}))
 
 			et := time.Date(2023, 4, 11, 12, 0, 0, 0, time.UTC)
-			logsCursorResponse, _, err = Client().LogsApi.
-				ListLogs(TestContext(), "default").
-				EndTime(et).
-				Execute()
+			response, err = Client().Logs.ListLogs(
+				TestContext(),
+				operations.ListLogsRequest{
+					EndTime: &et,
+					Ledger:  "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			logsCursorResponse = response.LogsCursorResponse
 			Expect(logsCursorResponse.Cursor.Data).To(HaveLen(1))
 
-			Expect(logsCursorResponse.Cursor.Data[0].Id).To(Equal(int64(0)))
-			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal("NEW_TRANSACTION"))
+			Expect(logsCursorResponse.Cursor.Data[0].ID).To(Equal(int64(0)))
+			Expect(logsCursorResponse.Cursor.Data[0].Type).To(Equal(shared.LogTypeNewTransaction))
 			// Cannot check date and txid inside Data since they are changing at
 			// every run
 			Expect(logsCursorResponse.Cursor.Data[0].Date).To(Equal(timestamp1))
@@ -196,13 +231,13 @@ var _ = Given("some empty environment", func() {
 var _ = Given("some environment with accounts", func() {
 	type expectedLog struct {
 		id       int64
-		typ      string
+		typ      shared.LogType
 		postings []any
 	}
 
 	var (
-		compareLogs = func(log formance.Log, expected expectedLog) {
-			Expect(log.Id).To(Equal(expected.id))
+		compareLogs = func(log shared.Log, expected expectedLog) {
+			Expect(log.ID).To(Equal(expected.id))
 			Expect(log.Type).To(Equal(expected.typ))
 			Expect(log.Data["accountMetadata"]).To(Equal(map[string]any{}))
 			Expect(log.Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
@@ -225,23 +260,30 @@ var _ = Given("some environment with accounts", func() {
 			for i := 0; i < int(accountCounts); i++ {
 				now := time.Now().Round(time.Millisecond).UTC()
 
-				_, _, err := Client().TransactionsApi.
-					CreateTransaction(TestContext(), "default").
-					PostTransaction(formance.PostTransaction{
-						Timestamp: &now,
-						Postings: []formance.Posting{{
-							Amount:      100,
-							Asset:       "USD",
-							Source:      "world",
-							Destination: fmt.Sprintf("foo:%d", i),
-						}},
-						Metadata: metadata.Metadata{},
-					}).
-					Execute()
+				response, err := Client().Transactions.CreateTransaction(
+					TestContext(),
+					operations.CreateTransactionRequest{
+						PostTransaction: shared.PostTransaction{
+							Metadata: map[string]string{},
+							Postings: []shared.Posting{
+								{
+									Amount:      100,
+									Asset:       "USD",
+									Source:      "world",
+									Destination: fmt.Sprintf("foo:%d", i),
+								},
+							},
+							Timestamp: &now,
+						},
+						Ledger: "default",
+					},
+				)
 				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(200))
+
 				expectedLogs = append(expectedLogs, expectedLog{
 					id:  int64(i),
-					typ: "NEW_TRANSACTION",
+					typ: shared.LogTypeNewTransaction,
 					postings: []any{
 						map[string]any{
 							"amount":      float64(100),
@@ -262,15 +304,20 @@ var _ = Given("some environment with accounts", func() {
 		})
 		Then(fmt.Sprintf("listing accounts using page size of %d", pageSize), func() {
 			var (
-				rsp *formance.LogsCursorResponse
-				err error
+				rsp *shared.LogsCursorResponse
 			)
 			BeforeEach(func() {
-				rsp, _, err = Client().LogsApi.
-					ListLogs(TestContext(), "default").
-					PageSize(pageSize).
-					Execute()
+				response, err := Client().Logs.ListLogs(
+					TestContext(),
+					operations.ListLogsRequest{
+						Ledger:   "default",
+						PageSize: ptr(pageSize),
+					},
+				)
 				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(200))
+
+				rsp = response.LogsCursorResponse
 				Expect(rsp.Cursor.HasMore).To(BeTrue())
 				Expect(rsp.Cursor.Previous).To(BeNil())
 				Expect(rsp.Cursor.Next).NotTo(BeNil())
@@ -284,11 +331,17 @@ var _ = Given("some environment with accounts", func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					rsp, _, err = Client().LogsApi.
-						ListLogs(TestContext(), "default").
-						Cursor(*rsp.Cursor.Next).
-						Execute()
+					response, err := Client().Logs.ListLogs(
+						TestContext(),
+						operations.ListLogsRequest{
+							Cursor: rsp.Cursor.Next,
+							Ledger: "default",
+						},
+					)
 					Expect(err).ToNot(HaveOccurred())
+					Expect(response.StatusCode).To(Equal(200))
+
+					rsp = response.LogsCursorResponse
 				})
 				It("should return next page", func() {
 					Expect(rsp.Cursor.PageSize).To(Equal(pageSize))
@@ -300,11 +353,17 @@ var _ = Given("some environment with accounts", func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						rsp, _, err = Client().LogsApi.
-							ListLogs(TestContext(), "default").
-							Cursor(*rsp.Cursor.Previous).
-							Execute()
+						response, err := Client().Logs.ListLogs(
+							TestContext(),
+							operations.ListLogsRequest{
+								Cursor: rsp.Cursor.Previous,
+								Ledger: "default",
+							},
+						)
 						Expect(err).ToNot(HaveOccurred())
+						Expect(response.StatusCode).To(Equal(200))
+
+						rsp = response.LogsCursorResponse
 					})
 					It("should return first page", func() {
 						Expect(rsp.Cursor.PageSize).To(Equal(pageSize))

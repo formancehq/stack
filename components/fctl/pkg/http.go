@@ -13,10 +13,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func GetHttpClient(cmd *cobra.Command) *http.Client {
+func GetHttpClient(cmd *cobra.Command, defaultHeaders map[string][]string) *http.Client {
 	return NewHTTPClient(
 		GetBool(cmd, InsecureTlsFlag),
 		GetBool(cmd, DebugFlag),
+		defaultHeaders,
 	)
 }
 
@@ -87,7 +88,18 @@ func debugRoundTripper(rt http.RoundTripper) RoundTripperFn {
 	}
 }
 
-func NewHTTPClient(insecureTLS, debug bool) *http.Client {
+func defaultHeadersRoundTripper(rt http.RoundTripper, headers map[string][]string) RoundTripperFn {
+	return func(req *http.Request) (*http.Response, error) {
+		for k, v := range headers {
+			for _, vv := range v {
+				req.Header.Add(k, vv)
+			}
+		}
+		return rt.RoundTrip(req)
+	}
+}
+
+func NewHTTPClient(insecureTLS, debug bool, defaultHeaders map[string][]string) *http.Client {
 	var transport http.RoundTripper = &http.Transport{
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: insecureTLS,
@@ -95,6 +107,9 @@ func NewHTTPClient(insecureTLS, debug bool) *http.Client {
 	}
 	if debug {
 		transport = debugRoundTripper(transport)
+	}
+	if len(defaultHeaders) > 0 {
+		transport = defaultHeadersRoundTripper(transport, defaultHeaders)
 	}
 	return &http.Client{
 		Transport: transport,

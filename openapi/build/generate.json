@@ -12,7 +12,7 @@
       "url": "https://avatars.githubusercontent.com/u/84325077?s=200&v=4",
       "altText": "Formance"
     },
-    "version": "develop"
+    "version": "v1.0.20230523"
   },
   "servers": [
     {
@@ -58,6 +58,9 @@
       "get": {
         "summary": "Get server info",
         "operationId": "getServerInfo",
+        "tags": [
+          "Auth"
+        ],
         "responses": {
           "200": {
             "description": "Server information",
@@ -76,6 +79,7 @@
       "get": {
         "summary": "List clients",
         "tags": [
+          "Auth",
           "Clients"
         ],
         "operationId": "listClients",
@@ -95,6 +99,7 @@
       "post": {
         "summary": "Create client",
         "tags": [
+          "Auth",
           "Clients"
         ],
         "operationId": "createClient",
@@ -125,6 +130,7 @@
       "get": {
         "summary": "Read client",
         "tags": [
+          "Auth",
           "Clients"
         ],
         "operationId": "readClient",
@@ -155,6 +161,7 @@
       "put": {
         "summary": "Update client",
         "tags": [
+          "Auth",
           "Clients"
         ],
         "operationId": "updateClient",
@@ -194,6 +201,7 @@
       "delete": {
         "summary": "Delete client",
         "tags": [
+          "Auth",
           "Clients"
         ],
         "operationId": "deleteClient",
@@ -219,6 +227,7 @@
       "post": {
         "summary": "Add a secret to a client",
         "tags": [
+          "Auth",
           "Clients"
         ],
         "operationId": "createSecret",
@@ -260,6 +269,7 @@
       "delete": {
         "summary": "Delete a secret from a client",
         "tags": [
+          "Auth",
           "Clients"
         ],
         "operationId": "deleteSecret",
@@ -294,6 +304,7 @@
       "put": {
         "summary": "Add scope to client",
         "tags": [
+          "Auth",
           "Clients"
         ],
         "operationId": "addScopeToClient",
@@ -326,6 +337,7 @@
       "delete": {
         "summary": "Delete scope from client",
         "tags": [
+          "Auth",
           "Clients"
         ],
         "operationId": "deleteScopeFromClient",
@@ -360,6 +372,7 @@
       "get": {
         "summary": "List scopes",
         "tags": [
+          "Auth",
           "Scopes"
         ],
         "description": "List Scopes",
@@ -380,6 +393,7 @@
       "post": {
         "summary": "Create scope",
         "tags": [
+          "Auth",
           "Scopes"
         ],
         "description": "Create scope",
@@ -411,6 +425,7 @@
       "get": {
         "summary": "Read scope",
         "tags": [
+          "Auth",
           "Scopes"
         ],
         "description": "Read scope",
@@ -442,6 +457,7 @@
       "put": {
         "summary": "Update scope",
         "tags": [
+          "Auth",
           "Scopes"
         ],
         "description": "Update scope",
@@ -482,6 +498,7 @@
       "delete": {
         "summary": "Delete scope",
         "tags": [
+          "Auth",
           "Scopes"
         ],
         "description": "Delete scope",
@@ -508,6 +525,7 @@
       "put": {
         "summary": "Add a transient scope to a scope",
         "tags": [
+          "Auth",
           "Scopes"
         ],
         "description": "Add a transient scope to a scope",
@@ -541,6 +559,7 @@
       "delete": {
         "summary": "Delete a transient scope from a scope",
         "tags": [
+          "Auth",
           "Scopes"
         ],
         "description": "Delete a transient scope from a scope",
@@ -576,6 +595,7 @@
       "get": {
         "summary": "List users",
         "tags": [
+          "Auth",
           "Users"
         ],
         "description": "List users",
@@ -598,6 +618,7 @@
       "get": {
         "summary": "Read user",
         "tags": [
+          "Auth",
           "Users"
         ],
         "description": "Read user",
@@ -1798,6 +1819,9 @@
       "get": {
         "summary": "Get server info",
         "operationId": "paymentsgetServerInfo",
+        "tags": [
+          "Payments"
+        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/ServerInfo"
@@ -2119,6 +2143,9 @@
       "get": {
         "summary": "Get server info",
         "operationId": "searchgetServerInfo",
+        "tags": [
+          "Search"
+        ],
         "responses": {
           "200": {
             "description": "Server information",
@@ -3662,7 +3689,7 @@
             "type": "string"
           },
           "health": {
-            "type": "bool"
+            "type": "boolean"
           }
         },
         "required": [
@@ -6438,6 +6465,7 @@
         }
       },
       "LedgerAccountSubject": {
+        "type": "object",
         "required": [
           "type",
           "identifier"
@@ -6452,6 +6480,7 @@
         }
       },
       "WalletSubject": {
+        "type": "object",
         "required": [
           "type",
           "identifier"
@@ -6476,7 +6505,7 @@
             "WALLET": "#/components/schemas/WalletSubject"
           }
         },
-        "anyOf": [
+        "oneOf": [
           {
             "$ref": "#/components/schemas/LedgerAccountSubject"
           },

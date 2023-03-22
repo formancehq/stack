@@ -41,6 +41,13 @@ runs:
       shell: bash
       run: |
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
+    - name: Install speakeasy
+      shell: bash
+      run: |
+        wget https://github.com/speakeasy-api/speakeasy/releases/download/v1.36.1/speakeasy_linux_amd64.tar.gz
+        tar -zxvf speakeasy_linux_amd64.tar.gz
+        chmod +x ./speakeasy
+        mv ./speakeasy $(go env GOPATH)/bin/speakeasy
     - name: 'install go deps'
       shell: bash
       run: |

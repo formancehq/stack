@@ -21,7 +21,7 @@ import (
 	"github.com/formancehq/fctl/cmd/webhooks"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -94,13 +94,13 @@ func extractOpenAPIErrorMessage(err error) error {
 	}
 
 	if err := unwrapOpenAPIError(err); err != nil {
-		return errors.New(err.GetErrorMessage())
+		return errors.New(err.ErrorMessage)
 	}
 
 	return err
 }
 
-func unwrapOpenAPIError(err error) *formance.ErrorResponse {
+func unwrapOpenAPIError(err error) *shared.ErrorResponse {
 	openapiError := &membershipclient.GenericOpenAPIError{}
 	if errors.As(err, &openapiError) {
 		body := openapiError.Body()
@@ -114,8 +114,8 @@ func unwrapOpenAPIError(err error) *formance.ErrorResponse {
 		}
 
 		if errResponse.ErrorCode != "" {
-			errorCode := formance.ErrorsEnum(errResponse.ErrorCode)
-			return &formance.ErrorResponse{
+			errorCode := shared.ErrorsEnum(errResponse.ErrorCode)
+			return &shared.ErrorResponse{
 				ErrorCode:    errorCode,
 				ErrorMessage: errResponse.ErrorMessage,
 				Details:      &errResponse.Details,

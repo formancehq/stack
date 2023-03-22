@@ -1,0 +1,8 @@
+configVersion: 1.0.0
+generation:
+  telemetryEnabled: false
+  sdkClassName: SDK
+  sdkFlattening: true
+terraform:
+  version: 0.0.1
+  packageName: openapi

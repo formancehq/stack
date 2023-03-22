@@ -1,0 +1,10 @@
+configVersion: 1.0.0
+generation:
+  sdkClassName: SDK
+  singleTagPerOp: true
+  telemetryEnabled: false
+typescript:
+  version: 0.7.2
+  author: Formance
+  maxMethodParams: 0
+  packageName: '@formance/formance-sdk'

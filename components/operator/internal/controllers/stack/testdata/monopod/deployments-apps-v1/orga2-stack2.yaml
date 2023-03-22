@@ -34,7 +34,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32816"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-auth
                     - name: POSTGRES_USERNAME
@@ -215,7 +215,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32816"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-ledger
                     - name: POSTGRES_USERNAME
@@ -287,7 +287,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32816"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-orchestration
                     - name: POSTGRES_USERNAME
@@ -362,7 +362,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32816"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-orchestration
                     - name: POSTGRES_USERNAME
@@ -421,7 +421,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32816"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-payments
                     - name: POSTGRES_USERNAME
@@ -609,7 +609,7 @@ spec:
                     - name: LEDGER_POSTGRES_HOST
                       value: localhost
                     - name: LEDGER_POSTGRES_PORT
-                      value: "32779"
+                      value: "32816"
                     - name: LEDGER_POSTGRES_DATABASE
                       value: orga2-stack2-ledger
                     - name: LEDGER_POSTGRES_USERNAME
@@ -766,7 +766,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32816"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-webhooks
                     - name: POSTGRES_USERNAME
@@ -839,7 +839,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32816"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-webhooks
                     - name: POSTGRES_USERNAME
@@ -903,7 +903,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32816"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-payments
                     - name: POSTGRES_USERNAME

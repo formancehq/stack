@@ -5,8 +5,8 @@ import (
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
-	"github.com/pkg/errors"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -38,19 +38,27 @@ func NewListPaymentsCommand() *cobra.Command {
 				return err
 			}
 
-			paymentsCursor, _, err := client.PaymentsApi.ListPayments(cmd.Context()).Execute()
+			response, err := client.Payments.ListPayments(
+				cmd.Context(),
+				operations.ListPaymentsRequest{},
+			)
 			if err != nil {
-				return errors.Wrap(err, "listing payments")
+				return err
 			}
 
-			tableData := fctl.Map(paymentsCursor.Cursor.Data, func(payment formance.Payment) []string {
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			paymentsCursor := response.PaymentsCursor
+			tableData := fctl.Map(paymentsCursor.Cursor.Data, func(payment shared.Payment) []string {
 				return []string{
-					payment.Id,
-					payment.Type,
+					payment.ID,
+					string(payment.Type),
 					fmt.Sprint(payment.InitialAmount),
 					payment.Asset,
 					string(payment.Status),
-					payment.Scheme,
+					string(payment.Scheme),
 					payment.Reference,
 					payment.AccountID,
 					string(payment.Provider),

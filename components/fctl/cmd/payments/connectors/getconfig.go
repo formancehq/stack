@@ -1,9 +1,12 @@
 package connectors
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -37,21 +40,28 @@ func NewGetConfigCommand() *cobra.Command {
 				return err
 			}
 
-			connectorConfig, _, err := client.PaymentsApi.ReadConnectorConfig(cmd.Context(), formance.Connector(args[0])).Execute()
+			response, err := client.Payments.ReadConnectorConfig(cmd.Context(), operations.ReadConnectorConfigRequest{
+				Connector: shared.Connector(args[0]),
+			})
 			if err != nil {
-				return errors.Wrap(err, "reading connector config")
+				return err
 			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
 			switch args[0] {
 			case internal.StripeConnector:
-				err = displayStripeConfig(cmd, connectorConfig.Data)
+				err = displayStripeConfig(cmd, response.ConnectorConfigResponse)
 			case internal.ModulrConnector:
-				err = displayModulrConfig(cmd, connectorConfig.Data)
+				err = displayModulrConfig(cmd, response.ConnectorConfigResponse)
 			case internal.BankingCircleConnector:
-				err = displayBankingCircleConfig(cmd, connectorConfig.Data)
+				err = displayBankingCircleConfig(cmd, response.ConnectorConfigResponse)
 			case internal.CurrencyCloudConnector:
-				err = displayCurrencyCloudConfig(cmd, connectorConfig.Data)
+				err = displayCurrencyCloudConfig(cmd, response.ConnectorConfigResponse)
 			case internal.WiseConnector:
-				err = displayWiseConfig(cmd, connectorConfig.Data)
+				err = displayWiseConfig(cmd, response.ConnectorConfigResponse)
 			default:
 				pterm.Error.WithWriter(cmd.OutOrStderr()).Printfln("Connection unknown.")
 			}
@@ -60,11 +70,14 @@ func NewGetConfigCommand() *cobra.Command {
 	)
 }
 
-func displayStripeConfig(cmd *cobra.Command, connectorConfig formance.ConnectorConfig) error {
-	config := connectorConfig.StripeConfig
+func displayStripeConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+	config, ok := connectorConfig.Data.(*shared.StripeConfig)
+	if !ok {
+		return errors.New("invalid stripe connector config")
+	}
 
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.ApiKey})
+	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).
@@ -75,12 +88,15 @@ func displayStripeConfig(cmd *cobra.Command, connectorConfig formance.ConnectorC
 	return nil
 }
 
-func displayModulrConfig(cmd *cobra.Command, connectorConfig formance.ConnectorConfig) error {
-	config := connectorConfig.ModulrConfig
+func displayModulrConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+	config, ok := connectorConfig.Data.(*shared.ModulrConfig)
+	if !ok {
+		return errors.New("invalid modulr connector config")
+	}
 
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.ApiKey})
-	tableData = append(tableData, []string{pterm.LightCyan("API secret:"), config.ApiSecret})
+	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
+	tableData = append(tableData, []string{pterm.LightCyan("API secret:"), config.APISecret})
 	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), func() string {
 		if config.Endpoint == nil {
 			return ""
@@ -97,11 +113,14 @@ func displayModulrConfig(cmd *cobra.Command, connectorConfig formance.ConnectorC
 	return nil
 }
 
-func displayWiseConfig(cmd *cobra.Command, connectorConfig formance.ConnectorConfig) error {
-	config := connectorConfig.WiseConfig
+func displayWiseConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+	config, ok := connectorConfig.Data.(*shared.WiseConfig)
+	if !ok {
+		return errors.New("invalid wise connector config")
+	}
 
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.ApiKey})
+	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
 
 	if err := pterm.DefaultTable.
 		WithWriter(cmd.OutOrStdout()).
@@ -112,8 +131,11 @@ func displayWiseConfig(cmd *cobra.Command, connectorConfig formance.ConnectorCon
 	return nil
 }
 
-func displayBankingCircleConfig(cmd *cobra.Command, connectorConfig formance.ConnectorConfig) error {
-	config := connectorConfig.BankingCircleConfig
+func displayBankingCircleConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+	config, ok := connectorConfig.Data.(*shared.BankingCircleConfig)
+	if !ok {
+		return errors.New("invalid banking circle connector config")
+	}
 
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("Username:"), config.Username})
@@ -130,11 +152,14 @@ func displayBankingCircleConfig(cmd *cobra.Command, connectorConfig formance.Con
 	return nil
 }
 
-func displayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig formance.ConnectorConfig) error {
-	config := connectorConfig.CurrencyCloudConfig
+func displayCurrencyCloudConfig(cmd *cobra.Command, connectorConfig *shared.ConnectorConfigResponse) error {
+	config, ok := connectorConfig.Data.(*shared.CurrencyCloudConfig)
+	if !ok {
+		return errors.New("invalid currency cloud connector config")
+	}
 
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.ApiKey})
+	tableData = append(tableData, []string{pterm.LightCyan("API key:"), config.APIKey})
 	tableData = append(tableData, []string{pterm.LightCyan("Login ID:"), config.LoginID})
 	tableData = append(tableData, []string{pterm.LightCyan("Endpoint:"), func() string {
 		if config.Endpoint == nil {

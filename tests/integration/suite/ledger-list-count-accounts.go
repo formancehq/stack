@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
@@ -26,126 +27,183 @@ var _ = Given("some empty environment", func() {
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
-			_, err := Client().AccountsApi.
-				AddMetadataToAccount(TestContext(), "default", "foo:foo").
-				RequestBody(metadata1).
-				Execute()
+			response, err := Client().Accounts.AddMetadataToAccount(
+				TestContext(),
+				operations.AddMetadataToAccountRequest{
+					RequestBody: metadata1,
+					Address:     "foo:foo",
+					Ledger:      "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(204))
 
-			_, err = Client().AccountsApi.
-				AddMetadataToAccount(TestContext(), "default", "foo:bar").
-				RequestBody(metadata2).
-				Execute()
+			response, err = Client().Accounts.AddMetadataToAccount(
+				TestContext(),
+				operations.AddMetadataToAccountRequest{
+					RequestBody: metadata2,
+					Address:     "foo:bar",
+					Ledger:      "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(204))
 
-			_, _, err = Client().TransactionsApi.
-				CreateTransaction(TestContext(), "default").
-				PostTransaction(formance.PostTransaction{
-					Timestamp: &timestamp,
-					Postings: []formance.Posting{{
-						Amount:      100,
-						Asset:       "USD",
-						Source:      "world",
-						Destination: "foo:foo",
-					}},
-					Metadata: metadata.Metadata{},
-				}).
-				Execute()
+			createTransactionResponse, err := Client().Transactions.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.Posting{
+							{
+								Amount:      100,
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "foo:foo",
+							},
+						},
+						Timestamp: &timestamp,
+					},
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(createTransactionResponse.StatusCode).To(Equal(200))
 		})
 		It("should be countable on api", func() {
-			accountResponse, err := Client().AccountsApi.
-				CountAccounts(TestContext(), "default").
-				Execute()
+			response, err := Client().Accounts.CountAccounts(
+				TestContext(),
+				operations.CountAccountsRequest{
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(accountResponse.Header.Get("Count")).Should(Equal("3"))
+			Expect(response.StatusCode).To(Equal(204))
+			Expect(response.Headers["Count"]).Should(HaveLen(1))
+			Expect(response.Headers["Count"][0]).Should(Equal("3"))
 		})
 		It("should be listed on api", func() {
-			accountsCursorResponse, _, err := Client().AccountsApi.
-				ListAccounts(TestContext(), "default").
-				Execute()
+			response, err := Client().Accounts.ListAccounts(
+				TestContext(),
+				operations.ListAccountsRequest{
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			accountsCursorResponse := response.AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(3))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
-			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(formance.Account{
+			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
 				Address:  "foo:bar",
 				Metadata: metadata2,
 			}))
 
-			Expect(accountsCursorResponse.Cursor.Data[2]).To(Equal(formance.Account{
+			Expect(accountsCursorResponse.Cursor.Data[2]).To(Equal(shared.Account{
 				Address:  "world",
 				Metadata: metadata.Metadata{},
 			}))
 		})
 		It("should be listed on api using address filters", func() {
-			accountsCursorResponse, _, err := Client().AccountsApi.
-				ListAccounts(TestContext(), "default").
-				Address("foo:.*").
-				Execute()
+			response, err := Client().Accounts.ListAccounts(
+				TestContext(),
+				operations.ListAccountsRequest{
+					Address: ptr("foo:.*"),
+					Ledger:  "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			accountsCursorResponse := response.AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(2))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
-			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(formance.Account{
+			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
 				Address:  "foo:bar",
 				Metadata: metadata2,
 			}))
 
-			accountsCursorResponse, _, err = Client().AccountsApi.
-				ListAccounts(TestContext(), "default").
-				Address("foo:f.*").
-				Execute()
+			response, err = Client().Accounts.ListAccounts(
+				TestContext(),
+				operations.ListAccountsRequest{
+					Address: ptr("foo:f.*"),
+					Ledger:  "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			accountsCursorResponse = response.AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(1))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
 		})
 		It("should be listed on api using balance filters", func() {
-			accountsCursorResponse, _, err := Client().AccountsApi.
-				ListAccounts(TestContext(), "default").
-				Balance(90).
-				BalanceOperator("lte").
-				Execute()
+			response, err := Client().Accounts.ListAccounts(
+				TestContext(),
+				operations.ListAccountsRequest{
+					Balance:         ptr(int64(90)),
+					BalanceOperator: ptr(operations.ListAccountsBalanceOperatorLte),
+					Ledger:          "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			accountsCursorResponse := response.AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(2))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
 				Address:  "foo:bar",
 				Metadata: metadata2,
 			}))
-			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(formance.Account{
+			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(shared.Account{
 				Address:  "world",
 				Metadata: metadata.Metadata{},
 			}))
 
 			// Default operator should be gte
-			accountsCursorResponse, _, err = Client().AccountsApi.
-				ListAccounts(TestContext(), "default").
-				Balance(90).
-				Execute()
+			response, err = Client().Accounts.ListAccounts(
+				TestContext(),
+				operations.ListAccountsRequest{
+					Balance: ptr(int64(90)),
+					Ledger:  "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			accountsCursorResponse = response.AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(1))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
 		})
 		It("should be listed on api using metadata filters", func() {
-			accountsCursorResponse, _, err := Client().AccountsApi.
-				ListAccounts(TestContext(), "default").
-				Metadata(map[string]string{
-					"clientType": "gold",
-				}).
-				Execute()
+			response, err := Client().Accounts.ListAccounts(
+				TestContext(),
+				operations.ListAccountsRequest{
+					Ledger: "default",
+					Metadata: map[string]string{
+						"clientType": "gold",
+					},
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			accountsCursorResponse := response.AccountsCursorResponse
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(1))
-			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
+			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(shared.Account{
 				Address:  "foo:foo",
 				Metadata: metadata1,
 			}))
@@ -156,18 +214,29 @@ var _ = Given("some empty environment", func() {
 var _ = Given("some empty environment", func() {
 	When("counting and listing accounts empty", func() {
 		It("should be countable on api even if empty", func() {
-			accountResponse, err := Client().AccountsApi.
-				CountAccounts(TestContext(), "default").
-				Execute()
+			response, err := Client().Accounts.CountAccounts(
+				TestContext(),
+				operations.CountAccountsRequest{
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(accountResponse.Header.Get("Count")).Should(Equal("0"))
+			Expect(response.StatusCode).To(Equal(204))
+
+			Expect(response.Headers["Count"]).Should(HaveLen(1))
+			Expect(response.Headers["Count"][0]).Should(Equal("0"))
 		})
 		It("should be listed on api even if empty", func() {
-			accountsCursorResponse, _, err := Client().AccountsApi.
-				ListAccounts(TestContext(), "default").
-				Execute()
+			response, err := Client().Accounts.ListAccounts(
+				TestContext(),
+				operations.ListAccountsRequest{
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(0))
+			Expect(response.StatusCode).To(Equal(200))
+
+			Expect(response.AccountsCursorResponse.Cursor.Data).To(HaveLen(0))
 		})
 	})
 })
@@ -179,7 +248,7 @@ var _ = Given("some environment with accounts", func() {
 	)
 	When("creating accounts", func() {
 		var (
-			accounts []formance.Account
+			accounts []shared.Account
 		)
 		BeforeEach(func() {
 			for i := 0; i < int(accountCounts); i++ {
@@ -187,12 +256,18 @@ var _ = Given("some environment with accounts", func() {
 					"id": fmt.Sprintf("%d", i),
 				}
 
-				_, err := Client().AccountsApi.
-					AddMetadataToAccount(TestContext(), "default", fmt.Sprintf("foo:%d", i)).
-					RequestBody(m).
-					Execute()
+				response, err := Client().Accounts.AddMetadataToAccount(
+					TestContext(),
+					operations.AddMetadataToAccountRequest{
+						RequestBody: m,
+						Address:     fmt.Sprintf("foo:%d", i),
+						Ledger:      "default",
+					},
+				)
 				Expect(err).ToNot(HaveOccurred())
-				accounts = append(accounts, formance.Account{
+				Expect(response.StatusCode).To(Equal(204))
+
+				accounts = append(accounts, shared.Account{
 					Address:  fmt.Sprintf("foo:%d", i),
 					Metadata: m,
 				})
@@ -203,15 +278,20 @@ var _ = Given("some environment with accounts", func() {
 		})
 		Then(fmt.Sprintf("listing accounts using page size of %d", pageSize), func() {
 			var (
-				rsp *formance.AccountsCursorResponse
-				err error
+				rsp *shared.AccountsCursorResponse
 			)
 			BeforeEach(func() {
-				rsp, _, err = Client().AccountsApi.
-					ListAccounts(TestContext(), "default").
-					PageSize(pageSize).
-					Execute()
+				response, err := Client().Accounts.ListAccounts(
+					TestContext(),
+					operations.ListAccountsRequest{
+						Ledger:   "default",
+						PageSize: ptr(pageSize),
+					},
+				)
 				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(200))
+
+				rsp = response.AccountsCursorResponse
 				Expect(rsp.Cursor.HasMore).To(BeTrue())
 				Expect(rsp.Cursor.Previous).To(BeNil())
 				Expect(rsp.Cursor.Next).NotTo(BeNil())
@@ -222,11 +302,17 @@ var _ = Given("some environment with accounts", func() {
 			})
 			Then("following next cursor", func() {
 				BeforeEach(func() {
-					rsp, _, err = Client().AccountsApi.
-						ListAccounts(TestContext(), "default").
-						Cursor(*rsp.Cursor.Next).
-						Execute()
+					response, err := Client().Accounts.ListAccounts(
+						TestContext(),
+						operations.ListAccountsRequest{
+							Cursor: rsp.Cursor.Next,
+							Ledger: "default",
+						},
+					)
 					Expect(err).ToNot(HaveOccurred())
+					Expect(response.StatusCode).To(Equal(200))
+
+					rsp = response.AccountsCursorResponse
 				})
 				It("should return next page", func() {
 					Expect(rsp.Cursor.PageSize).To(Equal(pageSize))
@@ -235,11 +321,17 @@ var _ = Given("some environment with accounts", func() {
 				})
 				Then("following previous cursor", func() {
 					BeforeEach(func() {
-						rsp, _, err = Client().AccountsApi.
-							ListAccounts(TestContext(), "default").
-							Cursor(*rsp.Cursor.Previous).
-							Execute()
+						response, err := Client().Accounts.ListAccounts(
+							TestContext(),
+							operations.ListAccountsRequest{
+								Ledger: "default",
+								Cursor: rsp.Cursor.Previous,
+							},
+						)
 						Expect(err).ToNot(HaveOccurred())
+						Expect(response.StatusCode).To(Equal(200))
+
+						rsp = response.AccountsCursorResponse
 					})
 					It("should return first page", func() {
 						Expect(rsp.Cursor.PageSize).To(Equal(pageSize))

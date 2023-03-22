@@ -19,7 +19,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-var sdkClient *formance.APIClient
+var sdkClient *formance.Formance
 
 type openapiCheckerRoundTripper struct {
 	router     routers.Router
@@ -107,19 +107,17 @@ func configureSDK() {
 		panic(err)
 	}
 
-	configuration := formance.NewConfiguration()
-	configuration.Host = gatewayUrl.Host
-	configuration.Servers = []formance.ServerConfiguration{{
-		URL: gatewayUrl.String(),
-	}}
-	configuration.HTTPClient = &http.Client{
-		Transport: newOpenapiCheckerTransport(
-			httpclient.NewDebugHTTPTransport(http.DefaultTransport),
-		),
-	}
-	sdkClient = formance.NewAPIClient(configuration)
+	sdkClient = formance.New(
+		formance.WithServerURL(gatewayUrl.String()),
+		formance.WithClient(
+			&http.Client{
+				Transport: newOpenapiCheckerTransport(
+					httpclient.NewDebugHTTPTransport(http.DefaultTransport),
+				),
+			},
+		))
 }
 
-func Client() *formance.APIClient {
+func Client() *formance.Formance {
 	return sdkClient
 }
