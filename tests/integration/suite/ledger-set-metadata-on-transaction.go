@@ -1,4 +1,4 @@
-package suite_test
+package suite
 
 import (
 	"time"
@@ -30,7 +30,7 @@ var _ = Given("some empty environment", func() {
 					}},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).NotTo(HaveOccurred())
 
 			// Check existence on api
 			Eventually(func(g Gomega) bool {
@@ -44,17 +44,15 @@ var _ = Given("some empty environment", func() {
 			}).Should(BeTrue())
 		})
 		Then("adding a metadata", func() {
-			var (
-				metadata = map[string]any{
-					"foo": "bar",
-				}
-			)
+			metadata := map[string]any{
+				"foo": "bar",
+			}
 			BeforeEach(func() {
 				_, err := Client().TransactionsApi.
 					AddMetadataOnTransaction(TestContext(), "default", rsp.Data.Txid).
 					RequestBody(metadata).
 					Execute()
-				Expect(err).To(Succeed())
+				Expect(err).NotTo(HaveOccurred())
 			})
 			It("should eventually be available on api", func() {
 				// Check existence on api

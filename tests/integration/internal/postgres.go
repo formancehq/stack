@@ -22,10 +22,10 @@ func getPostgresDSN() (*dburl.URL, error) {
 
 func createDatabases() {
 	conn, err := pgx.Connect(ctx, getPostgresDSNString())
-	Expect(err).To(BeNil())
+	Expect(err).NotTo(HaveOccurred())
 	for _, component := range []string{"ledger", "wallets", "orchestration", "auth", "payments", "webhooks"} {
 		_, err = conn.Exec(ctx, databaseNameForComponent(component))
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(HaveOccurred())
 	}
 }
 

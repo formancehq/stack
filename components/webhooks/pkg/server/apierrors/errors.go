@@ -19,7 +19,6 @@ const (
 
 func ResponseError(w http.ResponseWriter, r *http.Request, err error) {
 	status, code := coreErrorToErrorCode(err)
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	if status < 500 {
 		err := json.NewEncoder(w).Encode(api.ErrorResponse{

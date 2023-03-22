@@ -1,4 +1,4 @@
-package suite_test
+package suite
 
 import (
 	"time"

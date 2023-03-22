@@ -31,7 +31,6 @@ func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Requ
 			Data: cfgs,
 		},
 	}
-
 	if err := json.NewEncoder(w).Encode(resp); err != nil {
 		logging.FromContext(r.Context()).Errorf("json.Encoder.Encode: %s", err)
 		apierrors.ResponseError(w, r, err)

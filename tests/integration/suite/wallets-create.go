@@ -1,4 +1,4 @@
-package suite_test
+package suite
 
 import (
 	"github.com/formancehq/formance-sdk-go"

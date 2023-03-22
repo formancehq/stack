@@ -11,7 +11,3 @@ func TestExamples(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Examples Testing Suite")
 }
-
-func ptr[T any](t T) *T {
-	return &t
-}

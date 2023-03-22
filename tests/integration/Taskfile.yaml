@@ -3,10 +3,10 @@ version: "3"
 vars:
   PKG: "./suite"
   RUN: ".*"
-  VERBOSE: "false"
-  PARALLEL: "true"
+  VERBOSE: "true"
+  PARALLEL: "false"
   FAILFAST: "false"
-  DEBUG: "false"
+  DEBUG: "true"
   REPEAT: 0
 
 tasks:

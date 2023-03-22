@@ -1,4 +1,4 @@
-package suite_test
+package suite
 
 import (
 	"time"
@@ -186,6 +186,7 @@ var _ = Given("some empty environment", func() {
 			Expect(httpResp.StatusCode).To(Equal(400))
 			Expect(resp).To(BeNil())
 
+			// nolint: errorlint
 			apiErr, ok := err.(GenericOpenAPIError)
 			Expect(ok).To(BeTrue())
 
