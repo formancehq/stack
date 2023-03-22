@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
+	"github.com/formancehq/webhooks/pkg/server/apierrors"
 )
 
 func decodeJSONBody(r *http.Request, dst interface{}, allowEmpty bool) error {

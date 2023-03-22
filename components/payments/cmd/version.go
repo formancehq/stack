@@ -14,7 +14,7 @@ func newVersion() *cobra.Command {
 	}
 }
 
-func printVersion(cmd *cobra.Command, args []string) {
+func printVersion(*cobra.Command, []string) {
 	log.Printf("Version: %s \n", Version)
 	log.Printf("Date: %s \n", BuildDate)
 	log.Printf("Commit: %s \n", Commit)

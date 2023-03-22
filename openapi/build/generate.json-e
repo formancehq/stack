@@ -980,7 +980,8 @@
         },
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "No Content",
+            "content": {}
           },
           "default": {
             "description": "Error",
@@ -1462,7 +1463,8 @@
         },
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "No Content",
+            "content": {}
           },
           "default": {
             "description": "Error",

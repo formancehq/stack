@@ -16,6 +16,7 @@ func init() {
 				InjectPostgresVariables: true,
 				HasVersionEndpoint:      true,
 				ExposeHTTP:              true,
+				NeedTopic:               true,
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 					env := modules.NewEnv().Append(
 						modules.Env("STORAGE_DRIVER", "postgres"),

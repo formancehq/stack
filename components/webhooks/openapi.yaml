@@ -67,8 +67,8 @@ paths:
           description: Config created successfully.
           content:
             application/json:
-                schema:
-                  $ref: '#/components/schemas/ConfigResponse'
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
 
         default:
           description: Error

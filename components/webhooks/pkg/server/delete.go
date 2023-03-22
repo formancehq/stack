@@ -3,8 +3,8 @@ package server
 import (
 	"net/http"
 
-	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/formancehq/webhooks/pkg/server/apierrors"
 	"github.com/formancehq/webhooks/pkg/storage"
 	"github.com/go-chi/chi/v5"
 	"github.com/pkg/errors"

@@ -23,7 +23,7 @@ type Connector struct {
 	fs     fs
 }
 
-func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.Transfer) error {
+func (c *Connector) InitiateTransfer(task.ConnectorContext, models.Transfer) error {
 	// TODO implement me
 	panic("implement me")
 }
@@ -54,7 +54,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 
 // Uninstall executes pre-uninstallation steps to remove the generated files.
 // It is called before the connector is uninstalled.
-func (c *Connector) Uninstall(ctx context.Context) error {
+func (c *Connector) Uninstall(context.Context) error {
 	c.logger.Infof("Removing generated files from '%s'...", c.cfg.Directory)
 
 	err := removeFiles(c.cfg, c.fs)

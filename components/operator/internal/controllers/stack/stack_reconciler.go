@@ -9,10 +9,8 @@ import (
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/controllerutils"
 	"github.com/formancehq/operator/internal/modules"
-	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	networkingv1 "k8s.io/api/networking/v1"
-	apiextensionv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
@@ -44,7 +42,6 @@ const (
 // +kubebuilder:rbac:groups=core,resources=secrets,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=core,resources=namespaces,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=cert-manager.io,resources=certificates,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=traefik.containo.us,resources=middlewares,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=stack.formance.com,resources=stacks,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=stack.formance.com,resources=stacks/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=stack.formance.com,resources=stacks/finalizers,verbs=update
@@ -189,20 +186,6 @@ func (r *Reconciler) reconcileStack(ctx context.Context, stack *stackv1beta3.Sta
 	_, _, err := controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
 		Name: stack.Name,
 	}, controllerutils.WithController[*corev1.Namespace](stack, r.scheme), func(ns *corev1.Namespace) {})
-	if err != nil {
-		return err
-	}
-
-	_, _, err = controllerutils.CreateOrUpdate(ctx, r.client, types.NamespacedName{
-		Name:      "auth-middleware",
-		Namespace: stack.Name,
-	}, controllerutils.WithController[*traefik.Middleware](stack, r.scheme), func(t *traefik.Middleware) {
-		t.Spec.Plugin = map[string]apiextensionv1.JSON{
-			"auth": {
-				Raw: []byte(fmt.Sprintf(`{"Issuer": "%s", "RefreshTime": "%s", "ExcludePaths": ["/_health", "/_healthcheck", "/.well-known/openid-configuration"]}`, stack.Spec.Scheme+"://"+stack.Spec.Host+"/api/auth", "10s")),
-			},
-		}
-	})
 	if err != nil {
 		return err
 	}

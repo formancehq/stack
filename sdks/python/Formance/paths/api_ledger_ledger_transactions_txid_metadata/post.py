@@ -91,7 +91,8 @@ _auth = [
 @dataclass
 class ApiResponseFor204(api_client.ApiResponse):
     response: urllib3.HTTPResponse
-    body: schemas.Unset = schemas.unset
+    body: typing.Union[
+    ]
     headers: schemas.Unset = schemas.unset
 
 

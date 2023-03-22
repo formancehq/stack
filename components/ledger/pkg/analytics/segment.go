@@ -7,9 +7,9 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
-	"github.com/formancehq/stack/libs/go-libs/sqlstorage/sqlerrors"
 	"github.com/pbnjay/memory"
 	"github.com/pborman/uuid"
 	"go.uber.org/fx"
@@ -45,10 +45,10 @@ func FromStorageAppIdProvider(driver storage.Driver) AppIdProvider {
 		var err error
 		if appId == "" {
 			appId, err = driver.GetSystemStore().GetConfiguration(ctx, "appId")
-			if err != nil && err != sqlerrors.ErrConfigurationNotFound {
+			if err != nil && err != storage.ErrConfigurationNotFound {
 				return "", err
 			}
-			if err == sqlerrors.ErrConfigurationNotFound {
+			if err == storage.ErrConfigurationNotFound {
 				appId = uuid.New()
 				if err := driver.GetSystemStore().InsertConfiguration(ctx, "appId", appId); err != nil {
 					return "", err
@@ -111,7 +111,7 @@ func (m *heartbeat) enqueue(ctx context.Context) error {
 		return err
 	}
 
-	tz, _ := time.Now().Local().Zone()
+	tz, _ := core.Now().Local().Zone()
 
 	properties := analytics.NewProperties().
 		Set(VersionProperty, m.version).

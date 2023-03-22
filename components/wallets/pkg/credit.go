@@ -16,15 +16,12 @@ type CreditRequest struct {
 	Balance   string            `json:"balance"`
 }
 
-func (c *CreditRequest) Bind(r *http.Request) error {
+func (c *CreditRequest) Bind(_ *http.Request) error {
 	return nil
 }
 
 func (c CreditRequest) Validate() error {
-	if err := c.Sources.Validate(); err != nil {
-		return err
-	}
-	return nil
+	return c.Sources.Validate()
 }
 
 type Credit struct {

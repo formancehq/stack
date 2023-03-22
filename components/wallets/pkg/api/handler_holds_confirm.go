@@ -14,7 +14,7 @@ type ConfirmHoldRequest struct {
 	Final  bool  `json:"final"`
 }
 
-func (c ConfirmHoldRequest) Bind(r *http.Request) error {
+func (c ConfirmHoldRequest) Bind(_ *http.Request) error {
 	return nil
 }
 

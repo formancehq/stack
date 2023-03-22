@@ -88,11 +88,11 @@ type ClientMock struct {
 	expectations *FIFO[*ClientMockExpectation]
 }
 
-func (m *ClientMock) ForAccount(account string) Client {
+func (m *ClientMock) ForAccount(string) Client {
 	return m
 }
 
-func (m *ClientMock) BalanceTransactions(ctx context.Context,
+func (m *ClientMock) BalanceTransactions(_ context.Context,
 	options ...ClientOption,
 ) ([]*stripe.BalanceTransaction, bool, error) {
 	e, ok := m.expectations.Pop()

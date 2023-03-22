@@ -1,4 +1,4 @@
-package suite
+package suite_test
 
 import (
 	"time"
@@ -34,7 +34,22 @@ var _ = Given("some empty environment", func() {
 		AfterEach(func() {
 			cancelSubscription()
 		})
-
+		It("should eventually be available on api", func() {
+			Eventually(func() formance.AccountWithVolumesAndBalances {
+				accountResponse, _, err := Client().AccountsApi.
+					GetAccount(TestContext(), "default", "foo").
+					Execute()
+				if err != nil {
+					return formance.AccountWithVolumesAndBalances{}
+				}
+				return accountResponse.Data
+			}).Should(Equal(formance.AccountWithVolumesAndBalances{
+				Address:  "foo",
+				Metadata: metadata,
+				Volumes:  ptr(map[string]map[string]int64{}),
+				Balances: ptr(map[string]int64{}),
+			}))
+		})
 		It("should trigger a new event", func() {
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
 			Expect(events.Check(msg.Data, "ledger", bus.EventTypeSavedMetadata)).Should(Succeed())

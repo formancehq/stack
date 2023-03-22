@@ -1,4 +1,4 @@
-package suite
+package suite_test
 
 import (
 	"os"

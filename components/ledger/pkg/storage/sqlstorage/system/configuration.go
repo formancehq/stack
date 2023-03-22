@@ -3,9 +3,9 @@ package system
 import (
 	"context"
 	"database/sql"
-	"time"
 
-	"github.com/formancehq/stack/libs/go-libs/sqlstorage/sqlerrors"
+	"github.com/formancehq/ledger/pkg/core"
+	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 )
@@ -17,7 +17,7 @@ type configuration struct {
 
 	Key     string    `bun:"key,type:varchar(255),pk"` // Primary key
 	Value   string    `bun:"value,type:text"`
-	AddedAt time.Time `bun:"addedAt,type:timestamp"`
+	AddedAt core.Time `bun:"addedAt,type:timestamp"`
 }
 
 func (s *Store) CreateConfigurationTable(ctx context.Context) error {
@@ -46,7 +46,7 @@ func (s *Store) GetConfiguration(ctx context.Context, key string) (string, error
 	var value string
 	if err := row.Scan(&value); err != nil {
 		if err == sql.ErrNoRows {
-			return "", sqlerrors.ErrConfigurationNotFound
+			return "", storage.ErrConfigurationNotFound
 		}
 		return "", err
 	}
@@ -58,7 +58,7 @@ func (s *Store) InsertConfiguration(ctx context.Context, key, value string) erro
 	config := &configuration{
 		Key:     key,
 		Value:   value,
-		AddedAt: time.Now().UTC().Truncate(time.Second),
+		AddedAt: core.Now(),
 	}
 
 	_, err := s.schema.NewInsert(configTableName).

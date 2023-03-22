@@ -27,7 +27,7 @@ func TestSimpleWorker(t *testing.T) {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
-			case err := <-w.WriteModels(ctx, []Log{{id: _i}}):
+			case err := <-w.WriteModels(ctx, &Log{id: _i}):
 				return err
 			}
 		})
@@ -52,15 +52,15 @@ func TestBatchWorker(t *testing.T) {
 
 	eg := errgroup.Group{}
 	for i := 0; i < 1000; i += 100 {
-		logs := make([]Log, 0, 100)
+		logs := make([]*Log, 0, 100)
 		for j := i; j < i+100 && j < 1000; j++ {
-			logs = append(logs, Log{id: j})
+			logs = append(logs, &Log{id: j})
 		}
 		eg.Go(func() error {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
-			case err := <-w.WriteModels(ctx, logs):
+			case err := <-w.WriteModels(ctx, logs...):
 				return err
 			}
 		})
@@ -87,15 +87,15 @@ func TestBatchTickerWorker(t *testing.T) {
 
 	eg := errgroup.Group{}
 	for i := 0; i < 1000; i += 100 {
-		logs := make([]Log, 0, 100)
+		logs := make([]*Log, 0, 100)
 		for j := i; j < i+100 && j < 1000; j++ {
-			logs = append(logs, Log{id: j})
+			logs = append(logs, &Log{id: j})
 		}
 		eg.Go(func() error {
 			select {
 			case <-ctx.Done():
 				return ctx.Err()
-			case err := <-w.WriteModels(ctx, logs):
+			case err := <-w.WriteModels(ctx, logs...):
 				return err
 			}
 		})
@@ -122,7 +122,7 @@ func NewMockDB() *MockDB {
 	}
 }
 
-func (m *MockDB) Write(ctx context.Context, logs []Log) error {
+func (m *MockDB) Write(ctx context.Context, logs []*Log) error {
 	for _, log := range logs {
 		m.ids[log.id] = struct{}{}
 	}

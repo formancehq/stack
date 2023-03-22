@@ -17,7 +17,7 @@ type Connector struct {
 	cfg    Config
 }
 
-func (c *Connector) InitiateTransfer(ctx task.ConnectorContext, transfer models.Transfer) error {
+func (c *Connector) InitiateTransfer(task.ConnectorContext, models.Transfer) error {
 	// TODO implement me
 	panic("implement me")
 }
@@ -34,7 +34,7 @@ func (c *Connector) Install(ctx task.ConnectorContext) error {
 	return ctx.Scheduler().Schedule(ctx.Context(), taskDescriptor, false)
 }
 
-func (c *Connector) Uninstall(ctx context.Context) error {
+func (c *Connector) Uninstall(context.Context) error {
 	return nil
 }
 

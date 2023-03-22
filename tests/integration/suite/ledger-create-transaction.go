@@ -1,4 +1,4 @@
-package suite
+package suite_test
 
 import (
 	"time"
@@ -18,13 +18,15 @@ var _ = Given("some empty environment", func() {
 			msgs               chan *nats.Msg
 			cancelSubscription func()
 			timestamp          = time.Now().Round(time.Second).UTC()
+			err                error
+			rsp                *formance.TransactionResponse
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 
 			// Create a transaction
-			_, _, err := Client().TransactionsApi.
+			rsp, _, err = Client().TransactionsApi.
 				CreateTransaction(TestContext(), "default").
 				PostTransaction(formance.PostTransaction{
 					Timestamp: &timestamp,
@@ -41,7 +43,39 @@ var _ = Given("some empty environment", func() {
 		AfterEach(func() {
 			cancelSubscription()
 		})
-
+		It("should eventually be available on api", func() {
+			Eventually(func(g Gomega) formance.Transaction {
+				transactionResponse, _, err := Client().TransactionsApi.
+					GetTransaction(TestContext(), "default", rsp.Data.Txid).
+					Execute()
+				if err != nil {
+					return formance.Transaction{}
+				}
+				return transactionResponse.Data
+			}).Should(Equal(rsp.Data))
+			Eventually(func(g Gomega) formance.AccountWithVolumesAndBalances {
+				accountResponse, _, err := Client().AccountsApi.
+					GetAccount(TestContext(), "default", "alice").
+					Execute()
+				if err != nil {
+					return formance.AccountWithVolumesAndBalances{}
+				}
+				return accountResponse.Data
+			}).Should(Equal(formance.AccountWithVolumesAndBalances{
+				Address:  "alice",
+				Metadata: map[string]interface{}{},
+				Volumes: ptr(map[string]map[string]int64{
+					"USD": {
+						"input":   100,
+						"output":  0,
+						"balance": 100,
+					},
+				}),
+				Balances: ptr(map[string]int64{
+					"USD": 100,
+				}),
+			}))
+		})
 		It("should trigger a new event", func() {
 			// Wait for created transaction event
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
@@ -127,6 +161,40 @@ var _ = Given("some empty environment", func() {
 				))
 				return true
 			}).Should(BeTrue())
+		})
+	})
+})
+
+type GenericOpenAPIError interface {
+	Model() any
+}
+
+var _ = Given("some empty environment", func() {
+	When("creating a transaction on a ledger with insufficient funds", func() {
+		It("should fail", func() {
+			resp, httpResp, err := Client().TransactionsApi.
+				CreateTransaction(TestContext(), "default").
+				PostTransaction(formance.PostTransaction{
+					Postings: []formance.Posting{{
+						Amount:      100,
+						Asset:       "USD",
+						Source:      "bob",
+						Destination: "alice",
+					}},
+				}).Execute()
+			Expect(err).To(HaveOccurred())
+			Expect(httpResp.StatusCode).To(Equal(400))
+			Expect(resp).To(BeNil())
+
+			apiErr, ok := err.(GenericOpenAPIError)
+			Expect(ok).To(BeTrue())
+
+			details := "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
+			Expect(apiErr.Model()).Should(Equal(formance.ErrorResponse{
+				ErrorCode:    formance.INSUFFICIENT_FUND,
+				ErrorMessage: "[INSUFFICIENT_FUND] account had insufficient funds",
+				Details:      &details,
+			}))
 		})
 	})
 })

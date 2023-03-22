@@ -18,7 +18,7 @@ type PatchRequest struct {
 	Metadata metadata.Metadata `json:"metadata"`
 }
 
-func (c *PatchRequest) Bind(r *http.Request) error {
+func (c *PatchRequest) Bind(_ *http.Request) error {
 	return nil
 }
 
@@ -27,7 +27,7 @@ type CreateRequest struct {
 	Name string `json:"name"`
 }
 
-func (c *CreateRequest) Bind(r *http.Request) error {
+func (c *CreateRequest) Bind(_ *http.Request) error {
 	return nil
 }
 

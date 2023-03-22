@@ -40,7 +40,7 @@ func newServer() *cobra.Command {
 	}
 }
 
-func runServer(cmd *cobra.Command, args []string) error {
+func runServer(cmd *cobra.Command, _ []string) error {
 	setLogger()
 
 	if viper.GetBool(autoMigrateFlag) {
@@ -82,5 +82,5 @@ func prepareDatabaseOptions(output io.Writer) (fx.Option, error) {
 		return nil, errors.New("missing config encryption key")
 	}
 
-	return storage.Module(postgresURI, configEncryptionKey, output), nil
+	return storage.Module(postgresURI, configEncryptionKey, viper.GetBool(service.DebugFlag), output), nil
 }

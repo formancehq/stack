@@ -13,7 +13,7 @@ type InMemoryConnectorStore struct {
 	configs   map[models.ConnectorProvider]json.RawMessage
 }
 
-func (i *InMemoryConnectorStore) Uninstall(ctx context.Context, name models.ConnectorProvider) error {
+func (i *InMemoryConnectorStore) Uninstall(_ context.Context, name models.ConnectorProvider) error {
 	delete(i.installed, name)
 	delete(i.configs, name)
 	delete(i.disabled, name)
@@ -25,11 +25,11 @@ func (i *InMemoryConnectorStore) ListConnectors(_ context.Context) ([]*models.Co
 	return []*models.Connector{}, nil
 }
 
-func (i *InMemoryConnectorStore) IsInstalled(ctx context.Context, name models.ConnectorProvider) (bool, error) {
+func (i *InMemoryConnectorStore) IsInstalled(_ context.Context, name models.ConnectorProvider) (bool, error) {
 	return i.installed[name], nil
 }
 
-func (i *InMemoryConnectorStore) Install(ctx context.Context, name models.ConnectorProvider, config json.RawMessage) error {
+func (i *InMemoryConnectorStore) Install(_ context.Context, name models.ConnectorProvider, config json.RawMessage) error {
 	i.installed[name] = true
 	i.configs[name] = config
 	i.disabled[name] = false
@@ -37,25 +37,25 @@ func (i *InMemoryConnectorStore) Install(ctx context.Context, name models.Connec
 	return nil
 }
 
-func (i *InMemoryConnectorStore) UpdateConfig(ctx context.Context, name models.ConnectorProvider, config json.RawMessage) error {
+func (i *InMemoryConnectorStore) UpdateConfig(_ context.Context, name models.ConnectorProvider, config json.RawMessage) error {
 	i.configs[name] = config
 
 	return nil
 }
 
-func (i *InMemoryConnectorStore) Enable(ctx context.Context, name models.ConnectorProvider) error {
+func (i *InMemoryConnectorStore) Enable(_ context.Context, name models.ConnectorProvider) error {
 	i.disabled[name] = false
 
 	return nil
 }
 
-func (i *InMemoryConnectorStore) Disable(ctx context.Context, name models.ConnectorProvider) error {
+func (i *InMemoryConnectorStore) Disable(_ context.Context, name models.ConnectorProvider) error {
 	i.disabled[name] = true
 
 	return nil
 }
 
-func (i *InMemoryConnectorStore) IsEnabled(ctx context.Context, name models.ConnectorProvider) (bool, error) {
+func (i *InMemoryConnectorStore) IsEnabled(_ context.Context, name models.ConnectorProvider) (bool, error) {
 	disabled, ok := i.disabled[name]
 	if !ok {
 		return false, nil
@@ -64,7 +64,7 @@ func (i *InMemoryConnectorStore) IsEnabled(ctx context.Context, name models.Conn
 	return !disabled, nil
 }
 
-func (i *InMemoryConnectorStore) GetConnector(ctx context.Context, name models.ConnectorProvider) (*models.Connector, error) {
+func (i *InMemoryConnectorStore) GetConnector(_ context.Context, name models.ConnectorProvider) (*models.Connector, error) {
 	cfg, ok := i.configs[name]
 	if !ok {
 		return nil, ErrNotFound
@@ -81,18 +81,14 @@ func (i *InMemoryConnectorStore) ReadConfig(ctx context.Context, name models.Con
 		return err
 	}
 
-	if err = connector.ParseConfig(to); err != nil {
-		return err
-	}
-
-	return nil
+	return connector.ParseConfig(to)
 }
 
-func (i *InMemoryConnectorStore) CreateNewTransfer(ctx context.Context, name models.ConnectorProvider, source, destination, currency string, amount int64) (models.Transfer, error) {
+func (i *InMemoryConnectorStore) CreateNewTransfer(_ context.Context, _ models.ConnectorProvider, _ string, _ string, _ string, _ int64) (models.Transfer, error) {
 	return models.Transfer{}, nil
 }
 
-func (i *InMemoryConnectorStore) ListTransfers(ctx context.Context, name models.ConnectorProvider) ([]models.Transfer, error) {
+func (i *InMemoryConnectorStore) ListTransfers(_ context.Context, _ models.ConnectorProvider) ([]models.Transfer, error) {
 	return []models.Transfer{}, nil
 }
 

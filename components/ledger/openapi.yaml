@@ -258,6 +258,7 @@ paths:
       responses:
         "204":
           description: No Content
+          content: {}
         default:
           description: Error
           content:
@@ -593,6 +594,7 @@ paths:
       responses:
         "204":
           description: No Content
+          content: {}
         default:
           description: Error
           content:

@@ -18,11 +18,7 @@ var (
 func NewRootCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if err := bindFlagsToViper(cmd); err != nil {
-				return err
-			}
-
-			return nil
+			return bindFlagsToViper(cmd)
 		},
 	}
 	cmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")

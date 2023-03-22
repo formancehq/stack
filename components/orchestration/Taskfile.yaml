@@ -5,13 +5,13 @@ vars:
     sh: cat go.mod |head -1|cut -d \  -f2|cut -d / -f 3
 
 tasks:
-  lint:
-    cmds:
-      - golangci-lint run -v --fix
-
   tests:
     cmds:
-      - go test -race -coverpkg ./... -coverprofile coverage.out ./...
+      - go test -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
+
+  lint:
+    cmds:
+    - golangci-lint run --fix
 
   build:
     cmds:

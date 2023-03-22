@@ -9,6 +9,8 @@ import (
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/common"
 	"github.com/formancehq/operator/internal/controllerutils"
+	"github.com/formancehq/stack/libs/go-libs/logging"
+	"github.com/nats-io/nats.go"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -294,6 +296,7 @@ type Service struct {
 	Secrets                 func(resolveContext ServiceInstallContext) Secrets
 	Container               func(resolveContext ContainerResolutionContext) Container
 	InitContainer           func(resolveContext ContainerResolutionContext) []Container
+	NeedTopic               bool
 
 	usedPort int32
 }
@@ -306,6 +309,35 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 		service.usedPort = service.Port
 		if service.usedPort == 0 {
 			service.usedPort = ctx.PortAllocator.NextPort()
+		}
+	}
+
+	if ctx.Configuration.Spec.Broker.Nats != nil && service.NeedTopic {
+		topicName := ctx.Stack.GetServiceNamespacedName(serviceName).Name
+		streamConfig := nats.StreamConfig{
+			Name:      topicName,
+			Subjects:  []string{topicName},
+			Retention: nats.InterestPolicy,
+		}
+		nc, err := nats.Connect(ctx.Configuration.Spec.Broker.Nats.URL)
+		if err != nil {
+			logging.Error(err)
+		}
+		js, err := nc.JetStream()
+		if err != nil {
+			logging.Error(err)
+		}
+		_, err = js.StreamInfo(topicName)
+		if err != nil {
+			_, err := js.AddStream(&streamConfig)
+			if err != nil {
+				logging.Error(err)
+			}
+		} else {
+			_, err = js.UpdateStream(&streamConfig)
+			if err != nil {
+				logging.Error(err)
+			}
 		}
 	}
 }

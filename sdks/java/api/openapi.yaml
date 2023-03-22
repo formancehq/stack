@@ -764,6 +764,7 @@ paths:
         required: true
       responses:
         "204":
+          content: {}
           description: No Content
         default:
           content:
@@ -1185,6 +1186,7 @@ paths:
         description: metadata
       responses:
         "204":
+          content: {}
           description: No Content
         default:
           content:

@@ -18,7 +18,7 @@ type DebitRequest struct {
 	Balances    []string          `json:"balances"`
 }
 
-func (c *DebitRequest) Bind(r *http.Request) error {
+func (c *DebitRequest) Bind(_ *http.Request) error {
 	return nil
 }
 

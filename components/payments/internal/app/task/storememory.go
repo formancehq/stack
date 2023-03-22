@@ -22,7 +22,7 @@ type InMemoryStore struct {
 	errors   map[string]string
 }
 
-func (s *InMemoryStore) GetTask(ctx context.Context, id uuid.UUID) (*models.Task, error) {
+func (s *InMemoryStore) GetTask(_ context.Context, id uuid.UUID) (*models.Task, error) {
 	task, ok := s.tasks[id]
 	if !ok {
 		return nil, storage.ErrNotFound
@@ -31,7 +31,7 @@ func (s *InMemoryStore) GetTask(ctx context.Context, id uuid.UUID) (*models.Task
 	return &task, nil
 }
 
-func (s *InMemoryStore) GetTaskByDescriptor(ctx context.Context, provider models.ConnectorProvider,
+func (s *InMemoryStore) GetTaskByDescriptor(_ context.Context, _ models.ConnectorProvider,
 	descriptor models.TaskDescriptor,
 ) (*models.Task, error) {
 	id, err := descriptor.EncodeToString()
@@ -53,9 +53,9 @@ func (s *InMemoryStore) GetTaskByDescriptor(ctx context.Context, provider models
 	}, nil
 }
 
-func (s *InMemoryStore) ListTasks(ctx context.Context,
+func (s *InMemoryStore) ListTasks(_ context.Context,
 	provider models.ConnectorProvider,
-	pagination storage.Paginator,
+	_ storage.Paginator,
 ) ([]models.Task, storage.PaginationDetails, error) {
 	ret := make([]models.Task, 0)
 
@@ -78,9 +78,7 @@ func (s *InMemoryStore) ListTasks(ctx context.Context,
 	return ret, storage.PaginationDetails{}, nil
 }
 
-func (s *InMemoryStore) ReadOldestPendingTask(ctx context.Context,
-	provider models.ConnectorProvider,
-) (*models.Task, error) {
+func (s *InMemoryStore) ReadOldestPendingTask(context.Context, models.ConnectorProvider) (*models.Task, error) {
 	var (
 		oldestDate time.Time
 		oldestID   string
@@ -160,7 +158,7 @@ func (s *InMemoryStore) FindAndUpsertTask(ctx context.Context,
 	}, nil
 }
 
-func (s *InMemoryStore) UpdateTaskStatus(ctx context.Context, provider models.ConnectorProvider,
+func (s *InMemoryStore) UpdateTaskStatus(_ context.Context, provider models.ConnectorProvider,
 	descriptor models.TaskDescriptor, status models.TaskStatus, taskError string,
 ) error {
 	taskID, err := descriptor.EncodeToString()

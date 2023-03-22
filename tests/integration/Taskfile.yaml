@@ -5,8 +5,8 @@ vars:
   RUN: ".*"
   VERBOSE: "false"
   PARALLEL: "true"
-  FAILFAST: "true"
-  DEBUG: "true"
+  FAILFAST: "false"
+  DEBUG: "false"
   REPEAT: 0
 
 tasks:

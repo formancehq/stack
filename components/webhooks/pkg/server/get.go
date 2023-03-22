@@ -7,9 +7,9 @@ import (
 	"net/url"
 
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	webhooks "github.com/formancehq/webhooks/pkg"
+	"github.com/formancehq/webhooks/pkg/server/apierrors"
 )
 
 func (h *serverHandler) getManyConfigsHandle(w http.ResponseWriter, r *http.Request) {

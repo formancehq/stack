@@ -81,27 +81,27 @@ pipeline:
             map committedTransactions {
                 root = [
                     this.payload.transactions.map_each(t -> t.apply("tx")).map_each(t -> t.assign({
-                        "id": "TRANSACTION-%s-%s".format(this.ledger, t.id)
+                        "id": "TRANSACTION-%s-%s".format(this.payload.ledger, t.id)
                     })),
                     this.payload.volumes.apply("volumes").
                         sort(v -> v.right.id > v.left.id).
                         map_each(t -> t.assign({
-                            "id": "ASSET-%s-%s".format(this.ledger, t.id)
+                            "id": "ASSET-%s-%s".format(this.payload.ledger, t.id)
                         })),
                     this.payload.volumes.apply("account").
                         sort(v -> v.right.id > v.left.id).
                         map_each(t -> t.assign({
-                            "id": "ACCOUNT-%s-%s".format(this.ledger, t.id)
+                            "id": "ACCOUNT-%s-%s".format(this.payload.ledger, t.id)
                         })),
                 ].flatten().map_each(t -> t.merge({
                    "document": {
                        "when": this.date,
-                       "ledger": this.ledger,
+                       "ledger": this.payload.ledger,
                        "data": {
-                           "ledger": this.ledger
+                           "ledger": this.payload.ledger
                        },
                        "indexed": {
-                           "ledger": this.ledger
+                           "ledger": this.payload.ledger
                        }
                    },
                }))
@@ -119,8 +119,8 @@ pipeline:
         - bloblang: |
             meta targetType = this.payload.targetType
             meta targetId = this.payload.targetId
-            meta ledger = this.ledger
-            meta id = "%s-%s-%s".format(this.payload.targetType, this.ledger, this.payload.targetId)
+            meta ledger = this.payload.ledger
+            meta id = "%s-%s-%s".format(this.payload.targetType, this.payload.ledger, this.payload.targetId)
             meta action = "upsert"
             root = this
         - get_doc:
@@ -146,12 +146,12 @@ pipeline:
             root = this._doc.assign({
               "data": {
                 "metadata": this.payload.metadata,
-                "ledger": this.ledger
+                "ledger": this.payload.ledger
               },
               "indexed": {
-                "ledger": this.ledger
+                "ledger": this.payload.ledger
               },
-              "ledger": this.ledger,
+              "ledger": this.payload.ledger,
               "when": this.date
             })
 

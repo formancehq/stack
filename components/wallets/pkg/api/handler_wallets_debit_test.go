@@ -2,12 +2,12 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -17,11 +17,38 @@ import (
 type testCase struct {
 	name                    string
 	request                 wallet.DebitRequest
-	postTransactionResponse sdk.TransactionResponse
-	postTransactionError    error
+	postTransactionError    *apiErrorMock
 	expectedPostTransaction func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction
 	expectedStatusCode      int
 	expectedErrorCode       string
+}
+
+type apiErrorMock struct {
+	ErrorCode    sdk.ErrorsEnum `json:"errorCode,omitempty"`
+	ErrorMessage string         `json:"errorMessage,omitempty"`
+	Details      *string        `json:"details,omitempty"`
+}
+
+func (a *apiErrorMock) Model() any {
+	if a == nil {
+		return nil
+	}
+	return sdk.ErrorResponse{
+		ErrorCode:    a.ErrorCode,
+		ErrorMessage: a.ErrorMessage,
+		Details:      a.Details,
+	}
+}
+
+func (a *apiErrorMock) Error() string {
+	if a == nil {
+		return ""
+	}
+	by, err := json.Marshal(a)
+	if err != nil {
+		panic(err)
+	}
+	return string(by)
 }
 
 var walletDebitTestCases = []testCase{
@@ -95,8 +122,9 @@ var walletDebitTestCases = []testCase{
 		request: wallet.DebitRequest{
 			Amount: wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
 		},
-		postTransactionError: apierrors.NewScriptError(apierrors.ScriptErrorInsufficientFund,
-			"account had insufficient funds"),
+		postTransactionError: &apiErrorMock{
+			ErrorCode: sdk.INSUFFICIENT_FUND,
+		},
 		expectedStatusCode: http.StatusBadRequest,
 		expectedErrorCode:  string(sdk.INSUFFICIENT_FUND),
 	},
@@ -261,7 +289,11 @@ func TestWalletsDebit(t *testing.T) {
 				WithCreateTransaction(func(ctx context.Context, ledger string, p sdk.PostTransaction) (*sdk.TransactionResponse, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					postTransaction = p
-					return &testCase.postTransactionResponse, testCase.postTransactionError
+					if testCase.postTransactionError != nil {
+						return nil, testCase.postTransactionError
+					}
+					//nolint:nilnil
+					return nil, nil
 				}),
 			)
 			testEnv.Router().ServeHTTP(rec, req)

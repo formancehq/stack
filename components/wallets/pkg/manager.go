@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/stack/libs/go-libs/api/apierrors"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pkg/errors"
 )
@@ -145,11 +144,8 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 		postTransaction.Reference = &debit.Reference
 	}
 
-	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
-		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
-			return nil, ErrInsufficientFundError
-		}
-		return nil, errors.Wrap(err, "creating transaction")
+	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+		return nil, err
 	}
 
 	return hold, nil
@@ -188,14 +184,7 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 		Metadata: TransactionMetadata(metadata.Metadata{}),
 	}
 
-	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
-		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
-			return ErrInsufficientFundError
-		}
-		return errors.Wrap(err, "creating transaction")
-	}
-
-	return nil
+	return m.CreateTransaction(ctx, postTransaction)
 }
 
 func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
@@ -219,14 +208,7 @@ func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
 		Metadata: TransactionMetadata(metadata.Metadata{}),
 	}
 
-	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
-		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
-			return ErrInsufficientFundError
-		}
-		return errors.Wrap(err, "creating transaction")
-	}
-
-	return nil
+	return m.CreateTransaction(ctx, postTransaction)
 }
 
 func (m *Manager) Credit(ctx context.Context, credit Credit) error {
@@ -258,10 +240,22 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 		postTransaction.Reference = &credit.Reference
 	}
 
+	return m.CreateTransaction(ctx, postTransaction)
+}
+
+func (m *Manager) CreateTransaction(ctx context.Context, postTransaction sdk.PostTransaction) error {
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
-		if apierrors.IsScriptErrorWithCode(err, apierrors.ErrInsufficientFund) {
-			return ErrInsufficientFundError
+		apiErr, ok := err.(GenericOpenAPIError)
+		if ok {
+			respErr, ok := apiErr.Model().(sdk.ErrorResponse)
+			if ok {
+				switch respErr.ErrorCode {
+				case sdk.INSUFFICIENT_FUND:
+					return ErrInsufficientFundError
+				}
+			}
 		}
+
 		return errors.Wrap(err, "creating transaction")
 	}
 

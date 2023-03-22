@@ -25,7 +25,7 @@ func newMigrate() *cobra.Command {
 	}
 }
 
-func runMigrate(cmd *cobra.Command, args []string) error {
+func runMigrate(cmd *cobra.Command, _ []string) error {
 	postgresURI := viper.GetString(postgresURIFlag)
 	if postgresURI == "" {
 		postgresURI = cmd.Flag(postgresURIFlag).Value.String()

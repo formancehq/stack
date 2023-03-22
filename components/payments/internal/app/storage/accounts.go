@@ -9,7 +9,7 @@ import (
 	"github.com/formancehq/payments/internal/app/models"
 )
 
-func (s *Storage) UpsertAccounts(ctx context.Context, provider models.ConnectorProvider, accounts []models.Account) error {
+func (s *Storage) UpsertAccounts(ctx context.Context, _ models.ConnectorProvider, accounts []models.Account) error {
 	if len(accounts) == 0 {
 		return nil
 	}
