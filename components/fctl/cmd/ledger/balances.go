@@ -5,6 +5,7 @@ import (
 
 	internal "github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -39,13 +40,26 @@ func NewBalancesCommand() *cobra.Command {
 				return err
 			}
 
-			balances, _, err := client.BalancesApi.
-				GetBalances(cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag)).
-				Address(fctl.GetString(cmd, addressFlag)).
-				Execute()
+			response, err := client.Balances.GetBalances(
+				cmd.Context(),
+				operations.GetBalancesRequest{
+					Address: fctl.Ptr(fctl.GetString(cmd, addressFlag)),
+					Ledger:  fctl.GetString(cmd, internal.LedgerFlag),
+				},
+			)
 			if err != nil {
 				return err
 			}
+
+			if response.ErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			balances := response.BalancesCursorResponse
 
 			tableData := pterm.TableData{}
 			tableData = append(tableData, []string{"Account", "Asset", "Balance"})

@@ -2,7 +2,12 @@ package activities
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -11,13 +16,30 @@ type ConfirmHoldRequest struct {
 }
 
 func (a Activities) ConfirmHold(ctx context.Context, request ConfirmHoldRequest) error {
-	_, err := a.client.WalletsApi.
-		ConfirmHold(ctx, request.ID).
-		Execute()
+	response, err := a.client.Wallets.ConfirmHold(
+		ctx,
+		operations.ConfirmHoldRequest{
+			ConfirmHoldRequest: &shared.ConfirmHoldRequest{},
+			HoldID:             request.ID,
+		},
+	)
 	if err != nil {
-		return openApiErrorToApplicationError(err)
+		return err
 	}
-	return nil
+
+	if response.WalletsErrorResponse != nil {
+		return temporal.NewApplicationError(
+			response.WalletsErrorResponse.ErrorMessage,
+			string(response.WalletsErrorResponse.ErrorCode),
+		)
+	}
+
+	switch response.StatusCode {
+	case http.StatusNoContent:
+		return nil
+	default:
+		return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
 }
 
 var ConfirmHoldActivity = Activities{}.ConfirmHold

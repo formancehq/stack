@@ -5,7 +5,8 @@ import (
 	"io"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -37,22 +38,31 @@ func NewShowCommand() *cobra.Command {
 				return errors.Wrap(err, "creating stack client")
 			}
 
-			res, _, err := client.WalletsApi.
-				GetHold(cmd.Context(), args[0]).
-				Execute()
+			request := operations.GetHoldRequest{
+				HoldID: args[0],
+			}
+			response, err := client.Wallets.GetHold(cmd.Context(), request)
 			if err != nil {
-				return errors.Wrap(err, "getting wallet")
+				return errors.Wrap(err, "getting hold")
 			}
 
-			return PrintHold(cmd.OutOrStdout(), res.Data)
+			if response.WalletsErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			return PrintHold(cmd.OutOrStdout(), response.GetHoldResponse.Data)
 		}),
 	)
 }
 
-func PrintHold(out io.Writer, hold formance.ExpandedDebitHold) error {
+func PrintHold(out io.Writer, hold shared.ExpandedDebitHold) error {
 	fctl.Section.Println("Information")
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(hold.Id)})
+	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(hold.ID)})
 	tableData = append(tableData, []string{pterm.LightCyan("Wallet ID"), hold.WalletID})
 	tableData = append(tableData, []string{pterm.LightCyan("Original amount"), fmt.Sprint(hold.OriginalAmount)})
 	tableData = append(tableData, []string{pterm.LightCyan("Remaining"), fmt.Sprint(hold.Remaining)})

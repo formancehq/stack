@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -35,14 +36,25 @@ func NewStatsCommand() *cobra.Command {
 				return err
 			}
 
-			response, _, err := ledgerClient.StatsApi.ReadStats(cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag)).Execute()
+			request := operations.ReadStatsRequest{
+				Ledger: fctl.GetString(cmd, internal.LedgerFlag),
+			}
+			response, err := ledgerClient.Stats.ReadStats(cmd.Context(), request)
 			if err != nil {
 				return err
 			}
 
+			if response.ErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
 			tableData := pterm.TableData{}
-			tableData = append(tableData, []string{pterm.LightCyan("Transactions"), fmt.Sprint(response.Data.Transactions)})
-			tableData = append(tableData, []string{pterm.LightCyan("Accounts"), fmt.Sprint(response.Data.Accounts)})
+			tableData = append(tableData, []string{pterm.LightCyan("Transactions"), fmt.Sprint(response.StatsResponse.Data.Transactions)})
+			tableData = append(tableData, []string{pterm.LightCyan("Accounts"), fmt.Sprint(response.StatsResponse.Data.Accounts)})
 
 			return pterm.DefaultTable.
 				WithWriter(cmd.OutOrStdout()).

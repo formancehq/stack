@@ -1,9 +1,12 @@
 package install
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -38,17 +41,23 @@ func NewWiseCommand() *cobra.Command {
 				return err
 			}
 
-			_, err = paymentsClient.PaymentsApi.InstallConnector(cmd.Context(), internal.WiseConnector).
-				ConnectorConfig(formance.ConnectorConfig{
-					WiseConfig: &formance.WiseConfig{
-						ApiKey: args[1],
-					},
-				}).
-				Execute()
+			response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), operations.InstallConnectorRequest{
+				RequestBody: shared.WiseConfig{
+					APIKey: args[1],
+				},
+				Connector: shared.ConnectorWise,
+			})
+			if err != nil {
+				return errors.Wrap(err, "installing connector")
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
 
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector installed!")
 
-			return errors.Wrap(err, "installing connector")
+			return nil
 		}),
 	)
 }

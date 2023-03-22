@@ -6,7 +6,8 @@ import (
 	"net/http/httptest"
 	"strconv"
 
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	"github.com/formancehq/webhooks/pkg/security"
@@ -19,9 +20,8 @@ var _ = Given("empty environment for webhooks configs", func() {
 		Context("inserting a config with an endpoint to a success handler", func() {
 			var (
 				httpServer *httptest.Server
-				insertResp *formance.ConfigResponse
+				insertResp *shared.ConfigResponse
 				secret     = webhooks.NewSecret()
-				err        error
 			)
 
 			BeforeEach(func() {
@@ -53,16 +53,20 @@ var _ = Given("empty environment for webhooks configs", func() {
 						}
 					}))
 
-				cfg := formance.ConfigUser{
+				cfg := shared.ConfigUser{
 					Endpoint: httpServer.URL,
 					Secret:   &secret,
 					EventTypes: []string{
 						"ledger.committed_transactions",
 					},
 				}
-				insertResp, _, err = Client().WebhooksApi.
-					InsertConfig(TestContext()).ConfigUser(cfg).Execute()
+				response, err := Client().Webhooks.InsertConfig(
+					TestContext(),
+					cfg,
+				)
 				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(http.StatusOK))
+				insertResp = response.ConfigResponse
 				DeferCleanup(func() {
 					httpServer.Close()
 				})
@@ -70,11 +74,17 @@ var _ = Given("empty environment for webhooks configs", func() {
 
 			Context("testing the inserted one", func() {
 				It("should return a successful attempt", func() {
-					attemptResp, httpResp, err := Client().WebhooksApi.
-						TestConfig(TestContext(), insertResp.Data.Id).Execute()
+					response, err := Client().Webhooks.TestConfig(
+						TestContext(),
+						operations.TestConfigRequest{
+							ID: insertResp.Data.ID,
+						},
+					)
 					Expect(err).ToNot(HaveOccurred())
-					Expect(httpResp.StatusCode).To(Equal(http.StatusOK))
-					Expect(attemptResp.Data.Config.Id).To(Equal(insertResp.Data.Id))
+					Expect(response.StatusCode).To(Equal(http.StatusOK))
+
+					attemptResp := response.AttemptResponse
+					Expect(attemptResp.Data.Config.ID).To(Equal(insertResp.Data.ID))
 					Expect(attemptResp.Data.Payload).To(Equal(`{"data":"test"}`))
 					Expect(int(attemptResp.Data.StatusCode)).To(Equal(http.StatusOK))
 					Expect(attemptResp.Data.Status).To(Equal("success"))
@@ -83,7 +93,7 @@ var _ = Given("empty environment for webhooks configs", func() {
 		})
 
 		Context("inserting a config with an endpoint to a fail handler", func() {
-			var insertResp *formance.ConfigResponse
+			var insertResp *shared.ConfigResponse
 
 			BeforeEach(func() {
 				httpServer := httptest.NewServer(http.HandlerFunc(
@@ -92,16 +102,19 @@ var _ = Given("empty environment for webhooks configs", func() {
 							"WEBHOOKS RECEIVED: MOCK ERROR RESPONSE", http.StatusNotFound)
 					}))
 
-				cfg := formance.ConfigUser{
+				cfg := shared.ConfigUser{
 					Endpoint: httpServer.URL,
 					EventTypes: []string{
 						"ledger.committed_transactions",
 					},
 				}
-				var err error
-				insertResp, _, err = Client().WebhooksApi.
-					InsertConfig(TestContext()).ConfigUser(cfg).Execute()
+				response, err := Client().Webhooks.InsertConfig(
+					TestContext(),
+					cfg,
+				)
 				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(http.StatusOK))
+				insertResp = response.ConfigResponse
 				DeferCleanup(func() {
 					httpServer.Close()
 				})
@@ -109,11 +122,17 @@ var _ = Given("empty environment for webhooks configs", func() {
 
 			Context("testing the inserted one", func() {
 				It("should return a failed attempt", func() {
-					attemptResp, httpResp, err := Client().WebhooksApi.
-						TestConfig(TestContext(), insertResp.Data.Id).Execute()
+					response, err := Client().Webhooks.TestConfig(
+						TestContext(),
+						operations.TestConfigRequest{
+							ID: insertResp.Data.ID,
+						},
+					)
 					Expect(err).ToNot(HaveOccurred())
-					Expect(httpResp.StatusCode).To(Equal(http.StatusOK))
-					Expect(attemptResp.Data.Config.Id).To(Equal(insertResp.Data.Id))
+					Expect(response.StatusCode).To(Equal(http.StatusOK))
+
+					attemptResp := response.AttemptResponse
+					Expect(attemptResp.Data.Config.ID).To(Equal(insertResp.Data.ID))
 					Expect(attemptResp.Data.Payload).To(Equal(`{"data":"test"}`))
 					Expect(int(attemptResp.Data.StatusCode)).To(Equal(http.StatusNotFound))
 					Expect(attemptResp.Data.Status).To(Equal("failed"))
@@ -123,11 +142,16 @@ var _ = Given("empty environment for webhooks configs", func() {
 
 		Context("testing an unknown ID", func() {
 			It("should fail", func() {
-				attemptResp, httpResp, err := Client().WebhooksApi.
-					TestConfig(TestContext(), "unknown").Execute()
-				Expect(err).To(HaveOccurred())
-				Expect(attemptResp).To(BeNil())
-				Expect(httpResp.StatusCode).To(Equal(http.StatusNotFound))
+				response, err := Client().Webhooks.TestConfig(
+					TestContext(),
+					operations.TestConfigRequest{
+						ID: "unknown",
+					},
+				)
+				Expect(err).ToNot(HaveOccurred())
+				Expect(response.StatusCode).To(Equal(http.StatusNotFound))
+				Expect(response.AttemptResponse).To(BeNil())
+				Expect(response.ErrorResponse).ToNot(BeNil())
 			})
 		})
 	})

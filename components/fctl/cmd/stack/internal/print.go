@@ -6,12 +6,12 @@ import (
 
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/iancoleman/strcase"
 	"github.com/pterm/pterm"
 )
 
-func PrintStackInformation(out io.Writer, profile *fctl.Profile, stack *membershipclient.Stack, versions *formance.GetVersionsResponse) error {
+func PrintStackInformation(out io.Writer, profile *fctl.Profile, stack *membershipclient.Stack, versions *shared.GetVersionsResponse) error {
 	baseUrlStr := profile.ServicesBaseUrl(stack).String()
 
 	fctl.Section.WithWriter(out).Println("Information")

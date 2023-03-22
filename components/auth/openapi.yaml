@@ -9,6 +9,8 @@ paths:
     get:
       summary: Get server info
       operationId: getServerInfo
+      tags:
+        - Auth
       responses:
         200:
           description: Server information
@@ -20,6 +22,7 @@ paths:
     get:
       summary: List clients
       tags:
+        - Auth
         - Clients
       operationId: listClients
       responses:
@@ -32,6 +35,7 @@ paths:
     post:
       summary: Create client
       tags:
+        - Auth
         - Clients
       operationId: createClient
       requestBody:
@@ -50,6 +54,7 @@ paths:
     get:
       summary: Read client
       tags:
+        - Auth
         - Clients
       operationId: readClient
       parameters:
@@ -69,6 +74,7 @@ paths:
     put:
       summary: Update client
       tags:
+        - Auth
         - Clients
       operationId: updateClient
       requestBody:
@@ -93,6 +99,7 @@ paths:
     delete:
       summary: Delete client
       tags:
+        - Auth
         - Clients
       operationId: deleteClient
       parameters:
@@ -109,6 +116,7 @@ paths:
     post:
       summary: Add a secret to a client
       tags:
+        - Auth
         - Clients
       operationId: createSecret
       parameters:
@@ -134,6 +142,7 @@ paths:
     delete:
       summary: Delete a secret from a client
       tags:
+        - Auth
         - Clients
       operationId: deleteSecret
       parameters:
@@ -156,6 +165,7 @@ paths:
     put:
       summary: Add scope to client
       tags:
+        - Auth
         - Clients
       operationId: addScopeToClient
       parameters:
@@ -177,6 +187,7 @@ paths:
     delete:
       summary: Delete scope from client
       tags:
+        - Auth
         - Clients
       operationId: deleteScopeFromClient
       parameters:
@@ -199,6 +210,7 @@ paths:
     get:
       summary: List scopes
       tags:
+        - Auth
         - Scopes
       description: List Scopes
       operationId: listScopes
@@ -212,6 +224,7 @@ paths:
     post:
       summary: Create scope
       tags:
+        - Auth
         - Scopes
       description: Create scope
       operationId: createScope
@@ -231,6 +244,7 @@ paths:
     get:
       summary: Read scope
       tags:
+        - Auth
         - Scopes
       description: Read scope
       operationId: readScope
@@ -251,6 +265,7 @@ paths:
     put:
       summary: Update scope
       tags:
+        - Auth
         - Scopes
       description: Update scope
       operationId: updateScope
@@ -276,6 +291,7 @@ paths:
     delete:
       summary: Delete scope
       tags:
+        - Auth
         - Scopes
       description: Delete scope
       operationId: deleteScope
@@ -293,6 +309,7 @@ paths:
     put:
       summary: Add a transient scope to a scope
       tags:
+        - Auth
         - Scopes
       description: Add a transient scope to a scope
       operationId: addTransientScope
@@ -315,6 +332,7 @@ paths:
     delete:
       summary: Delete a transient scope from a scope
       tags:
+        - Auth
         - Scopes
       description: Delete a transient scope from a scope
       operationId: deleteTransientScope
@@ -338,6 +356,7 @@ paths:
     get:
       summary: List users
       tags:
+        - Auth
         - Users
       description: List users
       operationId: listUsers
@@ -352,6 +371,7 @@ paths:
     get:
       summary: Read user
       tags:
+        - Auth
         - Users
       description: Read user
       operationId: readUser

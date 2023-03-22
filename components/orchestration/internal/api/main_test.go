@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/orchestration/internal/storage"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/health"
@@ -42,11 +41,12 @@ type mockedClient struct {
 func (c *mockedClient) ExecuteWorkflow(ctx context.Context, options client.StartWorkflowOptions, w interface{}, args ...interface{}) (client.WorkflowRun, error) {
 	input := args[0].(workflow.Input)
 	for ind := range input.Workflow.Config.Stages {
+		timestamp := time.Now()
 		_, err := c.db.NewInsert().Model(&workflow.Stage{
 			Number:       ind,
 			InstanceID:   options.ID,
 			StartedAt:    time.Now(),
-			TerminatedAt: sdk.PtrTime(time.Now()),
+			TerminatedAt: &timestamp,
 		}).Exec(context.Background())
 		require.NoError(c.t, err)
 	}

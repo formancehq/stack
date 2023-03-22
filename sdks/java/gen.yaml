@@ -1,0 +1,16 @@
+configVersion: 1.0.0
+generation:
+  sdkClassName: SDK
+  singleTagPerOp: true
+  telemetryEnabled: false
+java:
+  version: 0.0.1
+  artifactID: formance-sdk
+  companyEmail: info@mycompany.com
+  companyName: My Company
+  companyURL: www.mycompany.com
+  githubURL: github.com/owner/repo
+  groupID: com.formance
+  maxMethodParams: 0
+  ossrhURL: https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/
+  projectName: formance-sdk

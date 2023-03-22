@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go"
-	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
@@ -35,28 +35,37 @@ var _ = Given("an environment configured with a webhook sent on created transact
 				Expect(db.Close()).To(Succeed())
 			})
 
-			_, _, err := Client().WebhooksApi.
-				InsertConfig(TestContext()).ConfigUser(formance.ConfigUser{
-				Endpoint: httpServer.URL,
-				EventTypes: []string{
-					"ledger.committed_transactions",
+			response, err := Client().Webhooks.InsertConfig(
+				TestContext(),
+				shared.ConfigUser{
+					Endpoint: httpServer.URL,
+					EventTypes: []string{
+						"ledger.committed_transactions",
+					},
 				},
-			}).Execute()
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(http.StatusOK))
 
-			_, _, err = Client().TransactionsApi.
-				CreateTransaction(TestContext(), "default").
-				PostTransaction(formance.PostTransaction{
-					Postings: []formance.Posting{{
-						Amount:      100,
-						Asset:       "USD",
-						Source:      "world",
-						Destination: "alice",
-					}},
-					Metadata: metadata.Metadata{},
-				}).
-				Execute()
+			createTransactionResponse, err := Client().Transactions.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.Posting{
+							{
+								Amount:      100,
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "alice",
+							},
+						},
+					},
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(createTransactionResponse.StatusCode).To(Equal(http.StatusOK))
 
 			Eventually(db.Ping()).
 				WithTimeout(5 * time.Second).Should(Succeed())

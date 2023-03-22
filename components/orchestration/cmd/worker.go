@@ -18,12 +18,7 @@ import (
 
 func stackClientModule() fx.Option {
 	return fx.Options(
-		fx.Provide(func() *sdk.APIClient {
-			configuration := sdk.NewConfiguration()
-			configuration.Servers = []sdk.ServerConfiguration{{
-				URL: viper.GetString(stackURLFlag),
-			}}
-			configuration.Debug = viper.GetBool(service.DebugFlag)
+		fx.Provide(func() *sdk.Formance {
 			oauthConfig := clientcredentials.Config{
 				ClientID:     viper.GetString(stackClientIDFlag),
 				ClientSecret: viper.GetString(stackClientSecretFlag),
@@ -32,9 +27,15 @@ func stackClientModule() fx.Option {
 			underlyingHTTPClient := &http.Client{
 				Transport: otlp.NewRoundTripper(viper.GetBool(service.DebugFlag)),
 			}
-			configuration.HTTPClient = oauthConfig.Client(context.WithValue(context.Background(),
-				oauth2.HTTPClient, underlyingHTTPClient))
-			return sdk.NewAPIClient(configuration)
+			// TODO: No debug flag for sdk ?
+			// configuration.Debug = viper.GetBool(service.DebugFlag)
+			return sdk.New(
+				sdk.WithClient(
+					oauthConfig.Client(context.WithValue(context.Background(),
+						oauth2.HTTPClient, underlyingHTTPClient)),
+				),
+				sdk.WithServerURL(viper.GetString(stackURLFlag)),
+			)
 		}),
 	)
 }

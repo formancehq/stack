@@ -5,6 +5,7 @@ import (
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -37,24 +38,33 @@ func NewShowCommand() *cobra.Command {
 				return errors.Wrap(err, "creating stack client")
 			}
 
-			res, _, err := client.OrchestrationApi.
-				GetWorkflow(cmd.Context(), args[0]).
-				Execute()
+			response, err := client.Orchestration.
+				GetWorkflow(cmd.Context(), operations.GetWorkflowRequest{
+					FlowID: args[0],
+				})
 			if err != nil {
-				return errors.Wrap(err, "getting workflow")
+				return err
+			}
+
+			if response.Error != nil {
+				return fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
 			}
 
 			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
 			tableData := pterm.TableData{}
-			tableData = append(tableData, []string{pterm.LightCyan("ID"), res.Data.Id})
+			tableData = append(tableData, []string{pterm.LightCyan("ID"), response.GetWorkflowResponse.Data.ID})
 			tableData = append(tableData, []string{pterm.LightCyan("Name"), func() string {
-				if res.Data.Config.Name != nil {
-					return *res.Data.Config.Name
+				if response.GetWorkflowResponse.Data.Config.Name != nil {
+					return *response.GetWorkflowResponse.Data.Config.Name
 				}
 				return ""
 			}()})
-			tableData = append(tableData, []string{pterm.LightCyan("Created at"), res.Data.CreatedAt.Format(time.RFC3339)})
-			tableData = append(tableData, []string{pterm.LightCyan("Updated at"), res.Data.UpdatedAt.Format(time.RFC3339)})
+			tableData = append(tableData, []string{pterm.LightCyan("Created at"), response.GetWorkflowResponse.Data.CreatedAt.Format(time.RFC3339)})
+			tableData = append(tableData, []string{pterm.LightCyan("Updated at"), response.GetWorkflowResponse.Data.UpdatedAt.Format(time.RFC3339)})
 
 			if err := pterm.DefaultTable.
 				WithWriter(cmd.OutOrStdout()).
@@ -66,7 +76,7 @@ func NewShowCommand() *cobra.Command {
 			fmt.Fprintln(cmd.OutOrStdout())
 
 			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Configuration")
-			configAsBytes, err := yaml.Marshal(res.Data.Config)
+			configAsBytes, err := yaml.Marshal(response.GetWorkflowResponse.Data.Config)
 			if err != nil {
 				panic(err)
 			}

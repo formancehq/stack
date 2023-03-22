@@ -2,8 +2,12 @@ package activities
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 
-	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -12,20 +16,38 @@ type RevertTransactionRequest struct {
 	TxID   int64  `json:"txId"`
 }
 
-func (a Activities) RevertTransaction(ctx context.Context, request RevertTransactionRequest) (*sdk.Transaction, error) {
-	ret, _, err := a.client.TransactionsApi.
-		RevertTransaction(ctx, request.Ledger, request.TxID).
-		Execute()
+func (a Activities) RevertTransaction(ctx context.Context, request RevertTransactionRequest) (*shared.Transaction, error) {
+	response, err := a.client.Transactions.
+		RevertTransaction(
+			ctx,
+			operations.RevertTransactionRequest{
+				Ledger: request.Ledger,
+				Txid:   request.TxID,
+			},
+		)
 	if err != nil {
-		return nil, openApiErrorToApplicationError(err)
+		return nil, err
 	}
-	return &ret.Data, nil
+
+	switch response.StatusCode {
+	case http.StatusCreated:
+		return &response.RevertTransactionResponse.Data, nil
+	default:
+		if response.ErrorResponse != nil {
+			return nil, temporal.NewApplicationError(
+				response.ErrorResponse.ErrorMessage,
+				string(response.ErrorResponse.ErrorCode),
+				response.ErrorResponse.Details)
+		}
+
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
 }
 
 var RevertTransactionActivity = Activities{}.RevertTransaction
 
-func RevertTransaction(ctx workflow.Context, ledger string, txID int64) (*sdk.Transaction, error) {
-	tx := &sdk.Transaction{}
+func RevertTransaction(ctx workflow.Context, ledger string, txID int64) (*shared.Transaction, error) {
+	tx := &shared.Transaction{}
 	if err := executeActivity(ctx, RevertTransactionActivity, tx, RevertTransactionRequest{
 		Ledger: ledger,
 		TxID:   txID,

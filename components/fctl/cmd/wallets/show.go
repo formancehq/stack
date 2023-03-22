@@ -6,7 +6,8 @@ import (
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -49,20 +50,30 @@ func NewShowCommand() *cobra.Command {
 				return errors.New("You need to specify wallet id using --id or --name flags")
 			}
 
-			res, _, err := client.WalletsApi.GetWallet(cmd.Context(), walletID).Execute()
+			response, err := client.Wallets.GetWallet(cmd.Context(), operations.GetWalletRequest{
+				ID: walletID,
+			})
 			if err != nil {
-				return errors.Wrap(err, "Creating wallets")
+				return errors.Wrap(err, "getting wallet")
 			}
 
-			return PrintWallet(cmd.OutOrStdout(), res.Data)
+			if response.WalletsErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			return PrintWallet(cmd.OutOrStdout(), response.GetWalletResponse.Data)
 		}),
 	)
 }
 
-func PrintWallet(out io.Writer, wallet formance.WalletWithBalances) error {
+func PrintWallet(out io.Writer, wallet shared.WalletWithBalances) error {
 	fctl.Section.Println("Information")
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(wallet.Id)})
+	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(wallet.ID)})
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), wallet.Name})
 
 	if err := pterm.DefaultTable.
@@ -90,5 +101,5 @@ func PrintWallet(out io.Writer, wallet formance.WalletWithBalances) error {
 		}
 	}
 
-	return fctl.PrintMetadata(out, wallet.GetMetadata())
+	return fctl.PrintMetadata(out, wallet.Metadata)
 }

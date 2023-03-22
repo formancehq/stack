@@ -7,7 +7,7 @@ require (
 	github.com/athul/shelby v1.0.6
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/formancehq/fctl/membershipclient v0.0.0-00010101000000-000000000000
-	github.com/formancehq/formance-sdk-go v1.0.0-rc.1.0.20230105103853-efecdbdedb04
+	github.com/formancehq/formance-sdk-go v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-00010101000000-000000000000
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/iancoleman/strcase v0.2.0
@@ -26,6 +26,7 @@ require (
 require (
 	atomicgo.dev/cursor v0.1.1 // indirect
 	atomicgo.dev/keyboard v0.2.8 // indirect
+	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/fatih/color v1.14.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

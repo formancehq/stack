@@ -34,15 +34,16 @@ func NewServerInfoCommand() *cobra.Command {
 				return err
 			}
 
-			response, _, err := ledgerClient.ServerApi.GetInfo(cmd.Context()).Execute()
+			response, err := ledgerClient.Server.GetInfo(cmd.Context())
 			if err != nil {
 				return err
 			}
 
+			infoResponse := response.ConfigInfoResponse
 			tableData := pterm.TableData{}
-			tableData = append(tableData, []string{pterm.LightCyan("Server"), fmt.Sprint(response.Server)})
-			tableData = append(tableData, []string{pterm.LightCyan("Version"), fmt.Sprint(response.Version)})
-			tableData = append(tableData, []string{pterm.LightCyan("Storage driver"), fmt.Sprint(response.Config.Storage.Driver)})
+			tableData = append(tableData, []string{pterm.LightCyan("Server"), fmt.Sprint(infoResponse.Server)})
+			tableData = append(tableData, []string{pterm.LightCyan("Version"), fmt.Sprint(infoResponse.Version)})
+			tableData = append(tableData, []string{pterm.LightCyan("Storage driver"), fmt.Sprint(infoResponse.Config.Storage.Driver)})
 
 			if err := pterm.DefaultTable.
 				WithWriter(cmd.OutOrStdout()).
@@ -54,7 +55,7 @@ func NewServerInfoCommand() *cobra.Command {
 			fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Ledgers :")
 			if err := pterm.DefaultBulletList.
 				WithWriter(cmd.OutOrStdout()).
-				WithItems(fctl.Map(response.Config.Storage.Ledgers, func(ledger string) pterm.BulletListItem {
+				WithItems(fctl.Map(infoResponse.Config.Storage.Ledgers, func(ledger string) pterm.BulletListItem {
 					return pterm.BulletListItem{
 						Text:        ledger,
 						TextStyle:   pterm.NewStyle(pterm.FgDefault),

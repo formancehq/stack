@@ -6,7 +6,8 @@ import (
 
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -45,20 +46,32 @@ func NewShowCommand() *cobra.Command {
 				return err
 			}
 
-			res, _, err := client.WalletsApi.GetBalance(cmd.Context(), walletID, args[0]).Execute()
+			request := operations.GetBalanceRequest{
+				ID:          walletID,
+				BalanceName: args[0],
+			}
+			response, err := client.Wallets.GetBalance(cmd.Context(), request)
 			if err != nil {
-				return errors.Wrap(err, "Creating wallets")
+				return errors.Wrap(err, "getting balance")
 			}
 
-			return PrintBalance(cmd.OutOrStdout(), res.Data)
+			if response.WalletsErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			return PrintBalance(cmd.OutOrStdout(), response.GetBalanceResponse.Data)
 		}),
 	)
 }
 
-func PrintWallet(out io.Writer, wallet formance.WalletWithBalances) error {
+func PrintWallet(out io.Writer, wallet shared.WalletWithBalances) error {
 	fctl.Section.Println("Information")
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(wallet.Id)})
+	tableData = append(tableData, []string{pterm.LightCyan("ID"), fmt.Sprint(wallet.ID)})
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), wallet.Name})
 
 	if err := pterm.DefaultTable.
@@ -89,7 +102,7 @@ func PrintWallet(out io.Writer, wallet formance.WalletWithBalances) error {
 	return nil
 }
 
-func PrintBalance(out io.Writer, balance formance.BalanceWithAssets) error {
+func PrintBalance(out io.Writer, balance shared.BalanceWithAssets) error {
 	fctl.Section.Println("Information")
 	tableData := pterm.TableData{}
 	tableData = append(tableData, []string{pterm.LightCyan("Name"), balance.Name})

@@ -1,10 +1,12 @@
 package connectors
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
-	"github.com/pkg/errors"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -42,10 +44,17 @@ func NewUninstallCommand() *cobra.Command {
 				return err
 			}
 
-			_, err = client.PaymentsApi.UninstallConnector(cmd.Context(), formance.Connector(args[0])).Execute()
+			response, err := client.Payments.UninstallConnector(cmd.Context(), operations.UninstallConnectorRequest{
+				Connector: shared.Connector(args[0]),
+			})
 			if err != nil {
-				return errors.Wrap(err, "uninstalling connector")
+				return err
 			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector '%s' uninstalled!", args[0])
 			return nil
 		}),

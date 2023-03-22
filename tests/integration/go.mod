@@ -12,7 +12,7 @@ require (
 	github.com/formancehq/payments v0.5.0
 	github.com/formancehq/search v0.5.2
 	github.com/formancehq/stack v0.0.0-00010101000000-000000000000
-	github.com/formancehq/stack/libs/go-libs v0.0.0-20230222164357-55840b21a337
+	github.com/formancehq/stack/libs/go-libs v0.0.0-20230517212829-71aaaacfd130
 	github.com/formancehq/wallets v0.3.0
 	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
 	github.com/getkin/kin-openapi v0.114.0

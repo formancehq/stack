@@ -3,7 +3,8 @@ package suite
 import (
 	"net/http"
 
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	. "github.com/onsi/ginkgo/v2"
@@ -13,57 +14,77 @@ import (
 var _ = Given("empty environment for webhooks configs", func() {
 	var (
 		secret     = webhooks.NewSecret()
-		insertResp *formance.ConfigResponse
-		httpResp   *http.Response
-		err        error
+		insertResp *shared.ConfigResponse
 	)
 
 	BeforeEach(func() {
-		cfg := formance.ConfigUser{
+		cfg := shared.ConfigUser{
 			Endpoint: "https://example.com",
 			Secret:   &secret,
 			EventTypes: []string{
 				"ledger.committed_transactions",
 			},
 		}
-		insertResp, httpResp, err = Client().WebhooksApi.
-			InsertConfig(TestContext()).ConfigUser(cfg).Execute()
+		response, err := Client().Webhooks.InsertConfig(
+			TestContext(),
+			cfg,
+		)
 		Expect(err).ToNot(HaveOccurred())
-		Expect(httpResp.StatusCode).To(Equal(http.StatusOK))
+		Expect(response.StatusCode).To(Equal(http.StatusOK))
+
+		insertResp = response.ConfigResponse
 	})
 
 	Context("deleting the inserted one", func() {
 		BeforeEach(func() {
-			httpResp, err := Client().WebhooksApi.
-				DeleteConfig(TestContext(), insertResp.Data.Id).Execute()
+			response, err := Client().Webhooks.DeleteConfig(
+				TestContext(),
+				operations.DeleteConfigRequest{
+					ID: insertResp.Data.ID,
+				},
+			)
 			Expect(err).NotTo(HaveOccurred())
-			Expect(httpResp.StatusCode).To(Equal(http.StatusOK))
+			Expect(response.StatusCode).To(Equal(http.StatusOK))
 		})
 
 		Context("getting all configs", func() {
 			It("should return 0 config", func() {
-				resp, _, err := Client().WebhooksApi.
-					GetManyConfigs(TestContext()).Execute()
+				response, err := Client().Webhooks.GetManyConfigs(
+					TestContext(),
+					operations.GetManyConfigsRequest{},
+				)
 				Expect(err).NotTo(HaveOccurred())
-				Expect(resp.Cursor.HasMore).To(BeFalse())
-				Expect(resp.Cursor.Data).To(BeEmpty())
+				Expect(response.StatusCode).To(Equal(http.StatusOK))
+
+				Expect(response.ConfigsResponse.Cursor.HasMore).To(BeFalse())
+				Expect(response.ConfigsResponse.Cursor.Data).To(BeEmpty())
 			})
 		})
 
 		AfterEach(func() {
-			httpResp, err := Client().WebhooksApi.
-				DeleteConfig(TestContext(), insertResp.Data.Id).Execute()
-			Expect(err).To(HaveOccurred())
-			Expect(httpResp.StatusCode).To(Equal(http.StatusNotFound))
+			response, err := Client().Webhooks.DeleteConfig(
+				TestContext(),
+				operations.DeleteConfigRequest{
+					ID: insertResp.Data.ID,
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(http.StatusNotFound))
+			Expect(response.ErrorResponse).ToNot(BeNil())
 		})
 	})
 
 	Context("trying to delete an unknown ID", func() {
 		It("should fail", func() {
-			httpResp, err := Client().WebhooksApi.
-				DeleteConfig(TestContext(), "unknown").Execute()
-			Expect(err).To(HaveOccurred())
-			Expect(httpResp.StatusCode).To(Equal(http.StatusNotFound))
+			response, err := Client().Webhooks.DeleteConfig(
+				TestContext(),
+				operations.DeleteConfigRequest{
+					ID: "unknown",
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(http.StatusNotFound))
+			Expect(response.ErrorResponse).ToNot(BeNil())
 		})
 	})
 })

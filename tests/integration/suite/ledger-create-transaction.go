@@ -3,7 +3,8 @@ package suite
 import (
 	"time"
 
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/stack/libs/events"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -19,44 +20,58 @@ var _ = Given("some empty environment", func() {
 			msgs               chan *nats.Msg
 			cancelSubscription func()
 			timestamp          = time.Now().Round(time.Second).UTC()
-			err                error
-			rsp                *formance.CreateTransactionResponse
+			rsp                *shared.CreateTransactionResponse
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 
 			// Create a transaction
-			rsp, _, err = Client().TransactionsApi.
-				CreateTransaction(TestContext(), "default").
-				PostTransaction(formance.PostTransaction{
-					Timestamp: &timestamp,
-					Postings: []formance.Posting{{
-						Amount:      100,
-						Asset:       "USD",
-						Source:      "world",
-						Destination: "alice",
-					}},
-					Metadata: metadata.Metadata{},
-				}).
-				Execute()
+			response, err := Client().Transactions.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.Posting{
+							{
+								Amount:      100,
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "alice",
+							},
+						},
+						Timestamp: &timestamp,
+					},
+					Ledger: "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(200))
+
+			rsp = response.CreateTransactionResponse
 		})
 		AfterEach(func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			transactionResponse, _, err := Client().TransactionsApi.
-				GetTransaction(TestContext(), "default", rsp.Data.Txid).
-				Execute()
+			response, err := Client().Transactions.GetTransaction(
+				TestContext(),
+				operations.GetTransactionRequest{
+					Ledger: "default",
+					Txid:   rsp.Data.Txid,
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(transactionResponse.Data).To(Equal(formance.ExpandedTransaction{
+			Expect(response.StatusCode).To(Equal(200))
+
+			transactionResponse := response.GetTransactionResponse
+			Expect(transactionResponse.Data).To(Equal(shared.ExpandedTransaction{
 				Timestamp: rsp.Data.Timestamp,
 				Postings:  rsp.Data.Postings,
 				Reference: rsp.Data.Reference,
 				Metadata:  rsp.Data.Metadata,
 				Txid:      rsp.Data.Txid,
-				PreCommitVolumes: map[string]map[string]formance.Volume{
+				PreCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
 							Input:   0,
@@ -72,7 +87,7 @@ var _ = Given("some empty environment", func() {
 						},
 					},
 				},
-				PostCommitVolumes: map[string]map[string]formance.Volume{
+				PostCommitVolumes: map[string]map[string]shared.Volume{
 					"world": {
 						"USD": {
 							Input:   0,
@@ -90,11 +105,18 @@ var _ = Given("some empty environment", func() {
 				},
 			}))
 
-			accountResponse, _, err := Client().AccountsApi.
-				GetAccount(TestContext(), "default", "alice").
-				Execute()
+			accResponse, err := Client().Accounts.GetAccount(
+				TestContext(),
+				operations.GetAccountRequest{
+					Address: "alice",
+					Ledger:  "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(accountResponse.Data).Should(Equal(formance.AccountWithVolumesAndBalances{
+			Expect(accResponse.StatusCode).To(Equal(200))
+
+			accountResponse := accResponse.AccountResponse
+			Expect(accountResponse.Data).Should(Equal(shared.AccountWithVolumesAndBalances{
 				Address:  "alice",
 				Metadata: metadata.Metadata{},
 				Volumes: map[string]map[string]int64{
@@ -131,31 +153,49 @@ var _ = Given("some empty environment", func() {
 				"ledger":    "default",
 			}
 			Eventually(func(g Gomega) bool {
-				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
-					Target: formance.PtrString("TRANSACTION"),
-				}).Execute()
+				response, err := Client().Search.Search(
+					TestContext(),
+					shared.Query{
+						Target: ptr("TRANSACTION"),
+					},
+				)
 				g.Expect(err).ToNot(HaveOccurred())
+				g.Expect(response.StatusCode).To(Equal(200))
+
+				res := response.Response
 				g.Expect(res.Cursor.Data).To(HaveLen(1))
 				g.Expect(res.Cursor.Data[0]).To(Equal(expectedTx))
 
 				return true
 			}).Should(BeTrue())
 
-			Eventually(func(g Gomega) []any {
-				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
-					Target: formance.PtrString("TRANSACTION"),
-					Terms:  []string{"alice"},
-				}).Execute()
+			Eventually(func(g Gomega) []map[string]any {
+				response, err := Client().Search.Search(
+					TestContext(),
+					shared.Query{
+						Target: ptr("TRANSACTION"),
+						Terms:  []string{"alice"},
+					},
+				)
 				g.Expect(err).ToNot(HaveOccurred())
+				g.Expect(response.StatusCode).To(Equal(200))
+
+				res := response.Response
 				g.Expect(res.Cursor.Data[0]).To(Equal(expectedTx))
 				return res.Cursor.Data
 			}).Should(HaveLen(1))
 
 			Eventually(func(g Gomega) bool {
-				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
-					Target: formance.PtrString("ACCOUNT"),
-				}).Execute()
+				response, err := Client().Search.Search(
+					TestContext(),
+					shared.Query{
+						Target: ptr("ACCOUNT"),
+					},
+				)
 				g.Expect(err).ToNot(HaveOccurred())
+				g.Expect(response.StatusCode).To(Equal(200))
+
+				res := response.Response
 				g.Expect(res.Cursor.Data).To(HaveLen(2))
 				g.Expect(res.Cursor.Data).To(ContainElements(
 					map[string]any{
@@ -171,10 +211,16 @@ var _ = Given("some empty environment", func() {
 			}).Should(BeTrue())
 
 			Eventually(func(g Gomega) bool {
-				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
-					Target: formance.PtrString("ASSET"),
-				}).Execute()
+				response, err := Client().Search.Search(
+					TestContext(),
+					shared.Query{
+						Target: ptr("ASSET"),
+					},
+				)
 				g.Expect(err).ToNot(HaveOccurred())
+				g.Expect(response.StatusCode).To(Equal(200))
+
+				res := response.Response
 				g.Expect(res.Cursor.Data).To(HaveLen(2))
 				g.Expect(res.Cursor.Data).To(ContainElements(
 					map[string]any{
@@ -205,27 +251,30 @@ type GenericOpenAPIError interface {
 var _ = Given("some empty environment", func() {
 	When("creating a transaction on a ledger with insufficient funds", func() {
 		It("should fail", func() {
-			resp, httpResp, err := Client().TransactionsApi.
-				CreateTransaction(TestContext(), "default").
-				PostTransaction(formance.PostTransaction{
-					Postings: []formance.Posting{{
-						Amount:      100,
-						Asset:       "USD",
-						Source:      "bob",
-						Destination: "alice",
-					}},
-					Metadata: metadata.Metadata{},
-				}).Execute()
-			Expect(err).To(HaveOccurred())
-			Expect(httpResp.StatusCode).To(Equal(400))
-			Expect(resp).To(BeNil())
-
-			apiErr, ok := err.(GenericOpenAPIError)
-			Expect(ok).To(BeTrue())
+			response, err := Client().Transactions.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.Posting{
+							{
+								Amount:      100,
+								Asset:       "USD",
+								Source:      "bob",
+								Destination: "alice",
+							},
+						},
+					},
+					Ledger: "default",
+				},
+			)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(400))
+			Expect(response.CreateTransactionResponse).To(BeNil())
 
 			details := "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
-			Expect(apiErr.Model()).Should(Equal(formance.ErrorResponse{
-				ErrorCode:    formance.INSUFFICIENT_FUND,
+			Expect(response.ErrorResponse).Should(Equal(&shared.ErrorResponse{
+				ErrorCode:    shared.ErrorsEnumInsufficientFund,
 				ErrorMessage: "account had insufficient funds",
 				Details:      &details,
 			}))
@@ -236,34 +285,39 @@ var _ = Given("some empty environment", func() {
 var _ = Given("some empty environment", func() {
 	When("creating a transaction on a ledger with an idempotency key", func() {
 		var (
-			err  error
-			resp *formance.CreateTransactionResponse
+			err      error
+			response *operations.CreateTransactionResponse
 		)
 		createTransaction := func() {
-			resp, _, err = Client().TransactionsApi.
-				CreateTransaction(TestContext(), "default").
-				IdempotencyKey("testing").
-				PostTransaction(formance.PostTransaction{
-					Postings: []formance.Posting{{
-						Amount:      100,
-						Asset:       "USD",
-						Source:      "world",
-						Destination: "alice",
-					}},
-					Metadata: metadata.Metadata{},
-				}).
-				Execute()
+			response, err = Client().Transactions.CreateTransaction(
+				TestContext(),
+				operations.CreateTransactionRequest{
+					IdempotencyKey: ptr("testing"),
+					PostTransaction: shared.PostTransaction{
+						Metadata: map[string]string{},
+						Postings: []shared.Posting{
+							{
+								Amount:      100,
+								Asset:       "USD",
+								Source:      "world",
+								Destination: "alice",
+							},
+						},
+					},
+					Ledger: "default",
+				},
+			)
 		}
 		BeforeEach(createTransaction)
 		It("should be ok", func() {
 			Expect(err).To(Succeed())
-			Expect(resp.Data.Txid).To(Equal(int64(0)))
+			Expect(response.CreateTransactionResponse.Data.Txid).To(Equal(int64(0)))
 		})
 		Then("replaying with the same IK", func() {
 			BeforeEach(createTransaction)
 			It("should respond with the same tx id", func() {
 				Expect(err).To(Succeed())
-				Expect(resp.Data.Txid).To(Equal(int64(0)))
+				Expect(response.CreateTransactionResponse.Data.Txid).To(Equal(int64(0)))
 			})
 		})
 	})

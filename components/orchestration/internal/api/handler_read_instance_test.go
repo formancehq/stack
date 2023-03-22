@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/orchestration/internal/workflow"
 	"github.com/formancehq/stack/libs/go-libs/api/apitesting"
 	"github.com/go-chi/chi/v5"
@@ -28,11 +27,12 @@ func TestGetInstance(t *testing.T) {
 
 		now := time.Now().Round(time.Nanosecond)
 		for i := 0; i < 10; i++ {
+			timestamp := now.Add(time.Second)
 			_, err := db.NewInsert().Model(&workflow.Stage{
 				Number:       i,
 				InstanceID:   instance.ID,
 				StartedAt:    now,
-				TerminatedAt: sdk.PtrTime(now.Add(time.Second)),
+				TerminatedAt: &timestamp,
 			}).Exec(context.TODO())
 			require.NoError(t, err)
 		}

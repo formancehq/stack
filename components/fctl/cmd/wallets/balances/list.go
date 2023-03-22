@@ -1,9 +1,12 @@
 package balances
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/cmd/wallets/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -42,17 +45,24 @@ func NewListCommand() *cobra.Command {
 				return err
 			}
 
-			res, _, err := client.WalletsApi.ListBalances(cmd.Context(), walletID).Execute()
+			request := operations.ListBalancesRequest{
+				ID: walletID,
+			}
+			response, err := client.Wallets.ListBalances(cmd.Context(), request)
 			if err != nil {
-				return errors.Wrap(err, "listing balances")
+				return errors.Wrap(err, "listing balance")
 			}
 
-			if len(res.Cursor.Data) == 0 {
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			if len(response.ListBalancesResponse.Cursor.Data) == 0 {
 				fctl.Println("No balances found.")
 				return nil
 			}
 
-			tableData := fctl.Map(res.Cursor.Data, func(balance formance.Balance) []string {
+			tableData := fctl.Map(response.ListBalancesResponse.Cursor.Data, func(balance shared.Balance) []string {
 				return []string{
 					balance.Name,
 				}

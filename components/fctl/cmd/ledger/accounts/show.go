@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -36,16 +37,27 @@ func NewShowCommand() *cobra.Command {
 			}
 
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
-			rsp, _, err := ledgerClient.AccountsApi.GetAccount(cmd.Context(), ledger, args[0]).Execute()
+			response, err := ledgerClient.Accounts.GetAccount(cmd.Context(), operations.GetAccountRequest{
+				Address: args[0],
+				Ledger:  ledger,
+			})
 			if err != nil {
 				return err
 			}
 
+			if response.ErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
 			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
-			if rsp.Data.Volumes != nil && len(rsp.Data.Volumes) > 0 {
+			if response.AccountResponse.Data.Volumes != nil && len(response.AccountResponse.Data.Volumes) > 0 {
 				tableData := pterm.TableData{}
 				tableData = append(tableData, []string{"Asset", "Input", "Output"})
-				for asset, volumes := range rsp.Data.Volumes {
+				for asset, volumes := range response.AccountResponse.Data.Volumes {
 					input := volumes["input"]
 					output := volumes["output"]
 					tableData = append(tableData, []string{pterm.LightCyan(asset), fmt.Sprint(input), fmt.Sprint(output)})
@@ -63,7 +75,7 @@ func NewShowCommand() *cobra.Command {
 
 			fmt.Fprintln(cmd.OutOrStdout())
 
-			if err := fctl.PrintMetadata(cmd.OutOrStdout(), rsp.Data.Metadata); err != nil {
+			if err := fctl.PrintMetadata(cmd.OutOrStdout(), response.AccountResponse.Data.Metadata); err != nil {
 				return err
 			}
 

@@ -1,0 +1,10 @@
+configVersion: 1.0.0
+generation:
+  sdkClassName: Formance
+  singleTagPerOp: true
+  telemetryEnabled: false
+go:
+  version: ""
+  author: Formance
+  maxMethodParams: 0
+  packageName: github.com/formancehq/formance-sdk-go

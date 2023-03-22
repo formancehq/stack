@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
@@ -142,7 +142,7 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, quer
 	defer httpResponse.Body.Close()
 
 	if httpResponse.StatusCode != http.StatusOK {
-		errorResponse := &sdk.ErrorResponse{}
+		errorResponse := &shared.ErrorResponse{}
 		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
 			panic(err)
 		}
@@ -177,7 +177,7 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 	defer httpResponse.Body.Close()
 
 	if httpResponse.StatusCode != http.StatusOK && httpResponse.StatusCode != http.StatusCreated {
-		errorResponse := &sdk.ErrorResponse{}
+		errorResponse := &shared.ErrorResponse{}
 		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
 			panic(err)
 		}
@@ -228,7 +228,7 @@ func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account
 	defer httpResponse.Body.Close()
 
 	if httpResponse.StatusCode != http.StatusOK && httpResponse.StatusCode != http.StatusNoContent {
-		errorResponse := &sdk.ErrorResponse{}
+		errorResponse := &shared.ErrorResponse{}
 		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
 			panic(err)
 		}
@@ -252,7 +252,7 @@ func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (
 	defer httpResponse.Body.Close()
 
 	if httpResponse.StatusCode != http.StatusOK {
-		errorResponse := &sdk.ErrorResponse{}
+		errorResponse := &shared.ErrorResponse{}
 		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
 			panic(err)
 		}
@@ -299,7 +299,7 @@ func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, query Li
 	defer httpResponse.Body.Close()
 
 	if httpResponse.StatusCode != http.StatusOK {
-		errorResponse := &sdk.ErrorResponse{}
+		errorResponse := &shared.ErrorResponse{}
 		if err := json.NewDecoder(httpResponse.Body).Decode(errorResponse); err != nil {
 			panic(err)
 		}

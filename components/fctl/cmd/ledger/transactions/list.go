@@ -6,7 +6,8 @@ import (
 
 	internal "github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -81,27 +82,39 @@ func NewListCommand() *cobra.Command {
 			}
 
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
-			rsp, _, err := ledgerClient.TransactionsApi.
-				ListTransactions(cmd.Context(), ledger).
-				PageSize(int64(fctl.GetInt(cmd, pageSizeFlag))).
-				Reference(fctl.GetString(cmd, referenceFlag)).
-				Account(fctl.GetString(cmd, accountFlag)).
-				Destination(fctl.GetString(cmd, destinationFlag)).
-				Source(fctl.GetString(cmd, sourceFlag)).
-				EndTime(endTime).
-				StartTime(startTime).
-				Metadata(metadata).
-				Execute()
+			response, err := ledgerClient.Transactions.ListTransactions(
+				cmd.Context(),
+				operations.ListTransactionsRequest{
+					Account:     fctl.Ptr(fctl.GetString(cmd, accountFlag)),
+					Destination: fctl.Ptr(fctl.GetString(cmd, destinationFlag)),
+					EndTime:     &endTime,
+					Ledger:      ledger,
+					Metadata:    metadata,
+					PageSize:    fctl.Ptr(int64(fctl.GetInt(cmd, pageSizeFlag))),
+					Reference:   fctl.Ptr(fctl.GetString(cmd, referenceFlag)),
+					Source:      fctl.Ptr(fctl.GetString(cmd, sourceFlag)),
+					StartTime:   &startTime,
+				},
+			)
 			if err != nil {
 				return err
 			}
 
-			if len(rsp.Cursor.Data) == 0 {
+			if response.ErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			transactionResponse := response.TransactionsCursorResponse
+			if len(transactionResponse.Cursor.Data) == 0 {
 				fctl.Println("No transactions found.")
 				return nil
 			}
 
-			tableData := fctl.Map(rsp.Cursor.Data, func(tx formance.ExpandedTransaction) []string {
+			tableData := fctl.Map(transactionResponse.Cursor.Data, func(tx shared.ExpandedTransaction) []string {
 				return []string{
 					fmt.Sprintf("%d", tx.Txid),
 					func() string {

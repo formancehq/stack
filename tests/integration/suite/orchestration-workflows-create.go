@@ -1,7 +1,7 @@
 package suite
 
 import (
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -11,14 +11,13 @@ import (
 var _ = Given("An empty environment", func() {
 	When("creating a new workflow", func() {
 		var (
-			createWorkflowResponse *formance.CreateWorkflowResponse
-			err                    error
+			createWorkflowResponse *shared.CreateWorkflowResponse
 		)
 		BeforeEach(func() {
-			createWorkflowResponse, _, err = Client().OrchestrationApi.
-				CreateWorkflow(TestContext()).
-				Body(formance.WorkflowConfig{
-					Name: formance.PtrString(uuid.New()),
+			response, err := Client().Orchestration.CreateWorkflow(
+				TestContext(),
+				shared.CreateWorkflowRequest{
+					Name: ptr(uuid.New()),
 					Stages: []map[string]interface{}{
 						{
 							"send": map[string]any{
@@ -41,12 +40,15 @@ var _ = Given("An empty environment", func() {
 							},
 						},
 					},
-				}).
-				Execute()
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(201))
+
+			createWorkflowResponse = response.CreateWorkflowResponse
 		})
 		It("should be ok", func() {
-			Expect(createWorkflowResponse.Data.Id).NotTo(BeEmpty())
+			Expect(createWorkflowResponse.Data.ID).NotTo(BeEmpty())
 		})
 	})
 })

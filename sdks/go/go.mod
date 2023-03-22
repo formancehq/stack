@@ -1,7 +1,7 @@
 module github.com/formancehq/formance-sdk-go
 
-go 1.18
+go 1.14
 
 require (
-	golang.org/x/oauth2 v0.0.0-20210323180902-22b0adad7558
+	github.com/cenkalti/backoff/v4 v4.2.0
 )

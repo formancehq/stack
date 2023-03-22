@@ -3,7 +3,7 @@
 version: "3"
 
 env:
-  VERSION: "develop"
+  VERSION: v1.0.{{now | date "20060102"}}
 
 tasks:
   sdk:build:
@@ -11,46 +11,23 @@ tasks:
     cmds:
       - npm install
       - npm run build
-      - sed -i -e "s/SDK_VERSION/{{.VERSION}}/g" build/generate.json
+      - cat <<< $(jq '.info.version = "{{.VERSION}}"' build/generate.json) > build/generate.json
 
   sdk:generate:
-    desc: Generate client code
-    preconditions:
-      - sh: '[ "{{.CLI_ARGS}}" != "" ]'
-        msg: Please specify generator as first cli arg (ie "task generate -- go")
+    internal: true
     cmds:
-      - rm -rf ./sdks/{{.CLI_ARGS}}
-      - >
-        docker run --rm -w /local -v ${PWD}/..:/local openapitools/openapi-generator-cli:v6.4.0 generate
-        -i ./openapi/build/generate.json
-        -g {{ (split "-" .CLI_ARGS)._0 }}
-        -c ./openapi/configs/{{.CLI_ARGS}}.yaml
-        -o ./sdks/{{.CLI_ARGS}}
-        --git-user-id=formancehq
-        --git-repo-id=formance-sdk-{{.CLI_ARGS}}
-        -p packageVersion={{.VERSION}}
-        -p apiVersion={{.VERSION}}
+      - speakeasy generate sdk -s ./build/generate.json -o ./../sdks/{{.TARGET}} -l {{.TARGET}}
 
   sdk:generate:all:
     desc: Generate all client code
     deps:
       - task: sdk:generate
-        vars: {CLI_ARGS: "go", VERSION: "{{.VERSION}}"}
+        vars: {TARGET: "go", VERSION: "{{.VERSION}}"}
       - task: sdk:generate
-        vars: {CLI_ARGS: "java", VERSION: "{{.VERSION}}"}
+        vars: {TARGET: "java", VERSION: "{{.VERSION}}"}
       - task: sdk:generate
-        vars: {CLI_ARGS: "php", VERSION: "{{.VERSION}}"}
+        vars: {TARGET: "php", VERSION: "{{.VERSION}}"}
       - task: sdk:generate
-        vars: {CLI_ARGS: "python", VERSION: "{{.VERSION}}"}
+        vars: {TARGET: "python", VERSION: "{{.VERSION}}"}
       - task: sdk:generate
-        vars: {CLI_ARGS: "typescript-node", VERSION: "{{.VERSION}}"}
-
-  sdk:template:
-    desc: Extract templates
-    preconditions:
-    - sh: "[ \"{{.CLI_ARGS}}\" != \"\" ]"
-      msg: Please specify generator as first cli arg (ie "task template -- go")
-    cmds:
-    - >
-      docker run --rm -w /local -v ${PWD}:/local openapitools/openapi-generator-cli:v6.4.0 author
-      template -g {{.CLI_ARGS}} -o templates/{{.CLI_ARGS}}
+        vars: {TARGET: "typescript", VERSION: "{{.VERSION}}"}

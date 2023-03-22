@@ -1,10 +1,11 @@
 package workflows
 
 import (
+	"fmt"
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -36,12 +37,20 @@ func NewListCommand() *cobra.Command {
 				return errors.Wrap(err, "creating stack client")
 			}
 
-			res, _, err := client.OrchestrationApi.ListWorkflows(cmd.Context()).Execute()
+			response, err := client.Orchestration.ListWorkflows(cmd.Context())
 			if err != nil {
-				return errors.Wrap(err, "listing workflows")
+				return err
 			}
 
-			if len(res.Data) == 0 {
+			if response.Error != nil {
+				return fmt.Errorf("%s: %s", response.Error.ErrorCode, response.Error.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			if len(response.ListWorkflowsResponse.Data) == 0 {
 				fctl.Println("No workflows found.")
 				return nil
 			}
@@ -51,10 +60,10 @@ func NewListCommand() *cobra.Command {
 				WithWriter(cmd.OutOrStdout()).
 				WithData(
 					fctl.Prepend(
-						fctl.Map(res.Data,
-							func(src formance.Workflow) []string {
+						fctl.Map(response.ListWorkflowsResponse.Data,
+							func(src shared.Workflow) []string {
 								return []string{
-									src.Id,
+									src.ID,
 									func() string {
 										if src.Config.Name != nil {
 											return *src.Config.Name

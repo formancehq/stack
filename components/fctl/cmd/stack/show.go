@@ -1,6 +1,7 @@
 package stack
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/formancehq/fctl/cmd/stack/internal"
@@ -73,12 +74,16 @@ func NewShowCommand() *cobra.Command {
 				return err
 			}
 
-			versions, _, err := stackClient.DefaultApi.GetVersions(cmd.Context()).Execute()
+			versions, err := stackClient.GetVersions(cmd.Context())
 			if err != nil {
 				return err
 			}
 
-			return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, cfg), stack, versions)
+			if versions.StatusCode != http.StatusOK {
+				return fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
+			}
+
+			return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, cfg), stack, versions.GetVersionsResponse)
 		}),
 	)
 }

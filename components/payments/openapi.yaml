@@ -9,6 +9,8 @@ paths:
     get:
       summary: Get server info
       operationId: getServerInfo
+      tags:
+        - Payments
       responses:
         200:
           $ref: '#/components/responses/ServerInfo'

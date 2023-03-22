@@ -125,12 +125,15 @@ func NewCreateCommand() *cobra.Command {
 				return err
 			}
 
-			versions, _, err := stackClient.DefaultApi.GetVersions(cmd.Context()).Execute()
+			versions, err := stackClient.GetVersions(cmd.Context())
 			if err != nil {
 				return err
 			}
+			if versions.StatusCode != http.StatusOK {
+				return fmt.Errorf("unexpected status code %d when reading versions", versions.StatusCode)
+			}
 
-			return internal.PrintStackInformation(cmd.OutOrStdout(), profile, stackResponse.Data, versions)
+			return internal.PrintStackInformation(cmd.OutOrStdout(), profile, stackResponse.Data, versions.GetVersionsResponse)
 		}),
 	)
 }
@@ -144,7 +147,7 @@ func waitStackReady(cmd *cobra.Command, profile *fctl.Profile, stack *membership
 		if err != nil {
 			return err
 		}
-		rsp, err := fctl.GetHttpClient(cmd).Do(req)
+		rsp, err := fctl.GetHttpClient(cmd, map[string][]string{}).Do(req)
 		if err == nil && rsp.StatusCode == http.StatusOK {
 			break
 		}

@@ -2,31 +2,52 @@ package activities
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 
-	sdk "github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
 type CreateTransactionRequest struct {
-	Ledger string              `json:"ledger"`
-	Data   sdk.PostTransaction `json:"data"`
+	Ledger string                 `json:"ledger"`
+	Data   shared.PostTransaction `json:"data"`
 }
 
-func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*sdk.CreateTransactionResponse, error) {
-	ret, _, err := a.client.TransactionsApi.
-		CreateTransaction(ctx, request.Ledger).
-		PostTransaction(request.Data).
-		Execute()
+func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*shared.CreateTransactionResponse, error) {
+	response, err := a.client.Transactions.
+		CreateTransaction(
+			ctx,
+			operations.CreateTransactionRequest{
+				PostTransaction: request.Data,
+				Ledger:          request.Ledger,
+			},
+		)
 	if err != nil {
-		return nil, openApiErrorToApplicationError(err)
+		return nil, err
 	}
-	return ret, nil
+
+	switch response.StatusCode {
+	case http.StatusOK:
+		return response.CreateTransactionResponse, nil
+	default:
+		if response.ErrorResponse != nil {
+			return nil, temporal.NewApplicationError(
+				response.ErrorResponse.ErrorMessage,
+				string(response.ErrorResponse.ErrorCode),
+				response.ErrorResponse.Details)
+		}
+
+		return nil, fmt.Errorf("unexpected status code: %d", response.StatusCode)
+	}
 }
 
 var CreateTransactionActivity = Activities{}.CreateTransaction
 
-func CreateTransaction(ctx workflow.Context, ledger string, request sdk.PostTransaction) (*sdk.Transaction, error) {
-	tx := &sdk.CreateTransactionResponse{}
+func CreateTransaction(ctx workflow.Context, ledger string, request shared.PostTransaction) (*shared.Transaction, error) {
+	tx := &shared.CreateTransactionResponse{}
 	if err := executeActivity(ctx, CreateTransactionActivity, tx, CreateTransactionRequest{
 		Ledger: ledger,
 		Data:   request,

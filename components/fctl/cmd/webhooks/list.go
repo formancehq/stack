@@ -1,11 +1,13 @@
 package webhooks
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -36,20 +38,30 @@ func NewListCommand() *cobra.Command {
 				return errors.Wrap(err, "creating stack client")
 			}
 
-			res, _, err := webhookClient.WebhooksApi.GetManyConfigs(cmd.Context()).Execute()
+			request := operations.GetManyConfigsRequest{}
+			response, err := webhookClient.Webhooks.GetManyConfigs(cmd.Context(), request)
 			if err != nil {
-				return errors.Wrap(err, "listing all configs")
+				return errors.Wrap(err, "listing all config")
 			}
 
+			if response.ErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.ErrorResponse.ErrorCode, response.ErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
+
+			// TODO: WebhooksConfig is missing ?
 			if err := pterm.DefaultTable.
 				WithHasHeader(true).
 				WithWriter(cmd.OutOrStdout()).
 				WithData(
 					fctl.Prepend(
-						fctl.Map(res.Cursor.Data,
-							func(src formance.WebhooksConfig) []string {
+						fctl.Map(response.ConfigsResponse.Cursor.Data,
+							func(src shared.WebhooksConfig) []string {
 								return []string{
-									src.Id,
+									src.ID,
 									src.CreatedAt.Format(time.RFC3339),
 									src.Secret,
 									src.Endpoint,

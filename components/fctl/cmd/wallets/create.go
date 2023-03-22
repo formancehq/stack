@@ -1,8 +1,10 @@
 package wallets
 
 import (
+	"fmt"
+
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -48,16 +50,25 @@ func NewCreateCommand() *cobra.Command {
 				return err
 			}
 
-			res, _, err := client.WalletsApi.CreateWallet(cmd.Context()).CreateWalletRequest(formance.CreateWalletRequest{
+			request := shared.CreateWalletRequest{
 				Name:     args[0],
 				Metadata: metadata,
-			}).Execute()
+			}
+			response, err := client.Wallets.CreateWallet(cmd.Context(), request)
 			if err != nil {
-				return errors.Wrap(err, "Creating wallets")
+				return errors.Wrap(err, "creating wallet")
+			}
+
+			if response.WalletsErrorResponse != nil {
+				return fmt.Errorf("%s: %s", response.WalletsErrorResponse.ErrorCode, response.WalletsErrorResponse.ErrorMessage)
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
 			}
 
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln(
-				"Wallet created successfully with ID: %s", res.Data.Id)
+				"Wallet created successfully with ID: %s", response.CreateWalletResponse.Data.ID)
 			return nil
 		}),
 	)

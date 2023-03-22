@@ -1,9 +1,12 @@
 package install
 
 import (
+	"fmt"
+
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	fctl "github.com/formancehq/fctl/pkg"
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -47,20 +50,27 @@ func NewBankingCircleCommand() *cobra.Command {
 				return err
 			}
 
-			_, err = paymentsClient.PaymentsApi.InstallConnector(cmd.Context(), internal.BankingCircleConnector).
-				ConnectorConfig(formance.ConnectorConfig{
-					BankingCircleConfig: &formance.BankingCircleConfig{
-						Username:              args[0],
-						Password:              args[1],
-						Endpoint:              fctl.GetString(cmd, endpointFlag),
-						AuthorizationEndpoint: fctl.GetString(cmd, authorizationEndpointFlag),
-					},
-				}).
-				Execute()
+			request := operations.InstallConnectorRequest{
+				Connector: shared.ConnectorBankingCircle,
+				RequestBody: shared.BankingCircleConfig{
+					Username:              args[0],
+					Password:              args[1],
+					Endpoint:              fctl.GetString(cmd, endpointFlag),
+					AuthorizationEndpoint: fctl.GetString(cmd, authorizationEndpointFlag),
+				},
+			}
+			response, err := paymentsClient.Payments.InstallConnector(cmd.Context(), request)
+			if err != nil {
+				return errors.Wrap(err, "installing connector")
+			}
+
+			if response.StatusCode >= 300 {
+				return fmt.Errorf("unexpected status code: %d", response.StatusCode)
+			}
 
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector installed!")
 
-			return errors.Wrap(err, "installing connector")
+			return nil
 		}),
 	)
 }

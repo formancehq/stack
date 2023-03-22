@@ -4,7 +4,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/formance-sdk-go/pkg/models/operations"
+	"github.com/formancehq/formance-sdk-go/pkg/models/shared"
 	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/stack/libs/events"
 	. "github.com/formancehq/stack/tests/integration/internal"
@@ -26,21 +27,32 @@ var _ = Given("some empty environment", func() {
 			// Subscribe to nats subject
 			cancelSubscription, msgs = SubscribeLedger()
 
-			_, err := Client().AccountsApi.
-				AddMetadataToAccount(TestContext(), "default", "foo").
-				RequestBody(metadata).
-				Execute()
+			response, err := Client().Accounts.AddMetadataToAccount(
+				TestContext(),
+				operations.AddMetadataToAccountRequest{
+					RequestBody: metadata,
+					Address:     "foo",
+					Ledger:      "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
+			Expect(response.StatusCode).To(Equal(204))
 		})
 		AfterEach(func() {
 			cancelSubscription()
 		})
 		It("should be available on api", func() {
-			accountResponse, _, err := Client().AccountsApi.
-				GetAccount(TestContext(), "default", "foo").
-				Execute()
+			response, err := Client().Accounts.GetAccount(
+				TestContext(),
+				operations.GetAccountRequest{
+					Address: "foo",
+					Ledger:  "default",
+				},
+			)
 			Expect(err).ToNot(HaveOccurred())
-			Expect(accountResponse.Data).Should(Equal(formance.AccountWithVolumesAndBalances{
+			Expect(response.StatusCode).To(Equal(200))
+
+			Expect(response.AccountResponse.Data).Should(Equal(shared.AccountWithVolumesAndBalances{
 				Address:  "foo",
 				Metadata: metadata,
 				Volumes:  map[string]map[string]int64{},
@@ -53,16 +65,22 @@ var _ = Given("some empty environment", func() {
 		})
 		It("should pop an account with the correct metadata on search service", func() {
 			Eventually(func() bool {
-				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
-					Target: formance.PtrString("ACCOUNT"),
-				}).Execute()
+				response, err := Client().Search.Search(
+					TestContext(),
+					shared.Query{
+						Target: ptr("ACCOUNT"),
+					},
+				)
 				if err != nil {
 					return false
 				}
-				if len(res.Cursor.Data) != 1 {
+				if response.StatusCode != 200 {
 					return false
 				}
-				return reflect.DeepEqual(res.Cursor.Data[0], map[string]any{
+				if len(response.Response.Cursor.Data) != 1 {
+					return false
+				}
+				return reflect.DeepEqual(response.Response.Cursor.Data[0], map[string]any{
 					"ledger": "default",
 					"metadata": map[string]any{
 						"clientType": "gold",
