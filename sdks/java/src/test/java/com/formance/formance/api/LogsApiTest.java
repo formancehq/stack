@@ -35,15 +35,11 @@ public class LogsApiTest {
     public void listLogsTest() {
         String ledger = null;
         Long pageSize = null;
-        Long pageSize2 = null;
         String after = null;
         OffsetDateTime startTime = null;
-        OffsetDateTime startTime2 = null;
         OffsetDateTime endTime = null;
-        OffsetDateTime endTime2 = null;
         String cursor = null;
-        String paginationToken = null;
-        // LogsCursorResponse response = api.listLogs(ledger, pageSize, pageSize2, after, startTime, startTime2, endTime, endTime2, cursor, paginationToken);
+        // LogsCursorResponse response = api.listLogs(ledger, pageSize, after, startTime, endTime, cursor);
 
         // TODO: test validations
     }

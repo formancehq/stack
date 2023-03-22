@@ -1,7 +1,7 @@
 package com.formance.formance.api;
 
 import com.formance.formance.ApiClient;
-import com.formance.formance.model.ConfigInfoResponse;
+import com.formance.formance.model.ConfigInfo;
 import com.formance.formance.model.ErrorResponse;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,11 +28,11 @@ public class ServerApiTest {
     /**
      * Show server information
      *
-     *
+     * 
      */
     @Test
     public void getInfoTest() {
-        // ConfigInfoResponse response = api.getInfo();
+        // ConfigInfo response = api.getInfo();
 
         // TODO: test validations
     }

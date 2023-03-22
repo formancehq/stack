@@ -82,8 +82,7 @@ _response_for_200 = api_client.OpenApiResponse(
 @dataclass
 class ApiResponseFor304(api_client.ApiResponse):
     response: urllib3.HTTPResponse
-    body: typing.Union[
-    ]
+    body: schemas.Unset = schemas.unset
     headers: schemas.Unset = schemas.unset
 
 

@@ -129,8 +129,6 @@ from Formance.model.run_workflow_request import RunWorkflowRequest
 from Formance.model.run_workflow_response import RunWorkflowResponse
 from Formance.model.scope import Scope
 from Formance.model.scope_options import ScopeOptions
-from Formance.model.script import Script
-from Formance.model.script_response import ScriptResponse
 from Formance.model.secret import Secret
 from Formance.model.secret_options import SecretOptions
 from Formance.model.server_info import ServerInfo
@@ -162,9 +160,7 @@ from Formance.model.task_stripe import TaskStripe
 from Formance.model.task_wise import TaskWise
 from Formance.model.tasks_cursor import TasksCursor
 from Formance.model.transaction import Transaction
-from Formance.model.transaction_data import TransactionData
 from Formance.model.transaction_response import TransactionResponse
-from Formance.model.transactions import Transactions
 from Formance.model.transactions_cursor_response import TransactionsCursorResponse
 from Formance.model.transfer_request import TransferRequest
 from Formance.model.transfer_response import TransferResponse

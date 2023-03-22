@@ -27,7 +27,7 @@ public class DefaultApiTest {
     /**
      * Get server info
      *
-     *
+     * 
      */
     @Test
     public void getServerInfoTest() {
@@ -38,7 +38,7 @@ public class DefaultApiTest {
     /**
      * Get server info
      *
-     *
+     * 
      */
     @Test
     public void paymentsgetServerInfoTest() {
@@ -49,7 +49,7 @@ public class DefaultApiTest {
     /**
      * Get server info
      *
-     *
+     * 
      */
     @Test
     public void searchgetServerInfoTest() {

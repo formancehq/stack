@@ -115,7 +115,7 @@ func unwrapOpenAPIError(err error) *formance.ErrorResponse {
 				errorCode := formance.ErrorsEnum(errResponse.ErrorCode)
 				return &formance.ErrorResponse{
 					ErrorCode:    errorCode,
-					ErrorMessage: &errResponse.ErrorMessage,
+					ErrorMessage: errResponse.ErrorMessage,
 					Details:      &errResponse.Details,
 				}
 			}

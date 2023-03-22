@@ -44,15 +44,17 @@ func TestHoldsVoid(t *testing.T) {
 				Volumes:  &volumes,
 			}, nil
 		}),
-		WithRunScript(func(ctx context.Context, name string, script sdk.Script) (*sdk.ScriptResponse, error) {
-			require.Equal(t, sdk.Script{
-				Plain: wallet.BuildCancelHoldScript("USD"),
-				Vars: map[string]interface{}{
-					"hold": testEnv.Chart().GetHoldAccount(hold.ID),
+		WithCreateTransaction(func(ctx context.Context, name string, script sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+			require.Equal(t, sdk.PostTransaction{
+				Script: &sdk.PostTransactionScript{
+					Plain: wallet.BuildCancelHoldScript("USD"),
+					Vars: map[string]interface{}{
+						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
+					},
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, script)
-			return &sdk.ScriptResponse{}, nil
+			return &sdk.TransactionResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)

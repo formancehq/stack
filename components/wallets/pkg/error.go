@@ -15,3 +15,7 @@ var (
 	ErrBalanceNotExists        = errors.New("balance not exists")
 	ErrInvalidBalanceSpecified = errors.New("invalid balance specified")
 )
+
+type GenericOpenAPIError interface {
+	Model() any
+}

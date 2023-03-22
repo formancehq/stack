@@ -125,8 +125,6 @@ import { RunWorkflowResponse } from '../models/RunWorkflowResponse';
 import { Scope } from '../models/Scope';
 import { ScopeAllOf } from '../models/ScopeAllOf';
 import { ScopeOptions } from '../models/ScopeOptions';
-import { Script } from '../models/Script';
-import { ScriptResponse } from '../models/ScriptResponse';
 import { Secret } from '../models/Secret';
 import { SecretAllOf } from '../models/SecretAllOf';
 import { SecretOptions } from '../models/SecretOptions';
@@ -174,9 +172,7 @@ import { TasksCursorCursorAllOf } from '../models/TasksCursorCursorAllOf';
 import { TasksCursorCursorAllOfDataInner } from '../models/TasksCursorCursorAllOfDataInner';
 import { Total } from '../models/Total';
 import { Transaction } from '../models/Transaction';
-import { TransactionData } from '../models/TransactionData';
 import { TransactionResponse } from '../models/TransactionResponse';
-import { Transactions } from '../models/Transactions';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
 import { TransferRequest } from '../models/TransferRequest';
@@ -254,18 +250,15 @@ export class PromiseAccountsApi {
      * List accounts from a ledger
      * @param ledger Name of the ledger.
      * @param pageSize The maximum number of results to return per page. 
-     * @param pageSize2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. 
      * @param after Pagination cursor, will return accounts after given address, in descending order.
      * @param address Filter accounts by address pattern (regular expression placed between ^ and $).
      * @param metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
      * @param balance Filter accounts by their balance (default operator is gte)
      * @param balanceOperator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. 
-     * @param balanceOperator2 Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. Deprecated, please use &#x60;balanceOperator&#x60; instead. 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
-     * @param paginationToken Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. 
      */
-    public listAccounts(ledger: string, pageSize?: number, pageSize2?: number, after?: string, address?: string, metadata?: any, balance?: number, balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne', balanceOperator2?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne', cursor?: string, paginationToken?: string, _options?: Configuration): Promise<AccountsCursorResponse> {
-        const result = this.api.listAccounts(ledger, pageSize, pageSize2, after, address, metadata, balance, balanceOperator, balanceOperator2, cursor, paginationToken, _options);
+    public listAccounts(ledger: string, pageSize?: number, after?: string, address?: string, metadata?: any, balance?: number, balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne', cursor?: string, _options?: Configuration): Promise<AccountsCursorResponse> {
+        const result = this.api.listAccounts(ledger, pageSize, after, address, metadata, balance, balanceOperator, cursor, _options);
         return result.toPromise();
     }
 
@@ -294,10 +287,9 @@ export class PromiseBalancesApi {
      * @param address Filter balances involving given account, either as source or destination.
      * @param after Pagination cursor, will return accounts after given address, in descending order.
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
-     * @param paginationToken Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. Deprecated, please use &#x60;cursor&#x60; instead.
      */
-    public getBalances(ledger: string, address?: string, after?: string, cursor?: string, paginationToken?: string, _options?: Configuration): Promise<BalancesCursorResponse> {
-        const result = this.api.getBalances(ledger, address, after, cursor, paginationToken, _options);
+    public getBalances(ledger: string, address?: string, after?: string, cursor?: string, _options?: Configuration): Promise<BalancesCursorResponse> {
+        const result = this.api.getBalances(ledger, address, after, cursor, _options);
         return result.toPromise();
     }
 
@@ -510,17 +502,13 @@ export class PromiseLogsApi {
      * List the logs from a ledger
      * @param ledger Name of the ledger.
      * @param pageSize The maximum number of results to return per page. 
-     * @param pageSize2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. 
      * @param after Pagination cursor, will return the logs after a given ID. (in descending order).
      * @param startTime Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). 
-     * @param startTime2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. 
      * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
-     * @param endTime2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
-     * @param paginationToken Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. 
      */
-    public listLogs(ledger: string, pageSize?: number, pageSize2?: number, after?: string, startTime?: Date, startTime2?: Date, endTime?: Date, endTime2?: Date, cursor?: string, paginationToken?: string, _options?: Configuration): Promise<LogsCursorResponse> {
-        const result = this.api.listLogs(ledger, pageSize, pageSize2, after, startTime, startTime2, endTime, endTime2, cursor, paginationToken, _options);
+    public listLogs(ledger: string, pageSize?: number, after?: string, startTime?: Date, endTime?: Date, cursor?: string, _options?: Configuration): Promise<LogsCursorResponse> {
+        const result = this.api.listLogs(ledger, pageSize, after, startTime, endTime, cursor, _options);
         return result.toPromise();
     }
 
@@ -924,37 +912,6 @@ export class PromiseScopesApi {
 
 
 
-import { ObservableScriptApi } from './ObservableAPI';
-
-import { ScriptApiRequestFactory, ScriptApiResponseProcessor} from "../apis/ScriptApi";
-export class PromiseScriptApi {
-    private api: ObservableScriptApi
-
-    public constructor(
-        configuration: Configuration,
-        requestFactory?: ScriptApiRequestFactory,
-        responseProcessor?: ScriptApiResponseProcessor
-    ) {
-        this.api = new ObservableScriptApi(configuration, requestFactory, responseProcessor);
-    }
-
-    /**
-     * This route is deprecated, and has been merged into `POST /{ledger}/transactions`. 
-     * Execute a Numscript
-     * @param ledger Name of the ledger.
-     * @param script 
-     * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
-     */
-    public runScript(ledger: string, script: Script, preview?: boolean, _options?: Configuration): Promise<ScriptResponse> {
-        const result = this.api.runScript(ledger, script, preview, _options);
-        return result.toPromise();
-    }
-
-
-}
-
-
-
 import { ObservableSearchApi } from './ObservableAPI';
 
 import { SearchApiRequestFactory, SearchApiResponseProcessor} from "../apis/SearchApi";
@@ -1073,13 +1030,11 @@ export class PromiseTransactionsApi {
      * @param source Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
      * @param destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
      * @param startTime Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). 
-     * @param startTime2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. 
      * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
-     * @param endTime2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. 
      * @param metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
-    public countTransactions(ledger: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, startTime2?: Date, endTime?: Date, endTime2?: Date, metadata?: any, _options?: Configuration): Promise<void> {
-        const result = this.api.countTransactions(ledger, reference, account, source, destination, startTime, startTime2, endTime, endTime2, metadata, _options);
+    public countTransactions(ledger: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, metadata?: any, _options?: Configuration): Promise<void> {
+        const result = this.api.countTransactions(ledger, reference, account, source, destination, startTime, endTime, metadata, _options);
         return result.toPromise();
     }
 
@@ -1109,22 +1064,18 @@ export class PromiseTransactionsApi {
      * List transactions from a ledger
      * @param ledger Name of the ledger.
      * @param pageSize The maximum number of results to return per page. 
-     * @param pageSize2 The maximum number of results to return per page. Deprecated, please use &#x60;pageSize&#x60; instead. 
      * @param after Pagination cursor, will return transactions after given txid (in descending order).
      * @param reference Find transactions by reference field.
      * @param account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
      * @param source Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
      * @param destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
      * @param startTime Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). 
-     * @param startTime2 Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). Deprecated, please use &#x60;startTime&#x60; instead. 
      * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
-     * @param endTime2 Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). Deprecated, please use &#x60;endTime&#x60; instead. 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
-     * @param paginationToken Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. Deprecated, please use &#x60;cursor&#x60; instead. 
      * @param metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
-    public listTransactions(ledger: string, pageSize?: number, pageSize2?: number, after?: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, startTime2?: Date, endTime?: Date, endTime2?: Date, cursor?: string, paginationToken?: string, metadata?: any, _options?: Configuration): Promise<TransactionsCursorResponse> {
-        const result = this.api.listTransactions(ledger, pageSize, pageSize2, after, reference, account, source, destination, startTime, startTime2, endTime, endTime2, cursor, paginationToken, metadata, _options);
+    public listTransactions(ledger: string, pageSize?: number, after?: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, cursor?: string, metadata?: any, _options?: Configuration): Promise<TransactionsCursorResponse> {
+        const result = this.api.listTransactions(ledger, pageSize, after, reference, account, source, destination, startTime, endTime, cursor, metadata, _options);
         return result.toPromise();
     }
 

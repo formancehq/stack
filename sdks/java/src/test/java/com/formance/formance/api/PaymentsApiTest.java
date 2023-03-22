@@ -79,7 +79,7 @@ public class PaymentsApiTest {
     /**
      * Get a payment
      *
-     *
+     * 
      */
     @Test
     public void getPaymentTest() {
@@ -152,7 +152,7 @@ public class PaymentsApiTest {
     /**
      * List payments
      *
-     *
+     * 
      */
     @Test
     public void listPaymentsTest() {
@@ -166,7 +166,7 @@ public class PaymentsApiTest {
     /**
      * List accounts
      *
-     *
+     * 
      */
     @Test
     public void paymentslistAccountsTest() {
@@ -192,7 +192,7 @@ public class PaymentsApiTest {
     /**
      * Reset a connector
      *
-     * Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it.
+     * Reset a connector by its name. It will remove the connector and ALL PAYMENTS generated with it. 
      */
     @Test
     public void resetConnectorTest() {
@@ -216,7 +216,7 @@ public class PaymentsApiTest {
     /**
      * Update metadata
      *
-     *
+     * 
      */
     @Test
     public void updateMetadataTest() {
