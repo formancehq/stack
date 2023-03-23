@@ -1,0 +1,10 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  annotations:
+    config.kubernetes.io/origin: |
+      path: ../certmanager/certificate.yaml
+  name: formance-operator-selfsigned-issuer
+  namespace: formance-operator
+spec:
+  selfSigned: {}
