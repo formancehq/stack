@@ -1,0 +1,67 @@
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  creationTimestamp: null
+  name: mutating-webhook-configuration
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: webhook-service
+      namespace: system
+      path: /mutate-stack-formance-com-v1beta3-configuration
+  failurePolicy: Fail
+  name: mconfiguration.kb.io
+  rules:
+  - apiGroups:
+    - stack.formance.com
+    apiVersions:
+    - v1beta3
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - configurations
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: webhook-service
+      namespace: system
+      path: /mutate-stack-formance-com-v1beta3-stack
+  failurePolicy: Fail
+  name: mstacks-v1beta3.kb.io
+  rules:
+  - apiGroups:
+    - stack.formance.com
+    apiVersions:
+    - v1beta3
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - stacks
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    service:
+      name: webhook-service
+      namespace: system
+      path: /mutate-stack-formance-com-v1beta2-stack
+  failurePolicy: Fail
+  name: mstacks-v1beta2.kb.io
+  rules:
+  - apiGroups:
+    - stack.formance.com
+    apiVersions:
+    - v1beta2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - stacks
+  sideEffects: None

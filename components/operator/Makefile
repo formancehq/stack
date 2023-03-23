@@ -104,8 +104,11 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 
 .PHONY: helm-update
 helm-update: manifests generate
+	rm -rf ./helm/operator/templates/bases ./helm/operator/templates/rbac ./helm/operator/templates/certmanager ./helm/operator/templates/webhook
 	cp -pr ./config/crd/bases ./helm/operator/templates/
 	cp -pr ./config/rbac ./helm/operator/templates/
+	cp -pr ./config/certmanager ./helm/operator/templates/
+	cp -pr ./config/webhook ./helm/operator/templates/
 
 .PHONY: helm-debug
 helm-debug: helm-update
