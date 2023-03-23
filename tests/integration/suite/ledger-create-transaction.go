@@ -44,24 +44,17 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription()
 		})
 		It("should eventually be available on api", func() {
-			Eventually(func(g Gomega) formance.Transaction {
-				transactionResponse, _, err := Client().TransactionsApi.
-					GetTransaction(TestContext(), "default", rsp.Data.Txid).
-					Execute()
-				if err != nil {
-					return formance.Transaction{}
-				}
-				return transactionResponse.Data
-			}).Should(Equal(rsp.Data))
-			Eventually(func(g Gomega) formance.AccountWithVolumesAndBalances {
-				accountResponse, _, err := Client().AccountsApi.
-					GetAccount(TestContext(), "default", "alice").
-					Execute()
-				if err != nil {
-					return formance.AccountWithVolumesAndBalances{}
-				}
-				return accountResponse.Data
-			}).Should(Equal(formance.AccountWithVolumesAndBalances{
+			transactionResponse, _, err := Client().TransactionsApi.
+				GetTransaction(TestContext(), "default", rsp.Data.Txid).
+				Execute()
+			Expect(err).To(BeNil())
+			Expect(transactionResponse.Data).To(Equal(rsp.Data))
+
+			accountResponse, _, err := Client().AccountsApi.
+				GetAccount(TestContext(), "default", "alice").
+				Execute()
+			Expect(err).To(BeNil())
+			Expect(accountResponse.Data).Should(Equal(formance.AccountWithVolumesAndBalances{
 				Address:  "alice",
 				Metadata: map[string]interface{}{},
 				Volumes: ptr(map[string]map[string]int64{

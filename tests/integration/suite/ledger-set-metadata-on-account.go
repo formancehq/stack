@@ -35,15 +35,11 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription()
 		})
 		It("should eventually be available on api", func() {
-			Eventually(func() formance.AccountWithVolumesAndBalances {
-				accountResponse, _, err := Client().AccountsApi.
-					GetAccount(TestContext(), "default", "foo").
-					Execute()
-				if err != nil {
-					return formance.AccountWithVolumesAndBalances{}
-				}
-				return accountResponse.Data
-			}).Should(Equal(formance.AccountWithVolumesAndBalances{
+			accountResponse, _, err := Client().AccountsApi.
+				GetAccount(TestContext(), "default", "foo").
+				Execute()
+			Expect(err).To(BeNil())
+			Expect(accountResponse.Data).Should(Equal(formance.AccountWithVolumesAndBalances{
 				Address:  "foo",
 				Metadata: metadata,
 				Volumes:  ptr(map[string]map[string]int64{}),
