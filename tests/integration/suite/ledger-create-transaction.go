@@ -45,7 +45,7 @@ var _ = Given("some empty environment", func() {
 		AfterEach(func() {
 			cancelSubscription()
 		})
-		It("should eventually be available on api", func() {
+		It("should be available on api", func() {
 			transactionResponse, _, err := Client().TransactionsApi.
 				GetTransaction(TestContext(), "default", rsp.Data.Txid).
 				Execute()
