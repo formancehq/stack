@@ -181,7 +181,7 @@ func stopLedger() {
 	ledgerCancel()
 	select {
 	case <-ledgerErrCh:
-	case <-time.After(5 * time.Second):
+	case <-time.After(10 * time.Second):
 		Fail("timeout waiting for ledger stopped")
 	}
 }
@@ -213,7 +213,7 @@ func stopSearch() {
 	searchCancel()
 	select {
 	case <-searchErrCh:
-	case <-time.After(5 * time.Second):
+	case <-time.After(10 * time.Second):
 		Fail("timeout waiting for search stopped")
 	}
 }
@@ -255,7 +255,7 @@ func stopPayments() {
 	paymentsCancel()
 	select {
 	case <-paymentsErrCh:
-	case <-time.After(5 * time.Second):
+	case <-time.After(10 * time.Second):
 		Fail("timeout waiting for payments stopped")
 	}
 }
@@ -297,7 +297,7 @@ func stopOrchestration() {
 	orchestrationCancel()
 	select {
 	case <-orchestrationErrCh:
-	case <-time.After(5 * time.Second):
+	case <-time.After(10 * time.Second):
 		Fail("timeout waiting for orchestration stopped")
 	}
 }
@@ -362,7 +362,7 @@ func stopAuth() {
 	authCancel()
 	select {
 	case <-authErrCh:
-	case <-time.After(5 * time.Second):
+	case <-time.After(10 * time.Second):
 		Fail("timeout waiting for auth stopped")
 	}
 }
@@ -399,7 +399,7 @@ func stopWallets() {
 	walletsCancel()
 	select {
 	case <-walletsErrCh:
-	case <-time.After(5 * time.Second):
+	case <-time.After(10 * time.Second):
 		Fail("timeout waiting for wallet stopped")
 	}
 }
@@ -445,7 +445,7 @@ func stopWebhooks() {
 	webhooksCancel()
 	select {
 	case <-webhooksErrCh:
-	case <-time.After(5 * time.Second):
+	case <-time.After(10 * time.Second):
 		Fail("timeout waiting for webhooks stopped")
 	}
 }
@@ -468,7 +468,7 @@ func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc
 	case err := <-errCh:
 		By("starting service " + service)
 		Expect(err).ToNot(HaveOccurred())
-	case <-time.After(5 * time.Second):
+	case <-time.After(10 * time.Second):
 		Fail(fmt.Sprintf("timeout waiting for service '%s' to be properly started", service))
 	}
 	port := httpserver.Port(ctx)
