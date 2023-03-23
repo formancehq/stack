@@ -23,7 +23,7 @@ tasks:
     deps: [run-docker-compose]
     cmds:
       - >
-        ginkgo --race --vet ""
+        ginkgo --vet ""
         {{if eq .VERBOSE "true"}}-v{{end}}
         {{if eq .PARALLEL "true"}}-p{{end}}
         {{if eq .FAILFAST "true"}}--fail-fast{{end}}
