@@ -18,10 +18,8 @@ jobs:
       openapi_doc_location: ./openapi/base.yaml
       languages: |-
         - python: ./sdks/python
-      # publish_python: true # Tells the generation action to generate artifacts for publishing to PyPi
       mode: pr
       force: ${{ github.event.inputs.force }}
     secrets:
       speakeasy_api_key: ${{ secrets.SPEAKEASY_API_KEY }}
       github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      # pypi_token: ${{ secrets.PYPI_TOKEN }}
