@@ -1,0 +1,28 @@
+name: Generate Java SDK
+
+on:
+  workflow_dispatch: # Allows manual triggering of the workflow to generate SDK
+    inputs:
+      force:
+        description: "Force generation of SDKs"
+        type: boolean
+        default: false
+  schedule:
+    - cron: 0 0 * * * # Runs every day at midnight
+
+jobs:
+  generate:
+    uses: speakeasy-api/sdk-generation-action/.github/workflows/sdk-generation.yaml@v14 # Import the sdk generation workflow which will handle the generation of the SDKs and publishing to the package managers in 'direct' mode.
+    with:
+      speakeasy_version: latest
+      openapi_doc_location: ./openapi/base.yaml
+      languages: |-
+        - java: ./sdks/java
+      # publish_java: true # Tells the generation action to generate artifacts for publishing to Maven
+      mode: pr
+      force: ${{ github.event.inputs.force }}
+    secrets:
+      speakeasy_api_key: ${{ secrets.SPEAKEASY_API_KEY }}
+      github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      # maven_username: ${{ secrets.MAVEN_USERNAME }}
+      # maven_password: ${{ secrets.MAVEN_PASSWORD }}

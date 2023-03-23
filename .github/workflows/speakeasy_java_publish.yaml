@@ -1,0 +1,20 @@
+name: Publish Java SDK
+
+on:
+  push: # Will trigger when the RELEASES.md file is updated by the merged PR from the generation workflow
+    paths:
+      - "./sdks/java/RELEASES.md"
+    branches:
+      - main
+
+jobs:
+  publish:
+    uses: speakeasy-api/sdk-generation-action/.github/workflows/sdk-publish.yaml@v14 # Import the sdk publish workflow which will handle the publishing to the package managers
+    with:
+      publish_java: true
+      create_release: true
+    secrets:
+      maven_username: ${{ secrets.MAVEN_USERNAME }}
+      maven_password: ${{ secrets.MAVEN_PASSWORD }}
+      github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      speakeasy_api_key: ${{ secrets.SPEAKEASY_API_KEY }}
