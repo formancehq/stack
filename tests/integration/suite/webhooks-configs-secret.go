@@ -36,7 +36,10 @@ var _ = Given("empty environment for webhooks configs", func() {
 		Context("without passing a secret", func() {
 			BeforeEach(func() {
 				resp, httpResp, err := Client().WebhooksApi.
-					ChangeConfigSecret(TestContext(), insertResp.Data.Id).Execute()
+					ChangeConfigSecret(TestContext(), insertResp.Data.Id).
+					ConfigChangeSecret(formance.ConfigChangeSecret{
+						Secret: "",
+					}).Execute()
 				Expect(err).NotTo(HaveOccurred())
 				Expect(httpResp.StatusCode).To(Equal(http.StatusOK))
 				Expect(resp.Data.Secret).To(Not(Equal(insertResp.Data.Secret)))

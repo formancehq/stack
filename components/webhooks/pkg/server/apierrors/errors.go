@@ -55,7 +55,8 @@ func (v ValidationError) Error() string {
 }
 
 func (v ValidationError) Is(err error) bool {
-	return errors.Is(err, &ValidationError{})
+	_, ok := err.(*ValidationError)
+	return ok
 }
 
 func NewValidationError(msg string) *ValidationError {
@@ -77,7 +78,8 @@ func (v NotFoundError) Error() string {
 }
 
 func (v NotFoundError) Is(err error) bool {
-	return errors.Is(err, &NotFoundError{})
+	_, ok := err.(*NotFoundError)
+	return ok
 }
 
 func NewNotFoundError(msg string) *NotFoundError {
