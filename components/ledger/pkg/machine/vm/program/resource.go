@@ -40,10 +40,20 @@ func (m VariableAccountMetadata) String() string {
 type VariableAccountBalance struct {
 	Name    string
 	Account internal.Address
-	Asset   string
+	Asset   internal.Address
 }
 
 func (a VariableAccountBalance) GetType() internal.Type { return internal.TypeMonetary }
 func (a VariableAccountBalance) String() string {
 	return fmt.Sprintf("<%v %v balance(%v, %v)>", internal.TypeMonetary, a.Name, a.Account, a.Asset)
+}
+
+type Monetary struct {
+	Asset  internal.Address
+	Amount *internal.MonetaryInt
+}
+
+func (a Monetary) GetType() internal.Type { return internal.TypeMonetary }
+func (a Monetary) String() string {
+	return fmt.Sprintf("<%v [%v %v]>", internal.TypeMonetary, a.Asset, a.Amount)
 }

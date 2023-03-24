@@ -547,21 +547,21 @@ func (m *Machine) ResolveResources(ctx context.Context, store Store) ([]string, 
 				involvedAccountsMap[internal.Address(idx)] = string(val.(internal.AccountAddress))
 			}
 		case program.VariableAccountMetadata:
-			sourceAccount, ok := m.getResource(res.Account)
+			acc, ok := m.getResource(res.Account)
 			if !ok {
 				//TODO(gfyrag): Is that really mandatory? The visitor should catch missing account?
 				return nil, nil, fmt.Errorf(
 					"variable '%s': tried to request metadata of an account which has not yet been solved",
 					res.Name)
 			}
-			if (*sourceAccount).GetType() != internal.TypeAccount {
+			if (*acc).GetType() != internal.TypeAccount {
 				//TODO(gfyrag): Is that really mandatory? The visitor should catch invalid typing?
 				return nil, nil, fmt.Errorf(
 					"variable '%s': tried to request metadata on wrong entity: %v instead of account",
-					res.Name, (*sourceAccount).GetType())
+					res.Name, (*acc).GetType())
 			}
 
-			address := string((*sourceAccount).(internal.AccountAddress))
+			address := string((*acc).(internal.AccountAddress))
 			account, err := store.GetAccountWithVolumes(ctx, address)
 			if err != nil {
 				return nil, nil, errors.Wrap(err, fmt.Sprintf("could not get account %s", address))
@@ -584,26 +584,55 @@ func (m *Machine) ResolveResources(ctx context.Context, store Store) ([]string, 
 					fmt.Sprintf("invalid format for metadata at key %v for account %s", res.Key, address))
 			}
 		case program.VariableAccountBalance:
-			sourceAccount, ok := m.getResource(res.Account)
+			acc, ok := m.getResource(res.Account)
 			if !ok {
 				//TODO(gfyrag): Is that really mandatory? The visitor should catch missing account?
-				return nil, nil, fmt.Errorf(
-					"variable '%s': tried to request metadata of an account which has not yet been solved",
-					res.Name)
-			}
-			if (*sourceAccount).GetType() != internal.TypeAccount {
-				//TODO(gfyrag): Is that really mandatory? The visitor should catch this?
 				return nil, nil, fmt.Errorf(
 					"variable '%s': tried to request balance of an account which has not yet been solved",
 					res.Name)
 			}
+			if (*acc).GetType() != internal.TypeAccount {
+				//TODO(gfyrag): Is that really mandatory? The visitor should catch this?
+				return nil, nil, fmt.Errorf(
+					"variable '%s': tried to request account balance on wrong entity: %v instead of account",
+					res.Name, (*acc).GetType())
+			}
 
-			address := string((*sourceAccount).(internal.AccountAddress))
+			address := string((*acc).(internal.AccountAddress))
 			involvedAccountsMap[internal.Address(idx)] = address
 			m.UnresolvedResourceBalances[address] = idx
 
+			ass, ok := m.getResource(res.Asset)
+			if !ok {
+				return nil, nil, fmt.Errorf(
+					"variable '%s': tried to request account balance of an asset which has not yet been solved",
+					res.Name)
+			}
+			if (*ass).GetType() != internal.TypeAsset {
+				return nil, nil, fmt.Errorf(
+					"variable '%s': tried to request account balance for an asset on wrong entity: %v instead of asset",
+					res.Name, (*ass).GetType())
+			}
+			asset := (*ass).(internal.Asset)
+
 			val = internal.Monetary{
-				Asset: internal.Asset(res.Asset),
+				Asset: asset,
+			}
+		case program.Monetary:
+			ass, ok := m.getResource(res.Asset)
+			if !ok {
+				return nil, nil, fmt.Errorf(
+					"tried to resolve an asset which has not yet been solved")
+			}
+			if (*ass).GetType() != internal.TypeAsset {
+				return nil, nil, fmt.Errorf(
+					"tried to resolve an asset on wrong type '%v'",
+					(*ass).GetType())
+			}
+			asset := (*ass).(internal.Asset)
+			val = internal.Monetary{
+				Asset:  asset,
+				Amount: res.Amount,
 			}
 		default:
 			panic(fmt.Errorf("type %T not implemented", res))

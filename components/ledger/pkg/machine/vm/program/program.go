@@ -52,6 +52,11 @@ func (p *Program) ParseVariables(vars map[string]internal.Value) (map[string]int
 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
 							variable.Name, string(val.(internal.AccountAddress)))
 					}
+				case internal.TypeAsset:
+					if err := internal.ParseAsset(val.(internal.Asset)); err != nil {
+						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
+							variable.Name, string(val.(internal.Asset)))
+					}
 				case internal.TypeMonetary:
 					if err := internal.ParseMonetary(val.(internal.Monetary)); err != nil {
 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",

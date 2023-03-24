@@ -143,7 +143,7 @@ func testImpl(t *testing.T, prog *program.Program, expected CaseResult, exec fun
 	}
 
 	exitCode, err := exec(m)
-	require.Equal(t, expected.ExitCode, exitCode)
+	require.Equal(t, expected.ExitCode, exitCode, err)
 	if expected.Error != "" {
 		require.ErrorContains(t, err, expected.Error)
 	} else {
@@ -219,14 +219,22 @@ func TestVariables(t *testing.T) {
 	tc.compile(t, `vars {
 		account $rider
 		account $driver
+		string 	$description
+		number 	$nb
+		asset 	$ass
 	}
-	send [EUR/2 999] (
+	send [$ass 999] (
 		source=$rider
 		destination=$driver
-	)`)
+	)
+	set_tx_meta("description", $description)
+	set_tx_meta("ride", $nb)`)
 	tc.vars = map[string]internal.Value{
-		"rider":  internal.AccountAddress("users:001"),
-		"driver": internal.AccountAddress("users:002"),
+		"rider":       internal.AccountAddress("users:001"),
+		"driver":      internal.AccountAddress("users:002"),
+		"description": internal.String("midnight ride"),
+		"nb":          internal.NewMonetaryInt(1),
+		"ass":         internal.Asset("EUR/2"),
 	}
 	tc.setBalance("users:001", "EUR/2", 1000)
 	tc.expected = CaseResult{
@@ -239,6 +247,10 @@ func TestVariables(t *testing.T) {
 				Destination: "users:002",
 			},
 		},
+		Metadata: map[string]internal.Value{
+			"description": internal.String("midnight ride"),
+			"ride":        internal.NewMonetaryInt(1),
+		},
 		ExitCode: EXIT_OK,
 	}
 }
@@ -250,8 +262,9 @@ func TestVariablesJSON(t *testing.T) {
 		account $driver
 		string 	$description
 		number 	$nb
+		asset 	$ass
 	}
-	send [EUR/2 999] (
+	send [$ass 999] (
 		source=$rider
 		destination=$driver
 	)
@@ -261,7 +274,8 @@ func TestVariablesJSON(t *testing.T) {
 		"rider": "users:001",
 		"driver": "users:002",
 		"description": "midnight ride",
-		"nb": 1
+		"nb": 1,
+		"ass": "EUR/2"
 	}`)
 	tc.setBalance("users:001", "EUR/2", 1000)
 	tc.expected = CaseResult{
@@ -1278,6 +1292,34 @@ func TestVariablesParsing(t *testing.T) {
 		}))
 	})
 
+	t.Run("asset", func(t *testing.T) {
+		p, err := compiler.Compile(`
+			vars {
+				asset $ass
+			}
+			set_tx_meta("asset", $ass)
+		`)
+		require.NoError(t, err)
+
+		m := NewMachine(*p)
+
+		require.NoError(t, m.SetVars(map[string]internal.Value{
+			"ass": internal.Asset("USD/2"),
+		}))
+
+		require.Error(t, m.SetVars(map[string]internal.Value{
+			"ass": internal.Asset("USD-2"),
+		}))
+
+		require.NoError(t, m.SetVarsFromJSON(map[string]json.RawMessage{
+			"ass": json.RawMessage(`"USD/2"`),
+		}))
+
+		require.Error(t, m.SetVarsFromJSON(map[string]json.RawMessage{
+			"ass": json.RawMessage(`"USD-2"`),
+		}))
+	})
+
 	// TODO: handle properly in ledger v1.10
 	t.Run("account empty string", func(t *testing.T) {
 		p, err := compiler.Compile(`
@@ -1795,6 +1837,69 @@ func TestMachine(t *testing.T) {
 		_, _, err := m.ResolveResources(context.Background(), EmptyStore)
 		require.Error(t, err)
 	})
+}
+
+func TestVariableAsset(t *testing.T) {
+	script := `
+		vars {
+			asset $ass
+			monetary $bal = balance(@alice, $ass)
+		}
+
+		send [$ass 15] (
+			source = {
+				@alice
+				@bob
+			}
+			destination = @swap
+		)
+
+		send [$ass *] (
+			source = @swap
+			destination = {
+				max $bal to @alice_2
+				remaining to @bob_2
+			}
+		)`
+
+	tc := NewTestCase()
+	tc.compile(t, script)
+	tc.vars = map[string]internal.Value{
+		"ass": internal.Asset("USD"),
+	}
+	tc.setBalance("alice", "USD", 10)
+	tc.setBalance("bob", "USD", 10)
+	tc.expected = CaseResult{
+		Printed: []internal.Value{},
+		Postings: []Posting{
+			{
+				Asset:       "USD",
+				Amount:      internal.NewMonetaryInt(10),
+				Source:      "alice",
+				Destination: "swap",
+			},
+			{
+				Asset:       "USD",
+				Amount:      internal.NewMonetaryInt(5),
+				Source:      "bob",
+				Destination: "swap",
+			},
+			{
+				Asset:       "USD",
+				Amount:      internal.NewMonetaryInt(10),
+				Source:      "swap",
+				Destination: "alice_2",
+			},
+			{
+				Asset:       "USD",
+				Amount:      internal.NewMonetaryInt(5),
+				Source:      "swap",
+				Destination: "bob_2",
+			},
+		},
+		ExitCode: EXIT_OK,
+	}
+	test(t, tc)
 }
 
 func TestIsScriptErrorWithCode(t *testing.T) {

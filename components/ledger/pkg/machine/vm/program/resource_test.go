@@ -23,9 +23,9 @@ func TestResource(t *testing.T) {
 	vab := VariableAccountBalance{
 		Name:    "name",
 		Account: internal.Address(0),
-		Asset:   "EUR",
+		Asset:   internal.Address(1),
 	}
-	require.Equal(t, "<monetary name balance(0, EUR)>", vab.String())
+	require.Equal(t, "<monetary name balance(0, 1)>", vab.String())
 
 	vam := VariableAccountMetadata{
 		Typ:     internal.TypeMonetary,
