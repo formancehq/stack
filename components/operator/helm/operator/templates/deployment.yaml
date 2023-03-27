@@ -4,6 +4,7 @@ metadata:
   name: {{ include "operator.fullname" . }}
   labels:
     {{- include "operator.labels" . | nindent 4 }}
+    control-plane: controller-manager
 spec:
   selector:
     matchLabels:
@@ -16,6 +17,7 @@ spec:
       {{- end }}
       labels:
         {{- include "operator.selectorLabels" . | nindent 8 }}
+        control-plane: controller-manager
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
