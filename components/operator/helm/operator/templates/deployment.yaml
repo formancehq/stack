@@ -52,9 +52,9 @@ spec:
             - --disable-webhooks
             {{- end }}
           ports:
-            - name: probe
-              containerPort: {{ regexReplaceAll ":" .Values.operator.probeAddr "" | default "8081" }}
-              protocol: TCP
+          - containerPort: 9443
+            name: webhook-server
+            protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz
