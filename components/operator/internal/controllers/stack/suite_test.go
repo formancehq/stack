@@ -13,7 +13,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/onsi/ginkgo/v2"
 	"github.com/onsi/gomega"
-	traefik "github.com/traefik/traefik/v2/pkg/provider/kubernetes/crd/traefik/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -55,7 +54,6 @@ var _ = ginkgo.BeforeSuite(func() {
 	testEnv = &envtest.Environment{
 		CRDDirectoryPaths: []string{
 			filepath.Join(filepath.Dir(filename), "..", "..", "..", "config", "crd", "bases"),
-			filepath.Join(filepath.Dir(filename), "..", "..", "..", "internal", "controllers", "stack", "testing", "crd"),
 		},
 		ErrorIfCRDPathMissing: true,
 	}
@@ -66,7 +64,6 @@ var _ = ginkgo.BeforeSuite(func() {
 	gomega.Expect(restConfig).NotTo(gomega.BeNil())
 
 	gomega.Expect(v1beta3.AddToScheme(scheme.Scheme)).To(gomega.Succeed())
-	gomega.Expect(traefik.AddToScheme(scheme.Scheme)).To(gomega.Succeed())
 
 	k8sClient, err = client.New(restConfig, client.Options{Scheme: scheme.Scheme})
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
