@@ -713,7 +713,7 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.",
+            "description": "Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2",
             "style": "deepObject",
             "explode": true,
             "schema": {
@@ -2488,7 +2488,7 @@
             }
           },
           {
-            "name": "wallet_id",
+            "name": "walletID",
             "in": "query",
             "description": "A wallet ID to filter on",
             "example": "wallet1",

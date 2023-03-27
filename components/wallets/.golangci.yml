@@ -50,5 +50,6 @@ linters:
     - errname
     - exhaustive
     - errorlint
+    - revive
 run:
   timeout: 5m

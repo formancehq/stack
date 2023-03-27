@@ -2,7 +2,6 @@ package ledger
 
 import (
 	"context"
-	"time"
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
@@ -17,21 +16,18 @@ import (
 
 const (
 	SQLCustomFuncMetaCompare = "meta_compare"
-
-	// TODO(polo/gfyrag): make these configurable by env or create an algorithm
-	// to calculate the optimal values based on the number of transactions
-	// NOTE: the batch size must stay `1` until we implement the lock and CQRS
-	// pattern
-	batchSize       = 1
-	batchTickerTime = 100 * time.Millisecond
 )
+
+var ErrStoreNotInitialized = errors.New("Store not initialized")
 
 type Store struct {
 	schema   schema.Schema
 	onClose  func(ctx context.Context) error
 	onDelete func(ctx context.Context) error
 
-	logsBatchWorker *worker.Worker[core.Log]
+	logsBatchWorker *worker.Worker[*core.Log]
+
+	isInitialized bool
 }
 
 func (s *Store) error(err error) error {
@@ -64,11 +60,20 @@ func (s *Store) Initialize(ctx context.Context) (bool, error) {
 		return false, err
 	}
 
-	return migrations.Migrate(ctx, s.schema, ms...)
+	modified, err := migrations.Migrate(ctx, s.schema, ms...)
+	if err == nil {
+		s.isInitialized = true
+	}
+
+	return modified, err
 }
 
 func (s *Store) Close(ctx context.Context) error {
 	return s.onClose(ctx)
+}
+
+func (s *Store) IsInitialized() bool {
+	return s.isInitialized
 }
 
 func NewStore(
@@ -82,10 +87,13 @@ func NewStore(
 		onDelete: onDelete,
 	}
 
-	logsBatchWorker := worker.NewWorker(batchSize, batchTickerTime, s.batchLogs)
+	logsBatchWorker := worker.NewWorker(s.batchLogs)
 	s.logsBatchWorker = logsBatchWorker
 
-	go logsBatchWorker.Run(ctx)
+	go logsBatchWorker.Run(logging.ContextWithLogger(
+		context.Background(),
+		logging.FromContext(ctx),
+	))
 
 	return s
 }

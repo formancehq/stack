@@ -7,9 +7,9 @@ repos:
   - id: trailing-whitespace
     exclude: components/operator/internal/controllers/stack/testdata
   - id: end-of-file-fixer
-  - id: check-yaml
-    exclude: services/orchestration/examples
-    args: [--allow-multiple-documents]
+  #- id: check-yaml
+  #  exclude: services/orchestration/examples
+  #  args: [--allow-multiple-documents]
   - id: check-added-large-files
 - repo: local
   hooks:

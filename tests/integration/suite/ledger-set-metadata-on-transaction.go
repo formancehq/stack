@@ -30,18 +30,13 @@ var _ = Given("some empty environment", func() {
 					}},
 				}).
 				Execute()
-			Expect(err).NotTo(HaveOccurred())
+			Expect(err).ToNot(HaveOccurred())
 
 			// Check existence on api
-			Eventually(func(g Gomega) bool {
-				_, _, err := Client().TransactionsApi.
-					GetTransaction(TestContext(), "default", rsp.Data.Txid).
-					Execute()
-				if err != nil {
-					return false
-				}
-				return true
-			}).Should(BeTrue())
+			_, _, err := Client().TransactionsApi.
+				GetTransaction(TestContext(), "default", rsp.Data.Txid).
+				Execute()
+			Expect(err).ToNot(HaveOccurred())
 		})
 		Then("adding a metadata", func() {
 			metadata := map[string]any{
@@ -52,19 +47,15 @@ var _ = Given("some empty environment", func() {
 					AddMetadataOnTransaction(TestContext(), "default", rsp.Data.Txid).
 					RequestBody(metadata).
 					Execute()
-				Expect(err).NotTo(HaveOccurred())
+				Expect(err).To(Succeed())
 			})
 			It("should eventually be available on api", func() {
 				// Check existence on api
-				Eventually(func(g Gomega) map[string]any {
-					transaction, _, err := Client().TransactionsApi.
-						GetTransaction(TestContext(), "default", rsp.Data.Txid).
-						Execute()
-					if err != nil {
-						return map[string]any{}
-					}
-					return transaction.Data.Metadata
-				}).Should(Equal(metadata))
+				transaction, _, err := Client().TransactionsApi.
+					GetTransaction(TestContext(), "default", rsp.Data.Txid).
+					Execute()
+				Expect(err).ToNot(HaveOccurred())
+				Expect(transaction.Data.Metadata).Should(Equal(metadata))
 			})
 		})
 	})

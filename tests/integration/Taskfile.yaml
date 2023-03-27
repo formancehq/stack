@@ -3,10 +3,10 @@ version: "3"
 vars:
   PKG: "./suite"
   RUN: ".*"
-  VERBOSE: "true"
-  PARALLEL: "false"
+  VERBOSE: "false"
+  PARALLEL: "true"
   FAILFAST: "false"
-  DEBUG: "true"
+  DEBUG: "false"
   REPEAT: 0
 
 tasks:
@@ -17,7 +17,7 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run -v --fix
+      - golangci-lint run {{if eq .VERBOSE "true"}}-v{{end}} --fix
 
   tests:
     deps: [run-docker-compose]
@@ -27,6 +27,7 @@ tasks:
         {{if eq .VERBOSE "true"}}-v{{end}}
         {{if eq .PARALLEL "true"}}-p{{end}}
         {{if eq .FAILFAST "true"}}--fail-fast{{end}}
+        --timeout=10m
         --focus-file "{{.RUN}}"
         --repeat {{.REPEAT}}
         {{if eq .DEBUG "true"}}--output-interceptor-mode=none{{end}}

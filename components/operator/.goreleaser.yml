@@ -101,3 +101,7 @@ docker_manifests:
     image_templates:
       - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-amd64
       - ghcr.io/formancehq/{{ .ProjectName }}:v{{ .Version }}-arm64
+after:
+  hooks:
+  - cmd: make helm-update
+    dir: ./components/operator/

@@ -2875,7 +2875,7 @@ class WalletsApi
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
             $wallet_id,
-            'wallet_id', // param base name
+            'walletID', // param base name
             'string', // openApiType
             'form', // style
             true, // explode

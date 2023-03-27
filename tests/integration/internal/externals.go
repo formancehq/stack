@@ -10,10 +10,3 @@ func getOpenSearchUrl() string {
 	}
 	return "localhost:9200"
 }
-
-func getTemporalAddress() string {
-	if fromEnv := os.Getenv("TEMPORAL_ADDRESS"); fromEnv != "" {
-		return fromEnv
-	}
-	return "localhost:7233"
-}

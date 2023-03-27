@@ -9,6 +9,7 @@ import (
 	"github.com/formancehq/ledger/pkg/ledger/cache"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/ledger/pkg/machine/script/compiler"
+	"github.com/formancehq/ledger/pkg/machine/vm"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
 	"github.com/google/uuid"
@@ -48,7 +49,7 @@ var testCases = []testCase{
 				source = @bank
 				destination = @user:001
 			)`,
-		expectErrorCode: ScriptErrorInsufficientFund,
+		expectErrorCode: vm.ScriptErrorInsufficientFund,
 	},
 	{
 		name: "send 0$",
@@ -116,7 +117,7 @@ var testCases = []testCase{
 				destination = $dest
 			)`,
 		vars:            map[string]json.RawMessage{},
-		expectErrorCode: ScriptErrorCompilationFailed,
+		expectErrorCode: vm.ScriptErrorCompilationFailed,
 	},
 	{
 		name: "use empty account",
@@ -164,7 +165,7 @@ var testCases = []testCase{
 		vars: map[string]json.RawMessage{
 			"sale": json.RawMessage(`"sales:042"`),
 		},
-		expectErrorCode: ScriptErrorCompilationFailed,
+		expectErrorCode: vm.ScriptErrorCompilationFailed,
 	},
 	{
 		name: "using metadata",
@@ -269,7 +270,7 @@ var testCases = []testCase{
 		metadata: core.Metadata{
 			"priority": "low",
 		},
-		expectErrorCode: ScriptErrorMetadataOverride,
+		expectErrorCode: vm.ScriptErrorMetadataOverride,
 	},
 	{
 		name: "set account meta",
@@ -350,7 +351,7 @@ var testCases = []testCase{
 				source = @users:001
 				destination = @world
 			)`,
-		expectErrorCode: ScriptErrorCompilationFailed,
+		expectErrorCode: vm.ScriptErrorCompilationFailed,
 	},
 	{
 		name: "overdraft",
@@ -411,7 +412,7 @@ func TestMachine(t *testing.T) {
 				Metadata: tc.metadata,
 			})
 			if tc.expectErrorCode != "" {
-				require.True(t, IsScriptErrorWithCode(err, tc.expectErrorCode))
+				require.True(t, vm.IsScriptErrorWithCode(err, tc.expectErrorCode))
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, result)

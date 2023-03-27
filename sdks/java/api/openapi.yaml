@@ -650,8 +650,8 @@ paths:
           example: users:.+
           type: string
         style: form
-      - description: Filter accounts by metadata key value pairs. Nested objects can
-          be used as seen in the example below.
+      - description: "Filter accounts by metadata key value pairs. The filter can\
+          \ be used like this metadata[key]=value1&metadata[a.nested.key]=value2"
         example:
           admin: true
           a:
@@ -2188,7 +2188,7 @@ paths:
         example: wallet1
         explode: true
         in: query
-        name: wallet_id
+        name: walletID
         required: false
         schema:
           type: string

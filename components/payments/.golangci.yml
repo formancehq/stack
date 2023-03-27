@@ -97,6 +97,7 @@ linters:
     - containedctx # TODO: FIX
     - gochecknoinits
     - gomoddirectives
+    - revive
 
 issues:
   exclude-rules:

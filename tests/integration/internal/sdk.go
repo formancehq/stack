@@ -48,7 +48,7 @@ func (c *openapiCheckerRoundTripper) RoundTrip(req *http.Request) (*http.Respons
 		WithOffset(8).To(Succeed())
 
 	_, err = httputil.DumpRequest(req, true)
-	Expect(err).NotTo(HaveOccurred())
+	Expect(err).ToNot(HaveOccurred())
 
 	rsp, err := c.underlying.RoundTrip(req)
 	Expect(err).WithOffset(8).To(Succeed())
@@ -73,14 +73,14 @@ var _ http.RoundTripper = &openapiCheckerRoundTripper{}
 
 func newOpenapiCheckerTransport(rt http.RoundTripper) *openapiCheckerRoundTripper {
 	openapiRawSpec, err := os.ReadFile(filepath.Join("..", "..", "..", "openapi", "build", "generate.json"))
-	Expect(err).NotTo(HaveOccurred())
+	Expect(err).ToNot(HaveOccurred())
 
 	loader := &openapi3.Loader{
 		Context:               TestContext(),
 		IsExternalRefsAllowed: true,
 	}
 	doc, err := loader.LoadFromData(openapiRawSpec)
-	Expect(err).NotTo(HaveOccurred())
+	Expect(err).ToNot(HaveOccurred())
 
 	// Override default servers
 	doc.Servers = []*openapi3.Server{{
@@ -90,10 +90,10 @@ func newOpenapiCheckerTransport(rt http.RoundTripper) *openapiCheckerRoundTrippe
 	doc.Components.SecuritySchemes = openapi3.SecuritySchemes{}
 
 	err = doc.Validate(ctx)
-	Expect(err).NotTo(HaveOccurred())
+	Expect(err).ToNot(HaveOccurred())
 
 	router, err := gorillamux.NewRouter(doc)
-	Expect(err).NotTo(HaveOccurred())
+	Expect(err).ToNot(HaveOccurred())
 
 	return &openapiCheckerRoundTripper{
 		router:     router,

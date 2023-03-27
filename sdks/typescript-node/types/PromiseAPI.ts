@@ -228,7 +228,7 @@ export class PromiseAccountsApi {
      * Count the accounts from a ledger
      * @param ledger Name of the ledger.
      * @param address Filter accounts by address pattern (regular expression placed between ^ and $).
-     * @param metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+     * @param metadata Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2
      */
     public countAccounts(ledger: string, address?: string, metadata?: any, _options?: Configuration): Promise<void> {
         const result = this.api.countAccounts(ledger, address, metadata, _options);
@@ -1228,11 +1228,11 @@ export class PromiseWalletsApi {
 
     /**
      * @param pageSize The maximum number of results to return per page
-     * @param walletId A wallet ID to filter on
+     * @param walletID A wallet ID to filter on
      * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set. 
      */
-    public getTransactions(pageSize?: number, walletId?: string, cursor?: string, _options?: Configuration): Promise<GetTransactionsResponse> {
-        const result = this.api.getTransactions(pageSize, walletId, cursor, _options);
+    public getTransactions(pageSize?: number, walletID?: string, cursor?: string, _options?: Configuration): Promise<GetTransactionsResponse> {
+        const result = this.api.getTransactions(pageSize, walletID, cursor, _options);
         return result.toPromise();
     }
 

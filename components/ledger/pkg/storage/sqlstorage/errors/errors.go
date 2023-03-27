@@ -5,7 +5,7 @@ import (
 	"github.com/lib/pq"
 )
 
-// PostgresError is an helper to wrap postgres errors into storage errors
+// postgresError is an helper to wrap postgres errors into storage errors
 func PostgresError(err error) error {
 	if err != nil {
 		switch pge := err.(type) {

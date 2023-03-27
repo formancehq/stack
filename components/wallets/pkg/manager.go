@@ -184,7 +184,11 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 		Metadata: TransactionMetadata(metadata.Metadata{}),
 	}
 
-	return m.CreateTransaction(ctx, postTransaction)
+	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
@@ -208,7 +212,11 @@ func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
 		Metadata: TransactionMetadata(metadata.Metadata{}),
 	}
 
-	return m.CreateTransaction(ctx, postTransaction)
+	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *Manager) Credit(ctx context.Context, credit Credit) error {
@@ -240,7 +248,11 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 		postTransaction.Reference = &credit.Reference
 	}
 
-	return m.CreateTransaction(ctx, postTransaction)
+	if err := m.CreateTransaction(ctx, postTransaction); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (m *Manager) CreateTransaction(ctx context.Context, postTransaction sdk.PostTransaction) error {

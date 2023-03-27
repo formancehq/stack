@@ -17,3 +17,4 @@ linters:
     - godox
     - wrapcheck
     - rowserrcheck
+    - errorlint

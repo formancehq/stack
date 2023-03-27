@@ -3,74 +3,111 @@ package cache
 import (
 	"context"
 	"strings"
+	"sync"
 
 	"github.com/bluele/gcache"
 	"github.com/formancehq/ledger/pkg/core"
-	"github.com/formancehq/ledger/pkg/storage"
+	"golang.org/x/sync/singleflight"
 )
 
+type AccountComputer interface {
+	ComputeAccount(ctx context.Context, address string) (*core.AccountWithVolumes, error)
+}
+type AccountComputerFn func(ctx context.Context, address string) (*core.AccountWithVolumes, error)
+
+func (fn AccountComputerFn) ComputeAccount(ctx context.Context, address string) (*core.AccountWithVolumes, error) {
+	return fn(ctx, address)
+}
+
+type cacheEntry struct {
+	sync.Mutex
+	account *core.AccountWithVolumes
+}
+
 type Cache struct {
-	cache gcache.Cache
-	store storage.LedgerStore
+	cache           gcache.Cache
+	accountComputer AccountComputer
+	sg              singleflight.Group
 }
 
 func (c *Cache) GetAccountWithVolumes(ctx context.Context, address string) (*core.AccountWithVolumes, error) {
 
 	address = strings.TrimPrefix(address, "@")
 
-	rawAccount, err := c.cache.Get(c.accountKey(address))
-	if err != nil {
+	item, err, _ := c.sg.Do(address, func() (interface{}, error) {
+		item, err := c.cache.Get(address)
+		if err == nil {
+			return item, nil
+		}
+		entry := &cacheEntry{}
+
 		// TODO: Rename later ?
-		account, err := c.store.ComputeAccount(ctx, address)
+		entry.account, err = c.accountComputer.ComputeAccount(ctx, address)
 		if err != nil {
 			return nil, err
 		}
-
-		if err := c.cache.Set(c.accountKey(account.Address), account); err != nil {
-			panic(err)
+		if err := c.cache.Set(address, entry); err != nil {
+			return nil, err
 		}
-
-		return account, nil
+		return entry, nil
+	})
+	if err != nil {
+		panic(err)
 	}
-	cp := rawAccount.(*core.AccountWithVolumes).Copy()
+	cp := item.(*cacheEntry).account.Copy()
 
 	return &cp, nil
 }
 
-func (c *Cache) Update(accounts core.AccountsAssetsVolumes) {
-	for address, volumes := range accounts {
-		rawAccount, err := c.cache.Get(c.accountKey(address))
-		if err != nil {
-			// Cannot update cache, item maybe evicted
-			continue
-		}
-		account := rawAccount.(*core.AccountWithVolumes)
-		account.Volumes = volumes
-		account.Balances = volumes.Balances()
-		if err := c.cache.Set(c.accountKey(address), account); err != nil {
-			panic(err)
-		}
+func (c *Cache) withLockOnAccount(address string, callback func(account *core.AccountWithVolumes)) {
+	item, err := c.cache.Get(address)
+	if err != nil {
+		return
+	}
+	entry := item.(*cacheEntry)
+	entry.Lock()
+	defer entry.Unlock()
+
+	callback(entry.account)
+}
+
+func (c *Cache) addOutput(address, asset string, amount *core.MonetaryInt) {
+	c.withLockOnAccount(address, func(account *core.AccountWithVolumes) {
+		volumes := account.Volumes[asset]
+		volumes.Output = volumes.Output.OrZero().Add(amount)
+		volumes.Input = volumes.Input.OrZero()
+		account.Volumes[asset] = volumes
+	})
+}
+
+func (c *Cache) addInput(address, asset string, amount *core.MonetaryInt) {
+	c.withLockOnAccount(address, func(account *core.AccountWithVolumes) {
+		volumes := account.Volumes[asset]
+		volumes.Input = volumes.Input.OrZero().Add(amount)
+		volumes.Output = volumes.Output.OrZero()
+		account.Volumes[asset] = volumes
+	})
+}
+
+func (c *Cache) UpdateVolumeWithTX(tx core.Transaction) {
+	for _, posting := range tx.Postings {
+		c.addOutput(posting.Source, posting.Asset, posting.Amount)
+		c.addInput(posting.Destination, posting.Asset, posting.Amount)
 	}
 }
 
-func (c *Cache) UpdateAccountMetadata(ctx context.Context, address string, m core.Metadata) error {
-	account, err := c.GetAccountWithVolumes(ctx, address)
-	if err != nil {
-		return err
-	}
-	account.Metadata = account.Metadata.Merge(m)
-	_ = c.cache.Set(c.accountKey(address), account)
+func (c *Cache) UpdateAccountMetadata(address string, m core.Metadata) error {
+	c.withLockOnAccount(address, func(account *core.AccountWithVolumes) {
+		account.Metadata = account.Metadata.Merge(m)
+	})
+
 	return nil
 }
 
-func (c *Cache) accountKey(address string) string {
-	return c.store.Name() + "-" + address
-}
-
-func New(store storage.LedgerStore) *Cache {
+func New(accountComputer AccountComputer) *Cache {
 	return &Cache{
-		store: store,
+		accountComputer: accountComputer,
 		//TODO(gfyrag): Make configurable
-		cache: gcache.New(1000).LFU().Build(),
+		cache: gcache.New(1024).LFU().Build(),
 	}
 }

@@ -1,6 +1,6 @@
 
 # Image URL to use all building/pushing image targets
-IMG ?= controller:latest
+IMG ?= controller
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.24.1
 
@@ -101,6 +101,37 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
+
+.PHONY: helm-update
+helm-update: manifests generate
+	cp -pr ./config/crd/bases ./helm/operator/templates/
+	cp -pr ./config/rbac ./helm/operator/templates/
+
+.PHONY: helm-debug
+helm-debug: helm-update
+	helm template ./helm/operator --debug
+	helm install --create-namespace --namespace formance-operator -f ./helm/operator/values.yaml formance-operator ./helm/operator --dry-run
+
+.PHONY: helm-install
+helm-install: helm-update
+	helm install --create-namespace --namespace formance-operator -f ./helm/operator/values.yaml formance-operator ./helm/operator
+
+.PHONY: helm-local-install
+helm-local-install: helm-update
+	helm install --create-namespace --namespace formance-operator -f ./helm/operator/values.yaml --set image.repository="${IMG}" formance-operator ./helm/operator
+
+.PHONY: helm-uninstall
+helm-uninstall:
+	helm uninstall formance-operator --namespace formance-operator
+
+.PHONY: helm-upgrade
+helm-upgrade: helm-update
+	helm upgrade --namespace formance-operator -f ./helm/operator/values.yaml formance-operator ./helm/operator
+
+.PHONY: helm-local-upgrade
+helm-local-upgrade: helm-update
+	helm upgrade --namespace formance-operator -f ./helm/operator/values.yaml --set image.repository="${IMG}" formance-operator ./helm/operator
+
 
 ##@ Build Dependencies
 

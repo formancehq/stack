@@ -103,7 +103,7 @@ import (
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
     address := "users:.+" // string | Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-    metadata := map[string]interface{}{"key": map[string]interface{}(123)} // map[string]interface{} | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+    metadata := map[string]interface{}{"key": map[string]interface{}(123)} // map[string]interface{} | Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2 (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -132,7 +132,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **address** | **string** | Filter accounts by address pattern (regular expression placed between ^ and $). | 
- **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. | 
+ **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2 | 
 
 ### Return type
 

@@ -53,8 +53,14 @@ func (l *Ledger) CreateTransaction(ctx context.Context, dryRun bool, script core
 	tx, log, err := l.runner.Execute(ctx, script, dryRun, func(expandedTx core.ExpandedTransaction, accountMetadata map[string]core.Metadata) core.Log {
 		return core.NewTransactionLog(expandedTx.Transaction, accountMetadata)
 	})
-	if err == nil {
-		l.queryWorker.QueueLog(ctx, log, l.store)
+	if err == nil && !dryRun {
+		// Wait for CQRS ingestion
+		// TODO(polo/gfyrag): add possiblity to disable this via request param
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-l.queryWorker.QueueLog(ctx, log, l.store):
+		}
 	}
 
 	return tx, err
@@ -106,7 +112,13 @@ func (l *Ledger) RevertTransaction(ctx context.Context, id uint64) (*core.Expand
 		return core.NewRevertedTransactionLog(expandedTx.Timestamp, revertedTx.ID, expandedTx.Transaction)
 	})
 	if err == nil {
-		l.queryWorker.QueueLog(ctx, log, l.store)
+		// Wait for CQRS ingestion
+		// TODO(polo/gfyrag): add possiblity to disable this via request param
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-l.queryWorker.QueueLog(ctx, log, l.store):
+		}
 	}
 
 	return tx, err
@@ -167,7 +179,7 @@ func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID inter
 		}
 		defer unlock(context.Background())
 
-		err = l.dbCache.UpdateAccountMetadata(ctx, targetID.(string), m)
+		err = l.dbCache.UpdateAccountMetadata(targetID.(string), m)
 		if err != nil {
 			return err
 		}
@@ -188,7 +200,13 @@ func (l *Ledger) SaveMeta(ctx context.Context, targetType string, targetID inter
 
 	err = l.store.AppendLog(ctx, &log)
 	if err == nil {
-		l.queryWorker.QueueLog(ctx, log, l.store)
+		// Wait for CQRS ingestion
+		// TODO(polo/gfyrag): add possiblity to disable this via request param
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-l.queryWorker.QueueLog(ctx, log, l.store):
+		}
 	}
 
 	return err

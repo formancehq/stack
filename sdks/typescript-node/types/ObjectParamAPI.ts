@@ -238,7 +238,7 @@ export interface AccountsApiCountAccountsRequest {
      */
     address?: string
     /**
-     * Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+     * Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2
      * @type any
      * @memberof AccountsApicountAccounts
      */
@@ -1962,7 +1962,7 @@ export interface WalletsApiGetTransactionsRequest {
      * @type string
      * @memberof WalletsApigetTransactions
      */
-    walletId?: string
+    walletID?: string
     /**
      * Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the cursor is set. 
      * @type string
@@ -2118,7 +2118,7 @@ export class ObjectWalletsApi {
      * @param param the request object
      */
     public getTransactions(param: WalletsApiGetTransactionsRequest = {}, options?: Configuration): Promise<GetTransactionsResponse> {
-        return this.api.getTransactions(param.pageSize, param.walletId, param.cursor,  options).toPromise();
+        return this.api.getTransactions(param.pageSize, param.walletID, param.cursor,  options).toPromise();
     }
 
     /**

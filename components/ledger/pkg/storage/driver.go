@@ -23,6 +23,7 @@ type LedgerStore interface {
 	Delete(ctx context.Context) error
 	Initialize(ctx context.Context) (bool, error)
 	Close(ctx context.Context) error
+	IsInitialized() bool
 	Name() string
 
 	GetNextLogID(ctx context.Context) (uint64, error)
@@ -51,7 +52,7 @@ type LedgerStore interface {
 	GetMigrationsDone(context.Context) ([]core.MigrationInfo, error)
 	ComputeAccount(ctx context.Context, account string) (*core.AccountWithVolumes, error)
 	ReadLogWithReference(ctx context.Context, reference string) (*core.Log, error)
-	ReadLastLogWithType(ctx context.Context, logType ...string) (*core.Log, error)
+	ReadLastLogWithType(ctx context.Context, logType ...core.LogType) (*core.Log, error)
 }
 
 type Driver interface {
