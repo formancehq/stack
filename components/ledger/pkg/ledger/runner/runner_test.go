@@ -204,10 +204,6 @@ func TestExecuteScript(t *testing.T) {
 				require.NoError(t, err)
 				require.NotNil(t, ret)
 				tc.expectedTx.Timestamp = now
-				//data, _ := json.MarshalIndent(tc.expectedTx, "", "  ")
-				//fmt.Println(string(data))
-				//data, _ = json.MarshalIndent(*ret, "", "  ")
-				//fmt.Println(string(data))
 				require.Equal(t, tc.expectedTx, *ret)
 
 				logs, err := store.ReadLogsStartingFromID(context.Background(), 0)
