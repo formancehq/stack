@@ -46,6 +46,7 @@ type LedgerStore interface {
 	UpdateAccountMetadata(ctx context.Context, id string, metadata core.Metadata) error
 	UpdateAccountsMetadata(ctx context.Context, accounts []core.Account) error
 	EnsureAccountExists(ctx context.Context, account string) error
+	EnsureAccountsExist(ctx context.Context, accounts []string) error
 	CountAccounts(context.Context, AccountsQuery) (uint64, error)
 	GetAccounts(context.Context, AccountsQuery) (api.Cursor[core.Account], error)
 	GetAccountWithVolumes(ctx context.Context, addr string) (*core.AccountWithVolumes, error)

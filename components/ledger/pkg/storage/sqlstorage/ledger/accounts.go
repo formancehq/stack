@@ -312,6 +312,27 @@ func (s *Store) EnsureAccountExists(ctx context.Context, account string) error {
 	return sqlerrors.PostgresError(err)
 }
 
+func (s *Store) EnsureAccountsExist(ctx context.Context, accounts []string) error {
+	if !s.isInitialized {
+		return ErrStoreNotInitialized
+	}
+
+	accs := make([]*Accounts, len(accounts))
+	for i, a := range accounts {
+		accs[i] = &Accounts{
+			Address:  a,
+			Metadata: make(map[string]interface{}),
+		}
+	}
+
+	_, err := s.schema.NewInsert(accountsTableName).
+		Model(&accs).
+		Ignore().
+		Exec(ctx)
+
+	return s.error(err)
+}
+
 func (s *Store) UpdateAccountMetadata(ctx context.Context, address string, metadata core.Metadata) error {
 	if !s.isInitialized {
 		return storage.ErrStoreNotInitialized

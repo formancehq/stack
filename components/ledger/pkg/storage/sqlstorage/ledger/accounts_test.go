@@ -124,4 +124,30 @@ func TestAccounts(t *testing.T) {
 			assert.Equal(t, account.Metadata, acc.Metadata, "account metadata should match")
 		}
 	})
+
+	t.Run("success ensure account exists", func(t *testing.T) {
+		addr := "test:account:4"
+
+		err := store.EnsureAccountExists(context.Background(), addr)
+		assert.NoError(t, err, "account insertion should not fail")
+
+		account, err := store.GetAccount(context.Background(), addr)
+		assert.NoError(t, err, "account retrieval should not fail")
+
+		assert.Equal(t, addr, account.Address, "account address should match")
+	})
+
+	t.Run("success ensure mulitple accounts exist", func(t *testing.T) {
+		addrs := []string{"test:account:4", "test:account:5", "test:account:6"}
+
+		err := store.EnsureAccountsExist(context.Background(), addrs)
+		assert.NoError(t, err, "account insertion should not fail")
+
+		for _, addr := range addrs {
+			account, err := store.GetAccount(context.Background(), addr)
+			assert.NoError(t, err, "account retrieval should not fail")
+
+			assert.Equal(t, addr, account.Address, "account address should match")
+		}
+	})
 }
