@@ -328,5 +328,25 @@ func (s *Store) UpdateAccountMetadata(ctx context.Context, address string, metad
 		Set("metadata = accounts.metadata || EXCLUDED.metadata").
 		Exec(ctx)
 	return err
+}
 
+func (s *Store) UpdateAccountsMetadata(ctx context.Context, accounts []core.Account) error {
+	if !s.isInitialized {
+		return ErrStoreNotInitialized
+	}
+
+	accs := make([]*Accounts, len(accounts))
+	for i, a := range accounts {
+		accs[i] = &Accounts{
+			Address:  a.Address,
+			Metadata: a.Metadata,
+		}
+	}
+
+	_, err := s.schema.NewInsert(accountsTableName).
+		Model(&accs).
+		On("CONFLICT (address) DO UPDATE").
+		Set("metadata = accounts.metadata || EXCLUDED.metadata").
+		Exec(ctx)
+	return err
 }
