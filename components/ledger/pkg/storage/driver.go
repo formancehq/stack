@@ -37,6 +37,7 @@ type LedgerStore interface {
 
 	InsertTransactions(ctx context.Context, transaction ...core.ExpandedTransaction) error
 	UpdateTransactionMetadata(ctx context.Context, id uint64, metadata core.Metadata) error
+	UpdateTransactionsMetadata(ctx context.Context, txs ...core.TransactionWithMetadata) error
 	CountTransactions(context.Context, TransactionsQuery) (uint64, error)
 	GetTransactions(context.Context, TransactionsQuery) (api.Cursor[core.ExpandedTransaction], error)
 	GetTransaction(ctx context.Context, txid uint64) (*core.ExpandedTransaction, error)
