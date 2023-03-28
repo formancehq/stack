@@ -23,21 +23,23 @@ type Volumes struct {
 	Output  uint64 `bun:"output,type:numeric"`
 }
 
-func (s *Store) UpdateVolumes(ctx context.Context, volumes core.AccountsAssetsVolumes) error {
+func (s *Store) UpdateVolumes(ctx context.Context, volumes ...core.AccountsAssetsVolumes) error {
 	if !s.isInitialized {
 		return storage.ErrStoreNotInitialized
 	}
 
 	vls := make([]*Volumes, 0, len(volumes))
 
-	for account, accountVolumes := range volumes {
-		for asset, volumes := range accountVolumes {
-			vls = append(vls, &Volumes{
-				Account: account,
-				Asset:   asset,
-				Input:   volumes.Input.Uint64(),
-				Output:  volumes.Output.Uint64(),
-			})
+	for _, vs := range volumes {
+		for account, accountVolumes := range vs {
+			for asset, volumes := range accountVolumes {
+				vls = append(vls, &Volumes{
+					Account: account,
+					Asset:   asset,
+					Input:   volumes.Input.Uint64(),
+					Output:  volumes.Output.Uint64(),
+				})
+			}
 		}
 	}
 

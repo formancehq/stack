@@ -52,7 +52,7 @@ type LedgerStore interface {
 	GetAccountWithVolumes(ctx context.Context, addr string) (*core.AccountWithVolumes, error)
 	GetAccount(ctx context.Context, accountAddress string) (*core.Account, error)
 
-	UpdateVolumes(ctx context.Context, volumes core.AccountsAssetsVolumes) error
+	UpdateVolumes(ctx context.Context, volumes ...core.AccountsAssetsVolumes) error
 	GetAssetsVolumes(ctx context.Context, accountAddress string) (core.AssetsVolumes, error)
 
 	GetBalances(context.Context, BalancesQuery) (api.Cursor[core.AccountsBalances], error)
