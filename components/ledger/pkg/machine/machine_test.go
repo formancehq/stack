@@ -6,6 +6,7 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/ledger/pkg/machine/script/compiler"
@@ -52,7 +53,7 @@ var testCases = []testCase{
 		expectErrorCode: vm.ScriptErrorInsufficientFund,
 	},
 	{
-		name: "send 0$",
+		name: "send $0",
 		script: `
 			send [USD/2 0] (
 				source = @world
@@ -60,8 +61,7 @@ var testCases = []testCase{
 			)`,
 		expectResult: Result{
 			Postings: []core.Posting{
-				// TODO: The machine should return a posting with 0 as amount
-				//core.NewPosting("world", "user:001", "USD/2", core.NewMonetaryInt(0)),
+				core.NewPosting("world", "user:001", "USD/2", big.NewInt(0)),
 			},
 			Metadata:        map[string]any{},
 			AccountMetadata: map[string]core.Metadata{},
@@ -76,8 +76,7 @@ var testCases = []testCase{
 			)`,
 		expectResult: Result{
 			Postings: []core.Posting{
-				// TODO: The machine should return a posting with 0 as amount
-				//core.NewPosting("world", "user:001", "USD/2", core.NewMonetaryInt(0)),
+				core.NewPosting("world", "user:001", "USD/2", big.NewInt(0)),
 			},
 			Metadata:        map[string]any{},
 			AccountMetadata: map[string]core.Metadata{},
@@ -273,7 +272,6 @@ var testCases = []testCase{
 	{
 		name: "balance function",
 		setup: func(t *testing.T, store storage.LedgerStore) {
-			require.NoError(t, store.EnsureAccountExists(context.Background(), "users:001"))
 			require.NoError(t, store.UpdateVolumes(context.Background(), core.AccountsAssetsVolumes{
 				"users:001": map[string]core.Volumes{
 					"COIN": {
@@ -368,4 +366,52 @@ func TestMachine(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMachineZero(t *testing.T) {
+	require.NoError(t, pgtesting.CreatePostgresServer())
+	defer func() {
+		_ = pgtesting.DestroyPostgresServer()
+	}()
+
+	storageDriver := ledgertesting.StorageDriver(t)
+	require.NoError(t, storageDriver.Initialize(context.Background()))
+	ledger := uuid.NewString()
+	store, _, err := storageDriver.GetLedgerStore(context.Background(), ledger, true)
+	require.NoError(t, err)
+
+	_, err = store.Initialize(context.Background())
+	require.NoError(t, err)
+
+	require.NoError(t, store.UpdateVolumes(context.Background(), core.AccountsAssetsVolumes{
+		"alice": {
+			"USD": {
+				Input:  big.NewInt(3),
+				Output: big.NewInt(0),
+			},
+		},
+	}))
+
+	script := `
+		send [USD 0] (
+			source = @alice
+			destination = @bob
+		)`
+
+	program, err := compiler.Compile(script)
+	require.NoError(t, err)
+
+	m := vm.NewMachine(*program)
+	m.Debug = true
+	_, _, err = m.ResolveResources(context.Background(), store)
+	require.NoError(t, err)
+	require.NoError(t, m.ResolveBalances(context.Background(), store))
+
+	result, err := Run(m, core.RunScript{
+		Script: core.Script{
+			Plain: script,
+		},
+	})
+	require.NoError(t, err)
+	spew.Dump(result)
 }

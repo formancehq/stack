@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	DEBUG bool = false
+	DEBUG bool = true
 )
 
 type CaseResult struct {
