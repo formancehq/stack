@@ -28,26 +28,28 @@ func (s *Store) UpdateVolumes(ctx context.Context, volumes core.AccountsAssetsVo
 		return storage.ErrStoreNotInitialized
 	}
 
+	vls := make([]*Volumes, 0, len(volumes))
+
 	for account, accountVolumes := range volumes {
 		for asset, volumes := range accountVolumes {
-			v := &Volumes{
+			vls = append(vls, &Volumes{
 				Account: account,
 				Asset:   asset,
 				Input:   volumes.Input.Uint64(),
 				Output:  volumes.Output.Uint64(),
-			}
-
-			query := s.schema.NewInsert(volumesTableName).
-				Model(v).
-				On("CONFLICT (account, asset) DO UPDATE").
-				Set("input = EXCLUDED.input, output = EXCLUDED.output").
-				String()
-
-			_, err := s.schema.ExecContext(ctx, query)
-			if err != nil {
-				return sqlerrors.PostgresError(err)
-			}
+			})
 		}
+	}
+
+	query := s.schema.NewInsert(volumesTableName).
+		Model(&vls).
+		On("CONFLICT (account, asset) DO UPDATE").
+		Set("input = EXCLUDED.input, output = EXCLUDED.output").
+		String()
+
+	_, err := s.schema.ExecContext(ctx, query)
+	if err != nil {
+		return sqlerrors.PostgresError(err)
 	}
 
 	return nil
