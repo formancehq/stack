@@ -7,7 +7,6 @@ require (
 	github.com/ThreeDotsLabs/watermill v1.2.0
 	github.com/antlr/antlr4/runtime/Go/antlr v1.4.10
 	github.com/bluele/gcache v0.0.2
-	github.com/davecgh/go-spew v1.1.1
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230222164357-55840b21a337
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/cors v1.2.1
@@ -45,6 +44,7 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
 	github.com/containerd/continuity v0.3.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/cli v20.10.17+incompatible // indirect
 	github.com/docker/docker v20.10.17+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect

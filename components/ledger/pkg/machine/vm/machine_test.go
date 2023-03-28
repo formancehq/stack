@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	DEBUG bool = true
+	DEBUG bool = false
 )
 
 type CaseResult struct {
@@ -548,7 +548,7 @@ func TestNoEmptyPostings(t *testing.T) {
 	test(t, tc)
 }
 
-func TestNoEmptyPostings2(t *testing.T) {
+func TestEmptyPostings(t *testing.T) {
 	tc := NewTestCase()
 	tc.compile(t, `send [GEM *] (
 		source = @foo
@@ -556,8 +556,15 @@ func TestNoEmptyPostings2(t *testing.T) {
 	)`)
 	tc.setBalance("foo", "GEM", 0)
 	tc.expected = CaseResult{
-		Printed:  []internal.Value{},
-		Postings: []Posting{},
+		Printed: []internal.Value{},
+		Postings: []Posting{
+			{
+				Source:      "foo",
+				Destination: "bar",
+				Amount:      internal.NewMonetaryInt(0),
+				Asset:       "GEM",
+			},
+		},
 		ExitCode: EXIT_OK,
 	}
 	test(t, tc)

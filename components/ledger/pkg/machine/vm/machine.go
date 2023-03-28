@@ -15,7 +15,6 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/machine/internal"
 	"github.com/formancehq/ledger/pkg/machine/vm/program"
@@ -261,10 +260,8 @@ func (m *Machine) tick() (bool, byte) {
 	case program.OP_MONETARY_NEW:
 		amount := pop[internal.Number](m)
 		asset := pop[internal.Asset](m)
-		m.pushValue(internal.Monetary{
-			Asset:  asset,
-			Amount: amount,
-		})
+		mon := internal.Monetary{Asset: asset, Amount: amount}
+		m.pushValue(mon)
 
 	case program.OP_MONETARY_ADD:
 		b := pop[internal.Monetary](m)
@@ -297,7 +294,6 @@ func (m *Machine) tick() (bool, byte) {
 		if err != nil {
 			return true, EXIT_FAIL_INVALID
 		}
-		spew.Dump("TAKE ALL", overdraft, funding)
 		m.pushValue(*funding)
 
 	case program.OP_TAKE_ALWAYS:
@@ -319,7 +315,6 @@ func (m *Machine) tick() (bool, byte) {
 		if err != nil {
 			return true, EXIT_FAIL_INSUFFICIENT_FUNDS
 		}
-		spew.Dump("OP_TAKE", mon, funding, result, remainder)
 		m.pushValue(remainder)
 		m.pushValue(result)
 
@@ -398,20 +393,15 @@ func (m *Machine) tick() (bool, byte) {
 
 	case program.OP_REPAY:
 		funding := pop[internal.Funding](m)
-		spew.Dump("OP_REPAY", funding)
 		m.repay(funding)
 
 	case program.OP_SEND:
 		dest := pop[internal.AccountAddress](m)
 		funding := pop[internal.Funding](m)
-		spew.Dump("OP_SEND", dest, funding)
 		m.credit(dest, funding)
 		for _, part := range funding.Parts {
 			src := part.Account
 			amt := part.Amount
-			if amt.Eq(internal.NewMonetaryInt(0)) {
-				continue
-			}
 			m.Postings = append(m.Postings, Posting{
 				Source:      string(src),
 				Destination: string(dest),

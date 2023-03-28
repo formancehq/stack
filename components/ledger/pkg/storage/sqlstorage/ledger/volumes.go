@@ -27,10 +27,6 @@ func (s *Store) UpdateVolumes(ctx context.Context, volumes core.AccountsAssetsVo
 	}
 
 	for account, accountVolumes := range volumes {
-		if err := s.EnsureAccountExists(ctx, account); err != nil {
-			return s.error(err)
-		}
-
 		for asset, volumes := range accountVolumes {
 			v := &Volumes{
 				Account: account,

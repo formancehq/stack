@@ -6,7 +6,6 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/ledger/pkg/machine/script/compiler"
@@ -56,6 +55,21 @@ var testCases = []testCase{
 		name: "send $0",
 		script: `
 			send [USD/2 0] (
+				source = @alice
+				destination = @user:001
+			)`,
+		expectResult: Result{
+			Postings: []core.Posting{
+				core.NewPosting("alice", "user:001", "USD/2", big.NewInt(0)),
+			},
+			Metadata:        map[string]any{},
+			AccountMetadata: map[string]core.Metadata{},
+		},
+	},
+	{
+		name: "send $0 world",
+		script: `
+			send [USD/2 0] (
 				source = @world
 				destination = @user:001
 			)`,
@@ -76,7 +90,7 @@ var testCases = []testCase{
 			)`,
 		expectResult: Result{
 			Postings: []core.Posting{
-				core.NewPosting("world", "user:001", "USD/2", big.NewInt(0)),
+				core.NewPosting("alice", "user:001", "USD/2", big.NewInt(0)),
 			},
 			Metadata:        map[string]any{},
 			AccountMetadata: map[string]core.Metadata{},
@@ -272,6 +286,7 @@ var testCases = []testCase{
 	{
 		name: "balance function",
 		setup: func(t *testing.T, store storage.LedgerStore) {
+			require.NoError(t, store.EnsureAccountExists(context.Background(), "users:001"))
 			require.NoError(t, store.UpdateVolumes(context.Background(), core.AccountsAssetsVolumes{
 				"users:001": map[string]core.Volumes{
 					"COIN": {
@@ -383,35 +398,68 @@ func TestMachineZero(t *testing.T) {
 	_, err = store.Initialize(context.Background())
 	require.NoError(t, err)
 
+	require.NoError(t, store.EnsureAccountExists(context.Background(), "alice"))
 	require.NoError(t, store.UpdateVolumes(context.Background(), core.AccountsAssetsVolumes{
 		"alice": {
 			"USD": {
-				Input:  big.NewInt(3),
+				Input:  big.NewInt(0),
 				Output: big.NewInt(0),
 			},
 		},
 	}))
 
-	script := `
-		send [USD 0] (
-			source = @alice
-			destination = @bob
-		)`
-
-	program, err := compiler.Compile(script)
-	require.NoError(t, err)
-
-	m := vm.NewMachine(*program)
-	m.Debug = true
-	_, _, err = m.ResolveResources(context.Background(), store)
-	require.NoError(t, err)
-	require.NoError(t, m.ResolveBalances(context.Background(), store))
-
-	result, err := Run(m, core.RunScript{
-		Script: core.Script{
-			Plain: script,
+	type testCase struct {
+		name   string
+		script string
+	}
+	testCases := []testCase{
+		{
+			name: "0",
+			script: `
+				send [USD 0] (
+					source = @alice
+					destination = @bob
+				)`,
 		},
-	})
-	require.NoError(t, err)
-	spew.Dump(result)
+		{
+			name: "1",
+			script: `
+				send [USD *] (
+					source = @alice
+					destination = @bob
+				)`,
+		},
+		{
+			name: "2",
+			script: `
+				vars {
+					monetary $bal = balance(@alice, USD)
+				}
+				send $bal (
+					source = @alice
+					destination = @bob
+				)`,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			p, err := compiler.Compile(testCase.script)
+			require.NoError(t, err)
+
+			m := vm.NewMachine(*p)
+			_, _, err = m.ResolveResources(context.Background(), store)
+			require.NoError(t, err)
+			require.NoError(t, m.ResolveBalances(context.Background(), store))
+
+			res, err := Run(m, core.RunScript{
+				Script: core.Script{
+					Plain: testCase.script,
+				},
+			})
+			require.NoError(t, err)
+			require.Equal(t, 1, len(res.Postings))
+			require.Equal(t, big.NewInt(0), res.Postings[0].Amount)
+		})
+	}
 }
