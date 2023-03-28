@@ -327,6 +327,63 @@ var testCases = []testCase{
 			AccountMetadata: map[string]core.Metadata{},
 		},
 	},
+	{
+		name: "send amount 0",
+		setup: func(t *testing.T, store storage.LedgerStore) {
+			require.NoError(t, store.EnsureAccountExists(context.Background(), "alice"))
+		},
+		script: `
+			send [USD 0] (
+				source = @alice
+				destination = @bob
+			)`,
+		expectResult: Result{
+			Postings: []core.Posting{
+				core.NewPosting("alice", "bob", "USD", big.NewInt(0)),
+			},
+			Metadata:        core.Metadata{},
+			AccountMetadata: map[string]core.Metadata{},
+		},
+	},
+	{
+		name: "send all with balance 0",
+		setup: func(t *testing.T, store storage.LedgerStore) {
+			require.NoError(t, store.EnsureAccountExists(context.Background(), "alice"))
+		},
+		script: `
+			send [USD *] (
+				source = @alice
+				destination = @bob
+			)`,
+		expectResult: Result{
+			Postings: []core.Posting{
+				core.NewPosting("alice", "bob", "USD", big.NewInt(0)),
+			},
+			Metadata:        core.Metadata{},
+			AccountMetadata: map[string]core.Metadata{},
+		},
+	},
+	{
+		name: "send account balance of 0",
+		setup: func(t *testing.T, store storage.LedgerStore) {
+			require.NoError(t, store.EnsureAccountExists(context.Background(), "alice"))
+		},
+		script: `
+			vars {
+				monetary $bal = balance(@alice, USD)
+			}
+			send $bal (
+				source = @alice
+				destination = @bob
+			)`,
+		expectResult: Result{
+			Postings: []core.Posting{
+				core.NewPosting("alice", "bob", "USD", big.NewInt(0)),
+			},
+			Metadata:        core.Metadata{},
+			AccountMetadata: map[string]core.Metadata{},
+		},
+	},
 }
 
 func TestMachine(t *testing.T) {
@@ -379,87 +436,6 @@ func TestMachine(t *testing.T) {
 				require.NotNil(t, result)
 				require.Equal(t, tc.expectResult, *result)
 			}
-		})
-	}
-}
-
-func TestMachineZero(t *testing.T) {
-	require.NoError(t, pgtesting.CreatePostgresServer())
-	defer func() {
-		_ = pgtesting.DestroyPostgresServer()
-	}()
-
-	storageDriver := ledgertesting.StorageDriver(t)
-	require.NoError(t, storageDriver.Initialize(context.Background()))
-	ledger := uuid.NewString()
-	store, _, err := storageDriver.GetLedgerStore(context.Background(), ledger, true)
-	require.NoError(t, err)
-
-	_, err = store.Initialize(context.Background())
-	require.NoError(t, err)
-
-	require.NoError(t, store.EnsureAccountExists(context.Background(), "alice"))
-	require.NoError(t, store.UpdateVolumes(context.Background(), core.AccountsAssetsVolumes{
-		"alice": {
-			"USD": {
-				Input:  big.NewInt(0),
-				Output: big.NewInt(0),
-			},
-		},
-	}))
-
-	type testCase struct {
-		name   string
-		script string
-	}
-	testCases := []testCase{
-		{
-			name: "0",
-			script: `
-				send [USD 0] (
-					source = @alice
-					destination = @bob
-				)`,
-		},
-		{
-			name: "1",
-			script: `
-				send [USD *] (
-					source = @alice
-					destination = @bob
-				)`,
-		},
-		{
-			name: "2",
-			script: `
-				vars {
-					monetary $bal = balance(@alice, USD)
-				}
-				send $bal (
-					source = @alice
-					destination = @bob
-				)`,
-		},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			p, err := compiler.Compile(testCase.script)
-			require.NoError(t, err)
-
-			m := vm.NewMachine(*p)
-			_, _, err = m.ResolveResources(context.Background(), store)
-			require.NoError(t, err)
-			require.NoError(t, m.ResolveBalances(context.Background(), store))
-
-			res, err := Run(m, core.RunScript{
-				Script: core.Script{
-					Plain: testCase.script,
-				},
-			})
-			require.NoError(t, err)
-			require.Equal(t, 1, len(res.Postings))
-			require.Equal(t, big.NewInt(0), res.Postings[0].Amount)
 		})
 	}
 }
