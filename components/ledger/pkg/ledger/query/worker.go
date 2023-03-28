@@ -2,7 +2,6 @@ package query
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger/aggregator"
@@ -88,7 +87,7 @@ func (w *Worker) run() error {
 				close(wl.Ingested)
 				continue
 			}
-			if err := w.processLog(w.ctx, wl.store, wl.Log); err != nil {
+			if err := w.processLogs(w.ctx, wl.store, *wl.Log); err != nil {
 				if err == context.Canceled {
 					logging.FromContext(w.ctx).Debugf("CQRS worker canceled")
 				} else {
@@ -185,107 +184,147 @@ func (w *Worker) initLedger(ctx context.Context, ledger string) error {
 }
 
 func (w *Worker) processLogs(ctx context.Context, store storage.LedgerStore, logs ...core.Log) error {
-	for _, log := range logs {
-		if err := w.processLog(ctx, store, &log); err != nil {
-			return errors.Wrapf(err, "processing log %d", log.ID)
-		}
+
+	accountsToUpdate, ensureAccountsExist, transactionsToInsert,
+		transactionsToUpdate, volumesToUpdate, err := w.buildData(ctx, store, logs...)
+	if err != nil {
+		return errors.Wrap(err, "building data")
 	}
 
-	return nil
+	return store.RunInTransaction(ctx, func(ctx context.Context, tx storage.LedgerStore) error {
+		if len(accountsToUpdate) > 0 {
+			if err := tx.UpdateAccountsMetadata(ctx, accountsToUpdate); err != nil {
+				return errors.Wrap(err, "updating accounts metadata")
+			}
+		}
+
+		if len(transactionsToInsert) > 0 {
+			if err := tx.InsertTransactions(ctx, transactionsToInsert...); err != nil {
+				return errors.Wrap(err, "inserting transactions")
+			}
+		}
+
+		if len(transactionsToUpdate) > 0 {
+			if err := tx.UpdateTransactionsMetadata(ctx, transactionsToUpdate...); err != nil {
+				return errors.Wrap(err, "updating transactions")
+			}
+		}
+
+		if len(ensureAccountsExist) > 0 {
+			if err := tx.EnsureAccountsExist(ctx, ensureAccountsExist); err != nil {
+				return errors.Wrap(err, "ensuring accounts exist")
+			}
+		}
+
+		if len(volumesToUpdate) > 0 {
+			return tx.UpdateVolumes(ctx, volumesToUpdate...)
+		}
+
+		return nil
+	})
 }
 
-func (w *Worker) processLog(ctx context.Context, store storage.LedgerStore, log *core.Log) error {
+func (w *Worker) buildData(
+	ctx context.Context,
+	store storage.LedgerStore,
+	logs ...core.Log,
+) ([]core.Account, []string, []core.ExpandedTransaction, []core.TransactionWithMetadata, []core.AccountsAssetsVolumes, error) {
+	var accountsToUpdate []core.Account
+	var ensureAccountsExist []string
+
+	var transactionsToInsert []core.ExpandedTransaction
+	var transactionsToUpdate []core.TransactionWithMetadata
+
+	var volumesToUpdate []core.AccountsAssetsVolumes
+
 	volumeAggregator := aggregator.Volumes(store)
 
-	var err error
-	switch log.Type {
-	case core.NewTransactionLogType:
-		payload := log.Data.(core.NewTransactionLogPayload)
-		txVolumeAggregator, err := volumeAggregator.NextTxWithPostings(ctx, payload.Transaction.Postings...)
-		if err != nil {
-			return err
-		}
+	for _, log := range logs {
+		switch log.Type {
+		case core.NewTransactionLogType:
+			payload := log.Data.(core.NewTransactionLogPayload)
+			txVolumeAggregator, err := volumeAggregator.NextTxWithPostings(ctx, payload.Transaction.Postings...)
+			if err != nil {
+				return nil, nil, nil, nil, nil, err
+			}
 
-		if payload.AccountMetadata != nil {
-			for account, metadata := range payload.AccountMetadata {
-				if err := store.UpdateAccountMetadata(ctx, account, metadata); err != nil {
-					return errors.Wrap(err, "updating account metadata")
+			if payload.AccountMetadata != nil {
+				for account, metadata := range payload.AccountMetadata {
+					accountsToUpdate = append(accountsToUpdate, core.Account{
+						Address:  account,
+						Metadata: metadata,
+					})
 				}
 			}
-		}
 
-		expandedTx := core.ExpandedTransaction{
-			Transaction:       payload.Transaction,
-			PreCommitVolumes:  txVolumeAggregator.PreCommitVolumes,
-			PostCommitVolumes: txVolumeAggregator.PostCommitVolumes,
-		}
-
-		if err := store.InsertTransactions(ctx, expandedTx); err != nil {
-			return errors.Wrap(err, "inserting transactions")
-		}
-
-		for account := range txVolumeAggregator.PostCommitVolumes {
-			if err := store.EnsureAccountExists(ctx, account); err != nil {
-				return errors.Wrap(err, "ensuring account exists")
+			expandedTx := core.ExpandedTransaction{
+				Transaction:       payload.Transaction,
+				PreCommitVolumes:  txVolumeAggregator.PreCommitVolumes,
+				PostCommitVolumes: txVolumeAggregator.PostCommitVolumes,
 			}
-		}
 
-		if err := store.UpdateVolumes(ctx, txVolumeAggregator.PostCommitVolumes); err != nil {
-			return errors.Wrap(err, "updating volumes")
-		}
+			transactionsToInsert = append(transactionsToInsert, expandedTx)
 
-		if w.monitor != nil {
-			w.monitor.CommittedTransactions(ctx, store.Name(), expandedTx)
-			for account, metadata := range payload.AccountMetadata {
-				w.monitor.SavedMetadata(ctx, store.Name(), core.MetaTargetTypeAccount, account, metadata)
+			for account := range txVolumeAggregator.PostCommitVolumes {
+				ensureAccountsExist = append(ensureAccountsExist, account)
 			}
-		}
 
-	case core.SetMetadataLogType:
-		setMetadata := log.Data.(core.SetMetadataLogPayload)
-		switch setMetadata.TargetType {
-		case core.MetaTargetTypeAccount:
-			if err := store.UpdateAccountMetadata(ctx, setMetadata.TargetID.(string), setMetadata.Metadata); err != nil {
-				return errors.Wrap(err, "updating account metadata")
+			volumesToUpdate = append(volumesToUpdate, txVolumeAggregator.PostCommitVolumes)
+
+			// if w.monitor != nil {
+			// 	w.monitor.CommittedTransactions(ctx, store.Name(), expandedTx)
+			// 	for account, metadata := range payload.AccountMetadata {
+			// 		w.monitor.SavedMetadata(ctx, store.Name(), core.MetaTargetTypeAccount, account, metadata)
+			// 	}
+			// }
+
+		case core.SetMetadataLogType:
+			setMetadata := log.Data.(core.SetMetadataLogPayload)
+			switch setMetadata.TargetType {
+			case core.MetaTargetTypeAccount:
+				accountsToUpdate = append(accountsToUpdate, core.Account{
+					Address:  setMetadata.TargetID.(string),
+					Metadata: setMetadata.Metadata,
+				})
+			case core.MetaTargetTypeTransaction:
+				transactionsToUpdate = append(transactionsToUpdate, core.TransactionWithMetadata{
+					ID:       setMetadata.TargetID.(uint64),
+					Metadata: setMetadata.Metadata,
+				})
 			}
-		case core.MetaTargetTypeTransaction:
-			if err := store.UpdateTransactionMetadata(ctx, setMetadata.TargetID.(uint64), setMetadata.Metadata); err != nil {
-				return errors.Wrap(err, "updating transactions metadata")
-			}
-		}
-		if w.monitor != nil {
-			w.monitor.SavedMetadata(ctx, store.Name(), store.Name(), fmt.Sprint(setMetadata.TargetID), setMetadata.Metadata)
-		}
-	case core.RevertedTransactionLogType:
-		payload := log.Data.(core.RevertedTransactionLogPayload)
-		if err := store.UpdateTransactionMetadata(ctx, payload.RevertedTransactionID,
-			core.RevertedMetadata(payload.RevertTransaction.ID)); err != nil {
-			return errors.Wrap(err, "updating metadata")
-		}
-		txVolumeAggregator, err := volumeAggregator.NextTxWithPostings(ctx, payload.RevertTransaction.Postings...)
-		if err != nil {
-			return errors.Wrap(err, "aggregating volumes")
-		}
-
-		expandedTx := core.ExpandedTransaction{
-			Transaction:       payload.RevertTransaction,
-			PreCommitVolumes:  txVolumeAggregator.PreCommitVolumes,
-			PostCommitVolumes: txVolumeAggregator.PostCommitVolumes,
-		}
-		if err := store.InsertTransactions(ctx, expandedTx); err != nil {
-			return errors.Wrap(err, "inserting transaction")
-		}
-
-		if w.monitor != nil {
-			revertedTx, err := store.GetTransaction(ctx, payload.RevertedTransactionID)
+			// if w.monitor != nil {
+			// 	w.monitor.SavedMetadata(ctx, store.Name(), store.Name(), fmt.Sprint(setMetadata.TargetID), setMetadata.Metadata)
+			// }
+		case core.RevertedTransactionLogType:
+			payload := log.Data.(core.RevertedTransactionLogPayload)
+			transactionsToUpdate = append(transactionsToUpdate, core.TransactionWithMetadata{
+				ID:       payload.RevertedTransactionID,
+				Metadata: core.RevertedMetadata(payload.RevertTransaction.ID),
+			})
+			txVolumeAggregator, err := volumeAggregator.NextTxWithPostings(ctx, payload.RevertTransaction.Postings...)
 			if err != nil {
-				return err
+				return nil, nil, nil, nil, nil, errors.Wrap(err, "aggregating volumes")
 			}
-			w.monitor.RevertedTransaction(ctx, store.Name(), revertedTx, &expandedTx)
+
+			expandedTx := core.ExpandedTransaction{
+				Transaction:       payload.RevertTransaction,
+				PreCommitVolumes:  txVolumeAggregator.PreCommitVolumes,
+				PostCommitVolumes: txVolumeAggregator.PostCommitVolumes,
+			}
+			transactionsToInsert = append(transactionsToInsert, expandedTx)
+
+			// if w.monitor != nil {
+			// 	revertedTx, err := store.GetTransaction(ctx, payload.RevertedTransactionID)
+			// 	if err != nil {
+			// 		return err
+			// 	}
+			// 	w.monitor.RevertedTransaction(ctx, store.Name(), revertedTx, &expandedTx)
+			// }
 		}
 	}
 
-	return err
+	return accountsToUpdate, ensureAccountsExist, transactionsToInsert,
+		transactionsToUpdate, volumesToUpdate, nil
 }
 
 func (w *Worker) QueueLog(ctx context.Context, log *core.LogHolder, store storage.LedgerStore) {

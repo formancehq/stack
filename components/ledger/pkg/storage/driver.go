@@ -26,6 +26,8 @@ type LedgerStore interface {
 	IsInitialized() bool
 	Name() string
 
+	RunInTransaction(ctx context.Context, f func(ctx context.Context, store LedgerStore) error) error
+
 	AppendLog(context.Context, *core.Log) error
 	GetNextLogID(ctx context.Context) (uint64, error)
 	ReadLogsStartingFromID(ctx context.Context, id uint64) ([]core.Log, error)
