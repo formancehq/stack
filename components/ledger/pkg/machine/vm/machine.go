@@ -260,8 +260,10 @@ func (m *Machine) tick() (bool, byte) {
 	case program.OP_MONETARY_NEW:
 		amount := pop[internal.Number](m)
 		asset := pop[internal.Asset](m)
-		mon := internal.Monetary{Asset: asset, Amount: amount}
-		m.pushValue(mon)
+		m.pushValue(internal.Monetary{
+			Asset:  asset,
+			Amount: amount,
+		})
 
 	case program.OP_MONETARY_ADD:
 		b := pop[internal.Monetary](m)
@@ -392,8 +394,7 @@ func (m *Machine) tick() (bool, byte) {
 		}
 
 	case program.OP_REPAY:
-		funding := pop[internal.Funding](m)
-		m.repay(funding)
+		m.repay(pop[internal.Funding](m))
 
 	case program.OP_SEND:
 		dest := pop[internal.AccountAddress](m)

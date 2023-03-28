@@ -50,7 +50,6 @@ func (f Funding) Take(amount *MonetaryInt) (Funding, Funding, error) {
 	result := Funding{
 		Asset: f.Asset,
 	}
-
 	remainder := Funding{
 		Asset: f.Asset,
 	}
@@ -82,7 +81,6 @@ func (f Funding) Take(amount *MonetaryInt) (Funding, Funding, error) {
 		})
 		i++
 	}
-
 	for i < len(f.Parts) {
 		remainder.Parts = append(remainder.Parts, FundingPart{
 			Account: f.Parts[i].Account,
@@ -90,11 +88,9 @@ func (f Funding) Take(amount *MonetaryInt) (Funding, Funding, error) {
 		})
 		i++
 	}
-
 	if !remainingToWithdraw.Eq(NewMonetaryInt(0)) {
 		return Funding{}, Funding{}, errors.New("insufficient funding")
 	}
-
 	return result, remainder, nil
 }
 
