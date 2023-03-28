@@ -1,5 +1,5 @@
 # Adds namespace to all resources.
-namespace: formance-operator-system
+namespace: formance-operator
 
 # Value of this field is prepended to the
 # names of all resources, e.g. a deployment named
@@ -11,6 +11,7 @@ namePrefix: formance-operator-
 # Labels to add to all resources and selectors.
 #commonLabels:
 #  someName: someValue
+buildMetadata: [originAnnotations]
 
 resources:
 - ../crd

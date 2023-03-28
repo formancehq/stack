@@ -104,8 +104,11 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 
 .PHONY: helm-update
 helm-update: manifests generate
-	cp -pr ./config/crd/bases ./helm/operator/templates/
-	cp -pr ./config/rbac ./helm/operator/templates/
+	rm -rf ./helm/operator/templates/gen
+	mkdir -p ./helm/operator/templates/gen
+	$(KUSTOMIZE) build config/default --output ./helm/operator/templates/gen
+	rm -f ./helm/operator/templates/gen/v1_namespace*.yaml
+	rm -f ./helm/operator/templates/gen/apps_v1_deployment_*.yaml
 
 .PHONY: helm-debug
 helm-debug: helm-update

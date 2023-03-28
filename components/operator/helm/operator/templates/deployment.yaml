@@ -4,6 +4,7 @@ metadata:
   name: {{ include "operator.fullname" . }}
   labels:
     {{- include "operator.labels" . | nindent 4 }}
+    control-plane: controller-manager
 spec:
   selector:
     matchLabels:
@@ -16,12 +17,13 @@ spec:
       {{- end }}
       labels:
         {{- include "operator.selectorLabels" . | nindent 8 }}
+        control-plane: controller-manager
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: controller-manager
+      serviceAccountName: formance-operator-controller-manager
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -52,9 +54,9 @@ spec:
             - --disable-webhooks
             {{- end }}
           ports:
-            - name: probe
-              containerPort: {{ regexReplaceAll ":" .Values.operator.probeAddr "" | default "8081" }}
-              protocol: TCP
+          - containerPort: 9443
+            name: webhook-server
+            protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz
@@ -69,6 +71,33 @@ spec:
             periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /tmp/k8s-webhook-server/serving-certs
+              name: cert
+              readOnly: true
+        - args:
+          - --secure-listen-address=0.0.0.0:8443
+          - --upstream=http://127.0.0.1{{- .Values.operator.metricsAddr | default ":8080" -}}/
+          - --logtostderr=true
+          - --v=0
+          image: gcr.io/kubebuilder/kube-rbac-proxy:v0.12.0
+          name: kube-rbac-proxy
+          ports:
+          - containerPort: 8443
+            name: https
+            protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 5m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - ALL
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -81,3 +110,8 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        - name: cert
+          secret:
+            defaultMode: 420
+            secretName: webhook-server-cert
