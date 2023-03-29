@@ -49,11 +49,11 @@ func NewListCommand() *cobra.Command {
 						fctl.Map(res.Cursor.Data,
 							func(src formance.WebhooksConfig) []string {
 								return []string{
-									*src.Id,
+									src.Id,
 									src.CreatedAt.Format(time.RFC3339),
-									fctl.StringPointerToString(src.Secret),
-									*src.Endpoint,
-									fctl.BoolPointerToString(src.Active),
+									src.Secret,
+									src.Endpoint,
+									fctl.BoolToString(src.Active),
 									strings.Join(src.EventTypes, ","),
 								}
 							}),

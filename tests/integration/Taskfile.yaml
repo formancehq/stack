@@ -17,7 +17,7 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run -v --fix
+      - golangci-lint run {{if eq .VERBOSE "true"}}-v{{end}} --fix
 
   tests:
     deps: [run-docker-compose]

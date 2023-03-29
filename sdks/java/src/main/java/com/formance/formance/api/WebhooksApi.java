@@ -14,6 +14,7 @@ import com.formance.formance.model.ConfigChangeSecret;
 import com.formance.formance.model.ConfigResponse;
 import com.formance.formance.model.ConfigUser;
 import com.formance.formance.model.ConfigsResponse;
+import com.formance.formance.model.ErrorResponse;
 
 import java.util.ArrayList;
 import java.util.HashMap;

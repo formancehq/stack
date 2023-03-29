@@ -65,3 +65,11 @@ class ErrorsEnum(
     @schemas.classproperty
     def NOT_FOUND(cls):
         return cls("NOT_FOUND")
+    
+    @schemas.classproperty
+    def CONTEXT_CANCELLED(cls):
+        return cls("CONTEXT_CANCELLED")
+    
+    @schemas.classproperty
+    def STORE(cls):
+        return cls("STORE")

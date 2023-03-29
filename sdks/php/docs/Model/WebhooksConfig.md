@@ -4,12 +4,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **string** |  | [optional]
-**endpoint** | **string** |  | [optional]
-**secret** | **string** |  | [optional]
-**event_types** | **string[]** |  | [optional]
-**active** | **bool** |  | [optional]
-**created_at** | **\DateTime** |  | [optional]
-**updated_at** | **\DateTime** |  | [optional]
+**id** | **string** |  |
+**endpoint** | **string** |  |
+**secret** | **string** |  |
+**event_types** | **string[]** |  |
+**active** | **bool** |  |
+**created_at** | **\DateTime** |  |
+**updated_at** | **\DateTime** |  |
 
 [[Back to Model list]](../../README.md#models) [[Back to API list]](../../README.md#endpoints) [[Back to README]](../../README.md)

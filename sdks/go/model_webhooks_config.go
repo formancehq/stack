@@ -21,21 +21,28 @@ var _ MappedNullable = &WebhooksConfig{}
 
 // WebhooksConfig struct for WebhooksConfig
 type WebhooksConfig struct {
-	Id *string `json:"id,omitempty"`
-	Endpoint *string `json:"endpoint,omitempty"`
-	Secret *string `json:"secret,omitempty"`
-	EventTypes []string `json:"eventTypes,omitempty"`
-	Active *bool `json:"active,omitempty"`
-	CreatedAt *time.Time `json:"createdAt,omitempty"`
-	UpdatedAt *time.Time `json:"updatedAt,omitempty"`
+	Id string `json:"id"`
+	Endpoint string `json:"endpoint"`
+	Secret string `json:"secret"`
+	EventTypes []string `json:"eventTypes"`
+	Active bool `json:"active"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 // NewWebhooksConfig instantiates a new WebhooksConfig object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWebhooksConfig() *WebhooksConfig {
+func NewWebhooksConfig(id string, endpoint string, secret string, eventTypes []string, active bool, createdAt time.Time, updatedAt time.Time) *WebhooksConfig {
 	this := WebhooksConfig{}
+	this.Id = id
+	this.Endpoint = endpoint
+	this.Secret = secret
+	this.EventTypes = eventTypes
+	this.Active = active
+	this.CreatedAt = createdAt
+	this.UpdatedAt = updatedAt
 	return &this
 }
 
@@ -47,228 +54,172 @@ func NewWebhooksConfigWithDefaults() *WebhooksConfig {
 	return &this
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
+// GetId returns the Id field value
 func (o *WebhooksConfig) GetId() string {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Id
+
+	return o.Id
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetIdOk() (*string, bool) {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Id, true
+	return &o.Id, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *WebhooksConfig) HasId() bool {
-	if o != nil && !IsNil(o.Id) {
-		return true
-	}
-
-	return false
-}
-
-// SetId gets a reference to the given string and assigns it to the Id field.
+// SetId sets field value
 func (o *WebhooksConfig) SetId(v string) {
-	o.Id = &v
+	o.Id = v
 }
 
-// GetEndpoint returns the Endpoint field value if set, zero value otherwise.
+// GetEndpoint returns the Endpoint field value
 func (o *WebhooksConfig) GetEndpoint() string {
-	if o == nil || IsNil(o.Endpoint) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Endpoint
+
+	return o.Endpoint
 }
 
-// GetEndpointOk returns a tuple with the Endpoint field value if set, nil otherwise
+// GetEndpointOk returns a tuple with the Endpoint field value
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetEndpointOk() (*string, bool) {
-	if o == nil || IsNil(o.Endpoint) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Endpoint, true
+	return &o.Endpoint, true
 }
 
-// HasEndpoint returns a boolean if a field has been set.
-func (o *WebhooksConfig) HasEndpoint() bool {
-	if o != nil && !IsNil(o.Endpoint) {
-		return true
-	}
-
-	return false
-}
-
-// SetEndpoint gets a reference to the given string and assigns it to the Endpoint field.
+// SetEndpoint sets field value
 func (o *WebhooksConfig) SetEndpoint(v string) {
-	o.Endpoint = &v
+	o.Endpoint = v
 }
 
-// GetSecret returns the Secret field value if set, zero value otherwise.
+// GetSecret returns the Secret field value
 func (o *WebhooksConfig) GetSecret() string {
-	if o == nil || IsNil(o.Secret) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Secret
+
+	return o.Secret
 }
 
-// GetSecretOk returns a tuple with the Secret field value if set, nil otherwise
+// GetSecretOk returns a tuple with the Secret field value
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetSecretOk() (*string, bool) {
-	if o == nil || IsNil(o.Secret) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Secret, true
+	return &o.Secret, true
 }
 
-// HasSecret returns a boolean if a field has been set.
-func (o *WebhooksConfig) HasSecret() bool {
-	if o != nil && !IsNil(o.Secret) {
-		return true
-	}
-
-	return false
-}
-
-// SetSecret gets a reference to the given string and assigns it to the Secret field.
+// SetSecret sets field value
 func (o *WebhooksConfig) SetSecret(v string) {
-	o.Secret = &v
+	o.Secret = v
 }
 
-// GetEventTypes returns the EventTypes field value if set, zero value otherwise.
+// GetEventTypes returns the EventTypes field value
 func (o *WebhooksConfig) GetEventTypes() []string {
-	if o == nil || IsNil(o.EventTypes) {
+	if o == nil {
 		var ret []string
 		return ret
 	}
+
 	return o.EventTypes
 }
 
-// GetEventTypesOk returns a tuple with the EventTypes field value if set, nil otherwise
+// GetEventTypesOk returns a tuple with the EventTypes field value
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetEventTypesOk() ([]string, bool) {
-	if o == nil || IsNil(o.EventTypes) {
+	if o == nil {
 		return nil, false
 	}
 	return o.EventTypes, true
 }
 
-// HasEventTypes returns a boolean if a field has been set.
-func (o *WebhooksConfig) HasEventTypes() bool {
-	if o != nil && !IsNil(o.EventTypes) {
-		return true
-	}
-
-	return false
-}
-
-// SetEventTypes gets a reference to the given []string and assigns it to the EventTypes field.
+// SetEventTypes sets field value
 func (o *WebhooksConfig) SetEventTypes(v []string) {
 	o.EventTypes = v
 }
 
-// GetActive returns the Active field value if set, zero value otherwise.
+// GetActive returns the Active field value
 func (o *WebhooksConfig) GetActive() bool {
-	if o == nil || IsNil(o.Active) {
+	if o == nil {
 		var ret bool
 		return ret
 	}
-	return *o.Active
+
+	return o.Active
 }
 
-// GetActiveOk returns a tuple with the Active field value if set, nil otherwise
+// GetActiveOk returns a tuple with the Active field value
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetActiveOk() (*bool, bool) {
-	if o == nil || IsNil(o.Active) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Active, true
+	return &o.Active, true
 }
 
-// HasActive returns a boolean if a field has been set.
-func (o *WebhooksConfig) HasActive() bool {
-	if o != nil && !IsNil(o.Active) {
-		return true
-	}
-
-	return false
-}
-
-// SetActive gets a reference to the given bool and assigns it to the Active field.
+// SetActive sets field value
 func (o *WebhooksConfig) SetActive(v bool) {
-	o.Active = &v
+	o.Active = v
 }
 
-// GetCreatedAt returns the CreatedAt field value if set, zero value otherwise.
+// GetCreatedAt returns the CreatedAt field value
 func (o *WebhooksConfig) GetCreatedAt() time.Time {
-	if o == nil || IsNil(o.CreatedAt) {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}
-	return *o.CreatedAt
+
+	return o.CreatedAt
 }
 
-// GetCreatedAtOk returns a tuple with the CreatedAt field value if set, nil otherwise
+// GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetCreatedAtOk() (*time.Time, bool) {
-	if o == nil || IsNil(o.CreatedAt) {
+	if o == nil {
 		return nil, false
 	}
-	return o.CreatedAt, true
+	return &o.CreatedAt, true
 }
 
-// HasCreatedAt returns a boolean if a field has been set.
-func (o *WebhooksConfig) HasCreatedAt() bool {
-	if o != nil && !IsNil(o.CreatedAt) {
-		return true
-	}
-
-	return false
-}
-
-// SetCreatedAt gets a reference to the given time.Time and assigns it to the CreatedAt field.
+// SetCreatedAt sets field value
 func (o *WebhooksConfig) SetCreatedAt(v time.Time) {
-	o.CreatedAt = &v
+	o.CreatedAt = v
 }
 
-// GetUpdatedAt returns the UpdatedAt field value if set, zero value otherwise.
+// GetUpdatedAt returns the UpdatedAt field value
 func (o *WebhooksConfig) GetUpdatedAt() time.Time {
-	if o == nil || IsNil(o.UpdatedAt) {
+	if o == nil {
 		var ret time.Time
 		return ret
 	}
-	return *o.UpdatedAt
+
+	return o.UpdatedAt
 }
 
-// GetUpdatedAtOk returns a tuple with the UpdatedAt field value if set, nil otherwise
+// GetUpdatedAtOk returns a tuple with the UpdatedAt field value
 // and a boolean to check if the value has been set.
 func (o *WebhooksConfig) GetUpdatedAtOk() (*time.Time, bool) {
-	if o == nil || IsNil(o.UpdatedAt) {
+	if o == nil {
 		return nil, false
 	}
-	return o.UpdatedAt, true
+	return &o.UpdatedAt, true
 }
 
-// HasUpdatedAt returns a boolean if a field has been set.
-func (o *WebhooksConfig) HasUpdatedAt() bool {
-	if o != nil && !IsNil(o.UpdatedAt) {
-		return true
-	}
-
-	return false
-}
-
-// SetUpdatedAt gets a reference to the given time.Time and assigns it to the UpdatedAt field.
+// SetUpdatedAt sets field value
 func (o *WebhooksConfig) SetUpdatedAt(v time.Time) {
-	o.UpdatedAt = &v
+	o.UpdatedAt = v
 }
 
 func (o WebhooksConfig) MarshalJSON() ([]byte, error) {
@@ -281,27 +232,13 @@ func (o WebhooksConfig) MarshalJSON() ([]byte, error) {
 
 func (o WebhooksConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Id) {
-		toSerialize["id"] = o.Id
-	}
-	if !IsNil(o.Endpoint) {
-		toSerialize["endpoint"] = o.Endpoint
-	}
-	if !IsNil(o.Secret) {
-		toSerialize["secret"] = o.Secret
-	}
-	if !IsNil(o.EventTypes) {
-		toSerialize["eventTypes"] = o.EventTypes
-	}
-	if !IsNil(o.Active) {
-		toSerialize["active"] = o.Active
-	}
-	if !IsNil(o.CreatedAt) {
-		toSerialize["createdAt"] = o.CreatedAt
-	}
-	if !IsNil(o.UpdatedAt) {
-		toSerialize["updatedAt"] = o.UpdatedAt
-	}
+	toSerialize["id"] = o.Id
+	toSerialize["endpoint"] = o.Endpoint
+	toSerialize["secret"] = o.Secret
+	toSerialize["eventTypes"] = o.EventTypes
+	toSerialize["active"] = o.Active
+	toSerialize["createdAt"] = o.CreatedAt
+	toSerialize["updatedAt"] = o.UpdatedAt
 	return toSerialize, nil
 }
 

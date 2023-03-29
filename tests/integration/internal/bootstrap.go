@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"github.com/docker/docker/client"
+	"github.com/egymgmbh/go-prefix-writer/prefixer"
 	authCmd "github.com/formancehq/auth/cmd"
 	auth "github.com/formancehq/auth/pkg"
+	"github.com/formancehq/ledger/cmd"
 	paymentsCmd "github.com/formancehq/payments/cmd"
 	searchCmd "github.com/formancehq/search/cmd"
 	"github.com/formancehq/search/pkg/searchengine"
@@ -20,18 +22,16 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	walletsCmd "github.com/formancehq/wallets/cmd"
+	webhooksCmd "github.com/formancehq/webhooks/cmd"
 	"github.com/google/uuid"
-	"github.com/opensearch-project/opensearch-go"
-	"github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v3"
-
-	"github.com/egymgmbh/go-prefix-writer/prefixer"
-	"github.com/formancehq/ledger/cmd"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/opensearch-project/opensearch-go"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -52,21 +52,21 @@ var _ = BeforeSuite(func() {
 
 	var err error
 	dockerPool, err = dockertest.NewPool("")
-	Expect(err).To(BeNil())
+	Expect(err).ToNot(HaveOccurred())
 
 	dockerClient, err = client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
-	Expect(err).To(BeNil())
+	Expect(err).ToNot(HaveOccurred())
 
 	// uses pool to try to connect to Docker
 	err = dockerPool.Client.Ping()
-	Expect(err).To(BeNil())
+	Expect(err).ToNot(HaveOccurred())
 })
 
 func runDockerResource(options *dockertest.RunOptions) *dockertest.Resource {
 	resource, err := dockerPool.RunWithOptions(options, func(config *docker.HostConfig) {
 		config.AutoRemove = true
 	})
-	Expect(err).To(BeNil())
+	Expect(err).ToNot(HaveOccurred())
 
 	return resource
 }
@@ -82,7 +82,7 @@ var _ = BeforeEach(func() {
 		Addresses: []string{"http://" + getOpenSearchUrl()},
 		Transport: httpclient.NewDebugHTTPTransport(http.DefaultTransport),
 	})
-	Expect(err).To(BeNil())
+	Expect(err).ToNot(HaveOccurred())
 	Eventually(func() error {
 		return searchengine.CreateIndex(ctx, openSearchClient, actualTestID)
 	}).WithTimeout(10 * time.Second).Should(BeNil())
@@ -96,40 +96,35 @@ var _ = BeforeEach(func() {
 	startAuth()
 	startWallets()
 	startPayments()
+	startWebhooks()
 
 	// TODO: Wait search has properly configured mapping before trying to ingest any data
 	startBenthosServer()
 
 	// Start the gateway
 	ledgerUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", ledgerPort))
-	if err != nil {
-		panic(err)
-	}
+	Expect(err).ToNot(HaveOccurred())
 	registerService("ledger", ledgerUrl)
 
 	searchUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", searchPort))
-	if err != nil {
-		panic(err)
-	}
+	Expect(err).ToNot(HaveOccurred())
 	registerService("search", searchUrl)
 
 	authUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", authPort))
-	if err != nil {
-		panic(err)
-	}
+	Expect(err).ToNot(HaveOccurred())
 	registerService("auth", authUrl)
 
 	walletsUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", walletsPort))
-	if err != nil {
-		panic(err)
-	}
+	Expect(err).ToNot(HaveOccurred())
 	registerService("wallets", walletsUrl)
 
 	paymentsUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", paymentsPort))
-	if err != nil {
-		panic(err)
-	}
+	Expect(err).ToNot(HaveOccurred())
 	registerService("payments", paymentsUrl)
+
+	webhooksUrl, err := url.Parse(fmt.Sprintf("http://localhost:%d", webhooksPort))
+	Expect(err).ToNot(HaveOccurred())
+	registerService("webhooks", webhooksUrl)
 
 	// Start services
 	// Configure the sdk with a preconfigured auth client
@@ -143,6 +138,7 @@ var _ = AfterEach(func() {
 	stopAuth()
 	stopWallets()
 	stopPayments()
+	stopWebhooks()
 	stopFakeGateway() // TODO: Wait for gateway to be shutdown
 })
 
@@ -154,7 +150,7 @@ var (
 
 func startLedger() {
 	dsn, err := getPostgresDSN()
-	Expect(err).To(BeNil())
+	Expect(err).ToNot(HaveOccurred())
 	dsn.Path = fmt.Sprintf("%s-ledger", actualTestID)
 
 	ledgerCmd := cmd.NewRootCommand()
@@ -190,7 +186,7 @@ var (
 )
 
 func startSearch() {
-	searchCmd := searchCmd.NewRootCommand()
+	command := searchCmd.NewRootCommand()
 	args := make([]string, 0)
 	args = append(args,
 		"serve",
@@ -202,8 +198,8 @@ func startSearch() {
 		fmt.Sprintf("--es-indices=%s", actualTestID),
 		"--mapping-init-disabled",
 	)
-	searchCmd.SetArgs(args)
-	searchPort, searchCancel, searchErrCh = runAndWaitPort("search", searchCmd)
+	command.SetArgs(args)
+	searchPort, searchCancel, searchErrCh = runAndWaitPort("search", command)
 }
 
 func stopSearch() {
@@ -223,13 +219,13 @@ var (
 
 func startPayments() {
 	dsn, err := getPostgresDSN()
-	Expect(err).To(BeNil())
+	Expect(err).ToNot(HaveOccurred())
 	dsn.Path = fmt.Sprintf("%s-payments", actualTestID)
 
-	paymentsCmd := paymentsCmd.NewRootCommand()
+	command := paymentsCmd.NewRootCommand()
 	if testing.Verbose() {
-		paymentsCmd.SetOut(os.Stdout)
-		paymentsCmd.SetErr(os.Stderr)
+		command.SetOut(os.Stdout)
+		command.SetErr(os.Stderr)
 	}
 
 	args := make([]string, 0)
@@ -244,8 +240,8 @@ func startPayments() {
 		"--listen=0.0.0.0:0",
 		"--auto-migrate",
 	)
-	paymentsCmd.SetArgs(args)
-	paymentsPort, paymentsCancel, paymentsErrCh = runAndWaitPort("payments", paymentsCmd)
+	command.SetArgs(args)
+	paymentsPort, paymentsCancel, paymentsErrCh = runAndWaitPort("payments", command)
 }
 
 func stopPayments() {
@@ -265,17 +261,17 @@ var (
 
 func startAuth() {
 	dsn, err := getPostgresDSN()
-	Expect(err).To(BeNil())
+	Expect(err).ToNot(HaveOccurred())
 	dsn.Path = fmt.Sprintf("%s-auth", actualTestID)
 
-	authCmd := authCmd.NewRootCommand()
+	command := authCmd.NewRootCommand()
 	if testing.Verbose() {
-		authCmd.SetOut(os.Stdout)
-		authCmd.SetErr(os.Stderr)
+		command.SetOut(os.Stdout)
+		command.SetErr(os.Stderr)
 	}
 
 	authDir := filepath.Join(os.TempDir(), uuid.NewString())
-	Expect(os.MkdirAll(authDir, 0777)).To(BeNil())
+	Expect(os.MkdirAll(authDir, 0o777)).To(Succeed())
 	type configuration struct {
 		Clients []auth.StaticClient `yaml:"clients"`
 	}
@@ -291,10 +287,10 @@ func startAuth() {
 	}
 	configFile := filepath.Join(authDir, "config.yaml")
 	f, err := os.Create(configFile)
-	Expect(err).To(BeNil())
-	Expect(yaml.NewEncoder(f).Encode(cfg)).To(BeNil())
+	Expect(err).ToNot(HaveOccurred())
+	Expect(yaml.NewEncoder(f).Encode(cfg)).To(Succeed())
 
-	os.Setenv("CAOS_OIDC_DEV", "1")
+	Expect(os.Setenv("CAOS_OIDC_DEV", "1")).To(Succeed())
 	args := make([]string, 0)
 	args = append(args,
 		"serve",
@@ -309,8 +305,8 @@ func startAuth() {
 	if testing.Verbose() {
 		args = append(args, "--debug")
 	}
-	authCmd.SetArgs(args)
-	authPort, authCancel, authErrCh = runAndWaitPort("auth", authCmd)
+	command.SetArgs(args)
+	authPort, authCancel, authErrCh = runAndWaitPort("auth", command)
 }
 
 func stopAuth() {
@@ -329,10 +325,10 @@ var (
 )
 
 func startWallets() {
-	walletCmd := walletsCmd.NewRootCommand()
+	command := walletsCmd.NewRootCommand()
 	if testing.Verbose() {
-		walletCmd.SetOut(os.Stdout)
-		walletCmd.SetErr(os.Stderr)
+		command.SetOut(os.Stdout)
+		command.SetErr(os.Stderr)
 	}
 
 	args := make([]string, 0)
@@ -346,8 +342,8 @@ func startWallets() {
 	if testing.Verbose() {
 		args = append(args, "--debug")
 	}
-	walletCmd.SetArgs(args)
-	walletsPort, walletsCancel, walletsErrCh = runAndWaitPort("wallets", walletCmd)
+	command.SetArgs(args)
+	walletsPort, walletsCancel, walletsErrCh = runAndWaitPort("wallets", command)
 }
 
 func stopWallets() {
@@ -359,8 +355,53 @@ func stopWallets() {
 	}
 }
 
-func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc, chan error) {
+var (
+	webhooksPort   int
+	webhooksErrCh  chan error
+	webhooksCancel func()
+)
 
+func startWebhooks() {
+	dsn, err := getPostgresDSN()
+	Expect(err).ToNot(HaveOccurred())
+	dsn.Path = fmt.Sprintf("%s-webhooks", actualTestID)
+
+	command := webhooksCmd.NewRootCommand()
+	if testing.Verbose() {
+		command.SetOut(os.Stdout)
+		command.SetErr(os.Stderr)
+	}
+
+	args := make([]string, 0)
+	args = append(args,
+		"serve",
+		"--storage-postgres-conn-string="+dsn.String(),
+		"--listen=0.0.0.0:0",
+		"--worker",
+		"--publisher-nats-enabled",
+		"--publisher-nats-client-id=webhooks",
+		"--publisher-nats-url="+natsAddress(),
+		fmt.Sprintf("--kafka-topics=%s-ledger", actualTestID),
+		"--retries-cron=1s",
+		"--retries-schedule=1s,1s",
+	)
+	if testing.Verbose() {
+		args = append(args, "--debug")
+	}
+	command.SetArgs(args)
+	webhooksPort, webhooksCancel, webhooksErrCh = runAndWaitPort("webhooks", command)
+}
+
+func stopWebhooks() {
+	webhooksCancel()
+	select {
+	case <-webhooksErrCh:
+	case <-time.After(5 * time.Second):
+		Fail("timeout waiting for webhooks stopped")
+	}
+}
+
+func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc, chan error) {
 	writer := prefixer.New(GinkgoWriter, func() string {
 		return service + " | "
 	})
@@ -377,7 +418,7 @@ func runAndWaitPort(service string, cmd *cobra.Command) (int, context.CancelFunc
 	case <-httpserver.Started(ctx):
 	case err := <-errCh:
 		By("starting service " + service)
-		Expect(err).To(BeNil())
+		Expect(err).ToNot(HaveOccurred())
 	case <-time.After(5 * time.Second):
 		Fail("timeout waiting for service to be properly started")
 	}

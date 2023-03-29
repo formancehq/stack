@@ -713,7 +713,7 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.",
+            "description": "Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2",
             "style": "deepObject",
             "explode": true,
             "schema": {
@@ -2164,6 +2164,16 @@
                 }
               }
             }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       },
@@ -2195,13 +2205,12 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request",
+          "default": {
+            "description": "Error",
             "content": {
-              "text/plain": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "example": "endpoints should be valid urls"
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2231,8 +2240,17 @@
         ],
         "responses": {
           "200": {
-            "description": "Config successfully deleted.",
-            "content": {}
+            "description": "Config successfully deleted."
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2264,6 +2282,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AttemptResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -2302,8 +2330,15 @@
               }
             }
           },
-          "304": {
-            "description": "Config not modified, was already activated."
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2339,8 +2374,15 @@
               }
             }
           },
-          "304": {
-            "description": "Config not modified, was already deactivated."
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -2381,6 +2423,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ConfigResponse"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -4471,9 +4523,11 @@
           "NO_SCRIPT",
           "COMPILATION_FAILED",
           "METADATA_OVERRIDE",
-          "NOT_FOUND"
+          "NOT_FOUND",
+          "CONTEXT_CANCELLED",
+          "STORE"
         ],
-        "example": "INSUFFICIENT_FUND"
+        "example": "VALIDATION"
       },
       "LedgerInfoResponse": {
         "properties": {
@@ -5675,7 +5729,16 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "id",
+          "endpoint",
+          "secret",
+          "eventTypes",
+          "active",
+          "createdAt",
+          "updatedAt"
+        ]
       },
       "ConfigChangeSecret": {
         "type": "object",
@@ -5684,7 +5747,10 @@
             "type": "string",
             "example": "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
           }
-        }
+        },
+        "required": [
+          "secret"
+        ]
       },
       "AttemptResponse": {
         "type": "object",
@@ -5738,7 +5804,18 @@
             "type": "string",
             "format": "date-time"
           }
-        }
+        },
+        "required": [
+          "id",
+          "webhookID",
+          "createdAt",
+          "updatedAt",
+          "config",
+          "payload",
+          "statusCode",
+          "retryAttempt",
+          "status"
+        ]
       },
       "Monetary": {
         "type": "object",

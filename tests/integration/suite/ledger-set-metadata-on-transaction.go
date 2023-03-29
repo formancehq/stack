@@ -1,4 +1,4 @@
-package suite_test
+package suite
 
 import (
 	"time"
@@ -30,20 +30,18 @@ var _ = Given("some empty environment", func() {
 					}},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 
 			// Check existence on api
 			_, _, err := Client().TransactionsApi.
 				GetTransaction(TestContext(), "default", rsp.Data.Txid).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 		Then("adding a metadata", func() {
-			var (
-				metadata = map[string]any{
-					"foo": "bar",
-				}
-			)
+			metadata := map[string]any{
+				"foo": "bar",
+			}
 			BeforeEach(func() {
 				_, err := Client().TransactionsApi.
 					AddMetadataOnTransaction(TestContext(), "default", rsp.Data.Txid).
@@ -56,7 +54,7 @@ var _ = Given("some empty environment", func() {
 				transaction, _, err := Client().TransactionsApi.
 					GetTransaction(TestContext(), "default", rsp.Data.Txid).
 					Execute()
-				Expect(err).To(BeNil())
+				Expect(err).ToNot(HaveOccurred())
 				Expect(transaction.Data.Metadata).Should(Equal(metadata))
 			})
 		})

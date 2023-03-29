@@ -34,6 +34,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConfigsResponse'
 
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
     post:
       summary: Insert a new config
       description: |
@@ -60,16 +67,15 @@ paths:
           description: Config created successfully.
           content:
             application/json:
-                schema:
-                  $ref: '#/components/schemas/ConfigResponse'
-
-        "400":
-          description: Bad Request
-          content:
-            text/plain:
               schema:
-                type: string
-                example: endpoints should be valid urls
+                $ref: '#/components/schemas/ConfigResponse'
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /configs/{id}:
     delete:
@@ -89,7 +95,13 @@ paths:
       responses:
         "200":
           description: Config successfully deleted.
-          content: {}
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /configs/{id}/test:
     get:
@@ -114,6 +126,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/AttemptResponse'
 
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /configs/{id}/activate:
     put:
       summary: Activate one config
@@ -136,8 +155,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-        "304":
-          description: Config not modified, was already activated.
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /configs/{id}/deactivate:
     put:
@@ -161,8 +185,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
-        "304":
-          description: Config not modified, was already deactivated.
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /configs/{id}/secret/change:
     put:
@@ -195,6 +224,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
+
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -282,6 +318,14 @@ components:
         updatedAt:
           type: string
           format: date-time
+      required:
+        - id
+        - endpoint
+        - secret
+        - eventTypes
+        - active
+        - createdAt
+        - updatedAt
 
     ConfigChangeSecret:
       type: object
@@ -289,6 +333,8 @@ components:
         secret:
           type: string
           example: "V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3"
+      required:
+        - secret
 
     AttemptResponse:
       type: object
@@ -329,3 +375,43 @@ components:
         nextRetryAfter:
           type: string
           format: date-time
+      required:
+        - id
+        - webhookID
+        - createdAt
+        - updatedAt
+        - config
+        - payload
+        - statusCode
+        - retryAttempt
+        - status
+
+    ErrorResponse:
+      type: object
+      required:
+        - errorCode
+        - errorMessage
+      properties:
+        errorCode:
+          $ref: '#/components/schemas/ErrorsEnum'
+        errorMessage:
+          type: string
+          example: "[VALIDATION] invalid 'cursor' query param"
+        details:
+          type: string
+          example: "https://play.numscript.org/?payload=eyJlcnJvciI6ImFjY291bnQgaGFkIGluc3VmZmljaWVudCBmdW5kcyJ9"
+
+    ErrorsEnum:
+      type: string
+      enum:
+        - INTERNAL
+        - INSUFFICIENT_FUND
+        - VALIDATION
+        - CONFLICT
+        - NO_SCRIPT
+        - COMPILATION_FAILED
+        - METADATA_OVERRIDE
+        - NOT_FOUND
+        - CONTEXT_CANCELLED
+        - STORE
+      example: VALIDATION

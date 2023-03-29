@@ -43,7 +43,11 @@ public enum ErrorsEnum {
   
   METADATA_OVERRIDE("METADATA_OVERRIDE"),
   
-  NOT_FOUND("NOT_FOUND");
+  NOT_FOUND("NOT_FOUND"),
+  
+  CONTEXT_CANCELLED("CONTEXT_CANCELLED"),
+  
+  STORE("STORE");
 
   private String value;
 

@@ -20,15 +20,16 @@ var _ MappedNullable = &ConfigChangeSecret{}
 
 // ConfigChangeSecret struct for ConfigChangeSecret
 type ConfigChangeSecret struct {
-	Secret *string `json:"secret,omitempty"`
+	Secret string `json:"secret"`
 }
 
 // NewConfigChangeSecret instantiates a new ConfigChangeSecret object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConfigChangeSecret() *ConfigChangeSecret {
+func NewConfigChangeSecret(secret string) *ConfigChangeSecret {
 	this := ConfigChangeSecret{}
+	this.Secret = secret
 	return &this
 }
 
@@ -40,36 +41,28 @@ func NewConfigChangeSecretWithDefaults() *ConfigChangeSecret {
 	return &this
 }
 
-// GetSecret returns the Secret field value if set, zero value otherwise.
+// GetSecret returns the Secret field value
 func (o *ConfigChangeSecret) GetSecret() string {
-	if o == nil || IsNil(o.Secret) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Secret
+
+	return o.Secret
 }
 
-// GetSecretOk returns a tuple with the Secret field value if set, nil otherwise
+// GetSecretOk returns a tuple with the Secret field value
 // and a boolean to check if the value has been set.
 func (o *ConfigChangeSecret) GetSecretOk() (*string, bool) {
-	if o == nil || IsNil(o.Secret) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Secret, true
+	return &o.Secret, true
 }
 
-// HasSecret returns a boolean if a field has been set.
-func (o *ConfigChangeSecret) HasSecret() bool {
-	if o != nil && !IsNil(o.Secret) {
-		return true
-	}
-
-	return false
-}
-
-// SetSecret gets a reference to the given string and assigns it to the Secret field.
+// SetSecret sets field value
 func (o *ConfigChangeSecret) SetSecret(v string) {
-	o.Secret = &v
+	o.Secret = v
 }
 
 func (o ConfigChangeSecret) MarshalJSON() ([]byte, error) {
@@ -82,9 +75,7 @@ func (o ConfigChangeSecret) MarshalJSON() ([]byte, error) {
 
 func (o ConfigChangeSecret) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Secret) {
-		toSerialize["secret"] = o.Secret
-	}
+	toSerialize["secret"] = o.Secret
 	return toSerialize, nil
 }
 
