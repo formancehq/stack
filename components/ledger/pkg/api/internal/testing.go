@@ -206,12 +206,19 @@ func RunTest(t *testing.T, callback func(api chi.Router, storageDriver storage.D
 	storageDriver := ledgertesting.StorageDriver(t)
 	require.NoError(t, storageDriver.Initialize(context.Background()))
 
-	queryWorker := query.NewWorker(query.DefaultWorkerConfig, storageDriver, query.NewNoOpMonitor())
+	ledgerStore, _, err := storageDriver.GetLedgerStore(context.Background(), uuid.New(), true)
+	require.NoError(t, err)
+
+	modified, err := ledgerStore.Initialize(context.Background())
+	require.NoError(t, err)
+	require.True(t, modified)
+
+	queryWorker := query.NewWorker(query.DefaultWorkerConfig, storageDriver, ledgerStore, query.NewNoOpMonitor())
 	go func() {
 		require.NoError(t, queryWorker.Run(context.Background()))
 	}()
 
-	resolver := ledger.NewResolver(storageDriver, lock.NewInMemory(), queryWorker, false)
+	resolver := ledger.NewResolver(storageDriver, lock.NewInMemory(), false)
 	router := routes.NewRouter(storageDriver, "latest", resolver,
 		logging.FromContext(context.Background()), &health.HealthController{})
 

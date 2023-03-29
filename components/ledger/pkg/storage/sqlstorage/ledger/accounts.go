@@ -314,7 +314,7 @@ func (s *Store) EnsureAccountExists(ctx context.Context, account string) error {
 
 func (s *Store) EnsureAccountsExist(ctx context.Context, accounts []string) error {
 	if !s.isInitialized {
-		return ErrStoreNotInitialized
+		return storage.ErrStoreNotInitialized
 	}
 
 	accs := make([]*Accounts, len(accounts))
@@ -330,7 +330,7 @@ func (s *Store) EnsureAccountsExist(ctx context.Context, accounts []string) erro
 		Ignore().
 		Exec(ctx)
 
-	return s.error(err)
+	return sqlerrors.PostgresError(err)
 }
 
 func (s *Store) UpdateAccountMetadata(ctx context.Context, address string, metadata core.Metadata) error {
@@ -348,12 +348,12 @@ func (s *Store) UpdateAccountMetadata(ctx context.Context, address string, metad
 		On("CONFLICT (address) DO UPDATE").
 		Set("metadata = accounts.metadata || EXCLUDED.metadata").
 		Exec(ctx)
-	return err
+	return sqlerrors.PostgresError(err)
 }
 
 func (s *Store) UpdateAccountsMetadata(ctx context.Context, accounts []core.Account) error {
 	if !s.isInitialized {
-		return ErrStoreNotInitialized
+		return storage.ErrStoreNotInitialized
 	}
 
 	accs := make([]*Accounts, len(accounts))
@@ -377,5 +377,5 @@ func (s *Store) UpdateAccountsMetadata(ctx context.Context, accounts []core.Acco
 			Set("metadata = accounts.metadata || EXCLUDED.metadata").String())
 		fmt.Println(accounts)
 	}
-	return err
+	return sqlerrors.PostgresError(err)
 }

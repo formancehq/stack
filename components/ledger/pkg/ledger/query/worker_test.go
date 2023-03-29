@@ -32,9 +32,9 @@ func TestWorker(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, modified)
 
-	worker := NewWorker(workerConfig{
+	worker := NewWorker(WorkerConfig{
 		ChanSize: 1024,
-	}, driver, NewNoOpMonitor())
+	}, driver, ledgerStore, NewNoOpMonitor())
 	go func() {
 		require.NoError(t, worker.Run(context.Background()))
 	}()

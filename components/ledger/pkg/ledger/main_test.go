@@ -30,12 +30,19 @@ func newResolver(t interface{ pgtesting.TestingT }) *Resolver {
 	storageDriver := ledgertesting.StorageDriver(t)
 	require.NoError(t, storageDriver.Initialize(context.Background()))
 
-	queryWorker := query.NewWorker(query.DefaultWorkerConfig, storageDriver, query.NewNoOpMonitor())
+	ledgerStore, _, err := storageDriver.GetLedgerStore(context.Background(), uuid.New(), true)
+	require.NoError(t, err)
+
+	modified, err := ledgerStore.Initialize(context.Background())
+	require.NoError(t, err)
+	require.True(t, modified)
+
+	queryWorker := query.NewWorker(query.DefaultWorkerConfig, storageDriver, ledgerStore, query.NewNoOpMonitor())
 	go func() {
 		require.NoError(t, queryWorker.Run(context.Background()))
 	}()
 
-	return NewResolver(storageDriver, lock.NewInMemory(), queryWorker, false)
+	return NewResolver(storageDriver, lock.NewInMemory(), false)
 }
 
 func runOnLedger(t interface {

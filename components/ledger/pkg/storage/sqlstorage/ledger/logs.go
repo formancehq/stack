@@ -2,6 +2,7 @@ package ledger
 
 import (
 	"context"
+	"database/sql"
 	"database/sql/driver"
 	"encoding/base64"
 	"encoding/json"
@@ -180,7 +181,7 @@ func (s *Store) GetLogs(ctx context.Context, q *storage.LogsQuery) (api.Cursor[c
 		var raw LogsV2
 		err = rows.Scan(&raw.ID, &raw.Type, &raw.Hash, &raw.Date, &raw.Data, &raw.Reference)
 		if err != nil {
-			return api.Cursor[core.Log]{}, s.error(err)
+			return api.Cursor[core.Log]{}, sqlerrors.PostgresError(err)
 		}
 
 		payload, err := core.HydrateLog(core.LogType(raw.Type), raw.Data)

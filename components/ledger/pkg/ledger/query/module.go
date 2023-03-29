@@ -9,7 +9,7 @@ import (
 
 func Module() fx.Option {
 	return fx.Options(
-		fx.Supply(workerConfig{
+		fx.Supply(WorkerConfig{
 			// TODO(gfyrag): Probably need to be configurable
 			ChanSize: 1024,
 		}),

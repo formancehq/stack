@@ -411,7 +411,7 @@ func (s *Store) UpdateTransactionMetadata(ctx context.Context, id uint64, metada
 
 func (s *Store) UpdateTransactionsMetadata(ctx context.Context, transactionsWithMetadata ...core.TransactionWithMetadata) error {
 	if !s.isInitialized {
-		return ErrStoreNotInitialized
+		return storage.ErrStoreNotInitialized
 	}
 
 	txs := make([]*Transactions, 0, len(transactionsWithMetadata))
