@@ -9,3 +9,7 @@ vendor
 go.work
 go.work.sum
 worktrees
+
+memprofile.out
+profile.out
+*.test
