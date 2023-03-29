@@ -16,7 +16,6 @@ import (
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger"
 	"github.com/formancehq/ledger/pkg/ledger/lock"
-	"github.com/formancehq/ledger/pkg/ledger/query"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/ledger/pkg/storage"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
@@ -212,11 +211,6 @@ func RunTest(t *testing.T, callback func(api chi.Router, storageDriver storage.D
 	modified, err := ledgerStore.Initialize(context.Background())
 	require.NoError(t, err)
 	require.True(t, modified)
-
-	queryWorker := query.NewWorker(query.DefaultWorkerConfig, storageDriver, ledgerStore, query.NewNoOpMonitor())
-	go func() {
-		require.NoError(t, queryWorker.Run(context.Background()))
-	}()
 
 	resolver := ledger.NewResolver(storageDriver, lock.NewInMemory(), false)
 	router := routes.NewRouter(storageDriver, "latest", resolver,

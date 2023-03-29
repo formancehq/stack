@@ -221,6 +221,9 @@ l:
 }
 
 func (w *Worker) Stop(ctx context.Context) error {
+	fmt.Println("LAUNCH CLOSE")
+	defer fmt.Println("LAUNCH CLOSE 2")
+
 	ch := make(chan struct{})
 	select {
 	case <-ctx.Done():
