@@ -369,13 +369,5 @@ func (s *Store) UpdateAccountsMetadata(ctx context.Context, accounts []core.Acco
 		On("CONFLICT (address) DO UPDATE").
 		Set("metadata = accounts.metadata || EXCLUDED.metadata").
 		Exec(ctx)
-	if err != nil {
-		fmt.Println("ERRRRRR")
-		fmt.Println(s.schema.NewInsert(accountsTableName).
-			Model(&accs).
-			On("CONFLICT (address) DO UPDATE").
-			Set("metadata = accounts.metadata || EXCLUDED.metadata").String())
-		fmt.Println(accounts)
-	}
 	return sqlerrors.PostgresError(err)
 }

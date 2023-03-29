@@ -352,7 +352,7 @@ func (w *Worker) buildData(
 	logsData := &logsData{}
 
 	volumeAggregator := aggregator.Volumes(w.store)
-
+	accountsToUpdate := make(map[string]core.Metadata)
 	for _, log := range logs {
 		switch log.Type {
 		case core.NewTransactionLogType:
@@ -364,10 +364,13 @@ func (w *Worker) buildData(
 
 			if payload.AccountMetadata != nil {
 				for account, metadata := range payload.AccountMetadata {
-					logsData.accountsToUpdate = append(logsData.accountsToUpdate, core.Account{
-						Address:  account,
-						Metadata: metadata,
-					})
+					if m, ok := accountsToUpdate[account]; !ok {
+						accountsToUpdate[account] = metadata
+					} else {
+						for k, v := range metadata {
+							m[k] = v
+						}
+					}
 				}
 			}
 
@@ -396,10 +399,15 @@ func (w *Worker) buildData(
 			setMetadata := log.Data.(core.SetMetadataLogPayload)
 			switch setMetadata.TargetType {
 			case core.MetaTargetTypeAccount:
-				logsData.accountsToUpdate = append(logsData.accountsToUpdate, core.Account{
-					Address:  setMetadata.TargetID.(string),
-					Metadata: setMetadata.Metadata,
-				})
+				addr := setMetadata.TargetID.(string)
+				if m, ok := accountsToUpdate[addr]; !ok {
+					accountsToUpdate[addr] = setMetadata.Metadata
+				} else {
+					for k, v := range setMetadata.Metadata {
+						m[k] = v
+					}
+				}
+
 			case core.MetaTargetTypeTransaction:
 				logsData.transactionsToUpdate = append(logsData.transactionsToUpdate, core.TransactionWithMetadata{
 					ID:       setMetadata.TargetID.(uint64),
@@ -438,6 +446,13 @@ func (w *Worker) buildData(
 				w.monitor.RevertedTransaction(ctx, w.store.Name(), revertedTx, &expandedTx)
 			})
 		}
+	}
+
+	for account, metadata := range accountsToUpdate {
+		logsData.accountsToUpdate = append(logsData.accountsToUpdate, core.Account{
+			Address:  account,
+			Metadata: metadata,
+		})
 	}
 
 	return logsData, nil
