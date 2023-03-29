@@ -353,6 +353,7 @@ func (w *Worker) buildData(
 
 	volumeAggregator := aggregator.Volumes(w.store)
 	accountsToUpdate := make(map[string]core.Metadata)
+	transactionsToUpdate := make(map[uint64]core.Metadata)
 	for _, log := range logs {
 		switch log.Type {
 		case core.NewTransactionLogType:
@@ -409,10 +410,14 @@ func (w *Worker) buildData(
 				}
 
 			case core.MetaTargetTypeTransaction:
-				logsData.transactionsToUpdate = append(logsData.transactionsToUpdate, core.TransactionWithMetadata{
-					ID:       setMetadata.TargetID.(uint64),
-					Metadata: setMetadata.Metadata,
-				})
+				id := setMetadata.TargetID.(uint64)
+				if m, ok := transactionsToUpdate[id]; !ok {
+					transactionsToUpdate[id] = setMetadata.Metadata
+				} else {
+					for k, v := range setMetadata.Metadata {
+						m[k] = v
+					}
+				}
 			}
 
 			logsData.monitors = append(logsData.monitors, func(ctx context.Context, monitor Monitor) {
@@ -421,10 +426,16 @@ func (w *Worker) buildData(
 
 		case core.RevertedTransactionLogType:
 			payload := log.Data.(core.RevertedTransactionLogPayload)
-			logsData.transactionsToUpdate = append(logsData.transactionsToUpdate, core.TransactionWithMetadata{
-				ID:       payload.RevertedTransactionID,
-				Metadata: core.RevertedMetadata(payload.RevertTransaction.ID),
-			})
+			id := payload.RevertedTransactionID
+			metadata := core.RevertedMetadata(payload.RevertTransaction.ID)
+			if m, ok := transactionsToUpdate[id]; !ok {
+				transactionsToUpdate[id] = metadata
+			} else {
+				for k, v := range metadata {
+					m[k] = v
+				}
+			}
+
 			txVolumeAggregator, err := volumeAggregator.NextTxWithPostings(ctx, payload.RevertTransaction.Postings...)
 			if err != nil {
 				return nil, errors.Wrap(err, "aggregating volumes")
@@ -451,6 +462,13 @@ func (w *Worker) buildData(
 	for account, metadata := range accountsToUpdate {
 		logsData.accountsToUpdate = append(logsData.accountsToUpdate, core.Account{
 			Address:  account,
+			Metadata: metadata,
+		})
+	}
+
+	for transaction, metadata := range transactionsToUpdate {
+		logsData.transactionsToUpdate = append(logsData.transactionsToUpdate, core.TransactionWithMetadata{
+			ID:       transaction,
 			Metadata: metadata,
 		})
 	}

@@ -28,19 +28,24 @@ func (s *Store) UpdateVolumes(ctx context.Context, volumes ...core.AccountsAsset
 		return storage.ErrStoreNotInitialized
 	}
 
-	vls := make([]*Volumes, 0, len(volumes))
-
+	volumesMap := make(map[string]*Volumes)
 	for _, vs := range volumes {
 		for account, accountVolumes := range vs {
 			for asset, volumes := range accountVolumes {
-				vls = append(vls, &Volumes{
+				// De-duplicate same volumes to only have the last version
+				volumesMap[account+asset] = &Volumes{
 					Account: account,
 					Asset:   asset,
 					Input:   volumes.Input.Uint64(),
 					Output:  volumes.Output.Uint64(),
-				})
+				}
 			}
 		}
+	}
+
+	vls := make([]*Volumes, 0, len(volumes))
+	for _, v := range volumesMap {
+		vls = append(vls, v)
 	}
 
 	query := s.schema.NewInsert(volumesTableName).

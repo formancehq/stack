@@ -57,4 +57,36 @@ func TestVolumes(t *testing.T) {
 		assert.NoError(t, err, "get asset volumes should not fail")
 		assert.Equal(t, foo2, assetVolumes, "asset volumes should be equal")
 	})
+
+	t.Run("success update same volume", func(t *testing.T) {
+		foo := core.AssetsVolumes{
+			"bar": {
+				Input:  big.NewInt(1),
+				Output: big.NewInt(2),
+			},
+		}
+
+		foo2 := core.AssetsVolumes{
+			"bar": {
+				Input:  big.NewInt(3),
+				Output: big.NewInt(4),
+			},
+		}
+
+		volumes := []core.AccountsAssetsVolumes{
+			{
+				"foo": foo,
+			},
+			{
+				"foo": foo2,
+			},
+		}
+
+		err := store.UpdateVolumes(context.Background(), volumes...)
+		assert.NoError(t, err, "update volumes should not fail")
+
+		assetVolumes, err := store.GetAssetsVolumes(context.Background(), "foo")
+		assert.NoError(t, err, "get asset volumes should not fail")
+		assert.Equal(t, foo2, assetVolumes, "asset volumes should be equal")
+	})
 }
