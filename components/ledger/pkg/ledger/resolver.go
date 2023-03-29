@@ -6,6 +6,7 @@ import (
 
 	"github.com/formancehq/ledger/pkg/ledger/cache"
 	"github.com/formancehq/ledger/pkg/ledger/lock"
+	"github.com/formancehq/ledger/pkg/ledger/monitor"
 	"github.com/formancehq/ledger/pkg/ledger/numscript"
 	"github.com/formancehq/ledger/pkg/ledger/query"
 	"github.com/formancehq/ledger/pkg/ledger/runner"
@@ -16,6 +17,7 @@ import (
 
 type Resolver struct {
 	storageDriver storage.Driver
+	monitor       monitor.Monitor
 	lock          sync.RWMutex
 	locker        lock.Locker
 	//TODO(gfyrag): add a routine to clean old ledger
@@ -26,11 +28,13 @@ type Resolver struct {
 
 func NewResolver(
 	storageDriver storage.Driver,
+	monitor monitor.Monitor,
 	locker lock.Locker,
 	allowPastTimestamps bool,
 ) *Resolver {
 	return &Resolver{
 		storageDriver:       storageDriver,
+		monitor:             monitor,
 		locker:              locker,
 		compiler:            numscript.NewCompiler(),
 		ledgers:             map[string]*Ledger{},
@@ -65,7 +69,7 @@ func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) 
 
 		queryWorker := query.NewWorker(query.WorkerConfig{
 			ChanSize: 1024,
-		}, r.storageDriver, store, query.NewNoOpMonitor())
+		}, r.storageDriver, store, r.monitor)
 
 		go func() {
 			if err := queryWorker.Run(logging.ContextWithLogger(

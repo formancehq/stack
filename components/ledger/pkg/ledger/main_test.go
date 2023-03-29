@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/formancehq/ledger/pkg/ledger/lock"
-	"github.com/formancehq/ledger/pkg/ledger/query"
+	"github.com/formancehq/ledger/pkg/ledger/monitor"
 	"github.com/formancehq/ledger/pkg/ledgertesting"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/pgtesting"
@@ -37,12 +37,7 @@ func newResolver(t interface{ pgtesting.TestingT }) *Resolver {
 	require.NoError(t, err)
 	require.True(t, modified)
 
-	queryWorker := query.NewWorker(query.DefaultWorkerConfig, storageDriver, ledgerStore, query.NewNoOpMonitor())
-	go func() {
-		require.NoError(t, queryWorker.Run(context.Background()))
-	}()
-
-	return NewResolver(storageDriver, lock.NewInMemory(), false)
+	return NewResolver(storageDriver, monitor.NewNoOpMonitor(), lock.NewInMemory(), false)
 }
 
 func runOnLedger(t interface {

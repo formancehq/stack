@@ -6,6 +6,7 @@ import (
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/ledger/aggregator"
+	"github.com/formancehq/ledger/pkg/ledger/monitor"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
@@ -27,7 +28,7 @@ type logsData struct {
 	transactionsToInsert []core.ExpandedTransaction
 	transactionsToUpdate []core.TransactionWithMetadata
 	volumesToUpdate      []core.AccountsAssetsVolumes
-	monitors             []func(context.Context, Monitor)
+	monitors             []func(context.Context, monitor.Monitor)
 }
 
 type Worker struct {
@@ -43,7 +44,7 @@ type Worker struct {
 
 	driver             storage.Driver
 	store              storage.LedgerStore
-	monitor            Monitor
+	monitor            monitor.Monitor
 	lastProcessedLogID *uint64
 }
 
@@ -114,8 +115,6 @@ func (w *Worker) writeLoop(ctx context.Context) {
 
 				// TODO(polo/gfyrag): add indempotency tests
 				// Return the error to restart the worker
-				fmt.Println("writeLoop error updating next id: ", len(modelsHolder), err)
-
 				w.errorChan <- err
 				return
 			}
@@ -221,9 +220,6 @@ l:
 }
 
 func (w *Worker) Stop(ctx context.Context) error {
-	fmt.Println("LAUNCH CLOSE")
-	defer fmt.Println("LAUNCH CLOSE 2")
-
 	ch := make(chan struct{})
 	select {
 	case <-ctx.Done():
@@ -389,7 +385,7 @@ func (w *Worker) buildData(
 
 			logsData.volumesToUpdate = append(logsData.volumesToUpdate, txVolumeAggregator.PostCommitVolumes)
 
-			logsData.monitors = append(logsData.monitors, func(ctx context.Context, monitor Monitor) {
+			logsData.monitors = append(logsData.monitors, func(ctx context.Context, monitor monitor.Monitor) {
 				w.monitor.CommittedTransactions(ctx, w.store.Name(), expandedTx)
 				for account, metadata := range payload.AccountMetadata {
 					w.monitor.SavedMetadata(ctx, w.store.Name(), core.MetaTargetTypeAccount, account, metadata)
@@ -420,7 +416,7 @@ func (w *Worker) buildData(
 				}
 			}
 
-			logsData.monitors = append(logsData.monitors, func(ctx context.Context, monitor Monitor) {
+			logsData.monitors = append(logsData.monitors, func(ctx context.Context, monitor monitor.Monitor) {
 				w.monitor.SavedMetadata(ctx, w.store.Name(), w.store.Name(), fmt.Sprint(setMetadata.TargetID), setMetadata.Metadata)
 			})
 
@@ -453,7 +449,7 @@ func (w *Worker) buildData(
 				return nil, err
 			}
 
-			logsData.monitors = append(logsData.monitors, func(ctx context.Context, monitor Monitor) {
+			logsData.monitors = append(logsData.monitors, func(ctx context.Context, monitor monitor.Monitor) {
 				w.monitor.RevertedTransaction(ctx, w.store.Name(), revertedTx, &expandedTx)
 			})
 		}
@@ -483,7 +479,7 @@ func (w *Worker) QueueLog(ctx context.Context, log *core.LogHolder, store storag
 	}
 }
 
-func NewWorker(config WorkerConfig, driver storage.Driver, store storage.LedgerStore, monitor Monitor) *Worker {
+func NewWorker(config WorkerConfig, driver storage.Driver, store storage.LedgerStore, monitor monitor.Monitor) *Worker {
 	return &Worker{
 		pending:      make([]*core.LogHolder, 0),
 		jobs:         make(chan []*core.LogHolder),
