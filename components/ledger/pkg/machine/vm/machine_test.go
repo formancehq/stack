@@ -964,6 +964,7 @@ func TestNeededBalances(t *testing.T) {
 	}))
 	require.NotNil(t, called["a"])
 	require.NotNil(t, called["b"])
+	require.NoError(t, err)
 }
 
 func TestSetTxMeta(t *testing.T) {
