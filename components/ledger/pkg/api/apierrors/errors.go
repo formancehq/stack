@@ -35,12 +35,14 @@ const (
 func ResponseError(w http.ResponseWriter, r *http.Request, err error) {
 	status, code, details := coreErrorToErrorCode(err)
 
+	baseError := errors.Cause(err)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	if status < 500 {
 		err := json.NewEncoder(w).Encode(api.ErrorResponse{
 			ErrorCode:    code,
-			ErrorMessage: err.Error(),
+			ErrorMessage: baseError.Error(),
 			Details:      details,
 		})
 		if err != nil {
@@ -64,19 +66,19 @@ func coreErrorToErrorCode(err error) (int, string, string) {
 		return http.StatusNotFound, ErrNotFound, ""
 	case ledger.IsNoScriptError(err):
 		baseError := errors.Cause(err)
-		return http.StatusBadRequest, ScriptErrorNoScript, baseError.Error()
+		return http.StatusBadRequest, ScriptErrorNoScript, EncodeLink(baseError.Error())
 	case ledger.IsInsufficientFundError(err):
 		baseError := errors.Cause(err)
-		return http.StatusBadRequest, ScriptErrorInsufficientFund, baseError.Error()
+		return http.StatusBadRequest, ScriptErrorInsufficientFund, EncodeLink(baseError.Error())
 	case ledger.IsCompilationFailedError(err):
 		baseError := errors.Cause(err)
-		return http.StatusBadRequest, ScriptErrorCompilationFailed, baseError.Error()
+		return http.StatusBadRequest, ScriptErrorCompilationFailed, EncodeLink(baseError.Error())
 	case ledger.IsScriptMetadataOverrideError(err):
 		baseError := errors.Cause(err)
-		return http.StatusBadRequest, ScriptErrorMetadataOverride, baseError.Error()
+		return http.StatusBadRequest, ScriptErrorMetadataOverride, EncodeLink(baseError.Error())
 	case ledger.IsInvalidResourceResolutionError(err):
 		baseError := errors.Cause(err)
-		return http.StatusBadRequest, ResourceResolutionError, baseError.Error()
+		return http.StatusBadRequest, ResourceResolutionError, EncodeLink(baseError.Error())
 	case errors.Is(err, context.Canceled):
 		return http.StatusInternalServerError, ErrContextCancelled, ""
 	case ledger.IsStorageError(err):

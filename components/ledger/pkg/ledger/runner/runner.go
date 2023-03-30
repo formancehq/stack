@@ -112,7 +112,7 @@ func (r *Runner) execute(ctx context.Context, script core.RunScript, logComputer
 	result, err := machine.Run(m, script)
 	if err != nil {
 		release()
-		return nil, nil, errorsutil.NewError(ErrRunner, err)
+		return nil, nil, VMErrorToRunnerError(err)
 	}
 
 	if len(result.Postings) == 0 {

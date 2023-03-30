@@ -7,6 +7,7 @@ import (
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/machine/vm"
+	"github.com/formancehq/stack/libs/go-libs/errorsutil"
 	"github.com/pkg/errors"
 )
 
@@ -53,7 +54,8 @@ func Run(m *vm.Machine, script core.RunScript) (*Result, error) {
 	for k, v := range script.Metadata {
 		_, ok := result.Metadata[k]
 		if ok {
-			return nil, vm.ErrMetadataOverride
+			return nil, errorsutil.NewError(vm.ErrMetadataOverride,
+				errors.New("cannot override metadata from script"))
 		}
 		result.Metadata[k] = v
 	}
