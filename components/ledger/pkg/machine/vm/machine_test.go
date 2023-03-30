@@ -1671,7 +1671,7 @@ func TestResolveResources(t *testing.T) {
 			_, _, err = m.ResolveResources(context.Background(), EmptyStore)
 			if tc.expectedError != nil {
 				require.Error(t, err)
-				require.True(t, errors.Is(tc.expectedError, err))
+				require.True(t, errors.Is(err, tc.expectedError))
 			} else {
 				require.NoError(t, err)
 			}
@@ -1713,7 +1713,7 @@ func TestResolveBalances(t *testing.T) {
 					source = @users:001
 					destination = @world
 				)`,
-			expectedError: fmt.Errorf("tried to request the balance of account users:001 for asset COIN: received -100: monetary amounts must be non-negative"),
+			expectedError: ErrNegativeMonetaryAmount,
 		},
 	} {
 		tc := tc
@@ -1735,7 +1735,7 @@ func TestResolveBalances(t *testing.T) {
 			err = m.ResolveBalances(context.Background(), store)
 			if tc.expectedError != nil {
 				require.Error(t, err)
-				require.Equal(t, tc.expectedError, err)
+				require.True(t, errors.Is(err, tc.expectedError))
 			} else {
 				require.NoError(t, err)
 			}
