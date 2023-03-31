@@ -22,7 +22,7 @@ export class WalletsTransaction {
     /**
     * Metadata associated with the wallet.
     */
-    'metadata'?: { [key: string]: any; };
+    'metadata': { [key: string]: string; };
     'txid': number;
     'preCommitVolumes'?: { [key: string]: { [key: string]: WalletsVolume; }; };
     'postCommitVolumes'?: { [key: string]: { [key: string]: WalletsVolume; }; };
@@ -57,7 +57,7 @@ export class WalletsTransaction {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "{ [key: string]: any; }",
+            "type": "{ [key: string]: string; }",
             "format": ""
         },
         {

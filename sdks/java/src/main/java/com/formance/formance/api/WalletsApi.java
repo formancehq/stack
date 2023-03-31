@@ -143,7 +143,7 @@ public interface WalletsApi {
    */
   @GET("api/wallets/holds")
   Call<GetHoldsResponse> getHolds(
-    @retrofit2.http.Query("pageSize") Integer pageSize, @retrofit2.http.Query("walletID") String walletID, @retrofit2.http.Query("metadata") Object metadata, @retrofit2.http.Query("cursor") String cursor
+    @retrofit2.http.Query("pageSize") Integer pageSize, @retrofit2.http.Query("walletID") String walletID, @retrofit2.http.Query("metadata") Map<String, String> metadata, @retrofit2.http.Query("cursor") String cursor
   );
 
   /**
@@ -192,7 +192,7 @@ public interface WalletsApi {
    */
   @GET("api/wallets/wallets")
   Call<ListWalletsResponse> listWallets(
-    @retrofit2.http.Query("name") String name, @retrofit2.http.Query("metadata") Object metadata, @retrofit2.http.Query("pageSize") Integer pageSize, @retrofit2.http.Query("cursor") String cursor
+    @retrofit2.http.Query("name") String name, @retrofit2.http.Query("metadata") Map<String, String> metadata, @retrofit2.http.Query("pageSize") Integer pageSize, @retrofit2.http.Query("cursor") String cursor
   );
 
   /**

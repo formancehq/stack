@@ -18,7 +18,7 @@ export class Transaction {
     'timestamp': Date;
     'postings': Array<Posting>;
     'reference'?: string;
-    'metadata'?: { [key: string]: any; };
+    'metadata': { [key: string]: string; };
     'txid': number;
     'preCommitVolumes'?: { [key: string]: { [key: string]: Volume; }; };
     'postCommitVolumes'?: { [key: string]: { [key: string]: Volume; }; };
@@ -47,7 +47,7 @@ export class Transaction {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "{ [key: string]: any; }",
+            "type": "{ [key: string]: string; }",
             "format": ""
         },
         {

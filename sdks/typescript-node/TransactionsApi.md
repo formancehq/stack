@@ -31,9 +31,9 @@ let body:TransactionsApiAddMetadataOnTransactionRequest = {
   ledger: "ledger001",
   // number | Transaction ID.
   txid: 1234,
-  // { [key: string]: any; } | metadata (optional)
+  // { [key: string]: string; } | metadata (optional)
   requestBody: {
-    "key": null,
+    "key": "key_example",
   },
 };
 
@@ -47,7 +47,7 @@ apiInstance.addMetadataOnTransaction(body).then((data:any) => {
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **requestBody** | **{ [key: string]: any; }**| metadata |
+ **requestBody** | **{ [key: string]: string; }**| metadata |
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
  **txid** | [**number**] | Transaction ID. | defaults to undefined
 
@@ -190,7 +190,7 @@ send [COIN 10] (
     },
     reference: "ref:001",
     metadata: {
-      "key": null,
+      "key": "key_example",
     },
   },
   // boolean | Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker. (optional)
@@ -327,8 +327,10 @@ let body:TransactionsApiListTransactionsRequest = {
   endTime: new Date('1970-01-01T00:00:00.00Z'),
   // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-  // any | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
-  metadata: {},
+  // { [key: string]: string; } | Filter transactions by metadata key value pairs. (optional)
+  metadata: {
+    "key": "key_example",
+  },
 };
 
 apiInstance.listTransactions(body).then((data:any) => {
@@ -351,7 +353,7 @@ Name | Type | Description  | Notes
  **startTime** | [**Date**] | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  | (optional) defaults to undefined
  **endTime** | [**Date**] | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  | (optional) defaults to undefined
  **cursor** | [**string**] | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | (optional) defaults to undefined
- **metadata** | **any** | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | (optional) defaults to undefined
+ **metadata** | **{ [key: string]: string; }** | Filter transactions by metadata key value pairs. | (optional) defaults to undefined
 
 
 ### Return type

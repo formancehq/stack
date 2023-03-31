@@ -133,7 +133,7 @@ var walletDebitTestCases = []testCase{
 		request: wallet.DebitRequest{
 			Amount:  wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
 			Pending: true,
-			Metadata: map[string]any{
+			Metadata: map[string]string{
 				"foo": "bar",
 			},
 			Description: "a first tx",

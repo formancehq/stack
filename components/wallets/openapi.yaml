@@ -89,7 +89,9 @@ paths:
         schema:
           type: object
           properties: { }
-        example: { admin: true, a: { nested: { key: value}} }
+          additionalProperties:
+            type: string
+        example: { admin: "true" }
       - name: pageSize
         in: query
         description: 'The maximum number of results to return per page'
@@ -180,11 +182,14 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+              - metadata
               properties:
                 metadata:
                   type: object
                   description: Custom metadata to attach to this wallet.
-                  additionalProperties: {}
+                  additionalProperties:
+                    type: string
       responses:
         204:
           description: Wallet successfully updated
@@ -355,11 +360,12 @@ paths:
         in: query
         description: Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
         style: deepObject
-        explode: true
         schema:
           type: object
           properties: { }
-        example: { admin: true, a: { nested: { key: value}} }
+          additionalProperties:
+            type: string
+        example: { admin: "true" }
       - name: cursor
         in: query
         description: |
@@ -490,7 +496,8 @@ components:
           description: The unique ID of the wallet.
         metadata:
           type: object
-          additionalProperties: { }
+          additionalProperties:
+            type: string
           description: Metadata associated with the wallet.
         name:
           type: string
@@ -516,7 +523,8 @@ components:
         metadata:
           type: object
           description: Metadata associated with the wallet.
-          additionalProperties: { }
+          additionalProperties:
+            type: string
         name:
           type: string
         createdAt:
@@ -549,7 +557,8 @@ components:
         metadata:
           type: object
           description: Metadata associated with the hold.
-          additionalProperties: {}
+          additionalProperties:
+            type: string
         description:
           type: string
         destination:
@@ -654,7 +663,8 @@ components:
           example: ref:001
         metadata:
           type: object
-          additionalProperties: { }
+          additionalProperties:
+            type: string
           description: Metadata associated with the wallet.
         txid:
           type: integer
@@ -668,6 +678,7 @@ components:
       - postings
       - timestamp
       - txid
+      - metadata
     Cursor:
       type: object
       required:
@@ -731,11 +742,13 @@ components:
       type: object
       required:
       - name
+      - metadata
       properties:
         metadata:
           type: object
           description: Custom metadata to attach to this wallet.
-          additionalProperties: {}
+          additionalProperties:
+            type: string
         name:
           type: string
     Volume:
@@ -814,12 +827,14 @@ components:
       required:
       - amount
       - sources
+      - metadata
       properties:
         amount:
           $ref: '#/components/schemas/Monetary'
         metadata:
           type: object
-          additionalProperties: { }
+          additionalProperties:
+            type: string
           description: Metadata associated with the wallet.
         reference:
           type: string
@@ -840,6 +855,7 @@ components:
       type: object
       required:
       - amount
+      - metadata
       properties:
         amount:
           $ref: '#/components/schemas/Monetary'
@@ -848,7 +864,8 @@ components:
           description: Set to true to create a pending hold. If false, the wallet will be debited immediately.
         metadata:
           type: object
-          additionalProperties: { }
+          additionalProperties:
+            type: string
           description: Metadata associated with the wallet.
         description:
           type: string

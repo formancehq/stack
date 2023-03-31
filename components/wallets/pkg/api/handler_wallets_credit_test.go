@@ -29,7 +29,7 @@ func TestWalletsCredit(t *testing.T) {
 			name: "nominal",
 			request: wallet.CreditRequest{
 				Amount: wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
-				Metadata: map[string]interface{}{
+				Metadata: metadata.Metadata{
 					"foo": "bar",
 				},
 			},

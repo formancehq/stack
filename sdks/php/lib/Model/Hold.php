@@ -60,7 +60,7 @@ class Hold implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPITypes = [
         'id' => 'string',
         'wallet_id' => 'string',
-        'metadata' => 'array<string,mixed>',
+        'metadata' => 'array<string,string>',
         'description' => 'string',
         'destination' => '\Formance\Model\Subject'
     ];
@@ -387,7 +387,7 @@ class Hold implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets metadata
      *
-     * @return array<string,mixed>
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -397,7 +397,7 @@ class Hold implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets metadata
      *
-     * @param array<string,mixed> $metadata Metadata associated with the hold.
+     * @param array<string,string> $metadata Metadata associated with the hold.
      *
      * @return self
      */

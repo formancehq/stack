@@ -17,7 +17,7 @@ func TestWalletsCreate(t *testing.T) {
 
 	createWalletRequest := wallet.CreateRequest{
 		PatchRequest: wallet.PatchRequest{
-			Metadata: map[string]interface{}{
+			Metadata: metadata.Metadata{
 				"foo": "bar",
 			},
 		},

@@ -35,8 +35,15 @@ class PostTransaction(
 
 
     class MetaOapg:
+        required = {
+            "metadata",
+        }
         
         class properties:
+        
+            @staticmethod
+            def metadata() -> typing.Type['LedgerMetadata']:
+                return LedgerMetadata
             timestamp = schemas.DateTimeSchema
             
             
@@ -130,17 +137,18 @@ class PostTransaction(
                         **kwargs,
                     )
             reference = schemas.StrSchema
-        
-            @staticmethod
-            def metadata() -> typing.Type['LedgerMetadata']:
-                return LedgerMetadata
             __annotations__ = {
+                "metadata": metadata,
                 "timestamp": timestamp,
                 "postings": postings,
                 "script": script,
                 "reference": reference,
-                "metadata": metadata,
             }
+    
+    metadata: 'LedgerMetadata'
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> 'LedgerMetadata': ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["timestamp"]) -> MetaOapg.properties.timestamp: ...
@@ -155,15 +163,15 @@ class PostTransaction(
     def __getitem__(self, name: typing_extensions.Literal["reference"]) -> MetaOapg.properties.reference: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> 'LedgerMetadata': ...
-    
-    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["timestamp", "postings", "script", "reference", "metadata", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["metadata", "timestamp", "postings", "script", "reference", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> 'LedgerMetadata': ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["timestamp"]) -> typing.Union[MetaOapg.properties.timestamp, schemas.Unset]: ...
@@ -178,34 +186,31 @@ class PostTransaction(
     def get_item_oapg(self, name: typing_extensions.Literal["reference"]) -> typing.Union[MetaOapg.properties.reference, schemas.Unset]: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> typing.Union['LedgerMetadata', schemas.Unset]: ...
-    
-    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["timestamp", "postings", "script", "reference", "metadata", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["metadata", "timestamp", "postings", "script", "reference", ], str]):
         return super().get_item_oapg(name)
     
 
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
+        metadata: 'LedgerMetadata',
         timestamp: typing.Union[MetaOapg.properties.timestamp, str, datetime, schemas.Unset] = schemas.unset,
         postings: typing.Union[MetaOapg.properties.postings, list, tuple, schemas.Unset] = schemas.unset,
         script: typing.Union[MetaOapg.properties.script, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
         reference: typing.Union[MetaOapg.properties.reference, str, schemas.Unset] = schemas.unset,
-        metadata: typing.Union['LedgerMetadata', schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'PostTransaction':
         return super().__new__(
             cls,
             *_args,
+            metadata=metadata,
             timestamp=timestamp,
             postings=postings,
             script=script,
             reference=reference,
-            metadata=metadata,
             _configuration=_configuration,
             **kwargs,
         )

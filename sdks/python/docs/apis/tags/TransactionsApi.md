@@ -67,7 +67,7 @@ with Formance.ApiClient(configuration) as api_client:
         'txid': 1234,
     }
     body = LedgerMetadata(
-        key=None,
+        key="key_example",
     )
     try:
         # Set the metadata of a transaction by its ID
@@ -420,7 +420,7 @@ with Formance.ApiClient(configuration) as api_client:
         ),
         reference="ref:001",
         metadata=LedgerMetadata(
-            key=None,
+            key="key_example",
         ),
     )
     try:
@@ -457,7 +457,7 @@ with Formance.ApiClient(configuration) as api_client:
         ),
         reference="ref:001",
         metadata=LedgerMetadata(
-            key=None,
+            key="key_example",
         ),
     )
     try:
@@ -751,7 +751,9 @@ with Formance.ApiClient(configuration) as api_client:
         'startTime': "1970-01-01T00:00:00.00Z",
         'endTime': "1970-01-01T00:00:00.00Z",
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
-        'metadata': dict(),
+        'metadata': dict(
+        "key": "key_example",
+    ),
     }
     try:
         # List transactions from a ledger
@@ -860,6 +862,11 @@ str,  | str,  |  |
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | str,  | str,  | any string name can be used but the value must be the correct type | [optional] 
 
 ### path_params
 #### RequestPathParams

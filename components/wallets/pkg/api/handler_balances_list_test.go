@@ -10,6 +10,7 @@ import (
 
 	sdk "github.com/formancehq/formance-sdk-go"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -59,7 +60,7 @@ func TestBalancesList(t *testing.T) {
 
 			require.Equal(t, pageSize, query.Limit)
 			require.Equal(t, testEnv.LedgerName(), ledger)
-			require.Equal(t, map[string]any{
+			require.Equal(t, metadata.Metadata{
 				wallet.MetadataKeyWalletBalance: wallet.TrueValue,
 				wallet.MetadataKeyWalletID:      walletID,
 			}, query.Metadata)

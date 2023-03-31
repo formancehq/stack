@@ -39,7 +39,7 @@ public class CreditWalletRequest {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = new HashMap<>();
+  private Map<String, String> metadata = new HashMap<>();
 
   public static final String SERIALIZED_NAME_REFERENCE = "reference";
   @SerializedName(SERIALIZED_NAME_REFERENCE)
@@ -78,16 +78,13 @@ public class CreditWalletRequest {
   }
 
 
-  public CreditWalletRequest metadata(Map<String, Object> metadata) {
+  public CreditWalletRequest metadata(Map<String, String> metadata) {
     
     this.metadata = metadata;
     return this;
   }
 
-  public CreditWalletRequest putMetadataItem(String key, Object metadataItem) {
-    if (this.metadata == null) {
-      this.metadata = new HashMap<>();
-    }
+  public CreditWalletRequest putMetadataItem(String key, String metadataItem) {
     this.metadata.put(key, metadataItem);
     return this;
   }
@@ -96,14 +93,14 @@ public class CreditWalletRequest {
    * Metadata associated with the wallet.
    * @return metadata
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
-  public Map<String, Object> getMetadata() {
+  public Map<String, String> getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(Map<String, Object> metadata) {
+  public void setMetadata(Map<String, String> metadata) {
     this.metadata = metadata;
   }
 

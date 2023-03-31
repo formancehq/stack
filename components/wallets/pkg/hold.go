@@ -20,21 +20,21 @@ func (h DebitHold) LedgerMetadata(chart *Chart) metadata.Metadata {
 		MetadataKeyHoldWalletID:   h.WalletID,
 		MetadataKeyHoldID:         h.ID,
 		MetadataKeyHoldAsset:      h.Asset,
-		MetadataKeyHoldVoidDestination: map[string]any{
+		MetadataKeyHoldVoidDestination: metadata.MarshalValue(map[string]any{
 			"type":  "account",
 			"value": chart.GetMainBalanceAccount(h.WalletID),
-		},
-		MetadataKeyHoldDestination: map[string]any{
+		}),
+		MetadataKeyHoldDestination: metadata.MarshalValue(map[string]any{
 			"type":  "account",
 			"value": h.Destination.getAccount(chart),
-		},
-		MetadataKeyWalletCustomData:      map[string]any(h.Metadata),
+		}),
+		MetadataKeyWalletCustomData:      metadata.MarshalValue(h.Metadata),
 		MetadataKeyWalletHoldDescription: h.Description,
-		MetadataKeyHoldSubject: map[string]any{
+		MetadataKeyHoldSubject: metadata.MarshalValue(map[string]any{
 			"type":       h.Destination.Type,
 			"identifier": h.Destination.Identifier,
 			"balance":    h.Destination.Balance,
-		},
+		}),
 	}
 }
 
@@ -50,25 +50,15 @@ func NewDebitHold(walletID string, destination Subject, asset, description strin
 }
 
 func DebitHoldFromLedgerAccount(account Account) DebitHold {
-	subjectMetadata := account.GetMetadata()[MetadataKeyHoldSubject].(map[string]any)
-	subject := Subject{
-		Type:       subjectMetadata["type"].(string),
-		Identifier: subjectMetadata["identifier"].(string),
-		Balance: func() string {
-			if balance := subjectMetadata["balance"]; balance != nil {
-				return balance.(string)
-			}
-			return ""
-		}(),
-	}
+	subject := metadata.UnmarshalValue[Subject](account.GetMetadata()[MetadataKeyHoldSubject])
 
 	hold := DebitHold{}
-	hold.ID = account.GetMetadata()[MetadataKeyHoldID].(string)
-	hold.WalletID = account.GetMetadata()[MetadataKeyHoldWalletID].(string)
+	hold.ID = account.GetMetadata()[MetadataKeyHoldID]
+	hold.WalletID = account.GetMetadata()[MetadataKeyHoldWalletID]
 	hold.Destination = subject
-	hold.Asset = account.GetMetadata()[MetadataKeyHoldAsset].(string)
-	hold.Metadata = account.GetMetadata()[MetadataKeyWalletCustomData].(map[string]any)
-	hold.Description = account.GetMetadata()[MetadataKeyWalletHoldDescription].(string)
+	hold.Asset = account.GetMetadata()[MetadataKeyHoldAsset]
+	hold.Metadata = metadata.UnmarshalValue[metadata.Metadata](account.GetMetadata()[MetadataKeyWalletCustomData])
+	hold.Description = account.GetMetadata()[MetadataKeyWalletHoldDescription]
 	return hold
 }
 

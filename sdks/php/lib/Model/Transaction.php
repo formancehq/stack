@@ -61,7 +61,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         'timestamp' => '\DateTime',
         'postings' => '\Formance\Model\Posting[]',
         'reference' => 'string',
-        'metadata' => 'array<string,mixed>',
+        'metadata' => 'array<string,string>',
         'txid' => 'int',
         'pre_commit_volumes' => 'array<string,array>',
         'post_commit_volumes' => 'array<string,array>'
@@ -93,7 +93,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         'timestamp' => false,
 		'postings' => false,
 		'reference' => false,
-		'metadata' => true,
+		'metadata' => false,
 		'txid' => false,
 		'pre_commit_volumes' => false,
 		'post_commit_volumes' => false
@@ -323,6 +323,9 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         if ($this->container['postings'] === null) {
             $invalidProperties[] = "'postings' can't be null";
         }
+        if ($this->container['metadata'] === null) {
+            $invalidProperties[] = "'metadata' can't be null";
+        }
         if ($this->container['txid'] === null) {
             $invalidProperties[] = "'txid' can't be null";
         }
@@ -429,7 +432,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets metadata
      *
-     * @return array<string,mixed>|null
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -439,21 +442,14 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets metadata
      *
-     * @param array<string,mixed>|null $metadata metadata
+     * @param array<string,string> $metadata metadata
      *
      * @return self
      */
     public function setMetadata($metadata)
     {
         if (is_null($metadata)) {
-            array_push($this->openAPINullablesSetToNull, 'metadata');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('metadata', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
+            throw new \InvalidArgumentException('non-nullable metadata cannot be null');
         }
         $this->container['metadata'] = $metadata;
 

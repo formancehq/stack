@@ -158,7 +158,7 @@ let body:WalletsApiCreateWalletRequest = {
   // CreateWalletRequest (optional)
   createWalletRequest: {
     metadata: {
-      "key": null,
+      "key": "key_example",
     },
     name: "name_example",
   },
@@ -223,7 +223,7 @@ let body:WalletsApiCreditWalletRequest = {
       amount: 1,
     },
     metadata: {
-      "key": null,
+      "key": "key_example",
     },
     reference: "reference_example",
     sources: [
@@ -294,7 +294,7 @@ let body:WalletsApiDebitWalletRequest = {
     },
     pending: true,
     metadata: {
-      "key": null,
+      "key": "key_example",
     },
     description: "description_example",
     destination: null,
@@ -471,8 +471,10 @@ let body:WalletsApiGetHoldsRequest = {
   pageSize: 100,
   // string | The wallet to filter on (optional)
   walletID: "wallet1",
-  // any | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
-  metadata: {},
+  // { [key: string]: string; } | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+  metadata: {
+    "key": "key_example",
+  },
   // string | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  (optional)
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
 };
@@ -489,7 +491,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **pageSize** | [**number**] | The maximum number of results to return per page | (optional) defaults to 15
  **walletID** | [**string**] | The wallet to filter on | (optional) defaults to undefined
- **metadata** | **any** | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. | (optional) defaults to undefined
+ **metadata** | **{ [key: string]: string; }** | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. | (optional) defaults to undefined
  **cursor** | [**string**] | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  | (optional) defaults to undefined
 
 
@@ -700,8 +702,10 @@ const apiInstance = new WalletsApi(configuration);
 let body:WalletsApiListWalletsRequest = {
   // string | Filter on wallet name (optional)
   name: "wallet1",
-  // any | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
-  metadata: {},
+  // { [key: string]: string; } | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+  metadata: {
+    "key": "key_example",
+  },
   // number | The maximum number of results to return per page (optional)
   pageSize: 100,
   // string | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  (optional)
@@ -719,7 +723,7 @@ apiInstance.listWallets(body).then((data:any) => {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **name** | [**string**] | Filter on wallet name | (optional) defaults to undefined
- **metadata** | **any** | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. | (optional) defaults to undefined
+ **metadata** | **{ [key: string]: string; }** | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. | (optional) defaults to undefined
  **pageSize** | [**number**] | The maximum number of results to return per page | (optional) defaults to 15
  **cursor** | [**string**] | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  | (optional) defaults to undefined
 
@@ -765,7 +769,7 @@ let body:WalletsApiUpdateWalletRequest = {
   // UpdateWalletRequest (optional)
   updateWalletRequest: {
     metadata: {
-      "key": null,
+      "key": "key_example",
     },
   },
 };

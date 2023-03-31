@@ -809,10 +809,12 @@
             "in": "query",
             "description": "Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
-            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
             "example": {
               "admin": true,
@@ -1263,20 +1265,17 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
+            "description": "Filter transactions by metadata key value pairs.",
             "style": "deepObject",
-            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           }
         ],
@@ -2555,15 +2554,13 @@
             "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           },
           {
@@ -2697,11 +2694,16 @@
             "application/json": {
               "schema": {
                 "type": "object",
+                "required": [
+                  "metadata"
+                ],
                 "properties": {
                   "metadata": {
                     "type": "object",
                     "description": "Custom metadata to attach to this wallet.",
-                    "additionalProperties": {}
+                    "additionalProperties": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -2973,18 +2975,15 @@
             "in": "query",
             "description": "Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
-            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           },
           {
@@ -4094,15 +4093,11 @@
       },
       "ledgerMetadata": {
         "type": "object",
-        "nullable": true,
-        "additionalProperties": {},
+        "additionalProperties": {
+          "type": "string"
+        },
         "example": {
-          "admin": true,
-          "a": {
-            "nested": {
-              "key": "value"
-            }
-          }
+          "admin": "true"
         }
       },
       "ConfigInfo": {
@@ -4127,7 +4122,8 @@
       "Account": {
         "type": "object",
         "required": [
-          "address"
+          "address",
+          "metadata"
         ],
         "properties": {
           "address": {
@@ -4141,13 +4137,11 @@
           "metadata": {
             "type": "object",
             "properties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           }
         }
@@ -4155,7 +4149,10 @@
       "AccountWithVolumesAndBalances": {
         "type": "object",
         "required": [
-          "address"
+          "address",
+          "metadata",
+          "volumes",
+          "balances"
         ],
         "properties": {
           "address": {
@@ -4169,13 +4166,11 @@
           "metadata": {
             "type": "object",
             "properties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           },
           "volumes": {
@@ -4300,11 +4295,15 @@
         "required": [
           "postings",
           "timestamp",
-          "txid"
+          "txid",
+          "metadata"
         ]
       },
       "PostTransaction": {
         "type": "object",
+        "required": [
+          "metadata"
+        ],
         "properties": {
           "timestamp": {
             "type": "string",
@@ -5852,7 +5851,9 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Metadata associated with the wallet."
           },
           "name": {
@@ -5886,7 +5887,9 @@
           "metadata": {
             "type": "object",
             "description": "Metadata associated with the wallet.",
-            "additionalProperties": {}
+            "additionalProperties": {
+              "type": "string"
+            }
           },
           "name": {
             "type": "string"
@@ -5932,7 +5935,9 @@
           "metadata": {
             "type": "object",
             "description": "Metadata associated with the hold.",
-            "additionalProperties": {}
+            "additionalProperties": {
+              "type": "string"
+            }
           },
           "description": {
             "type": "string"
@@ -6063,7 +6068,9 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Metadata associated with the wallet."
           },
           "txid": {
@@ -6081,7 +6088,8 @@
         "required": [
           "postings",
           "timestamp",
-          "txid"
+          "txid",
+          "metadata"
         ]
       },
       "walletsCursor": {
@@ -6183,13 +6191,16 @@
       "CreateWalletRequest": {
         "type": "object",
         "required": [
-          "name"
+          "name",
+          "metadata"
         ],
         "properties": {
           "metadata": {
             "type": "object",
             "description": "Custom metadata to attach to this wallet.",
-            "additionalProperties": {}
+            "additionalProperties": {
+              "type": "string"
+            }
           },
           "name": {
             "type": "string"
@@ -6306,7 +6317,8 @@
         "type": "object",
         "required": [
           "amount",
-          "sources"
+          "sources",
+          "metadata"
         ],
         "properties": {
           "amount": {
@@ -6314,7 +6326,9 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Metadata associated with the wallet."
           },
           "reference": {
@@ -6342,7 +6356,8 @@
       "DebitWalletRequest": {
         "type": "object",
         "required": [
-          "amount"
+          "amount",
+          "metadata"
         ],
         "properties": {
           "amount": {
@@ -6354,7 +6369,9 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": {},
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Metadata associated with the wallet."
           },
           "description": {

@@ -8,13 +8,13 @@ Name | Type | Description | Notes
 **Postings** | Pointer to [**[]Posting**](Posting.md) |  | [optional] 
 **Script** | Pointer to [**PostTransactionScript**](PostTransactionScript.md) |  | [optional] 
 **Reference** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
+**Metadata** | **map[string]string** |  | 
 
 ## Methods
 
 ### NewPostTransaction
 
-`func NewPostTransaction() *PostTransaction`
+`func NewPostTransaction(metadata map[string]string, ) *PostTransaction`
 
 NewPostTransaction instantiates a new PostTransaction object
 This constructor will assign default values to properties that have it defined,
@@ -131,39 +131,24 @@ HasReference returns a boolean if a field has been set.
 
 ### GetMetadata
 
-`func (o *PostTransaction) GetMetadata() map[string]interface{}`
+`func (o *PostTransaction) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *PostTransaction) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *PostTransaction) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *PostTransaction) SetMetadata(v map[string]interface{})`
+`func (o *PostTransaction) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 
-### HasMetadata
 
-`func (o *PostTransaction) HasMetadata() bool`
-
-HasMetadata returns a boolean if a field has been set.
-
-### SetMetadataNil
-
-`func (o *PostTransaction) SetMetadataNil(b bool)`
-
- SetMetadataNil sets the value for Metadata to be an explicit nil
-
-### UnsetMetadata
-`func (o *PostTransaction) UnsetMetadata()`
-
-UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

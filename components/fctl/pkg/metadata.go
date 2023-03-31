@@ -6,11 +6,12 @@ import (
 	"io"
 	"strings"
 
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pterm/pterm"
 )
 
-func ParseMetadata(array []string) (map[string]any, error) {
-	metadata := map[string]interface{}{}
+func ParseMetadata(array []string) (metadata.Metadata, error) {
+	metadata := metadata.Metadata{}
 	for _, v := range array {
 		parts := strings.SplitN(v, "=", 2)
 		if len(parts) == 1 {
@@ -21,7 +22,7 @@ func ParseMetadata(array []string) (map[string]any, error) {
 	return metadata, nil
 }
 
-func PrintMetadata(out io.Writer, metadata map[string]any) error {
+func PrintMetadata(out io.Writer, metadata metadata.Metadata) error {
 	Section.WithWriter(out).Println("Metadata")
 	if len(metadata) == 0 {
 		Println("No metadata.")
@@ -29,11 +30,7 @@ func PrintMetadata(out io.Writer, metadata map[string]any) error {
 	}
 	tableData := pterm.TableData{}
 	for k, v := range metadata {
-		data, err := json.Marshal(v)
-		if err != nil {
-			panic(err)
-		}
-		tableData = append(tableData, []string{pterm.LightCyan(k), string(data)})
+		tableData = append(tableData, []string{pterm.LightCyan(k), v})
 	}
 
 	return pterm.DefaultTable.
@@ -42,7 +39,7 @@ func PrintMetadata(out io.Writer, metadata map[string]any) error {
 		Render()
 }
 
-func MetadataAsShortString(metadata map[string]any) string {
+func MetadataAsShortString(metadata metadata.Metadata) string {
 	metadataAsString := ""
 	for k, v := range metadata {
 		asJson, err := json.Marshal(v)

@@ -52,7 +52,7 @@ public class PostTransaction {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata;
+  private Map<String, String> metadata = new HashMap<>();
 
   public PostTransaction() {
   }
@@ -153,13 +153,13 @@ public class PostTransaction {
   }
 
 
-  public PostTransaction metadata(Map<String, Object> metadata) {
+  public PostTransaction metadata(Map<String, String> metadata) {
     
     this.metadata = metadata;
     return this;
   }
 
-  public PostTransaction putMetadataItem(String key, Object metadataItem) {
+  public PostTransaction putMetadataItem(String key, String metadataItem) {
     this.metadata.put(key, metadataItem);
     return this;
   }
@@ -168,14 +168,14 @@ public class PostTransaction {
    * Get metadata
    * @return metadata
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
-  public Map<String, Object> getMetadata() {
+  public Map<String, String> getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(Map<String, Object> metadata) {
+  public void setMetadata(Map<String, String> metadata) {
     this.metadata = metadata;
   }
 

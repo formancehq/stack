@@ -145,7 +145,7 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $txid Transaction ID. (required)
-     * @param  array<string,mixed> $request_body metadata (optional)
+     * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -164,7 +164,7 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $txid Transaction ID. (required)
-     * @param  array<string,mixed> $request_body metadata (optional)
+     * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -234,7 +234,7 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $txid Transaction ID. (required)
-     * @param  array<string,mixed> $request_body metadata (optional)
+     * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -257,7 +257,7 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $txid Transaction ID. (required)
-     * @param  array<string,mixed> $request_body metadata (optional)
+     * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -296,7 +296,7 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $txid Transaction ID. (required)
-     * @param  array<string,mixed> $request_body metadata (optional)
+     * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1453,7 +1453,7 @@ class TransactionsApi
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter transactions by metadata key value pairs. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listTransactions'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -1481,7 +1481,7 @@ class TransactionsApi
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter transactions by metadata key value pairs. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listTransactions'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -1614,7 +1614,7 @@ class TransactionsApi
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter transactions by metadata key value pairs. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1645,7 +1645,7 @@ class TransactionsApi
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter transactions by metadata key value pairs. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1705,7 +1705,7 @@ class TransactionsApi
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
-     * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter transactions by metadata key value pairs. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1832,7 +1832,7 @@ class TransactionsApi
             'metadata', // param base name
             'object', // openApiType
             'deepObject', // style
-            true, // explode
+            false, // explode
             false // required
         ) ?? []);
 

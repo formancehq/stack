@@ -73,7 +73,7 @@ $apiInstance = new Formance\Api\AccountsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $address = users:001; // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
-$request_body = NULL; // array<string,mixed> | metadata
+$request_body = array('key' => 'request_body_example'); // array<string,string> | metadata
 
 try {
     $apiInstance->addMetadataToAccount($ledger, $address, $request_body);

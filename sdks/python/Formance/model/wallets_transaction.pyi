@@ -36,6 +36,7 @@ class WalletsTransaction(
 
     class MetaOapg:
         required = {
+            "metadata",
             "postings",
             "txid",
             "timestamp",
@@ -71,21 +72,13 @@ class WalletsTransaction(
                     return super().__getitem__(i)
             
             
-            class txid(
-                schemas.Int64Schema
-            ):
-                pass
-            ledger = schemas.StrSchema
-            reference = schemas.StrSchema
-            
-            
             class metadata(
                 schemas.DictSchema
             ):
             
             
                 class MetaOapg:
-                    additional_properties = schemas.AnyTypeSchema
+                    additional_properties = schemas.StrSchema
                 
                 def __getitem__(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
                     # dict_instance[name] accessor
@@ -98,7 +91,7 @@ class WalletsTransaction(
                     cls,
                     *_args: typing.Union[dict, frozendict.frozendict, ],
                     _configuration: typing.Optional[schemas.Configuration] = None,
-                    **kwargs: typing.Union[MetaOapg.additional_properties, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
+                    **kwargs: typing.Union[MetaOapg.additional_properties, str, ],
                 ) -> 'metadata':
                     return super().__new__(
                         cls,
@@ -106,6 +99,14 @@ class WalletsTransaction(
                         _configuration=_configuration,
                         **kwargs,
                     )
+            
+            
+            class txid(
+                schemas.Int64Schema
+            ):
+                pass
+            ledger = schemas.StrSchema
+            reference = schemas.StrSchema
         
             @staticmethod
             def preCommitVolumes() -> typing.Type['WalletsAggregatedVolumes']:
@@ -117,14 +118,15 @@ class WalletsTransaction(
             __annotations__ = {
                 "timestamp": timestamp,
                 "postings": postings,
+                "metadata": metadata,
                 "txid": txid,
                 "ledger": ledger,
                 "reference": reference,
-                "metadata": metadata,
                 "preCommitVolumes": preCommitVolumes,
                 "postCommitVolumes": postCommitVolumes,
             }
     
+    metadata: MetaOapg.properties.metadata
     postings: MetaOapg.properties.postings
     txid: MetaOapg.properties.txid
     timestamp: MetaOapg.properties.timestamp
@@ -136,6 +138,9 @@ class WalletsTransaction(
     def __getitem__(self, name: typing_extensions.Literal["postings"]) -> MetaOapg.properties.postings: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
+    
+    @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["txid"]) -> MetaOapg.properties.txid: ...
     
     @typing.overload
@@ -143,9 +148,6 @@ class WalletsTransaction(
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["reference"]) -> MetaOapg.properties.reference: ...
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["preCommitVolumes"]) -> 'WalletsAggregatedVolumes': ...
@@ -156,7 +158,7 @@ class WalletsTransaction(
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["timestamp", "postings", "txid", "ledger", "reference", "metadata", "preCommitVolumes", "postCommitVolumes", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["timestamp", "postings", "metadata", "txid", "ledger", "reference", "preCommitVolumes", "postCommitVolumes", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -168,6 +170,9 @@ class WalletsTransaction(
     def get_item_oapg(self, name: typing_extensions.Literal["postings"]) -> MetaOapg.properties.postings: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["txid"]) -> MetaOapg.properties.txid: ...
     
     @typing.overload
@@ -175,9 +180,6 @@ class WalletsTransaction(
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["reference"]) -> typing.Union[MetaOapg.properties.reference, schemas.Unset]: ...
-    
-    @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> typing.Union[MetaOapg.properties.metadata, schemas.Unset]: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["preCommitVolumes"]) -> typing.Union['WalletsAggregatedVolumes', schemas.Unset]: ...
@@ -188,19 +190,19 @@ class WalletsTransaction(
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["timestamp", "postings", "txid", "ledger", "reference", "metadata", "preCommitVolumes", "postCommitVolumes", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["timestamp", "postings", "metadata", "txid", "ledger", "reference", "preCommitVolumes", "postCommitVolumes", ], str]):
         return super().get_item_oapg(name)
     
 
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
+        metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, ],
         postings: typing.Union[MetaOapg.properties.postings, list, tuple, ],
         txid: typing.Union[MetaOapg.properties.txid, decimal.Decimal, int, ],
         timestamp: typing.Union[MetaOapg.properties.timestamp, str, datetime, ],
         ledger: typing.Union[MetaOapg.properties.ledger, str, schemas.Unset] = schemas.unset,
         reference: typing.Union[MetaOapg.properties.reference, str, schemas.Unset] = schemas.unset,
-        metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
         preCommitVolumes: typing.Union['WalletsAggregatedVolumes', schemas.Unset] = schemas.unset,
         postCommitVolumes: typing.Union['WalletsAggregatedVolumes', schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
@@ -209,12 +211,12 @@ class WalletsTransaction(
         return super().__new__(
             cls,
             *_args,
+            metadata=metadata,
             postings=postings,
             txid=txid,
             timestamp=timestamp,
             ledger=ledger,
             reference=reference,
-            metadata=metadata,
             preCommitVolumes=preCommitVolumes,
             postCommitVolumes=postCommitVolumes,
             _configuration=_configuration,

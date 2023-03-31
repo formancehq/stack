@@ -86,11 +86,11 @@ type ApiAddMetadataToAccountRequest struct {
 	ApiService AccountsApi
 	ledger string
 	address string
-	requestBody *map[string]interface{}
+	requestBody *map[string]string
 }
 
 // metadata
-func (r ApiAddMetadataToAccountRequest) RequestBody(requestBody map[string]interface{}) ApiAddMetadataToAccountRequest {
+func (r ApiAddMetadataToAccountRequest) RequestBody(requestBody map[string]string) ApiAddMetadataToAccountRequest {
 	r.requestBody = &requestBody
 	return r
 }
@@ -433,7 +433,7 @@ type ApiListAccountsRequest struct {
 	pageSize *int64
 	after *string
 	address *string
-	metadata *map[string]interface{}
+	metadata *map[string]string
 	balance *int64
 	balanceOperator *string
 	cursor *string
@@ -458,7 +458,7 @@ func (r ApiListAccountsRequest) Address(address string) ApiListAccountsRequest {
 }
 
 // Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
-func (r ApiListAccountsRequest) Metadata(metadata map[string]interface{}) ApiListAccountsRequest {
+func (r ApiListAccountsRequest) Metadata(metadata map[string]string) ApiListAccountsRequest {
 	r.metadata = &metadata
 	return r
 }

@@ -33,7 +33,7 @@ public interface AccountsApi {
   })
   @POST("api/ledger/{ledger}/accounts/{address}/metadata")
   Call<Void> addMetadataToAccount(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("address") String address, @retrofit2.http.Body Map<String, Object> requestBody
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("address") String address, @retrofit2.http.Body Map<String, String> requestBody
   );
 
   /**
@@ -76,7 +76,7 @@ public interface AccountsApi {
    */
   @GET("api/ledger/{ledger}/accounts")
   Call<AccountsCursorResponse> listAccounts(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("after") String after, @retrofit2.http.Query("address") String address, @retrofit2.http.Query("metadata") Object metadata, @retrofit2.http.Query("balance") Long balance, @retrofit2.http.Query("balanceOperator") String balanceOperator, @retrofit2.http.Query("cursor") String cursor
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("after") String after, @retrofit2.http.Query("address") String address, @retrofit2.http.Query("metadata") Map<String, String> metadata, @retrofit2.http.Query("balance") Long balance, @retrofit2.http.Query("balanceOperator") String balanceOperator, @retrofit2.http.Query("cursor") String cursor
   );
 
 }

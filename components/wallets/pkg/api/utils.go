@@ -106,8 +106,8 @@ func readPaginatedRequest[T any](r *http.Request, f func(r *http.Request) T) wal
 	}
 }
 
-func getQueryMap(m map[string][]string, key string) map[string]any {
-	dicts := make(map[string]any)
+func getQueryMap(m map[string][]string, key string) map[string]string {
+	dicts := make(map[string]string)
 	for k, v := range m {
 		if i := strings.IndexByte(k, '['); i >= 1 && k[0:i] == key {
 			if j := strings.IndexByte(k[i+1:], ']'); j >= 1 {

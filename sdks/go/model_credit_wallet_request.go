@@ -22,7 +22,7 @@ var _ MappedNullable = &CreditWalletRequest{}
 type CreditWalletRequest struct {
 	Amount Monetary `json:"amount"`
 	// Metadata associated with the wallet.
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata"`
 	Reference *string `json:"reference,omitempty"`
 	Sources []Subject `json:"sources"`
 	// The balance to credit
@@ -33,9 +33,10 @@ type CreditWalletRequest struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCreditWalletRequest(amount Monetary, sources []Subject) *CreditWalletRequest {
+func NewCreditWalletRequest(amount Monetary, metadata map[string]string, sources []Subject) *CreditWalletRequest {
 	this := CreditWalletRequest{}
 	this.Amount = amount
+	this.Metadata = metadata
 	this.Sources = sources
 	return &this
 }
@@ -72,35 +73,27 @@ func (o *CreditWalletRequest) SetAmount(v Monetary) {
 	o.Amount = v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *CreditWalletRequest) GetMetadata() map[string]interface{} {
-	if o == nil || IsNil(o.Metadata) {
-		var ret map[string]interface{}
+// GetMetadata returns the Metadata field value
+func (o *CreditWalletRequest) GetMetadata() map[string]string {
+	if o == nil {
+		var ret map[string]string
 		return ret
 	}
+
 	return o.Metadata
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
-func (o *CreditWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || IsNil(o.Metadata) {
-		return map[string]interface{}{}, false
+func (o *CreditWalletRequest) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil {
+		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
-// HasMetadata returns a boolean if a field has been set.
-func (o *CreditWalletRequest) HasMetadata() bool {
-	if o != nil && !IsNil(o.Metadata) {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
-func (o *CreditWalletRequest) SetMetadata(v map[string]interface{}) {
+// SetMetadata sets field value
+func (o *CreditWalletRequest) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
 
@@ -203,9 +196,7 @@ func (o CreditWalletRequest) MarshalJSON() ([]byte, error) {
 func (o CreditWalletRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["amount"] = o.Amount
-	if !IsNil(o.Metadata) {
-		toSerialize["metadata"] = o.Metadata
-	}
+	toSerialize["metadata"] = o.Metadata
 	if !IsNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}

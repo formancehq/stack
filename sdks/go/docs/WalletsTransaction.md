@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **Timestamp** | **time.Time** |  | 
 **Postings** | [**[]Posting**](Posting.md) |  | 
 **Reference** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional] 
+**Metadata** | **map[string]string** | Metadata associated with the wallet. | 
 **Txid** | **int64** |  | 
 **PreCommitVolumes** | Pointer to [**map[string]map[string]WalletsVolume**](map.md) |  | [optional] 
 **PostCommitVolumes** | Pointer to [**map[string]map[string]WalletsVolume**](map.md) |  | [optional] 
@@ -17,7 +17,7 @@ Name | Type | Description | Notes
 
 ### NewWalletsTransaction
 
-`func NewWalletsTransaction(timestamp time.Time, postings []Posting, txid int64, ) *WalletsTransaction`
+`func NewWalletsTransaction(timestamp time.Time, postings []Posting, metadata map[string]string, txid int64, ) *WalletsTransaction`
 
 NewWalletsTransaction instantiates a new WalletsTransaction object
 This constructor will assign default values to properties that have it defined,
@@ -124,28 +124,23 @@ HasReference returns a boolean if a field has been set.
 
 ### GetMetadata
 
-`func (o *WalletsTransaction) GetMetadata() map[string]interface{}`
+`func (o *WalletsTransaction) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *WalletsTransaction) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *WalletsTransaction) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *WalletsTransaction) SetMetadata(v map[string]interface{})`
+`func (o *WalletsTransaction) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 
-### HasMetadata
-
-`func (o *WalletsTransaction) HasMetadata() bool`
-
-HasMetadata returns a boolean if a field has been set.
 
 ### GetTxid
 

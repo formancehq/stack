@@ -22,16 +22,17 @@ var _ MappedNullable = &Account{}
 type Account struct {
 	Address string `json:"address"`
 	Type *string `json:"type,omitempty"`
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata"`
 }
 
 // NewAccount instantiates a new Account object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAccount(address string) *Account {
+func NewAccount(address string, metadata map[string]string) *Account {
 	this := Account{}
 	this.Address = address
+	this.Metadata = metadata
 	return &this
 }
 
@@ -99,35 +100,27 @@ func (o *Account) SetType(v string) {
 	o.Type = &v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *Account) GetMetadata() map[string]interface{} {
-	if o == nil || IsNil(o.Metadata) {
-		var ret map[string]interface{}
+// GetMetadata returns the Metadata field value
+func (o *Account) GetMetadata() map[string]string {
+	if o == nil {
+		var ret map[string]string
 		return ret
 	}
+
 	return o.Metadata
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
-func (o *Account) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || IsNil(o.Metadata) {
-		return map[string]interface{}{}, false
+func (o *Account) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil {
+		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
-// HasMetadata returns a boolean if a field has been set.
-func (o *Account) HasMetadata() bool {
-	if o != nil && !IsNil(o.Metadata) {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
-func (o *Account) SetMetadata(v map[string]interface{}) {
+// SetMetadata sets field value
+func (o *Account) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
 
@@ -145,9 +138,7 @@ func (o Account) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Type) {
 		toSerialize["type"] = o.Type
 	}
-	if !IsNil(o.Metadata) {
-		toSerialize["metadata"] = o.Metadata
-	}
+	toSerialize["metadata"] = o.Metadata
 	return toSerialize, nil
 }
 
