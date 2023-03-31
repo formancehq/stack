@@ -139,7 +139,7 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; (required)
-     * @param  array<string,mixed> $request_body metadata (required)
+     * @param  array<string,string> $request_body metadata (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataToAccount'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -158,7 +158,7 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; (required)
-     * @param  array<string,mixed> $request_body metadata (required)
+     * @param  array<string,string> $request_body metadata (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataToAccount'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -228,7 +228,7 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; (required)
-     * @param  array<string,mixed> $request_body metadata (required)
+     * @param  array<string,string> $request_body metadata (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataToAccount'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -251,7 +251,7 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; (required)
-     * @param  array<string,mixed> $request_body metadata (required)
+     * @param  array<string,string> $request_body metadata (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataToAccount'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -290,7 +290,7 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; (required)
-     * @param  array<string,mixed> $request_body metadata (required)
+     * @param  array<string,string> $request_body metadata (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataToAccount'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1022,7 +1022,7 @@ class AccountsApi
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-     * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
      * @param  string $balance_operator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
@@ -1047,7 +1047,7 @@ class AccountsApi
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-     * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
      * @param  string $balance_operator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
@@ -1177,7 +1177,7 @@ class AccountsApi
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-     * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
      * @param  string $balance_operator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
@@ -1205,7 +1205,7 @@ class AccountsApi
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-     * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
      * @param  string $balance_operator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
@@ -1262,7 +1262,7 @@ class AccountsApi
      * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
      * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-     * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
      * @param  string $balance_operator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
@@ -1338,7 +1338,7 @@ class AccountsApi
             'metadata', // param base name
             'object', // openApiType
             'deepObject', // style
-            true, // explode
+            false, // explode
             false // required
         ) ?? []);
         // query params

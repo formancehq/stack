@@ -7,6 +7,7 @@ import (
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/pkg/errors"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
@@ -19,15 +20,11 @@ const (
 )
 
 func extractStripeConnectID(metadataKey string, object interface {
-	GetMetadata() map[string]any
+	GetMetadata() map[string]string
 }) (string, error) {
-	stripeConnectIDAny, ok := object.GetMetadata()[metadataKey]
+	stripeConnectID, ok := object.GetMetadata()[metadataKey]
 	if !ok {
 		return "", fmt.Errorf("expected '%s' metadata containing connected account ID", metadataKey)
-	}
-	stripeConnectID, ok := stripeConnectIDAny.(string)
-	if !ok {
-		return "", fmt.Errorf("expected '%s' to be a string", metadataKey)
 	}
 	if stripeConnectID == "" {
 		return "", errors.New("stripe connect ID empty")
@@ -145,7 +142,7 @@ func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *
 	if err := justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), source.ID, sdk.DebitWalletRequest{
 		Amount:   *sdk.NewMonetary(amount.Asset, amount.Amount),
 		Balances: []string{source.Balance},
-		Metadata: map[string]interface{}{
+		Metadata: metadata.Metadata{
 			moveToLedgerMetadata: walletDestination.Ledger,
 		},
 	})); err != nil {
@@ -155,7 +152,7 @@ func runWalletToWallet(ctx workflow.Context, source *WalletSource, destination *
 	return activities.CreditWallet(internal.InfiniteRetryContext(ctx), destination.ID, sdk.CreditWalletRequest{
 		Amount:  *sdk.NewMonetary(amount.Asset, amount.Amount),
 		Balance: sdk.PtrString(destination.Balance),
-		Metadata: map[string]interface{}{
+		Metadata: metadata.Metadata{
 			moveFromLedgerMetadata: walletSource.Ledger,
 		},
 	})
@@ -205,7 +202,7 @@ func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination 
 	if err := justError(activities.DebitWallet(internal.InfiniteRetryContext(ctx), source.ID, sdk.DebitWalletRequest{
 		Amount:   *sdk.NewMonetary(amount.Asset, amount.Amount),
 		Balances: []string{source.Balance},
-		Metadata: map[string]interface{}{
+		Metadata: metadata.Metadata{
 			moveToLedgerMetadata: destination.Ledger,
 		},
 	})); err != nil {
@@ -219,7 +216,7 @@ func runWalletToAccount(ctx workflow.Context, source *WalletSource, destination 
 			Destination: destination.ID,
 			Source:      "world",
 		}},
-		Metadata: map[string]interface{}{
+		Metadata: metadata.Metadata{
 			moveFromLedgerMetadata: wallet.Ledger,
 		},
 	}))
@@ -247,7 +244,7 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: map[string]interface{}{
+		Metadata: metadata.Metadata{
 			moveToLedgerMetadata: wallet.Ledger,
 		},
 	})); err != nil {
@@ -260,7 +257,7 @@ func runAccountToWallet(ctx workflow.Context, source *LedgerAccountSource, desti
 			LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", "world"),
 		}},
 		Balance: sdk.PtrString(destination.Balance),
-		Metadata: map[string]interface{}{
+		Metadata: metadata.Metadata{
 			moveFromLedgerMetadata: source.Ledger,
 		},
 	})
@@ -284,7 +281,7 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 			Destination: "world",
 			Source:      source.ID,
 		}},
-		Metadata: map[string]interface{}{
+		Metadata: metadata.Metadata{
 			moveToLedgerMetadata: destination.Ledger,
 		},
 	})); err != nil {
@@ -297,7 +294,7 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 			Destination: destination.ID,
 			Source:      "world",
 		}},
-		Metadata: map[string]interface{}{
+		Metadata: metadata.Metadata{
 			moveFromLedgerMetadata: source.Ledger,
 		},
 	}))

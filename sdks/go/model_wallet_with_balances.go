@@ -24,7 +24,7 @@ type WalletWithBalances struct {
 	// The unique ID of the wallet.
 	Id string `json:"id"`
 	// Metadata associated with the wallet.
-	Metadata map[string]interface{} `json:"metadata"`
+	Metadata map[string]string `json:"metadata"`
 	Name string `json:"name"`
 	CreatedAt time.Time `json:"createdAt"`
 	Balances WalletWithBalancesBalances `json:"balances"`
@@ -35,7 +35,7 @@ type WalletWithBalances struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWalletWithBalances(id string, metadata map[string]interface{}, name string, createdAt time.Time, balances WalletWithBalancesBalances, ledger string) *WalletWithBalances {
+func NewWalletWithBalances(id string, metadata map[string]string, name string, createdAt time.Time, balances WalletWithBalancesBalances, ledger string) *WalletWithBalances {
 	this := WalletWithBalances{}
 	this.Id = id
 	this.Metadata = metadata
@@ -79,9 +79,9 @@ func (o *WalletWithBalances) SetId(v string) {
 }
 
 // GetMetadata returns the Metadata field value
-func (o *WalletWithBalances) GetMetadata() map[string]interface{} {
+func (o *WalletWithBalances) GetMetadata() map[string]string {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret map[string]string
 		return ret
 	}
 
@@ -90,15 +90,15 @@ func (o *WalletWithBalances) GetMetadata() map[string]interface{} {
 
 // GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
-func (o *WalletWithBalances) GetMetadataOk() (map[string]interface{}, bool) {
+func (o *WalletWithBalances) GetMetadataOk() (*map[string]string, bool) {
 	if o == nil {
-		return map[string]interface{}{}, false
+		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
 // SetMetadata sets field value
-func (o *WalletWithBalances) SetMetadata(v map[string]interface{}) {
+func (o *WalletWithBalances) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
 

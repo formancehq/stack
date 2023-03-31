@@ -59,7 +59,7 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
       */
     protected static $openAPITypes = [
         'id' => 'string',
-        'metadata' => 'array<string,mixed>',
+        'metadata' => 'array<string,string>',
         'name' => 'string',
         'created_at' => '\DateTime',
         'balances' => '\Formance\Model\WalletWithBalancesBalances',
@@ -373,7 +373,7 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Gets metadata
      *
-     * @return array<string,mixed>
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -383,7 +383,7 @@ class WalletWithBalances implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Sets metadata
      *
-     * @param array<string,mixed> $metadata Metadata associated with the wallet.
+     * @param array<string,string> $metadata Metadata associated with the wallet.
      *
      * @return self
      */

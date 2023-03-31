@@ -59,7 +59,7 @@ class CreditWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializa
       */
     protected static $openAPITypes = [
         'amount' => '\Formance\Model\Monetary',
-        'metadata' => 'array<string,mixed>',
+        'metadata' => 'array<string,string>',
         'reference' => 'string',
         'sources' => '\Formance\Model\Subject[]',
         'balance' => 'string'
@@ -306,6 +306,9 @@ class CreditWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializa
         if ($this->container['amount'] === null) {
             $invalidProperties[] = "'amount' can't be null";
         }
+        if ($this->container['metadata'] === null) {
+            $invalidProperties[] = "'metadata' can't be null";
+        }
         if ($this->container['sources'] === null) {
             $invalidProperties[] = "'sources' can't be null";
         }
@@ -354,7 +357,7 @@ class CreditWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Gets metadata
      *
-     * @return array<string,mixed>|null
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -364,7 +367,7 @@ class CreditWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Sets metadata
      *
-     * @param array<string,mixed>|null $metadata Metadata associated with the wallet.
+     * @param array<string,string> $metadata Metadata associated with the wallet.
      *
      * @return self
      */

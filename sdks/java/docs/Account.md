@@ -9,7 +9,7 @@
 |------------ | ------------- | ------------- | -------------|
 |**address** | **String** |  |  |
 |**type** | **String** |  |  [optional] |
-|**metadata** | **Object** |  |  [optional] |
+|**metadata** | **Map&lt;String, String&gt;** |  |  |
 
 
 

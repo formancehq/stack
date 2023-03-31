@@ -6,6 +6,7 @@ import (
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/orchestration/internal/workflow/activities"
 	"github.com/formancehq/orchestration/internal/workflow/stages/internal/stagestesting"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/stretchr/testify/mock"
 	"go.temporal.io/sdk/temporal"
 )
@@ -159,7 +160,7 @@ var (
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "default",
 							},
 						},
@@ -194,7 +195,7 @@ var (
 								LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", "world"),
 							}},
 							Balance: sdk.PtrString("main"),
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
@@ -265,7 +266,7 @@ var (
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "default",
 							},
 						},
@@ -287,7 +288,7 @@ var (
 								Destination: "foo",
 								Source:      "world",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
@@ -358,7 +359,7 @@ var (
 								Destination: "world",
 								Source:      paymentAccountName("payment1"),
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "default",
 							},
 						},
@@ -380,7 +381,7 @@ var (
 								Destination: "foo",
 								Source:      "world",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: internalLedger,
 							},
 						},
@@ -453,7 +454,7 @@ var (
 								Destination: "world",
 								Source:      "account1",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
@@ -475,7 +476,7 @@ var (
 								Destination: "account2",
 								Source:      "world",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
@@ -567,7 +568,7 @@ var (
 								Destination: "world",
 								Source:      "account1",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
@@ -588,7 +589,7 @@ var (
 								LedgerAccountSubject: sdk.NewLedgerAccountSubject("ACCOUNT", "world"),
 							}},
 							Balance: sdk.PtrString("main"),
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
@@ -621,7 +622,7 @@ var (
 				Returns: []any{&sdk.AccountResponse{
 					Data: sdk.AccountWithVolumesAndBalances{
 						Address: "foo",
-						Metadata: map[string]interface{}{
+						Metadata: metadata.Metadata{
 							"stripeConnectID": "abcd",
 						},
 					},
@@ -681,7 +682,7 @@ var (
 				Returns: []any{&sdk.GetWalletResponse{
 					Data: sdk.WalletWithBalances{
 						Id: "foo",
-						Metadata: map[string]interface{}{
+						Metadata: metadata.Metadata{
 							"stripeConnectID": "abcd",
 						},
 						Ledger: "default",
@@ -746,7 +747,7 @@ var (
 								Amount: 100,
 							},
 							Balances: []string{"main"},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "ledger2",
 							},
 						},
@@ -766,7 +767,7 @@ var (
 								Destination: "account",
 								Source:      "world",
 							}},
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
@@ -879,7 +880,7 @@ var (
 						ID: "wallet1",
 						Data: sdk.DebitWalletRequest{
 							Amount: *sdk.NewMonetary("USD", 100),
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveToLedgerMetadata: "ledger2",
 							},
 							Balances: []string{"main"},
@@ -896,7 +897,7 @@ var (
 						Data: sdk.CreditWalletRequest{
 							Amount:  *sdk.NewMonetary("USD", 100),
 							Balance: sdk.PtrString("main"),
-							Metadata: map[string]interface{}{
+							Metadata: metadata.Metadata{
 								moveFromLedgerMetadata: "ledger1",
 							},
 						},
@@ -927,7 +928,7 @@ var (
 				}},
 				Returns: []any{&sdk.GetWalletResponse{
 					Data: sdk.WalletWithBalances{
-						Metadata: map[string]interface{}{
+						Metadata: metadata.Metadata{
 							"stripeConnectID": "abcd",
 						},
 					},

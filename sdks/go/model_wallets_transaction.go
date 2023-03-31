@@ -26,7 +26,7 @@ type WalletsTransaction struct {
 	Postings []Posting `json:"postings"`
 	Reference *string `json:"reference,omitempty"`
 	// Metadata associated with the wallet.
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata"`
 	Txid int64 `json:"txid"`
 	PreCommitVolumes *map[string]map[string]WalletsVolume `json:"preCommitVolumes,omitempty"`
 	PostCommitVolumes *map[string]map[string]WalletsVolume `json:"postCommitVolumes,omitempty"`
@@ -36,10 +36,11 @@ type WalletsTransaction struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWalletsTransaction(timestamp time.Time, postings []Posting, txid int64) *WalletsTransaction {
+func NewWalletsTransaction(timestamp time.Time, postings []Posting, metadata map[string]string, txid int64) *WalletsTransaction {
 	this := WalletsTransaction{}
 	this.Timestamp = timestamp
 	this.Postings = postings
+	this.Metadata = metadata
 	this.Txid = txid
 	return &this
 }
@@ -164,35 +165,27 @@ func (o *WalletsTransaction) SetReference(v string) {
 	o.Reference = &v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *WalletsTransaction) GetMetadata() map[string]interface{} {
-	if o == nil || IsNil(o.Metadata) {
-		var ret map[string]interface{}
+// GetMetadata returns the Metadata field value
+func (o *WalletsTransaction) GetMetadata() map[string]string {
+	if o == nil {
+		var ret map[string]string
 		return ret
 	}
+
 	return o.Metadata
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
-func (o *WalletsTransaction) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || IsNil(o.Metadata) {
-		return map[string]interface{}{}, false
+func (o *WalletsTransaction) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil {
+		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
-// HasMetadata returns a boolean if a field has been set.
-func (o *WalletsTransaction) HasMetadata() bool {
-	if o != nil && !IsNil(o.Metadata) {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
-func (o *WalletsTransaction) SetMetadata(v map[string]interface{}) {
+// SetMetadata sets field value
+func (o *WalletsTransaction) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
 
@@ -302,9 +295,7 @@ func (o WalletsTransaction) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
-	if !IsNil(o.Metadata) {
-		toSerialize["metadata"] = o.Metadata
-	}
+	toSerialize["metadata"] = o.Metadata
 	toSerialize["txid"] = o.Txid
 	if !IsNil(o.PreCommitVolumes) {
 		toSerialize["preCommitVolumes"] = o.PreCommitVolumes

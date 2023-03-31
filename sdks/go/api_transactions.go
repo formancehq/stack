@@ -114,11 +114,11 @@ type ApiAddMetadataOnTransactionRequest struct {
 	ApiService TransactionsApi
 	ledger string
 	txid int64
-	requestBody *map[string]interface{}
+	requestBody *map[string]string
 }
 
 // metadata
-func (r ApiAddMetadataOnTransactionRequest) RequestBody(requestBody map[string]interface{}) ApiAddMetadataOnTransactionRequest {
+func (r ApiAddMetadataOnTransactionRequest) RequestBody(requestBody map[string]string) ApiAddMetadataOnTransactionRequest {
 	r.requestBody = &requestBody
 	return r
 }
@@ -651,7 +651,7 @@ type ApiListTransactionsRequest struct {
 	startTime *time.Time
 	endTime *time.Time
 	cursor *string
-	metadata *map[string]interface{}
+	metadata *map[string]string
 }
 
 // The maximum number of results to return per page. 
@@ -708,8 +708,8 @@ func (r ApiListTransactionsRequest) Cursor(cursor string) ApiListTransactionsReq
 	return r
 }
 
-// Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
-func (r ApiListTransactionsRequest) Metadata(metadata map[string]interface{}) ApiListTransactionsRequest {
+// Filter transactions by metadata key value pairs.
+func (r ApiListTransactionsRequest) Metadata(metadata map[string]string) ApiListTransactionsRequest {
 	r.metadata = &metadata
 	return r
 }

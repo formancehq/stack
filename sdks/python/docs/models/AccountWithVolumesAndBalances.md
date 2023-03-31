@@ -8,11 +8,11 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
+**[balances](#balances)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+**[metadata](#metadata)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
 **address** | str,  | str,  |  | 
+**[volumes](#volumes)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
 **type** | str,  | str,  |  | [optional] 
-**[metadata](#metadata)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
-**[volumes](#volumes)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
-**[balances](#balances)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # metadata
@@ -21,6 +21,11 @@ Key | Input Type | Accessed Type | Description | Notes
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | str,  | str,  | any string name can be used but the value must be the correct type | [optional] 
 
 # volumes
 

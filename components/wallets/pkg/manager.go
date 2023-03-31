@@ -48,20 +48,20 @@ func newListResponse[SRC any, DST any](cursor interface {
 
 type ListHolds struct {
 	WalletID string
-	Metadata map[string]any
+	Metadata metadata.Metadata
 }
 
 type ListBalances struct {
 	WalletID string
-	Metadata map[string]any
+	Metadata metadata.Metadata
 }
 
 type ListTransactions struct {
 	WalletID string
 }
 
-func BalancesMetadataFilter(walletID string) map[string]interface{} {
-	return map[string]interface{}{
+func BalancesMetadataFilter(walletID string) metadata.Metadata {
+	return metadata.Metadata{
 		MetadataKeyWalletBalance: TrueValue,
 		MetadataKeyWalletID:      walletID,
 	}
@@ -278,7 +278,7 @@ func (m *Manager) ListWallets(ctx context.Context, query ListQuery[ListWallets])
 	return mapAccountList(ctx, m, mapAccountListQuery{
 		Pagination: query.Pagination,
 		Metadata: func() metadata.Metadata {
-			metadata := map[string]interface{}{
+			metadata := metadata.Metadata{
 				MetadataKeyWalletSpecType: PrimaryWallet,
 			}
 			if query.Payload.Metadata != nil && len(query.Payload.Metadata) > 0 {
@@ -391,13 +391,15 @@ func (m *Manager) UpdateWallet(ctx context.Context, id string, data *PatchReques
 
 	newCustomMetadata := metadata.Metadata{}
 	existingCustomMetadata := GetMetadata(account, MetadataKeyWalletCustomData)
-	if existingCustomMetadata != nil {
-		newCustomMetadata = newCustomMetadata.Merge(existingCustomMetadata.(map[string]any))
+	if existingCustomMetadata != "" {
+		newCustomMetadata = newCustomMetadata.Merge(
+			metadata.UnmarshalValue[metadata.Metadata](existingCustomMetadata),
+		)
 	}
 	newCustomMetadata = newCustomMetadata.Merge(data.Metadata)
 
 	meta := account.GetMetadata()
-	meta[MetadataKeyWalletCustomData] = newCustomMetadata
+	meta[MetadataKeyWalletCustomData] = metadata.MarshalValue(newCustomMetadata)
 
 	if err := m.client.AddMetadataToAccount(ctx, m.ledgerName, m.chart.GetMainBalanceAccount(id), meta); err != nil {
 		return errors.Wrap(err, "adding metadata to account")

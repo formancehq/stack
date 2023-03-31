@@ -39,7 +39,7 @@ public class AccountWithVolumesAndBalances {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Object metadata;
+  private Map<String, String> metadata = new HashMap<>();
 
   public static final String SERIALIZED_NAME_VOLUMES = "volumes";
   @SerializedName(SERIALIZED_NAME_VOLUMES)
@@ -96,9 +96,14 @@ public class AccountWithVolumesAndBalances {
   }
 
 
-  public AccountWithVolumesAndBalances metadata(Object metadata) {
+  public AccountWithVolumesAndBalances metadata(Map<String, String> metadata) {
     
     this.metadata = metadata;
+    return this;
+  }
+
+  public AccountWithVolumesAndBalances putMetadataItem(String key, String metadataItem) {
+    this.metadata.put(key, metadataItem);
     return this;
   }
 
@@ -106,14 +111,14 @@ public class AccountWithVolumesAndBalances {
    * Get metadata
    * @return metadata
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
-  public Object getMetadata() {
+  public Map<String, String> getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(Object metadata) {
+  public void setMetadata(Map<String, String> metadata) {
     this.metadata = metadata;
   }
 
@@ -125,9 +130,6 @@ public class AccountWithVolumesAndBalances {
   }
 
   public AccountWithVolumesAndBalances putVolumesItem(String key, Map<String, Long> volumesItem) {
-    if (this.volumes == null) {
-      this.volumes = new HashMap<>();
-    }
     this.volumes.put(key, volumesItem);
     return this;
   }
@@ -136,7 +138,7 @@ public class AccountWithVolumesAndBalances {
    * Get volumes
    * @return volumes
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public Map<String, Map<String, Long>> getVolumes() {
     return volumes;
@@ -155,9 +157,6 @@ public class AccountWithVolumesAndBalances {
   }
 
   public AccountWithVolumesAndBalances putBalancesItem(String key, Long balancesItem) {
-    if (this.balances == null) {
-      this.balances = new HashMap<>();
-    }
     this.balances.put(key, balancesItem);
     return this;
   }
@@ -166,7 +165,7 @@ public class AccountWithVolumesAndBalances {
    * Get balances
    * @return balances
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public Map<String, Long> getBalances() {
     return balances;

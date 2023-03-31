@@ -462,7 +462,7 @@ $apiInstance = new Formance\Api\WalletsApi(
 );
 $page_size = 100; // int | The maximum number of results to return per page
 $wallet_id = wallet1; // string | The wallet to filter on
-$metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
+$metadata = {"admin":"true"}; // array<string,string> | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
 
 try {
@@ -479,7 +479,7 @@ try {
 | ------------- | ------------- | ------------- | ------------- |
 | **page_size** | **int**| The maximum number of results to return per page | [optional] [default to 15] |
 | **wallet_id** | **string**| The wallet to filter on | [optional] |
-| **metadata** | [**object**](../Model/.md)| Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
+| **metadata** | [**array<string,string>**](../Model/string.md)| Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 | **cursor** | **string**| Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. | [optional] |
 
 ### Return type
@@ -703,7 +703,7 @@ $apiInstance = new Formance\Api\WalletsApi(
     $config
 );
 $name = wallet1; // string | Filter on wallet name
-$metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.
+$metadata = {"admin":"true"}; // array<string,string> | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.
 $page_size = 100; // int | The maximum number of results to return per page
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.
 
@@ -720,7 +720,7 @@ try {
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
 | **name** | **string**| Filter on wallet name | [optional] |
-| **metadata** | [**object**](../Model/.md)| Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
+| **metadata** | [**array<string,string>**](../Model/string.md)| Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 | **page_size** | **int**| The maximum number of results to return per page | [optional] [default to 15] |
 | **cursor** | **string**| Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. | [optional] |
 

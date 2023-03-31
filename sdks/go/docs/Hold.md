@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | **string** | The unique ID of the hold. | 
 **WalletID** | **string** | The ID of the wallet the hold is associated with. | 
-**Metadata** | **map[string]interface{}** | Metadata associated with the hold. | 
+**Metadata** | **map[string]string** | Metadata associated with the hold. | 
 **Description** | **string** |  | 
 **Destination** | Pointer to [**Subject**](Subject.md) |  | [optional] 
 
@@ -14,7 +14,7 @@ Name | Type | Description | Notes
 
 ### NewHold
 
-`func NewHold(id string, walletID string, metadata map[string]interface{}, description string, ) *Hold`
+`func NewHold(id string, walletID string, metadata map[string]string, description string, ) *Hold`
 
 NewHold instantiates a new Hold object
 This constructor will assign default values to properties that have it defined,
@@ -71,20 +71,20 @@ SetWalletID sets WalletID field to given value.
 
 ### GetMetadata
 
-`func (o *Hold) GetMetadata() map[string]interface{}`
+`func (o *Hold) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *Hold) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *Hold) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *Hold) SetMetadata(v map[string]interface{})`
+`func (o *Hold) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 

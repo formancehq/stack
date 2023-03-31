@@ -181,7 +181,7 @@ with Formance.ApiClient(configuration) as api_client:
     ledger = "ledger001" # str | Name of the ledger.
 address = "users:001" # str | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
 ledger_metadata = LedgerMetadata(
-        key=None,
+        key="key_example",
     ) # LedgerMetadata | metadata
 
     try:

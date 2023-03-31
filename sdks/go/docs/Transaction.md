@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **Timestamp** | **time.Time** |  | 
 **Postings** | [**[]Posting**](Posting.md) |  | 
 **Reference** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
+**Metadata** | **map[string]string** |  | 
 **Txid** | **int64** |  | 
 **PreCommitVolumes** | Pointer to [**map[string]map[string]Volume**](map.md) |  | [optional] 
 **PostCommitVolumes** | Pointer to [**map[string]map[string]Volume**](map.md) |  | [optional] 
@@ -16,7 +16,7 @@ Name | Type | Description | Notes
 
 ### NewTransaction
 
-`func NewTransaction(timestamp time.Time, postings []Posting, txid int64, ) *Transaction`
+`func NewTransaction(timestamp time.Time, postings []Posting, metadata map[string]string, txid int64, ) *Transaction`
 
 NewTransaction instantiates a new Transaction object
 This constructor will assign default values to properties that have it defined,
@@ -98,39 +98,24 @@ HasReference returns a boolean if a field has been set.
 
 ### GetMetadata
 
-`func (o *Transaction) GetMetadata() map[string]interface{}`
+`func (o *Transaction) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *Transaction) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *Transaction) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *Transaction) SetMetadata(v map[string]interface{})`
+`func (o *Transaction) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 
-### HasMetadata
 
-`func (o *Transaction) HasMetadata() bool`
-
-HasMetadata returns a boolean if a field has been set.
-
-### SetMetadataNil
-
-`func (o *Transaction) SetMetadataNil(b bool)`
-
- SetMetadataNil sets the value for Metadata to be an explicit nil
-
-### UnsetMetadata
-`func (o *Transaction) UnsetMetadata()`
-
-UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 ### GetTxid
 
 `func (o *Transaction) GetTxid() int64`

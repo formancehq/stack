@@ -24,7 +24,7 @@ type Transaction struct {
 	Timestamp time.Time `json:"timestamp"`
 	Postings []Posting `json:"postings"`
 	Reference *string `json:"reference,omitempty"`
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata"`
 	Txid int64 `json:"txid"`
 	PreCommitVolumes *map[string]map[string]Volume `json:"preCommitVolumes,omitempty"`
 	PostCommitVolumes *map[string]map[string]Volume `json:"postCommitVolumes,omitempty"`
@@ -34,10 +34,11 @@ type Transaction struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTransaction(timestamp time.Time, postings []Posting, txid int64) *Transaction {
+func NewTransaction(timestamp time.Time, postings []Posting, metadata map[string]string, txid int64) *Transaction {
 	this := Transaction{}
 	this.Timestamp = timestamp
 	this.Postings = postings
+	this.Metadata = metadata
 	this.Txid = txid
 	return &this
 }
@@ -130,36 +131,27 @@ func (o *Transaction) SetReference(v string) {
 	o.Reference = &v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Transaction) GetMetadata() map[string]interface{} {
+// GetMetadata returns the Metadata field value
+func (o *Transaction) GetMetadata() map[string]string {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret map[string]string
 		return ret
 	}
+
 	return o.Metadata
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Transaction) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || IsNil(o.Metadata) {
-		return map[string]interface{}{}, false
+func (o *Transaction) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil {
+		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
-// HasMetadata returns a boolean if a field has been set.
-func (o *Transaction) HasMetadata() bool {
-	if o != nil && IsNil(o.Metadata) {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
-func (o *Transaction) SetMetadata(v map[string]interface{}) {
+// SetMetadata sets field value
+func (o *Transaction) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
 
@@ -266,9 +258,7 @@ func (o Transaction) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
-	}
+	toSerialize["metadata"] = o.Metadata
 	toSerialize["txid"] = o.Txid
 	if !IsNil(o.PreCommitVolumes) {
 		toSerialize["preCommitVolumes"] = o.PreCommitVolumes

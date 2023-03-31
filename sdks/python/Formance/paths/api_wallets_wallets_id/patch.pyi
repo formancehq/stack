@@ -62,6 +62,9 @@ class SchemaForRequestBodyApplicationJson(
 
 
     class MetaOapg:
+        required = {
+            "metadata",
+        }
         
         class properties:
             
@@ -72,7 +75,7 @@ class SchemaForRequestBodyApplicationJson(
             
             
                 class MetaOapg:
-                    additional_properties = schemas.AnyTypeSchema
+                    additional_properties = schemas.StrSchema
                 
                 def __getitem__(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
                     # dict_instance[name] accessor
@@ -85,7 +88,7 @@ class SchemaForRequestBodyApplicationJson(
                     cls,
                     *_args: typing.Union[dict, frozendict.frozendict, ],
                     _configuration: typing.Optional[schemas.Configuration] = None,
-                    **kwargs: typing.Union[MetaOapg.additional_properties, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
+                    **kwargs: typing.Union[MetaOapg.additional_properties, str, ],
                 ) -> 'metadata':
                     return super().__new__(
                         cls,
@@ -96,6 +99,8 @@ class SchemaForRequestBodyApplicationJson(
             __annotations__ = {
                 "metadata": metadata,
             }
+    
+    metadata: MetaOapg.properties.metadata
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
@@ -109,7 +114,7 @@ class SchemaForRequestBodyApplicationJson(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> typing.Union[MetaOapg.properties.metadata, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -121,7 +126,7 @@ class SchemaForRequestBodyApplicationJson(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
+        metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, ],
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'SchemaForRequestBodyApplicationJson':

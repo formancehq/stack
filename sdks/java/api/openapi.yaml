@@ -562,11 +562,13 @@ paths:
           a:
             nested:
               key: value
-        explode: true
+        explode: false
         in: query
         name: metadata
         required: false
         schema:
+          additionalProperties:
+            type: string
           properties: {}
           type: object
         style: deepObject
@@ -922,18 +924,16 @@ paths:
           example: aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==
           type: string
         style: form
-      - description: Filter transactions by metadata key value pairs. Nested objects
-          can be used as seen in the example below.
+      - description: Filter transactions by metadata key value pairs.
         example:
-          admin: true
-          a:
-            nested:
-              key: value
-        explode: true
+          admin: "true"
+        explode: false
         in: query
         name: metadata
         required: false
         schema:
+          additionalProperties:
+            type: string
           properties: {}
           type: object
         style: deepObject
@@ -2238,15 +2238,14 @@ paths:
       - description: Filter wallets by metadata key value pairs. Nested objects can
           be used as seen in the example below.
         example:
-          admin: true
-          a:
-            nested:
-              key: value
+          admin: "true"
         explode: true
         in: query
         name: metadata
         required: false
         schema:
+          additionalProperties:
+            type: string
           properties: {}
           type: object
         style: deepObject
@@ -2554,15 +2553,14 @@ paths:
       - description: Filter holds by metadata key value pairs. Nested objects can
           be used as seen in the example below.
         example:
-          admin: true
-          a:
-            nested:
-              key: value
-        explode: true
+          admin: "true"
+        explode: false
         in: query
         name: metadata
         required: false
         schema:
+          additionalProperties:
+            type: string
           properties: {}
           type: object
         style: deepObject
@@ -3424,17 +3422,11 @@ components:
           previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
           data:
           - metadata:
-              admin: true
-              a:
-                nested:
-                  key: value
+              admin: "true"
             address: users:001
             type: virtual
           - metadata:
-              admin: true
-              a:
-                nested:
-                  key: value
+              admin: "true"
             address: users:001
             type: virtual
           hasMore: false
@@ -3479,10 +3471,7 @@ components:
           data:
           - reference: ref:001
             metadata:
-              admin: true
-              a:
-                nested:
-                  key: value
+              admin: "true"
             postings:
             - amount: 100
               destination: users:002
@@ -3518,10 +3507,7 @@ components:
             timestamp: 2000-01-23T04:56:07.000+00:00
           - reference: ref:001
             metadata:
-              admin: true
-              a:
-                nested:
-                  key: value
+              admin: "true"
             postings:
             - amount: 100
               destination: users:002
@@ -3591,10 +3577,7 @@ components:
       example:
         data:
           metadata:
-            admin: true
-            a:
-              nested:
-                key: value
+            admin: "true"
           balances:
             COIN: 100
           address: users:001
@@ -3658,13 +3641,10 @@ components:
       - ledgers
       type: object
     ledgerMetadata:
-      additionalProperties: {}
+      additionalProperties:
+        type: string
       example:
-        admin: true
-        a:
-          nested:
-            key: value
-      nullable: true
+        admin: "true"
       type: object
     ConfigInfo:
       example:
@@ -3691,10 +3671,7 @@ components:
     Account:
       example:
         metadata:
-          admin: true
-          a:
-            nested:
-              key: value
+          admin: "true"
         address: users:001
         type: virtual
       properties:
@@ -3705,23 +3682,20 @@ components:
           example: virtual
           type: string
         metadata:
+          additionalProperties:
+            type: string
           example:
-            admin: true
-            a:
-              nested:
-                key: value
+            admin: "true"
           properties: {}
           type: object
       required:
       - address
+      - metadata
       type: object
     AccountWithVolumesAndBalances:
       example:
         metadata:
-          admin: true
-          a:
-            nested:
-              key: value
+          admin: "true"
         balances:
           COIN: 100
         address: users:001
@@ -3738,11 +3712,10 @@ components:
           example: virtual
           type: string
         metadata:
+          additionalProperties:
+            type: string
           example:
-            admin: true
-            a:
-              nested:
-                key: value
+            admin: "true"
           properties: {}
           type: object
         volumes:
@@ -3767,6 +3740,9 @@ components:
           type: object
       required:
       - address
+      - balances
+      - metadata
+      - volumes
       type: object
     AccountsBalances:
       additionalProperties:
@@ -3819,10 +3795,7 @@ components:
       example:
         reference: ref:001
         metadata:
-          admin: true
-          a:
-            nested:
-              key: value
+          admin: "true"
         postings:
         - amount: 100
           destination: users:002
@@ -3868,13 +3841,10 @@ components:
           example: ref:001
           type: string
         metadata:
-          additionalProperties: {}
+          additionalProperties:
+            type: string
           example:
-            admin: true
-            a:
-              nested:
-                key: value
-          nullable: true
+            admin: "true"
           type: object
         txid:
           format: int64
@@ -3911,6 +3881,7 @@ components:
                 balance: 90
           type: object
       required:
+      - metadata
       - postings
       - timestamp
       - txid
@@ -3919,10 +3890,7 @@ components:
       example:
         reference: ref:001
         metadata:
-          admin: true
-          a:
-            nested:
-              key: value
+          admin: "true"
         postings:
         - amount: 100
           destination: users:002
@@ -3953,14 +3921,13 @@ components:
           example: ref:001
           type: string
         metadata:
-          additionalProperties: {}
+          additionalProperties:
+            type: string
           example:
-            admin: true
-            a:
-              nested:
-                key: value
-          nullable: true
+            admin: "true"
           type: object
+      required:
+      - metadata
       type: object
     Stats:
       example:
@@ -4018,10 +3985,7 @@ components:
         data:
           reference: ref:001
           metadata:
-            admin: true
-            a:
-              nested:
-                key: value
+            admin: "true"
           postings:
           - amount: 100
             destination: users:002
@@ -5077,7 +5041,7 @@ components:
         ledger: ledger
         createdAt: 2000-01-23T04:56:07.000+00:00
         metadata:
-          key: ""
+          key: metadata
         name: name
         id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
@@ -5086,7 +5050,8 @@ components:
           format: uuid
           type: string
         metadata:
-          additionalProperties: {}
+          additionalProperties:
+            type: string
           description: Metadata associated with the wallet.
           type: object
         name:
@@ -5108,7 +5073,7 @@ components:
         ledger: ledger
         createdAt: 2000-01-23T04:56:07.000+00:00
         metadata:
-          key: ""
+          key: metadata
         balances:
           main:
             assets:
@@ -5121,7 +5086,8 @@ components:
           format: uuid
           type: string
         metadata:
-          additionalProperties: {}
+          additionalProperties:
+            type: string
           description: Metadata associated with the wallet.
           type: object
         name:
@@ -5145,7 +5111,7 @@ components:
       example:
         walletID: walletID
         metadata:
-          key: ""
+          key: metadata
         destination: null
         description: description
         id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -5158,7 +5124,8 @@ components:
           description: The ID of the wallet the hold is associated with.
           type: string
         metadata:
-          additionalProperties: {}
+          additionalProperties:
+            type: string
           description: Metadata associated with the hold.
           type: object
         description:
@@ -5190,7 +5157,7 @@ components:
           ledger: ledger
           createdAt: 2000-01-23T04:56:07.000+00:00
           metadata:
-            key: ""
+            key: metadata
           name: name
           id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
@@ -5205,7 +5172,7 @@ components:
           ledger: ledger
           createdAt: 2000-01-23T04:56:07.000+00:00
           metadata:
-            key: ""
+            key: metadata
           balances:
             main:
               assets:
@@ -5223,7 +5190,7 @@ components:
         data:
           walletID: walletID
           metadata:
-            key: ""
+            key: metadata
           destination: null
           description: description
           id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -5254,7 +5221,8 @@ components:
           example: ref:001
           type: string
         metadata:
-          additionalProperties: {}
+          additionalProperties:
+            type: string
           description: Metadata associated with the wallet.
           type: object
         txid:
@@ -5274,6 +5242,7 @@ components:
           x-go-type:
             type: AggregatedVolumes
       required:
+      - metadata
       - postings
       - timestamp
       - txid
@@ -5328,16 +5297,18 @@ components:
     CreateWalletRequest:
       example:
         metadata:
-          key: ""
+          key: metadata
         name: name
       properties:
         metadata:
-          additionalProperties: {}
+          additionalProperties:
+            type: string
           description: Custom metadata to attach to this wallet.
           type: object
         name:
           type: string
       required:
+      - metadata
       - name
       type: object
     walletsVolume:
@@ -5425,7 +5396,8 @@ components:
         amount:
           $ref: '#/components/schemas/Monetary'
         metadata:
-          additionalProperties: {}
+          additionalProperties:
+            type: string
           description: Metadata associated with the wallet.
           type: object
         reference:
@@ -5439,6 +5411,7 @@ components:
           type: string
       required:
       - amount
+      - metadata
       - sources
       type: object
     DebitWalletRequest:
@@ -5455,7 +5428,8 @@ components:
             \ will be debited immediately."
           type: boolean
         metadata:
-          additionalProperties: {}
+          additionalProperties:
+            type: string
           description: Metadata associated with the wallet.
           type: object
         description:
@@ -5469,6 +5443,7 @@ components:
           type: array
       required:
       - amount
+      - metadata
       type: object
     AssetHolder:
       example:
@@ -5675,10 +5650,7 @@ components:
             data:
               reference: ref:001
               metadata:
-                admin: true
-                a:
-                  nested:
-                    key: value
+                admin: "true"
               postings:
               - amount: 100
                 destination: users:002
@@ -5716,10 +5688,7 @@ components:
             data:
               reference: ref:001
               metadata:
-                admin: true
-                a:
-                  nested:
-                    key: value
+                admin: "true"
               postings:
               - amount: 100
                 destination: users:002
@@ -5756,10 +5725,7 @@ components:
           GetAccount:
             data:
               metadata:
-                admin: true
-                a:
-                  nested:
-                    key: value
+                admin: "true"
               balances:
                 COIN: 100
               address: users:001
@@ -5798,7 +5764,7 @@ components:
             data:
               walletID: walletID
               metadata:
-                key: ""
+                key: metadata
               destination: null
               description: description
               id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -5807,7 +5773,7 @@ components:
               ledger: ledger
               createdAt: 2000-01-23T04:56:07.000+00:00
               metadata:
-                key: ""
+                key: metadata
               balances:
                 main:
                   assets:
@@ -5820,10 +5786,7 @@ components:
             data:
               reference: ref:001
               metadata:
-                admin: true
-                a:
-                  nested:
-                    key: value
+                admin: "true"
               postings:
               - amount: 100
                 destination: users:002
@@ -6155,10 +6118,7 @@ components:
               data:
                 reference: ref:001
                 metadata:
-                  admin: true
-                  a:
-                    nested:
-                      key: value
+                  admin: "true"
                 postings:
                 - amount: 100
                   destination: users:002
@@ -6196,10 +6156,7 @@ components:
               data:
                 reference: ref:001
                 metadata:
-                  admin: true
-                  a:
-                    nested:
-                      key: value
+                  admin: "true"
                 postings:
                 - amount: 100
                   destination: users:002
@@ -6236,10 +6193,7 @@ components:
             GetAccount:
               data:
                 metadata:
-                  admin: true
-                  a:
-                    nested:
-                      key: value
+                  admin: "true"
                 balances:
                   COIN: 100
                 address: users:001
@@ -6278,7 +6232,7 @@ components:
               data:
                 walletID: walletID
                 metadata:
-                  key: ""
+                  key: metadata
                 destination: null
                 description: description
                 id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -6287,7 +6241,7 @@ components:
                 ledger: ledger
                 createdAt: 2000-01-23T04:56:07.000+00:00
                 metadata:
-                  key: ""
+                  key: metadata
                 balances:
                   main:
                     assets:
@@ -6300,10 +6254,7 @@ components:
               data:
                 reference: ref:001
                 metadata:
-                  admin: true
-                  a:
-                    nested:
-                      key: value
+                  admin: "true"
                 postings:
                 - amount: 100
                   destination: users:002
@@ -6367,10 +6318,7 @@ components:
               data:
                 reference: ref:001
                 metadata:
-                  admin: true
-                  a:
-                    nested:
-                      key: value
+                  admin: "true"
                 postings:
                 - amount: 100
                   destination: users:002
@@ -6408,10 +6356,7 @@ components:
               data:
                 reference: ref:001
                 metadata:
-                  admin: true
-                  a:
-                    nested:
-                      key: value
+                  admin: "true"
                 postings:
                 - amount: 100
                   destination: users:002
@@ -6448,10 +6393,7 @@ components:
             GetAccount:
               data:
                 metadata:
-                  admin: true
-                  a:
-                    nested:
-                      key: value
+                  admin: "true"
                 balances:
                   COIN: 100
                 address: users:001
@@ -6490,7 +6432,7 @@ components:
               data:
                 walletID: walletID
                 metadata:
-                  key: ""
+                  key: metadata
                 destination: null
                 description: description
                 id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -6499,7 +6441,7 @@ components:
                 ledger: ledger
                 createdAt: 2000-01-23T04:56:07.000+00:00
                 metadata:
-                  key: ""
+                  key: metadata
                 balances:
                   main:
                     assets:
@@ -6512,10 +6454,7 @@ components:
               data:
                 reference: ref:001
                 metadata:
-                  admin: true
-                  a:
-                    nested:
-                      key: value
+                  admin: "true"
                 postings:
                 - amount: 100
                   destination: users:002
@@ -6686,10 +6625,7 @@ components:
         data:
           reference: ref:001
           metadata:
-            admin: true
-            a:
-              nested:
-                key: value
+            admin: "true"
           postings:
           - amount: 100
             destination: users:002
@@ -6808,10 +6744,7 @@ components:
           data:
             reference: ref:001
             metadata:
-              admin: true
-              a:
-                nested:
-                  key: value
+              admin: "true"
             postings:
             - amount: 100
               destination: users:002
@@ -6890,10 +6823,7 @@ components:
           data:
             reference: ref:001
             metadata:
-              admin: true
-              a:
-                nested:
-                  key: value
+              admin: "true"
             postings:
             - amount: 100
               destination: users:002
@@ -6931,10 +6861,7 @@ components:
           data:
             reference: ref:001
             metadata:
-              admin: true
-              a:
-                nested:
-                  key: value
+              admin: "true"
             postings:
             - amount: 100
               destination: users:002
@@ -6971,10 +6898,7 @@ components:
         GetAccount:
           data:
             metadata:
-              admin: true
-              a:
-                nested:
-                  key: value
+              admin: "true"
             balances:
               COIN: 100
             address: users:001
@@ -7013,7 +6937,7 @@ components:
           data:
             walletID: walletID
             metadata:
-              key: ""
+              key: metadata
             destination: null
             description: description
             id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
@@ -7022,7 +6946,7 @@ components:
             ledger: ledger
             createdAt: 2000-01-23T04:56:07.000+00:00
             metadata:
-              key: ""
+              key: metadata
             balances:
               main:
                 assets:
@@ -7046,9 +6970,12 @@ components:
     updateWallet_request:
       properties:
         metadata:
-          additionalProperties: {}
+          additionalProperties:
+            type: string
           description: Custom metadata to attach to this wallet.
           type: object
+      required:
+      - metadata
       type: object
     sendEvent_request:
       properties:
@@ -7105,17 +7032,11 @@ components:
         previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
         data:
         - metadata:
-            admin: true
-            a:
-              nested:
-                key: value
+            admin: "true"
           address: users:001
           type: virtual
         - metadata:
-            admin: true
-            a:
-              nested:
-                key: value
+            admin: "true"
           address: users:001
           type: virtual
         hasMore: false
@@ -7196,10 +7117,7 @@ components:
         data:
         - reference: ref:001
           metadata:
-            admin: true
-            a:
-              nested:
-                key: value
+            admin: "true"
           postings:
           - amount: 100
             destination: users:002
@@ -7235,10 +7153,7 @@ components:
           timestamp: 2000-01-23T04:56:07.000+00:00
         - reference: ref:001
           metadata:
-            admin: true
-            a:
-              nested:
-                key: value
+            admin: "true"
           postings:
           - amount: 100
             destination: users:002

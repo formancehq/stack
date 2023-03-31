@@ -37,6 +37,7 @@ class CreditWalletRequest(
     class MetaOapg:
         required = {
             "amount",
+            "metadata",
             "sources",
         }
         
@@ -45,6 +46,35 @@ class CreditWalletRequest(
             @staticmethod
             def amount() -> typing.Type['Monetary']:
                 return Monetary
+            
+            
+            class metadata(
+                schemas.DictSchema
+            ):
+            
+            
+                class MetaOapg:
+                    additional_properties = schemas.StrSchema
+                
+                def __getitem__(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
+                    # dict_instance[name] accessor
+                    return super().__getitem__(name)
+                
+                def get_item_oapg(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
+                    return super().get_item_oapg(name)
+            
+                def __new__(
+                    cls,
+                    *_args: typing.Union[dict, frozendict.frozendict, ],
+                    _configuration: typing.Optional[schemas.Configuration] = None,
+                    **kwargs: typing.Union[MetaOapg.additional_properties, str, ],
+                ) -> 'metadata':
+                    return super().__new__(
+                        cls,
+                        *_args,
+                        _configuration=_configuration,
+                        **kwargs,
+                    )
             
             
             class sources(
@@ -71,56 +101,28 @@ class CreditWalletRequest(
             
                 def __getitem__(self, i: int) -> 'Subject':
                     return super().__getitem__(i)
-            
-            
-            class metadata(
-                schemas.DictSchema
-            ):
-            
-            
-                class MetaOapg:
-                    additional_properties = schemas.AnyTypeSchema
-                
-                def __getitem__(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
-                    # dict_instance[name] accessor
-                    return super().__getitem__(name)
-                
-                def get_item_oapg(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
-                    return super().get_item_oapg(name)
-            
-                def __new__(
-                    cls,
-                    *_args: typing.Union[dict, frozendict.frozendict, ],
-                    _configuration: typing.Optional[schemas.Configuration] = None,
-                    **kwargs: typing.Union[MetaOapg.additional_properties, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
-                ) -> 'metadata':
-                    return super().__new__(
-                        cls,
-                        *_args,
-                        _configuration=_configuration,
-                        **kwargs,
-                    )
             reference = schemas.StrSchema
             balance = schemas.StrSchema
             __annotations__ = {
                 "amount": amount,
-                "sources": sources,
                 "metadata": metadata,
+                "sources": sources,
                 "reference": reference,
                 "balance": balance,
             }
     
     amount: 'Monetary'
+    metadata: MetaOapg.properties.metadata
     sources: MetaOapg.properties.sources
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["amount"]) -> 'Monetary': ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["sources"]) -> MetaOapg.properties.sources: ...
+    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
+    def __getitem__(self, name: typing_extensions.Literal["sources"]) -> MetaOapg.properties.sources: ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["reference"]) -> MetaOapg.properties.reference: ...
@@ -131,7 +133,7 @@ class CreditWalletRequest(
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["amount", "sources", "metadata", "reference", "balance", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["amount", "metadata", "sources", "reference", "balance", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -140,10 +142,10 @@ class CreditWalletRequest(
     def get_item_oapg(self, name: typing_extensions.Literal["amount"]) -> 'Monetary': ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["sources"]) -> MetaOapg.properties.sources: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> typing.Union[MetaOapg.properties.metadata, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["sources"]) -> MetaOapg.properties.sources: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["reference"]) -> typing.Union[MetaOapg.properties.reference, schemas.Unset]: ...
@@ -154,7 +156,7 @@ class CreditWalletRequest(
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["amount", "sources", "metadata", "reference", "balance", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["amount", "metadata", "sources", "reference", "balance", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -162,8 +164,8 @@ class CreditWalletRequest(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
         amount: 'Monetary',
+        metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, ],
         sources: typing.Union[MetaOapg.properties.sources, list, tuple, ],
-        metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
         reference: typing.Union[MetaOapg.properties.reference, str, schemas.Unset] = schemas.unset,
         balance: typing.Union[MetaOapg.properties.balance, str, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
@@ -173,8 +175,8 @@ class CreditWalletRequest(
             cls,
             *_args,
             amount=amount,
-            sources=sources,
             metadata=metadata,
+            sources=sources,
             reference=reference,
             balance=balance,
             _configuration=_configuration,

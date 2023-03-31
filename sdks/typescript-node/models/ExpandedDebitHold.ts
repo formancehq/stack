@@ -25,7 +25,7 @@ export class ExpandedDebitHold {
     /**
     * Metadata associated with the hold.
     */
-    'metadata': { [key: string]: any; };
+    'metadata': { [key: string]: string; };
     'description': string;
     'destination'?: Subject;
     /**
@@ -55,7 +55,7 @@ export class ExpandedDebitHold {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "{ [key: string]: any; }",
+            "type": "{ [key: string]: string; }",
             "format": ""
         },
         {

@@ -23,7 +23,7 @@ export class DebitWalletRequest {
     /**
     * Metadata associated with the wallet.
     */
-    'metadata'?: { [key: string]: any; };
+    'metadata': { [key: string]: string; };
     'description'?: string;
     'destination'?: Subject;
     'balances'?: Array<string>;
@@ -46,7 +46,7 @@ export class DebitWalletRequest {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "{ [key: string]: any; }",
+            "type": "{ [key: string]: string; }",
             "format": ""
         },
         {
