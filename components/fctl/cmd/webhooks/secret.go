@@ -48,7 +48,7 @@ func NewChangeSecretCommand() *cobra.Command {
 				ChangeConfigSecret(cmd.Context(), args[0]).
 				ConfigChangeSecret(
 					formance.ConfigChangeSecret{
-						Secret: &secret,
+						Secret: secret,
 					}).
 				Execute()
 			if err != nil {
@@ -56,7 +56,7 @@ func NewChangeSecretCommand() *cobra.Command {
 			}
 
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln(
-				"Config updated successfully with new secret: %s", *res.Data.Secret)
+				"Config '%s' updated successfully with new secret", res.Data.Id)
 			return nil
 		}),
 	)

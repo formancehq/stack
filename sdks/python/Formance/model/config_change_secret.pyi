@@ -35,12 +35,17 @@ class ConfigChangeSecret(
 
 
     class MetaOapg:
+        required = {
+            "secret",
+        }
         
         class properties:
             secret = schemas.StrSchema
             __annotations__ = {
                 "secret": secret,
             }
+    
+    secret: MetaOapg.properties.secret
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["secret"]) -> MetaOapg.properties.secret: ...
@@ -54,7 +59,7 @@ class ConfigChangeSecret(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["secret"]) -> typing.Union[MetaOapg.properties.secret, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["secret"]) -> MetaOapg.properties.secret: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -66,7 +71,7 @@ class ConfigChangeSecret(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        secret: typing.Union[MetaOapg.properties.secret, str, schemas.Unset] = schemas.unset,
+        secret: typing.Union[MetaOapg.properties.secret, str, ],
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'ConfigChangeSecret':

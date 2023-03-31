@@ -105,5 +105,3 @@ after:
   hooks:
   - cmd: make helm-update
     dir: ./components/operator/
-  
-  

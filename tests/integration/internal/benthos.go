@@ -13,9 +13,7 @@ import (
 	"github.com/ory/dockertest/v3"
 )
 
-var (
-	benthosResource *dockertest.Resource
-)
+var benthosResource *dockertest.Resource
 
 func startBenthosServer() {
 	entrypoint := []string{
@@ -29,13 +27,13 @@ func startBenthosServer() {
 	}
 	entrypoint = append(entrypoint, "streams", "/config/streams/*.yaml")
 	wd, err := os.Getwd()
+	Expect(err).ToNot(HaveOccurred())
 
 	host := os.Getenv("DOCKER_HOSTNAME")
 	if host == "" {
 		host = "host.docker.internal"
 	}
 
-	Expect(err).To(BeNil())
 	benthosResource = runDockerResource(&dockertest.RunOptions{
 		Repository: "jeffail/benthos",
 		Tag:        "4.11",
@@ -72,5 +70,5 @@ func startBenthosServer() {
 }
 
 func stopBenthosServer() {
-	Expect(benthosResource.Close()).Should(BeNil())
+	Expect(benthosResource.Close()).Should(Not(HaveOccurred()))
 }

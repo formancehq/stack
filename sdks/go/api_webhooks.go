@@ -230,6 +230,14 @@ func (a *WebhooksApiService) ActivateConfigExecute(r ApiActivateConfigRequest) (
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -345,6 +353,14 @@ func (a *WebhooksApiService) ChangeConfigSecretExecute(r ApiChangeConfigSecretRe
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -448,6 +464,14 @@ func (a *WebhooksApiService) DeactivateConfigExecute(r ApiDeactivateConfigReques
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -520,7 +544,7 @@ func (a *WebhooksApiService) DeleteConfigExecute(r ApiDeleteConfigRequest) (*htt
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{}
+	localVarHTTPHeaderAccepts := []string{"application/json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -549,6 +573,14 @@ func (a *WebhooksApiService) DeleteConfigExecute(r ApiDeleteConfigRequest) (*htt
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarHTTPResponse, newErr
 	}
 
@@ -659,6 +691,14 @@ func (a *WebhooksApiService) GetManyConfigsExecute(r ApiGetManyConfigsRequest) (
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -747,7 +787,7 @@ func (a *WebhooksApiService) InsertConfigExecute(r ApiInsertConfigRequest) (*Con
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json", "text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -778,8 +818,7 @@ func (a *WebhooksApiService) InsertConfigExecute(r ApiInsertConfigRequest) (*Con
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v string
+			var v ErrorResponse
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()
@@ -787,7 +826,6 @@ func (a *WebhooksApiService) InsertConfigExecute(r ApiInsertConfigRequest) (*Con
 			}
 					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
 					newErr.model = v
-		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -891,6 +929,14 @@ func (a *WebhooksApiService) TestConfigExecute(r ApiTestConfigRequest) (*Attempt
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
+			var v ErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

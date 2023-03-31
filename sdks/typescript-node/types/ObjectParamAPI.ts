@@ -238,7 +238,7 @@ export interface AccountsApiCountAccountsRequest {
      */
     address?: string
     /**
-     * Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+     * Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2
      * @type any
      * @memberof AccountsApicountAccounts
      */

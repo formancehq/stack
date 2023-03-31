@@ -41,7 +41,7 @@ public interface AccountsApi {
    * 
    * @param ledger Name of the ledger. (required)
    * @param address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-   * @param metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+   * @param metadata Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2 (optional)
    * @return Call&lt;Void&gt;
    */
   @HEAD("api/ledger/{ledger}/accounts")

@@ -9,6 +9,7 @@
 from dataclasses import dataclass
 import typing_extensions
 import urllib3
+from urllib3._collections import HTTPHeaderDict
 
 from Formance import api_client, exceptions
 from datetime import date, datetime  # noqa: F401
@@ -23,6 +24,8 @@ import uuid  # noqa: F401
 import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
+
+from Formance.model.error_response import ErrorResponse
 
 # Path params
 IdSchema = schemas.StrSchema
@@ -55,13 +58,34 @@ request_path_id = api_client.PathParameter(
 @dataclass
 class ApiResponseFor200(api_client.ApiResponse):
     response: urllib3.HTTPResponse
-    body: typing.Union[
-    ]
+    body: schemas.Unset = schemas.unset
     headers: schemas.Unset = schemas.unset
 
 
 _response_for_200 = api_client.OpenApiResponse(
     response_cls=ApiResponseFor200,
+)
+SchemaFor0ResponseBodyApplicationJson = ErrorResponse
+
+
+@dataclass
+class ApiResponseForDefault(api_client.ApiResponse):
+    response: urllib3.HTTPResponse
+    body: typing.Union[
+        SchemaFor0ResponseBodyApplicationJson,
+    ]
+    headers: schemas.Unset = schemas.unset
+
+
+_response_for_default = api_client.OpenApiResponse(
+    response_cls=ApiResponseForDefault,
+    content={
+        'application/json': api_client.MediaType(
+            schema=SchemaFor0ResponseBodyApplicationJson),
+    },
+)
+_all_accept_content_types = (
+    'application/json',
 )
 
 
@@ -70,11 +94,13 @@ class BaseApi(api_client.Api):
     def _delete_config_oapg(
         self,
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
     ]: ...
 
     @typing.overload
@@ -82,6 +108,7 @@ class BaseApi(api_client.Api):
         self,
         skip_deserialization: typing_extensions.Literal[True],
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
     ) -> api_client.ApiResponseWithoutDeserialization: ...
@@ -90,17 +117,20 @@ class BaseApi(api_client.Api):
     def _delete_config_oapg(
         self,
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
 
     def _delete_config_oapg(
         self,
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = False,
@@ -126,11 +156,17 @@ class BaseApi(api_client.Api):
 
         for k, v in _path_params.items():
             used_path = used_path.replace('{%s}' % k, v)
+
+        _headers = HTTPHeaderDict()
         # TODO add cookie handling
+        if accept_content_types:
+            for accept_content_type in accept_content_types:
+                _headers.add('Accept', accept_content_type)
 
         response = self.api_client.call_api(
             resource_path=used_path,
             method='delete'.upper(),
+            headers=_headers,
             auth_settings=_auth,
             stream=stream,
             timeout=timeout,
@@ -143,7 +179,11 @@ class BaseApi(api_client.Api):
             if response_for_status:
                 api_response = response_for_status.deserialize(response, self.api_client.configuration)
             else:
-                api_response = api_client.ApiResponseWithoutDeserialization(response=response)
+                default_response = _status_code_to_response.get('default')
+                if default_response:
+                    api_response = default_response.deserialize(response, self.api_client.configuration)
+                else:
+                    api_response = api_client.ApiResponseWithoutDeserialization(response=response)
 
         if not 200 <= response.status <= 299:
             raise exceptions.ApiException(
@@ -162,11 +202,13 @@ class DeleteConfig(BaseApi):
     def delete_config(
         self,
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
     ]: ...
 
     @typing.overload
@@ -174,6 +216,7 @@ class DeleteConfig(BaseApi):
         self,
         skip_deserialization: typing_extensions.Literal[True],
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
     ) -> api_client.ApiResponseWithoutDeserialization: ...
@@ -182,23 +225,27 @@ class DeleteConfig(BaseApi):
     def delete_config(
         self,
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
 
     def delete_config(
         self,
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = False,
     ):
         return self._delete_config_oapg(
             path_params=path_params,
+            accept_content_types=accept_content_types,
             stream=stream,
             timeout=timeout,
             skip_deserialization=skip_deserialization
@@ -212,11 +259,13 @@ class ApiFordelete(BaseApi):
     def delete(
         self,
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
     ]: ...
 
     @typing.overload
@@ -224,6 +273,7 @@ class ApiFordelete(BaseApi):
         self,
         skip_deserialization: typing_extensions.Literal[True],
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
     ) -> api_client.ApiResponseWithoutDeserialization: ...
@@ -232,23 +282,27 @@ class ApiFordelete(BaseApi):
     def delete(
         self,
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = ...,
     ) -> typing.Union[
         ApiResponseFor200,
+        ApiResponseForDefault,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
 
     def delete(
         self,
         path_params: RequestPathParams = frozendict.frozendict(),
+        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = False,
     ):
         return self._delete_config_oapg(
             path_params=path_params,
+            accept_content_types=accept_content_types,
             stream=stream,
             timeout=timeout,
             skip_deserialization=skip_deserialization

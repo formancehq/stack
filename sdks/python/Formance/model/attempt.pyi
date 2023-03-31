@@ -35,6 +35,17 @@ class Attempt(
 
 
     class MetaOapg:
+        required = {
+            "createdAt",
+            "webhookID",
+            "payload",
+            "id",
+            "retryAttempt",
+            "config",
+            "status",
+            "statusCode",
+            "updatedAt",
+        }
         
         class properties:
             id = schemas.UUIDSchema
@@ -63,6 +74,16 @@ class Attempt(
                 "nextRetryAfter": nextRetryAfter,
             }
 
+    
+    createdAt: MetaOapg.properties.createdAt
+    webhookID: MetaOapg.properties.webhookID
+    payload: MetaOapg.properties.payload
+    id: MetaOapg.properties.id
+    retryAttempt: MetaOapg.properties.retryAttempt
+    config: 'WebhooksConfig'
+    status: MetaOapg.properties.status
+    statusCode: MetaOapg.properties.statusCode
+    updatedAt: MetaOapg.properties.updatedAt
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
@@ -103,31 +124,31 @@ class Attempt(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> typing.Union[MetaOapg.properties.id, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["webhookID"]) -> typing.Union[MetaOapg.properties.webhookID, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["webhookID"]) -> MetaOapg.properties.webhookID: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["createdAt"]) -> typing.Union[MetaOapg.properties.createdAt, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["createdAt"]) -> MetaOapg.properties.createdAt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["updatedAt"]) -> typing.Union[MetaOapg.properties.updatedAt, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["config"]) -> typing.Union['WebhooksConfig', schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["config"]) -> 'WebhooksConfig': ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["payload"]) -> typing.Union[MetaOapg.properties.payload, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["payload"]) -> MetaOapg.properties.payload: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["statusCode"]) -> typing.Union[MetaOapg.properties.statusCode, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["statusCode"]) -> MetaOapg.properties.statusCode: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["retryAttempt"]) -> typing.Union[MetaOapg.properties.retryAttempt, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["retryAttempt"]) -> MetaOapg.properties.retryAttempt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["status"]) -> typing.Union[MetaOapg.properties.status, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["status"]) -> MetaOapg.properties.status: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["nextRetryAfter"]) -> typing.Union[MetaOapg.properties.nextRetryAfter, schemas.Unset]: ...
@@ -142,15 +163,15 @@ class Attempt(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
-        id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, schemas.Unset] = schemas.unset,
-        webhookID: typing.Union[MetaOapg.properties.webhookID, str, uuid.UUID, schemas.Unset] = schemas.unset,
-        createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, schemas.Unset] = schemas.unset,
-        updatedAt: typing.Union[MetaOapg.properties.updatedAt, str, datetime, schemas.Unset] = schemas.unset,
-        config: typing.Union['WebhooksConfig', schemas.Unset] = schemas.unset,
-        payload: typing.Union[MetaOapg.properties.payload, str, schemas.Unset] = schemas.unset,
-        statusCode: typing.Union[MetaOapg.properties.statusCode, decimal.Decimal, int, schemas.Unset] = schemas.unset,
-        retryAttempt: typing.Union[MetaOapg.properties.retryAttempt, decimal.Decimal, int, schemas.Unset] = schemas.unset,
-        status: typing.Union[MetaOapg.properties.status, str, schemas.Unset] = schemas.unset,
+        createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, ],
+        webhookID: typing.Union[MetaOapg.properties.webhookID, str, uuid.UUID, ],
+        payload: typing.Union[MetaOapg.properties.payload, str, ],
+        id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, ],
+        retryAttempt: typing.Union[MetaOapg.properties.retryAttempt, decimal.Decimal, int, ],
+        config: 'WebhooksConfig',
+        status: typing.Union[MetaOapg.properties.status, str, ],
+        statusCode: typing.Union[MetaOapg.properties.statusCode, decimal.Decimal, int, ],
+        updatedAt: typing.Union[MetaOapg.properties.updatedAt, str, datetime, ],
         nextRetryAfter: typing.Union[MetaOapg.properties.nextRetryAfter, str, datetime, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
@@ -158,15 +179,15 @@ class Attempt(
         return super().__new__(
             cls,
             *_args,
-            id=id,
-            webhookID=webhookID,
             createdAt=createdAt,
-            updatedAt=updatedAt,
-            config=config,
+            webhookID=webhookID,
             payload=payload,
-            statusCode=statusCode,
+            id=id,
             retryAttempt=retryAttempt,
+            config=config,
             status=status,
+            statusCode=statusCode,
+            updatedAt=updatedAt,
             nextRetryAfter=nextRetryAfter,
             _configuration=_configuration,
             **kwargs,

@@ -45,6 +45,8 @@ class ErrorsEnum(
             "COMPILATION_FAILED": "COMPILATION_FAILED",
             "METADATA_OVERRIDE": "METADATA_OVERRIDE",
             "NOT_FOUND": "NOT_FOUND",
+            "CONTEXT_CANCELLED": "CONTEXT_CANCELLED",
+            "STORE": "STORE",
         }
     
     @schemas.classproperty
@@ -78,3 +80,11 @@ class ErrorsEnum(
     @schemas.classproperty
     def NOT_FOUND(cls):
         return cls("NOT_FOUND")
+    
+    @schemas.classproperty
+    def CONTEXT_CANCELLED(cls):
+        return cls("CONTEXT_CANCELLED")
+    
+    @schemas.classproperty
+    def STORE(cls):
+        return cls("STORE")

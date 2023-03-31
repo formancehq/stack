@@ -15,6 +15,7 @@ import { ConfigChangeSecret } from '../models/ConfigChangeSecret';
 import { ConfigResponse } from '../models/ConfigResponse';
 import { ConfigUser } from '../models/ConfigUser';
 import { ConfigsResponse } from '../models/ConfigsResponse';
+import { ErrorResponse } from '../models/ErrorResponse';
 
 /**
  * no description
@@ -336,8 +337,12 @@ export class WebhooksApiResponseProcessor {
             ) as ConfigResponse;
             return body;
         }
-        if (isCodeInRange("304", response.httpStatusCode)) {
-            throw new ApiException<undefined>(response.httpStatusCode, "Config not modified, was already activated.", undefined, response.headers);
+        if (isCodeInRange("0", response.httpStatusCode)) {
+            const body: ErrorResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "ErrorResponse", ""
+            ) as ErrorResponse;
+            throw new ApiException<ErrorResponse>(response.httpStatusCode, "Error", body, response.headers);
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
@@ -368,6 +373,13 @@ export class WebhooksApiResponseProcessor {
             ) as ConfigResponse;
             return body;
         }
+        if (isCodeInRange("0", response.httpStatusCode)) {
+            const body: ErrorResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "ErrorResponse", ""
+            ) as ErrorResponse;
+            throw new ApiException<ErrorResponse>(response.httpStatusCode, "Error", body, response.headers);
+        }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
@@ -397,8 +409,12 @@ export class WebhooksApiResponseProcessor {
             ) as ConfigResponse;
             return body;
         }
-        if (isCodeInRange("304", response.httpStatusCode)) {
-            throw new ApiException<undefined>(response.httpStatusCode, "Config not modified, was already deactivated.", undefined, response.headers);
+        if (isCodeInRange("0", response.httpStatusCode)) {
+            const body: ErrorResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "ErrorResponse", ""
+            ) as ErrorResponse;
+            throw new ApiException<ErrorResponse>(response.httpStatusCode, "Error", body, response.headers);
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
@@ -424,6 +440,13 @@ export class WebhooksApiResponseProcessor {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
             return;
+        }
+        if (isCodeInRange("0", response.httpStatusCode)) {
+            const body: ErrorResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "ErrorResponse", ""
+            ) as ErrorResponse;
+            throw new ApiException<ErrorResponse>(response.httpStatusCode, "Error", body, response.headers);
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
@@ -454,6 +477,13 @@ export class WebhooksApiResponseProcessor {
             ) as ConfigsResponse;
             return body;
         }
+        if (isCodeInRange("0", response.httpStatusCode)) {
+            const body: ErrorResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "ErrorResponse", ""
+            ) as ErrorResponse;
+            throw new ApiException<ErrorResponse>(response.httpStatusCode, "Error", body, response.headers);
+        }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
@@ -483,12 +513,12 @@ export class WebhooksApiResponseProcessor {
             ) as ConfigResponse;
             return body;
         }
-        if (isCodeInRange("400", response.httpStatusCode)) {
-            const body: string = ObjectSerializer.deserialize(
+        if (isCodeInRange("0", response.httpStatusCode)) {
+            const body: ErrorResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "string", ""
-            ) as string;
-            throw new ApiException<string>(response.httpStatusCode, "Bad Request", body, response.headers);
+                "ErrorResponse", ""
+            ) as ErrorResponse;
+            throw new ApiException<ErrorResponse>(response.httpStatusCode, "Error", body, response.headers);
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
@@ -518,6 +548,13 @@ export class WebhooksApiResponseProcessor {
                 "AttemptResponse", ""
             ) as AttemptResponse;
             return body;
+        }
+        if (isCodeInRange("0", response.httpStatusCode)) {
+            const body: ErrorResponse = ObjectSerializer.deserialize(
+                ObjectSerializer.parse(await response.body.text(), contentType),
+                "ErrorResponse", ""
+            ) as ErrorResponse;
+            throw new ApiException<ErrorResponse>(response.httpStatusCode, "Error", body, response.headers);
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
