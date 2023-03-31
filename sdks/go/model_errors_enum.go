@@ -29,6 +29,8 @@ const (
 	COMPILATION_FAILED ErrorsEnum = "COMPILATION_FAILED"
 	METADATA_OVERRIDE ErrorsEnum = "METADATA_OVERRIDE"
 	NOT_FOUND ErrorsEnum = "NOT_FOUND"
+	CONTEXT_CANCELLED ErrorsEnum = "CONTEXT_CANCELLED"
+	STORE ErrorsEnum = "STORE"
 )
 
 // All allowed values of ErrorsEnum enum
@@ -41,6 +43,8 @@ var AllowedErrorsEnumEnumValues = []ErrorsEnum{
 	"COMPILATION_FAILED",
 	"METADATA_OVERRIDE",
 	"NOT_FOUND",
+	"CONTEXT_CANCELLED",
+	"STORE",
 }
 
 func (v *ErrorsEnum) UnmarshalJSON(src []byte) error {

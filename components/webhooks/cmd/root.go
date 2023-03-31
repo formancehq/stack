@@ -3,31 +3,33 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/webhooks/cmd/flag"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-var retriesSchedule []time.Duration
+var ErrScheduleInvalid = errors.New("the retry schedule should only contain durations of at least 1 second")
 
 func NewRootCommand() *cobra.Command {
 	root := &cobra.Command{
 		Use: "webhooks",
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			return errors.Wrap(viper.BindPFlags(cmd.Flags()), "binding viper flags")
+		},
 	}
 
-	var err error
 	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
 	publish.InitCLIFlags(root)
-	retriesSchedule, err = flag.Init(root.PersistentFlags())
-	cobra.CheckErr(err)
+	flag.Init(root.PersistentFlags())
 
-	root.AddCommand(serverCmd)
-	root.AddCommand(workerCmd)
-	root.AddCommand(versionCmd)
+	root.AddCommand(newServeCommand())
+	root.AddCommand(newWorkerCommand())
+	root.AddCommand(newVersionCommand())
 
 	return root
 }

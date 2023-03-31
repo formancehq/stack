@@ -22,6 +22,7 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - wrapcheck
+    - errorlint
 
 run:
   timeout: 5m

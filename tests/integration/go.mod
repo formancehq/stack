@@ -13,6 +13,7 @@ require (
 	github.com/formancehq/stack v0.0.0-00010101000000-000000000000
 	github.com/formancehq/stack/libs/go-libs v0.0.0-20230425092747-deaef0a31004
 	github.com/formancehq/wallets v0.3.0
+	github.com/formancehq/webhooks v0.0.0-00010101000000-000000000000
 	github.com/getkin/kin-openapi v0.114.0
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v5 v5.3.0
@@ -137,6 +138,7 @@ require (
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/uptrace/bun v1.1.12 // indirect
 	github.com/uptrace/bun/dialect/pgdialect v1.1.12 // indirect
+	github.com/uptrace/bun/driver/pgdriver v1.1.12 // indirect
 	github.com/uptrace/bun/extra/bundebug v1.1.12 // indirect
 	github.com/uptrace/bun/extra/bunotel v1.1.12 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
@@ -193,6 +195,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/postgres v1.4.8 // indirect
 	gorm.io/gorm v1.24.5 // indirect
+	mellium.im/sasl v0.3.1 // indirect
 )
 
 replace (

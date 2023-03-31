@@ -440,4 +440,3 @@ lib/Model/WorkflowInstanceHistoryStageInput.php
 lib/Model/WorkflowInstanceHistoryStageOutput.php
 lib/ObjectSerializer.php
 phpunit.xml.dist
-test/Model/ScriptTest.php

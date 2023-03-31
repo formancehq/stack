@@ -153,9 +153,9 @@ public class WalletsApiTest {
     @Test
     public void getTransactionsTest() {
         Integer pageSize = null;
-        String walletId = null;
+        String walletID = null;
         String cursor = null;
-        // GetTransactionsResponse response = api.getTransactions(pageSize, walletId, cursor);
+        // GetTransactionsResponse response = api.getTransactions(pageSize, walletID, cursor);
 
         // TODO: test validations
     }

@@ -72,7 +72,7 @@ public class WebhooksConfig {
    * Get id
    * @return id
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public UUID getId() {
     return id;
@@ -94,7 +94,7 @@ public class WebhooksConfig {
    * Get endpoint
    * @return endpoint
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public String getEndpoint() {
     return endpoint;
@@ -116,7 +116,7 @@ public class WebhooksConfig {
    * Get secret
    * @return secret
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public String getSecret() {
     return secret;
@@ -135,9 +135,6 @@ public class WebhooksConfig {
   }
 
   public WebhooksConfig addEventTypesItem(String eventTypesItem) {
-    if (this.eventTypes == null) {
-      this.eventTypes = new ArrayList<>();
-    }
     this.eventTypes.add(eventTypesItem);
     return this;
   }
@@ -146,7 +143,7 @@ public class WebhooksConfig {
    * Get eventTypes
    * @return eventTypes
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public List<String> getEventTypes() {
     return eventTypes;
@@ -168,7 +165,7 @@ public class WebhooksConfig {
    * Get active
    * @return active
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public Boolean getActive() {
     return active;
@@ -190,7 +187,7 @@ public class WebhooksConfig {
    * Get createdAt
    * @return createdAt
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public OffsetDateTime getCreatedAt() {
     return createdAt;
@@ -212,7 +209,7 @@ public class WebhooksConfig {
    * Get updatedAt
    * @return updatedAt
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public OffsetDateTime getUpdatedAt() {
     return updatedAt;

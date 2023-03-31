@@ -7,15 +7,15 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**id** | **UUID** |  |  [optional] |
-|**webhookID** | **UUID** |  |  [optional] |
-|**createdAt** | **OffsetDateTime** |  |  [optional] |
-|**updatedAt** | **OffsetDateTime** |  |  [optional] |
-|**config** | [**WebhooksConfig**](WebhooksConfig.md) |  |  [optional] |
-|**payload** | **String** |  |  [optional] |
-|**statusCode** | **Integer** |  |  [optional] |
-|**retryAttempt** | **Integer** |  |  [optional] |
-|**status** | **String** |  |  [optional] |
+|**id** | **UUID** |  |  |
+|**webhookID** | **UUID** |  |  |
+|**createdAt** | **OffsetDateTime** |  |  |
+|**updatedAt** | **OffsetDateTime** |  |  |
+|**config** | [**WebhooksConfig**](WebhooksConfig.md) |  |  |
+|**payload** | **String** |  |  |
+|**statusCode** | **Integer** |  |  |
+|**retryAttempt** | **Integer** |  |  |
+|**status** | **String** |  |  |
 |**nextRetryAfter** | **OffsetDateTime** |  |  [optional] |
 
 

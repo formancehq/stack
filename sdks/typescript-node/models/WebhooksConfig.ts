@@ -13,13 +13,13 @@
 import { HttpFile } from '../http/http';
 
 export class WebhooksConfig {
-    'id'?: string;
-    'endpoint'?: string;
-    'secret'?: string;
-    'eventTypes'?: Array<string>;
-    'active'?: boolean;
-    'createdAt'?: Date;
-    'updatedAt'?: Date;
+    'id': string;
+    'endpoint': string;
+    'secret': string;
+    'eventTypes': Array<string>;
+    'active': boolean;
+    'createdAt': Date;
+    'updatedAt': Date;
 
     static readonly discriminator: string | undefined = undefined;
 
