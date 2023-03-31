@@ -83,7 +83,7 @@ public class Example {
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Config successfully activated. |  -  |
-| **304** | Config not modified, was already activated. |  -  |
+| **0** | Error |  -  |
 
 
 ## changeConfigSecret
@@ -157,6 +157,7 @@ public class Example {
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Secret successfully changed. |  -  |
+| **0** | Error |  -  |
 
 
 ## deactivateConfig
@@ -228,7 +229,7 @@ public class Example {
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Config successfully deactivated. |  -  |
-| **304** | Config not modified, was already deactivated. |  -  |
+| **0** | Error |  -  |
 
 
 ## deleteConfig
@@ -292,13 +293,14 @@ null (empty response body)
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Config successfully deleted. |  -  |
+| **0** | Error |  -  |
 
 
 ## getManyConfigs
@@ -372,6 +374,7 @@ public class Example {
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | OK |  -  |
+| **0** | Error |  -  |
 
 
 ## insertConfig
@@ -436,14 +439,14 @@ public class Example {
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: application/json, text/plain
+- **Accept**: application/json
 
 
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | Config created successfully. |  -  |
-| **400** | Bad Request |  -  |
+| **0** | Error |  -  |
 
 
 ## testConfig
@@ -515,4 +518,5 @@ public class Example {
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
 | **200** | OK |  -  |
+| **0** | Error |  -  |
 

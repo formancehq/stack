@@ -1938,6 +1938,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConfigsResponse'
           description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error
       summary: Get many configs
       tags:
       - Webhooks
@@ -1967,13 +1973,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
           description: Config created successfully.
-        "400":
+        default:
           content:
-            text/plain:
+            application/json:
               schema:
-                example: endpoints should be valid urls
-                type: string
-          description: Bad Request
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error
       summary: Insert a new config
       tags:
       - Webhooks
@@ -1995,8 +2000,13 @@ paths:
         style: simple
       responses:
         "200":
-          content: {}
           description: Config successfully deleted.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error
       summary: Delete one config
       tags:
       - Webhooks
@@ -2022,6 +2032,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/AttemptResponse'
           description: OK
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error
       summary: Test one config
       tags:
       - Webhooks
@@ -2048,8 +2064,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
           description: Config successfully activated.
-        "304":
-          description: "Config not modified, was already activated."
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error
       summary: Activate one config
       tags:
       - Webhooks
@@ -2076,8 +2096,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
           description: Config successfully deactivated.
-        "304":
-          description: "Config not modified, was already deactivated."
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error
       summary: Deactivate one config
       tags:
       - Webhooks
@@ -2112,6 +2136,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConfigResponse'
           description: Secret successfully changed.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: Error
       summary: Change the signing secret of a config
       tags:
       - Webhooks
@@ -4137,7 +4167,9 @@ components:
       - COMPILATION_FAILED
       - METADATA_OVERRIDE
       - NOT_FOUND
-      example: INSUFFICIENT_FUND
+      - CONTEXT_CANCELLED
+      - STORE
+      example: VALIDATION
       type: string
     LedgerInfoResponse:
       example:
@@ -4942,6 +4974,14 @@ components:
         updatedAt:
           format: date-time
           type: string
+      required:
+      - active
+      - createdAt
+      - endpoint
+      - eventTypes
+      - id
+      - secret
+      - updatedAt
     ConfigChangeSecret:
       example:
         secret: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
@@ -4949,6 +4989,8 @@ components:
         secret:
           example: V0bivxRWveaoz08afqjU6Ko/jwO0Cb+3
           type: string
+      required:
+      - secret
       type: object
     AttemptResponse:
       example:
@@ -5029,6 +5071,16 @@ components:
         nextRetryAfter:
           format: date-time
           type: string
+      required:
+      - config
+      - createdAt
+      - id
+      - payload
+      - retryAttempt
+      - status
+      - statusCode
+      - updatedAt
+      - webhookID
     Monetary:
       properties:
         asset:

@@ -4,22 +4,22 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | Pointer to **string** |  | [optional] 
-**WebhookID** | Pointer to **string** |  | [optional] 
-**CreatedAt** | Pointer to **time.Time** |  | [optional] 
-**UpdatedAt** | Pointer to **time.Time** |  | [optional] 
-**Config** | Pointer to [**WebhooksConfig**](WebhooksConfig.md) |  | [optional] 
-**Payload** | Pointer to **string** |  | [optional] 
-**StatusCode** | Pointer to **int32** |  | [optional] 
-**RetryAttempt** | Pointer to **int32** |  | [optional] 
-**Status** | Pointer to **string** |  | [optional] 
+**Id** | **string** |  | 
+**WebhookID** | **string** |  | 
+**CreatedAt** | **time.Time** |  | 
+**UpdatedAt** | **time.Time** |  | 
+**Config** | [**WebhooksConfig**](WebhooksConfig.md) |  | 
+**Payload** | **string** |  | 
+**StatusCode** | **int32** |  | 
+**RetryAttempt** | **int32** |  | 
+**Status** | **string** |  | 
 **NextRetryAfter** | Pointer to **time.Time** |  | [optional] 
 
 ## Methods
 
 ### NewAttempt
 
-`func NewAttempt() *Attempt`
+`func NewAttempt(id string, webhookID string, createdAt time.Time, updatedAt time.Time, config WebhooksConfig, payload string, statusCode int32, retryAttempt int32, status string, ) *Attempt`
 
 NewAttempt instantiates a new Attempt object
 This constructor will assign default values to properties that have it defined,
@@ -53,11 +53,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
-
-`func (o *Attempt) HasId() bool`
-
-HasId returns a boolean if a field has been set.
 
 ### GetWebhookID
 
@@ -78,11 +73,6 @@ and a boolean to check if the value has been set.
 
 SetWebhookID sets WebhookID field to given value.
 
-### HasWebhookID
-
-`func (o *Attempt) HasWebhookID() bool`
-
-HasWebhookID returns a boolean if a field has been set.
 
 ### GetCreatedAt
 
@@ -103,11 +93,6 @@ and a boolean to check if the value has been set.
 
 SetCreatedAt sets CreatedAt field to given value.
 
-### HasCreatedAt
-
-`func (o *Attempt) HasCreatedAt() bool`
-
-HasCreatedAt returns a boolean if a field has been set.
 
 ### GetUpdatedAt
 
@@ -128,11 +113,6 @@ and a boolean to check if the value has been set.
 
 SetUpdatedAt sets UpdatedAt field to given value.
 
-### HasUpdatedAt
-
-`func (o *Attempt) HasUpdatedAt() bool`
-
-HasUpdatedAt returns a boolean if a field has been set.
 
 ### GetConfig
 
@@ -153,11 +133,6 @@ and a boolean to check if the value has been set.
 
 SetConfig sets Config field to given value.
 
-### HasConfig
-
-`func (o *Attempt) HasConfig() bool`
-
-HasConfig returns a boolean if a field has been set.
 
 ### GetPayload
 
@@ -178,11 +153,6 @@ and a boolean to check if the value has been set.
 
 SetPayload sets Payload field to given value.
 
-### HasPayload
-
-`func (o *Attempt) HasPayload() bool`
-
-HasPayload returns a boolean if a field has been set.
 
 ### GetStatusCode
 
@@ -203,11 +173,6 @@ and a boolean to check if the value has been set.
 
 SetStatusCode sets StatusCode field to given value.
 
-### HasStatusCode
-
-`func (o *Attempt) HasStatusCode() bool`
-
-HasStatusCode returns a boolean if a field has been set.
 
 ### GetRetryAttempt
 
@@ -228,11 +193,6 @@ and a boolean to check if the value has been set.
 
 SetRetryAttempt sets RetryAttempt field to given value.
 
-### HasRetryAttempt
-
-`func (o *Attempt) HasRetryAttempt() bool`
-
-HasRetryAttempt returns a boolean if a field has been set.
 
 ### GetStatus
 
@@ -253,11 +213,6 @@ and a boolean to check if the value has been set.
 
 SetStatus sets Status field to given value.
 
-### HasStatus
-
-`func (o *Attempt) HasStatus() bool`
-
-HasStatus returns a boolean if a field has been set.
 
 ### GetNextRetryAfter
 

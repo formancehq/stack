@@ -456,4 +456,3 @@ src/main/java/com/formance/formance/model/WorkflowInstanceHistory.java
 src/main/java/com/formance/formance/model/WorkflowInstanceHistoryStage.java
 src/main/java/com/formance/formance/model/WorkflowInstanceHistoryStageInput.java
 src/main/java/com/formance/formance/model/WorkflowInstanceHistoryStageOutput.java
-src/test/java/com/formance/formance/model/ScriptTest.java

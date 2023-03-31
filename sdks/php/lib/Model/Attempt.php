@@ -338,6 +338,33 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
+        }
+        if ($this->container['webhook_id'] === null) {
+            $invalidProperties[] = "'webhook_id' can't be null";
+        }
+        if ($this->container['created_at'] === null) {
+            $invalidProperties[] = "'created_at' can't be null";
+        }
+        if ($this->container['updated_at'] === null) {
+            $invalidProperties[] = "'updated_at' can't be null";
+        }
+        if ($this->container['config'] === null) {
+            $invalidProperties[] = "'config' can't be null";
+        }
+        if ($this->container['payload'] === null) {
+            $invalidProperties[] = "'payload' can't be null";
+        }
+        if ($this->container['status_code'] === null) {
+            $invalidProperties[] = "'status_code' can't be null";
+        }
+        if ($this->container['retry_attempt'] === null) {
+            $invalidProperties[] = "'retry_attempt' can't be null";
+        }
+        if ($this->container['status'] === null) {
+            $invalidProperties[] = "'status' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -356,7 +383,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets id
      *
-     * @return string|null
+     * @return string
      */
     public function getId()
     {
@@ -366,7 +393,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets id
      *
-     * @param string|null $id id
+     * @param string $id id
      *
      * @return self
      */
@@ -383,7 +410,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets webhook_id
      *
-     * @return string|null
+     * @return string
      */
     public function getWebhookId()
     {
@@ -393,7 +420,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets webhook_id
      *
-     * @param string|null $webhook_id webhook_id
+     * @param string $webhook_id webhook_id
      *
      * @return self
      */
@@ -410,7 +437,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets created_at
      *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -420,7 +447,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets created_at
      *
-     * @param \DateTime|null $created_at created_at
+     * @param \DateTime $created_at created_at
      *
      * @return self
      */
@@ -437,7 +464,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets updated_at
      *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getUpdatedAt()
     {
@@ -447,7 +474,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets updated_at
      *
-     * @param \DateTime|null $updated_at updated_at
+     * @param \DateTime $updated_at updated_at
      *
      * @return self
      */
@@ -464,7 +491,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets config
      *
-     * @return \Formance\Model\WebhooksConfig|null
+     * @return \Formance\Model\WebhooksConfig
      */
     public function getConfig()
     {
@@ -474,7 +501,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets config
      *
-     * @param \Formance\Model\WebhooksConfig|null $config config
+     * @param \Formance\Model\WebhooksConfig $config config
      *
      * @return self
      */
@@ -491,7 +518,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets payload
      *
-     * @return string|null
+     * @return string
      */
     public function getPayload()
     {
@@ -501,7 +528,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets payload
      *
-     * @param string|null $payload payload
+     * @param string $payload payload
      *
      * @return self
      */
@@ -518,7 +545,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets status_code
      *
-     * @return int|null
+     * @return int
      */
     public function getStatusCode()
     {
@@ -528,7 +555,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets status_code
      *
-     * @param int|null $status_code status_code
+     * @param int $status_code status_code
      *
      * @return self
      */
@@ -545,7 +572,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets retry_attempt
      *
-     * @return int|null
+     * @return int
      */
     public function getRetryAttempt()
     {
@@ -555,7 +582,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets retry_attempt
      *
-     * @param int|null $retry_attempt retry_attempt
+     * @param int $retry_attempt retry_attempt
      *
      * @return self
      */
@@ -572,7 +599,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets status
      *
-     * @return string|null
+     * @return string
      */
     public function getStatus()
     {
@@ -582,7 +609,7 @@ class Attempt implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets status
      *
-     * @param string|null $status status
+     * @param string $status status
      *
      * @return self
      */

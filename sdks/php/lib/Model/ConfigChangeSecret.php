@@ -275,6 +275,9 @@ class ConfigChangeSecret implements ModelInterface, ArrayAccess, \JsonSerializab
     {
         $invalidProperties = [];
 
+        if ($this->container['secret'] === null) {
+            $invalidProperties[] = "'secret' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -293,7 +296,7 @@ class ConfigChangeSecret implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Gets secret
      *
-     * @return string|null
+     * @return string
      */
     public function getSecret()
     {
@@ -303,7 +306,7 @@ class ConfigChangeSecret implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Sets secret
      *
-     * @param string|null $secret secret
+     * @param string $secret secret
      *
      * @return self
      */
