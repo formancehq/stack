@@ -1,4 +1,4 @@
-package suite_test
+package suite
 
 import (
 	"time"
@@ -38,7 +38,7 @@ var _ = Given("some empty environment", func() {
 					}},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 		AfterEach(func() {
 			cancelSubscription()
@@ -47,13 +47,13 @@ var _ = Given("some empty environment", func() {
 			transactionResponse, _, err := Client().TransactionsApi.
 				GetTransaction(TestContext(), "default", rsp.Data.Txid).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(transactionResponse.Data).To(Equal(rsp.Data))
 
 			accountResponse, _, err := Client().AccountsApi.
 				GetAccount(TestContext(), "default", "alice").
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 			Expect(accountResponse.Data).Should(Equal(formance.AccountWithVolumesAndBalances{
 				Address:  "alice",
 				Metadata: map[string]interface{}{},
@@ -72,7 +72,7 @@ var _ = Given("some empty environment", func() {
 		It("should trigger a new event", func() {
 			// Wait for created transaction event
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
-			Expect(events.Check(msg.Data, "ledger", bus.EventTypeCommittedTransactions)).Should(BeNil())
+			Expect(events.Check(msg.Data, "ledger", bus.EventTypeCommittedTransactions)).Should(Succeed())
 		})
 		It("should pop a transaction, two accounts and two assets entries on search service", func() {
 			expectedTx := map[string]any{
@@ -94,7 +94,7 @@ var _ = Given("some empty environment", func() {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("TRANSACTION"),
 				}).Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).ToNot(HaveOccurred())
 				g.Expect(res.Cursor.Data).To(HaveLen(1))
 				g.Expect(res.Cursor.Data[0]).To(Equal(expectedTx))
 
@@ -106,7 +106,7 @@ var _ = Given("some empty environment", func() {
 					Target: formance.PtrString("TRANSACTION"),
 					Terms:  []string{"alice"},
 				}).Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).ToNot(HaveOccurred())
 				g.Expect(res.Cursor.Data[0]).To(Equal(expectedTx))
 				return res.Cursor.Data
 			}).Should(HaveLen(1))
@@ -115,7 +115,7 @@ var _ = Given("some empty environment", func() {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("ACCOUNT"),
 				}).Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).ToNot(HaveOccurred())
 				g.Expect(res.Cursor.Data).To(HaveLen(2))
 				g.Expect(res.Cursor.Data).To(ContainElements(
 					map[string]any{
@@ -134,7 +134,7 @@ var _ = Given("some empty environment", func() {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("ASSET"),
 				}).Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).ToNot(HaveOccurred())
 				g.Expect(res.Cursor.Data).To(HaveLen(2))
 				g.Expect(res.Cursor.Data).To(ContainElements(
 					map[string]any{

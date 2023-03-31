@@ -35,6 +35,15 @@ class WebhooksConfig(
 
 
     class MetaOapg:
+        required = {
+            "createdAt",
+            "endpoint",
+            "active",
+            "id",
+            "secret",
+            "eventTypes",
+            "updatedAt",
+        }
         
         class properties:
             id = schemas.UUIDSchema
@@ -77,6 +86,14 @@ class WebhooksConfig(
             }
 
     
+    createdAt: MetaOapg.properties.createdAt
+    endpoint: MetaOapg.properties.endpoint
+    active: MetaOapg.properties.active
+    id: MetaOapg.properties.id
+    secret: MetaOapg.properties.secret
+    eventTypes: MetaOapg.properties.eventTypes
+    updatedAt: MetaOapg.properties.updatedAt
+    
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
     
@@ -107,25 +124,25 @@ class WebhooksConfig(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> typing.Union[MetaOapg.properties.id, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["endpoint"]) -> typing.Union[MetaOapg.properties.endpoint, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["endpoint"]) -> MetaOapg.properties.endpoint: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["secret"]) -> typing.Union[MetaOapg.properties.secret, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["secret"]) -> MetaOapg.properties.secret: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["eventTypes"]) -> typing.Union[MetaOapg.properties.eventTypes, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["eventTypes"]) -> MetaOapg.properties.eventTypes: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["active"]) -> typing.Union[MetaOapg.properties.active, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["active"]) -> MetaOapg.properties.active: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["createdAt"]) -> typing.Union[MetaOapg.properties.createdAt, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["createdAt"]) -> MetaOapg.properties.createdAt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["updatedAt"]) -> typing.Union[MetaOapg.properties.updatedAt, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
@@ -137,25 +154,25 @@ class WebhooksConfig(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
-        id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, schemas.Unset] = schemas.unset,
-        endpoint: typing.Union[MetaOapg.properties.endpoint, str, schemas.Unset] = schemas.unset,
-        secret: typing.Union[MetaOapg.properties.secret, str, schemas.Unset] = schemas.unset,
-        eventTypes: typing.Union[MetaOapg.properties.eventTypes, list, tuple, schemas.Unset] = schemas.unset,
-        active: typing.Union[MetaOapg.properties.active, bool, schemas.Unset] = schemas.unset,
-        createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, schemas.Unset] = schemas.unset,
-        updatedAt: typing.Union[MetaOapg.properties.updatedAt, str, datetime, schemas.Unset] = schemas.unset,
+        createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, ],
+        endpoint: typing.Union[MetaOapg.properties.endpoint, str, ],
+        active: typing.Union[MetaOapg.properties.active, bool, ],
+        id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, ],
+        secret: typing.Union[MetaOapg.properties.secret, str, ],
+        eventTypes: typing.Union[MetaOapg.properties.eventTypes, list, tuple, ],
+        updatedAt: typing.Union[MetaOapg.properties.updatedAt, str, datetime, ],
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'WebhooksConfig':
         return super().__new__(
             cls,
             *_args,
-            id=id,
+            createdAt=createdAt,
             endpoint=endpoint,
+            active=active,
+            id=id,
             secret=secret,
             eventTypes=eventTypes,
-            active=active,
-            createdAt=createdAt,
             updatedAt=updatedAt,
             _configuration=_configuration,
             **kwargs,

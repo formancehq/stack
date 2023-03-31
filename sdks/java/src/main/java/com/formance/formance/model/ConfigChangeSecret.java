@@ -44,7 +44,7 @@ public class ConfigChangeSecret {
    * Get secret
    * @return secret
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public String getSecret() {
     return secret;

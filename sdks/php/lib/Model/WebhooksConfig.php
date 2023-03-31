@@ -317,6 +317,27 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
+        if ($this->container['id'] === null) {
+            $invalidProperties[] = "'id' can't be null";
+        }
+        if ($this->container['endpoint'] === null) {
+            $invalidProperties[] = "'endpoint' can't be null";
+        }
+        if ($this->container['secret'] === null) {
+            $invalidProperties[] = "'secret' can't be null";
+        }
+        if ($this->container['event_types'] === null) {
+            $invalidProperties[] = "'event_types' can't be null";
+        }
+        if ($this->container['active'] === null) {
+            $invalidProperties[] = "'active' can't be null";
+        }
+        if ($this->container['created_at'] === null) {
+            $invalidProperties[] = "'created_at' can't be null";
+        }
+        if ($this->container['updated_at'] === null) {
+            $invalidProperties[] = "'updated_at' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -335,7 +356,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets id
      *
-     * @return string|null
+     * @return string
      */
     public function getId()
     {
@@ -345,7 +366,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets id
      *
-     * @param string|null $id id
+     * @param string $id id
      *
      * @return self
      */
@@ -362,7 +383,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets endpoint
      *
-     * @return string|null
+     * @return string
      */
     public function getEndpoint()
     {
@@ -372,7 +393,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets endpoint
      *
-     * @param string|null $endpoint endpoint
+     * @param string $endpoint endpoint
      *
      * @return self
      */
@@ -389,7 +410,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets secret
      *
-     * @return string|null
+     * @return string
      */
     public function getSecret()
     {
@@ -399,7 +420,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets secret
      *
-     * @param string|null $secret secret
+     * @param string $secret secret
      *
      * @return self
      */
@@ -416,7 +437,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets event_types
      *
-     * @return string[]|null
+     * @return string[]
      */
     public function getEventTypes()
     {
@@ -426,7 +447,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets event_types
      *
-     * @param string[]|null $event_types event_types
+     * @param string[] $event_types event_types
      *
      * @return self
      */
@@ -443,7 +464,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets active
      *
-     * @return bool|null
+     * @return bool
      */
     public function getActive()
     {
@@ -453,7 +474,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets active
      *
-     * @param bool|null $active active
+     * @param bool $active active
      *
      * @return self
      */
@@ -470,7 +491,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets created_at
      *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -480,7 +501,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets created_at
      *
-     * @param \DateTime|null $created_at created_at
+     * @param \DateTime $created_at created_at
      *
      * @return self
      */
@@ -497,7 +518,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets updated_at
      *
-     * @return \DateTime|null
+     * @return \DateTime
      */
     public function getUpdatedAt()
     {
@@ -507,7 +528,7 @@ class WebhooksConfig implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets updated_at
      *
-     * @param \DateTime|null $updated_at updated_at
+     * @param \DateTime $updated_at updated_at
      *
      * @return self
      */

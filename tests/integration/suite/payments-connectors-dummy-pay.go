@@ -1,4 +1,4 @@
-package suite_test
+package suite
 
 import (
 	"os"
@@ -25,7 +25,7 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription, msgs = SubscribePayments()
 
 			paymentsDir := filepath.Join(os.TempDir(), uuid.NewString())
-			Expect(os.MkdirAll(paymentsDir, 0777)).To(BeNil())
+			Expect(os.MkdirAll(paymentsDir, 0o777)).To(Succeed())
 			_, err := Client().PaymentsApi.
 				InstallConnector(TestContext(), formance.DUMMY_PAY).
 				ConnectorConfig(formance.ConnectorConfig{
@@ -36,21 +36,21 @@ var _ = Given("some empty environment", func() {
 					},
 				}).
 				Execute()
-			Expect(err).To(BeNil())
+			Expect(err).ToNot(HaveOccurred())
 		})
 		AfterEach(func() {
 			cancelSubscription()
 		})
 		It("should trigger some events", func() {
 			msg := WaitOnChanWithTimeout(msgs, 10*time.Second)
-			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeSavedPayments)).Should(BeNil())
+			Expect(events.Check(msg.Data, "payments", paymentEvents.EventTypeSavedPayments)).Should(Succeed())
 		})
 		It("should generate some payments", func() {
 			Eventually(func(g Gomega) []formance.Payment {
 				res, _, err := Client().PaymentsApi.
 					ListPayments(TestContext()).
 					Execute()
-				g.Expect(err).To(BeNil())
+				g.Expect(err).ToNot(HaveOccurred())
 				return res.Cursor.Data
 			}).WithTimeout(10 * time.Second).ShouldNot(BeEmpty()) // TODO: Check other fields
 		})

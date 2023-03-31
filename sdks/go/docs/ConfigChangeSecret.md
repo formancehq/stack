@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Secret** | Pointer to **string** |  | [optional] 
+**Secret** | **string** |  | 
 
 ## Methods
 
 ### NewConfigChangeSecret
 
-`func NewConfigChangeSecret() *ConfigChangeSecret`
+`func NewConfigChangeSecret(secret string, ) *ConfigChangeSecret`
 
 NewConfigChangeSecret instantiates a new ConfigChangeSecret object
 This constructor will assign default values to properties that have it defined,
@@ -44,11 +44,6 @@ and a boolean to check if the value has been set.
 
 SetSecret sets Secret field to given value.
 
-### HasSecret
-
-`func (o *ConfigChangeSecret) HasSecret() bool`
-
-HasSecret returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

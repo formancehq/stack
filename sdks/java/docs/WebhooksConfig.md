@@ -7,13 +7,13 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**id** | **UUID** |  |  [optional] |
-|**endpoint** | **String** |  |  [optional] |
-|**secret** | **String** |  |  [optional] |
-|**eventTypes** | **List&lt;String&gt;** |  |  [optional] |
-|**active** | **Boolean** |  |  [optional] |
-|**createdAt** | **OffsetDateTime** |  |  [optional] |
-|**updatedAt** | **OffsetDateTime** |  |  [optional] |
+|**id** | **UUID** |  |  |
+|**endpoint** | **String** |  |  |
+|**secret** | **String** |  |  |
+|**eventTypes** | **List&lt;String&gt;** |  |  |
+|**active** | **Boolean** |  |  |
+|**createdAt** | **OffsetDateTime** |  |  |
+|**updatedAt** | **OffsetDateTime** |  |  |
 
 
 

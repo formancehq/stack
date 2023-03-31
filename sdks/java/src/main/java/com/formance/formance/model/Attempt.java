@@ -83,7 +83,7 @@ public class Attempt {
    * Get id
    * @return id
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public UUID getId() {
     return id;
@@ -105,7 +105,7 @@ public class Attempt {
    * Get webhookID
    * @return webhookID
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public UUID getWebhookID() {
     return webhookID;
@@ -127,7 +127,7 @@ public class Attempt {
    * Get createdAt
    * @return createdAt
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public OffsetDateTime getCreatedAt() {
     return createdAt;
@@ -149,7 +149,7 @@ public class Attempt {
    * Get updatedAt
    * @return updatedAt
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public OffsetDateTime getUpdatedAt() {
     return updatedAt;
@@ -171,7 +171,7 @@ public class Attempt {
    * Get config
    * @return config
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public WebhooksConfig getConfig() {
     return config;
@@ -193,7 +193,7 @@ public class Attempt {
    * Get payload
    * @return payload
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public String getPayload() {
     return payload;
@@ -215,7 +215,7 @@ public class Attempt {
    * Get statusCode
    * @return statusCode
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public Integer getStatusCode() {
     return statusCode;
@@ -237,7 +237,7 @@ public class Attempt {
    * Get retryAttempt
    * @return retryAttempt
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public Integer getRetryAttempt() {
     return retryAttempt;
@@ -259,7 +259,7 @@ public class Attempt {
    * Get status
    * @return status
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
   public String getStatus() {
     return status;

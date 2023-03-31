@@ -13,7 +13,7 @@
 import { HttpFile } from '../http/http';
 
 export class ConfigChangeSecret {
-    'secret'?: string;
+    'secret': string;
 
     static readonly discriminator: string | undefined = undefined;
 

@@ -15,32 +15,25 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/publish"
 	"github.com/formancehq/webhooks/cmd/flag"
 	webhooks "github.com/formancehq/webhooks/pkg"
-	"github.com/formancehq/webhooks/pkg/httpserver"
 	"github.com/formancehq/webhooks/pkg/storage"
-	"github.com/formancehq/webhooks/pkg/storage/postgres"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
-func StartModule(addr, serviceName string, retriesCron time.Duration, retriesSchedule []time.Duration) fx.Option {
+func StartModule(serviceName string, retriesCron time.Duration, retriesSchedule []time.Duration) fx.Option {
 	var options []fx.Option
 
 	options = append(options, otlptraces.CLITracesModule(viper.GetViper()))
 	options = append(options, publish.CLIPublisherModule(viper.GetViper(), serviceName))
 
 	options = append(options, fx.Provide(
-		func() (string, time.Duration, []time.Duration) {
-			return addr, retriesCron, retriesSchedule
+		func() (time.Duration, []time.Duration) {
+			return retriesCron, retriesSchedule
 		},
-		httpserver.NewMuxServer,
-		postgres.NewStore,
 		NewRetrier,
-		newWorkerHandler,
 	))
-	options = append(options, fx.Invoke(httpserver.RegisterHandler))
-	options = append(options, fx.Invoke(httpserver.Run))
 	options = append(options, fx.Invoke(run))
 	options = append(options, fx.Invoke(func(r *message.Router, subscriber message.Subscriber, store storage.Store, httpClient *http.Client) {
 		configureMessageRouter(r, subscriber, viper.GetStringSlice(flag.KafkaTopics), store, httpClient, retriesSchedule)
@@ -125,7 +118,7 @@ func processMessages(store storage.Store, httpClient *http.Client, retriesSchedu
 			}
 
 			if attempt.Status == webhooks.StatusAttemptSuccess {
-				logging.FromContext(msg.Context()).Infof(
+				logging.FromContext(msg.Context()).Debugf(
 					"webhook sent with ID %s to %s of type %s",
 					attempt.WebhookID, cfg.Endpoint, ev.Type)
 			}

@@ -19,6 +19,10 @@
 
 * `NOT_FOUND` (value: `"NOT_FOUND"`)
 
+* `CONTEXT_CANCELLED` (value: `"CONTEXT_CANCELLED"`)
+
+* `STORE` (value: `"STORE"`)
+
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

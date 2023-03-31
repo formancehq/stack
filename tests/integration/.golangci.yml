@@ -1,0 +1,20 @@
+linters:
+  enable:
+    - gofmt
+    - gci
+    - goimports
+    - ginkgolinter
+
+  presets:
+    - bugs
+    - comment
+    - error
+    - format
+    - import
+    - unused
+
+  disable:
+    - godox
+    - wrapcheck
+    - rowserrcheck
+    - errorlint

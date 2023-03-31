@@ -21,5 +21,9 @@
 
 * `NOT_FOUND` (value: `"NOT_FOUND"`)
 
+* `CONTEXT_CANCELLED` (value: `"CONTEXT_CANCELLED"`)
+
+* `STORE` (value: `"STORE"`)
+
 
 
