@@ -39,7 +39,7 @@ $apiInstance = new Formance\Api\TransactionsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $txid = 1234; // int | Transaction ID.
-$request_body = NULL; // array<string,mixed> | metadata
+$request_body = array('key' => 'request_body_example'); // array<string,string> | metadata
 
 try {
     $apiInstance->addMetadataOnTransaction($ledger, $txid, $request_body);
@@ -54,7 +54,7 @@ try {
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
 | **txid** | **int**| Transaction ID. | |
-| **request_body** | [**array<string,mixed>**](../Model/mixed.md)| metadata | [optional] |
+| **request_body** | [**array<string,string>**](../Model/string.md)| metadata | [optional] |
 
 ### Return type
 
@@ -303,7 +303,7 @@ $destination = users:001; // string | Filter transactions with postings involvin
 $start_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).
 $end_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
-$metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+$metadata = {"admin":"true"}; // array<string,string> | Filter transactions by metadata key value pairs.
 
 try {
     $result = $apiInstance->listTransactions($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata);
@@ -327,7 +327,7 @@ try {
 | **start_time** | **\DateTime**| Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). | [optional] |
 | **end_time** | **\DateTime**| Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). | [optional] |
 | **cursor** | **string**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. | [optional] |
-| **metadata** | [**object**](../Model/.md)| Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
+| **metadata** | [**array<string,string>**](../Model/string.md)| Filter transactions by metadata key value pairs. | [optional] |
 
 ### Return type
 

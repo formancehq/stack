@@ -31,7 +31,7 @@ import java.util.Map;
 public class CreateWalletRequest {
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = new HashMap<>();
+  private Map<String, String> metadata = new HashMap<>();
 
   public static final String SERIALIZED_NAME_NAME = "name";
   @SerializedName(SERIALIZED_NAME_NAME)
@@ -40,16 +40,13 @@ public class CreateWalletRequest {
   public CreateWalletRequest() {
   }
 
-  public CreateWalletRequest metadata(Map<String, Object> metadata) {
+  public CreateWalletRequest metadata(Map<String, String> metadata) {
     
     this.metadata = metadata;
     return this;
   }
 
-  public CreateWalletRequest putMetadataItem(String key, Object metadataItem) {
-    if (this.metadata == null) {
-      this.metadata = new HashMap<>();
-    }
+  public CreateWalletRequest putMetadataItem(String key, String metadataItem) {
     this.metadata.put(key, metadataItem);
     return this;
   }
@@ -58,14 +55,14 @@ public class CreateWalletRequest {
    * Custom metadata to attach to this wallet.
    * @return metadata
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
-  public Map<String, Object> getMetadata() {
+  public Map<String, String> getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(Map<String, Object> metadata) {
+  public void setMetadata(Map<String, String> metadata) {
     this.metadata = metadata;
   }
 

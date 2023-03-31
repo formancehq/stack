@@ -62,7 +62,7 @@ class PostTransaction implements ModelInterface, ArrayAccess, \JsonSerializable
         'postings' => '\Formance\Model\Posting[]',
         'script' => '\Formance\Model\PostTransactionScript',
         'reference' => 'string',
-        'metadata' => 'array<string,mixed>'
+        'metadata' => 'array<string,string>'
     ];
 
     /**
@@ -90,7 +90,7 @@ class PostTransaction implements ModelInterface, ArrayAccess, \JsonSerializable
 		'postings' => false,
 		'script' => false,
 		'reference' => false,
-		'metadata' => true
+		'metadata' => false
     ];
 
     /**
@@ -303,6 +303,9 @@ class PostTransaction implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $invalidProperties = [];
 
+        if ($this->container['metadata'] === null) {
+            $invalidProperties[] = "'metadata' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -429,7 +432,7 @@ class PostTransaction implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets metadata
      *
-     * @return array<string,mixed>|null
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -439,21 +442,14 @@ class PostTransaction implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets metadata
      *
-     * @param array<string,mixed>|null $metadata metadata
+     * @param array<string,string> $metadata metadata
      *
      * @return self
      */
     public function setMetadata($metadata)
     {
         if (is_null($metadata)) {
-            array_push($this->openAPINullablesSetToNull, 'metadata');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('metadata', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
+            throw new \InvalidArgumentException('non-nullable metadata cannot be null');
         }
         $this->container['metadata'] = $metadata;
 

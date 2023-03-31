@@ -19,7 +19,7 @@ export class PostTransaction {
     'postings'?: Array<Posting>;
     'script'?: PostTransactionScript;
     'reference'?: string;
-    'metadata'?: { [key: string]: any; };
+    'metadata': { [key: string]: string; };
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -51,7 +51,7 @@ export class PostTransaction {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "{ [key: string]: any; }",
+            "type": "{ [key: string]: string; }",
             "format": ""
         }    ];
 

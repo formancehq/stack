@@ -15,9 +15,9 @@ import { HttpFile } from '../http/http';
 export class AccountWithVolumesAndBalances {
     'address': string;
     'type'?: string;
-    'metadata'?: any;
-    'volumes'?: { [key: string]: { [key: string]: number; }; };
-    'balances'?: { [key: string]: number; };
+    'metadata': { [key: string]: string; };
+    'volumes': { [key: string]: { [key: string]: number; }; };
+    'balances': { [key: string]: number; };
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -37,7 +37,7 @@ export class AccountWithVolumesAndBalances {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "any",
+            "type": "{ [key: string]: string; }",
             "format": ""
         },
         {

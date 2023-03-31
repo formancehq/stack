@@ -43,7 +43,7 @@ public class Script {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata;
+  private Map<String, String> metadata = new HashMap<>();
 
   public Script() {
   }
@@ -114,13 +114,16 @@ public class Script {
   }
 
 
-  public Script metadata(Map<String, Object> metadata) {
+  public Script metadata(Map<String, String> metadata) {
     
     this.metadata = metadata;
     return this;
   }
 
-  public Script putMetadataItem(String key, Object metadataItem) {
+  public Script putMetadataItem(String key, String metadataItem) {
+    if (this.metadata == null) {
+      this.metadata = new HashMap<>();
+    }
     this.metadata.put(key, metadataItem);
     return this;
   }
@@ -131,12 +134,12 @@ public class Script {
   **/
   @javax.annotation.Nullable
 
-  public Map<String, Object> getMetadata() {
+  public Map<String, String> getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(Map<String, Object> metadata) {
+  public void setMetadata(Map<String, String> metadata) {
     this.metadata = metadata;
   }
 

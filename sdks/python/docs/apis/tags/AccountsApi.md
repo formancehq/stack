@@ -52,7 +52,7 @@ with Formance.ApiClient(configuration) as api_client:
         'address': "users:001",
     }
     body = LedgerMetadata(
-        key=None,
+        key="key_example",
     )
     try:
         # Add metadata to an account
@@ -485,7 +485,9 @@ with Formance.ApiClient(configuration) as api_client:
         'pageSize': 100,
         'after': "users:003",
         'address': "users:.+",
-        'metadata': dict(),
+        'metadata': dict(
+        "key": "key_example",
+    ),
         'balance': 2400,
         'balanceOperator': "gte",
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
@@ -552,6 +554,11 @@ str,  | str,  |  |
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | str,  | str,  | any string name can be used but the value must be the correct type | [optional] 
 
 # BalanceSchema
 

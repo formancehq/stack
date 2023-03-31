@@ -7,7 +7,7 @@ Name | Type | Description | Notes
 **timestamp** | **\DateTime** |  |
 **postings** | [**\Formance\Model\Posting[]**](Posting.md) |  |
 **reference** | **string** |  | [optional]
-**metadata** | **array<string,mixed>** |  | [optional]
+**metadata** | **array<string,string>** |  |
 **txid** | **int** |  |
 **pre_commit_volumes** | **array<string,array>** |  | [optional]
 **post_commit_volumes** | **array<string,array>** |  | [optional]

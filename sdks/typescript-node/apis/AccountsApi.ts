@@ -25,7 +25,7 @@ export class AccountsApiRequestFactory extends BaseAPIRequestFactory {
      * @param address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; 
      * @param requestBody metadata
      */
-    public async addMetadataToAccount(ledger: string, address: string, requestBody: { [key: string]: any; }, _options?: Configuration): Promise<RequestContext> {
+    public async addMetadataToAccount(ledger: string, address: string, requestBody: { [key: string]: string; }, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
@@ -62,7 +62,7 @@ export class AccountsApiRequestFactory extends BaseAPIRequestFactory {
         ]);
         requestContext.setHeaderParam("Content-Type", contentType);
         const serializedBody = ObjectSerializer.stringify(
-            ObjectSerializer.serialize(requestBody, "{ [key: string]: any; }", ""),
+            ObjectSerializer.serialize(requestBody, "{ [key: string]: string; }", ""),
             contentType
         );
         requestContext.setBody(serializedBody);
@@ -190,7 +190,7 @@ export class AccountsApiRequestFactory extends BaseAPIRequestFactory {
      * @param balanceOperator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      */
-    public async listAccounts(ledger: string, pageSize?: number, after?: string, address?: string, metadata?: any, balance?: number, balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne', cursor?: string, _options?: Configuration): Promise<RequestContext> {
+    public async listAccounts(ledger: string, pageSize?: number, after?: string, address?: string, metadata?: { [key: string]: string; }, balance?: number, balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne', cursor?: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
@@ -231,7 +231,7 @@ export class AccountsApiRequestFactory extends BaseAPIRequestFactory {
 
         // Query Params
         if (metadata !== undefined) {
-            requestContext.setQueryParam("metadata", ObjectSerializer.serialize(metadata, "any", ""));
+            requestContext.setQueryParam("metadata", ObjectSerializer.serialize(metadata, "{ [key: string]: string; }", ""));
         }
 
         // Query Params

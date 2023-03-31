@@ -21,15 +21,16 @@ var _ MappedNullable = &UpdateWalletRequest{}
 // UpdateWalletRequest struct for UpdateWalletRequest
 type UpdateWalletRequest struct {
 	// Custom metadata to attach to this wallet.
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata"`
 }
 
 // NewUpdateWalletRequest instantiates a new UpdateWalletRequest object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUpdateWalletRequest() *UpdateWalletRequest {
+func NewUpdateWalletRequest(metadata map[string]string) *UpdateWalletRequest {
 	this := UpdateWalletRequest{}
+	this.Metadata = metadata
 	return &this
 }
 
@@ -41,35 +42,27 @@ func NewUpdateWalletRequestWithDefaults() *UpdateWalletRequest {
 	return &this
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *UpdateWalletRequest) GetMetadata() map[string]interface{} {
-	if o == nil || IsNil(o.Metadata) {
-		var ret map[string]interface{}
+// GetMetadata returns the Metadata field value
+func (o *UpdateWalletRequest) GetMetadata() map[string]string {
+	if o == nil {
+		var ret map[string]string
 		return ret
 	}
+
 	return o.Metadata
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
-func (o *UpdateWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || IsNil(o.Metadata) {
-		return map[string]interface{}{}, false
+func (o *UpdateWalletRequest) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil {
+		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
-// HasMetadata returns a boolean if a field has been set.
-func (o *UpdateWalletRequest) HasMetadata() bool {
-	if o != nil && !IsNil(o.Metadata) {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
-func (o *UpdateWalletRequest) SetMetadata(v map[string]interface{}) {
+// SetMetadata sets field value
+func (o *UpdateWalletRequest) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
 
@@ -83,9 +76,7 @@ func (o UpdateWalletRequest) MarshalJSON() ([]byte, error) {
 
 func (o UpdateWalletRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Metadata) {
-		toSerialize["metadata"] = o.Metadata
-	}
+	toSerialize["metadata"] = o.Metadata
 	return toSerialize, nil
 }
 

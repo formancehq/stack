@@ -21,7 +21,7 @@ export class WalletWithBalances {
     /**
     * Metadata associated with the wallet.
     */
-    'metadata': { [key: string]: any; };
+    'metadata': { [key: string]: string; };
     'name': string;
     'createdAt': Date;
     'balances': WalletWithBalancesBalances;
@@ -39,7 +39,7 @@ export class WalletWithBalances {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "{ [key: string]: any; }",
+            "type": "{ [key: string]: string; }",
             "format": ""
         },
         {

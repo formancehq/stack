@@ -37,7 +37,7 @@ $apiInstance = new Formance\Api\AccountsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $address = users:001; // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
-$request_body = NULL; // array<string,mixed> | metadata
+$request_body = array('key' => 'request_body_example'); // array<string,string> | metadata
 
 try {
     $apiInstance->addMetadataToAccount($ledger, $address, $request_body);
@@ -52,7 +52,7 @@ try {
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
 | **address** | **string**| Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; | |
-| **request_body** | [**array<string,mixed>**](../Model/mixed.md)| metadata | |
+| **request_body** | [**array<string,string>**](../Model/string.md)| metadata | |
 
 ### Return type
 
@@ -223,7 +223,7 @@ $ledger = ledger001; // string | Name of the ledger.
 $page_size = 100; // int | The maximum number of results to return per page.
 $after = users:003; // string | Pagination cursor, will return accounts after given address, in descending order.
 $address = users:.+; // string | Filter accounts by address pattern (regular expression placed between ^ and $).
-$metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+$metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // array<string,string> | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
 $balance = 2400; // int | Filter accounts by their balance (default operator is gte)
 $balance_operator = gte; // string | Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
@@ -244,7 +244,7 @@ try {
 | **page_size** | **int**| The maximum number of results to return per page. | [optional] [default to 15] |
 | **after** | **string**| Pagination cursor, will return accounts after given address, in descending order. | [optional] |
 | **address** | **string**| Filter accounts by address pattern (regular expression placed between ^ and $). | [optional] |
-| **metadata** | [**object**](../Model/.md)| Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
+| **metadata** | [**array<string,string>**](../Model/string.md)| Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 | **balance** | **int**| Filter accounts by their balance (default operator is gte) | [optional] |
 | **balance_operator** | **string**| Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. | [optional] |
 | **cursor** | **string**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. | [optional] |

@@ -28,20 +28,17 @@ func TestHoldsVoid(t *testing.T) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
 
-			balances := map[string]int64{
-				"USD": 100,
-			}
-			volumes := map[string]map[string]int64{
-				"USD": {
-					"input": 100,
-				},
-			}
-
 			return &sdk.AccountWithVolumesAndBalances{
 				Address:  testEnv.Chart().GetHoldAccount(hold.ID),
 				Metadata: hold.LedgerMetadata(testEnv.Chart()),
-				Balances: &balances,
-				Volumes:  &volumes,
+				Balances: map[string]int64{
+					"USD": 100,
+				},
+				Volumes: map[string]map[string]int64{
+					"USD": {
+						"input": 100,
+					},
+				},
 			}, nil
 		}),
 		WithCreateTransaction(func(ctx context.Context, name string, script sdk.PostTransaction) (*sdk.TransactionResponse, error) {

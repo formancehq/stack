@@ -24,7 +24,7 @@ type DebitWalletRequest struct {
 	// Set to true to create a pending hold. If false, the wallet will be debited immediately.
 	Pending *bool `json:"pending,omitempty"`
 	// Metadata associated with the wallet.
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Metadata map[string]string `json:"metadata"`
 	Description *string `json:"description,omitempty"`
 	Destination *Subject `json:"destination,omitempty"`
 	Balances []string `json:"balances,omitempty"`
@@ -34,9 +34,10 @@ type DebitWalletRequest struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDebitWalletRequest(amount Monetary) *DebitWalletRequest {
+func NewDebitWalletRequest(amount Monetary, metadata map[string]string) *DebitWalletRequest {
 	this := DebitWalletRequest{}
 	this.Amount = amount
+	this.Metadata = metadata
 	return &this
 }
 
@@ -104,35 +105,27 @@ func (o *DebitWalletRequest) SetPending(v bool) {
 	o.Pending = &v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *DebitWalletRequest) GetMetadata() map[string]interface{} {
-	if o == nil || IsNil(o.Metadata) {
-		var ret map[string]interface{}
+// GetMetadata returns the Metadata field value
+func (o *DebitWalletRequest) GetMetadata() map[string]string {
+	if o == nil {
+		var ret map[string]string
 		return ret
 	}
+
 	return o.Metadata
 }
 
-// GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
+// GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
-func (o *DebitWalletRequest) GetMetadataOk() (map[string]interface{}, bool) {
-	if o == nil || IsNil(o.Metadata) {
-		return map[string]interface{}{}, false
+func (o *DebitWalletRequest) GetMetadataOk() (*map[string]string, bool) {
+	if o == nil {
+		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
-// HasMetadata returns a boolean if a field has been set.
-func (o *DebitWalletRequest) HasMetadata() bool {
-	if o != nil && !IsNil(o.Metadata) {
-		return true
-	}
-
-	return false
-}
-
-// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
-func (o *DebitWalletRequest) SetMetadata(v map[string]interface{}) {
+// SetMetadata sets field value
+func (o *DebitWalletRequest) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
 
@@ -246,9 +239,7 @@ func (o DebitWalletRequest) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Pending) {
 		toSerialize["pending"] = o.Pending
 	}
-	if !IsNil(o.Metadata) {
-		toSerialize["metadata"] = o.Metadata
-	}
+	toSerialize["metadata"] = o.Metadata
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}

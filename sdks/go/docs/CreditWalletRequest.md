@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Amount** | [**Monetary**](Monetary.md) |  | 
-**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional] 
+**Metadata** | **map[string]string** | Metadata associated with the wallet. | 
 **Reference** | Pointer to **string** |  | [optional] 
 **Sources** | [**[]Subject**](Subject.md) |  | 
 **Balance** | Pointer to **string** | The balance to credit | [optional] 
@@ -14,7 +14,7 @@ Name | Type | Description | Notes
 
 ### NewCreditWalletRequest
 
-`func NewCreditWalletRequest(amount Monetary, sources []Subject, ) *CreditWalletRequest`
+`func NewCreditWalletRequest(amount Monetary, metadata map[string]string, sources []Subject, ) *CreditWalletRequest`
 
 NewCreditWalletRequest instantiates a new CreditWalletRequest object
 This constructor will assign default values to properties that have it defined,
@@ -51,28 +51,23 @@ SetAmount sets Amount field to given value.
 
 ### GetMetadata
 
-`func (o *CreditWalletRequest) GetMetadata() map[string]interface{}`
+`func (o *CreditWalletRequest) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *CreditWalletRequest) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *CreditWalletRequest) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *CreditWalletRequest) SetMetadata(v map[string]interface{})`
+`func (o *CreditWalletRequest) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 
-### HasMetadata
-
-`func (o *CreditWalletRequest) HasMetadata() bool`
-
-HasMetadata returns a boolean if a field has been set.
 
 ### GetReference
 

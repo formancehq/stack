@@ -1000,7 +1000,7 @@ type ApiGetHoldsRequest struct {
 	ApiService WalletsApi
 	pageSize *int32
 	walletID *string
-	metadata *map[string]interface{}
+	metadata *map[string]string
 	cursor *string
 }
 
@@ -1017,7 +1017,7 @@ func (r ApiGetHoldsRequest) WalletID(walletID string) ApiGetHoldsRequest {
 }
 
 // Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
-func (r ApiGetHoldsRequest) Metadata(metadata map[string]interface{}) ApiGetHoldsRequest {
+func (r ApiGetHoldsRequest) Metadata(metadata map[string]string) ApiGetHoldsRequest {
 	r.metadata = &metadata
 	return r
 }
@@ -1489,7 +1489,7 @@ type ApiListWalletsRequest struct {
 	ctx context.Context
 	ApiService WalletsApi
 	name *string
-	metadata *map[string]interface{}
+	metadata *map[string]string
 	pageSize *int32
 	cursor *string
 }
@@ -1501,7 +1501,7 @@ func (r ApiListWalletsRequest) Name(name string) ApiListWalletsRequest {
 }
 
 // Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.
-func (r ApiListWalletsRequest) Metadata(metadata map[string]interface{}) ApiListWalletsRequest {
+func (r ApiListWalletsRequest) Metadata(metadata map[string]string) ApiListWalletsRequest {
 	r.metadata = &metadata
 	return r
 }

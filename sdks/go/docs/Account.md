@@ -6,13 +6,13 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Address** | **string** |  | 
 **Type** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
+**Metadata** | **map[string]string** |  | 
 
 ## Methods
 
 ### NewAccount
 
-`func NewAccount(address string, ) *Account`
+`func NewAccount(address string, metadata map[string]string, ) *Account`
 
 NewAccount instantiates a new Account object
 This constructor will assign default values to properties that have it defined,
@@ -74,28 +74,23 @@ HasType returns a boolean if a field has been set.
 
 ### GetMetadata
 
-`func (o *Account) GetMetadata() map[string]interface{}`
+`func (o *Account) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *Account) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *Account) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *Account) SetMetadata(v map[string]interface{})`
+`func (o *Account) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 
-### HasMetadata
-
-`func (o *Account) HasMetadata() bool`
-
-HasMetadata returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

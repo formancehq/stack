@@ -6,15 +6,15 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Address** | **string** |  | 
 **Type** | Pointer to **string** |  | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** |  | [optional] 
-**Volumes** | Pointer to **map[string]map[string]int64** |  | [optional] 
-**Balances** | Pointer to **map[string]int64** |  | [optional] 
+**Metadata** | **map[string]string** |  | 
+**Volumes** | **map[string]map[string]int64** |  | 
+**Balances** | **map[string]int64** |  | 
 
 ## Methods
 
 ### NewAccountWithVolumesAndBalances
 
-`func NewAccountWithVolumesAndBalances(address string, ) *AccountWithVolumesAndBalances`
+`func NewAccountWithVolumesAndBalances(address string, metadata map[string]string, volumes map[string]map[string]int64, balances map[string]int64, ) *AccountWithVolumesAndBalances`
 
 NewAccountWithVolumesAndBalances instantiates a new AccountWithVolumesAndBalances object
 This constructor will assign default values to properties that have it defined,
@@ -76,28 +76,23 @@ HasType returns a boolean if a field has been set.
 
 ### GetMetadata
 
-`func (o *AccountWithVolumesAndBalances) GetMetadata() map[string]interface{}`
+`func (o *AccountWithVolumesAndBalances) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *AccountWithVolumesAndBalances) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *AccountWithVolumesAndBalances) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *AccountWithVolumesAndBalances) SetMetadata(v map[string]interface{})`
+`func (o *AccountWithVolumesAndBalances) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 
-### HasMetadata
-
-`func (o *AccountWithVolumesAndBalances) HasMetadata() bool`
-
-HasMetadata returns a boolean if a field has been set.
 
 ### GetVolumes
 
@@ -118,11 +113,6 @@ and a boolean to check if the value has been set.
 
 SetVolumes sets Volumes field to given value.
 
-### HasVolumes
-
-`func (o *AccountWithVolumesAndBalances) HasVolumes() bool`
-
-HasVolumes returns a boolean if a field has been set.
 
 ### GetBalances
 
@@ -143,11 +133,6 @@ and a boolean to check if the value has been set.
 
 SetBalances sets Balances field to given value.
 
-### HasBalances
-
-`func (o *AccountWithVolumesAndBalances) HasBalances() bool`
-
-HasBalances returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

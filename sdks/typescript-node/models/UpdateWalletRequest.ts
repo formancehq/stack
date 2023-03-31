@@ -16,7 +16,7 @@ export class UpdateWalletRequest {
     /**
     * Custom metadata to attach to this wallet.
     */
-    'metadata'?: { [key: string]: any; };
+    'metadata': { [key: string]: string; };
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -24,7 +24,7 @@ export class UpdateWalletRequest {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "{ [key: string]: any; }",
+            "type": "{ [key: string]: string; }",
             "format": ""
         }    ];
 

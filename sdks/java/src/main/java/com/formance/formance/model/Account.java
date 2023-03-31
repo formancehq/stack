@@ -21,6 +21,8 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Account
@@ -37,7 +39,7 @@ public class Account {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Object metadata;
+  private Map<String, String> metadata = new HashMap<>();
 
   public Account() {
   }
@@ -86,9 +88,14 @@ public class Account {
   }
 
 
-  public Account metadata(Object metadata) {
+  public Account metadata(Map<String, String> metadata) {
     
     this.metadata = metadata;
+    return this;
+  }
+
+  public Account putMetadataItem(String key, String metadataItem) {
+    this.metadata.put(key, metadataItem);
     return this;
   }
 
@@ -96,14 +103,14 @@ public class Account {
    * Get metadata
    * @return metadata
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
-  public Object getMetadata() {
+  public Map<String, String> getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(Object metadata) {
+  public void setMetadata(Map<String, String> metadata) {
     this.metadata = metadata;
   }
 

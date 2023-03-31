@@ -42,10 +42,10 @@ func NewShowCommand() *cobra.Command {
 			}
 
 			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
-			if rsp.Data.Volumes != nil && len(*rsp.Data.Volumes) > 0 {
+			if rsp.Data.Volumes != nil && len(rsp.Data.Volumes) > 0 {
 				tableData := pterm.TableData{}
 				tableData = append(tableData, []string{"Asset", "Input", "Output"})
-				for asset, volumes := range *rsp.Data.Volumes {
+				for asset, volumes := range rsp.Data.Volumes {
 					input := volumes["input"]
 					output := volumes["output"]
 					tableData = append(tableData, []string{pterm.LightCyan(asset), fmt.Sprint(input), fmt.Sprint(output)})
