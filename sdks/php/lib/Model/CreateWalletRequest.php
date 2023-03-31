@@ -58,7 +58,7 @@ class CreateWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializa
       * @var string[]
       */
     protected static $openAPITypes = [
-        'metadata' => 'array<string,mixed>',
+        'metadata' => 'array<string,string>',
         'name' => 'string'
     ];
 
@@ -282,6 +282,9 @@ class CreateWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     {
         $invalidProperties = [];
 
+        if ($this->container['metadata'] === null) {
+            $invalidProperties[] = "'metadata' can't be null";
+        }
         if ($this->container['name'] === null) {
             $invalidProperties[] = "'name' can't be null";
         }
@@ -303,7 +306,7 @@ class CreateWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Gets metadata
      *
-     * @return array<string,mixed>|null
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -313,7 +316,7 @@ class CreateWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializa
     /**
      * Sets metadata
      *
-     * @param array<string,mixed>|null $metadata Custom metadata to attach to this wallet.
+     * @param array<string,string> $metadata Custom metadata to attach to this wallet.
      *
      * @return self
      */

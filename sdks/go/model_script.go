@@ -24,7 +24,7 @@ type Script struct {
 	Vars map[string]interface{} `json:"vars,omitempty"`
 	// Reference to attach to the generated transaction
 	Reference *string `json:"reference,omitempty"`
-	Metadata map[string]interface{} `json:"metadata,omitempty"`
+	Metadata *map[string]string `json:"metadata,omitempty"`
 }
 
 // NewScript instantiates a new Script object
@@ -133,37 +133,36 @@ func (o *Script) SetReference(v string) {
 	o.Reference = &v
 }
 
-// GetMetadata returns the Metadata field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Script) GetMetadata() map[string]interface{} {
-	if o == nil {
-		var ret map[string]interface{}
+// GetMetadata returns the Metadata field value if set, zero value otherwise.
+func (o *Script) GetMetadata() map[string]string {
+	if o == nil || IsNil(o.Metadata) {
+		var ret map[string]string
 		return ret
 	}
-	return o.Metadata
+	return *o.Metadata
 }
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-// NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Script) GetMetadataOk() (map[string]interface{}, bool) {
+func (o *Script) GetMetadataOk() (*map[string]string, bool) {
 	if o == nil || IsNil(o.Metadata) {
-		return map[string]interface{}{}, false
+		return nil, false
 	}
 	return o.Metadata, true
 }
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *Script) HasMetadata() bool {
-	if o != nil && IsNil(o.Metadata) {
+	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
 
 	return false
 }
 
-// SetMetadata gets a reference to the given map[string]interface{} and assigns it to the Metadata field.
-func (o *Script) SetMetadata(v map[string]interface{}) {
-	o.Metadata = v
+// SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
+func (o *Script) SetMetadata(v map[string]string) {
+	o.Metadata = &v
 }
 
 func (o Script) MarshalJSON() ([]byte, error) {
@@ -183,7 +182,7 @@ func (o Script) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Reference) {
 		toSerialize["reference"] = o.Reference
 	}
-	if o.Metadata != nil {
+	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	return toSerialize, nil

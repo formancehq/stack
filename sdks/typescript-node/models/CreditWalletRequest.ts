@@ -19,7 +19,7 @@ export class CreditWalletRequest {
     /**
     * Metadata associated with the wallet.
     */
-    'metadata'?: { [key: string]: any; };
+    'metadata': { [key: string]: string; };
     'reference'?: string;
     'sources': Array<Subject>;
     /**
@@ -39,7 +39,7 @@ export class CreditWalletRequest {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "{ [key: string]: any; }",
+            "type": "{ [key: string]: string; }",
             "format": ""
         },
         {

@@ -18,7 +18,7 @@ func TestWalletsPatch(t *testing.T) {
 	t.Parallel()
 
 	patchWalletRequest := wallet.PatchRequest{
-		Metadata: map[string]interface{}{
+		Metadata: metadata.Metadata{
 			"role": "admin",
 			"foo":  "baz",
 		},
@@ -47,10 +47,10 @@ func TestWalletsPatch(t *testing.T) {
 				wallet.MetadataKeyWalletID:       w.ID,
 				wallet.MetadataKeyWalletName:     w.Name,
 				wallet.MetadataKeyWalletSpecType: wallet.PrimaryWallet,
-				wallet.MetadataKeyWalletCustomData: metadata.Metadata{
+				wallet.MetadataKeyWalletCustomData: metadata.MarshalValue(metadata.Metadata{
 					"role": "admin",
 					"foo":  "baz",
-				},
+				}),
 				wallet.MetadataKeyBalanceName:   wallet.MainBalance,
 				wallet.MetadataKeyWalletBalance: wallet.TrueValue,
 				wallet.MetadataKeyCreatedAt:     w.CreatedAt.UTC().Format(time.RFC3339Nano),

@@ -365,7 +365,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
      * @param metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
      * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
      */
-    public async getHolds(pageSize?: number, walletID?: string, metadata?: any, cursor?: string, _options?: Configuration): Promise<RequestContext> {
+    public async getHolds(pageSize?: number, walletID?: string, metadata?: { [key: string]: string; }, cursor?: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
 
@@ -391,7 +391,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
         // Query Params
         if (metadata !== undefined) {
-            requestContext.setQueryParam("metadata", ObjectSerializer.serialize(metadata, "any", ""));
+            requestContext.setQueryParam("metadata", ObjectSerializer.serialize(metadata, "{ [key: string]: string; }", ""));
         }
 
         // Query Params
@@ -545,7 +545,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
      * @param pageSize The maximum number of results to return per page
      * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
      */
-    public async listWallets(name?: string, metadata?: any, pageSize?: number, cursor?: string, _options?: Configuration): Promise<RequestContext> {
+    public async listWallets(name?: string, metadata?: { [key: string]: string; }, pageSize?: number, cursor?: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
 
@@ -566,7 +566,7 @@ export class WalletsApiRequestFactory extends BaseAPIRequestFactory {
 
         // Query Params
         if (metadata !== undefined) {
-            requestContext.setQueryParam("metadata", ObjectSerializer.serialize(metadata, "any", ""));
+            requestContext.setQueryParam("metadata", ObjectSerializer.serialize(metadata, "{ [key: string]: string; }", ""));
         }
 
         // Query Params

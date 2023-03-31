@@ -550,7 +550,7 @@ public class Example {
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         Integer pageSize = 15; // Integer | The maximum number of results to return per page
         String walletID = "wallet1"; // String | The wallet to filter on
-        Object metadata = new HashMap(); // Object | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
+        Map<String, String> metadata = new HashMap(); // Map<String, String> | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
         String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
         try {
             GetHoldsResponse result = apiInstance.getHolds(pageSize, walletID, metadata, cursor);
@@ -573,7 +573,7 @@ public class Example {
 |------------- | ------------- | ------------- | -------------|
 | **pageSize** | **Integer**| The maximum number of results to return per page | [optional] [default to 15] |
 | **walletID** | **String**| The wallet to filter on | [optional] |
-| **metadata** | [**Object**](.md)| Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
+| **metadata** | [**Map&lt;String, String&gt;**](String.md)| Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 | **cursor** | **String**| Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  | [optional] |
 
 ### Return type
@@ -839,7 +839,7 @@ public class Example {
 
         WalletsApi apiInstance = new WalletsApi(defaultClient);
         String name = "wallet1"; // String | Filter on wallet name
-        Object metadata = new HashMap(); // Object | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.
+        Map<String, String> metadata = new HashMap(); // Map<String, String> | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.
         Integer pageSize = 15; // Integer | The maximum number of results to return per page
         String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
         try {
@@ -862,7 +862,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **name** | **String**| Filter on wallet name | [optional] |
-| **metadata** | [**Object**](.md)| Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
+| **metadata** | [**Map&lt;String, String&gt;**](String.md)| Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 | **pageSize** | **Integer**| The maximum number of results to return per page | [optional] [default to 15] |
 | **cursor** | **String**| Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  | [optional] |
 

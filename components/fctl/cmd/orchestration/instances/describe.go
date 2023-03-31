@@ -1,7 +1,6 @@
 package instances
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"time"
@@ -99,17 +98,13 @@ func subjectName(src formance.Subject) string {
 	}
 }
 
-func printMetadata(metadata map[string]any) []pterm.BulletListItem {
+func printMetadata(metadata map[string]string) []pterm.BulletListItem {
 	ret := make([]pterm.BulletListItem, 0)
 	ret = append(ret, historyItemDetails("Added metadata:"))
 	for k, v := range metadata {
-		jsonValue, err := json.Marshal(v)
-		if err != nil {
-			panic(err)
-		}
 		ret = append(ret, pterm.BulletListItem{
 			Level: 2,
-			Text:  fmt.Sprintf("%s: %s", k, string(jsonValue)),
+			Text:  fmt.Sprintf("%s: %s", k, v),
 		})
 	}
 	return ret

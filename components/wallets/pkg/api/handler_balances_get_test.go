@@ -33,7 +33,7 @@ func TestGetBalance(t *testing.T) {
 			return &sdk.AccountWithVolumesAndBalances{
 				Address:  account,
 				Metadata: balance.LedgerMetadata(walletID),
-				Balances: &assets,
+				Balances: assets,
 			}, nil
 		}),
 	)

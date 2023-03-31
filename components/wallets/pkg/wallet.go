@@ -84,7 +84,7 @@ func (w Wallet) LedgerMetadata() metadata.Metadata {
 	return metadata.Metadata{
 		MetadataKeyWalletSpecType:   PrimaryWallet,
 		MetadataKeyWalletName:       w.Name,
-		MetadataKeyWalletCustomData: map[string]any(w.Metadata),
+		MetadataKeyWalletCustomData: metadata.MarshalValue(w.Metadata),
 		MetadataKeyWalletID:         w.ID,
 		MetadataKeyWalletBalance:    TrueValue,
 		MetadataKeyBalanceName:      MainBalance,
@@ -106,15 +106,15 @@ func NewWallet(name, ledger string, m metadata.Metadata) Wallet {
 }
 
 func FromAccount(ledger string, account Account) Wallet {
-	createdAt, err := time.Parse(time.RFC3339Nano, GetMetadata(account, MetadataKeyCreatedAt).(string))
+	createdAt, err := time.Parse(time.RFC3339Nano, GetMetadata(account, MetadataKeyCreatedAt))
 	if err != nil {
 		panic(err)
 	}
 
 	return Wallet{
-		ID:        GetMetadata(account, MetadataKeyWalletID).(string),
-		Name:      GetMetadata(account, MetadataKeyWalletName).(string),
-		Metadata:  GetMetadata(account, MetadataKeyWalletCustomData).(map[string]any),
+		ID:        GetMetadata(account, MetadataKeyWalletID),
+		Name:      GetMetadata(account, MetadataKeyWalletName),
+		Metadata:  metadata.UnmarshalValue[metadata.Metadata](GetMetadata(account, MetadataKeyWalletCustomData)),
 		CreatedAt: createdAt,
 		Ledger:    ledger,
 	}

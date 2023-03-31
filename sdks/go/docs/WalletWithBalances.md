@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Id** | **string** | The unique ID of the wallet. | 
-**Metadata** | **map[string]interface{}** | Metadata associated with the wallet. | 
+**Metadata** | **map[string]string** | Metadata associated with the wallet. | 
 **Name** | **string** |  | 
 **CreatedAt** | **time.Time** |  | 
 **Balances** | [**WalletWithBalancesBalances**](WalletWithBalancesBalances.md) |  | 
@@ -15,7 +15,7 @@ Name | Type | Description | Notes
 
 ### NewWalletWithBalances
 
-`func NewWalletWithBalances(id string, metadata map[string]interface{}, name string, createdAt time.Time, balances WalletWithBalancesBalances, ledger string, ) *WalletWithBalances`
+`func NewWalletWithBalances(id string, metadata map[string]string, name string, createdAt time.Time, balances WalletWithBalancesBalances, ledger string, ) *WalletWithBalances`
 
 NewWalletWithBalances instantiates a new WalletWithBalances object
 This constructor will assign default values to properties that have it defined,
@@ -52,20 +52,20 @@ SetId sets Id field to given value.
 
 ### GetMetadata
 
-`func (o *WalletWithBalances) GetMetadata() map[string]interface{}`
+`func (o *WalletWithBalances) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *WalletWithBalances) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *WalletWithBalances) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *WalletWithBalances) SetMetadata(v map[string]interface{})`
+`func (o *WalletWithBalances) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 

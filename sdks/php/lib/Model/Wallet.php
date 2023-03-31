@@ -59,7 +59,7 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
       */
     protected static $openAPITypes = [
         'id' => 'string',
-        'metadata' => 'array<string,mixed>',
+        'metadata' => 'array<string,string>',
         'name' => 'string',
         'created_at' => '\DateTime',
         'ledger' => 'string'
@@ -363,7 +363,7 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets metadata
      *
-     * @return array<string,mixed>
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -373,7 +373,7 @@ class Wallet implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets metadata
      *
-     * @param array<string,mixed> $metadata Metadata associated with the wallet.
+     * @param array<string,string> $metadata Metadata associated with the wallet.
      *
      * @return self
      */

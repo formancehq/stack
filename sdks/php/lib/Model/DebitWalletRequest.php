@@ -60,7 +60,7 @@ class DebitWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializab
     protected static $openAPITypes = [
         'amount' => '\Formance\Model\Monetary',
         'pending' => 'bool',
-        'metadata' => 'array<string,mixed>',
+        'metadata' => 'array<string,string>',
         'description' => 'string',
         'destination' => '\Formance\Model\Subject',
         'balances' => 'string[]'
@@ -313,6 +313,9 @@ class DebitWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializab
         if ($this->container['amount'] === null) {
             $invalidProperties[] = "'amount' can't be null";
         }
+        if ($this->container['metadata'] === null) {
+            $invalidProperties[] = "'metadata' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -385,7 +388,7 @@ class DebitWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Gets metadata
      *
-     * @return array<string,mixed>|null
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -395,7 +398,7 @@ class DebitWalletRequest implements ModelInterface, ArrayAccess, \JsonSerializab
     /**
      * Sets metadata
      *
-     * @param array<string,mixed>|null $metadata Metadata associated with the wallet.
+     * @param array<string,string> $metadata Metadata associated with the wallet.
      *
      * @return self
      */

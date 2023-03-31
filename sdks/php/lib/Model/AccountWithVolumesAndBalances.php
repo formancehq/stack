@@ -60,7 +60,7 @@ class AccountWithVolumesAndBalances implements ModelInterface, ArrayAccess, \Jso
     protected static $openAPITypes = [
         'address' => 'string',
         'type' => 'string',
-        'metadata' => 'object',
+        'metadata' => 'array<string,string>',
         'volumes' => 'array<string,array<string,int>>',
         'balances' => 'array<string,int>'
     ];
@@ -306,6 +306,15 @@ class AccountWithVolumesAndBalances implements ModelInterface, ArrayAccess, \Jso
         if ($this->container['address'] === null) {
             $invalidProperties[] = "'address' can't be null";
         }
+        if ($this->container['metadata'] === null) {
+            $invalidProperties[] = "'metadata' can't be null";
+        }
+        if ($this->container['volumes'] === null) {
+            $invalidProperties[] = "'volumes' can't be null";
+        }
+        if ($this->container['balances'] === null) {
+            $invalidProperties[] = "'balances' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -378,7 +387,7 @@ class AccountWithVolumesAndBalances implements ModelInterface, ArrayAccess, \Jso
     /**
      * Gets metadata
      *
-     * @return object|null
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -388,7 +397,7 @@ class AccountWithVolumesAndBalances implements ModelInterface, ArrayAccess, \Jso
     /**
      * Sets metadata
      *
-     * @param object|null $metadata metadata
+     * @param array<string,string> $metadata metadata
      *
      * @return self
      */
@@ -405,7 +414,7 @@ class AccountWithVolumesAndBalances implements ModelInterface, ArrayAccess, \Jso
     /**
      * Gets volumes
      *
-     * @return array<string,array<string,int>>|null
+     * @return array<string,array<string,int>>
      */
     public function getVolumes()
     {
@@ -415,7 +424,7 @@ class AccountWithVolumesAndBalances implements ModelInterface, ArrayAccess, \Jso
     /**
      * Sets volumes
      *
-     * @param array<string,array<string,int>>|null $volumes volumes
+     * @param array<string,array<string,int>> $volumes volumes
      *
      * @return self
      */
@@ -432,7 +441,7 @@ class AccountWithVolumesAndBalances implements ModelInterface, ArrayAccess, \Jso
     /**
      * Gets balances
      *
-     * @return array<string,int>|null
+     * @return array<string,int>
      */
     public function getBalances()
     {
@@ -442,7 +451,7 @@ class AccountWithVolumesAndBalances implements ModelInterface, ArrayAccess, \Jso
     /**
      * Sets balances
      *
-     * @param array<string,int>|null $balances balances
+     * @param array<string,int> $balances balances
      *
      * @return self
      */

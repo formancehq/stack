@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **string** | The unique ID of the wallet. |
-**metadata** | **array<string,mixed>** | Metadata associated with the wallet. |
+**metadata** | **array<string,string>** | Metadata associated with the wallet. |
 **name** | **string** |  |
 **created_at** | **\DateTime** |  |
 **balances** | [**\Formance\Model\WalletWithBalancesBalances**](WalletWithBalancesBalances.md) |  |
