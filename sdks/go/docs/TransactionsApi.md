@@ -34,7 +34,7 @@ import (
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
     txid := int64(1234) // int64 | Transaction ID.
-    requestBody := map[string]interface{}{"key": interface{}(123)} // map[string]interface{} | metadata (optional)
+    requestBody := map[string]string{"key": "Inner_example"} // map[string]string | metadata (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -64,7 +64,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **requestBody** | **map[string]interface{}** | metadata | 
+ **requestBody** | **map[string]string** | metadata | 
 
 ### Return type
 
@@ -185,7 +185,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    postTransaction := *client.NewPostTransaction() // PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript 
+    postTransaction := *client.NewPostTransaction(map[string]string{"key": "Inner_example"}) // PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript 
     preview := true // bool | Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker. (optional)
 
     configuration := client.NewConfiguration()
@@ -340,7 +340,7 @@ func main() {
     startTime := time.Now() // time.Time | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).  (optional)
     endTime := time.Now() // time.Time | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).  (optional)
     cursor := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
-    metadata := map[string]interface{}{"key": map[string]interface{}(123)} // map[string]interface{} | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+    metadata := map[string]string{"key": map[string]string{"key": "Inner_example"}} // map[string]string | Filter transactions by metadata key value pairs. (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -379,7 +379,7 @@ Name | Type | Description  | Notes
  **startTime** | **time.Time** | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  | 
  **endTime** | **time.Time** | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  | 
  **cursor** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | 
- **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | 
+ **metadata** | **map[string]map[string]string** | Filter transactions by metadata key value pairs. | 
 
 ### Return type
 

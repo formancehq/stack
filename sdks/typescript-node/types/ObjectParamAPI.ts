@@ -219,10 +219,10 @@ export interface AccountsApiAddMetadataToAccountRequest {
     address: string
     /**
      * metadata
-     * @type { [key: string]: any; }
+     * @type { [key: string]: string; }
      * @memberof AccountsApiaddMetadataToAccount
      */
-    requestBody: { [key: string]: any; }
+    requestBody: { [key: string]: string; }
 }
 
 export interface AccountsApiCountAccountsRequest {
@@ -288,10 +288,10 @@ export interface AccountsApiListAccountsRequest {
     address?: string
     /**
      * Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
-     * @type any
+     * @type { [key: string]: string; }
      * @memberof AccountsApilistAccounts
      */
-    metadata?: any
+    metadata?: { [key: string]: string; }
     /**
      * Filter accounts by their balance (default operator is gte)
      * @type number
@@ -1551,10 +1551,10 @@ export interface TransactionsApiAddMetadataOnTransactionRequest {
     txid: number
     /**
      * metadata
-     * @type { [key: string]: any; }
+     * @type { [key: string]: string; }
      * @memberof TransactionsApiaddMetadataOnTransaction
      */
-    requestBody?: { [key: string]: any; }
+    requestBody?: { [key: string]: string; }
 }
 
 export interface TransactionsApiCountTransactionsRequest {
@@ -1706,11 +1706,11 @@ export interface TransactionsApiListTransactionsRequest {
      */
     cursor?: string
     /**
-     * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
-     * @type any
+     * Filter transactions by metadata key value pairs.
+     * @type { [key: string]: string; }
      * @memberof TransactionsApilistTransactions
      */
-    metadata?: any
+    metadata?: { [key: string]: string; }
 }
 
 export interface TransactionsApiRevertTransactionRequest {
@@ -1939,10 +1939,10 @@ export interface WalletsApiGetHoldsRequest {
     walletID?: string
     /**
      * Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
-     * @type any
+     * @type { [key: string]: string; }
      * @memberof WalletsApigetHolds
      */
-    metadata?: any
+    metadata?: { [key: string]: string; }
     /**
      * Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
      * @type string
@@ -1999,10 +1999,10 @@ export interface WalletsApiListWalletsRequest {
     name?: string
     /**
      * Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below.
-     * @type any
+     * @type { [key: string]: string; }
      * @memberof WalletsApilistWallets
      */
-    metadata?: any
+    metadata?: { [key: string]: string; }
     /**
      * The maximum number of results to return per page
      * @type number

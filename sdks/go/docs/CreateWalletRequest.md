@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Metadata** | Pointer to **map[string]interface{}** | Custom metadata to attach to this wallet. | [optional] 
+**Metadata** | **map[string]string** | Custom metadata to attach to this wallet. | 
 **Name** | **string** |  | 
 
 ## Methods
 
 ### NewCreateWalletRequest
 
-`func NewCreateWalletRequest(name string, ) *CreateWalletRequest`
+`func NewCreateWalletRequest(metadata map[string]string, name string, ) *CreateWalletRequest`
 
 NewCreateWalletRequest instantiates a new CreateWalletRequest object
 This constructor will assign default values to properties that have it defined,
@@ -28,28 +28,23 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetMetadata
 
-`func (o *CreateWalletRequest) GetMetadata() map[string]interface{}`
+`func (o *CreateWalletRequest) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *CreateWalletRequest) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *CreateWalletRequest) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *CreateWalletRequest) SetMetadata(v map[string]interface{})`
+`func (o *CreateWalletRequest) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 
-### HasMetadata
-
-`func (o *CreateWalletRequest) HasMetadata() bool`
-
-HasMetadata returns a boolean if a field has been set.
 
 ### GetName
 

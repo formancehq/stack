@@ -52,7 +52,7 @@ public class WalletsTransaction {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = new HashMap<>();
+  private Map<String, String> metadata = new HashMap<>();
 
   public static final String SERIALIZED_NAME_TXID = "txid";
   @SerializedName(SERIALIZED_NAME_TXID)
@@ -162,16 +162,13 @@ public class WalletsTransaction {
   }
 
 
-  public WalletsTransaction metadata(Map<String, Object> metadata) {
+  public WalletsTransaction metadata(Map<String, String> metadata) {
     
     this.metadata = metadata;
     return this;
   }
 
-  public WalletsTransaction putMetadataItem(String key, Object metadataItem) {
-    if (this.metadata == null) {
-      this.metadata = new HashMap<>();
-    }
+  public WalletsTransaction putMetadataItem(String key, String metadataItem) {
     this.metadata.put(key, metadataItem);
     return this;
   }
@@ -180,14 +177,14 @@ public class WalletsTransaction {
    * Metadata associated with the wallet.
    * @return metadata
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
-  public Map<String, Object> getMetadata() {
+  public Map<String, String> getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(Map<String, Object> metadata) {
+  public void setMetadata(Map<String, String> metadata) {
     this.metadata = metadata;
   }
 

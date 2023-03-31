@@ -59,7 +59,7 @@ func TestWalletsList(t *testing.T) {
 
 			require.Equal(t, pageSize, query.Limit)
 			require.Equal(t, testEnv.LedgerName(), ledger)
-			require.Equal(t, map[string]any{
+			require.Equal(t, metadata.Metadata{
 				wallet.MetadataKeyWalletSpecType: wallet.PrimaryWallet,
 			}, query.Metadata)
 
@@ -113,7 +113,7 @@ func TestWalletsListByName(t *testing.T) {
 		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
 			require.Equal(t, defaultLimit, query.Limit)
 			require.Equal(t, testEnv.LedgerName(), ledger)
-			require.Equal(t, map[string]any{
+			require.Equal(t, metadata.Metadata{
 				wallet.MetadataKeyWalletSpecType: wallet.PrimaryWallet,
 				wallet.MetadataKeyWalletName:     wallets[1].Name,
 			}, query.Metadata)
@@ -149,7 +149,7 @@ func TestWalletsListFilterMetadata(t *testing.T) {
 	var wallets []wallet.Wallet
 	for i := 0; i < 10; i++ {
 		wallets = append(wallets, wallet.NewWallet(uuid.NewString(), "default", metadata.Metadata{
-			"wallet": float64(i),
+			"wallet": fmt.Sprint(i),
 		}))
 	}
 
@@ -158,7 +158,7 @@ func TestWalletsListFilterMetadata(t *testing.T) {
 		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
 			require.Equal(t, defaultLimit, query.Limit)
 			require.Equal(t, testEnv.LedgerName(), ledger)
-			require.Equal(t, map[string]any{
+			require.Equal(t, metadata.Metadata{
 				wallet.MetadataKeyWalletSpecType:               wallet.PrimaryWallet,
 				wallet.MetadataKeyWalletCustomData + ".wallet": "2",
 			}, query.Metadata)

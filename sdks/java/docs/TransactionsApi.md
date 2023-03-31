@@ -42,7 +42,7 @@ public class Example {
         TransactionsApi apiInstance = new TransactionsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
         Long txid = 1234L; // Long | Transaction ID.
-        Map<String, Object> requestBody = null; // Map<String, Object> | metadata
+        Map<String, String> requestBody = new HashMap(); // Map<String, String> | metadata
         try {
             apiInstance.addMetadataOnTransaction(ledger, txid, requestBody);
         } catch (ApiException e) {
@@ -63,7 +63,7 @@ public class Example {
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
 | **txid** | **Long**| Transaction ID. | |
-| **requestBody** | [**Map&lt;String, Object&gt;**](Object.md)| metadata | [optional] |
+| **requestBody** | [**Map&lt;String, String&gt;**](String.md)| metadata | [optional] |
 
 ### Return type
 
@@ -354,7 +354,7 @@ public class Example {
         OffsetDateTime startTime = OffsetDateTime.now(); // OffsetDateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute). 
         OffsetDateTime endTime = OffsetDateTime.now(); // OffsetDateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute). 
         String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
-        Object metadata = new HashMap(); // Object | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+        Map<String, String> metadata = new HashMap(); // Map<String, String> | Filter transactions by metadata key value pairs.
         try {
             TransactionsCursorResponse result = apiInstance.listTransactions(ledger, pageSize, after, reference, account, source, destination, startTime, endTime, cursor, metadata);
             System.out.println(result);
@@ -384,7 +384,7 @@ public class Example {
 | **startTime** | **OffsetDateTime**| Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  | [optional] |
 | **endTime** | **OffsetDateTime**| Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  | [optional] |
 | **cursor** | **String**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | [optional] |
-| **metadata** | [**Object**](.md)| Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
+| **metadata** | [**Map&lt;String, String&gt;**](String.md)| Filter transactions by metadata key value pairs. | [optional] |
 
 ### Return type
 

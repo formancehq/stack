@@ -60,7 +60,7 @@ class ExpandedDebitHold implements ModelInterface, ArrayAccess, \JsonSerializabl
     protected static $openAPITypes = [
         'id' => 'string',
         'wallet_id' => 'string',
-        'metadata' => 'array<string,mixed>',
+        'metadata' => 'array<string,string>',
         'description' => 'string',
         'destination' => '\Formance\Model\Subject',
         'remaining' => 'int',
@@ -407,7 +407,7 @@ class ExpandedDebitHold implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets metadata
      *
-     * @return array<string,mixed>
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -417,7 +417,7 @@ class ExpandedDebitHold implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets metadata
      *
-     * @param array<string,mixed> $metadata Metadata associated with the hold.
+     * @param array<string,string> $metadata Metadata associated with the hold.
      *
      * @return self
      */

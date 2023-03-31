@@ -25,7 +25,7 @@ type ExpandedDebitHold struct {
 	// The ID of the wallet the hold is associated with.
 	WalletID string `json:"walletID"`
 	// Metadata associated with the hold.
-	Metadata map[string]interface{} `json:"metadata"`
+	Metadata map[string]string `json:"metadata"`
 	Description string `json:"description"`
 	Destination *Subject `json:"destination,omitempty"`
 	// Remaining amount on hold
@@ -38,7 +38,7 @@ type ExpandedDebitHold struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewExpandedDebitHold(id string, walletID string, metadata map[string]interface{}, description string, remaining int64, originalAmount int64) *ExpandedDebitHold {
+func NewExpandedDebitHold(id string, walletID string, metadata map[string]string, description string, remaining int64, originalAmount int64) *ExpandedDebitHold {
 	this := ExpandedDebitHold{}
 	this.Id = id
 	this.WalletID = walletID
@@ -106,9 +106,9 @@ func (o *ExpandedDebitHold) SetWalletID(v string) {
 }
 
 // GetMetadata returns the Metadata field value
-func (o *ExpandedDebitHold) GetMetadata() map[string]interface{} {
+func (o *ExpandedDebitHold) GetMetadata() map[string]string {
 	if o == nil {
-		var ret map[string]interface{}
+		var ret map[string]string
 		return ret
 	}
 
@@ -117,15 +117,15 @@ func (o *ExpandedDebitHold) GetMetadata() map[string]interface{} {
 
 // GetMetadataOk returns a tuple with the Metadata field value
 // and a boolean to check if the value has been set.
-func (o *ExpandedDebitHold) GetMetadataOk() (map[string]interface{}, bool) {
+func (o *ExpandedDebitHold) GetMetadataOk() (*map[string]string, bool) {
 	if o == nil {
-		return map[string]interface{}{}, false
+		return nil, false
 	}
-	return o.Metadata, true
+	return &o.Metadata, true
 }
 
 // SetMetadata sets field value
-func (o *ExpandedDebitHold) SetMetadata(v map[string]interface{}) {
+func (o *ExpandedDebitHold) SetMetadata(v map[string]string) {
 	o.Metadata = v
 }
 

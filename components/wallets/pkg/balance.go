@@ -50,7 +50,7 @@ func NewBalance(name string) Balance {
 
 func BalanceFromAccount(account Account) Balance {
 	return Balance{
-		Name: GetMetadata(account, MetadataKeyBalanceName).(string),
+		Name: GetMetadata(account, MetadataKeyBalanceName),
 	}
 }
 

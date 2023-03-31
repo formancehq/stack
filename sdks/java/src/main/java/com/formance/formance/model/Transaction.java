@@ -48,7 +48,7 @@ public class Transaction {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata;
+  private Map<String, String> metadata = new HashMap<>();
 
   public static final String SERIALIZED_NAME_TXID = "txid";
   @SerializedName(SERIALIZED_NAME_TXID)
@@ -136,13 +136,13 @@ public class Transaction {
   }
 
 
-  public Transaction metadata(Map<String, Object> metadata) {
+  public Transaction metadata(Map<String, String> metadata) {
     
     this.metadata = metadata;
     return this;
   }
 
-  public Transaction putMetadataItem(String key, Object metadataItem) {
+  public Transaction putMetadataItem(String key, String metadataItem) {
     this.metadata.put(key, metadataItem);
     return this;
   }
@@ -151,14 +151,14 @@ public class Transaction {
    * Get metadata
    * @return metadata
   **/
-  @javax.annotation.Nullable
+  @javax.annotation.Nonnull
 
-  public Map<String, Object> getMetadata() {
+  public Map<String, String> getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(Map<String, Object> metadata) {
+  public void setMetadata(Map<String, String> metadata) {
     this.metadata = metadata;
   }
 

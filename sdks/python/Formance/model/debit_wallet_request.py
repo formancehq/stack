@@ -37,6 +37,7 @@ class DebitWalletRequest(
     class MetaOapg:
         required = {
             "amount",
+            "metadata",
         }
         
         class properties:
@@ -44,7 +45,6 @@ class DebitWalletRequest(
             @staticmethod
             def amount() -> typing.Type['Monetary']:
                 return Monetary
-            pending = schemas.BoolSchema
             
             
             class metadata(
@@ -53,7 +53,7 @@ class DebitWalletRequest(
             
             
                 class MetaOapg:
-                    additional_properties = schemas.AnyTypeSchema
+                    additional_properties = schemas.StrSchema
                 
                 def __getitem__(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
                     # dict_instance[name] accessor
@@ -66,7 +66,7 @@ class DebitWalletRequest(
                     cls,
                     *_args: typing.Union[dict, frozendict.frozendict, ],
                     _configuration: typing.Optional[schemas.Configuration] = None,
-                    **kwargs: typing.Union[MetaOapg.additional_properties, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
+                    **kwargs: typing.Union[MetaOapg.additional_properties, str, ],
                 ) -> 'metadata':
                     return super().__new__(
                         cls,
@@ -74,6 +74,7 @@ class DebitWalletRequest(
                         _configuration=_configuration,
                         **kwargs,
                     )
+            pending = schemas.BoolSchema
             description = schemas.StrSchema
         
             @staticmethod
@@ -104,23 +105,24 @@ class DebitWalletRequest(
                     return super().__getitem__(i)
             __annotations__ = {
                 "amount": amount,
-                "pending": pending,
                 "metadata": metadata,
+                "pending": pending,
                 "description": description,
                 "destination": destination,
                 "balances": balances,
             }
     
     amount: 'Monetary'
+    metadata: MetaOapg.properties.metadata
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["amount"]) -> 'Monetary': ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["pending"]) -> MetaOapg.properties.pending: ...
+    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
+    def __getitem__(self, name: typing_extensions.Literal["pending"]) -> MetaOapg.properties.pending: ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["description"]) -> MetaOapg.properties.description: ...
@@ -134,7 +136,7 @@ class DebitWalletRequest(
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["amount", "pending", "metadata", "description", "destination", "balances", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["amount", "metadata", "pending", "description", "destination", "balances", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -143,10 +145,10 @@ class DebitWalletRequest(
     def get_item_oapg(self, name: typing_extensions.Literal["amount"]) -> 'Monetary': ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["pending"]) -> typing.Union[MetaOapg.properties.pending, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> typing.Union[MetaOapg.properties.metadata, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["pending"]) -> typing.Union[MetaOapg.properties.pending, schemas.Unset]: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["description"]) -> typing.Union[MetaOapg.properties.description, schemas.Unset]: ...
@@ -160,7 +162,7 @@ class DebitWalletRequest(
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["amount", "pending", "metadata", "description", "destination", "balances", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["amount", "metadata", "pending", "description", "destination", "balances", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -168,8 +170,8 @@ class DebitWalletRequest(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
         amount: 'Monetary',
+        metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, ],
         pending: typing.Union[MetaOapg.properties.pending, bool, schemas.Unset] = schemas.unset,
-        metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
         description: typing.Union[MetaOapg.properties.description, str, schemas.Unset] = schemas.unset,
         destination: typing.Union['Subject', schemas.Unset] = schemas.unset,
         balances: typing.Union[MetaOapg.properties.balances, list, tuple, schemas.Unset] = schemas.unset,
@@ -180,8 +182,8 @@ class DebitWalletRequest(
             cls,
             *_args,
             amount=amount,
-            pending=pending,
             metadata=metadata,
+            pending=pending,
             description=description,
             destination=destination,
             balances=balances,

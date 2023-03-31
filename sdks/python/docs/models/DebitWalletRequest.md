@@ -9,8 +9,8 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **amount** | [**Monetary**](Monetary.md) | [**Monetary**](Monetary.md) |  | 
+**[metadata](#metadata)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | Metadata associated with the wallet. | 
 **pending** | bool,  | BoolClass,  | Set to true to create a pending hold. If false, the wallet will be debited immediately. | [optional] 
-**[metadata](#metadata)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | Metadata associated with the wallet. | [optional] 
 **description** | str,  | str,  |  | [optional] 
 **destination** | [**Subject**](Subject.md) | [**Subject**](Subject.md) |  | [optional] 
 **[balances](#balances)** | list, tuple,  | tuple,  |  | [optional] 
@@ -28,7 +28,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  | Metadata associated wi
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**any_string_name** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+**any_string_name** | str,  | str,  | any string name can be used but the value must be the correct type | [optional] 
 
 # balances
 

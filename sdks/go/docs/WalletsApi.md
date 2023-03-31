@@ -179,7 +179,7 @@ import (
 )
 
 func main() {
-    createWalletRequest := *client.NewCreateWalletRequest("Name_example") // CreateWalletRequest |  (optional)
+    createWalletRequest := *client.NewCreateWalletRequest(map[string]string{"key": "Inner_example"}, "Name_example") // CreateWalletRequest |  (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -244,7 +244,7 @@ import (
 
 func main() {
     id := "id_example" // string | 
-    creditWalletRequest := *client.NewCreditWalletRequest(*client.NewMonetary("Asset_example", int64(123)), []client.Subject{*client.NewSubject("Type_example", "Identifier_example")}) // CreditWalletRequest |  (optional)
+    creditWalletRequest := *client.NewCreditWalletRequest(*client.NewMonetary("Asset_example", int64(123)), map[string]string{"key": "Inner_example"}, []client.Subject{*client.NewSubject("Type_example", "Identifier_example")}) // CreditWalletRequest |  (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -312,7 +312,7 @@ import (
 
 func main() {
     id := "id_example" // string | 
-    debitWalletRequest := *client.NewDebitWalletRequest(*client.NewMonetary("Asset_example", int64(123))) // DebitWalletRequest |  (optional)
+    debitWalletRequest := *client.NewDebitWalletRequest(*client.NewMonetary("Asset_example", int64(123)), map[string]string{"key": "Inner_example"}) // DebitWalletRequest |  (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -522,7 +522,7 @@ import (
 func main() {
     pageSize := int32(100) // int32 | The maximum number of results to return per page (optional) (default to 15)
     walletID := "wallet1" // string | The wallet to filter on (optional)
-    metadata := map[string]interface{}{"key": map[string]interface{}(123)} // map[string]interface{} | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+    metadata := map[string]string{"key": map[string]string{"key": "Inner_example"}} // map[string]string | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
     cursor := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  (optional)
 
     configuration := client.NewConfiguration()
@@ -550,7 +550,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **pageSize** | **int32** | The maximum number of results to return per page | [default to 15]
  **walletID** | **string** | The wallet to filter on | 
- **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. | 
+ **metadata** | **map[string]map[string]string** | Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. | 
  **cursor** | **string** | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  | 
 
 ### Return type
@@ -795,7 +795,7 @@ import (
 
 func main() {
     name := "wallet1" // string | Filter on wallet name (optional)
-    metadata := map[string]interface{}{"key": map[string]interface{}(123)} // map[string]interface{} | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+    metadata := map[string]string{"key": map[string]string{"key": "Inner_example"}} // map[string]string | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
     pageSize := int32(100) // int32 | The maximum number of results to return per page (optional) (default to 15)
     cursor := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  (optional)
 
@@ -823,7 +823,7 @@ Other parameters are passed through a pointer to a apiListWalletsRequest struct 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **name** | **string** | Filter on wallet name | 
- **metadata** | [**map[string]interface{}**](map[string]interface{}.md) | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. | 
+ **metadata** | **map[string]map[string]string** | Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. | 
  **pageSize** | **int32** | The maximum number of results to return per page | [default to 15]
  **cursor** | **string** | Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set.  | 
 
@@ -865,7 +865,7 @@ import (
 
 func main() {
     id := "id_example" // string | 
-    updateWalletRequest := *client.NewUpdateWalletRequest() // UpdateWalletRequest |  (optional)
+    updateWalletRequest := *client.NewUpdateWalletRequest(map[string]string{"key": "Inner_example"}) // UpdateWalletRequest |  (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)

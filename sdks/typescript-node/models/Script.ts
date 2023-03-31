@@ -19,7 +19,7 @@ export class Script {
     * Reference to attach to the generated transaction
     */
     'reference'?: string;
-    'metadata'?: { [key: string]: any; };
+    'metadata'?: { [key: string]: string; };
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -45,7 +45,7 @@ export class Script {
         {
             "name": "metadata",
             "baseName": "metadata",
-            "type": "{ [key: string]: any; }",
+            "type": "{ [key: string]: string; }",
             "format": ""
         }    ];
 

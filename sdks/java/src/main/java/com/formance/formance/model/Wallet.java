@@ -37,7 +37,7 @@ public class Wallet {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = new HashMap<>();
+  private Map<String, String> metadata = new HashMap<>();
 
   public static final String SERIALIZED_NAME_NAME = "name";
   @SerializedName(SERIALIZED_NAME_NAME)
@@ -76,13 +76,13 @@ public class Wallet {
   }
 
 
-  public Wallet metadata(Map<String, Object> metadata) {
+  public Wallet metadata(Map<String, String> metadata) {
     
     this.metadata = metadata;
     return this;
   }
 
-  public Wallet putMetadataItem(String key, Object metadataItem) {
+  public Wallet putMetadataItem(String key, String metadataItem) {
     this.metadata.put(key, metadataItem);
     return this;
   }
@@ -93,12 +93,12 @@ public class Wallet {
   **/
   @javax.annotation.Nonnull
 
-  public Map<String, Object> getMetadata() {
+  public Map<String, String> getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(Map<String, Object> metadata) {
+  public void setMetadata(Map<String, String> metadata) {
     this.metadata = metadata;
   }
 

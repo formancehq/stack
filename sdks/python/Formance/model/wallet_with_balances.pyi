@@ -54,7 +54,7 @@ class WalletWithBalances(
             
             
                 class MetaOapg:
-                    additional_properties = schemas.AnyTypeSchema
+                    additional_properties = schemas.StrSchema
                 
                 def __getitem__(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
                     # dict_instance[name] accessor
@@ -67,7 +67,7 @@ class WalletWithBalances(
                     cls,
                     *_args: typing.Union[dict, frozendict.frozendict, ],
                     _configuration: typing.Optional[schemas.Configuration] = None,
-                    **kwargs: typing.Union[MetaOapg.additional_properties, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
+                    **kwargs: typing.Union[MetaOapg.additional_properties, str, ],
                 ) -> 'metadata':
                     return super().__new__(
                         cls,

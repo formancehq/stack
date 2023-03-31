@@ -61,7 +61,7 @@ class Script implements ModelInterface, ArrayAccess, \JsonSerializable
         'plain' => 'string',
         'vars' => 'object',
         'reference' => 'string',
-        'metadata' => 'array<string,mixed>'
+        'metadata' => 'array<string,string>'
     ];
 
     /**
@@ -87,7 +87,7 @@ class Script implements ModelInterface, ArrayAccess, \JsonSerializable
         'plain' => false,
 		'vars' => false,
 		'reference' => false,
-		'metadata' => true
+		'metadata' => false
     ];
 
     /**
@@ -398,7 +398,7 @@ class Script implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets metadata
      *
-     * @return array<string,mixed>|null
+     * @return array<string,string>|null
      */
     public function getMetadata()
     {
@@ -408,21 +408,14 @@ class Script implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets metadata
      *
-     * @param array<string,mixed>|null $metadata metadata
+     * @param array<string,string>|null $metadata metadata
      *
      * @return self
      */
     public function setMetadata($metadata)
     {
         if (is_null($metadata)) {
-            array_push($this->openAPINullablesSetToNull, 'metadata');
-        } else {
-            $nullablesSetToNull = $this->getOpenAPINullablesSetToNull();
-            $index = array_search('metadata', $nullablesSetToNull);
-            if ($index !== FALSE) {
-                unset($nullablesSetToNull[$index]);
-                $this->setOpenAPINullablesSetToNull($nullablesSetToNull);
-            }
+            throw new \InvalidArgumentException('non-nullable metadata cannot be null');
         }
         $this->container['metadata'] = $metadata;
 

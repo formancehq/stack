@@ -10,13 +10,13 @@ import (
 type ListAccountsQuery struct {
 	Cursor   string
 	Limit    int
-	Metadata map[string]any
+	Metadata metadata.Metadata
 }
 
 type ListTransactionsQuery struct {
 	Cursor      string
 	Limit       int
-	Metadata    map[string]any
+	Metadata    metadata.Metadata
 	Destination string
 	Source      string
 	Account     string

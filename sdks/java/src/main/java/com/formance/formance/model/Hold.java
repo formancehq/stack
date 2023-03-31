@@ -41,7 +41,7 @@ public class Hold {
 
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
-  private Map<String, Object> metadata = new HashMap<>();
+  private Map<String, String> metadata = new HashMap<>();
 
   public static final String SERIALIZED_NAME_DESCRIPTION = "description";
   @SerializedName(SERIALIZED_NAME_DESCRIPTION)
@@ -98,13 +98,13 @@ public class Hold {
   }
 
 
-  public Hold metadata(Map<String, Object> metadata) {
+  public Hold metadata(Map<String, String> metadata) {
     
     this.metadata = metadata;
     return this;
   }
 
-  public Hold putMetadataItem(String key, Object metadataItem) {
+  public Hold putMetadataItem(String key, String metadataItem) {
     this.metadata.put(key, metadataItem);
     return this;
   }
@@ -115,12 +115,12 @@ public class Hold {
   **/
   @javax.annotation.Nonnull
 
-  public Map<String, Object> getMetadata() {
+  public Map<String, String> getMetadata() {
     return metadata;
   }
 
 
-  public void setMetadata(Map<String, Object> metadata) {
+  public void setMetadata(Map<String, String> metadata) {
     this.metadata = metadata;
   }
 

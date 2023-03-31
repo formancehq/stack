@@ -224,7 +224,7 @@ export class ObservableAccountsApi {
      * @param address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; 
      * @param requestBody metadata
      */
-    public addMetadataToAccount(ledger: string, address: string, requestBody: { [key: string]: any; }, _options?: Configuration): Observable<void> {
+    public addMetadataToAccount(ledger: string, address: string, requestBody: { [key: string]: string; }, _options?: Configuration): Observable<void> {
         const requestContextPromise = this.requestFactory.addMetadataToAccount(ledger, address, requestBody, _options);
 
         // build promise chain
@@ -304,7 +304,7 @@ export class ObservableAccountsApi {
      * @param balanceOperator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      */
-    public listAccounts(ledger: string, pageSize?: number, after?: string, address?: string, metadata?: any, balance?: number, balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne', cursor?: string, _options?: Configuration): Observable<AccountsCursorResponse> {
+    public listAccounts(ledger: string, pageSize?: number, after?: string, address?: string, metadata?: { [key: string]: string; }, balance?: number, balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne', cursor?: string, _options?: Configuration): Observable<AccountsCursorResponse> {
         const requestContextPromise = this.requestFactory.listAccounts(ledger, pageSize, after, address, metadata, balance, balanceOperator, cursor, _options);
 
         // build promise chain
@@ -1794,7 +1794,7 @@ export class ObservableTransactionsApi {
      * @param txid Transaction ID.
      * @param requestBody metadata
      */
-    public addMetadataOnTransaction(ledger: string, txid: number, requestBody?: { [key: string]: any; }, _options?: Configuration): Observable<void> {
+    public addMetadataOnTransaction(ledger: string, txid: number, requestBody?: { [key: string]: string; }, _options?: Configuration): Observable<void> {
         const requestContextPromise = this.requestFactory.addMetadataOnTransaction(ledger, txid, requestBody, _options);
 
         // build promise chain
@@ -1905,9 +1905,9 @@ export class ObservableTransactionsApi {
      * @param startTime Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). 
      * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
-     * @param metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+     * @param metadata Filter transactions by metadata key value pairs.
      */
-    public listTransactions(ledger: string, pageSize?: number, after?: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, cursor?: string, metadata?: any, _options?: Configuration): Observable<TransactionsCursorResponse> {
+    public listTransactions(ledger: string, pageSize?: number, after?: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, cursor?: string, metadata?: { [key: string]: string; }, _options?: Configuration): Observable<TransactionsCursorResponse> {
         const requestContextPromise = this.requestFactory.listTransactions(ledger, pageSize, after, reference, account, source, destination, startTime, endTime, cursor, metadata, _options);
 
         // build promise chain
@@ -2206,7 +2206,7 @@ export class ObservableWalletsApi {
      * @param metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below.
      * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
      */
-    public getHolds(pageSize?: number, walletID?: string, metadata?: any, cursor?: string, _options?: Configuration): Observable<GetHoldsResponse> {
+    public getHolds(pageSize?: number, walletID?: string, metadata?: { [key: string]: string; }, cursor?: string, _options?: Configuration): Observable<GetHoldsResponse> {
         const requestContextPromise = this.requestFactory.getHolds(pageSize, walletID, metadata, cursor, _options);
 
         // build promise chain
@@ -2302,7 +2302,7 @@ export class ObservableWalletsApi {
      * @param pageSize The maximum number of results to return per page
      * @param cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. 
      */
-    public listWallets(name?: string, metadata?: any, pageSize?: number, cursor?: string, _options?: Configuration): Observable<ListWalletsResponse> {
+    public listWallets(name?: string, metadata?: { [key: string]: string; }, pageSize?: number, cursor?: string, _options?: Configuration): Observable<ListWalletsResponse> {
         const requestContextPromise = this.requestFactory.listWallets(name, metadata, pageSize, cursor, _options);
 
         // build promise chain

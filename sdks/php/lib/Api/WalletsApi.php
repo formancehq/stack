@@ -2269,7 +2269,7 @@ class WalletsApi
      *
      * @param  int $page_size The maximum number of results to return per page (optional, default to 15)
      * @param  string $wallet_id The wallet to filter on (optional)
-     * @param  object $metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getHolds'] to see the possible values for this operation
      *
@@ -2290,7 +2290,7 @@ class WalletsApi
      *
      * @param  int $page_size The maximum number of results to return per page (optional, default to 15)
      * @param  string $wallet_id The wallet to filter on (optional)
-     * @param  object $metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getHolds'] to see the possible values for this operation
      *
@@ -2416,7 +2416,7 @@ class WalletsApi
      *
      * @param  int $page_size The maximum number of results to return per page (optional, default to 15)
      * @param  string $wallet_id The wallet to filter on (optional)
-     * @param  object $metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getHolds'] to see the possible values for this operation
      *
@@ -2440,7 +2440,7 @@ class WalletsApi
      *
      * @param  int $page_size The maximum number of results to return per page (optional, default to 15)
      * @param  string $wallet_id The wallet to filter on (optional)
-     * @param  object $metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getHolds'] to see the possible values for this operation
      *
@@ -2493,7 +2493,7 @@ class WalletsApi
      *
      * @param  int $page_size The maximum number of results to return per page (optional, default to 15)
      * @param  string $wallet_id The wallet to filter on (optional)
-     * @param  object $metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter holds by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getHolds'] to see the possible values for this operation
      *
@@ -2545,7 +2545,7 @@ class WalletsApi
             'metadata', // param base name
             'object', // openApiType
             'deepObject', // style
-            true, // explode
+            false, // explode
             false // required
         ) ?? []);
         // query params
@@ -3554,7 +3554,7 @@ class WalletsApi
      * List all wallets
      *
      * @param  string $name Filter on wallet name (optional)
-     * @param  object $metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $page_size The maximum number of results to return per page (optional, default to 15)
      * @param  string $cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listWallets'] to see the possible values for this operation
@@ -3575,7 +3575,7 @@ class WalletsApi
      * List all wallets
      *
      * @param  string $name Filter on wallet name (optional)
-     * @param  object $metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $page_size The maximum number of results to return per page (optional, default to 15)
      * @param  string $cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listWallets'] to see the possible values for this operation
@@ -3678,7 +3678,7 @@ class WalletsApi
      * List all wallets
      *
      * @param  string $name Filter on wallet name (optional)
-     * @param  object $metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $page_size The maximum number of results to return per page (optional, default to 15)
      * @param  string $cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listWallets'] to see the possible values for this operation
@@ -3702,7 +3702,7 @@ class WalletsApi
      * List all wallets
      *
      * @param  string $name Filter on wallet name (optional)
-     * @param  object $metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $page_size The maximum number of results to return per page (optional, default to 15)
      * @param  string $cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listWallets'] to see the possible values for this operation
@@ -3755,7 +3755,7 @@ class WalletsApi
      * Create request for operation 'listWallets'
      *
      * @param  string $name Filter on wallet name (optional)
-     * @param  object $metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter wallets by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $page_size The maximum number of results to return per page (optional, default to 15)
      * @param  string $cursor Parameter used in pagination requests. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when the pagination token is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['listWallets'] to see the possible values for this operation

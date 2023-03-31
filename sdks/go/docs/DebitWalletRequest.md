@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Amount** | [**Monetary**](Monetary.md) |  | 
 **Pending** | Pointer to **bool** | Set to true to create a pending hold. If false, the wallet will be debited immediately. | [optional] 
-**Metadata** | Pointer to **map[string]interface{}** | Metadata associated with the wallet. | [optional] 
+**Metadata** | **map[string]string** | Metadata associated with the wallet. | 
 **Description** | Pointer to **string** |  | [optional] 
 **Destination** | Pointer to [**Subject**](Subject.md) |  | [optional] 
 **Balances** | Pointer to **[]string** |  | [optional] 
@@ -15,7 +15,7 @@ Name | Type | Description | Notes
 
 ### NewDebitWalletRequest
 
-`func NewDebitWalletRequest(amount Monetary, ) *DebitWalletRequest`
+`func NewDebitWalletRequest(amount Monetary, metadata map[string]string, ) *DebitWalletRequest`
 
 NewDebitWalletRequest instantiates a new DebitWalletRequest object
 This constructor will assign default values to properties that have it defined,
@@ -77,28 +77,23 @@ HasPending returns a boolean if a field has been set.
 
 ### GetMetadata
 
-`func (o *DebitWalletRequest) GetMetadata() map[string]interface{}`
+`func (o *DebitWalletRequest) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *DebitWalletRequest) GetMetadataOk() (*map[string]interface{}, bool)`
+`func (o *DebitWalletRequest) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *DebitWalletRequest) SetMetadata(v map[string]interface{})`
+`func (o *DebitWalletRequest) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 
-### HasMetadata
-
-`func (o *DebitWalletRequest) HasMetadata() bool`
-
-HasMetadata returns a boolean if a field has been set.
 
 ### GetDescription
 

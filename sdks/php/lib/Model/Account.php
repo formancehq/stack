@@ -60,7 +60,7 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
     protected static $openAPITypes = [
         'address' => 'string',
         'type' => 'string',
-        'metadata' => 'object'
+        'metadata' => 'array<string,string>'
     ];
 
     /**
@@ -292,6 +292,9 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
         if ($this->container['address'] === null) {
             $invalidProperties[] = "'address' can't be null";
         }
+        if ($this->container['metadata'] === null) {
+            $invalidProperties[] = "'metadata' can't be null";
+        }
         return $invalidProperties;
     }
 
@@ -364,7 +367,7 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets metadata
      *
-     * @return object|null
+     * @return array<string,string>
      */
     public function getMetadata()
     {
@@ -374,7 +377,7 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets metadata
      *
-     * @param object|null $metadata metadata
+     * @param array<string,string> $metadata metadata
      *
      * @return self
      */
