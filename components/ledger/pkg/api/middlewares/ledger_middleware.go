@@ -5,7 +5,7 @@ import (
 
 	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/api/controllers"
-	"github.com/formancehq/ledger/pkg/opentelemetry"
+	"github.com/formancehq/ledger/pkg/opentelemetry/tracer"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -21,7 +21,7 @@ func LedgerMiddleware(resolver controllers.Backend) func(handler http.Handler) h
 				return
 			}
 
-			ctx, span := opentelemetry.Start(r.Context(), name)
+			ctx, span := tracer.Start(r.Context(), name)
 			defer span.End()
 
 			r = r.WithContext(ctx)

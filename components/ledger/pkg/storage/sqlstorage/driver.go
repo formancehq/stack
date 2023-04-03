@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/formancehq/ledger/pkg/opentelemetry"
+	"github.com/formancehq/ledger/pkg/opentelemetry/tracer"
 	"github.com/formancehq/ledger/pkg/storage"
 	ledgerstore "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger"
 	"github.com/formancehq/ledger/pkg/storage/sqlstorage/schema"
@@ -85,7 +85,7 @@ func (d *Driver) GetLedgerStore(ctx context.Context, name string, create bool) (
 	d.lock.Lock()
 	defer d.lock.Unlock()
 
-	ctx, span := opentelemetry.Start(ctx, "Load store")
+	ctx, span := tracer.Start(ctx, "Load store")
 	defer span.End()
 
 	var (
