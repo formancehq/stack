@@ -14,10 +14,13 @@ const (
 	OtelTracesExporterJaegerEndpointFlag = "otel-traces-exporter-jaeger-endpoint"
 	OtelTracesExporterJaegerUserFlag     = "otel-traces-exporter-jaeger-user"
 	OtelTracesExporterJaegerPasswordFlag = "otel-traces-exporter-jaeger-password"
+	OtelTracesExporterOTLPModeFlag       = "otel-traces-exporter-otlp-mode"
+	OtelTracesExporterOTLPEndpointFlag   = "otel-traces-exporter-otlp-endpoint"
+	OtelTracesExporterOTLPInsecureFlag   = "otel-traces-exporter-otlp-insecure"
 )
 
 func InitOTLPTracesFlags(flags *flag.FlagSet) {
-	otlp.InitOTLPTracesFlags(flags)
+	otlp.InitOTLPFlags(flags)
 
 	flags.Bool(OtelTracesFlag, false, "Enable OpenTelemetry traces support")
 	flags.Bool(OtelTracesBatchFlag, false, "Use OpenTelemetry batching")
@@ -25,6 +28,9 @@ func InitOTLPTracesFlags(flags *flag.FlagSet) {
 	flags.String(OtelTracesExporterJaegerEndpointFlag, "", "OpenTelemetry traces Jaeger exporter endpoint")
 	flags.String(OtelTracesExporterJaegerUserFlag, "", "OpenTelemetry traces Jaeger exporter user")
 	flags.String(OtelTracesExporterJaegerPasswordFlag, "", "OpenTelemetry traces Jaeger exporter password")
+	flags.String(OtelTracesExporterOTLPModeFlag, "grpc", "OpenTelemetry traces OTLP exporter mode (grpc|http)")
+	flags.String(OtelTracesExporterOTLPEndpointFlag, "", "OpenTelemetry traces grpc endpoint")
+	flags.Bool(OtelTracesExporterOTLPInsecureFlag, false, "OpenTelemetry traces grpc insecure")
 }
 
 func CLITracesModule(v *viper.Viper) fx.Option {
@@ -47,9 +53,9 @@ func CLITracesModule(v *viper.Viper) fx.Option {
 					return nil
 				}
 				return &OTLPConfig{
-					Mode:     v.GetString(otlp.OtelTracesExporterOTLPModeFlag),
-					Endpoint: v.GetString(otlp.OtelTracesExporterOTLPEndpointFlag),
-					Insecure: v.GetBool(otlp.OtelTracesExporterOTLPInsecureFlag),
+					Mode:     v.GetString(OtelTracesExporterOTLPModeFlag),
+					Endpoint: v.GetString(OtelTracesExporterOTLPEndpointFlag),
+					Insecure: v.GetBool(OtelTracesExporterOTLPInsecureFlag),
 				}
 			}(),
 			ServiceName:        v.GetString(otlp.OtelServiceName),
