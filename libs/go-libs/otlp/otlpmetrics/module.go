@@ -25,6 +25,9 @@ import (
 const (
 	metricsProviderOptionKey = `group:"_metricsProviderOption"`
 	metricsRuntimeOptionKey  = `group:"_metricsRuntimeOption"`
+
+	StdoutExporter = "stdout"
+	OTLPExporter   = "otlp"
 )
 
 type ModuleConfig struct {
@@ -34,6 +37,7 @@ type ModuleConfig struct {
 	RuntimeMetrics              bool
 	MinimumReadMemStatsInterval time.Duration
 
+	Exporter           string
 	OTLPConfig         *OTLPConfig
 	PushInterval       time.Duration
 	ResourceAttributes []string
@@ -114,51 +118,48 @@ func MetricsModule(cfg ModuleConfig) fx.Option {
 		}),
 	)
 
-	mode := otlp.ModeGRPC
-	if cfg.OTLPConfig != nil {
-		if cfg.OTLPConfig.Mode != "" {
-			mode = cfg.OTLPConfig.Mode
-		}
-	}
-	switch mode {
-	case otlp.ModeGRPC:
+	switch cfg.Exporter {
+	case StdoutExporter:
+		options = append(options, StdoutMetricsModule())
+	case OTLPExporter:
+		mode := otlp.ModeGRPC
 		if cfg.OTLPConfig != nil {
-			if cfg.OTLPConfig.Endpoint != "" {
-				options = append(options, ProvideOTLPMetricsGRPCOption(func() otlpmetricgrpc.Option {
-					return otlpmetricgrpc.WithEndpoint(cfg.OTLPConfig.Endpoint)
-				}))
-			}
-			if cfg.OTLPConfig.Insecure {
-				options = append(options, ProvideOTLPMetricsGRPCOption(func() otlpmetricgrpc.Option {
-					return otlpmetricgrpc.WithInsecure()
-				}))
+			if cfg.OTLPConfig.Mode != "" {
+				mode = cfg.OTLPConfig.Mode
 			}
 		}
+		switch mode {
+		case otlp.ModeGRPC:
+			if cfg.OTLPConfig != nil {
+				if cfg.OTLPConfig.Endpoint != "" {
+					options = append(options, ProvideOTLPMetricsGRPCOption(func() otlpmetricgrpc.Option {
+						return otlpmetricgrpc.WithEndpoint(cfg.OTLPConfig.Endpoint)
+					}))
+				}
+				if cfg.OTLPConfig.Insecure {
+					options = append(options, ProvideOTLPMetricsGRPCOption(func() otlpmetricgrpc.Option {
+						return otlpmetricgrpc.WithInsecure()
+					}))
+				}
+			}
 
-		options = append(options, fx.Options(
-			fx.Provide(
-				fx.Annotate(LoadOTLPMetricsGRPCExporter, fx.As(new(sdkmetric.Exporter))),
-			),
-		))
-	case otlp.ModeHTTP:
-		if cfg.OTLPConfig != nil {
-			if cfg.OTLPConfig.Endpoint != "" {
-				options = append(options, ProvideOTLPMetricsHTTPOption(func() otlpmetrichttp.Option {
-					return otlpmetrichttp.WithEndpoint(cfg.OTLPConfig.Endpoint)
-				}))
+			options = append(options, ProvideOTLPMetricsGRPCExporter())
+		case otlp.ModeHTTP:
+			if cfg.OTLPConfig != nil {
+				if cfg.OTLPConfig.Endpoint != "" {
+					options = append(options, ProvideOTLPMetricsHTTPOption(func() otlpmetrichttp.Option {
+						return otlpmetrichttp.WithEndpoint(cfg.OTLPConfig.Endpoint)
+					}))
+				}
+				if cfg.OTLPConfig.Insecure {
+					options = append(options, ProvideOTLPMetricsHTTPOption(func() otlpmetrichttp.Option {
+						return otlpmetrichttp.WithInsecure()
+					}))
+				}
 			}
-			if cfg.OTLPConfig.Insecure {
-				options = append(options, ProvideOTLPMetricsHTTPOption(func() otlpmetrichttp.Option {
-					return otlpmetrichttp.WithInsecure()
-				}))
-			}
+
+			options = append(options, ProvideOTLPMetricsHTTPExporter())
 		}
-
-		options = append(options, fx.Options(
-			fx.Provide(
-				fx.Annotate(LoadOTLPMetricsHTTPExporter, fx.As(new(sdkmetric.Exporter))),
-			),
-		))
 	}
 
 	return fx.Options(options...)

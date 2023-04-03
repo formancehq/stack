@@ -14,9 +14,25 @@ func LoadOTLPMetricsGRPCExporter(options ...otlpmetricgrpc.Option) (sdkmetric.Ex
 	return otlpmetricgrpc.New(context.Background(), options...)
 }
 
+func ProvideOTLPMetricsGRPCExporter() fx.Option {
+	return fx.Options(
+		fx.Provide(
+			fx.Annotate(LoadOTLPMetricsGRPCExporter, fx.As(new(sdkmetric.Exporter))),
+		),
+	)
+}
+
 func LoadOTLPMetricsHTTPExporter(options ...otlpmetrichttp.Option) (sdkmetric.Exporter, error) {
 	// TODO(polo): context.Background() is not ideal here
 	return otlpmetrichttp.New(context.Background(), options...)
+}
+
+func ProvideOTLPMetricsHTTPExporter() fx.Option {
+	return fx.Options(
+		fx.Provide(
+			fx.Annotate(LoadOTLPMetricsHTTPExporter, fx.As(new(sdkmetric.Exporter))),
+		),
+	)
 }
 
 const OTLPMetricsGRPCOptionsKey = `group:"_otlpMetricsGrpcOptions"`
