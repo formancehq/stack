@@ -93,6 +93,7 @@ func savePayment(ctx workflow.Context, paymentID string) error {
 			Destination: paymentAccountName(paymentID),
 			Source:      "world",
 		}},
+		Metadata:  metadata.Metadata{},
 		Reference: sdk.PtrString(paymentAccountName(paymentID)),
 	})
 	if err != nil {
@@ -272,6 +273,7 @@ func runAccountToAccount(ctx workflow.Context, source *LedgerAccountSource, dest
 				Destination: destination.ID,
 				Source:      source.ID,
 			}},
+			Metadata: metadata.Metadata{},
 		}))
 	}
 	if err := justError(activities.CreateTransaction(internal.InfiniteRetryContext(ctx), source.Ledger, sdk.PostTransaction{
@@ -326,5 +328,6 @@ func runAccountToPayment(ctx workflow.Context, source *LedgerAccountSource, dest
 			Destination: "world",
 			Source:      source.ID,
 		}},
+		Metadata: metadata.Metadata{},
 	}))
 }

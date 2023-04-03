@@ -98,7 +98,7 @@ $apiInstance = new Formance\Api\AccountsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $address = users:.+; // string | Filter accounts by address pattern (regular expression placed between ^ and $).
-$metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2
+$metadata = {"admin":"true"}; // object | Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2
 
 try {
     $apiInstance->countAccounts($ledger, $address, $metadata);
@@ -223,7 +223,7 @@ $ledger = ledger001; // string | Name of the ledger.
 $page_size = 100; // int | The maximum number of results to return per page.
 $after = users:003; // string | Pagination cursor, will return accounts after given address, in descending order.
 $address = users:.+; // string | Filter accounts by address pattern (regular expression placed between ^ and $).
-$metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // array<string,string> | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+$metadata = {"admin":"true"}; // array<string,string> | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
 $balance = 2400; // int | Filter accounts by their balance (default operator is gte)
 $balance_operator = gte; // string | Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not.
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.

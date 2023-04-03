@@ -1823,7 +1823,7 @@ export class ObservableTransactionsApi {
      * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
      * @param metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
-    public countTransactions(ledger: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, metadata?: any, _options?: Configuration): Observable<void> {
+    public countTransactions(ledger: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, metadata?: { [key: string]: string; }, _options?: Configuration): Observable<void> {
         const requestContextPromise = this.requestFactory.countTransactions(ledger, reference, account, source, destination, startTime, endTime, metadata, _options);
 
         // build promise chain

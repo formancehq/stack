@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -28,6 +29,7 @@ var _ = Given("some empty environment", func() {
 						Source:      "world",
 						Destination: "alice",
 					}},
+					Metadata: metadata.Metadata{},
 				}).
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
