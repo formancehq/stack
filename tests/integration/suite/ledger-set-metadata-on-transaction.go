@@ -39,7 +39,7 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 		Then("adding a metadata", func() {
-			metadata := map[string]any{
+			metadata := map[string]string{
 				"foo": "bar",
 			}
 			BeforeEach(func() {
