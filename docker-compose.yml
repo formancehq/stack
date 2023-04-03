@@ -112,10 +112,10 @@ services:
         condition: service_healthy
     environment:
       STORAGE_DRIVER: "postgres"
-      STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger"
+      STORAGE_POSTGRES_CONN_STRING: "postgresql://formance:formance@postgres/ledger?sslmode=disable"
       SERVER_HTTP_BIND_ADDRESS: "0.0.0.0:3068"
       PUBLISHER_NATS_ENABLED: "true"
-      PUBLISHER_NATS_BROKER: "nats:4222"
+      PUBLISHER_NATS_URL: "nats:4222"
       PUBLISHER_TOPIC_MAPPING: "*:ledger"
 
   wallets:
