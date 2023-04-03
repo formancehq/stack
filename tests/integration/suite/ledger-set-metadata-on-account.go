@@ -17,7 +17,7 @@ var _ = Given("some empty environment", func() {
 		var (
 			msgs               chan *nats.Msg
 			cancelSubscription func()
-			metadata           = map[string]interface{}{
+			metadata           = map[string]string{
 				"clientType": "gold",
 			}
 		)
@@ -42,8 +42,8 @@ var _ = Given("some empty environment", func() {
 			Expect(accountResponse.Data).Should(Equal(formance.AccountWithVolumesAndBalances{
 				Address:  "foo",
 				Metadata: metadata,
-				Volumes:  ptr(map[string]map[string]int64{}),
-				Balances: ptr(map[string]int64{}),
+				Volumes:  map[string]map[string]int64{},
+				Balances: map[string]int64{},
 			}))
 		})
 		It("should trigger a new event", func() {
