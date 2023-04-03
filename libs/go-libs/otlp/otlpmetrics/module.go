@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/otlp"
+	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/contrib/propagators/b3"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -23,11 +24,15 @@ import (
 
 const (
 	metricsProviderOptionKey = `group:"_metricsProviderOption"`
+	metricsRuntimeOptionKey  = `group:"_metricsRuntimeOption"`
 )
 
 type ModuleConfig struct {
 	ServiceName    string
 	ServiceVersion string
+
+	RuntimeMetrics              bool
+	MinimumReadMemStatsInterval time.Duration
 
 	OTLPConfig         *OTLPConfig
 	PushInterval       time.Duration
@@ -43,6 +48,12 @@ type OTLPConfig struct {
 func ProvideMetricsProviderOption(v any, annotations ...fx.Annotation) fx.Option {
 	annotations = append(annotations, fx.ResultTags(metricsProviderOptionKey))
 	return fx.Provide(fx.Annotate(v, annotations...))
+}
+
+func ProvideRuntimeMetricsOption(v any, annotations ...fx.Annotation) fx.Option {
+	annotations = append(annotations, fx.ResultTags(metricsRuntimeOptionKey))
+	return fx.Provide(fx.Annotate(v, annotations...))
+
 }
 
 func loadResource(cfg ModuleConfig) (*resource.Resource, error) {
@@ -71,13 +82,18 @@ func MetricsModule(cfg ModuleConfig) fx.Option {
 		fx.Provide(fx.Annotate(func(options ...sdkmetric.Option) *sdkmetric.MeterProvider {
 			return sdkmetric.NewMeterProvider(options...)
 		}, fx.ParamTags(metricsProviderOptionKey))),
-		fx.Invoke(func(lc fx.Lifecycle, metricProvider *sdkmetric.MeterProvider) {
+		fx.Invoke(func(lc fx.Lifecycle, metricProvider *sdkmetric.MeterProvider, options ...runtime.Option) {
 			// set global propagator to tracecontext (the default is no-op).
 			otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
 				b3.New(), propagation.TraceContext{})) // B3 format is common and used by zipkin. Always enabled right now.
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					global.SetMeterProvider(metricProvider)
+					if cfg.RuntimeMetrics {
+						if err := runtime.Start(options...); err != nil {
+							return err
+						}
+					}
 					return nil
 				},
 				OnStop: func(ctx context.Context) error {
@@ -93,6 +109,9 @@ func MetricsModule(cfg ModuleConfig) fx.Option {
 		ProvideOTLPMetricsPeriodicReaderOption(func() sdkmetric.PeriodicReaderOption {
 			return sdkmetric.WithInterval(cfg.PushInterval)
 		}),
+		ProvideRuntimeMetricsOption(func() runtime.Option {
+			return runtime.WithMinimumReadMemStatsInterval(cfg.MinimumReadMemStatsInterval)
+		}),
 	)
 
 	mode := otlp.ModeGRPC
@@ -103,15 +122,17 @@ func MetricsModule(cfg ModuleConfig) fx.Option {
 	}
 	switch mode {
 	case otlp.ModeGRPC:
-		if cfg.OTLPConfig.Endpoint != "" {
-			options = append(options, ProvideOTLPMetricsGRPCOption(func() otlpmetricgrpc.Option {
-				return otlpmetricgrpc.WithEndpoint(cfg.OTLPConfig.Endpoint)
-			}))
-		}
-		if cfg.OTLPConfig.Insecure {
-			options = append(options, ProvideOTLPMetricsGRPCOption(func() otlpmetricgrpc.Option {
-				return otlpmetricgrpc.WithInsecure()
-			}))
+		if cfg.OTLPConfig != nil {
+			if cfg.OTLPConfig.Endpoint != "" {
+				options = append(options, ProvideOTLPMetricsGRPCOption(func() otlpmetricgrpc.Option {
+					return otlpmetricgrpc.WithEndpoint(cfg.OTLPConfig.Endpoint)
+				}))
+			}
+			if cfg.OTLPConfig.Insecure {
+				options = append(options, ProvideOTLPMetricsGRPCOption(func() otlpmetricgrpc.Option {
+					return otlpmetricgrpc.WithInsecure()
+				}))
+			}
 		}
 
 		options = append(options, fx.Options(
@@ -120,15 +141,17 @@ func MetricsModule(cfg ModuleConfig) fx.Option {
 			),
 		))
 	case otlp.ModeHTTP:
-		if cfg.OTLPConfig.Endpoint != "" {
-			options = append(options, ProvideOTLPMetricsHTTPOption(func() otlpmetrichttp.Option {
-				return otlpmetrichttp.WithEndpoint(cfg.OTLPConfig.Endpoint)
-			}))
-		}
-		if cfg.OTLPConfig.Insecure {
-			options = append(options, ProvideOTLPMetricsHTTPOption(func() otlpmetrichttp.Option {
-				return otlpmetrichttp.WithInsecure()
-			}))
+		if cfg.OTLPConfig != nil {
+			if cfg.OTLPConfig.Endpoint != "" {
+				options = append(options, ProvideOTLPMetricsHTTPOption(func() otlpmetrichttp.Option {
+					return otlpmetrichttp.WithEndpoint(cfg.OTLPConfig.Endpoint)
+				}))
+			}
+			if cfg.OTLPConfig.Insecure {
+				options = append(options, ProvideOTLPMetricsHTTPOption(func() otlpmetrichttp.Option {
+					return otlpmetrichttp.WithInsecure()
+				}))
+			}
 		}
 
 		options = append(options, fx.Options(
