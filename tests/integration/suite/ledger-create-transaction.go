@@ -6,6 +6,7 @@ import (
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/ledger/pkg/bus"
 	"github.com/formancehq/stack/libs/events"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/nats-io/nats.go"
 	. "github.com/onsi/ginkgo/v2"
@@ -56,17 +57,17 @@ var _ = Given("some empty environment", func() {
 			Expect(err).ToNot(HaveOccurred())
 			Expect(accountResponse.Data).Should(Equal(formance.AccountWithVolumesAndBalances{
 				Address:  "alice",
-				Metadata: map[string]interface{}{},
-				Volumes: ptr(map[string]map[string]int64{
+				Metadata: metadata.Metadata{},
+				Volumes: map[string]map[string]int64{
 					"USD": {
 						"input":   100,
 						"output":  0,
 						"balance": 100,
 					},
-				}),
-				Balances: ptr(map[string]int64{
+				},
+				Balances: map[string]int64{
 					"USD": 100,
-				}),
+				},
 			}))
 		})
 		It("should trigger a new event", func() {
@@ -74,7 +75,7 @@ var _ = Given("some empty environment", func() {
 			msg := WaitOnChanWithTimeout(msgs, 5*time.Second)
 			Expect(events.Check(msg.Data, "ledger", bus.EventTypeCommittedTransactions)).Should(Succeed())
 		})
-		FIt("should pop a transaction, two accounts and two assets entries on search service", func() {
+		It("should pop a transaction, two accounts and two assets entries on search service", func() {
 			expectedTx := map[string]any{
 				"reference": "",
 				"metadata":  map[string]any{},
