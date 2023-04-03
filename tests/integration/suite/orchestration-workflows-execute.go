@@ -174,7 +174,7 @@ var _ = Given("An empty environment", func() {
 									Data: formance.Transaction{
 										Postings:  postings,
 										Reference: formance.PtrString(""),
-										Metadata:  map[string]interface{}{},
+										Metadata:  map[string]string{},
 										PostCommitVolumes: &map[string]map[string]formance.Volume{
 											"bank": {
 												"EUR/2": formance.Volume{
