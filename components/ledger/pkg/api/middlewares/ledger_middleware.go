@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/formancehq/ledger/pkg/api/apierrors"
@@ -25,8 +24,6 @@ func LedgerMiddleware(
 				w.WriteHeader(http.StatusNotFound)
 				return
 			}
-
-			fmt.Println(chi.RouteContext(r.Context()).RoutePattern())
 
 			ctx, span := tracer.Start(r.Context(), name)
 			defer span.End()
