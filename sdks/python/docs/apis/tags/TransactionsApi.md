@@ -805,7 +805,7 @@ metadata | MetadataSchema | | optional
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | if omitted the server will use the default value of 15value must be a 64 bit integer
+decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 
 # AfterSchema
 
