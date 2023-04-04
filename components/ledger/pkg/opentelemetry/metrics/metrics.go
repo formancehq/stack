@@ -4,7 +4,6 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/global"
 	"go.opentelemetry.io/otel/metric/instrument"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 )
 
 type GlobalMetricsRegistry struct {
@@ -14,7 +13,7 @@ type GlobalMetricsRegistry struct {
 	ActiveLedgers instrument.Int64UpDownCounter
 }
 
-func RegisterGlobalMetricsRegistry(meterProvider *sdkmetric.MeterProvider) (*GlobalMetricsRegistry, error) {
+func RegisterGlobalMetricsRegistry(meterProvider metric.MeterProvider) (*GlobalMetricsRegistry, error) {
 	meter := meterProvider.Meter("global")
 
 	apiLatencies, err := meter.Int64Histogram(
@@ -165,6 +164,10 @@ func (pm *perLedgerMetricsRegistry) QueryProcessedLogs() instrument.Int64Counter
 }
 
 type NoOpMetricsRegistry struct{}
+
+func NewNoOpMetricsRegistry() *NoOpMetricsRegistry {
+	return &NoOpMetricsRegistry{}
+}
 
 func (nm *NoOpMetricsRegistry) CacheMisses() instrument.Int64Counter {
 	counter, _ := metric.NewNoopMeter().Int64Counter("cache_misses")

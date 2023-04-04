@@ -9,7 +9,7 @@ import (
 	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/health"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/metric"
 	"go.uber.org/fx"
 )
 
@@ -23,7 +23,8 @@ func Module(cfg Config) fx.Option {
 		fx.Provide(func(storageDriver storage.Driver, resolver *ledger.Resolver) controllers.Backend {
 			return controllers.NewDefaultBackend(storageDriver, cfg.Version, resolver)
 		}),
-		fx.Provide(func(meterProvider *sdkmetric.MeterProvider) (*metrics.GlobalMetricsRegistry, error) {
+		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
+		fx.Provide(func(meterProvider metric.MeterProvider) (*metrics.GlobalMetricsRegistry, error) {
 			return metrics.RegisterGlobalMetricsRegistry(meterProvider)
 		}),
 		health.Module(),
