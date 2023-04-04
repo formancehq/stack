@@ -1444,7 +1444,7 @@ class TransactionsApi
      * List transactions from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $after Pagination cursor, will return transactions after given txid (in descending order). (optional)
      * @param  string $reference Find transactions by reference field. (optional)
      * @param  string $account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
@@ -1460,7 +1460,7 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return \Formance\Model\TransactionsCursorResponse|\Formance\Model\ErrorResponse
      */
-    public function listTransactions($ledger, $page_size = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
+    public function listTransactions($ledger, $page_size = null, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
     {
         list($response) = $this->listTransactionsWithHttpInfo($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata, $contentType);
         return $response;
@@ -1472,7 +1472,7 @@ class TransactionsApi
      * List transactions from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $after Pagination cursor, will return transactions after given txid (in descending order). (optional)
      * @param  string $reference Find transactions by reference field. (optional)
      * @param  string $account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
@@ -1488,7 +1488,7 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\TransactionsCursorResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listTransactionsWithHttpInfo($ledger, $page_size = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
+    public function listTransactionsWithHttpInfo($ledger, $page_size = null, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
     {
         $request = $this->listTransactionsRequest($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata, $contentType);
 
@@ -1605,7 +1605,7 @@ class TransactionsApi
      * List transactions from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $after Pagination cursor, will return transactions after given txid (in descending order). (optional)
      * @param  string $reference Find transactions by reference field. (optional)
      * @param  string $account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
@@ -1620,7 +1620,7 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listTransactionsAsync($ledger, $page_size = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
+    public function listTransactionsAsync($ledger, $page_size = null, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
     {
         return $this->listTransactionsAsyncWithHttpInfo($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata, $contentType)
             ->then(
@@ -1636,7 +1636,7 @@ class TransactionsApi
      * List transactions from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $after Pagination cursor, will return transactions after given txid (in descending order). (optional)
      * @param  string $reference Find transactions by reference field. (optional)
      * @param  string $account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
@@ -1651,7 +1651,7 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listTransactionsAsyncWithHttpInfo($ledger, $page_size = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
+    public function listTransactionsAsyncWithHttpInfo($ledger, $page_size = null, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
     {
         $returnType = '\Formance\Model\TransactionsCursorResponse';
         $request = $this->listTransactionsRequest($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata, $contentType);
@@ -1696,7 +1696,7 @@ class TransactionsApi
      * Create request for operation 'listTransactions'
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $after Pagination cursor, will return transactions after given txid (in descending order). (optional)
      * @param  string $reference Find transactions by reference field. (optional)
      * @param  string $account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
@@ -1711,7 +1711,7 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listTransactionsRequest($ledger, $page_size = 15, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
+    public function listTransactionsRequest($ledger, $page_size = null, $after = null, $reference = null, $account = null, $source = null, $destination = null, $start_time = null, $end_time = null, $cursor = null, $metadata = null, string $contentType = self::contentTypes['listTransactions'][0])
     {
 
         // verify the required parameter 'ledger' is set

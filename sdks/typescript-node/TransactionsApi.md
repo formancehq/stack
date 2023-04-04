@@ -346,7 +346,7 @@ apiInstance.listTransactions(body).then((data:any) => {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
- **pageSize** | [**number**] | The maximum number of results to return per page.  | (optional) defaults to 15
+ **pageSize** | [**number**] | The maximum number of results to return per page.  | (optional) defaults to undefined
  **after** | [**string**] | Pagination cursor, will return transactions after given txid (in descending order). | (optional) defaults to undefined
  **reference** | [**string**] | Find transactions by reference field. | (optional) defaults to undefined
  **account** | [**string**] | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). | (optional) defaults to undefined

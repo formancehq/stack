@@ -345,7 +345,7 @@ public class Example {
 
         TransactionsApi apiInstance = new TransactionsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
-        Long pageSize = 15L; // Long | The maximum number of results to return per page. 
+        Long pageSize = 100L; // Long | The maximum number of results to return per page. 
         String after = "1234"; // String | Pagination cursor, will return transactions after given txid (in descending order).
         String reference = "ref:001"; // String | Find transactions by reference field.
         String account = "users:001"; // String | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
@@ -375,7 +375,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
-| **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] [default to 15] |
+| **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] |
 | **after** | **String**| Pagination cursor, will return transactions after given txid (in descending order). | [optional] |
 | **reference** | **String**| Find transactions by reference field. | [optional] |
 | **account** | **String**| Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). | [optional] |
