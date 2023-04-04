@@ -331,7 +331,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    pageSize := int64(100) // int64 | The maximum number of results to return per page.  (optional) (default to 15)
+    pageSize := int64(100) // int64 | The maximum number of results to return per page.  (optional)
     after := "1234" // string | Pagination cursor, will return transactions after given txid (in descending order). (optional)
     reference := "ref:001" // string | Find transactions by reference field. (optional)
     account := "users:001" // string | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
@@ -370,7 +370,7 @@ Other parameters are passed through a pointer to a apiListTransactionsRequest st
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **pageSize** | **int64** | The maximum number of results to return per page.  | [default to 15]
+ **pageSize** | **int64** | The maximum number of results to return per page.  | 
  **after** | **string** | Pagination cursor, will return transactions after given txid (in descending order). | 
  **reference** | **string** | Find transactions by reference field. | 
  **account** | **string** | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). | 

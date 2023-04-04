@@ -318,7 +318,7 @@ try {
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
-| **page_size** | **int**| The maximum number of results to return per page. | [optional] [default to 15] |
+| **page_size** | **int**| The maximum number of results to return per page. | [optional] |
 | **after** | **string**| Pagination cursor, will return transactions after given txid (in descending order). | [optional] |
 | **reference** | **string**| Find transactions by reference field. | [optional] |
 | **account** | **string**| Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). | [optional] |

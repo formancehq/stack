@@ -827,7 +827,6 @@ paths:
         name: pageSize
         required: false
         schema:
-          default: 15
           format: int64
           maximum: 1000
           minimum: 1
