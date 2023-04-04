@@ -37,6 +37,7 @@ var _ = Given("some empty environment", func() {
 						Source:      "world",
 						Destination: "alice",
 					}},
+					Metadata: metadata.Metadata{},
 				}).
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
@@ -175,6 +176,7 @@ var _ = Given("some empty environment", func() {
 						Source:      "bob",
 						Destination: "alice",
 					}},
+					Metadata: metadata.Metadata{},
 				}).Execute()
 			Expect(err).To(HaveOccurred())
 			Expect(httpResp.StatusCode).To(Equal(400))

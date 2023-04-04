@@ -2,6 +2,7 @@ package suite
 
 import (
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -86,6 +87,7 @@ var _ = Given("An empty environment", func() {
 										Destination: "bank",
 										Source:      "empty:account",
 									}},
+									Metadata: metadata.Metadata{},
 								},
 							},
 						},

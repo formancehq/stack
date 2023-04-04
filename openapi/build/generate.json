@@ -721,12 +721,7 @@
               "properties": {}
             },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           }
         ],
@@ -817,12 +812,7 @@
               }
             },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           },
           {
@@ -1118,18 +1108,15 @@
             "in": "query",
             "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
-            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           }
         ],
@@ -6372,6 +6359,9 @@
             "asset": "USD/2",
             "amount": 100
           },
+          "metadata": {
+            "key": ""
+          },
           "sources": []
         }
       },
@@ -6414,6 +6404,9 @@
           "amount": {
             "asset": "USD/2",
             "amount": 100
+          },
+          "metadata": {
+            "key": ""
           },
           "pending": true
         }

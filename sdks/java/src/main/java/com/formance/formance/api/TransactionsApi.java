@@ -53,7 +53,7 @@ public interface TransactionsApi {
    */
   @HEAD("api/ledger/{ledger}/transactions")
   Call<Void> countTransactions(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("reference") String reference, @retrofit2.http.Query("account") String account, @retrofit2.http.Query("source") String source, @retrofit2.http.Query("destination") String destination, @retrofit2.http.Query("startTime") OffsetDateTime startTime, @retrofit2.http.Query("endTime") OffsetDateTime endTime, @retrofit2.http.Query("metadata") Object metadata
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("reference") String reference, @retrofit2.http.Query("account") String account, @retrofit2.http.Query("source") String source, @retrofit2.http.Query("destination") String destination, @retrofit2.http.Query("startTime") OffsetDateTime startTime, @retrofit2.http.Query("endTime") OffsetDateTime endTime, @retrofit2.http.Query("metadata") Map<String, String> metadata
   );
 
   /**
