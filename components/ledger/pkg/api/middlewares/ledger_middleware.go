@@ -6,6 +6,7 @@ import (
 
 	"github.com/formancehq/ledger/pkg/api/apierrors"
 	"github.com/formancehq/ledger/pkg/api/controllers"
+	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
 	"github.com/formancehq/ledger/pkg/opentelemetry/tracer"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/go-chi/chi/v5"
@@ -13,7 +14,10 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-func LedgerMiddleware(resolver controllers.Backend) func(handler http.Handler) http.Handler {
+func LedgerMiddleware(
+	resolver controllers.Backend,
+	globalMetricsRegistry *metrics.GlobalMetricsRegistry,
+) func(handler http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			name := chi.URLParam(r, "ledger")
@@ -30,13 +34,18 @@ func LedgerMiddleware(resolver controllers.Backend) func(handler http.Handler) h
 			r = r.WithContext(ctx)
 			r = wrapRequest(r)
 
-			l, err := resolver.GetLedger(r.Context(), name)
+			l, created, err := resolver.GetLedger(r.Context(), name)
 			if err != nil {
 				apierrors.ResponseError(w, r, err)
 				return
 			}
+			if created {
+				globalMetricsRegistry.ActiveLedgers.Add(r.Context(), +1)
+			}
 			// TODO(polo/gfyrag): close ledger if not used for x minutes
 			// defer l.Close(context.Background())
+			// When close, we have to decrease the active ledgers counter:
+			// globalMetricsRegistry.ActiveLedgers.Add(r.Context(), -1)
 
 			r = r.WithContext(controllers.ContextWithLedger(r.Context(), l))
 

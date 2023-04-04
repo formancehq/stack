@@ -30,7 +30,7 @@ type Ledger interface {
 }
 
 type Backend interface {
-	GetLedger(ctx context.Context, name string) (Ledger, error)
+	GetLedger(ctx context.Context, name string) (Ledger, bool, error)
 	ListLedgers(ctx context.Context) ([]string, error)
 	GetVersion() string
 }
@@ -41,7 +41,7 @@ type DefaultBackend struct {
 	version       string
 }
 
-func (d DefaultBackend) GetLedger(ctx context.Context, name string) (Ledger, error) {
+func (d DefaultBackend) GetLedger(ctx context.Context, name string) (Ledger, bool, error) {
 	return d.resolver.GetLedger(ctx, name)
 }
 

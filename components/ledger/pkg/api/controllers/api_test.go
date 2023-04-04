@@ -273,12 +273,13 @@ func (m *MockBackend) EXPECT() *MockBackendMockRecorder {
 }
 
 // GetLedger mocks base method.
-func (m *MockBackend) GetLedger(ctx context.Context, name string) (controllers.Ledger, error) {
+func (m *MockBackend) GetLedger(ctx context.Context, name string) (controllers.Ledger, bool, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetLedger", ctx, name)
 	ret0, _ := ret[0].(controllers.Ledger)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].(bool)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetLedger indicates an expected call of GetLedger.

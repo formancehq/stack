@@ -64,7 +64,7 @@ func TestParallelRead(t *testing.T) {
 			},
 		},
 	}
-	cache := New(mock)
+	cache := New(mock, nil)
 
 	release, err := cache.LockAccounts(context.Background(), "bank")
 	require.NoError(t, err)
@@ -118,7 +118,7 @@ func TestUpdateVolumes(t *testing.T) {
 			},
 		},
 	}
-	cache := New(mock)
+	cache := New(mock, nil)
 
 	release, err := cache.LockAccounts(context.Background(), "world", "bank")
 	require.NoError(t, err)

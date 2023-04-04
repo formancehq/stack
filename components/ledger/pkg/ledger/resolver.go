@@ -43,31 +43,37 @@ func NewResolver(
 	}
 }
 
-func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) {
+func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, bool, error) {
 	r.lock.RLock()
 	ledger, ok := r.ledgers[name]
 	r.lock.RUnlock()
+	created := false
 	if !ok {
 		r.lock.Lock()
 		defer r.lock.Unlock()
 
 		store, _, err := r.storageDriver.GetLedgerStore(ctx, name, true)
 		if err != nil {
-			return nil, errors.Wrap(err, "retrieving ledger store")
+			return nil, false, errors.Wrap(err, "retrieving ledger store")
 		}
 		if !store.IsInitialized() {
 			if _, err := store.Initialize(ctx); err != nil {
-				return nil, errors.Wrap(err, "initializing ledger store")
+				return nil, false, errors.Wrap(err, "initializing ledger store")
 			}
 		}
 
-		cache := cache.New(store)
-		runner, err := runner.New(store, r.locker, cache, r.compiler, name, r.allowPastTimestamps)
+		metricsRegistry, err := metrics.RegisterPerLedgerMetricsRegistry(name)
 		if err != nil {
-			return nil, errors.Wrap(err, "creating ledger runner")
+			return nil, false, errors.Wrap(err, "registering metrics")
 		}
 
-		queryWorker := query.NewWorker(query.DefaultWorkerConfig, query.NewDefaultStore(store), name, r.monitor)
+		cache := cache.New(store, metricsRegistry)
+		runner, err := runner.New(store, r.locker, cache, r.compiler, name, r.allowPastTimestamps)
+		if err != nil {
+			return nil, false, errors.Wrap(err, "creating ledger runner")
+		}
+
+		queryWorker := query.NewWorker(query.DefaultWorkerConfig, query.NewDefaultStore(store), name, r.monitor, metricsRegistry)
 
 		go func() {
 			if err := queryWorker.Run(logging.ContextWithLogger(
@@ -78,14 +84,10 @@ func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) 
 			}
 		}()
 
-		metricsRegistry, err := metrics.RegisterPerLedgerMetricsRegistry(name)
-		if err != nil {
-			return nil, errors.Wrap(err, "registering metrics")
-		}
-
 		ledger = New(store, cache, runner, r.locker, queryWorker, metricsRegistry)
 		r.ledgers[name] = ledger
+		created = true
 	}
 
-	return ledger, nil
+	return ledger, created, nil
 }

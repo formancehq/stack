@@ -22,7 +22,7 @@ type Ledger struct {
 	locker          lock.Locker
 	dbCache         *cache.Cache
 	queryWorker     *query.Worker
-	metricsRegistry *metrics.PerLedgerMetricsRegistry
+	metricsRegistry metrics.PerLedgerMetricsRegistry
 }
 
 func New(
@@ -31,7 +31,7 @@ func New(
 	runner *runner.Runner,
 	locker lock.Locker,
 	queryWorker *query.Worker,
-	metricsRegistry *metrics.PerLedgerMetricsRegistry,
+	metricsRegistry metrics.PerLedgerMetricsRegistry,
 ) *Ledger {
 	return &Ledger{
 		store:           store,

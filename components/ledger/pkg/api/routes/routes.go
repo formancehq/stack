@@ -59,7 +59,7 @@ func NewRouter(
 					handler.ServeHTTP(w, r)
 				})
 			})
-			router.Use(middlewares.LedgerMiddleware(backend))
+			router.Use(middlewares.LedgerMiddleware(backend, globalMetricsRegistry))
 
 			// LedgerController
 			router.Get("/_info", controllers.GetLedgerInfo)
