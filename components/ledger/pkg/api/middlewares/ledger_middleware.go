@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/formancehq/ledger/pkg/api/apierrors"
@@ -38,7 +37,6 @@ func LedgerMiddleware(
 				return
 			}
 			if globalMetricsRegistry != nil && created {
-				fmt.Println(globalMetricsRegistry, globalMetricsRegistry.ActiveLedgers)
 				globalMetricsRegistry.ActiveLedgers.Add(r.Context(), +1)
 			}
 			// TODO(polo/gfyrag): close ledger if not used for x minutes
