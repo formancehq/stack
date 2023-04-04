@@ -13,7 +13,7 @@ func RegisterSQLStorageMetrics(schemaName string) (*SQLStorageMetricsRegistry, e
 	meter := global.MeterProvider().Meter(schemaName)
 
 	latencies, err := meter.Int64Histogram(
-		"sql_latencies",
+		"ledger.storage.sql.time",
 		instrument.WithUnit("ms"),
 		instrument.WithDescription("Latency of SQL calls"),
 	)

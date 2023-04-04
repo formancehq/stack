@@ -18,7 +18,7 @@ func RegisterGlobalMetricsRegistry(meterProvider *sdkmetric.MeterProvider) (*Glo
 	meter := meterProvider.Meter("global")
 
 	apiLatencies, err := meter.Int64Histogram(
-		"api_latencies",
+		"ledger.api.time",
 		instrument.WithUnit("ms"),
 		instrument.WithDescription("Latency of API calls"),
 	)
@@ -27,7 +27,7 @@ func RegisterGlobalMetricsRegistry(meterProvider *sdkmetric.MeterProvider) (*Glo
 	}
 
 	statusCodes, err := meter.Int64Counter(
-		"status_codes",
+		"ledger.api.status",
 		instrument.WithUnit("1"),
 		instrument.WithDescription("Status codes of API calls"),
 	)
@@ -36,7 +36,7 @@ func RegisterGlobalMetricsRegistry(meterProvider *sdkmetric.MeterProvider) (*Glo
 	}
 
 	activeLedgers, err := meter.Int64UpDownCounter(
-		"active_ledgers",
+		"ledger.api.ledgers",
 		instrument.WithUnit("1"),
 		instrument.WithDescription("Number of active ledgers"),
 	)
@@ -77,7 +77,7 @@ func RegisterPerLedgerMetricsRegistry(ledger string) (PerLedgerMetricsRegistry, 
 	meter := global.MeterProvider().Meter(ledger)
 
 	cacheMisses, err := meter.Int64Counter(
-		"cache_misses",
+		"ledger.cache.misses",
 		instrument.WithUnit("1"),
 		instrument.WithDescription("Cache misses"),
 	)
@@ -86,7 +86,7 @@ func RegisterPerLedgerMetricsRegistry(ledger string) (PerLedgerMetricsRegistry, 
 	}
 
 	cacheNumberEntries, err := meter.Int64UpDownCounter(
-		"cache_number_entries",
+		"ledger.cache.pending_entries",
 		instrument.WithUnit("1"),
 		instrument.WithDescription("Number of entries in the cache"),
 	)
@@ -95,7 +95,7 @@ func RegisterPerLedgerMetricsRegistry(ledger string) (PerLedgerMetricsRegistry, 
 	}
 
 	queryLatencies, err := meter.Int64Histogram(
-		"query_latencies",
+		"ledger.query.time",
 		instrument.WithUnit("ms"),
 		instrument.WithDescription("Latency of queries processing logs"),
 	)
@@ -104,7 +104,7 @@ func RegisterPerLedgerMetricsRegistry(ledger string) (PerLedgerMetricsRegistry, 
 	}
 
 	queryInboundLogs, err := meter.Int64Counter(
-		"query_inbound_logs",
+		"ledger.query.inbound_logs",
 		instrument.WithUnit("1"),
 		instrument.WithDescription("Number of inbound logs in CQRS worker"),
 	)
@@ -113,7 +113,7 @@ func RegisterPerLedgerMetricsRegistry(ledger string) (PerLedgerMetricsRegistry, 
 	}
 
 	queryPendingMessages, err := meter.Int64Counter(
-		"query_pending_messages",
+		"ledger.query.pending_messages",
 		instrument.WithUnit("1"),
 		instrument.WithDescription("Number of pending messages in CQRS worker"),
 	)
@@ -122,7 +122,7 @@ func RegisterPerLedgerMetricsRegistry(ledger string) (PerLedgerMetricsRegistry, 
 	}
 
 	queryProcessedLogs, err := meter.Int64Counter(
-		"query_processed_logs",
+		"ledger.query.processed_logs",
 		instrument.WithUnit("1"),
 		instrument.WithDescription("Number of processed logs in CQRS worker"),
 	)

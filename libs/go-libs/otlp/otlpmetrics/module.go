@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/otlp"
+	"go.opentelemetry.io/contrib/instrumentation/host"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/contrib/propagators/b3"
 	"go.opentelemetry.io/otel"
@@ -95,6 +96,9 @@ func MetricsModule(cfg ModuleConfig) fx.Option {
 					global.SetMeterProvider(metricProvider)
 					if cfg.RuntimeMetrics {
 						if err := runtime.Start(options...); err != nil {
+							return err
+						}
+						if err := host.Start(); err != nil {
 							return err
 						}
 					}
