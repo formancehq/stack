@@ -25,7 +25,7 @@ func TestGetLedgerInfo(t *testing.T) {
 	t.Parallel()
 
 	backend, mock := newTestingBackend(t)
-	router := routes.NewRouter(backend, nil, nil)
+	router := routes.NewRouter(backend, nil, nil, nil)
 
 	migrationInfo := []core.MigrationInfo{
 		{
@@ -68,7 +68,7 @@ func TestGetStats(t *testing.T) {
 	t.Parallel()
 
 	backend, mock := newTestingBackend(t)
-	router := routes.NewRouter(backend, nil, nil)
+	router := routes.NewRouter(backend, nil, nil, nil)
 
 	expectedStats := ledger.Stats{
 		Transactions: 10,
@@ -191,7 +191,7 @@ func TestGetLogs(t *testing.T) {
 					Return(expectedCursor, nil)
 			}
 
-			router := routes.NewRouter(backend, nil, nil)
+			router := routes.NewRouter(backend, nil, nil, nil)
 
 			req := httptest.NewRequest(http.MethodGet, "/xxx/logs", nil)
 			rec := httptest.NewRecorder()

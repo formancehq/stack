@@ -157,7 +157,7 @@ func TestPostTransactions(t *testing.T) {
 					Return(&expectedTx, nil)
 			}
 
-			router := routes.NewRouter(backend, nil, nil)
+			router := routes.NewRouter(backend, nil, nil, nil)
 
 			req := httptest.NewRequest(http.MethodPost, "/xxx/transactions", Buffer(t, testCase.payload))
 			rec := httptest.NewRecorder()
@@ -219,7 +219,7 @@ func TestPostTransactionMetadata(t *testing.T) {
 					Return(nil)
 			}
 
-			router := routes.NewRouter(backend, nil, nil)
+			router := routes.NewRouter(backend, nil, nil, nil)
 
 			req := httptest.NewRequest(http.MethodPost, "/xxx/transactions/0/metadata", Buffer(t, testCase.body))
 			rec := httptest.NewRecorder()
@@ -252,7 +252,7 @@ func TestGetTransaction(t *testing.T) {
 		GetTransaction(gomock.Any(), uint64(0)).
 		Return(&tx, nil)
 
-	router := routes.NewRouter(backend, nil, nil)
+	router := routes.NewRouter(backend, nil, nil, nil)
 
 	req := httptest.NewRequest(http.MethodGet, "/xxx/transactions/0", nil)
 	rec := httptest.NewRecorder()
@@ -450,7 +450,7 @@ func TestGetTransactions(t *testing.T) {
 					Return(expectedCursor, nil)
 			}
 
-			router := routes.NewRouter(backend, nil, nil)
+			router := routes.NewRouter(backend, nil, nil, nil)
 
 			req := httptest.NewRequest(http.MethodGet, "/xxx/transactions", nil)
 			rec := httptest.NewRecorder()
@@ -589,7 +589,7 @@ func TestCountTransactions(t *testing.T) {
 					Return(uint64(10), nil)
 			}
 
-			router := routes.NewRouter(backend, nil, nil)
+			router := routes.NewRouter(backend, nil, nil, nil)
 
 			req := httptest.NewRequest(http.MethodHead, "/xxx/transactions", nil)
 			rec := httptest.NewRecorder()
@@ -624,7 +624,7 @@ func TestRevertTransaction(t *testing.T) {
 		RevertTransaction(gomock.Any(), uint64(0)).
 		Return(&expectedTx, nil)
 
-	router := routes.NewRouter(backend, nil, nil)
+	router := routes.NewRouter(backend, nil, nil, nil)
 
 	req := httptest.NewRequest(http.MethodPost, "/xxx/transactions/0/revert", nil)
 	rec := httptest.NewRecorder()

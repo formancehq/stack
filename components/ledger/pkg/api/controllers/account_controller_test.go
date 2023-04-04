@@ -183,7 +183,7 @@ func TestGetAccounts(t *testing.T) {
 					Return(expectedCursor, nil)
 			}
 
-			router := routes.NewRouter(backend, nil, nil)
+			router := routes.NewRouter(backend, nil, nil, nil)
 
 			req := httptest.NewRequest(http.MethodGet, "/xxx/accounts", nil)
 			rec := httptest.NewRecorder()
@@ -220,7 +220,7 @@ func TestGetAccount(t *testing.T) {
 		GetAccount(gomock.Any(), "foo").
 		Return(&account, nil)
 
-	router := routes.NewRouter(backend, nil, nil)
+	router := routes.NewRouter(backend, nil, nil, nil)
 
 	req := httptest.NewRequest(http.MethodGet, "/xxx/accounts/foo", nil)
 	rec := httptest.NewRecorder()
@@ -281,7 +281,7 @@ func TestPostAccountMetadata(t *testing.T) {
 					Return(nil)
 			}
 
-			router := routes.NewRouter(backend, nil, nil)
+			router := routes.NewRouter(backend, nil, nil, nil)
 
 			req := httptest.NewRequest(http.MethodPost, "/xxx/accounts/"+testCase.account+"/metadata", Buffer(t, testCase.body))
 			rec := httptest.NewRecorder()

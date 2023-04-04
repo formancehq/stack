@@ -10,6 +10,7 @@ import (
 	"github.com/formancehq/ledger/pkg/ledger/numscript"
 	"github.com/formancehq/ledger/pkg/ledger/query"
 	"github.com/formancehq/ledger/pkg/ledger/runner"
+	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
 	"github.com/formancehq/ledger/pkg/storage"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
@@ -77,7 +78,12 @@ func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) 
 			}
 		}()
 
-		ledger = New(store, cache, runner, r.locker, queryWorker)
+		metricsRegistry, err := metrics.RegisterPerLedgerMetricsRegistry(name)
+		if err != nil {
+			return nil, errors.Wrap(err, "registering metrics")
+		}
+
+		ledger = New(store, cache, runner, r.locker, queryWorker, metricsRegistry)
 		r.ledgers[name] = ledger
 	}
 

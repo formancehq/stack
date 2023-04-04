@@ -5,6 +5,7 @@ import (
 
 	"github.com/formancehq/ledger/pkg/api/controllers"
 	"github.com/formancehq/ledger/pkg/api/middlewares"
+	"github.com/formancehq/ledger/pkg/opentelemetry/metrics"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/go-chi/chi/v5"
@@ -13,7 +14,12 @@ import (
 	"github.com/riandyrn/otelchi"
 )
 
-func NewRouter(backend controllers.Backend, logger logging.Logger, healthController *health.HealthController) chi.Router {
+func NewRouter(
+	backend controllers.Backend,
+	logger logging.Logger,
+	healthController *health.HealthController,
+	globalMetricsRegistry *metrics.GlobalMetricsRegistry,
+) chi.Router {
 	router := chi.NewMux()
 
 	router.Use(
@@ -37,6 +43,9 @@ func NewRouter(backend controllers.Backend, logger logging.Logger, healthControl
 		middleware.Recoverer,
 	)
 	router.Use(middlewares.Log())
+	if globalMetricsRegistry != nil {
+		router.Use(middlewares.MetricsMiddleware(globalMetricsRegistry))
+	}
 
 	router.Get("/_healthcheck", healthController.Check)
 

@@ -114,14 +114,19 @@ func (d *Driver) GetLedgerStore(ctx context.Context, name string, create bool) (
 		}
 
 		if err = schema.Initialize(ctx); err != nil {
-			return nil, false, err
+			return nil, false, errors.Wrap(err, "initializing schema")
 		}
 
-		d.registeredLedgers[name] = ledgerstore.NewStore(ctx, schema, func(ctx context.Context) error {
+		ledger, err := ledgerstore.NewStore(ctx, schema, func(ctx context.Context) error {
 			return schema.Close(context.Background())
 		}, func(ctx context.Context) error {
 			return d.GetSystemStore().DeleteLedger(ctx, name)
 		})
+		if err != nil {
+			return nil, false, errors.Wrap(err, "creating ledger store")
+		}
+
+		d.registeredLedgers[name] = ledger
 	}
 
 	return d.registeredLedgers[name], created, nil
