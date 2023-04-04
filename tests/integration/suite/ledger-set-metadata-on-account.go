@@ -58,9 +58,11 @@ var _ = Given("some empty environment", func() {
 				g.Expect(err).ToNot(HaveOccurred())
 				g.Expect(res.Cursor.Data).To(HaveLen(1))
 				g.Expect(res.Cursor.Data[0]).To(Equal(map[string]any{
-					"ledger":   "default",
-					"metadata": metadata,
-					"address":  "foo",
+					"ledger": "default",
+					"metadata": map[string]any{
+						"clientType": "gold",
+					},
+					"address": "foo",
 				}))
 
 				return true

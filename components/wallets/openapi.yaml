@@ -849,6 +849,8 @@ components:
         amount:
           asset: USD/2
           amount: 100
+        metadata:
+          key: ""
         sources: []
 
     DebitWalletRequest:
@@ -880,6 +882,8 @@ components:
         amount:
           asset: USD/2
           amount: 100
+        metadata:
+          key: ""
         pending: true
     ServerInfo:
       type: object
