@@ -88,7 +88,7 @@ public interface TransactionsApi {
    * List transactions from a ledger
    * List transactions from a ledger, sorted by txid in descending order.
    * @param ledger Name of the ledger. (required)
-   * @param pageSize The maximum number of results to return per page.  (optional, default to 15)
+   * @param pageSize The maximum number of results to return per page.  (optional)
    * @param after Pagination cursor, will return transactions after given txid (in descending order). (optional)
    * @param reference Find transactions by reference field. (optional)
    * @param account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)

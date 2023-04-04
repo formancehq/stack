@@ -1172,8 +1172,7 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000,
-              "default": 15
+              "maximum": 1000
             }
           },
           {
