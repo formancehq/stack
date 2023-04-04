@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	webhooks "github.com/formancehq/webhooks/pkg"
 	. "github.com/onsi/ginkgo/v2"
@@ -50,6 +51,7 @@ var _ = Given("An environment configured with a webhook sent on created transact
 						Source:      "world",
 						Destination: "alice",
 					}},
+					Metadata: metadata.Metadata{},
 				}).
 				Execute()
 			Expect(err).ToNot(HaveOccurred())

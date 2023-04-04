@@ -532,10 +532,7 @@ paths:
       - description: Filter accounts by metadata key value pairs. Nested objects can
           be used as seen in the example below.
         example:
-          admin: true
-          a:
-            nested:
-              key: value
+          admin: "true"
         explode: false
         in: query
         name: metadata
@@ -627,10 +624,7 @@ paths:
       - description: "Filter accounts by metadata key value pairs. The filter can\
           \ be used like this metadata[key]=value1&metadata[a.nested.key]=value2"
         example:
-          admin: true
-          a:
-            nested:
-              key: value
+          admin: "true"
         explode: true
         in: query
         name: metadata
@@ -996,15 +990,14 @@ paths:
       - description: Filter transactions by metadata key value pairs. Nested objects
           can be used as seen in the example below.
         example:
-          admin: true
-          a:
-            nested:
-              key: value
-        explode: true
+          admin: "true"
+        explode: false
         in: query
         name: metadata
         required: false
         schema:
+          additionalProperties:
+            type: string
           properties: {}
           type: object
         style: deepObject
@@ -5300,6 +5293,8 @@ components:
         amount:
           asset: USD/2
           amount: 100
+        metadata:
+          key: ""
         sources: []
       properties:
         amount:
@@ -5328,6 +5323,8 @@ components:
         amount:
           asset: USD/2
           amount: 100
+        metadata:
+          key: ""
         pending: true
       properties:
         amount:
@@ -5724,6 +5721,8 @@ components:
               amount:
                 asset: USD/2
                 amount: 100
+              metadata:
+                key: ""
               sources: []
             id: id
           VoidHold:
@@ -5741,6 +5740,8 @@ components:
               amount:
                 asset: USD/2
                 amount: 100
+              metadata:
+                key: ""
               pending: true
             id: id
           GetWallet:
@@ -6191,6 +6192,8 @@ components:
                 amount:
                   asset: USD/2
                   amount: 100
+                metadata:
+                  key: ""
                 sources: []
               id: id
             VoidHold:
@@ -6208,6 +6211,8 @@ components:
                 amount:
                   asset: USD/2
                   amount: 100
+                metadata:
+                  key: ""
                 pending: true
               id: id
             GetWallet:
@@ -6390,6 +6395,8 @@ components:
                 amount:
                   asset: USD/2
                   amount: 100
+                metadata:
+                  key: ""
                 sources: []
               id: id
             VoidHold:
@@ -6407,6 +6414,8 @@ components:
                 amount:
                   asset: USD/2
                   amount: 100
+                metadata:
+                  key: ""
                 pending: true
               id: id
             GetWallet:
@@ -6590,6 +6599,8 @@ components:
           amount:
             asset: USD/2
             amount: 100
+          metadata:
+            key: ""
           sources: []
         id: id
       properties:
@@ -6604,6 +6615,8 @@ components:
           amount:
             asset: USD/2
             amount: 100
+          metadata:
+            key: ""
           pending: true
         id: id
       properties:
@@ -6678,6 +6691,8 @@ components:
             amount:
               asset: USD/2
               amount: 100
+            metadata:
+              key: ""
             sources: []
           id: id
         VoidHold:
@@ -6695,6 +6710,8 @@ components:
             amount:
               asset: USD/2
               amount: 100
+            metadata:
+              key: ""
             pending: true
           id: id
         GetWallet:

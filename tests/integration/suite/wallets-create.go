@@ -2,6 +2,7 @@ package suite
 
 import (
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/formancehq/stack/libs/go-libs/metadata"
 	. "github.com/formancehq/stack/tests/integration/internal"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo/v2"
@@ -14,7 +15,8 @@ var _ = Given("some empty environment", func() {
 			_, _, err := Client().WalletsApi.
 				CreateWallet(TestContext()).
 				CreateWalletRequest(formance.CreateWalletRequest{
-					Name: uuid.NewString(),
+					Name:     uuid.NewString(),
+					Metadata: metadata.Metadata{},
 				}).
 				Execute()
 			Expect(err).ToNot(HaveOccurred())

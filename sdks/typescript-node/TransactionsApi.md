@@ -103,8 +103,10 @@ let body:TransactionsApiCountTransactionsRequest = {
   startTime: new Date('1970-01-01T00:00:00.00Z'),
   // Date | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).  (optional)
   endTime: new Date('1970-01-01T00:00:00.00Z'),
-  // any | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
-  metadata: {},
+  // { [key: string]: string; } | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+  metadata: {
+    "key": "key_example",
+  },
 };
 
 apiInstance.countTransactions(body).then((data:any) => {
@@ -124,7 +126,7 @@ Name | Type | Description  | Notes
  **destination** | [**string**] | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). | (optional) defaults to undefined
  **startTime** | [**Date**] | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  | (optional) defaults to undefined
  **endTime** | [**Date**] | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  | (optional) defaults to undefined
- **metadata** | **any** | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | (optional) defaults to undefined
+ **metadata** | **{ [key: string]: string; }** | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | (optional) defaults to undefined
 
 
 ### Return type
