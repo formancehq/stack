@@ -215,7 +215,9 @@ with Formance.ApiClient(configuration) as api_client:
         'destination': "users:001",
         'startTime': "1970-01-01T00:00:00.00Z",
         'endTime': "1970-01-01T00:00:00.00Z",
-        'metadata': dict(),
+        'metadata': dict(
+        "key": "key_example",
+    ),
     }
     try:
         # Count the transactions from a ledger
@@ -299,6 +301,11 @@ str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | str,  | str,  | any string name can be used but the value must be the correct type | [optional] 
 
 ### path_params
 #### RequestPathParams

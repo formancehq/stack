@@ -1602,10 +1602,10 @@ export interface TransactionsApiCountTransactionsRequest {
     endTime?: Date
     /**
      * Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
-     * @type any
+     * @type { [key: string]: string; }
      * @memberof TransactionsApicountTransactions
      */
-    metadata?: any
+    metadata?: { [key: string]: string; }
 }
 
 export interface TransactionsApiCreateTransactionRequest {

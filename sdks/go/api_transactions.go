@@ -233,7 +233,7 @@ type ApiCountTransactionsRequest struct {
 	destination *string
 	startTime *time.Time
 	endTime *time.Time
-	metadata *map[string]interface{}
+	metadata *map[string]string
 }
 
 // Filter transactions by reference field.
@@ -273,7 +273,7 @@ func (r ApiCountTransactionsRequest) EndTime(endTime time.Time) ApiCountTransact
 }
 
 // Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
-func (r ApiCountTransactionsRequest) Metadata(metadata map[string]interface{}) ApiCountTransactionsRequest {
+func (r ApiCountTransactionsRequest) Metadata(metadata map[string]string) ApiCountTransactionsRequest {
 	r.metadata = &metadata
 	return r
 }

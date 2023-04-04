@@ -105,7 +105,7 @@ $source = users:001; // string | Filter transactions with postings involving giv
 $destination = users:001; // string | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
 $start_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).
 $end_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).
-$metadata = {"admin":true,"a":{"nested":{"key":"value"}}}; // object | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+$metadata = {"admin":"true"}; // array<string,string> | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
 
 try {
     $apiInstance->countTransactions($ledger, $reference, $account, $source, $destination, $start_time, $end_time, $metadata);
@@ -125,7 +125,7 @@ try {
 | **destination** | **string**| Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). | [optional] |
 | **start_time** | **\DateTime**| Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). | [optional] |
 | **end_time** | **\DateTime**| Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). | [optional] |
-| **metadata** | [**object**](../Model/.md)| Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
+| **metadata** | [**array<string,string>**](../Model/string.md)| Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 
 ### Return type
 

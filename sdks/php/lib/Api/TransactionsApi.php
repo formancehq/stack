@@ -427,7 +427,7 @@ class TransactionsApi
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countTransactions'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -451,7 +451,7 @@ class TransactionsApi
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countTransactions'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -526,7 +526,7 @@ class TransactionsApi
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -554,7 +554,7 @@ class TransactionsApi
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -598,7 +598,7 @@ class TransactionsApi
      * @param  string $destination Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
-     * @param  object $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  array<string,string> $metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countTransactions'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -689,7 +689,7 @@ class TransactionsApi
             'metadata', // param base name
             'object', // openApiType
             'deepObject', // style
-            true, // explode
+            false, // explode
             false // required
         ) ?? []);
 

@@ -120,7 +120,7 @@ public class Example {
         String destination = "users:001"; // String | Filter transactions with postings involving given account at destination (regular expression placed between ^ and $).
         OffsetDateTime startTime = OffsetDateTime.now(); // OffsetDateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute). 
         OffsetDateTime endTime = OffsetDateTime.now(); // OffsetDateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute). 
-        Object metadata = new HashMap(); // Object | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
+        Map<String, String> metadata = new HashMap(); // Map<String, String> | Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
         try {
             apiInstance.countTransactions(ledger, reference, account, source, destination, startTime, endTime, metadata);
         } catch (ApiException e) {
@@ -146,7 +146,7 @@ public class Example {
 | **destination** | **String**| Filter transactions with postings involving given account at destination (regular expression placed between ^ and $). | [optional] |
 | **startTime** | **OffsetDateTime**| Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  | [optional] |
 | **endTime** | **OffsetDateTime**| Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  | [optional] |
-| **metadata** | [**Object**](.md)| Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
+| **metadata** | [**Map&lt;String, String&gt;**](String.md)| Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 
 ### Return type
 

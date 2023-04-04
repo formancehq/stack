@@ -89,7 +89,7 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
      * @param metadata Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.
      */
-    public async countTransactions(ledger: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, metadata?: any, _options?: Configuration): Promise<RequestContext> {
+    public async countTransactions(ledger: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, metadata?: { [key: string]: string; }, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
@@ -145,7 +145,7 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
 
         // Query Params
         if (metadata !== undefined) {
-            requestContext.setQueryParam("metadata", ObjectSerializer.serialize(metadata, "any", ""));
+            requestContext.setQueryParam("metadata", ObjectSerializer.serialize(metadata, "{ [key: string]: string; }", ""));
         }
 
 
