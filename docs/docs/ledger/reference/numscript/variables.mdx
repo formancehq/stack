@@ -33,19 +33,19 @@ The `script.vars` field in the request body is used to inject variable values:
 
 ```json
 {
-  "script": {
-    "vars": {
-      "price": {
-        "amount": 100,
-        "asset": "USD/2"
-      },
-      "trade": "trades:108391999",
-      "commission": "15%",
-      "pair": "EUR/2",
-      "id": 108391999,
-      "reference": "USD/EUR:108391999",
+    "script": {
+        "vars": {
+            "price": {
+                "amount": 100,
+                "asset": "USD/2"
+            },
+            "trade": "trades:108391999",
+            "commission": "15%",
+            "pair": "EUR/2",
+            "id": 108391999,
+            "reference": "USD/EUR:108391999"
+        }
     }
-	}
 }
 ```
 
@@ -66,35 +66,36 @@ This type represents asset names. They can contain uppercase letters, digits and
 This type represents an positive integer amount associated with an asset.
 ```json
 {
-  "amount": 100,
-  "asset": "USD/2"
+    "amount": 100,
+    "asset": "USD/2"
 }
 ```
 
-It is possible to pull the balance of an account and inject it in a monetary variable by using the the `balance(_account_, _asset_)` statement.
+It is possible to pull the balance of an account and inject it in a monetary variable by using the `balance(_account_, _asset_)` statement.
 The balance pulled needs to be non-negative, or the script will fail to execute. Here is an example:
 
 <NumscriptBlock script={`vars {
-  monetary $initial = balance(@A, USD/2)
+    monetary $initial = balance(@A, USD/2)
 }
 send [USD/2 100] (
-  source = {
-    @A
-    @C
-  }
-  destination = {
-    max $initial to @B
-    remaining to @D
-  }
+    source = {
+        @A
+        @C
+    }
+    destination = {
+        max $initial to @B
+        remaining to @D
+    }
 )`}></NumscriptBlock>
 
 ## Portion type
 
 This type represents portions of monetary values.
-They can be expressed in 2 differents ways:
-* As percentage: `15%`
-* As fraction: `15/100`
-Their computed values must be between 0 and 1.
+They can be expressed in 2 different ways:
+* As a percentage: `15%`
+* As a fraction: `15/100`
+
+Their computed values must be between 0 and 1 (inclusive).
 
 :::info
 Variables can also be pulled from account metadata, as per described in the [metadata](/ledger/reference/numscript/metadata) section in the next page.
