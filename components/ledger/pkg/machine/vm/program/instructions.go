@@ -24,6 +24,7 @@ const (
 	OP_SEND             // <funding> <account>
 	OP_TX_META          //
 	OP_ACCOUNT_META     //
+	OP_SAVE
 )
 
 func OpcodeName(op byte) string {
@@ -74,6 +75,8 @@ func OpcodeName(op byte) string {
 		return "OP_TX_META"
 	case OP_ACCOUNT_META:
 		return "OP_ACCOUNT_META"
+	case OP_SAVE:
+		return "OP_SAVE"
 	default:
 		return "Unknown opcode"
 	}
