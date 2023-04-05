@@ -49,7 +49,7 @@ func newTestingBackend(t *testing.T) (*MockBackend, *MockLedger) {
 		EXPECT().
 		GetLedger(gomock.Any(), gomock.Any()).
 		MinTimes(0).
-		Return(mockLedger, true, nil)
+		Return(mockLedger, nil)
 	t.Cleanup(func() {
 		ctrl.Finish()
 	})

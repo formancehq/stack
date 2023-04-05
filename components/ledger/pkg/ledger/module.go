@@ -20,6 +20,6 @@ func Module(allowPastTimestamp bool) fx.Option {
 			return NewResolver(storageDriver, monitor, locker, allowPastTimestamp, metricsRegsitry)
 		}),
 		fx.Provide(fx.Annotate(monitor.NewNoOpMonitor, fx.As(new(monitor.Monitor)))),
-		fx.Provide(metrics.NewNoOpMetricsRegistry, fx.As(new(metrics.GlobalMetricsRegistry))),
+		fx.Provide(fx.Annotate(metrics.NewNoOpMetricsRegistry, fx.As(new(metrics.GlobalMetricsRegistry)))),
 	)
 }
