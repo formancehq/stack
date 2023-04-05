@@ -62,7 +62,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         'postings' => '\Formance\Model\Posting[]',
         'reference' => 'string',
         'metadata' => 'array<string,string>',
-        'txid' => 'int',
+        'txid' => 'string',
         'pre_commit_volumes' => 'array<string,array>',
         'post_commit_volumes' => 'array<string,array>'
     ];
@@ -79,7 +79,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         'postings' => null,
         'reference' => null,
         'metadata' => null,
-        'txid' => 'int64',
+        'txid' => 'uuid',
         'pre_commit_volumes' => null,
         'post_commit_volumes' => null
     ];
@@ -329,10 +329,6 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         if ($this->container['txid'] === null) {
             $invalidProperties[] = "'txid' can't be null";
         }
-        if (($this->container['txid'] < 0)) {
-            $invalidProperties[] = "invalid value for 'txid', must be bigger than or equal to 0.";
-        }
-
         return $invalidProperties;
     }
 
@@ -459,7 +455,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets txid
      *
-     * @return int
+     * @return string
      */
     public function getTxid()
     {
@@ -469,7 +465,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets txid
      *
-     * @param int $txid txid
+     * @param string $txid txid
      *
      * @return self
      */
@@ -478,11 +474,6 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         if (is_null($txid)) {
             throw new \InvalidArgumentException('non-nullable txid cannot be null');
         }
-
-        if (($txid < 0)) {
-            throw new \InvalidArgumentException('invalid value for $txid when calling Transaction., must be bigger than or equal to 0.');
-        }
-
         $this->container['txid'] = $txid;
 
         return $this;

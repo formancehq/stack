@@ -171,6 +171,7 @@ var _ = Given("An empty environment", func() {
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp).
 								NotTo(BeZero())
 							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp = time.Time{}
+							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Txid = ""
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&formance.WorkflowInstanceHistoryStageOutput{
 								CreateTransaction: &formance.TransactionResponse{
 									Data: formance.Transaction{

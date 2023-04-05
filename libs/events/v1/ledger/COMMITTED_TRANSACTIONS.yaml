@@ -32,7 +32,8 @@ properties:
           properties: {}
           required: []
         txid:
-          type: number
+          type: string
+          format: uuid
         preCommitVolumes:
           type: object
           additionalProperties:

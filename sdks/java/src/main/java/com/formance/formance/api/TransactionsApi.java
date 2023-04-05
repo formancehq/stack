@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 import com.formance.formance.model.PostTransaction;
 import com.formance.formance.model.TransactionResponse;
 import com.formance.formance.model.TransactionsCursorResponse;
+import java.util.UUID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public interface TransactionsApi {
   })
   @POST("api/ledger/{ledger}/transactions/{txid}/metadata")
   Call<Void> addMetadataOnTransaction(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("txid") Long txid, @retrofit2.http.Body Map<String, String> requestBody
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("txid") UUID txid, @retrofit2.http.Body Map<String, String> requestBody
   );
 
   /**
@@ -81,7 +82,7 @@ public interface TransactionsApi {
    */
   @GET("api/ledger/{ledger}/transactions/{txid}")
   Call<TransactionResponse> getTransaction(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("txid") Long txid
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("txid") UUID txid
   );
 
   /**
@@ -114,7 +115,7 @@ public interface TransactionsApi {
    */
   @POST("api/ledger/{ledger}/transactions/{txid}/revert")
   Call<TransactionResponse> revertTransaction(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("txid") Long txid
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("txid") UUID txid
   );
 
 }

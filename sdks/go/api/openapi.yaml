@@ -1088,10 +1088,8 @@ paths:
         name: txid
         required: true
         schema:
-          example: 1234
-          format: int64
-          minimum: 0
-          type: integer
+          format: uuid
+          type: string
         style: simple
       responses:
         "200":
@@ -1128,10 +1126,8 @@ paths:
         name: txid
         required: true
         schema:
-          example: 1234
-          format: int64
-          minimum: 0
-          type: integer
+          format: uuid
+          type: string
         style: simple
       requestBody:
         content:
@@ -1171,10 +1167,8 @@ paths:
         name: txid
         required: true
         schema:
-          example: 1234
-          format: int64
-          minimum: 0
-          type: integer
+          format: uuid
+          type: string
         style: simple
       responses:
         "200":
@@ -3363,7 +3357,7 @@ components:
               destination: users:002
               source: users:001
               asset: COIN
-            txid: 0
+            txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             postCommitVolumes:
               orders:1:
                 USD:
@@ -3399,7 +3393,7 @@ components:
               destination: users:002
               source: users:001
               asset: COIN
-            txid: 0
+            txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             postCommitVolumes:
               orders:1:
                 USD:
@@ -3687,7 +3681,7 @@ components:
           destination: users:002
           source: users:001
           asset: COIN
-        txid: 0
+        txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         postCommitVolumes:
           orders:1:
             USD:
@@ -3729,9 +3723,8 @@ components:
             admin: "true"
           type: object
         txid:
-          format: int64
-          minimum: 0
-          type: integer
+          format: uuid
+          type: string
         preCommitVolumes:
           additionalProperties:
             $ref: '#/components/schemas/Volumes'
@@ -3877,7 +3870,7 @@ components:
             destination: users:002
             source: users:001
             asset: COIN
-          txid: 0
+          txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           postCommitVolumes:
             orders:1:
               USD:
@@ -5546,7 +5539,7 @@ components:
                 destination: users:002
                 source: users:001
                 asset: COIN
-              txid: 0
+              txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
               postCommitVolumes:
                 orders:1:
                   USD:
@@ -5584,7 +5577,7 @@ components:
                 destination: users:002
                 source: users:001
                 asset: COIN
-              txid: 0
+              txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
               postCommitVolumes:
                 orders:1:
                   USD:
@@ -6018,7 +6011,7 @@ components:
                   destination: users:002
                   source: users:001
                   asset: COIN
-                txid: 0
+                txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
                 postCommitVolumes:
                   orders:1:
                     USD:
@@ -6056,7 +6049,7 @@ components:
                   destination: users:002
                   source: users:001
                   asset: COIN
-                txid: 0
+                txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
                 postCommitVolumes:
                   orders:1:
                     USD:
@@ -6222,7 +6215,7 @@ components:
                   destination: users:002
                   source: users:001
                   asset: COIN
-                txid: 0
+                txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
                 postCommitVolumes:
                   orders:1:
                     USD:
@@ -6260,7 +6253,7 @@ components:
                   destination: users:002
                   source: users:001
                   asset: COIN
-                txid: 0
+                txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
                 postCommitVolumes:
                   orders:1:
                     USD:
@@ -6739,7 +6732,7 @@ components:
               destination: users:002
               source: users:001
               asset: COIN
-            txid: 0
+            txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             postCommitVolumes:
               orders:1:
                 USD:
@@ -6777,7 +6770,7 @@ components:
               destination: users:002
               source: users:001
               asset: COIN
-            txid: 0
+            txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
             postCommitVolumes:
               orders:1:
                 USD:
@@ -7033,7 +7026,7 @@ components:
             destination: users:002
             source: users:001
             asset: COIN
-          txid: 0
+          txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           postCommitVolumes:
             orders:1:
               USD:
@@ -7069,7 +7062,7 @@ components:
             destination: users:002
             source: users:001
             asset: COIN
-          txid: 0
+          txid: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           postCommitVolumes:
             orders:1:
               USD:
