@@ -15,8 +15,7 @@ import (
 )
 
 const (
-	storagePostgresConnectionStringFlag = "storage.postgres.conn_string"
-	bindFlag                            = "bind"
+	bindFlag = "bind"
 
 	commitPolicyFlag = "commit-policy"
 )
@@ -57,7 +56,6 @@ func NewRootCommand() *cobra.Command {
 	root.AddCommand(NewDocCommand())
 
 	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")
-	root.PersistentFlags().String(storagePostgresConnectionStringFlag, "postgresql://localhost/postgres", "Postgre connection string")
 	root.PersistentFlags().String(bindFlag, "0.0.0.0:3068", "API bind address")
 	root.PersistentFlags().String(commitPolicyFlag, "", "Transaction commit policy (default or allow-past-timestamps)")
 
