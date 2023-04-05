@@ -38,7 +38,7 @@ $apiInstance = new Formance\Api\TransactionsApi(
     $config
 );
 $ledger = ledger001; // string | Name of the ledger.
-$txid = 1234; // int | Transaction ID.
+$txid = 'txid_example'; // string | Transaction ID.
 $request_body = array('key' => 'request_body_example'); // array<string,string> | metadata
 
 try {
@@ -53,7 +53,7 @@ try {
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
-| **txid** | **int**| Transaction ID. | |
+| **txid** | **string**| Transaction ID. | |
 | **request_body** | [**array<string,string>**](../Model/string.md)| metadata | [optional] |
 
 ### Return type
@@ -232,7 +232,7 @@ $apiInstance = new Formance\Api\TransactionsApi(
     $config
 );
 $ledger = ledger001; // string | Name of the ledger.
-$txid = 1234; // int | Transaction ID.
+$txid = 'txid_example'; // string | Transaction ID.
 
 try {
     $result = $apiInstance->getTransaction($ledger, $txid);
@@ -247,7 +247,7 @@ try {
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
-| **txid** | **int**| Transaction ID. | |
+| **txid** | **string**| Transaction ID. | |
 
 ### Return type
 
@@ -372,7 +372,7 @@ $apiInstance = new Formance\Api\TransactionsApi(
     $config
 );
 $ledger = ledger001; // string | Name of the ledger.
-$txid = 1234; // int | Transaction ID.
+$txid = 'txid_example'; // string | Transaction ID.
 
 try {
     $result = $apiInstance->revertTransaction($ledger, $txid);
@@ -387,7 +387,7 @@ try {
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
-| **txid** | **int**| Transaction ID. | |
+| **txid** | **string**| Transaction ID. | |
 
 ### Return type
 

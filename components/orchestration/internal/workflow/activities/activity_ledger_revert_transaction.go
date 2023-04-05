@@ -9,7 +9,7 @@ import (
 
 type RevertTransactionRequest struct {
 	Ledger string `json:"ledger"`
-	TxID   int64  `json:"txId"`
+	TxID   string `json:"txId"`
 }
 
 func (a Activities) RevertTransaction(ctx context.Context, request RevertTransactionRequest) (*sdk.Transaction, error) {
@@ -24,7 +24,7 @@ func (a Activities) RevertTransaction(ctx context.Context, request RevertTransac
 
 var RevertTransactionActivity = Activities{}.RevertTransaction
 
-func RevertTransaction(ctx workflow.Context, ledger string, txID int64) (*sdk.Transaction, error) {
+func RevertTransaction(ctx workflow.Context, ledger string, txID string) (*sdk.Transaction, error) {
 	tx := &sdk.Transaction{}
 	if err := executeActivity(ctx, RevertTransactionActivity, tx, RevertTransactionRequest{
 		Ledger: ledger,

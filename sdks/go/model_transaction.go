@@ -25,7 +25,7 @@ type Transaction struct {
 	Postings []Posting `json:"postings"`
 	Reference *string `json:"reference,omitempty"`
 	Metadata map[string]string `json:"metadata"`
-	Txid int64 `json:"txid"`
+	Txid string `json:"txid"`
 	PreCommitVolumes *map[string]map[string]Volume `json:"preCommitVolumes,omitempty"`
 	PostCommitVolumes *map[string]map[string]Volume `json:"postCommitVolumes,omitempty"`
 }
@@ -34,7 +34,7 @@ type Transaction struct {
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTransaction(timestamp time.Time, postings []Posting, metadata map[string]string, txid int64) *Transaction {
+func NewTransaction(timestamp time.Time, postings []Posting, metadata map[string]string, txid string) *Transaction {
 	this := Transaction{}
 	this.Timestamp = timestamp
 	this.Postings = postings
@@ -156,9 +156,9 @@ func (o *Transaction) SetMetadata(v map[string]string) {
 }
 
 // GetTxid returns the Txid field value
-func (o *Transaction) GetTxid() int64 {
+func (o *Transaction) GetTxid() string {
 	if o == nil {
-		var ret int64
+		var ret string
 		return ret
 	}
 
@@ -167,7 +167,7 @@ func (o *Transaction) GetTxid() int64 {
 
 // GetTxidOk returns a tuple with the Txid field value
 // and a boolean to check if the value has been set.
-func (o *Transaction) GetTxidOk() (*int64, bool) {
+func (o *Transaction) GetTxidOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -175,7 +175,7 @@ func (o *Transaction) GetTxidOk() (*int64, bool) {
 }
 
 // SetTxid sets field value
-func (o *Transaction) SetTxid(v int64) {
+func (o *Transaction) SetTxid(v string) {
 	o.Txid = v
 }
 

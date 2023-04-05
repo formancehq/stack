@@ -1545,10 +1545,10 @@ export interface TransactionsApiAddMetadataOnTransactionRequest {
     ledger: string
     /**
      * Transaction ID.
-     * @type number
+     * @type string
      * @memberof TransactionsApiaddMetadataOnTransaction
      */
-    txid: number
+    txid: string
     /**
      * metadata
      * @type { [key: string]: string; }
@@ -1638,10 +1638,10 @@ export interface TransactionsApiGetTransactionRequest {
     ledger: string
     /**
      * Transaction ID.
-     * @type number
+     * @type string
      * @memberof TransactionsApigetTransaction
      */
-    txid: number
+    txid: string
 }
 
 export interface TransactionsApiListTransactionsRequest {
@@ -1722,10 +1722,10 @@ export interface TransactionsApiRevertTransactionRequest {
     ledger: string
     /**
      * Transaction ID.
-     * @type number
+     * @type string
      * @memberof TransactionsApirevertTransaction
      */
-    txid: number
+    txid: string
 }
 
 export class ObjectTransactionsApi {
