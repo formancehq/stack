@@ -25,8 +25,8 @@ require (
 	github.com/uptrace/bun/extra/bunotel v1.1.12
 	go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux v0.39.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.39.0
-	go.opentelemetry.io/otel v1.13.0
-	go.opentelemetry.io/otel/trace v1.13.0
+	go.opentelemetry.io/otel v1.14.0
+	go.opentelemetry.io/otel/trace v1.14.0
 	go.uber.org/dig v1.16.1
 	go.uber.org/fx v1.19.1
 	golang.org/x/sync v0.1.0
@@ -95,13 +95,13 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/github.com/Shopify/sarama/otelsarama v0.39.0 // indirect
 	go.opentelemetry.io/contrib/propagators/b3 v1.14.0 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.13.0 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.13.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.14.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.13.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.13.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.13.0 // indirect
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.13.0 // indirect
-	go.opentelemetry.io/otel/metric v0.36.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.13.0 // indirect
+	go.opentelemetry.io/otel/metric v0.37.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.14.0 // indirect
 	go.opentelemetry.io/proto/otlp v0.19.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect

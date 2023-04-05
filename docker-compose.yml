@@ -126,6 +126,8 @@ services:
       PUBLISHER_NATS_ENABLED: "true"
       PUBLISHER_NATS_URL: "nats:4222"
       PUBLISHER_TOPIC_MAPPING: "*:ledger"
+      OTEL_METRICS: "true"
+      OTEL_METRICS_RUNTIME: "true"
 
   wallets:
     image: "ghcr.io/formancehq/wallets:latest"
