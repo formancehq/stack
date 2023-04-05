@@ -33,7 +33,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    txid := int64(1234) // int64 | Transaction ID.
+    txid := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Transaction ID.
     requestBody := map[string]string{"key": "Inner_example"} // map[string]string | metadata (optional)
 
     configuration := client.NewConfiguration()
@@ -53,7 +53,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
 **ledger** | **string** | Name of the ledger. | 
-**txid** | **int64** | Transaction ID. | 
+**txid** | **string** | Transaction ID. | 
 
 ### Other Parameters
 
@@ -257,7 +257,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    txid := int64(1234) // int64 | Transaction ID.
+    txid := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Transaction ID.
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -278,7 +278,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
 **ledger** | **string** | Name of the ledger. | 
-**txid** | **int64** | Transaction ID. | 
+**txid** | **string** | Transaction ID. | 
 
 ### Other Parameters
 
@@ -419,7 +419,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    txid := int64(1234) // int64 | Transaction ID.
+    txid := "38400000-8cf0-11bd-b23e-10b96e4ef00d" // string | Transaction ID.
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
@@ -440,7 +440,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
 **ledger** | **string** | Name of the ledger. | 
-**txid** | **int64** | Transaction ID. | 
+**txid** | **string** | Transaction ID. | 
 
 ### Other Parameters
 

@@ -48,7 +48,7 @@
     "type" : "date"
   },
   "txid" : {
-    "type" : "long"
+    "type" : "keyword"
   },
   "type" : {
     "type": "keyword"

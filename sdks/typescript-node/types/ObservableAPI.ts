@@ -1793,7 +1793,7 @@ export class ObservableTransactionsApi {
      * @param txid Transaction ID.
      * @param requestBody metadata
      */
-    public addMetadataOnTransaction(ledger: string, txid: number, requestBody?: { [key: string]: string; }, _options?: Configuration): Observable<void> {
+    public addMetadataOnTransaction(ledger: string, txid: string, requestBody?: { [key: string]: string; }, _options?: Configuration): Observable<void> {
         const requestContextPromise = this.requestFactory.addMetadataOnTransaction(ledger, txid, requestBody, _options);
 
         // build promise chain
@@ -1872,7 +1872,7 @@ export class ObservableTransactionsApi {
      * @param ledger Name of the ledger.
      * @param txid Transaction ID.
      */
-    public getTransaction(ledger: string, txid: number, _options?: Configuration): Observable<TransactionResponse> {
+    public getTransaction(ledger: string, txid: string, _options?: Configuration): Observable<TransactionResponse> {
         const requestContextPromise = this.requestFactory.getTransaction(ledger, txid, _options);
 
         // build promise chain
@@ -1930,7 +1930,7 @@ export class ObservableTransactionsApi {
      * @param ledger Name of the ledger.
      * @param txid Transaction ID.
      */
-    public revertTransaction(ledger: string, txid: number, _options?: Configuration): Observable<TransactionResponse> {
+    public revertTransaction(ledger: string, txid: string, _options?: Configuration): Observable<TransactionResponse> {
         const requestContextPromise = this.requestFactory.revertTransaction(ledger, txid, _options);
 
         // build promise chain
