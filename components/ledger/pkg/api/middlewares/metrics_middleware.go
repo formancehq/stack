@@ -24,7 +24,7 @@ func (r *statusRecorder) WriteHeader(status int) {
 	r.ResponseWriter.WriteHeader(status)
 }
 
-func MetricsMiddleware(globalMetricsRegistry *metrics.GlobalMetricsRegistry) func(h http.Handler) http.Handler {
+func MetricsMiddleware(globalMetricsRegistry metrics.GlobalMetricsRegistry) func(h http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			attrs := []attribute.KeyValue{}
@@ -44,10 +44,10 @@ func MetricsMiddleware(globalMetricsRegistry *metrics.GlobalMetricsRegistry) fun
 			attrs = append(attrs,
 				attribute.String("route", chi.RouteContext(r.Context()).RoutePattern()))
 
-			globalMetricsRegistry.APILatencies.Record(ctx, latency.Milliseconds(), attrs...)
+			globalMetricsRegistry.APILatencies().Record(ctx, latency.Milliseconds(), attrs...)
 
 			attrs = append(attrs, attribute.Int("status", recorder.Status))
-			globalMetricsRegistry.StatusCodes.Add(ctx, 1, attrs...)
+			globalMetricsRegistry.StatusCodes().Add(ctx, 1, attrs...)
 		})
 	}
 }

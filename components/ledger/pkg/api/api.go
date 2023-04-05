@@ -24,9 +24,10 @@ func Module(cfg Config) fx.Option {
 			return controllers.NewDefaultBackend(storageDriver, cfg.Version, resolver)
 		}),
 		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
-		fx.Provide(func(meterProvider metric.MeterProvider) (*metrics.GlobalMetricsRegistry, error) {
+		fx.Provide(metrics.NewNoOpMetricsRegistry, fx.As(new(metrics.GlobalMetricsRegistry))),
+		fx.Decorate(func(meterProvider metric.MeterProvider) (metrics.GlobalMetricsRegistry, error) {
 			return metrics.RegisterGlobalMetricsRegistry(meterProvider)
-		}),
+		}, fx.As(new(metrics.GlobalMetricsRegistry))),
 		health.Module(),
 	)
 }

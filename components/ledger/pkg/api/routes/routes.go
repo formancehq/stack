@@ -18,7 +18,7 @@ func NewRouter(
 	backend controllers.Backend,
 	logger logging.Logger,
 	healthController *health.HealthController,
-	globalMetricsRegistry *metrics.GlobalMetricsRegistry,
+	globalMetricsRegistry metrics.GlobalMetricsRegistry,
 ) chi.Router {
 	router := chi.NewMux()
 
@@ -43,9 +43,7 @@ func NewRouter(
 		middleware.Recoverer,
 	)
 	router.Use(middlewares.Log())
-	if globalMetricsRegistry != nil {
-		router.Use(middlewares.MetricsMiddleware(globalMetricsRegistry))
-	}
+	router.Use(middlewares.MetricsMiddleware(globalMetricsRegistry))
 
 	router.Get("/_healthcheck", healthController.Check)
 

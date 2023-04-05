@@ -15,7 +15,7 @@ import (
 
 func LedgerMiddleware(
 	resolver controllers.Backend,
-	globalMetricsRegistry *metrics.GlobalMetricsRegistry,
+	globalMetricsRegistry metrics.GlobalMetricsRegistry,
 ) func(handler http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -36,8 +36,8 @@ func LedgerMiddleware(
 				apierrors.ResponseError(w, r, err)
 				return
 			}
-			if globalMetricsRegistry != nil && created {
-				globalMetricsRegistry.ActiveLedgers.Add(r.Context(), +1)
+			if created {
+				globalMetricsRegistry.ActiveLedgers().Add(r.Context(), +1)
 			}
 			// TODO(polo/gfyrag): close ledger if not used for x minutes
 			// defer l.Close(context.Background())

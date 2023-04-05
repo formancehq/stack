@@ -6,14 +6,20 @@ import (
 	"go.opentelemetry.io/otel/metric/instrument"
 )
 
-type GlobalMetricsRegistry struct {
-	// API Latencies
-	APILatencies  instrument.Int64Histogram
-	StatusCodes   instrument.Int64Counter
-	ActiveLedgers instrument.Int64UpDownCounter
+type GlobalMetricsRegistry interface {
+	APILatencies() instrument.Int64Histogram
+	StatusCodes() instrument.Int64Counter
+	ActiveLedgers() instrument.Int64UpDownCounter
 }
 
-func RegisterGlobalMetricsRegistry(meterProvider metric.MeterProvider) (*GlobalMetricsRegistry, error) {
+type globalMetricsRegistry struct {
+	// API Latencies
+	aPILatencies  instrument.Int64Histogram
+	statusCodes   instrument.Int64Counter
+	activeLedgers instrument.Int64UpDownCounter
+}
+
+func RegisterGlobalMetricsRegistry(meterProvider metric.MeterProvider) (GlobalMetricsRegistry, error) {
 	meter := meterProvider.Meter("global")
 
 	apiLatencies, err := meter.Int64Histogram(
@@ -43,11 +49,23 @@ func RegisterGlobalMetricsRegistry(meterProvider metric.MeterProvider) (*GlobalM
 		return nil, err
 	}
 
-	return &GlobalMetricsRegistry{
-		APILatencies:  apiLatencies,
-		StatusCodes:   statusCodes,
-		ActiveLedgers: activeLedgers,
+	return &globalMetricsRegistry{
+		aPILatencies:  apiLatencies,
+		statusCodes:   statusCodes,
+		activeLedgers: activeLedgers,
 	}, nil
+}
+
+func (gm *globalMetricsRegistry) APILatencies() instrument.Int64Histogram {
+	return gm.aPILatencies
+}
+
+func (gm *globalMetricsRegistry) StatusCodes() instrument.Int64Counter {
+	return gm.statusCodes
+}
+
+func (gm *globalMetricsRegistry) ActiveLedgers() instrument.Int64UpDownCounter {
+	return gm.activeLedgers
 }
 
 type PerLedgerMetricsRegistry interface {
@@ -196,5 +214,20 @@ func (nm *NoOpMetricsRegistry) QueryPendingMessages() instrument.Int64Counter {
 
 func (nm *NoOpMetricsRegistry) QueryProcessedLogs() instrument.Int64Counter {
 	counter, _ := metric.NewNoopMeter().Int64Counter("query_processed_logs")
+	return counter
+}
+
+func (nm *NoOpMetricsRegistry) APILatencies() instrument.Int64Histogram {
+	histogram, _ := metric.NewNoopMeter().Int64Histogram("api_latencies")
+	return histogram
+}
+
+func (nm *NoOpMetricsRegistry) StatusCodes() instrument.Int64Counter {
+	counter, _ := metric.NewNoopMeter().Int64Counter("status_codes")
+	return counter
+}
+
+func (nm *NoOpMetricsRegistry) ActiveLedgers() instrument.Int64UpDownCounter {
+	counter, _ := metric.NewNoopMeter().Int64UpDownCounter("active_ledgers")
 	return counter
 }
