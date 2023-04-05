@@ -24,10 +24,12 @@ func (a *App) Run(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		return app.Stop(context.Background())
 	case <-app.Done():
-		return app.Err()
+		// <-app.Done() is a signals channel, it means we have to call the
+		// app.Stop in order to gracefully shutdown the app
 	}
+
+	return app.Stop(context.Background())
 }
 
 func (a *App) Start(ctx context.Context) error {
