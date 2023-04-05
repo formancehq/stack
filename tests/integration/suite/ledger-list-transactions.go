@@ -2,7 +2,6 @@ package suite
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -18,7 +17,6 @@ var _ = Given("some empty environment", func() {
 	)
 	When(fmt.Sprintf("creating %d transactions", txCount), func() {
 		var (
-			timestamp    = time.Now().Round(time.Second).UTC()
 			transactions []formance.Transaction
 		)
 		BeforeEach(func() {
@@ -26,7 +24,6 @@ var _ = Given("some empty environment", func() {
 				ret, _, err := Client().TransactionsApi.
 					CreateTransaction(TestContext(), "default").
 					PostTransaction(formance.PostTransaction{
-						Timestamp: &timestamp,
 						Postings: []formance.Posting{{
 							Amount:      100,
 							Asset:       "USD",

@@ -29,8 +29,8 @@ const apiInstance = new TransactionsApi(configuration);
 let body:TransactionsApiAddMetadataOnTransactionRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
-  // number | Transaction ID.
-  txid: 1234,
+  // string | Transaction ID.
+  txid: "txid_example",
   // { [key: string]: string; } | metadata (optional)
   requestBody: {
     "key": "key_example",
@@ -49,7 +49,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **requestBody** | **{ [key: string]: string; }**| metadata |
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
- **txid** | [**number**] | Transaction ID. | defaults to undefined
+ **txid** | [**string**] | Transaction ID. | defaults to undefined
 
 
 ### Return type
@@ -253,8 +253,8 @@ const apiInstance = new TransactionsApi(configuration);
 let body:TransactionsApiGetTransactionRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
-  // number | Transaction ID.
-  txid: 1234,
+  // string | Transaction ID.
+  txid: "txid_example",
 };
 
 apiInstance.getTransaction(body).then((data:any) => {
@@ -268,7 +268,7 @@ apiInstance.getTransaction(body).then((data:any) => {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
- **txid** | [**number**] | Transaction ID. | defaults to undefined
+ **txid** | [**string**] | Transaction ID. | defaults to undefined
 
 
 ### Return type
@@ -397,8 +397,8 @@ const apiInstance = new TransactionsApi(configuration);
 let body:TransactionsApiRevertTransactionRequest = {
   // string | Name of the ledger.
   ledger: "ledger001",
-  // number | Transaction ID.
-  txid: 1234,
+  // string | Transaction ID.
+  txid: "txid_example",
 };
 
 apiInstance.revertTransaction(body).then((data:any) => {
@@ -412,7 +412,7 @@ apiInstance.revertTransaction(body).then((data:any) => {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
- **txid** | [**number**] | Transaction ID. | defaults to undefined
+ **txid** | [**string**] | Transaction ID. | defaults to undefined
 
 
 ### Return type

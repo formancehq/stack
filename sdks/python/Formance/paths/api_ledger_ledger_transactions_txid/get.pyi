@@ -30,17 +30,12 @@ from Formance.model.error_response import ErrorResponse
 
 # Path params
 LedgerSchema = schemas.StrSchema
-
-
-class TxidSchema(
-    schemas.Int64Schema
-):
-    pass
+TxidSchema = schemas.UUIDSchema
 RequestRequiredPathParams = typing_extensions.TypedDict(
     'RequestRequiredPathParams',
     {
         'ledger': typing.Union[LedgerSchema, str, ],
-        'txid': typing.Union[TxidSchema, decimal.Decimal, int, ],
+        'txid': typing.Union[TxidSchema, str, uuid.UUID, ],
     }
 )
 RequestOptionalPathParams = typing_extensions.TypedDict(
