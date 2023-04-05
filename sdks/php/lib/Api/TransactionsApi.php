@@ -144,7 +144,7 @@ class TransactionsApi
      * Set the metadata of a transaction by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
@@ -163,7 +163,7 @@ class TransactionsApi
      * Set the metadata of a transaction by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
@@ -233,7 +233,7 @@ class TransactionsApi
      * Set the metadata of a transaction by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
@@ -256,7 +256,7 @@ class TransactionsApi
      * Set the metadata of a transaction by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
@@ -295,7 +295,7 @@ class TransactionsApi
      * Create request for operation 'addMetadataOnTransaction'
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
@@ -318,10 +318,7 @@ class TransactionsApi
                 'Missing the required parameter $txid when calling addMetadataOnTransaction'
             );
         }
-        if ($txid < 0) {
-            throw new \InvalidArgumentException('invalid value for "$txid" when calling TransactionsApi.addMetadataOnTransaction, must be bigger than or equal to 0.');
-        }
-        
+
 
 
         $resourcePath = '/api/ledger/{ledger}/transactions/{txid}/metadata';
@@ -1111,7 +1108,7 @@ class TransactionsApi
      * Get transaction from a ledger by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getTransaction'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -1130,7 +1127,7 @@ class TransactionsApi
      * Get transaction from a ledger by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getTransaction'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -1254,7 +1251,7 @@ class TransactionsApi
      * Get transaction from a ledger by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1276,7 +1273,7 @@ class TransactionsApi
      * Get transaction from a ledger by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1327,7 +1324,7 @@ class TransactionsApi
      * Create request for operation 'getTransaction'
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1349,10 +1346,7 @@ class TransactionsApi
                 'Missing the required parameter $txid when calling getTransaction'
             );
         }
-        if ($txid < 0) {
-            throw new \InvalidArgumentException('invalid value for "$txid" when calling TransactionsApi.getTransaction, must be bigger than or equal to 0.');
-        }
-        
+
 
         $resourcePath = '/api/ledger/{ledger}/transactions/{txid}';
         $formParams = [];
@@ -1910,7 +1904,7 @@ class TransactionsApi
      * Revert a ledger transaction by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['revertTransaction'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -1929,7 +1923,7 @@ class TransactionsApi
      * Revert a ledger transaction by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['revertTransaction'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -2053,7 +2047,7 @@ class TransactionsApi
      * Revert a ledger transaction by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['revertTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -2075,7 +2069,7 @@ class TransactionsApi
      * Revert a ledger transaction by its ID
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['revertTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -2126,7 +2120,7 @@ class TransactionsApi
      * Create request for operation 'revertTransaction'
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $txid Transaction ID. (required)
+     * @param  string $txid Transaction ID. (required)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['revertTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -2148,10 +2142,7 @@ class TransactionsApi
                 'Missing the required parameter $txid when calling revertTransaction'
             );
         }
-        if ($txid < 0) {
-            throw new \InvalidArgumentException('invalid value for "$txid" when calling TransactionsApi.revertTransaction, must be bigger than or equal to 0.');
-        }
-        
+
 
         $resourcePath = '/api/ledger/{ledger}/transactions/{txid}/revert';
         $formParams = [];

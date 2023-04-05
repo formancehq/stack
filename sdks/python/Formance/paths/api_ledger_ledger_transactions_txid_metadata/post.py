@@ -32,21 +32,12 @@ from . import path
 
 # Path params
 LedgerSchema = schemas.StrSchema
-
-
-class TxidSchema(
-    schemas.Int64Schema
-):
-
-
-    class MetaOapg:
-        format = 'int64'
-        inclusive_minimum = 0
+TxidSchema = schemas.UUIDSchema
 RequestRequiredPathParams = typing_extensions.TypedDict(
     'RequestRequiredPathParams',
     {
         'ledger': typing.Union[LedgerSchema, str, ],
-        'txid': typing.Union[TxidSchema, decimal.Decimal, int, ],
+        'txid': typing.Union[TxidSchema, str, uuid.UUID, ],
     }
 )
 RequestOptionalPathParams = typing_extensions.TypedDict(

@@ -1018,7 +1018,7 @@ export class PromiseTransactionsApi {
      * @param txid Transaction ID.
      * @param requestBody metadata
      */
-    public addMetadataOnTransaction(ledger: string, txid: number, requestBody?: { [key: string]: string; }, _options?: Configuration): Promise<void> {
+    public addMetadataOnTransaction(ledger: string, txid: string, requestBody?: { [key: string]: string; }, _options?: Configuration): Promise<void> {
         const result = this.api.addMetadataOnTransaction(ledger, txid, requestBody, _options);
         return result.toPromise();
     }
@@ -1055,7 +1055,7 @@ export class PromiseTransactionsApi {
      * @param ledger Name of the ledger.
      * @param txid Transaction ID.
      */
-    public getTransaction(ledger: string, txid: number, _options?: Configuration): Promise<TransactionResponse> {
+    public getTransaction(ledger: string, txid: string, _options?: Configuration): Promise<TransactionResponse> {
         const result = this.api.getTransaction(ledger, txid, _options);
         return result.toPromise();
     }
@@ -1085,7 +1085,7 @@ export class PromiseTransactionsApi {
      * @param ledger Name of the ledger.
      * @param txid Transaction ID.
      */
-    public revertTransaction(ledger: string, txid: number, _options?: Configuration): Promise<TransactionResponse> {
+    public revertTransaction(ledger: string, txid: string, _options?: Configuration): Promise<TransactionResponse> {
         const result = this.api.revertTransaction(ledger, txid, _options);
         return result.toPromise();
     }

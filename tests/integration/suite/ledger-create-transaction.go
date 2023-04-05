@@ -88,7 +88,7 @@ var _ = Given("some empty environment", func() {
 						"destination": "alice",
 					},
 				},
-				"txid":      float64(0),
+				"txid":      rsp.Data.Txid,
 				"timestamp": timestamp.Format(time.RFC3339),
 				"ledger":    "default",
 			}
