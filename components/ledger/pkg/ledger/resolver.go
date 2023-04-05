@@ -17,10 +17,11 @@ import (
 )
 
 type Resolver struct {
-	storageDriver storage.Driver
-	monitor       monitor.Monitor
-	lock          sync.RWMutex
-	locker        lock.Locker
+	storageDriver   storage.Driver
+	monitor         monitor.Monitor
+	lock            sync.RWMutex
+	metricsRegsitry metrics.GlobalMetricsRegistry
+	locker          lock.Locker
 	//TODO(gfyrag): add a routine to clean old ledger
 	ledgers             map[string]*Ledger
 	compiler            *numscript.Compiler
@@ -32,45 +33,46 @@ func NewResolver(
 	monitor monitor.Monitor,
 	locker lock.Locker,
 	allowPastTimestamps bool,
+	metricsRegsitry metrics.GlobalMetricsRegistry,
 ) *Resolver {
 	return &Resolver{
 		storageDriver:       storageDriver,
 		monitor:             monitor,
 		locker:              locker,
+		metricsRegsitry:     metricsRegsitry,
 		compiler:            numscript.NewCompiler(),
 		ledgers:             map[string]*Ledger{},
 		allowPastTimestamps: allowPastTimestamps,
 	}
 }
 
-func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, bool, error) {
+func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) {
 	r.lock.RLock()
 	ledger, ok := r.ledgers[name]
 	r.lock.RUnlock()
-	created := false
 	if !ok {
 		r.lock.Lock()
 		defer r.lock.Unlock()
 
 		store, _, err := r.storageDriver.GetLedgerStore(ctx, name, true)
 		if err != nil {
-			return nil, false, errors.Wrap(err, "retrieving ledger store")
+			return nil, errors.Wrap(err, "retrieving ledger store")
 		}
 		if !store.IsInitialized() {
 			if _, err := store.Initialize(ctx); err != nil {
-				return nil, false, errors.Wrap(err, "initializing ledger store")
+				return nil, errors.Wrap(err, "initializing ledger store")
 			}
 		}
 
 		metricsRegistry, err := metrics.RegisterPerLedgerMetricsRegistry(name)
 		if err != nil {
-			return nil, false, errors.Wrap(err, "registering metrics")
+			return nil, errors.Wrap(err, "registering metrics")
 		}
 
 		cache := cache.New(store, metricsRegistry)
 		runner, err := runner.New(store, r.locker, cache, r.compiler, name, r.allowPastTimestamps)
 		if err != nil {
-			return nil, false, errors.Wrap(err, "creating ledger runner")
+			return nil, errors.Wrap(err, "creating ledger runner")
 		}
 
 		queryWorker := query.NewWorker(query.DefaultWorkerConfig, query.NewDefaultStore(store), name, r.monitor, metricsRegistry)
@@ -86,8 +88,8 @@ func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, bool, e
 
 		ledger = New(store, cache, runner, r.locker, queryWorker, metricsRegistry)
 		r.ledgers[name] = ledger
-		created = true
+		r.metricsRegsitry.ActiveLedgers().Add(ctx, +1)
 	}
 
-	return ledger, created, nil
+	return ledger, nil
 }
