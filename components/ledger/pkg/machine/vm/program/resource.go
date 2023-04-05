@@ -2,8 +2,10 @@ package program
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/numary/ledger/pkg/core"
+	"github.com/numary/ledger/pkg/machine/script/parser"
 )
 
 type Resource interface {
@@ -56,4 +58,33 @@ type Monetary struct {
 func (a Monetary) GetType() core.Type { return core.TypeMonetary }
 func (a Monetary) String() string {
 	return fmt.Sprintf("<%v [%v %v]>", core.TypeMonetary, a.Asset, a.Amount)
+}
+
+type SendMonetary struct {
+	Operands  []core.Address
+	Operators []int
+}
+
+func (a SendMonetary) GetType() core.Type { return core.TypeMonetary }
+func (a SendMonetary) String() string {
+	b := strings.Builder{}
+	if len(a.Operators) != len(a.Operands)-1 {
+		panic("send")
+	}
+	b.WriteString("<send (")
+	i := 0
+	for _, op := range a.Operands {
+		b.WriteString(fmt.Sprintf("%d", op))
+		if i < len(a.Operators) {
+			switch a.Operators[i] {
+			case parser.NumScriptLexerOP_ADD:
+				b.WriteString(" + ")
+			case parser.NumScriptLexerOP_SUB:
+				b.WriteString(" - ")
+			}
+		}
+		i++
+	}
+	b.WriteString(")>")
+	return b.String()
 }

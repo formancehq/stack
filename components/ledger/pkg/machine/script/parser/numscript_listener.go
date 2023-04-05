@@ -35,9 +35,6 @@ type NumScriptListener interface {
 	// EnterVariable is called when entering the variable production.
 	EnterVariable(c *VariableContext)
 
-	// EnterExprAddSub is called when entering the ExprAddSub production.
-	EnterExprAddSub(c *ExprAddSubContext)
-
 	// EnterExprLiteral is called when entering the ExprLiteral production.
 	EnterExprLiteral(c *ExprLiteralContext)
 
@@ -107,8 +104,14 @@ type NumScriptListener interface {
 	// EnterSrcAllotment is called when entering the SrcAllotment production.
 	EnterSrcAllotment(c *SrcAllotmentContext)
 
-	// EnterPrint is called when entering the Print production.
-	EnterPrint(c *PrintContext)
+	// EnterMonetaryArithmetic is called when entering the monetaryArithmetic production.
+	EnterMonetaryArithmetic(c *MonetaryArithmeticContext)
+
+	// EnterMonetaryExpressionAll is called when entering the MonetaryExpressionAll production.
+	EnterMonetaryExpressionAll(c *MonetaryExpressionAllContext)
+
+	// EnterMonetaryExpressionArithmetic is called when entering the MonetaryExpressionArithmetic production.
+	EnterMonetaryExpressionArithmetic(c *MonetaryExpressionArithmeticContext)
 
 	// EnterSetTxMeta is called when entering the SetTxMeta production.
 	EnterSetTxMeta(c *SetTxMetaContext)
@@ -166,9 +169,6 @@ type NumScriptListener interface {
 
 	// ExitVariable is called when exiting the variable production.
 	ExitVariable(c *VariableContext)
-
-	// ExitExprAddSub is called when exiting the ExprAddSub production.
-	ExitExprAddSub(c *ExprAddSubContext)
 
 	// ExitExprLiteral is called when exiting the ExprLiteral production.
 	ExitExprLiteral(c *ExprLiteralContext)
@@ -239,8 +239,14 @@ type NumScriptListener interface {
 	// ExitSrcAllotment is called when exiting the SrcAllotment production.
 	ExitSrcAllotment(c *SrcAllotmentContext)
 
-	// ExitPrint is called when exiting the Print production.
-	ExitPrint(c *PrintContext)
+	// ExitMonetaryArithmetic is called when exiting the monetaryArithmetic production.
+	ExitMonetaryArithmetic(c *MonetaryArithmeticContext)
+
+	// ExitMonetaryExpressionAll is called when exiting the MonetaryExpressionAll production.
+	ExitMonetaryExpressionAll(c *MonetaryExpressionAllContext)
+
+	// ExitMonetaryExpressionArithmetic is called when exiting the MonetaryExpressionArithmetic production.
+	ExitMonetaryExpressionArithmetic(c *MonetaryExpressionArithmeticContext)
 
 	// ExitSetTxMeta is called when exiting the SetTxMeta production.
 	ExitSetTxMeta(c *SetTxMetaContext)

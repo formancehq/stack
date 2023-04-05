@@ -9,7 +9,6 @@ VARS: 'vars';
 META: 'meta';
 SET_TX_META: 'set_tx_meta';
 SET_ACCOUNT_META: 'set_account_meta';
-PRINT: 'print';
 FAIL: 'fail';
 SEND: 'send';
 SOURCE: 'source';
@@ -63,8 +62,7 @@ literal
 variable: VARIABLE_NAME;
 
 expression
-    : lhs=expression op=(OP_ADD|OP_SUB) rhs=expression # ExprAddSub
-    | lit=literal # ExprLiteral
+    : lit=literal # ExprLiteral
     | var_=variable # ExprVariable
     ;
 
@@ -130,12 +128,20 @@ valueAwareSource
     | sourceAllotment # SrcAllotment
     ;
 
+monetaryArithmetic:
+    baseOperand=expression ((operators+=(OP_ADD|OP_SUB) operands+=expression)+)?
+    ;
+
+monetaryExpression
+    : monetaryAll # MonetaryExpressionAll
+    | monetaryArithmetic # MonetaryExpressionArithmetic
+    ;
+
 statement
-    : PRINT expr=expression # Print
-    | SET_TX_META '(' key=STRING ',' value=expression ')' # SetTxMeta
+    : SET_TX_META '(' key=STRING ',' value=expression ')' # SetTxMeta
     | SET_ACCOUNT_META '(' acc=expression ',' key=STRING ',' value=expression ')' # SetAccountMeta
     | FAIL # Fail
-    | SEND (mon=expression | monAll=monetaryAll) LPAREN NEWLINE
+    | SEND mon=monetaryExpression LPAREN NEWLINE
         ( SOURCE '=' src=valueAwareSource NEWLINE DESTINATION '=' dest=destination
         | DESTINATION '=' dest=destination NEWLINE SOURCE '=' src=valueAwareSource) NEWLINE RPAREN # Send
     ;

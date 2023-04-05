@@ -17,6 +17,7 @@ import (
 
 	"github.com/logrusorgru/aurora"
 	"github.com/numary/ledger/pkg/core"
+	"github.com/numary/ledger/pkg/machine/script/parser"
 	"github.com/numary/ledger/pkg/machine/vm/program"
 )
 
@@ -703,6 +704,48 @@ func (m *Machine) ResolveResources() (chan ResourceRequest, error) {
 				val = core.Monetary{
 					Asset:  asset,
 					Amount: res.Amount,
+				}
+			case program.SendMonetary:
+				var (
+					asset core.Asset
+					amt   = core.NewMonetaryInt(0)
+				)
+				for i, op := range res.Operands {
+					v, _ := m.getResource(op)
+					mon := (*v).(core.Monetary)
+					if amt.Equal(core.NewMonetaryInt(0)) {
+						amt = mon.Amount
+					}
+					if asset == "" {
+						asset = mon.Asset
+					}
+					if mon.Asset != asset {
+						resChan <- ResourceRequest{
+							Error: fmt.Errorf(
+								"cannot send a monetary arithmetic with different assets"),
+						}
+						return
+					}
+					if i > 0 {
+						switch res.Operators[i-1] {
+						case parser.NumScriptLexerOP_ADD:
+							amt = amt.Add(mon.Amount)
+						case parser.NumScriptLexerOP_SUB:
+							amt = amt.Sub(mon.Amount)
+						}
+					}
+				}
+				if amt.Ltz() {
+					resChan <- ResourceRequest{
+						Error: fmt.Errorf(
+							"cannot send a monetary arithmetic with a negative amount: [%s %s]",
+							asset, amt),
+					}
+					return
+				}
+				val = core.Monetary{
+					Asset:  asset,
+					Amount: amt,
 				}
 			default:
 				panic(fmt.Errorf("type %T not implemented", res))

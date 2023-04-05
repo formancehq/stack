@@ -77,39 +77,10 @@ func (p *parseVisitor) VisitVariable(c parser.IVariableContext, push bool) (core
 
 func (p *parseVisitor) VisitExpr(c parser.IExpressionContext, push bool) (core.Type, *core.Address, *CompileError) {
 	switch c := c.(type) {
-	case *parser.ExprAddSubContext:
-		ty, _, err := p.VisitExpr(c.GetLhs(), push)
-		if err != nil {
-			return 0, nil, err
-		}
-		if ty != core.TypeNumber {
-			return 0, nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
-		}
-		ty, _, err = p.VisitExpr(c.GetRhs(), push)
-		if err != nil {
-			return 0, nil, err
-		}
-		if ty != core.TypeNumber {
-			return 0, nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
-		}
-		if push {
-			switch c.GetOp().GetTokenType() {
-			case parser.NumScriptLexerOP_ADD:
-				p.AppendInstruction(program.OP_IADD)
-			case parser.NumScriptLexerOP_SUB:
-				p.AppendInstruction(program.OP_ISUB)
-			}
-		}
-		return core.TypeNumber, nil, nil
 	case *parser.ExprLiteralContext:
-		ty, addr, err := p.VisitLit(c.GetLit(), push)
-		if err != nil {
-			return 0, nil, err
-		}
-		return ty, addr, nil
+		return p.VisitLit(c.GetLit(), push)
 	case *parser.ExprVariableContext:
-		ty, addr, err := p.VisitVariable(c.GetVar_(), push)
-		return ty, addr, err
+		return p.VisitVariable(c.GetVar_(), push)
 	default:
 		return 0, nil, InternalError(c)
 	}
@@ -211,8 +182,9 @@ func (p *parseVisitor) VisitSend(c *parser.SendContext) *CompileError {
 		typ      core.Type
 	)
 
-	if monAll := c.GetMonAll(); monAll != nil {
-		typ, addr, compErr = p.VisitExpr(monAll.GetAsset(), false)
+	switch monCtx := c.GetMon().(type) {
+	case *parser.MonetaryExpressionAllContext:
+		typ, addr, compErr = p.VisitExpr(monCtx.MonetaryAll().GetAsset(), false)
 		if compErr != nil {
 			return compErr
 		}
@@ -227,14 +199,41 @@ func (p *parseVisitor) VisitSend(c *parser.SendContext) *CompileError {
 		if compErr != nil {
 			return compErr
 		}
-	} else if mon := c.GetMon(); mon != nil {
-		typ, addr, compErr = p.VisitExpr(mon, false)
+	case *parser.MonetaryExpressionArithmeticContext:
+		sm := program.SendMonetary{
+			Operands:  []core.Address{},
+			Operators: []int{},
+		}
+		baseOperand := monCtx.MonetaryArithmetic().GetBaseOperand()
+		typ, addr, compErr = p.VisitExpr(baseOperand, false)
 		if compErr != nil {
 			return compErr
 		}
 		if typ != core.TypeMonetary {
 			return LogicError(c, fmt.Errorf(
-				"send monetary: the expression should be of type 'monetary' instead of '%s'", typ))
+				"send monetary: all operands should be of type 'monetary'"))
+		}
+		sm.Operands = append(sm.Operands, *addr)
+
+		for _, op := range monCtx.MonetaryArithmetic().GetOperands() {
+			typ, addr, compErr = p.VisitExpr(op, false)
+			if compErr != nil {
+				return compErr
+			}
+			if typ != core.TypeMonetary {
+				return LogicError(c, fmt.Errorf(
+					"send monetary: all operands should be of type 'monetary'"))
+			}
+			sm.Operands = append(sm.Operands, *addr)
+		}
+
+		for _, op := range monCtx.MonetaryArithmetic().GetOperators() {
+			sm.Operators = append(sm.Operators, op.GetTokenType())
+		}
+
+		addr, err := p.AllocateResource(sm)
+		if err != nil {
+			return LogicError(c, err)
 		}
 
 		accounts, compErr = p.VisitValueAwareSource(c.GetSrc(), func() {
@@ -307,17 +306,6 @@ func (p *parseVisitor) VisitSetAccountMeta(ctx *parser.SetAccountMetaContext) *C
 	p.PushAddress(*accAddr)
 
 	p.AppendInstruction(program.OP_ACCOUNT_META)
-
-	return nil
-}
-
-func (p *parseVisitor) VisitPrint(ctx *parser.PrintContext) *CompileError {
-	_, _, err := p.VisitExpr(ctx.GetExpr(), true)
-	if err != nil {
-		return err
-	}
-
-	p.AppendInstruction(program.OP_PRINT)
 
 	return nil
 }
@@ -441,8 +429,6 @@ func (p *parseVisitor) VisitScript(c parser.IScriptContext) *CompileError {
 		for _, stmt := range c.GetStmts() {
 			var err *CompileError
 			switch c := stmt.(type) {
-			case *parser.PrintContext:
-				err = p.VisitPrint(c)
 			case *parser.FailContext:
 				p.AppendInstruction(program.OP_FAIL)
 			case *parser.SendContext:

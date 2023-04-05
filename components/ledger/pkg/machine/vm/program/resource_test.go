@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/numary/ledger/pkg/core"
+	"github.com/numary/ledger/pkg/machine/script/parser"
 	"github.com/stretchr/testify/require"
 )
 
@@ -34,4 +35,13 @@ func TestResource(t *testing.T) {
 		Key:     "key",
 	}
 	require.Equal(t, "<monetary name meta(0, key)>", vam.String())
+
+	swa := SendMonetary{
+		Operands: []core.Address{0, 1, 2},
+		Operators: []int{
+			parser.NumScriptLexerOP_ADD,
+			parser.NumScriptLexerOP_SUB,
+		},
+	}
+	require.Equal(t, "<send (0 + 1 - 2)>", swa.String())
 }

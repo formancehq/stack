@@ -75,12 +75,6 @@ func (s *BaseNumScriptListener) EnterVariable(ctx *VariableContext) {}
 // ExitVariable is called when production variable is exited.
 func (s *BaseNumScriptListener) ExitVariable(ctx *VariableContext) {}
 
-// EnterExprAddSub is called when production ExprAddSub is entered.
-func (s *BaseNumScriptListener) EnterExprAddSub(ctx *ExprAddSubContext) {}
-
-// ExitExprAddSub is called when production ExprAddSub is exited.
-func (s *BaseNumScriptListener) ExitExprAddSub(ctx *ExprAddSubContext) {}
-
 // EnterExprLiteral is called when production ExprLiteral is entered.
 func (s *BaseNumScriptListener) EnterExprLiteral(ctx *ExprLiteralContext) {}
 
@@ -225,11 +219,25 @@ func (s *BaseNumScriptListener) EnterSrcAllotment(ctx *SrcAllotmentContext) {}
 // ExitSrcAllotment is called when production SrcAllotment is exited.
 func (s *BaseNumScriptListener) ExitSrcAllotment(ctx *SrcAllotmentContext) {}
 
-// EnterPrint is called when production Print is entered.
-func (s *BaseNumScriptListener) EnterPrint(ctx *PrintContext) {}
+// EnterMonetaryArithmetic is called when production monetaryArithmetic is entered.
+func (s *BaseNumScriptListener) EnterMonetaryArithmetic(ctx *MonetaryArithmeticContext) {}
 
-// ExitPrint is called when production Print is exited.
-func (s *BaseNumScriptListener) ExitPrint(ctx *PrintContext) {}
+// ExitMonetaryArithmetic is called when production monetaryArithmetic is exited.
+func (s *BaseNumScriptListener) ExitMonetaryArithmetic(ctx *MonetaryArithmeticContext) {}
+
+// EnterMonetaryExpressionAll is called when production MonetaryExpressionAll is entered.
+func (s *BaseNumScriptListener) EnterMonetaryExpressionAll(ctx *MonetaryExpressionAllContext) {}
+
+// ExitMonetaryExpressionAll is called when production MonetaryExpressionAll is exited.
+func (s *BaseNumScriptListener) ExitMonetaryExpressionAll(ctx *MonetaryExpressionAllContext) {}
+
+// EnterMonetaryExpressionArithmetic is called when production MonetaryExpressionArithmetic is entered.
+func (s *BaseNumScriptListener) EnterMonetaryExpressionArithmetic(ctx *MonetaryExpressionArithmeticContext) {
+}
+
+// ExitMonetaryExpressionArithmetic is called when production MonetaryExpressionArithmetic is exited.
+func (s *BaseNumScriptListener) ExitMonetaryExpressionArithmetic(ctx *MonetaryExpressionArithmeticContext) {
+}
 
 // EnterSetTxMeta is called when production SetTxMeta is entered.
 func (s *BaseNumScriptListener) EnterSetTxMeta(ctx *SetTxMetaContext) {}

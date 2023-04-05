@@ -173,18 +173,6 @@ func TestFail(t *testing.T) {
 	test(t, tc)
 }
 
-func TestPrint(t *testing.T) {
-	tc := NewTestCase()
-	tc.compile(t, "print 29 + 15 - 2")
-	mi := core.MonetaryInt(*big.NewInt(42))
-	tc.expected = CaseResult{
-		Printed:  []core.Value{&mi},
-		Postings: []Posting{},
-		ExitCode: EXIT_OK,
-	}
-	test(t, tc)
-}
-
 func TestSend(t *testing.T) {
 	tc := NewTestCase()
 	tc.compile(t, `send [EUR/2 100] (
@@ -1670,9 +1658,8 @@ func TestMachine(t *testing.T) {
 		)`)
 	require.NoError(t, err)
 
-	t.Run("with debug", func(t *testing.T) {
+	t.Run("nominal", func(t *testing.T) {
 		m := NewMachine(*p)
-		m.Debug = true
 
 		err = m.SetVars(map[string]core.Value{
 			"dest": core.AccountAddress("charlie"),
@@ -1843,4 +1830,87 @@ func TestVariableAsset(t *testing.T) {
 		ExitCode: EXIT_OK,
 	}
 	test(t, tc)
+}
+
+func TestSendWithArithmetic(t *testing.T) {
+	t.Run("nominal", func(t *testing.T) {
+		tc := NewTestCase()
+		script := `
+			vars {
+				asset $ass
+				monetary $mon
+			}
+			send [EUR 1] + $mon + [$ass 3] - [EUR 4] (
+				source = @a
+				destination = @b
+			)`
+		tc.compile(t, script)
+		tc.setBalance("a", "EUR", 10)
+		tc.vars = map[string]core.Value{
+			"ass": core.Asset("EUR"),
+			"mon": core.Monetary{
+				Asset:  "EUR",
+				Amount: core.NewMonetaryInt(2),
+			},
+		}
+		tc.expected = CaseResult{
+			Printed: []core.Value{},
+			Postings: []Posting{
+				{
+					Asset:       "EUR",
+					Amount:      core.NewMonetaryInt(2),
+					Source:      "a",
+					Destination: "b",
+				},
+			},
+			ExitCode: EXIT_OK,
+		}
+		test(t, tc)
+	})
+
+	t.Run("error different assets", func(t *testing.T) {
+		tc := NewTestCase()
+		tc.compile(t, `
+			send [USD 2] + [EUR 1] (
+				source = @world
+				destination = @alice
+			)`)
+		tc.expected = CaseResult{
+			Printed:  []core.Value{},
+			Postings: []Posting{},
+			Error:    "cannot send a monetary arithmetic with different assets",
+		}
+		test(t, tc)
+	})
+
+	t.Run("error negative amount", func(t *testing.T) {
+		tc := NewTestCase()
+		tc.compile(t, `
+			send [USD 2] - [USD 3] (
+				source = @world
+				destination = @alice
+			)`)
+		tc.expected = CaseResult{
+			Printed:  []core.Value{},
+			Postings: []Posting{},
+			Error:    "cannot send a monetary arithmetic with a negative amount: [USD -1]",
+		}
+		test(t, tc)
+	})
+
+	t.Run("error insufficient funds", func(t *testing.T) {
+		tc := NewTestCase()
+		tc.compile(t, `
+			send [USD 3] - [USD 1] (
+				source = @bob
+				destination = @alice
+			)`)
+		tc.setBalance("bob", "USD", 1)
+		tc.expected = CaseResult{
+			Printed:  []core.Value{},
+			Postings: []Posting{},
+			ExitCode: EXIT_FAIL_INSUFFICIENT_FUNDS,
+		}
+		test(t, tc)
+	})
 }
