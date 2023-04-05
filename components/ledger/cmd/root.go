@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/formancehq/ledger/cmd/internal"
+	"github.com/formancehq/ledger/pkg/storage/sqlstorage"
 	_ "github.com/formancehq/ledger/pkg/storage/sqlstorage/ledger/migrates/9-add-pre-post-volumes"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -63,6 +64,7 @@ func NewRootCommand() *cobra.Command {
 	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
 	internal.InitAnalyticsFlags(root, DefaultSegmentWriteKey)
 	publish.InitCLIFlags(root)
+	sqlstorage.InitCLIFlags(root)
 
 	if err := viper.BindPFlags(root.PersistentFlags()); err != nil {
 		panic(err)

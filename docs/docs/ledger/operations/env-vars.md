@@ -59,6 +59,6 @@ As an example, DEBUG could either be passed as `numary server start --debug` or 
  |--storage.cache                        |STORAGE_CACHE                        |true                             |Storage cache                                                              |
  |--storage.dir                          |STORAGE_DIR                          |/Users/clement/.numary/data      |Storage directory (for sqlite)                                             |
  |--storage.driver                       |STORAGE_DRIVER                       |sqlite                           |Storage driver                                                             |
- |--storage.postgres.conn_string         |STORAGE_POSTGRES_CONN_STRING         |postgresql://localhost/postgres  |Postgre connection string                                                  |
+ |--storage-postgres-conn-string         |STORAGE_POSTGRES_CONN_STRING         |postgresql://localhost/postgres  |Postgre connection string                                                  |
  |--storage.sqlite.db_name               |STORAGE_SQLITE_DB_NAME               |numary                           |SQLite database name                                                       |
  |--ui.http.bind_address                 |UI_HTTP_BIND_ADDRESS                 |localhost:3068                   |UI bind address                                                            |
