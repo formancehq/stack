@@ -39,11 +39,10 @@ func NewRouter(
 				handler.ServeHTTP(w, r)
 			})
 		},
-		middlewares.Log(),
+		middlewares.MetricsMiddleware(globalMetricsRegistry),
 		middleware.Recoverer,
 	)
 	router.Use(middlewares.Log())
-	router.Use(middlewares.MetricsMiddleware(globalMetricsRegistry))
 
 	router.Get("/_healthcheck", healthController.Check)
 
