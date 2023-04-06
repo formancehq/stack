@@ -101,8 +101,7 @@ spec:
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst
             initContainers:
-                - command:
-                    - payments
+                - args:
                     - migrate
                     - up
                   env:

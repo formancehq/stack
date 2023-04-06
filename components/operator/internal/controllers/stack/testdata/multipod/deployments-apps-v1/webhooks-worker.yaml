@@ -28,8 +28,7 @@ spec:
                 app.kubernetes.io/name: webhooks-worker
         spec:
             containers:
-                - command:
-                    - /usr/bin/webhooks
+                - args:
                     - worker
                   env:
                     - name: POSTGRES_HOST

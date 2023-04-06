@@ -28,8 +28,7 @@ spec:
                 app.kubernetes.io/name: auth
         spec:
             containers:
-                - command:
-                    - /main
+                - args:
                     - serve
                   env:
                     - name: POSTGRES_HOST

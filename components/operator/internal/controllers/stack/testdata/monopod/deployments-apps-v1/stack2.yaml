@@ -28,8 +28,7 @@ spec:
                 app.kubernetes.io/name: stack2
         spec:
             containers:
-                - command:
-                    - /main
+                - args:
                     - serve
                   env:
                     - name: POSTGRES_HOST
@@ -349,8 +348,7 @@ spec:
                   resources: {}
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
-                - command:
-                    - /orchestration
+                - args:
                     - worker
                   env:
                     - name: POSTGRES_HOST
@@ -750,8 +748,7 @@ spec:
                   resources: {}
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
-                - command:
-                    - /usr/bin/webhooks
+                - args:
                     - worker
                   env:
                     - name: POSTGRES_HOST
@@ -811,10 +808,9 @@ spec:
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst
             initContainers:
-                - command:
-                    - payments
-                    - migrate
-                    - up
+                - args:
+                  - migrate
+                  - up
                   env:
                     - name: POSTGRES_HOST
                       value: localhost
