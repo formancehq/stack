@@ -29,7 +29,7 @@ func addInfoRoute(router *mux.Router, serviceInfo api.ServiceInfo) {
 
 func Module(addr string, serviceInfo api.ServiceInfo) fx.Option {
 	return fx.Options(
-		health.ProvideHealthCheck(delegatedOIDCServerAvailability),
+		//health.ProvideHealthCheck(delegatedOIDCServerAvailability),
 		health.Module(),
 		fx.Supply(serviceInfo),
 		fx.Provide(CreateRootRouter),
