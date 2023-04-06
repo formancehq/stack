@@ -47,9 +47,9 @@ func resolveAuthContainer(resolveContext modules.ContainerResolutionContext) mod
 		env = env.Append(modules.Env("CAOS_OIDC_DEV", "1"))
 	}
 	return modules.Container{
-		Command: []string{"/main", "serve"},
-		Env:     env,
-		Image:   modules.GetImage("auth", resolveContext.Versions.Spec.Auth),
+		Args:  []string{"serve"},
+		Env:   env,
+		Image: modules.GetImage("auth", resolveContext.Versions.Spec.Auth),
 	}
 }
 

@@ -28,8 +28,7 @@ spec:
                 app.kubernetes.io/name: orchestration-worker
         spec:
             containers:
-                - command:
-                    - /orchestration
+                - args:
                     - worker
                   env:
                     - name: POSTGRES_HOST

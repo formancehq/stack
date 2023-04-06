@@ -39,7 +39,7 @@ func init() {
 									resolveContext.Stack.GetServiceName("payments"),
 								}, " ")),
 							),
-							Command:  []string{"/usr/bin/webhooks", "worker"},
+							Args:     []string{"worker"},
 							Liveness: modules.LivenessDisable,
 						}
 					},

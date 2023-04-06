@@ -46,7 +46,7 @@ func init() {
 						return modules.Container{
 							Env:      orchestrationEnvVars(resolveContext),
 							Image:    modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
-							Command:  []string{"/orchestration", "worker"},
+							Args:     []string{"worker"},
 							Liveness: modules.LivenessDisable,
 						}
 					},
