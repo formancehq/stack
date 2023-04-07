@@ -1,0 +1,140 @@
+type: object
+properties:
+  ledger:
+    type: string
+  revertedTransaction:
+    type: object
+    properties:
+      postings:
+        type: array
+        items:
+          type: object
+          properties:
+            source:
+              type: string
+            destination:
+              type: string
+            amount:
+              type: number
+            asset:
+              type: string
+          required:
+          - source
+          - destination
+          - amount
+          - asset
+      reference:
+        type: string
+      metadata:
+        type: object
+        properties: { }
+        required: [ ]
+      txid:
+        type: string
+        format: uuid
+      preCommitVolumes:
+        type: object
+        additionalProperties:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              input:
+                type: number
+              output:
+                type: number
+              balance:
+                type: number
+      postCommitVolumes:
+        type: object
+        additionalProperties:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              input:
+                type: number
+              output:
+                type: number
+              balance:
+                type: number
+      timestamp:
+        type: string
+    required:
+    - postings
+    - reference
+    - metadata
+    - txid
+    - preCommitVolumes
+    - postCommitVolumes
+    - timestamp
+  revertTransaction:
+    type: object
+    properties:
+      postings:
+        type: array
+        items:
+          type: object
+          properties:
+            source:
+              type: string
+            destination:
+              type: string
+            amount:
+              type: number
+            asset:
+              type: string
+          required:
+          - source
+          - destination
+          - amount
+          - asset
+      reference:
+        type: string
+      metadata:
+        type: object
+        properties: { }
+        required: [ ]
+      txid:
+        type: string
+        format: uuid
+      preCommitVolumes:
+        type: object
+        additionalProperties:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              input:
+                type: number
+              output:
+                type: number
+              balance:
+                type: number
+      postCommitVolumes:
+        type: object
+        additionalProperties:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              input:
+                type: number
+              output:
+                type: number
+              balance:
+                type: number
+      timestamp:
+        type: string
+    required:
+    - postings
+    - reference
+    - metadata
+    - txid
+    - preCommitVolumes
+    - postCommitVolumes
+    - timestamp
+required:
+- ledger
+- revertedTransaction
+- revertTransaction
