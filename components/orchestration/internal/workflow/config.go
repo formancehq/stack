@@ -3,6 +3,7 @@ package workflow
 import (
 	"context"
 	"fmt"
+	"runtime/debug"
 	"time"
 
 	"github.com/formancehq/orchestration/internal/schema"
@@ -69,6 +70,7 @@ func (c *Config) run(ctx workflow.Context, db *bun.DB, instance Instance, variab
 	defer func() {
 		if e := recover(); e != nil {
 			err = errors.WithStack(fmt.Errorf("%s", e))
+			debug.PrintStack()
 		}
 	}()
 
@@ -96,10 +98,10 @@ func (c *Config) run(ctx workflow.Context, db *bun.DB, instance Instance, variab
 			Exec(context.Background()); dbErr != nil {
 			logger.Error("error updating stage into database", "error", dbErr)
 		}
-
 		if err != nil {
 			return err
 		}
+		logger.Info("stage terminated", "index", ind, "workflowID", instance.ID)
 	}
 
 	return nil

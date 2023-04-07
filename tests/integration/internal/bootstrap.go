@@ -1,3 +1,5 @@
+// TODO(gfyrag): Clean all copy/paste
+// Also, clean resources after tests : database and es shard
 package internal
 
 import (
