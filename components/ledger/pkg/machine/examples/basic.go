@@ -8,13 +8,21 @@ import (
 	"github.com/numary/ledger/pkg/machine/vm"
 )
 
+/*
+15% from {
+	@alice
+	@bob
+}
+remaining from @bob
+*/
+
 func main() {
 	program, err := compiler.Compile(`
 		// This is a comment
 		vars {
 			account $dest
 		}
-		send [COIN 99] (
+		send [COIN 38] - [COIN 12] (
 			source = {
 				15% from {
 					@alice

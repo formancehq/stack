@@ -22,11 +22,11 @@ func (p *parseVisitor) VisitDestinationRecursive(c parser.IDestinationContext) *
 	case *parser.DestAccountContext:
 		p.AppendInstruction(program.OP_FUNDING_SUM)
 		p.AppendInstruction(program.OP_TAKE)
-		ty, _, err := p.VisitExpr(c.Expression(), true)
+		account_info, err := p.VisitExpr(c.Expression(), true)
 		if err != nil {
 			return err
 		}
-		if ty != core.TypeAccount {
+		if account_info.ty != core.TypeAccount {
 			return LogicError(c,
 				errors.New("wrong type: expected account as destination"),
 			)
@@ -53,11 +53,11 @@ func (p *parseVisitor) VisitDestinationRecursive(c parser.IDestinationContext) *
 		}
 
 		for i := 0; i < n; i++ {
-			ty, _, compErr := p.VisitExpr(amounts[i], true)
+			amount_info, compErr := p.VisitExpr(amounts[i], true)
 			if compErr != nil {
 				return compErr
 			}
-			if ty != core.TypeMonetary {
+			if amount_info.ty != core.TypeMonetary {
 				return LogicError(c, errors.New("wrong type: expected monetary as max"))
 			}
 			p.AppendInstruction(program.OP_TAKE_MAX)

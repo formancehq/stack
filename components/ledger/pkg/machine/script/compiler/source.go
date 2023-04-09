@@ -12,9 +12,9 @@ import (
 type FallbackAccount core.Address
 
 // VisitValueAwareSource returns the resource addresses of all the accounts
-func (p *parseVisitor) VisitValueAwareSource(c parser.IValueAwareSourceContext, pushAsset func(), monAddr *core.Address) (map[core.Address]struct{}, *CompileError) {
+func (p *parseVisitor) VisitValueAwareSource(c parser.IValueAwareSourceContext, pushAsset func(), pushMonetary func()) (map[core.Address]struct{}, *CompileError) {
 	neededAccounts := map[core.Address]struct{}{}
-	isAll := monAddr == nil
+	isAll := pushMonetary == nil
 	switch c := c.(type) {
 	case *parser.SrcContext:
 		accounts, _, unbounded, compErr := p.VisitSource(c.Source(), pushAsset, isAll)
@@ -25,7 +25,7 @@ func (p *parseVisitor) VisitValueAwareSource(c parser.IValueAwareSourceContext, 
 			neededAccounts[k] = v
 		}
 		if !isAll {
-			p.PushAddress(*monAddr)
+			pushMonetary()
 			err := p.TakeFromSource(unbounded)
 			if err != nil {
 				return nil, LogicError(c, err)
@@ -35,7 +35,7 @@ func (p *parseVisitor) VisitValueAwareSource(c parser.IValueAwareSourceContext, 
 		if isAll {
 			return nil, LogicError(c, errors.New("cannot take all balance of an allotment source"))
 		}
-		p.PushAddress(*monAddr)
+		pushMonetary()
 		p.VisitAllotment(c.SourceAllotment(), c.SourceAllotment().GetPortions())
 		p.AppendInstruction(program.OP_ALLOC)
 
@@ -106,15 +106,15 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext, pushAsset func(), is
 	var fallback *FallbackAccount
 	switch c := c.(type) {
 	case *parser.SrcAccountContext:
-		ty, accAddr, compErr := p.VisitExpr(c.SourceAccount().GetAccount(), true)
+		account_info, compErr := p.VisitExpr(c.SourceAccount().GetAccount(), true)
 		if compErr != nil {
 			return nil, nil, nil, compErr
 		}
-		if ty != core.TypeAccount {
+		if account_info.ty != core.TypeAccount {
 			return nil, nil, nil, LogicError(c, errors.New("wrong type: expected account or allocation as destination"))
 		}
-		if p.isWorld(*accAddr) {
-			f := FallbackAccount(*accAddr)
+		if p.isWorld(*account_info.addr) {
+			f := FallbackAccount(*account_info.addr)
 			fallback = &f
 		}
 
@@ -129,16 +129,16 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext, pushAsset func(), is
 			p.AppendInstruction(program.OP_MONETARY_NEW)
 			p.AppendInstruction(program.OP_TAKE_ALL)
 		} else {
-			if p.isWorld(*accAddr) {
+			if p.isWorld(*account_info.addr) {
 				return nil, nil, nil, LogicError(c, errors.New("@world is already set to an unbounded overdraft"))
 			}
 			switch c := overdraft.(type) {
 			case *parser.SrcAccountOverdraftSpecificContext:
-				ty, _, compErr := p.VisitExpr(c.GetSpecific(), true)
+				overdraft_info, compErr := p.VisitExpr(c.GetSpecific(), true)
 				if compErr != nil {
 					return nil, nil, nil, compErr
 				}
-				if ty != core.TypeMonetary {
+				if overdraft_info.ty != core.TypeMonetary {
 					return nil, nil, nil, LogicError(c, errors.New("wrong type: expected monetary"))
 				}
 				p.AppendInstruction(program.OP_TAKE_ALL)
@@ -150,12 +150,12 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext, pushAsset func(), is
 				}
 				p.AppendInstruction(program.OP_MONETARY_NEW)
 				p.AppendInstruction(program.OP_TAKE_ALL)
-				f := FallbackAccount(*accAddr)
+				f := FallbackAccount(*account_info.addr)
 				fallback = &f
 			}
 		}
-		neededAccounts[*accAddr] = struct{}{}
-		emptiedAccounts[*accAddr] = struct{}{}
+		neededAccounts[*account_info.addr] = struct{}{}
+		emptiedAccounts[*account_info.addr] = struct{}{}
 
 		if fallback != nil && isAll {
 			return nil, nil, nil, LogicError(c, errors.New("cannot take all balance of an unbounded source"))
@@ -166,11 +166,11 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext, pushAsset func(), is
 		if compErr != nil {
 			return nil, nil, nil, compErr
 		}
-		ty, _, compErr := p.VisitExpr(c.SourceMaxed().GetMax(), true)
+		max_info, compErr := p.VisitExpr(c.SourceMaxed().GetMax(), true)
 		if compErr != nil {
 			return nil, nil, nil, compErr
 		}
-		if ty != core.TypeMonetary {
+		if max_info.ty != core.TypeMonetary {
 			return nil, nil, nil, LogicError(c, errors.New("wrong type: expected monetary as max"))
 		}
 		for k, v := range accounts {

@@ -272,6 +272,17 @@ func (m *Machine) tick() (bool, byte) {
 			Amount: a.Amount.Add(b.Amount),
 		})
 
+	case program.OP_MONETARY_SUB:
+		b := pop[core.Monetary](m)
+		a := pop[core.Monetary](m)
+		if a.Asset != b.Asset {
+			return true, EXIT_FAIL_INVALID
+		}
+		m.pushValue(core.Monetary{
+			Asset:  a.Asset,
+			Amount: a.Amount.Sub(b.Amount),
+		})
+
 	case program.OP_MAKE_ALLOTMENT:
 		n := pop[core.Number](m)
 		portions := make([]core.Portion, n.Uint64())

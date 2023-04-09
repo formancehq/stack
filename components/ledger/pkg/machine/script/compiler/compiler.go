@@ -75,43 +75,85 @@ func (p *parseVisitor) VisitVariable(c parser.IVariableContext, push bool) (core
 	}
 }
 
-func (p *parseVisitor) VisitExpr(c parser.IExpressionContext, push bool) (core.Type, *core.Address, *CompileError) {
+type ExprInfo struct {
+	ty core.Type
+	addr *core.Address
+	asset_source *core.Address // a resource address that has the corresponding asset (only assets or monetaries)
+}
+
+func (p *parseVisitor) VisitExpr(c parser.IExpressionContext, push bool) (*ExprInfo, *CompileError) {
 	switch c := c.(type) {
 	case *parser.ExprAddSubContext:
-		ty, _, err := p.VisitExpr(c.GetLhs(), push)
+		lhs_info, err := p.VisitExpr(c.GetLhs(), push)
 		if err != nil {
-			return 0, nil, err
+			return nil, err
 		}
-		if ty != core.TypeNumber {
-			return 0, nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
-		}
-		ty, _, err = p.VisitExpr(c.GetRhs(), push)
-		if err != nil {
-			return 0, nil, err
-		}
-		if ty != core.TypeNumber {
-			return 0, nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
-		}
-		if push {
-			switch c.GetOp().GetTokenType() {
-			case parser.NumScriptLexerOP_ADD:
-				p.AppendInstruction(program.OP_IADD)
-			case parser.NumScriptLexerOP_SUB:
-				p.AppendInstruction(program.OP_ISUB)
+		switch lhs_info.ty {
+		case core.TypeNumber:
+			rhs_info, err := p.VisitExpr(c.GetRhs(), push)
+			if err != nil {
+				return nil, err
 			}
+			if rhs_info.ty != core.TypeNumber {
+				return nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
+			}
+			if push {
+				switch c.GetOp().GetTokenType() {
+				case parser.NumScriptLexerOP_ADD:
+					p.AppendInstruction(program.OP_IADD)
+				case parser.NumScriptLexerOP_SUB:
+					p.AppendInstruction(program.OP_ISUB)
+				}
+			}
+			return &ExprInfo {
+				ty: core.TypeNumber,
+				addr: nil,
+				asset_source: lhs_info.addr,
+			}, nil
+		case core.TypeMonetary:
+			rhs_info, err := p.VisitExpr(c.GetRhs(), push)
+			if err != nil {
+				return nil, err
+			}
+			if rhs_info.ty != core.TypeMonetary {
+				return nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
+			}
+			if push {
+				switch c.GetOp().GetTokenType() {
+				case parser.NumScriptLexerOP_ADD:
+					p.AppendInstruction(program.OP_MONETARY_ADD)
+				case parser.NumScriptLexerOP_SUB:
+					p.AppendInstruction(program.OP_MONETARY_SUB)
+				}
+			}
+			return &ExprInfo {
+				ty: core.TypeMonetary,
+				addr: nil,
+				asset_source: lhs_info.addr,
+			}, nil
+		default:
+			return nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
 		}
-		return core.TypeNumber, nil, nil
 	case *parser.ExprLiteralContext:
 		ty, addr, err := p.VisitLit(c.GetLit(), push)
 		if err != nil {
-			return 0, nil, err
+			return nil, err
 		}
-		return ty, addr, nil
+		return &ExprInfo {
+			ty: ty,
+			addr: addr,
+			asset_source: nil,
+		},
+		nil
 	case *parser.ExprVariableContext:
 		ty, addr, err := p.VisitVariable(c.GetVar_(), push)
-		return ty, addr, err
+		if err != nil {
+			return nil, err
+		}
+		return &ExprInfo{
+			ty: ty, addr: addr}, nil
 	default:
-		return 0, nil, InternalError(c)
+		return nil, InternalError(c)
 	}
 }
 
@@ -174,21 +216,22 @@ func (p *parseVisitor) VisitLit(c parser.ILiteralContext, push bool) (core.Type,
 		}
 		return core.TypePortion, addr, nil
 	case *parser.LitMonetaryContext:
-		typ, assetAddr, compErr := p.VisitExpr(c.Monetary().GetAsset(), false)
+		// typ, assetAddr
+		asset_info, compErr := p.VisitExpr(c.Monetary().GetAsset(), false)
 		if compErr != nil {
 			return 0, nil, compErr
 		}
-		if typ != core.TypeAsset {
+		if asset_info.ty != core.TypeAsset {
 			return 0, nil, LogicError(c, fmt.Errorf(
 				"the expression in monetary literal should be of type '%s' instead of '%s'",
-				core.TypeAsset, typ))
+				core.TypeAsset, asset_info.ty))
 		}
 		amt, err := core.ParseMonetaryInt(c.Monetary().GetAmt().GetText())
 		if err != nil {
 			return 0, nil, LogicError(c, err)
 		}
 		monAddr, err := p.AllocateResource(program.Monetary{
-			Asset:  *assetAddr,
+			Asset:  *asset_info.addr,
 			Amount: amt,
 		})
 		if err != nil {
@@ -206,52 +249,56 @@ func (p *parseVisitor) VisitLit(c parser.ILiteralContext, push bool) (core.Type,
 func (p *parseVisitor) VisitSend(c *parser.SendContext) *CompileError {
 	var (
 		accounts map[core.Address]struct{}
-		addr     *core.Address
-		compErr  *CompileError
-		typ      core.Type
+		asset_source     *core.Address
+	// 	// compErr  *CompileError
+	// 	typ      core.Type
 	)
 
 	if monAll := c.GetMonAll(); monAll != nil {
-		typ, addr, compErr = p.VisitExpr(monAll.GetAsset(), false)
+		asset_info, compErr := p.VisitExpr(monAll.GetAsset(), false)
 		if compErr != nil {
 			return compErr
 		}
-		if typ != core.TypeAsset {
+		if asset_info.ty != core.TypeAsset {
 			return LogicError(c, fmt.Errorf(
-				"send monetary all: the expression should be of type 'asset' instead of '%s'", typ))
+				"send monetary all: the expression should be of type 'asset' instead of '%s'", asset_info.ty))
 		}
 
 		accounts, compErr = p.VisitValueAwareSource(c.GetSrc(), func() {
-			p.PushAddress(*addr)
+			p.PushAddress(*asset_info.addr)
 		}, nil)
 		if compErr != nil {
 			return compErr
 		}
+		asset_source = asset_info.asset_source
 	} else if mon := c.GetMon(); mon != nil {
-		typ, addr, compErr = p.VisitExpr(mon, false)
+		info, compErr := p.VisitExpr(mon, false)
 		if compErr != nil {
 			return compErr
 		}
-		if typ != core.TypeMonetary {
+		if info.ty != core.TypeMonetary {
 			return LogicError(c, fmt.Errorf(
-				"send monetary: the expression should be of type 'monetary' instead of '%s'", typ))
+				"send monetary: the expression should be of type 'monetary' instead of '%s'", info.ty))
 		}
 
 		accounts, compErr = p.VisitValueAwareSource(c.GetSrc(), func() {
-			p.PushAddress(*addr)
+			p.PushAddress(*info.asset_source)
 			p.AppendInstruction(program.OP_ASSET)
-		}, addr)
+		}, func() {
+			p.VisitExpr(mon, true)
+		})
 		if compErr != nil {
 			return compErr
 		}
+		asset_source = info.asset_source
 	}
 
 	for acc := range accounts {
 		if b, ok := p.neededBalances[acc]; ok {
-			b[*addr] = struct{}{}
+			b[*asset_source] = struct{}{}
 		} else {
 			p.neededBalances[acc] = map[core.Address]struct{}{
-				*addr: {},
+				*asset_source: {},
 			}
 		}
 	}
@@ -264,7 +311,7 @@ func (p *parseVisitor) VisitSend(c *parser.SendContext) *CompileError {
 }
 
 func (p *parseVisitor) VisitSetTxMeta(ctx *parser.SetTxMetaContext) *CompileError {
-	_, _, compErr := p.VisitExpr(ctx.GetValue(), true)
+	_, compErr := p.VisitExpr(ctx.GetValue(), true)
 	if compErr != nil {
 		return compErr
 	}
@@ -283,7 +330,7 @@ func (p *parseVisitor) VisitSetTxMeta(ctx *parser.SetTxMetaContext) *CompileErro
 }
 
 func (p *parseVisitor) VisitSetAccountMeta(ctx *parser.SetAccountMetaContext) *CompileError {
-	_, _, compErr := p.VisitExpr(ctx.GetValue(), true)
+	_, compErr := p.VisitExpr(ctx.GetValue(), true)
 	if compErr != nil {
 		return compErr
 	}
@@ -296,15 +343,15 @@ func (p *parseVisitor) VisitSetAccountMeta(ctx *parser.SetAccountMetaContext) *C
 	}
 	p.PushAddress(*keyAddr)
 
-	ty, accAddr, compErr := p.VisitExpr(ctx.GetAcc(), false)
+	account_info, compErr := p.VisitExpr(ctx.GetAcc(), false)
 	if compErr != nil {
 		return compErr
 	}
-	if ty != core.TypeAccount {
+	if account_info.ty != core.TypeAccount {
 		return LogicError(ctx, fmt.Errorf(
-			"variable is of type %s, and should be of type account", ty))
+			"variable is of type %s, and should be of type account", account_info.ty))
 	}
-	p.PushAddress(*accAddr)
+	p.PushAddress(*account_info.addr)
 
 	p.AppendInstruction(program.OP_ACCOUNT_META)
 
@@ -312,7 +359,7 @@ func (p *parseVisitor) VisitSetAccountMeta(ctx *parser.SetAccountMetaContext) *C
 }
 
 func (p *parseVisitor) VisitPrint(ctx *parser.PrintContext) *CompileError {
-	_, _, err := p.VisitExpr(ctx.GetExpr(), true)
+	_, err := p.VisitExpr(ctx.GetExpr(), true)
 	if err != nil {
 		return err
 	}
@@ -366,11 +413,11 @@ func (p *parseVisitor) VisitVars(c *parser.VarListDeclContext) *CompileError {
 
 		switch c := v.GetOrig().(type) {
 		case *parser.OriginAccountMetaContext:
-			srcTy, src, compErr := p.VisitExpr(c.GetAccount(), false)
+			account_info, compErr := p.VisitExpr(c.GetAccount(), false)
 			if compErr != nil {
 				return compErr
 			}
-			if srcTy != core.TypeAccount {
+			if account_info.ty != core.TypeAccount {
 				return LogicError(c, fmt.Errorf(
 					"variable $%s: type should be 'account' to pull account metadata", name))
 			}
@@ -378,7 +425,7 @@ func (p *parseVisitor) VisitVars(c *parser.VarListDeclContext) *CompileError {
 			addr, err = p.AllocateResource(program.VariableAccountMetadata{
 				Typ:     ty,
 				Name:    name,
-				Account: *src,
+				Account: *account_info.addr,
 				Key:     key,
 			})
 		case *parser.OriginAccountBalanceContext:
@@ -386,28 +433,28 @@ func (p *parseVisitor) VisitVars(c *parser.VarListDeclContext) *CompileError {
 				return LogicError(c, fmt.Errorf(
 					"variable $%s: type should be 'monetary' to pull account balance", name))
 			}
-			accTy, accAddr, compErr := p.VisitExpr(c.GetAccount(), false)
+			account_info, compErr := p.VisitExpr(c.GetAccount(), false)
 			if compErr != nil {
 				return compErr
 			}
-			if accTy != core.TypeAccount {
+			if account_info.ty != core.TypeAccount {
 				return LogicError(c, fmt.Errorf(
 					"variable $%s: the first argument to pull account balance should be of type 'account'", name))
 			}
 
-			assTy, assAddr, compErr := p.VisitExpr(c.GetAsset(), false)
+			asset_info, compErr := p.VisitExpr(c.GetAsset(), false)
 			if compErr != nil {
 				return compErr
 			}
-			if assTy != core.TypeAsset {
+			if asset_info.ty != core.TypeAsset {
 				return LogicError(c, fmt.Errorf(
 					"variable $%s: the second argument to pull account balance should be of type 'asset'", name))
 			}
 
 			addr, err = p.AllocateResource(program.VariableAccountBalance{
 				Name:    name,
-				Account: *accAddr,
-				Asset:   *assAddr,
+				Account: *account_info.addr,
+				Asset:   *asset_info.addr,
 			})
 			if err != nil {
 				return LogicError(c, err)
