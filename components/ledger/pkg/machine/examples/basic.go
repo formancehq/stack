@@ -20,17 +20,13 @@ func main() {
 	program, err := compiler.Compile(`
 		// This is a comment
 		vars {
-			account $dest
+		asset $asset
+		monetary $mon1 = balance(@alice, $asset)
+		monetary $mon2 = balance(@bob, $asset)
 		}
-		send [COIN 38] - [COIN 12] (
-			source = {
-				15% from {
-					@alice
-					@bob
-				}
-				remaining from @bob
-			}
-			destination = $dest
+		send $mon1 + $mon2 - [$asset 1] (
+			source = @wallet
+			destination = @account_c
 		)`)
 	if err != nil {
 		panic(err)
@@ -41,14 +37,15 @@ func main() {
 	m.Debug = true
 
 	if err = m.SetVars(map[string]core.Value{
-		"dest": core.AccountAddress("charlie"),
+		"asset": core.Asset("COIN"),
 	}); err != nil {
 		panic(err)
 	}
 
 	initialBalances := map[string]map[string]*core.MonetaryInt{
-		"alice": {"COIN": core.NewMonetaryInt(10)},
+		"alice": {"COIN": core.NewMonetaryInt(42)},
 		"bob":   {"COIN": core.NewMonetaryInt(100)},
+		"wallet": {"COIN": core.NewMonetaryInt(1000)},
 	}
 
 	{
@@ -59,6 +56,9 @@ func main() {
 		for req := range ch {
 			if req.Error != nil {
 				panic(req.Error)
+			}
+			if req.Asset != "" {
+				req.Response <- initialBalances[req.Account][req.Asset]
 			}
 		}
 	}

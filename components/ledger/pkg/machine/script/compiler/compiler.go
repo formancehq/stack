@@ -78,7 +78,9 @@ func (p *parseVisitor) VisitVariable(c parser.IVariableContext, push bool) (core
 type ExprInfo struct {
 	ty core.Type
 	addr *core.Address
-	asset_source *core.Address // a resource address that has the corresponding asset (only assets or monetaries)
+	// If the expr's type is a monetary or an asset, this contains a resource that holds the corresponding asset
+	// (that resource might be an asset or a monetary from which the asset must be extrated)
+	asset_source *core.Address
 }
 
 func (p *parseVisitor) VisitExpr(c parser.IExpressionContext, push bool) (*ExprInfo, *CompileError) {
@@ -108,7 +110,7 @@ func (p *parseVisitor) VisitExpr(c parser.IExpressionContext, push bool) (*ExprI
 			return &ExprInfo {
 				ty: core.TypeNumber,
 				addr: nil,
-				asset_source: lhs_info.addr,
+				asset_source: lhs_info.asset_source,
 			}, nil
 		case core.TypeMonetary:
 			rhs_info, err := p.VisitExpr(c.GetRhs(), push)
@@ -129,7 +131,7 @@ func (p *parseVisitor) VisitExpr(c parser.IExpressionContext, push bool) (*ExprI
 			return &ExprInfo {
 				ty: core.TypeMonetary,
 				addr: nil,
-				asset_source: lhs_info.addr,
+				asset_source: lhs_info.asset_source,
 			}, nil
 		default:
 			return nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
@@ -139,10 +141,14 @@ func (p *parseVisitor) VisitExpr(c parser.IExpressionContext, push bool) (*ExprI
 		if err != nil {
 			return nil, err
 		}
+		var asset_source *core.Address
+		if ty == core.TypeMonetary || ty == core.TypeAsset {
+			asset_source = addr
+		}
 		return &ExprInfo {
 			ty: ty,
 			addr: addr,
-			asset_source: nil,
+			asset_source: asset_source,
 		},
 		nil
 	case *parser.ExprVariableContext:
@@ -150,8 +156,15 @@ func (p *parseVisitor) VisitExpr(c parser.IExpressionContext, push bool) (*ExprI
 		if err != nil {
 			return nil, err
 		}
+		var asset_source *core.Address
+		if ty == core.TypeMonetary || ty == core.TypeAsset {
+			asset_source = addr
+		}
 		return &ExprInfo{
-			ty: ty, addr: addr}, nil
+			ty: ty,
+			addr: addr,
+			asset_source: asset_source,
+		}, nil
 	default:
 		return nil, InternalError(c)
 	}
@@ -250,8 +263,6 @@ func (p *parseVisitor) VisitSend(c *parser.SendContext) *CompileError {
 	var (
 		accounts map[core.Address]struct{}
 		asset_source     *core.Address
-	// 	// compErr  *CompileError
-	// 	typ      core.Type
 	)
 
 	if monAll := c.GetMonAll(); monAll != nil {
