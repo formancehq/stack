@@ -132,7 +132,10 @@ type StatementAllocate struct {
 }
 func (s StatementAllocate) isStatement() {}
 
-type StatementLet struct {}
+type StatementLet struct {
+	Name string
+	Expr Expr
+}
 func (s StatementLet) isStatement() {}
 
 type StatementSetTxMeta struct {

@@ -39,20 +39,38 @@ func (m Interpreter) Run(script program.Script) {
 
 	for _, stmt := range script.Statements {
 		switch s := stmt.(type) {
-		case program.Fail:
+		case program.StatementFail:
 			panic("fail")
 		case program.StatementPrint:
-			fmt.Printf("%v\n", s.expr)
+			fmt.Printf("%v\n", s.Expr)
+		case program.StatementAllocate:
+			funding := EvalAs[core.Funding](m, s.Funding)
+			m.Allocate(funding, s.Destination)
+		case program.StatementLet:
+			value := m.Eval(s.Expr)
+			m.vars[s.Name] = value
+		case program.StatementTxMeta:
+			value := m.Eval(s.Expr)
+			m.tx_meta[s.Key] = value
+		case program.SetAccountMeta:
+			account := EvalAs(m, s.Account)
+			value := m.Eval(s.Value)
+			if 
+			account_meta := []
 		}
 	}
 }
 
+func (m Interpreter) Allocate(funding core.Funding, destination program.Destination) {
+	// todo	
+}
 
-func (i Interpreter) Eval() core.Value {
+
+func (i Interpreter) Eval(expr program.Expr) core.Value {
 	// todo
 }
 
-func EvalAs[T core.Value](i Interpreter, expr Expr) T {
+func EvalAs[T core.Value](i Interpreter, expr program.Expr) T {
 	x := i.Eval(expr)
 	if v, ok := x.(T); ok {
 		return v
