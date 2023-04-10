@@ -1,112 +1,248 @@
 package program
 
 import (
-	"encoding/binary"
-	"encoding/json"
-	"fmt"
-
 	"github.com/numary/ledger/pkg/core"
-	"github.com/pkg/errors"
 )
 
-type Program struct {
-	Instructions   []byte
-	Resources      []Resource
-	NeededBalances map[core.Address]map[core.Address]struct{}
+const (
+	OP_ADD            = byte(iota + 1)
+	OP_SUB
+)
+
+type Expr interface {
+	isExpr()
 }
 
-func (p Program) String() string {
-	out := "Program:\nINSTRUCTIONS\n"
-	for i := 0; i < len(p.Instructions); i++ {
-		out += fmt.Sprintf("%02d----- ", i)
-		switch p.Instructions[i] {
-		case OP_APUSH:
-			out += "OP_APUSH "
-			address := binary.LittleEndian.Uint16(p.Instructions[i+1 : i+3])
-			out += fmt.Sprintf("#%d\n", address)
-			i += 2
-		default:
-			out += OpcodeName(p.Instructions[i]) + "\n"
-		}
-	}
+type ExprLiteral struct{core.Value}
+func (e ExprLiteral) isExpr() {}
 
-	out += fmt.Sprintln("RESOURCES")
-	i := 0
-	for i = 0; i < len(p.Resources); i++ {
-		out += fmt.Sprintf("%02d ", i)
-		out += fmt.Sprintf("%v\n", p.Resources[i])
-	}
-	return out
+type ExprInfix struct {
+	Op byte
+	Lhs Expr
+	Rhs Expr
+}
+func (e ExprInfix) isExpr() {}
+
+type ExprVariable string
+func (e ExprVariable) isExpr() {}
+
+type ExprTake struct {
+	Amount Expr
+	Source ValueAwareSource
+}
+func (e ExprTake) isExpr() {}
+
+type ExprTakeAll struct {
+	Asset Expr
+	Source Source
+}
+func (e ExprTakeAll) isExpr() {}
+
+type Overdraft struct {
+	Unbounded bool
+	UpTo *Expr // invariant: if unbounbed then up_to == nil
 }
 
-func (p *Program) ParseVariables(vars map[string]core.Value) (map[string]core.Value, error) {
-	variables := make(map[string]core.Value)
-	for _, res := range p.Resources {
-		if variable, ok := res.(Variable); ok {
-			if val, ok := vars[variable.Name]; ok && val.GetType() == variable.Typ {
-				variables[variable.Name] = val
-				switch val.GetType() {
-				case core.TypeAccount:
-					if err := core.ParseAccountAddress(val.(core.AccountAddress)); err != nil {
-						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-							variable.Name, string(val.(core.AccountAddress)))
-					}
-				case core.TypeAsset:
-					if err := core.ParseAsset(val.(core.Asset)); err != nil {
-						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-							variable.Name, string(val.(core.Asset)))
-					}
-				case core.TypeMonetary:
-					if err := core.ParseMonetary(val.(core.Monetary)); err != nil {
-						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-							variable.Name, val.(core.Monetary).String())
-					}
-				case core.TypePortion:
-					if err := core.ValidatePortionSpecific(val.(core.Portion)); err != nil {
-						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
-							variable.Name, val.(core.Portion).String())
-					}
-				case core.TypeString:
-				case core.TypeNumber:
-				default:
-					return nil, fmt.Errorf("unsupported type for variable $%s: %s",
-						variable.Name, val.GetType())
-				}
-				delete(vars, variable.Name)
-			} else if val, ok := vars[variable.Name]; ok && val.GetType() != variable.Typ {
-				return nil, fmt.Errorf("wrong type for variable $%s: %s instead of %s",
-					variable.Name, variable.Typ, val.GetType())
-			} else {
-				return nil, fmt.Errorf("missing variable $%s", variable.Name)
-			}
-		}
-	}
-	for name := range vars {
-		return nil, fmt.Errorf("extraneous variable $%s", name)
-	}
-	return variables, nil
+type Source interface {
+	isSource()
 }
 
-func (p *Program) ParseVariablesJSON(vars map[string]json.RawMessage) (map[string]core.Value, error) {
-	variables := make(map[string]core.Value)
-	for _, res := range p.Resources {
-		if param, ok := res.(Variable); ok {
-			data, ok := vars[param.Name]
-			if !ok {
-				return nil, fmt.Errorf("missing variable $%s", param.Name)
-			}
-			val, err := core.NewValueFromJSON(param.Typ, data)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"invalid JSON value for variable $%s of type %v: %w",
-					param.Name, param.Typ, err)
-			}
-			variables[param.Name] = *val
-			delete(vars, param.Name)
-		}
-	}
-	for name := range vars {
-		return nil, fmt.Errorf("extraneous variable $%s", name)
-	}
-	return variables, nil
+type SourceAccount struct {
+	Account Expr
+	Overdraft *Overdraft
 }
+func (s SourceAccount) isSource() {}
+
+type SourceMaxed struct {
+	Source Source
+	Max Expr
+}
+func (s SourceMaxed) isSource() {}
+
+type SourceInOrder []Source
+func (s SourceInOrder) isSource() {}
+
+type SourceArrayInOrder struct {
+	Expr Expr
+}
+func (s SourceArrayInOrder) isSource() {}
+
+// invariant: if remaining then expr == nil
+type AllotmentPortion struct {
+	Expr *Expr
+	Remaining bool
+}
+
+type ValueAwareSource interface {
+	isValueAwareSource()
+}
+
+type ValueAwareSourceSource struct {
+	Source Source
+}
+func (v ValueAwareSourceSource) isValueAwareSource() {}
+
+type ValueAwareSourceAllotment []struct {
+	Portion AllotmentPortion
+	Source Source
+}
+func (v ValueAwareSourceAllotment) isValueAwareSource() {}
+
+type KeptOrDestination struct {
+	Kept bool
+	Destination Destination
+}
+
+type Destination interface {
+	isDestination()
+}
+
+type DestinationAccount struct {
+	Expr Expr
+}
+func (d DestinationAccount) isDestination() {}
+
+type DestinationInOrder struct {
+	Parts []struct {
+		Expr Expr
+		Kod KeptOrDestination
+	}
+}
+func (d DestinationInOrder) isDestination() {}
+
+type DestinationAllotment []struct {
+	Portion AllotmentPortion
+	Kod KeptOrDestination
+}
+func (d DestinationAllotment) isDestination() {}
+
+type Statement interface {
+	isStatement()
+}
+
+type StatementFail struct {}
+func (s StatementFail) isStatement() {}
+
+type StatementPrint struct {Expr}
+func (s StatementPrint) isStatement() {}
+
+type StatementAllocate struct {
+	Funding Expr
+	Destination Destination
+}
+func (s StatementAllocate) isStatement() {}
+
+type StatementLet struct {}
+func (s StatementLet) isStatement() {}
+
+type StatementSetTxMeta struct {
+	Key string
+	Value Expr
+}
+func (s StatementSetTxMeta) isStatement() {}
+
+type StatementSetAccountMeta struct {
+	Account Expr
+	Key string
+	Value Expr
+}
+func (s StatementSetAccountMeta) isStatement() {}
+
+type VarOrigin interface {
+	isVarOrigin()
+}
+
+type VarOriginMeta struct {
+	Account Expr
+	Key string
+}
+func (v VarOriginMeta) isVarOrigin() {}
+
+type VarOriginBalance struct {
+	Account Expr
+	Asset Expr
+}
+func (v VarOriginBalance) isVarOrigin() {}
+
+type VarDecl struct {
+	Ty core.Type
+	Name string
+	Origin *VarOrigin
+}
+
+type Script struct {
+	VarsDecl []VarDecl
+	Statements []Statement
+}
+
+// func (p *Program) ParseVariables(vars map[string]core.Value) (map[string]core.Value, error) {
+// 	variables := make(map[string]core.Value)
+// 	for _, res := range p.Resources {
+// 		if variable, ok := res.(Variable); ok {
+// 			if val, ok := vars[variable.Name]; ok && val.GetType() == variable.Typ {
+// 				variables[variable.Name] = val
+// 				switch val.GetType() {
+// 				case core.TypeAccount:
+// 					if err := core.ParseAccountAddress(val.(core.AccountAddress)); err != nil {
+// 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
+// 							variable.Name, string(val.(core.AccountAddress)))
+// 					}
+// 				case core.TypeAsset:
+// 					if err := core.ParseAsset(val.(core.Asset)); err != nil {
+// 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
+// 							variable.Name, string(val.(core.Asset)))
+// 					}
+// 				case core.TypeMonetary:
+// 					if err := core.ParseMonetary(val.(core.Monetary)); err != nil {
+// 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
+// 							variable.Name, val.(core.Monetary).String())
+// 					}
+// 				case core.TypePortion:
+// 					if err := core.ValidatePortionSpecific(val.(core.Portion)); err != nil {
+// 						return nil, errors.Wrapf(err, "invalid variable $%s value '%s'",
+// 							variable.Name, val.(core.Portion).String())
+// 					}
+// 				case core.TypeString:
+// 				case core.TypeNumber:
+// 				default:
+// 					return nil, fmt.Errorf("unsupported type for variable $%s: %s",
+// 						variable.Name, val.GetType())
+// 				}
+// 				delete(vars, variable.Name)
+// 			} else if val, ok := vars[variable.Name]; ok && val.GetType() != variable.Typ {
+// 				return nil, fmt.Errorf("wrong type for variable $%s: %s instead of %s",
+// 					variable.Name, variable.Typ, val.GetType())
+// 			} else {
+// 				return nil, fmt.Errorf("missing variable $%s", variable.Name)
+// 			}
+// 		}
+// 	}
+// 	for name := range vars {
+// 		return nil, fmt.Errorf("extraneous variable $%s", name)
+// 	}
+// 	return variables, nil
+// }
+
+// func (p *Program) ParseVariablesJSON(vars map[string]json.RawMessage) (map[string]core.Value, error) {
+// 	variables := make(map[string]core.Value)
+// 	for _, res := range p.Resources {
+// 		if param, ok := res.(Variable); ok {
+// 			data, ok := vars[param.Name]
+// 			if !ok {
+// 				return nil, fmt.Errorf("missing variable $%s", param.Name)
+// 			}
+// 			val, err := core.NewValueFromJSON(param.Typ, data)
+// 			if err != nil {
+// 				return nil, fmt.Errorf(
+// 					"invalid JSON value for variable $%s of type %v: %w",
+// 					param.Name, param.Typ, err)
+// 			}
+// 			variables[param.Name] = *val
+// 			delete(vars, param.Name)
+// 		}
+// 	}
+// 	for name := range vars {
+// 		return nil, fmt.Errorf("extraneous variable $%s", name)
+// 	}
+// 	return variables, nil
+// }
