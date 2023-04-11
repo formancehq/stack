@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	
+
 	stackv1beta3 "github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/collectionutils"
 	"github.com/formancehq/operator/internal/common"
@@ -298,7 +298,7 @@ type Service struct {
 	Container               func(resolveContext ContainerResolutionContext) Container
 	InitContainer           func(resolveContext ContainerResolutionContext) []Container
 	NeedTopic               bool
-	
+
 	usedPort int32
 }
 
@@ -312,7 +312,7 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 			service.usedPort = ctx.PortAllocator.NextPort()
 		}
 	}
-	
+
 	if ctx.Configuration.Spec.Broker.Nats != nil && service.NeedTopic {
 		topicName := ctx.Stack.GetServiceNamespacedName(serviceName).Name
 		streamConfig := nats.StreamConfig{
@@ -371,7 +371,7 @@ func (service Service) createIngress(ctx ServiceInstallContext, deployer *Resour
 		} else {
 			annotations = collectionutils.CopyMap(annotations)
 		}
-		
+
 		pathType := networkingv1.PathTypePrefix
 		ingress.ObjectMeta.Annotations = annotations
 		ingress.Spec = networkingv1.IngressSpec{
@@ -456,12 +456,12 @@ func (service Service) Install(ctx ServiceInstallContext, deployer *ResourceDepl
 	if err != nil {
 		return err
 	}
-	
+
 	secretHandles, err := service.installSecrets(ctx, deployer, serviceName)
 	if err != nil {
 		return err
 	}
-	
+
 	if service.ExposeHTTP {
 		if err := service.installService(ctx, deployer, serviceName); err != nil {
 			return err
@@ -472,7 +472,7 @@ func (service Service) Install(ctx ServiceInstallContext, deployer *ResourceDepl
 			}
 		}
 	}
-	
+
 	err = service.createDeployment(ContainerResolutionContext{
 		ServiceInstallContext: ctx,
 		Configs:               configHandles,
@@ -481,7 +481,7 @@ func (service Service) Install(ctx ServiceInstallContext, deployer *ResourceDepl
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -508,13 +508,13 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 			Env(service.EnvPrefix+service.ListenEnvVar, fmt.Sprintf(":%d", service.usedPort)),
 		)
 	}
-	
+
 	if ctx.Configuration.Spec.Monitoring != nil {
 		env = env.Append(
 			MonitoringEnvVarsWithPrefix(*ctx.Configuration.Spec.Monitoring, service.EnvPrefix)...,
 		)
 	}
-	
+
 	if !init {
 		env = env.Append(
 			Env(service.EnvPrefix+"DEBUG", fmt.Sprintf("%v", ctx.Stack.Spec.Debug)),
@@ -525,9 +525,9 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 			Env(service.EnvPrefix+"OTEL_SERVICE_NAME", serviceName),
 		)
 	}
-	
+
 	c.Env = env.Append(container.Env...).ToCoreEnv()
-	
+
 	if !init {
 		ret := make([]corev1.VolumeMount, 0)
 		for _, configName := range ctx.Configs.sort() {
@@ -553,7 +553,7 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 			})
 		}
 		c.VolumeMounts = ret
-		
+
 		switch container.Liveness {
 		case LivenessDefault:
 			c.LivenessProbe = common.DefaultLiveness(service.GetUsedPort())

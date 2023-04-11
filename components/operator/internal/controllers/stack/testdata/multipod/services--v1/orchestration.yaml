@@ -2,13 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
     labels:
-        stack: "true"
+        app.kubernetes.io/service-name: orchestration
     name: orchestration
     namespace: stack1
 spec:
-    clusterIP: 10.0.0.79
+    clusterIP: 10.0.0.182
     clusterIPs:
-        - 10.0.0.79
+        - 10.0.0.182
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

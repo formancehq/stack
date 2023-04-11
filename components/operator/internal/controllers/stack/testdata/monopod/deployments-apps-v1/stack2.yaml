@@ -34,7 +34,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32768"
+                      value: "55000"
                     - name: POSTGRES_DATABASE
                       value: stack2-auth
                     - name: POSTGRES_USERNAME
@@ -210,7 +210,7 @@ spec:
                     - name: NUMARY_POSTGRES_HOST
                       value: localhost
                     - name: NUMARY_POSTGRES_PORT
-                      value: "32768"
+                      value: "55000"
                     - name: NUMARY_POSTGRES_DATABASE
                       value: stack2-ledger
                     - name: NUMARY_POSTGRES_USERNAME
@@ -282,7 +282,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32768"
+                      value: "55000"
                     - name: POSTGRES_DATABASE
                       value: stack2-orchestration
                     - name: POSTGRES_USERNAME
@@ -354,7 +354,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32768"
+                      value: "55000"
                     - name: POSTGRES_DATABASE
                       value: stack2-orchestration
                     - name: POSTGRES_USERNAME
@@ -410,7 +410,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32768"
+                      value: "55000"
                     - name: POSTGRES_DATABASE
                       value: stack2-payments
                     - name: POSTGRES_USERNAME
@@ -592,7 +592,7 @@ spec:
                     - name: LEDGER_POSTGRES_HOST
                       value: localhost
                     - name: LEDGER_POSTGRES_PORT
-                      value: "32768"
+                      value: "55000"
                     - name: LEDGER_POSTGRES_DATABASE
                       value: stack2-ledger
                     - name: LEDGER_POSTGRES_USERNAME
@@ -684,7 +684,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32768"
+                      value: "55000"
                     - name: POSTGRES_DATABASE
                       value: stack2-webhooks
                     - name: POSTGRES_USERNAME
@@ -754,7 +754,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32768"
+                      value: "55000"
                     - name: POSTGRES_DATABASE
                       value: stack2-webhooks
                     - name: POSTGRES_USERNAME
@@ -809,13 +809,13 @@ spec:
             dnsPolicy: ClusterFirst
             initContainers:
                 - args:
-                  - migrate
-                  - up
+                    - migrate
+                    - up
                   env:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32768"
+                      value: "55000"
                     - name: POSTGRES_DATABASE
                       value: stack2-payments
                     - name: POSTGRES_USERNAME

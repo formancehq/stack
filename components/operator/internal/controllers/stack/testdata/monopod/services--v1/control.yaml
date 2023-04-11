@@ -2,13 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
     labels:
-        stack: "true"
+        app.kubernetes.io/service-name: control
     name: control
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.123
+    clusterIP: 10.0.0.15
     clusterIPs:
-        - 10.0.0.123
+        - 10.0.0.15
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

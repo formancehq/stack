@@ -2,13 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
     labels:
-        stack: "true"
+        app.kubernetes.io/service-name: wallets
     name: wallets
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.78
+    clusterIP: 10.0.0.183
     clusterIPs:
-        - 10.0.0.78
+        - 10.0.0.183
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
