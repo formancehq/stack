@@ -97,16 +97,15 @@ type Destination interface {
 	isDestination()
 }
 
-type DestinationAccount struct {
-	Expr Expr
-}
+type DestinationAccount struct {Expr}
 func (d DestinationAccount) isDestination() {}
 
 type DestinationInOrder struct {
 	Parts []struct {
-		Expr Expr
+		Max Expr
 		Kod KeptOrDestination
 	}
+	Remaining KeptOrDestination
 }
 func (d DestinationInOrder) isDestination() {}
 
