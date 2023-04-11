@@ -9,7 +9,7 @@ import (
 	"github.com/xo/dburl"
 )
 
-func getPostgresDSNString() string {
+func GetPostgresDSNString() string {
 	if fromEnv := os.Getenv("POSTGRES_DSN"); fromEnv != "" {
 		return fromEnv
 	}
@@ -17,11 +17,11 @@ func getPostgresDSNString() string {
 }
 
 func getPostgresDSN() (*dburl.URL, error) {
-	return dburl.Parse(getPostgresDSNString())
+	return dburl.Parse(GetPostgresDSNString())
 }
 
 func createDatabases() {
-	conn, err := pgx.Connect(ctx, getPostgresDSNString())
+	conn, err := pgx.Connect(ctx, GetPostgresDSNString())
 	Expect(err).ToNot(HaveOccurred())
 
 	for _, component := range []string{"ledger", "wallets", "orchestration", "auth", "payments", "webhooks"} {
