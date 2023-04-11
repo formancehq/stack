@@ -1,6 +1,7 @@
 package suite
 
 import (
+	"reflect"
 	"time"
 
 	"github.com/formancehq/formance-sdk-go"
@@ -34,7 +35,7 @@ var _ = Given("some empty environment", func() {
 		AfterEach(func() {
 			cancelSubscription()
 		})
-		It("should eventually be available on api", func() {
+		It("should be available on api", func() {
 			accountResponse, _, err := Client().AccountsApi.
 				GetAccount(TestContext(), "default", "foo").
 				Execute()
@@ -51,21 +52,23 @@ var _ = Given("some empty environment", func() {
 			Expect(events.Check(msg.Data, "ledger", bus.EventTypeSavedMetadata)).Should(Succeed())
 		})
 		It("should pop an account with the correct metadata on search service", func() {
-			Eventually(func(g Gomega) bool {
+			Eventually(func() bool {
 				res, _, err := Client().SearchApi.Search(TestContext()).Query(formance.Query{
 					Target: formance.PtrString("ACCOUNT"),
 				}).Execute()
-				g.Expect(err).ToNot(HaveOccurred())
-				g.Expect(res.Cursor.Data).To(HaveLen(1))
-				g.Expect(res.Cursor.Data[0]).To(Equal(map[string]any{
+				if err != nil {
+					return false
+				}
+				if len(res.Cursor.Data) != 1 {
+					return false
+				}
+				return reflect.DeepEqual(res.Cursor.Data[0], map[string]any{
 					"ledger": "default",
 					"metadata": map[string]any{
 						"clientType": "gold",
 					},
 					"address": "foo",
-				}))
-
-				return true
+				})
 			}).Should(BeTrue())
 		})
 	})
