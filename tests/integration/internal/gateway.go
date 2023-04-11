@@ -6,26 +6,37 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strings"
+
+	"github.com/onsi/ginkgo/v2"
 )
+
+type proxy struct {
+	reverse *httputil.ReverseProxy
+	url     *url.URL
+}
 
 var (
 	gatewayServer *httptest.Server
-	proxies       = map[string]*httputil.ReverseProxy{}
+	proxies       = map[string]proxy{}
 )
 
 func registerService(s string, url *url.URL) {
-	proxies[s] = httputil.NewSingleHostReverseProxy(url)
+	proxies[s] = proxy{
+		reverse: httputil.NewSingleHostReverseProxy(url),
+		url:     url,
+	}
 }
 
 func startFakeGateway() {
 	gatewayServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		for name, proxy := range proxies {
 			if strings.HasPrefix(r.URL.Path, "/api/"+name) {
-				http.StripPrefix("/api/"+name, proxy).ServeHTTP(w, r)
+				ginkgo.GinkgoWriter.Printf("Proxying %s: %s\r\n", name, proxy.url.String())
+				http.StripPrefix("/api/"+name, proxy.reverse).ServeHTTP(w, r)
 				return
 			}
 		}
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusServiceUnavailable)
 	}))
 }
 
