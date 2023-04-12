@@ -1,10 +1,21 @@
+volumes:
+  gopath: {}
+
 services:
   ledger:
     image: golang:1.19-alpine
     entrypoint: go run main.go serve
     volumes:
-      - .:/src
-    working_dir: /src
+      - ../..:/src
+      - gopath:/go
+    working_dir: /src/components/ledger
+    healthcheck:
+      test: [ "CMD", "wget", "http://127.0.0.1:3068/_info", "-O", "-", "-q" ]
+      interval: 10s
+      timeout: 60s
+      retries: 6
+    networks:
+    - ledger
     environment:
       CGO_ENABLED: 0
       DEBUG: "true"
@@ -20,3 +31,5 @@ services:
     image: jaegertracing/all-in-one:1.31
     ports:
       - 16686:16686
+    networks:
+    - ledger

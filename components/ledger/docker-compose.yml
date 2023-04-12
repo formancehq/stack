@@ -1,6 +1,10 @@
 version: '3.8'
 volumes:
   postgres:
+networks:
+  ledger:
+    name: ledger
+    attachable: true
 services:
   postgres:
     image: "postgres:13-alpine"
@@ -14,6 +18,8 @@ services:
     command:
     - -c
     - max_connections=200
+    networks:
+    - ledger
     environment:
       POSTGRES_USER: "ledger"
       POSTGRES_PASSWORD: "ledger"
@@ -32,15 +38,19 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+    - ledger
     environment:
       STORAGE_DRIVER: "postgres"
-      STORAGE_POSTGRES_CONN_STRING: "postgresql://ledger:ledger@postgres/ledger"
+      STORAGE_POSTGRES_CONN_STRING: "postgresql://ledger:ledger@postgres/ledger?sslmode=disable"
 
   proxy:
     image: caddy:2
     depends_on:
     - ledger
     command: caddy reverse-proxy --from :3068 --to ledger:3068
+    networks:
+    - ledger
     ports:
     - "3068:3068"
 
@@ -52,5 +62,7 @@ services:
         condition: service_healthy
     ports:
       - "3078:3078"
+    networks:
+    - ledger
     environment:
       UI_HTTP_BIND_ADDRESS: "0.0.0.0:3078"

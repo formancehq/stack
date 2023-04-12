@@ -1,0 +1,22 @@
+networks:
+  ledger:
+    external: true
+services:
+  k6:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: sh
+    command: |
+      -c '
+        mkdir -p results;
+        yarn build;
+        k6 run -o json=/src/results/results.json /src/dist/transactions.js --verbose;
+      '
+    volumes:
+      - .:/src
+    working_dir: /src
+    environment:
+      LEDGER_URL: "http://ledger:3068"
+    networks:
+    - ledger
