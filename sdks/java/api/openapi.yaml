@@ -529,21 +529,10 @@ paths:
         name: pageSize
         required: false
         schema:
-          default: 15
           format: int64
           maximum: 1000
           minimum: 1
           type: integer
-        style: form
-      - description: "Pagination cursor, will return accounts after given address,\
-          \ in descending order."
-        explode: true
-        in: query
-        name: after
-        required: false
-        schema:
-          example: users:003
-          type: string
         style: form
       - description: Filter accounts by address pattern (regular expression placed
           between ^ and $).
@@ -1357,21 +1346,10 @@ paths:
         name: pageSize
         required: false
         schema:
-          default: 15
           format: int64
           maximum: 1000
           minimum: 1
           type: integer
-        style: form
-      - description: "Pagination cursor, will return the logs after a given ID. (in\
-          \ descending order)."
-        explode: true
-        in: query
-        name: after
-        required: false
-        schema:
-          example: "1234"
-          type: string
         style: form
       - description: |
           Filter transactions that occurred after this timestamp.

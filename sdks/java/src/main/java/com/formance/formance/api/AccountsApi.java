@@ -65,8 +65,7 @@ public interface AccountsApi {
    * List accounts from a ledger
    * List accounts from a ledger, sorted by address in descending order.
    * @param ledger Name of the ledger. (required)
-   * @param pageSize The maximum number of results to return per page.  (optional, default to 15)
-   * @param after Pagination cursor, will return accounts after given address, in descending order. (optional)
+   * @param pageSize The maximum number of results to return per page.  (optional)
    * @param address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
    * @param metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
    * @param balance Filter accounts by their balance (default operator is gte) (optional)
@@ -76,7 +75,7 @@ public interface AccountsApi {
    */
   @GET("api/ledger/{ledger}/accounts")
   Call<AccountsCursorResponse> listAccounts(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("after") String after, @retrofit2.http.Query("address") String address, @retrofit2.http.Query("metadata") Map<String, String> metadata, @retrofit2.http.Query("balance") Long balance, @retrofit2.http.Query("balanceOperator") String balanceOperator, @retrofit2.http.Query("cursor") String cursor
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("address") String address, @retrofit2.http.Query("metadata") Map<String, String> metadata, @retrofit2.http.Query("balance") Long balance, @retrofit2.http.Query("balanceOperator") String balanceOperator, @retrofit2.http.Query("cursor") String cursor
   );
 
 }

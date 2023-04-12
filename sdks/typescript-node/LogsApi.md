@@ -27,8 +27,6 @@ let body:LogsApiListLogsRequest = {
   ledger: "ledger001",
   // number | The maximum number of results to return per page.  (optional)
   pageSize: 100,
-  // string | Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
-  after: "1234",
   // Date | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).  (optional)
   startTime: new Date('1970-01-01T00:00:00.00Z'),
   // Date | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).  (optional)
@@ -48,8 +46,7 @@ apiInstance.listLogs(body).then((data:any) => {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
- **pageSize** | [**number**] | The maximum number of results to return per page.  | (optional) defaults to 15
- **after** | [**string**] | Pagination cursor, will return the logs after a given ID. (in descending order). | (optional) defaults to undefined
+ **pageSize** | [**number**] | The maximum number of results to return per page.  | (optional) defaults to undefined
  **startTime** | [**Date**] | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  | (optional) defaults to undefined
  **endTime** | [**Date**] | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  | (optional) defaults to undefined
  **cursor** | [**string**] | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | (optional) defaults to undefined

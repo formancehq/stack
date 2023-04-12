@@ -42,7 +42,6 @@ class PageSizeSchema(
         format = 'int64'
         inclusive_maximum = 1000
         inclusive_minimum = 1
-AfterSchema = schemas.StrSchema
 StartTimeSchema = schemas.DateTimeSchema
 EndTimeSchema = schemas.DateTimeSchema
 CursorSchema = schemas.StrSchema
@@ -55,7 +54,6 @@ RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
         'pageSize': typing.Union[PageSizeSchema, decimal.Decimal, int, ],
-        'after': typing.Union[AfterSchema, str, ],
         'startTime': typing.Union[StartTimeSchema, str, datetime, ],
         'endTime': typing.Union[EndTimeSchema, str, datetime, ],
         'cursor': typing.Union[CursorSchema, str, ],
@@ -72,12 +70,6 @@ request_query_page_size = api_client.QueryParameter(
     name="pageSize",
     style=api_client.ParameterStyle.FORM,
     schema=PageSizeSchema,
-    explode=True,
-)
-request_query_after = api_client.QueryParameter(
-    name="after",
-    style=api_client.ParameterStyle.FORM,
-    schema=AfterSchema,
     explode=True,
 )
 request_query_start_time = api_client.QueryParameter(
@@ -250,7 +242,6 @@ class BaseApi(api_client.Api):
         prefix_separator_iterator = None
         for parameter in (
             request_query_page_size,
-            request_query_after,
             request_query_start_time,
             request_query_end_time,
             request_query_cursor,

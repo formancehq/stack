@@ -1019,8 +1019,7 @@ class AccountsApi
      * List accounts from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
      * @param  array<string,string> $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
@@ -1032,9 +1031,9 @@ class AccountsApi
      * @throws \InvalidArgumentException
      * @return \Formance\Model\AccountsCursorResponse|\Formance\Model\ErrorResponse
      */
-    public function listAccounts($ledger, $page_size = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
+    public function listAccounts($ledger, $page_size = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
     {
-        list($response) = $this->listAccountsWithHttpInfo($ledger, $page_size, $after, $address, $metadata, $balance, $balance_operator, $cursor, $contentType);
+        list($response) = $this->listAccountsWithHttpInfo($ledger, $page_size, $address, $metadata, $balance, $balance_operator, $cursor, $contentType);
         return $response;
     }
 
@@ -1044,8 +1043,7 @@ class AccountsApi
      * List accounts from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
      * @param  array<string,string> $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
@@ -1057,9 +1055,9 @@ class AccountsApi
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\AccountsCursorResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listAccountsWithHttpInfo($ledger, $page_size = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
+    public function listAccountsWithHttpInfo($ledger, $page_size = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
     {
-        $request = $this->listAccountsRequest($ledger, $page_size, $after, $address, $metadata, $balance, $balance_operator, $cursor, $contentType);
+        $request = $this->listAccountsRequest($ledger, $page_size, $address, $metadata, $balance, $balance_operator, $cursor, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -1174,8 +1172,7 @@ class AccountsApi
      * List accounts from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
      * @param  array<string,string> $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
@@ -1186,9 +1183,9 @@ class AccountsApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listAccountsAsync($ledger, $page_size = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
+    public function listAccountsAsync($ledger, $page_size = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
     {
-        return $this->listAccountsAsyncWithHttpInfo($ledger, $page_size, $after, $address, $metadata, $balance, $balance_operator, $cursor, $contentType)
+        return $this->listAccountsAsyncWithHttpInfo($ledger, $page_size, $address, $metadata, $balance, $balance_operator, $cursor, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -1202,8 +1199,7 @@ class AccountsApi
      * List accounts from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
      * @param  array<string,string> $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
@@ -1214,10 +1210,10 @@ class AccountsApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listAccountsAsyncWithHttpInfo($ledger, $page_size = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
+    public function listAccountsAsyncWithHttpInfo($ledger, $page_size = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
     {
         $returnType = '\Formance\Model\AccountsCursorResponse';
-        $request = $this->listAccountsRequest($ledger, $page_size, $after, $address, $metadata, $balance, $balance_operator, $cursor, $contentType);
+        $request = $this->listAccountsRequest($ledger, $page_size, $address, $metadata, $balance, $balance_operator, $cursor, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -1259,8 +1255,7 @@ class AccountsApi
      * Create request for operation 'listAccounts'
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
      * @param  array<string,string> $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
      * @param  int $balance Filter accounts by their balance (default operator is gte) (optional)
@@ -1271,7 +1266,7 @@ class AccountsApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listAccountsRequest($ledger, $page_size = 15, $after = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
+    public function listAccountsRequest($ledger, $page_size = null, $address = null, $metadata = null, $balance = null, $balance_operator = null, $cursor = null, string $contentType = self::contentTypes['listAccounts'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -1288,7 +1283,6 @@ class AccountsApi
             throw new \InvalidArgumentException('invalid value for "$page_size" when calling AccountsApi.listAccounts, must be bigger than or equal to 1.');
         }
         
-
 
 
         if ($balance !== null && $balance < 0) {
@@ -1310,15 +1304,6 @@ class AccountsApi
             $page_size,
             'pageSize', // param base name
             'integer', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $after,
-            'after', // param base name
-            'string', // openApiType
             'form', // style
             true, // explode
             false // required
