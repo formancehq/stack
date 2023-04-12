@@ -349,6 +349,7 @@ func (service Service) installService(ctx ServiceInstallContext, deployer Deploy
 		if ctx.Configuration.Spec.LightMode {
 			selector = ctx.Stack.Name
 		}
+		t.Labels = collectionutils.CreateMap("app.kubernetes.io/service-name", serviceName)
 		t.Spec = corev1.ServiceSpec{
 			Ports: []corev1.ServicePort{{
 				Name:        "http",

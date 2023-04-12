@@ -2,13 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
     labels:
-        stack: "true"
+        app.kubernetes.io/service-name: search-benthos
     name: search-benthos
     namespace: stack1
 spec:
-    clusterIP: 10.0.0.35
+    clusterIP: 10.0.0.138
     clusterIPs:
-        - 10.0.0.35
+        - 10.0.0.138
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
