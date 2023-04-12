@@ -27,8 +27,8 @@ let body:BalancesApiGetBalancesRequest = {
   ledger: "ledger001",
   // string | Filter balances involving given account, either as source or destination. (optional)
   address: "users:001",
-  // string | Pagination cursor, will return accounts after given address, in descending order. (optional)
-  after: "users:003",
+  // number | The maximum number of results to return per page.  (optional)
+  pageSize: 100,
   // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
   cursor: "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
 };
@@ -45,7 +45,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
  **address** | [**string**] | Filter balances involving given account, either as source or destination. | (optional) defaults to undefined
- **after** | [**string**] | Pagination cursor, will return accounts after given address, in descending order. | (optional) defaults to undefined
+ **pageSize** | [**number**] | The maximum number of results to return per page.  | (optional) defaults to undefined
  **cursor** | [**string**] | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | (optional) defaults to undefined
 
 

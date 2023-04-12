@@ -1244,15 +1244,18 @@ paths:
           example: users:001
           type: string
         style: form
-      - description: "Pagination cursor, will return accounts after given address,\
-          \ in descending order."
+      - description: |
+          The maximum number of results to return per page.
+        example: 100
         explode: true
         in: query
-        name: after
+        name: pageSize
         required: false
         schema:
-          example: users:003
-          type: string
+          format: int64
+          maximum: 1000
+          minimum: 1
+          type: integer
         style: form
       - description: |
           Parameter used in pagination requests. Maximum page size is set to 15.
@@ -3571,7 +3574,6 @@ components:
         data:
           additionalProperties:
             format: int64
-            minimum: 0
             type: integer
           example:
             USD: 100
@@ -3728,7 +3730,6 @@ components:
     AssetsBalances:
       additionalProperties:
         format: int64
-        minimum: 0
         type: integer
       example:
         USD: 100

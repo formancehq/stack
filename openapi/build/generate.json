@@ -1537,12 +1537,15 @@
             }
           },
           {
-            "name": "after",
+            "name": "pageSize",
             "in": "query",
-            "description": "Pagination cursor, will return accounts after given address, in descending order.",
+            "description": "The maximum number of results to return per page.\n",
+            "example": 100,
             "schema": {
-              "type": "string",
-              "example": "users:003"
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 1000
             }
           },
           {
@@ -4189,8 +4192,7 @@
         "type": "object",
         "additionalProperties": {
           "type": "integer",
-          "format": "int64",
-          "minimum": 0
+          "format": "int64"
         },
         "example": {
           "USD": 100,

@@ -343,11 +343,11 @@ export class ObservableBalancesApi {
      * Get the balances from a ledger's account
      * @param ledger Name of the ledger.
      * @param address Filter balances involving given account, either as source or destination.
-     * @param after Pagination cursor, will return accounts after given address, in descending order.
+     * @param pageSize The maximum number of results to return per page. 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      */
-    public getBalances(ledger: string, address?: string, after?: string, cursor?: string, _options?: Configuration): Observable<BalancesCursorResponse> {
-        const requestContextPromise = this.requestFactory.getBalances(ledger, address, after, cursor, _options);
+    public getBalances(ledger: string, address?: string, pageSize?: number, cursor?: string, _options?: Configuration): Observable<BalancesCursorResponse> {
+        const requestContextPromise = this.requestFactory.getBalances(ledger, address, pageSize, cursor, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);

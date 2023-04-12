@@ -364,11 +364,11 @@ export interface BalancesApiGetBalancesRequest {
      */
     address?: string
     /**
-     * Pagination cursor, will return accounts after given address, in descending order.
-     * @type string
+     * The maximum number of results to return per page. 
+     * @type number
      * @memberof BalancesApigetBalances
      */
-    after?: string
+    pageSize?: number
     /**
      * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      * @type string
@@ -404,7 +404,7 @@ export class ObjectBalancesApi {
      * @param param the request object
      */
     public getBalances(param: BalancesApiGetBalancesRequest, options?: Configuration): Promise<BalancesCursorResponse> {
-        return this.api.getBalances(param.ledger, param.address, param.after, param.cursor,  options).toPromise();
+        return this.api.getBalances(param.ledger, param.address, param.pageSize, param.cursor,  options).toPromise();
     }
 
     /**
