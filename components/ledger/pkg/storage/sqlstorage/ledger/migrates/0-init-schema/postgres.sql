@@ -40,18 +40,6 @@ CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME".accounts (
 );
 
 --statement
-CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME".idempotency (
-    key character varying NOT NULL,
-    date character varying,
-    status_code integer,
-    headers character varying,
-    body character varying,
-    request_hash character varying,
-
-    primary key (key)
-);
-
---statement
 CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME".logs_ingestion (
     onerow_id boolean DEFAULT true NOT NULL,
     log_id bigint,
@@ -69,14 +57,6 @@ CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME".logs_v2 (
     reference text,
 
     unique(id)
-);
-
---statement
-CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME".mapping (
-    mapping_id character varying,
-    mapping character varying,
-
-    unique(mapping_id)
 );
 
 --statement
