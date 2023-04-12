@@ -419,7 +419,7 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-     * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  object $metadata Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2 (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countAccounts'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -438,7 +438,7 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-     * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  object $metadata Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2 (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countAccounts'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
@@ -508,7 +508,7 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-     * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  object $metadata Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2 (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countAccounts'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -531,7 +531,7 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-     * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  object $metadata Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2 (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countAccounts'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -570,7 +570,7 @@ class AccountsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
-     * @param  object $metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
+     * @param  object $metadata Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2 (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['countAccounts'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
@@ -1313,10 +1313,7 @@ class AccountsApi
 
 
 
-        if ($balance !== null && $balance < 0) {
-            throw new \InvalidArgumentException('invalid value for "$balance" when calling AccountsApi.listAccounts, must be bigger than or equal to 0.');
-        }
-        
+
 
 
 

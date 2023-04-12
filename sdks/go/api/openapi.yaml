@@ -564,7 +564,6 @@ paths:
         schema:
           example: 2400
           format: int64
-          minimum: 0
           type: integer
         style: form
       - description: |
@@ -669,8 +668,8 @@ paths:
           example: users:.+
           type: string
         style: form
-      - description: Filter accounts by metadata key value pairs. Nested objects can
-          be used as seen in the example below.
+      - description: "Filter accounts by metadata key value pairs. The filter can\
+          \ be used like this metadata[key]=value1&metadata[a.nested.key]=value2"
         example: "metadata[key]=value1&metadata[a.nested.key]=value2"
         explode: true
         in: query
@@ -3804,7 +3803,6 @@ components:
         data:
           additionalProperties:
             format: int64
-            minimum: 0
             type: integer
           example:
             USD: 100
@@ -4003,7 +4001,6 @@ components:
         balances:
           additionalProperties:
             format: int64
-            minimum: 0
             type: integer
           example:
             COIN: 100
@@ -4025,7 +4022,6 @@ components:
     AssetsBalances:
       additionalProperties:
         format: int64
-        minimum: 0
         type: integer
       example:
         USD: 100

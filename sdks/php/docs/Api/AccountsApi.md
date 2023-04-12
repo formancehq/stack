@@ -98,7 +98,7 @@ $apiInstance = new Formance\Api\AccountsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $address = users:.+; // string | Filter accounts by address pattern (regular expression placed between ^ and $).
-$metadata = metadata[key]=value1&metadata[a.nested.key]=value2; // object | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+$metadata = metadata[key]=value1&metadata[a.nested.key]=value2; // object | Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2
 
 try {
     $apiInstance->countAccounts($ledger, $address, $metadata);
@@ -113,7 +113,7 @@ try {
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
 | **address** | **string**| Filter accounts by address pattern (regular expression placed between ^ and $). | [optional] |
-| **metadata** | [**object**](../Model/.md)| Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
+| **metadata** | [**object**](../Model/.md)| Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2 | [optional] |
 
 ### Return type
 

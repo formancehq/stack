@@ -44,12 +44,7 @@ class PageSizeSchema(
 AfterSchema = schemas.StrSchema
 AddressSchema = schemas.StrSchema
 MetadataSchema = schemas.DictSchema
-
-
-class BalanceSchema(
-    schemas.Int64Schema
-):
-    pass
+BalanceSchema = schemas.Int64Schema
 
 
 class BalanceOperatorSchema(

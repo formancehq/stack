@@ -713,7 +713,7 @@
           {
             "name": "metadata",
             "in": "query",
-            "description": "Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.",
+            "description": "Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]=value1&metadata[a.nested.key]=value2",
             "style": "deepObject",
             "explode": true,
             "schema": {
@@ -830,7 +830,6 @@
             "schema": {
               "type": "integer",
               "format": "int64",
-              "minimum": 0,
               "example": 2400
             }
           },
@@ -4493,8 +4492,7 @@
             "type": "object",
             "additionalProperties": {
               "type": "integer",
-              "format": "int64",
-              "minimum": 0
+              "format": "int64"
             },
             "example": {
               "COIN": 100
@@ -4522,8 +4520,7 @@
         "type": "object",
         "additionalProperties": {
           "type": "integer",
-          "format": "int64",
-          "minimum": 0
+          "format": "int64"
         },
         "example": {
           "USD": 100,

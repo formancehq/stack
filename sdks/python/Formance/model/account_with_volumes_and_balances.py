@@ -117,16 +117,7 @@ class AccountWithVolumesAndBalances(
             
             
                 class MetaOapg:
-                    
-                    
-                    class additional_properties(
-                        schemas.Int64Schema
-                    ):
-                    
-                    
-                        class MetaOapg:
-                            format = 'int64'
-                            inclusive_minimum = 0
+                    additional_properties = schemas.Int64Schema
                 
                 def __getitem__(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
                     # dict_instance[name] accessor
