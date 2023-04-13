@@ -62,9 +62,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         'postings' => '\Formance\Model\Posting[]',
         'reference' => 'string',
         'metadata' => 'array<string,string>',
-        'txid' => 'int',
-        'pre_commit_volumes' => 'array<string,array>',
-        'post_commit_volumes' => 'array<string,array>'
+        'txid' => 'int'
     ];
 
     /**
@@ -79,9 +77,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         'postings' => null,
         'reference' => null,
         'metadata' => null,
-        'txid' => 'int64',
-        'pre_commit_volumes' => null,
-        'post_commit_volumes' => null
+        'txid' => 'int64'
     ];
 
     /**
@@ -94,9 +90,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
 		'postings' => false,
 		'reference' => false,
 		'metadata' => false,
-		'txid' => false,
-		'pre_commit_volumes' => false,
-		'post_commit_volumes' => false
+		'txid' => false
     ];
 
     /**
@@ -189,9 +183,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         'postings' => 'postings',
         'reference' => 'reference',
         'metadata' => 'metadata',
-        'txid' => 'txid',
-        'pre_commit_volumes' => 'preCommitVolumes',
-        'post_commit_volumes' => 'postCommitVolumes'
+        'txid' => 'txid'
     ];
 
     /**
@@ -204,9 +196,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         'postings' => 'setPostings',
         'reference' => 'setReference',
         'metadata' => 'setMetadata',
-        'txid' => 'setTxid',
-        'pre_commit_volumes' => 'setPreCommitVolumes',
-        'post_commit_volumes' => 'setPostCommitVolumes'
+        'txid' => 'setTxid'
     ];
 
     /**
@@ -219,9 +209,7 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         'postings' => 'getPostings',
         'reference' => 'getReference',
         'metadata' => 'getMetadata',
-        'txid' => 'getTxid',
-        'pre_commit_volumes' => 'getPreCommitVolumes',
-        'post_commit_volumes' => 'getPostCommitVolumes'
+        'txid' => 'getTxid'
     ];
 
     /**
@@ -286,8 +274,6 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         $this->setIfExists('reference', $data ?? [], null);
         $this->setIfExists('metadata', $data ?? [], null);
         $this->setIfExists('txid', $data ?? [], null);
-        $this->setIfExists('pre_commit_volumes', $data ?? [], null);
-        $this->setIfExists('post_commit_volumes', $data ?? [], null);
     }
 
     /**
@@ -484,60 +470,6 @@ class Transaction implements ModelInterface, ArrayAccess, \JsonSerializable
         }
 
         $this->container['txid'] = $txid;
-
-        return $this;
-    }
-
-    /**
-     * Gets pre_commit_volumes
-     *
-     * @return array<string,array>|null
-     */
-    public function getPreCommitVolumes()
-    {
-        return $this->container['pre_commit_volumes'];
-    }
-
-    /**
-     * Sets pre_commit_volumes
-     *
-     * @param array<string,array>|null $pre_commit_volumes pre_commit_volumes
-     *
-     * @return self
-     */
-    public function setPreCommitVolumes($pre_commit_volumes)
-    {
-        if (is_null($pre_commit_volumes)) {
-            throw new \InvalidArgumentException('non-nullable pre_commit_volumes cannot be null');
-        }
-        $this->container['pre_commit_volumes'] = $pre_commit_volumes;
-
-        return $this;
-    }
-
-    /**
-     * Gets post_commit_volumes
-     *
-     * @return array<string,array>|null
-     */
-    public function getPostCommitVolumes()
-    {
-        return $this->container['post_commit_volumes'];
-    }
-
-    /**
-     * Sets post_commit_volumes
-     *
-     * @param array<string,array>|null $post_commit_volumes post_commit_volumes
-     *
-     * @return self
-     */
-    public function setPostCommitVolumes($post_commit_volumes)
-    {
-        if (is_null($post_commit_volumes)) {
-            throw new \InvalidArgumentException('non-nullable post_commit_volumes cannot be null');
-        }
-        $this->container['post_commit_volumes'] = $post_commit_volumes;
 
         return $this;
     }

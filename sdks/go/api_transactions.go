@@ -59,8 +59,8 @@ type TransactionsApi interface {
 	CreateTransaction(ctx context.Context, ledger string) ApiCreateTransactionRequest
 
 	// CreateTransactionExecute executes the request
-	//  @return TransactionResponse
-	CreateTransactionExecute(r ApiCreateTransactionRequest) (*TransactionResponse, *http.Response, error)
+	//  @return CreateTransactionResponse
+	CreateTransactionExecute(r ApiCreateTransactionRequest) (*CreateTransactionResponse, *http.Response, error)
 
 	/*
 	GetTransaction Get transaction from a ledger by its ID
@@ -73,8 +73,8 @@ type TransactionsApi interface {
 	GetTransaction(ctx context.Context, ledger string, txid int64) ApiGetTransactionRequest
 
 	// GetTransactionExecute executes the request
-	//  @return TransactionResponse
-	GetTransactionExecute(r ApiGetTransactionRequest) (*TransactionResponse, *http.Response, error)
+	//  @return GetTransactionResponse
+	GetTransactionExecute(r ApiGetTransactionRequest) (*GetTransactionResponse, *http.Response, error)
 
 	/*
 	ListTransactions List transactions from a ledger
@@ -102,8 +102,8 @@ type TransactionsApi interface {
 	RevertTransaction(ctx context.Context, ledger string, txid int64) ApiRevertTransactionRequest
 
 	// RevertTransactionExecute executes the request
-	//  @return TransactionResponse
-	RevertTransactionExecute(r ApiRevertTransactionRequest) (*TransactionResponse, *http.Response, error)
+	//  @return CreateTransactionResponse
+	RevertTransactionExecute(r ApiRevertTransactionRequest) (*CreateTransactionResponse, *http.Response, error)
 }
 
 // TransactionsApiService TransactionsApi service
@@ -411,7 +411,7 @@ func (r ApiCreateTransactionRequest) Preview(preview bool) ApiCreateTransactionR
 	return r
 }
 
-func (r ApiCreateTransactionRequest) Execute() (*TransactionResponse, *http.Response, error) {
+func (r ApiCreateTransactionRequest) Execute() (*CreateTransactionResponse, *http.Response, error) {
 	return r.ApiService.CreateTransactionExecute(r)
 }
 
@@ -431,13 +431,13 @@ func (a *TransactionsApiService) CreateTransaction(ctx context.Context, ledger s
 }
 
 // Execute executes the request
-//  @return TransactionResponse
-func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransactionRequest) (*TransactionResponse, *http.Response, error) {
+//  @return CreateTransactionResponse
+func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransactionRequest) (*CreateTransactionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *TransactionResponse
+		localVarReturnValue  *CreateTransactionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.CreateTransaction")
@@ -529,7 +529,7 @@ type ApiGetTransactionRequest struct {
 	txid int64
 }
 
-func (r ApiGetTransactionRequest) Execute() (*TransactionResponse, *http.Response, error) {
+func (r ApiGetTransactionRequest) Execute() (*GetTransactionResponse, *http.Response, error) {
 	return r.ApiService.GetTransactionExecute(r)
 }
 
@@ -551,13 +551,13 @@ func (a *TransactionsApiService) GetTransaction(ctx context.Context, ledger stri
 }
 
 // Execute executes the request
-//  @return TransactionResponse
-func (a *TransactionsApiService) GetTransactionExecute(r ApiGetTransactionRequest) (*TransactionResponse, *http.Response, error) {
+//  @return GetTransactionResponse
+func (a *TransactionsApiService) GetTransactionExecute(r ApiGetTransactionRequest) (*GetTransactionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *TransactionResponse
+		localVarReturnValue  *GetTransactionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.GetTransaction")
@@ -846,7 +846,7 @@ type ApiRevertTransactionRequest struct {
 	txid int64
 }
 
-func (r ApiRevertTransactionRequest) Execute() (*TransactionResponse, *http.Response, error) {
+func (r ApiRevertTransactionRequest) Execute() (*CreateTransactionResponse, *http.Response, error) {
 	return r.ApiService.RevertTransactionExecute(r)
 }
 
@@ -868,13 +868,13 @@ func (a *TransactionsApiService) RevertTransaction(ctx context.Context, ledger s
 }
 
 // Execute executes the request
-//  @return TransactionResponse
-func (a *TransactionsApiService) RevertTransactionExecute(r ApiRevertTransactionRequest) (*TransactionResponse, *http.Response, error) {
+//  @return CreateTransactionResponse
+func (a *TransactionsApiService) RevertTransactionExecute(r ApiRevertTransactionRequest) (*CreateTransactionResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *TransactionResponse
+		localVarReturnValue  *CreateTransactionResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TransactionsApiService.RevertTransaction")

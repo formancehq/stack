@@ -79,12 +79,12 @@ class TransactionsCursorResponse(
                             class MetaOapg:
                                 
                                 @staticmethod
-                                def items() -> typing.Type['Transaction']:
-                                    return Transaction
+                                def items() -> typing.Type['ExpandedTransaction']:
+                                    return ExpandedTransaction
                         
                             def __new__(
                                 cls,
-                                _arg: typing.Union[typing.Tuple['Transaction'], typing.List['Transaction']],
+                                _arg: typing.Union[typing.Tuple['ExpandedTransaction'], typing.List['ExpandedTransaction']],
                                 _configuration: typing.Optional[schemas.Configuration] = None,
                             ) -> 'data':
                                 return super().__new__(
@@ -93,7 +93,7 @@ class TransactionsCursorResponse(
                                     _configuration=_configuration,
                                 )
                         
-                            def __getitem__(self, i: int) -> 'Transaction':
+                            def __getitem__(self, i: int) -> 'ExpandedTransaction':
                                 return super().__getitem__(i)
                         __annotations__ = {
                             "pageSize": pageSize,
@@ -216,4 +216,4 @@ class TransactionsCursorResponse(
             **kwargs,
         )
 
-from Formance.model.transaction import Transaction
+from Formance.model.expanded_transaction import ExpandedTransaction

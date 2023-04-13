@@ -21,7 +21,7 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription        func()
 			timestamp                 = time.Now().Round(time.Second).UTC()
 			err                       error
-			createTransactionResponse *formance.TransactionResponse
+			createTransactionResponse *formance.CreateTransactionResponse
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject

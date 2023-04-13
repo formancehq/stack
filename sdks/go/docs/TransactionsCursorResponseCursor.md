@@ -8,13 +8,13 @@ Name | Type | Description | Notes
 **HasMore** | **bool** |  | 
 **Previous** | Pointer to **string** |  | [optional] 
 **Next** | Pointer to **string** |  | [optional] 
-**Data** | [**[]Transaction**](Transaction.md) |  | 
+**Data** | [**[]ExpandedTransaction**](ExpandedTransaction.md) |  | 
 
 ## Methods
 
 ### NewTransactionsCursorResponseCursor
 
-`func NewTransactionsCursorResponseCursor(pageSize int64, hasMore bool, data []Transaction, ) *TransactionsCursorResponseCursor`
+`func NewTransactionsCursorResponseCursor(pageSize int64, hasMore bool, data []ExpandedTransaction, ) *TransactionsCursorResponseCursor`
 
 NewTransactionsCursorResponseCursor instantiates a new TransactionsCursorResponseCursor object
 This constructor will assign default values to properties that have it defined,
@@ -121,20 +121,20 @@ HasNext returns a boolean if a field has been set.
 
 ### GetData
 
-`func (o *TransactionsCursorResponseCursor) GetData() []Transaction`
+`func (o *TransactionsCursorResponseCursor) GetData() []ExpandedTransaction`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *TransactionsCursorResponseCursor) GetDataOk() (*[]Transaction, bool)`
+`func (o *TransactionsCursorResponseCursor) GetDataOk() (*[]ExpandedTransaction, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *TransactionsCursorResponseCursor) SetData(v []Transaction)`
+`func (o *TransactionsCursorResponseCursor) SetData(v []ExpandedTransaction)`
 
 SetData sets Data field to given value.
 

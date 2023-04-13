@@ -152,7 +152,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **createTransaction**
-> TransactionResponse createTransaction(postTransaction)
+> CreateTransactionResponse createTransaction(postTransaction)
 
 
 ### Example
@@ -216,7 +216,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**TransactionResponse**
+**CreateTransactionResponse**
 
 ### Authorization
 
@@ -237,7 +237,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **getTransaction**
-> TransactionResponse getTransaction()
+> GetTransactionResponse getTransaction()
 
 
 ### Example
@@ -273,7 +273,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**TransactionResponse**
+**GetTransactionResponse**
 
 ### Authorization
 
@@ -378,7 +378,7 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **revertTransaction**
-> TransactionResponse revertTransaction()
+> CreateTransactionResponse revertTransaction()
 
 
 ### Example
@@ -414,7 +414,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**TransactionResponse**
+**CreateTransactionResponse**
 
 ### Authorization
 

@@ -12,7 +12,7 @@ type CreateTransactionRequest struct {
 	Data   sdk.PostTransaction `json:"data"`
 }
 
-func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*sdk.TransactionResponse, error) {
+func (a Activities) CreateTransaction(ctx context.Context, request CreateTransactionRequest) (*sdk.CreateTransactionResponse, error) {
 	ret, _, err := a.client.TransactionsApi.
 		CreateTransaction(ctx, request.Ledger).
 		PostTransaction(request.Data).
@@ -26,7 +26,7 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 var CreateTransactionActivity = Activities{}.CreateTransaction
 
 func CreateTransaction(ctx workflow.Context, ledger string, request sdk.PostTransaction) (*sdk.Transaction, error) {
-	tx := &sdk.TransactionResponse{}
+	tx := &sdk.CreateTransactionResponse{}
 	if err := executeActivity(ctx, CreateTransactionActivity, tx, CreateTransactionRequest{
 		Ledger: ledger,
 		Data:   request,

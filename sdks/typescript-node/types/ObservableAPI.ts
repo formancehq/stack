@@ -54,6 +54,7 @@ import { CreateBalanceResponse } from '../models/CreateBalanceResponse';
 import { CreateClientResponse } from '../models/CreateClientResponse';
 import { CreateScopeResponse } from '../models/CreateScopeResponse';
 import { CreateSecretResponse } from '../models/CreateSecretResponse';
+import { CreateTransactionResponse } from '../models/CreateTransactionResponse';
 import { CreateWalletRequest } from '../models/CreateWalletRequest';
 import { CreateWalletResponse } from '../models/CreateWalletResponse';
 import { CreateWorkflowResponse } from '../models/CreateWorkflowResponse';
@@ -68,11 +69,14 @@ import { ErrorResponse } from '../models/ErrorResponse';
 import { ErrorsEnum } from '../models/ErrorsEnum';
 import { ExpandedDebitHold } from '../models/ExpandedDebitHold';
 import { ExpandedDebitHoldAllOf } from '../models/ExpandedDebitHoldAllOf';
+import { ExpandedTransaction } from '../models/ExpandedTransaction';
+import { ExpandedTransactionAllOf } from '../models/ExpandedTransactionAllOf';
 import { GetBalanceResponse } from '../models/GetBalanceResponse';
 import { GetHoldResponse } from '../models/GetHoldResponse';
 import { GetHoldsResponse } from '../models/GetHoldsResponse';
 import { GetHoldsResponseCursor } from '../models/GetHoldsResponseCursor';
 import { GetHoldsResponseCursorAllOf } from '../models/GetHoldsResponseCursorAllOf';
+import { GetTransactionResponse } from '../models/GetTransactionResponse';
 import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
@@ -173,7 +177,6 @@ import { TasksCursorCursorAllOf } from '../models/TasksCursorCursorAllOf';
 import { TasksCursorCursorAllOfDataInner } from '../models/TasksCursorCursorAllOfDataInner';
 import { Total } from '../models/Total';
 import { Transaction } from '../models/Transaction';
-import { TransactionResponse } from '../models/TransactionResponse';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
 import { TransferRequest } from '../models/TransferRequest';
@@ -1846,7 +1849,7 @@ export class ObservableTransactionsApi {
      * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript 
      * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
      */
-    public createTransaction(ledger: string, postTransaction: PostTransaction, preview?: boolean, _options?: Configuration): Observable<TransactionResponse> {
+    public createTransaction(ledger: string, postTransaction: PostTransaction, preview?: boolean, _options?: Configuration): Observable<CreateTransactionResponse> {
         const requestContextPromise = this.requestFactory.createTransaction(ledger, postTransaction, preview, _options);
 
         // build promise chain
@@ -1870,7 +1873,7 @@ export class ObservableTransactionsApi {
      * @param ledger Name of the ledger.
      * @param txid Transaction ID.
      */
-    public getTransaction(ledger: string, txid: number, _options?: Configuration): Observable<TransactionResponse> {
+    public getTransaction(ledger: string, txid: number, _options?: Configuration): Observable<GetTransactionResponse> {
         const requestContextPromise = this.requestFactory.getTransaction(ledger, txid, _options);
 
         // build promise chain
@@ -1927,7 +1930,7 @@ export class ObservableTransactionsApi {
      * @param ledger Name of the ledger.
      * @param txid Transaction ID.
      */
-    public revertTransaction(ledger: string, txid: number, _options?: Configuration): Observable<TransactionResponse> {
+    public revertTransaction(ledger: string, txid: number, _options?: Configuration): Observable<CreateTransactionResponse> {
         const requestContextPromise = this.requestFactory.revertTransaction(ledger, txid, _options);
 
         // build promise chain

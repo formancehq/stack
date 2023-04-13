@@ -677,9 +677,9 @@ components:
     ActivityGetAccountOutput:
       $ref: '#/components/schemas/AccountResponse'
     ActivityCreateTransactionOutput:
-      $ref: '#/components/schemas/TransactionResponse'
+      $ref: '#/components/schemas/CreateTransactionResponse'
     ActivityRevertTransactionOutput:
-      $ref: '#/components/schemas/TransactionResponse'
+      $ref: '#/components/schemas/RevertTransactionResponse'
     ActivityGetPaymentOutput:
       $ref: '#/components/schemas/PaymentResponse'
     ActivityDebitWalletOutput:

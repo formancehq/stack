@@ -9,10 +9,11 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okhttp3.MultipartBody;
 
+import com.formance.formance.model.CreateTransactionResponse;
 import com.formance.formance.model.ErrorResponse;
+import com.formance.formance.model.GetTransactionResponse;
 import java.time.OffsetDateTime;
 import com.formance.formance.model.PostTransaction;
-import com.formance.formance.model.TransactionResponse;
 import com.formance.formance.model.TransactionsCursorResponse;
 
 import java.util.ArrayList;
@@ -62,13 +63,13 @@ public interface TransactionsApi {
    * @param ledger Name of the ledger. (required)
    * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  (required)
    * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
-   * @return Call&lt;TransactionResponse&gt;
+   * @return Call&lt;CreateTransactionResponse&gt;
    */
   @Headers({
     "Content-Type:application/json"
   })
   @POST("api/ledger/{ledger}/transactions")
-  Call<TransactionResponse> createTransaction(
+  Call<CreateTransactionResponse> createTransaction(
     @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Body PostTransaction postTransaction, @retrofit2.http.Query("preview") Boolean preview
   );
 
@@ -77,10 +78,10 @@ public interface TransactionsApi {
    * 
    * @param ledger Name of the ledger. (required)
    * @param txid Transaction ID. (required)
-   * @return Call&lt;TransactionResponse&gt;
+   * @return Call&lt;GetTransactionResponse&gt;
    */
   @GET("api/ledger/{ledger}/transactions/{txid}")
-  Call<TransactionResponse> getTransaction(
+  Call<GetTransactionResponse> getTransaction(
     @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("txid") Long txid
   );
 
@@ -109,10 +110,10 @@ public interface TransactionsApi {
    * 
    * @param ledger Name of the ledger. (required)
    * @param txid Transaction ID. (required)
-   * @return Call&lt;TransactionResponse&gt;
+   * @return Call&lt;CreateTransactionResponse&gt;
    */
   @POST("api/ledger/{ledger}/transactions/{txid}/revert")
-  Call<TransactionResponse> revertTransaction(
+  Call<CreateTransactionResponse> revertTransaction(
     @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("txid") Long txid
   );
 

@@ -93,6 +93,7 @@ models/CreateBalanceResponse.ts
 models/CreateClientResponse.ts
 models/CreateScopeResponse.ts
 models/CreateSecretResponse.ts
+models/CreateTransactionResponse.ts
 models/CreateWalletRequest.ts
 models/CreateWalletResponse.ts
 models/CreateWorkflowResponse.ts
@@ -107,11 +108,14 @@ models/ErrorResponse.ts
 models/ErrorsEnum.ts
 models/ExpandedDebitHold.ts
 models/ExpandedDebitHoldAllOf.ts
+models/ExpandedTransaction.ts
+models/ExpandedTransactionAllOf.ts
 models/GetBalanceResponse.ts
 models/GetHoldResponse.ts
 models/GetHoldsResponse.ts
 models/GetHoldsResponseCursor.ts
 models/GetHoldsResponseCursorAllOf.ts
+models/GetTransactionResponse.ts
 models/GetTransactionsResponse.ts
 models/GetTransactionsResponseCursor.ts
 models/GetTransactionsResponseCursorAllOf.ts
@@ -213,7 +217,6 @@ models/TasksCursorCursorAllOf.ts
 models/TasksCursorCursorAllOfDataInner.ts
 models/Total.ts
 models/Transaction.ts
-models/TransactionResponse.ts
 models/TransactionsCursorResponse.ts
 models/TransactionsCursorResponseCursor.ts
 models/TransferRequest.ts

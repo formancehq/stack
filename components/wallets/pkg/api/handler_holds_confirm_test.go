@@ -36,7 +36,7 @@ func TestHoldsConfirm(t *testing.T) {
 				Balances: balances,
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, postTransaction sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+		WithCreateTransaction(func(ctx context.Context, name string, postTransaction sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
 			require.EqualValues(t, sdk.PostTransaction{
 				Script: &sdk.PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(false, "USD"),
@@ -50,7 +50,7 @@ func TestHoldsConfirm(t *testing.T) {
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, postTransaction)
-			return &sdk.TransactionResponse{}, nil
+			return &sdk.CreateTransactionResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
@@ -88,7 +88,7 @@ func TestHoldsPartialConfirm(t *testing.T) {
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, postTransaction sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+		WithCreateTransaction(func(ctx context.Context, name string, postTransaction sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
 			require.EqualValues(t, sdk.PostTransaction{
 				Script: &sdk.PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(false, "USD"),
@@ -102,7 +102,7 @@ func TestHoldsPartialConfirm(t *testing.T) {
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, postTransaction)
-			return &sdk.TransactionResponse{}, nil
+			return &sdk.CreateTransactionResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)
@@ -216,7 +216,7 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, script sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+		WithCreateTransaction(func(ctx context.Context, name string, script sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
 			require.EqualValues(t, sdk.PostTransaction{
 				Script: &sdk.PostTransactionScript{
 					Plain: wallet.BuildConfirmHoldScript(true, "USD"),
@@ -230,7 +230,7 @@ func TestHoldsPartialConfirmWithFinal(t *testing.T) {
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, script)
-			return &sdk.TransactionResponse{}, nil
+			return &sdk.CreateTransactionResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)

@@ -53,6 +53,7 @@ import { CreateBalanceResponse } from '../models/CreateBalanceResponse';
 import { CreateClientResponse } from '../models/CreateClientResponse';
 import { CreateScopeResponse } from '../models/CreateScopeResponse';
 import { CreateSecretResponse } from '../models/CreateSecretResponse';
+import { CreateTransactionResponse } from '../models/CreateTransactionResponse';
 import { CreateWalletRequest } from '../models/CreateWalletRequest';
 import { CreateWalletResponse } from '../models/CreateWalletResponse';
 import { CreateWorkflowResponse } from '../models/CreateWorkflowResponse';
@@ -67,11 +68,14 @@ import { ErrorResponse } from '../models/ErrorResponse';
 import { ErrorsEnum } from '../models/ErrorsEnum';
 import { ExpandedDebitHold } from '../models/ExpandedDebitHold';
 import { ExpandedDebitHoldAllOf } from '../models/ExpandedDebitHoldAllOf';
+import { ExpandedTransaction } from '../models/ExpandedTransaction';
+import { ExpandedTransactionAllOf } from '../models/ExpandedTransactionAllOf';
 import { GetBalanceResponse } from '../models/GetBalanceResponse';
 import { GetHoldResponse } from '../models/GetHoldResponse';
 import { GetHoldsResponse } from '../models/GetHoldsResponse';
 import { GetHoldsResponseCursor } from '../models/GetHoldsResponseCursor';
 import { GetHoldsResponseCursorAllOf } from '../models/GetHoldsResponseCursorAllOf';
+import { GetTransactionResponse } from '../models/GetTransactionResponse';
 import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
@@ -172,7 +176,6 @@ import { TasksCursorCursorAllOf } from '../models/TasksCursorCursorAllOf';
 import { TasksCursorCursorAllOfDataInner } from '../models/TasksCursorCursorAllOfDataInner';
 import { Total } from '../models/Total';
 import { Transaction } from '../models/Transaction';
-import { TransactionResponse } from '../models/TransactionResponse';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
 import { TransferRequest } from '../models/TransferRequest';
@@ -1736,7 +1739,7 @@ export class ObjectTransactionsApi {
      * Create a new transaction to a ledger
      * @param param the request object
      */
-    public createTransaction(param: TransactionsApiCreateTransactionRequest, options?: Configuration): Promise<TransactionResponse> {
+    public createTransaction(param: TransactionsApiCreateTransactionRequest, options?: Configuration): Promise<CreateTransactionResponse> {
         return this.api.createTransaction(param.ledger, param.postTransaction, param.preview,  options).toPromise();
     }
 
@@ -1744,7 +1747,7 @@ export class ObjectTransactionsApi {
      * Get transaction from a ledger by its ID
      * @param param the request object
      */
-    public getTransaction(param: TransactionsApiGetTransactionRequest, options?: Configuration): Promise<TransactionResponse> {
+    public getTransaction(param: TransactionsApiGetTransactionRequest, options?: Configuration): Promise<GetTransactionResponse> {
         return this.api.getTransaction(param.ledger, param.txid,  options).toPromise();
     }
 
@@ -1761,7 +1764,7 @@ export class ObjectTransactionsApi {
      * Revert a ledger transaction by its ID
      * @param param the request object
      */
-    public revertTransaction(param: TransactionsApiRevertTransactionRequest, options?: Configuration): Promise<TransactionResponse> {
+    public revertTransaction(param: TransactionsApiRevertTransactionRequest, options?: Configuration): Promise<CreateTransactionResponse> {
         return this.api.revertTransaction(param.ledger, param.txid,  options).toPromise();
     }
 

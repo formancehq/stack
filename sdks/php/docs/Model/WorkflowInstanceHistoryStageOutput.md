@@ -5,8 +5,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **get_account** | [**\Formance\Model\AccountResponse**](AccountResponse.md) |  | [optional]
-**create_transaction** | [**\Formance\Model\TransactionResponse**](TransactionResponse.md) |  | [optional]
-**revert_transaction** | [**\Formance\Model\TransactionResponse**](TransactionResponse.md) |  | [optional]
+**create_transaction** | [**\Formance\Model\CreateTransactionResponse**](CreateTransactionResponse.md) |  | [optional]
+**revert_transaction** | [**\Formance\Model\CreateTransactionResponse**](CreateTransactionResponse.md) |  | [optional]
 **get_payment** | [**\Formance\Model\PaymentResponse**](PaymentResponse.md) |  | [optional]
 **debit_wallet** | [**\Formance\Model\DebitWalletResponse**](DebitWalletResponse.md) |  | [optional]
 **get_wallet** | [**\Formance\Model\GetWalletResponse**](GetWalletResponse.md) |  | [optional]
