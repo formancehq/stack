@@ -147,7 +147,7 @@ void (empty response body)
 ## `createTransaction()`
 
 ```php
-createTransaction($ledger, $post_transaction, $preview): \Formance\Model\TransactionResponse
+createTransaction($ledger, $post_transaction, $preview): \Formance\Model\CreateTransactionResponse
 ```
 
 Create a new transaction to a ledger
@@ -191,7 +191,7 @@ try {
 
 ### Return type
 
-[**\Formance\Model\TransactionResponse**](../Model/TransactionResponse.md)
+[**\Formance\Model\CreateTransactionResponse**](../Model/CreateTransactionResponse.md)
 
 ### Authorization
 
@@ -209,7 +209,7 @@ try {
 ## `getTransaction()`
 
 ```php
-getTransaction($ledger, $txid): \Formance\Model\TransactionResponse
+getTransaction($ledger, $txid): \Formance\Model\GetTransactionResponse
 ```
 
 Get transaction from a ledger by its ID
@@ -251,7 +251,7 @@ try {
 
 ### Return type
 
-[**\Formance\Model\TransactionResponse**](../Model/TransactionResponse.md)
+[**\Formance\Model\GetTransactionResponse**](../Model/GetTransactionResponse.md)
 
 ### Authorization
 
@@ -347,7 +347,7 @@ try {
 ## `revertTransaction()`
 
 ```php
-revertTransaction($ledger, $txid): \Formance\Model\TransactionResponse
+revertTransaction($ledger, $txid): \Formance\Model\CreateTransactionResponse
 ```
 
 Revert a ledger transaction by its ID
@@ -389,7 +389,7 @@ try {
 
 ### Return type
 
-[**\Formance\Model\TransactionResponse**](../Model/TransactionResponse.md)
+[**\Formance\Model\CreateTransactionResponse**](../Model/CreateTransactionResponse.md)
 
 ### Authorization
 

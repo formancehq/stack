@@ -93,7 +93,7 @@ type (
 	getAccountFn           func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error)
 	listAccountsFn         func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error)
 	listTransactionsFn     func(ctx context.Context, ledger string, query wallet.ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error)
-	createTransactionFn    func(ctx context.Context, ledger string, postTransaction sdk.PostTransaction) (*sdk.TransactionResponse, error)
+	createTransactionFn    func(ctx context.Context, ledger string, postTransaction sdk.PostTransaction) (*sdk.CreateTransactionResponse, error)
 )
 
 type LedgerMock struct {
@@ -116,7 +116,7 @@ func (l *LedgerMock) ListAccounts(ctx context.Context, ledger string, query wall
 	return l.listAccounts(ctx, ledger, query)
 }
 
-func (l *LedgerMock) CreateTransaction(ctx context.Context, name string, postTransaction sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+func (l *LedgerMock) CreateTransaction(ctx context.Context, name string, postTransaction sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
 	return l.createTransaction(ctx, name, postTransaction)
 }
 

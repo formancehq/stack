@@ -20,7 +20,7 @@ var _ = Given("some empty environment", func() {
 			cancelSubscription func()
 			timestamp          = time.Now().Round(time.Second).UTC()
 			err                error
-			rsp                *formance.TransactionResponse
+			rsp                *formance.CreateTransactionResponse
 		)
 		BeforeEach(func() {
 			// Subscribe to nats subject
@@ -50,7 +50,45 @@ var _ = Given("some empty environment", func() {
 				GetTransaction(TestContext(), "default", rsp.Data.Txid).
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
-			Expect(transactionResponse.Data).To(Equal(rsp.Data))
+			Expect(transactionResponse.Data).To(Equal(formance.ExpandedTransaction{
+				Timestamp: rsp.Data.Timestamp,
+				Postings:  rsp.Data.Postings,
+				Reference: rsp.Data.Reference,
+				Metadata:  rsp.Data.Metadata,
+				Txid:      rsp.Data.Txid,
+				PreCommitVolumes: map[string]map[string]formance.Volume{
+					"world": {
+						"USD": {
+							Input:   0,
+							Output:  0,
+							Balance: ptr(int64(0)),
+						},
+					},
+					"alice": {
+						"USD": {
+							Input:   0,
+							Output:  0,
+							Balance: ptr(int64(0)),
+						},
+					},
+				},
+				PostCommitVolumes: map[string]map[string]formance.Volume{
+					"world": {
+						"USD": {
+							Input:   0,
+							Output:  100,
+							Balance: ptr(int64(-100)),
+						},
+					},
+					"alice": {
+						"USD": {
+							Input:   100,
+							Output:  0,
+							Balance: ptr(int64(100)),
+						},
+					},
+				},
+			}))
 
 			accountResponse, _, err := Client().AccountsApi.
 				GetAccount(TestContext(), "default", "alice").

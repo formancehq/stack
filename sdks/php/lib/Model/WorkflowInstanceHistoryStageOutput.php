@@ -59,8 +59,8 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
       */
     protected static $openAPITypes = [
         'get_account' => '\Formance\Model\AccountResponse',
-        'create_transaction' => '\Formance\Model\TransactionResponse',
-        'revert_transaction' => '\Formance\Model\TransactionResponse',
+        'create_transaction' => '\Formance\Model\CreateTransactionResponse',
+        'revert_transaction' => '\Formance\Model\CreateTransactionResponse',
         'get_payment' => '\Formance\Model\PaymentResponse',
         'debit_wallet' => '\Formance\Model\DebitWalletResponse',
         'get_wallet' => '\Formance\Model\GetWalletResponse'
@@ -355,7 +355,7 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
     /**
      * Gets create_transaction
      *
-     * @return \Formance\Model\TransactionResponse|null
+     * @return \Formance\Model\CreateTransactionResponse|null
      */
     public function getCreateTransaction()
     {
@@ -365,7 +365,7 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
     /**
      * Sets create_transaction
      *
-     * @param \Formance\Model\TransactionResponse|null $create_transaction create_transaction
+     * @param \Formance\Model\CreateTransactionResponse|null $create_transaction create_transaction
      *
      * @return self
      */
@@ -382,7 +382,7 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
     /**
      * Gets revert_transaction
      *
-     * @return \Formance\Model\TransactionResponse|null
+     * @return \Formance\Model\CreateTransactionResponse|null
      */
     public function getRevertTransaction()
     {
@@ -392,7 +392,7 @@ class WorkflowInstanceHistoryStageOutput implements ModelInterface, ArrayAccess,
     /**
      * Sets revert_transaction
      *
-     * @param \Formance\Model\TransactionResponse|null $revert_transaction revert_transaction
+     * @param \Formance\Model\CreateTransactionResponse|null $revert_transaction revert_transaction
      *
      * @return self
      */

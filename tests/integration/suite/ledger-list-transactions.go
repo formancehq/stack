@@ -19,7 +19,7 @@ var _ = Given("some empty environment", func() {
 	When(fmt.Sprintf("creating %d transactions", txCount), func() {
 		var (
 			timestamp    = time.Now().Round(time.Second).UTC()
-			transactions []formance.Transaction
+			transactions []formance.ExpandedTransaction
 		)
 		BeforeEach(func() {
 			for i := 0; i < int(txCount); i++ {
@@ -37,8 +37,46 @@ var _ = Given("some empty environment", func() {
 					}).
 					Execute()
 				Expect(err).ToNot(HaveOccurred())
-				transactions = append([]formance.Transaction{
-					ret.Data,
+				transactions = append([]formance.ExpandedTransaction{
+					{
+						Timestamp: ret.Data.Timestamp,
+						Postings:  ret.Data.Postings,
+						Reference: ret.Data.Reference,
+						Metadata:  ret.Data.Metadata,
+						Txid:      ret.Data.Txid,
+						PreCommitVolumes: map[string]map[string]formance.Volume{
+							"world": {
+								"USD": {
+									Input:   0,
+									Output:  int64(i * 100),
+									Balance: ptr(int64(-i * 100)),
+								},
+							},
+							fmt.Sprintf("account:%d", i): {
+								"USD": {
+									Input:   0,
+									Output:  0,
+									Balance: ptr(int64(0)),
+								},
+							},
+						},
+						PostCommitVolumes: map[string]map[string]formance.Volume{
+							"world": {
+								"USD": {
+									Input:   0,
+									Output:  int64((i + 1) * 100),
+									Balance: ptr(int64(-(i + 1) * 100)),
+								},
+							},
+							fmt.Sprintf("account:%d", i): {
+								"USD": {
+									Input:   100,
+									Output:  0,
+									Balance: ptr(int64(100)),
+								},
+							},
+						},
+					},
 				}, transactions...)
 			}
 		})
@@ -108,9 +146,9 @@ var _ = Given("some empty environment", func() {
 	)
 
 	var (
-		t1 formance.Transaction
-		t2 formance.Transaction
-		t3 formance.Transaction
+		t1 formance.ExpandedTransaction
+		t2 formance.ExpandedTransaction
+		t3 formance.ExpandedTransaction
 	)
 	When("creating transactions", func() {
 		BeforeEach(func() {
@@ -128,7 +166,45 @@ var _ = Given("some empty environment", func() {
 				}).
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
-			t1 = ret.Data
+			t1 = formance.ExpandedTransaction{
+				Timestamp: ret.Data.Timestamp,
+				Postings:  ret.Data.Postings,
+				Reference: ret.Data.Reference,
+				Metadata:  ret.Data.Metadata,
+				Txid:      ret.Data.Txid,
+				PreCommitVolumes: map[string]map[string]formance.Volume{
+					"world": {
+						"USD": {
+							Input:   0,
+							Output:  0,
+							Balance: ptr(int64(0)),
+						},
+					},
+					"foo:foo": {
+						"USD": {
+							Input:   0,
+							Output:  0,
+							Balance: ptr(int64(0)),
+						},
+					},
+				},
+				PostCommitVolumes: map[string]map[string]formance.Volume{
+					"world": {
+						"USD": {
+							Input:   0,
+							Output:  100,
+							Balance: ptr(int64(-100)),
+						},
+					},
+					"foo:foo": {
+						"USD": {
+							Input:   100,
+							Output:  0,
+							Balance: ptr(int64(100)),
+						},
+					},
+				},
+			}
 
 			ret, _, err = Client().TransactionsApi.
 				CreateTransaction(TestContext(), "default").
@@ -144,7 +220,45 @@ var _ = Given("some empty environment", func() {
 				}).
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
-			t2 = ret.Data
+			t2 = formance.ExpandedTransaction{
+				Timestamp: ret.Data.Timestamp,
+				Postings:  ret.Data.Postings,
+				Reference: ret.Data.Reference,
+				Metadata:  ret.Data.Metadata,
+				Txid:      ret.Data.Txid,
+				PreCommitVolumes: map[string]map[string]formance.Volume{
+					"world": {
+						"USD": {
+							Input:   0,
+							Output:  100,
+							Balance: ptr(int64(-100)),
+						},
+					},
+					"foo:bar": {
+						"USD": {
+							Input:   0,
+							Output:  0,
+							Balance: ptr(int64(0)),
+						},
+					},
+				},
+				PostCommitVolumes: map[string]map[string]formance.Volume{
+					"world": {
+						"USD": {
+							Input:   0,
+							Output:  200,
+							Balance: ptr(int64(-200)),
+						},
+					},
+					"foo:bar": {
+						"USD": {
+							Input:   100,
+							Output:  0,
+							Balance: ptr(int64(100)),
+						},
+					},
+				},
+			}
 
 			ret, _, err = Client().TransactionsApi.
 				CreateTransaction(TestContext(), "default").
@@ -160,7 +274,45 @@ var _ = Given("some empty environment", func() {
 				}).
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
-			t3 = ret.Data
+			t3 = formance.ExpandedTransaction{
+				Timestamp: ret.Data.Timestamp,
+				Postings:  ret.Data.Postings,
+				Reference: ret.Data.Reference,
+				Metadata:  ret.Data.Metadata,
+				Txid:      ret.Data.Txid,
+				PreCommitVolumes: map[string]map[string]formance.Volume{
+					"world": {
+						"USD": {
+							Input:   0,
+							Output:  200,
+							Balance: ptr(int64(-200)),
+						},
+					},
+					"foo:baz": {
+						"USD": {
+							Input:   0,
+							Output:  0,
+							Balance: ptr(int64(0)),
+						},
+					},
+				},
+				PostCommitVolumes: map[string]map[string]formance.Volume{
+					"world": {
+						"USD": {
+							Input:   0,
+							Output:  300,
+							Balance: ptr(int64(-300)),
+						},
+					},
+					"foo:baz": {
+						"USD": {
+							Input:   100,
+							Output:  0,
+							Balance: ptr(int64(100)),
+						},
+					},
+				},
+			}
 		})
 		It("should be countable on api", func() {
 			transactionResponse, err := Client().TransactionsApi.

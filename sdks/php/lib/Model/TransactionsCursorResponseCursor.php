@@ -62,7 +62,7 @@ class TransactionsCursorResponseCursor implements ModelInterface, ArrayAccess, \
         'has_more' => 'bool',
         'previous' => 'string',
         'next' => 'string',
-        'data' => '\Formance\Model\Transaction[]'
+        'data' => '\Formance\Model\ExpandedTransaction[]'
     ];
 
     /**
@@ -454,7 +454,7 @@ class TransactionsCursorResponseCursor implements ModelInterface, ArrayAccess, \
     /**
      * Gets data
      *
-     * @return \Formance\Model\Transaction[]
+     * @return \Formance\Model\ExpandedTransaction[]
      */
     public function getData()
     {
@@ -464,7 +464,7 @@ class TransactionsCursorResponseCursor implements ModelInterface, ArrayAccess, \
     /**
      * Sets data
      *
-     * @param \Formance\Model\Transaction[] $data data
+     * @param \Formance\Model\ExpandedTransaction[] $data data
      *
      * @return self
      */

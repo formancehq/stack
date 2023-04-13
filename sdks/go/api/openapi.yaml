@@ -1036,7 +1036,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionResponse'
+                $ref: '#/components/schemas/CreateTransactionResponse'
           description: OK
         default:
           content:
@@ -1076,7 +1076,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionResponse'
+                $ref: '#/components/schemas/GetTransactionResponse'
           description: OK
         default:
           content:
@@ -1159,7 +1159,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionResponse'
+                $ref: '#/components/schemas/RevertTransactionResponse'
           description: OK
         default:
           content:
@@ -3319,78 +3319,8 @@ components:
           next: ""
           previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
           data:
-          - reference: ref:001
-            metadata:
-              admin: "true"
-            postings:
-            - amount: 100
-              destination: users:002
-              source: users:001
-              asset: COIN
-            - amount: 100
-              destination: users:002
-              source: users:001
-              asset: COIN
-            txid: 0
-            postCommitVolumes:
-              orders:1:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-              orders:2:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-            preCommitVolumes:
-              orders:1:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-              orders:2:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-            timestamp: 2000-01-23T04:56:07.000+00:00
-          - reference: ref:001
-            metadata:
-              admin: "true"
-            postings:
-            - amount: 100
-              destination: users:002
-              source: users:001
-              asset: COIN
-            - amount: 100
-              destination: users:002
-              source: users:001
-              asset: COIN
-            txid: 0
-            postCommitVolumes:
-              orders:1:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-              orders:2:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-            preCommitVolumes:
-              orders:1:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-              orders:2:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-            timestamp: 2000-01-23T04:56:07.000+00:00
+          - null
+          - null
           hasMore: false
           pageSize: 15
       properties:
@@ -3673,28 +3603,6 @@ components:
           source: users:001
           asset: COIN
         txid: 0
-        postCommitVolumes:
-          orders:1:
-            USD:
-              input: 100
-              output: 10
-              balance: 90
-          orders:2:
-            USD:
-              input: 100
-              output: 10
-              balance: 90
-        preCommitVolumes:
-          orders:1:
-            USD:
-              input: 100
-              output: 10
-              balance: 90
-          orders:2:
-            USD:
-              input: 100
-              output: 10
-              balance: 90
         timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         timestamp:
@@ -3717,42 +3625,16 @@ components:
           format: int64
           minimum: 0
           type: integer
-        preCommitVolumes:
-          additionalProperties:
-            $ref: '#/components/schemas/Volumes'
-          example:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          type: object
-        postCommitVolumes:
-          additionalProperties:
-            $ref: '#/components/schemas/Volumes'
-          example:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          type: object
       required:
       - metadata
       - postings
       - timestamp
       - txid
       type: object
+    ExpandedTransaction:
+      allOf:
+      - $ref: '#/components/schemas/Transaction'
+      - $ref: '#/components/schemas/ExpandedTransaction_allOf'
     PostTransaction:
       example:
         reference: ref:001
@@ -3847,7 +3729,7 @@ components:
       - id
       - type
       type: object
-    TransactionResponse:
+    CreateTransactionResponse:
       example:
         data:
           reference: ref:001
@@ -3863,32 +3745,21 @@ components:
             source: users:001
             asset: COIN
           txid: 0
-          postCommitVolumes:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          preCommitVolumes:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
           timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         data:
           $ref: '#/components/schemas/Transaction'
+      required:
+      - data
+      type: object
+    RevertTransactionResponse:
+      $ref: '#/components/schemas/CreateTransactionResponse'
+    GetTransactionResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/ExpandedTransaction'
       required:
       - data
       type: object
@@ -5532,28 +5403,6 @@ components:
                 source: users:001
                 asset: COIN
               txid: 0
-              postCommitVolumes:
-                orders:1:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
-                orders:2:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
-              preCommitVolumes:
-                orders:1:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
-                orders:2:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
               timestamp: 2000-01-23T04:56:07.000+00:00
           RevertTransaction:
             data:
@@ -5570,28 +5419,6 @@ components:
                 source: users:001
                 asset: COIN
               txid: 0
-              postCommitVolumes:
-                orders:1:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
-                orders:2:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
-              preCommitVolumes:
-                orders:1:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
-                orders:2:
-                  USD:
-                    input: 100
-                    output: 10
-                    balance: 90
               timestamp: 2000-01-23T04:56:07.000+00:00
           GetAccount:
             data:
@@ -6003,28 +5830,6 @@ components:
                   source: users:001
                   asset: COIN
                 txid: 0
-                postCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                preCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
                 timestamp: 2000-01-23T04:56:07.000+00:00
             RevertTransaction:
               data:
@@ -6041,28 +5846,6 @@ components:
                   source: users:001
                   asset: COIN
                 txid: 0
-                postCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                preCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
                 timestamp: 2000-01-23T04:56:07.000+00:00
             GetAccount:
               data:
@@ -6206,28 +5989,6 @@ components:
                   source: users:001
                   asset: COIN
                 txid: 0
-                postCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                preCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
                 timestamp: 2000-01-23T04:56:07.000+00:00
             RevertTransaction:
               data:
@@ -6244,28 +6005,6 @@ components:
                   source: users:001
                   asset: COIN
                 txid: 0
-                postCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                preCommitVolumes:
-                  orders:1:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
-                  orders:2:
-                    USD:
-                      input: 100
-                      output: 10
-                      balance: 90
                 timestamp: 2000-01-23T04:56:07.000+00:00
             GetAccount:
               data:
@@ -6611,9 +6350,9 @@ components:
     ActivityGetAccountOutput:
       $ref: '#/components/schemas/AccountResponse'
     ActivityCreateTransactionOutput:
-      $ref: '#/components/schemas/TransactionResponse'
+      $ref: '#/components/schemas/CreateTransactionResponse'
     ActivityRevertTransactionOutput:
-      $ref: '#/components/schemas/TransactionResponse'
+      $ref: '#/components/schemas/RevertTransactionResponse'
     ActivityGetPaymentOutput:
       $ref: '#/components/schemas/PaymentResponse'
     ActivityDebitWalletOutput:
@@ -6720,28 +6459,6 @@ components:
               source: users:001
               asset: COIN
             txid: 0
-            postCommitVolumes:
-              orders:1:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-              orders:2:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-            preCommitVolumes:
-              orders:1:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-              orders:2:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
             timestamp: 2000-01-23T04:56:07.000+00:00
         RevertTransaction:
           data:
@@ -6758,28 +6475,6 @@ components:
               source: users:001
               asset: COIN
             txid: 0
-            postCommitVolumes:
-              orders:1:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-              orders:2:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-            preCommitVolumes:
-              orders:1:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
-              orders:2:
-                USD:
-                  input: 100
-                  output: 10
-                  balance: 90
             timestamp: 2000-01-23T04:56:07.000+00:00
         GetAccount:
           data:
@@ -6843,9 +6538,9 @@ components:
         GetAccount:
           $ref: '#/components/schemas/AccountResponse'
         CreateTransaction:
-          $ref: '#/components/schemas/TransactionResponse'
+          $ref: '#/components/schemas/CreateTransactionResponse'
         RevertTransaction:
-          $ref: '#/components/schemas/TransactionResponse'
+          $ref: '#/components/schemas/CreateTransactionResponse'
         GetPayment:
           $ref: '#/components/schemas/PaymentResponse'
         DebitWallet:
@@ -6999,78 +6694,8 @@ components:
         next: ""
         previous: YXVsdCBhbmQgYSBtYXhpbXVtIG1heF9yZXN1bHRzLol=
         data:
-        - reference: ref:001
-          metadata:
-            admin: "true"
-          postings:
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          txid: 0
-          postCommitVolumes:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          preCommitVolumes:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          timestamp: 2000-01-23T04:56:07.000+00:00
-        - reference: ref:001
-          metadata:
-            admin: "true"
-          postings:
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          - amount: 100
-            destination: users:002
-            source: users:001
-            asset: COIN
-          txid: 0
-          postCommitVolumes:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          preCommitVolumes:
-            orders:1:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-            orders:2:
-              USD:
-                input: 100
-                output: 10
-                balance: 90
-          timestamp: 2000-01-23T04:56:07.000+00:00
+        - null
+        - null
         hasMore: false
         pageSize: 15
       properties:
@@ -7091,7 +6716,7 @@ components:
           type: string
         data:
           items:
-            $ref: '#/components/schemas/Transaction'
+            $ref: '#/components/schemas/ExpandedTransaction'
           type: array
       required:
       - data
@@ -7140,6 +6765,43 @@ components:
       - hasMore
       - pageSize
       type: object
+    ExpandedTransaction_allOf:
+      properties:
+        preCommitVolumes:
+          additionalProperties:
+            $ref: '#/components/schemas/Volumes'
+          example:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          type: object
+        postCommitVolumes:
+          additionalProperties:
+            $ref: '#/components/schemas/Volumes'
+          example:
+            orders:1:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+            orders:2:
+              USD:
+                input: 100
+                output: 10
+                balance: 90
+          type: object
+      required:
+      - postCommitVolumes
+      - preCommitVolumes
+      type: object
+      example: null
     PostTransaction_script:
       example:
         plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\t\

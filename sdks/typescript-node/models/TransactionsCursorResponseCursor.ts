@@ -10,7 +10,7 @@
  * Do not edit the class manually.
  */
 
-import { Transaction } from '../models/Transaction';
+import { ExpandedTransaction } from '../models/ExpandedTransaction';
 import { HttpFile } from '../http/http';
 
 export class TransactionsCursorResponseCursor {
@@ -18,7 +18,7 @@ export class TransactionsCursorResponseCursor {
     'hasMore': boolean;
     'previous'?: string;
     'next'?: string;
-    'data': Array<Transaction>;
+    'data': Array<ExpandedTransaction>;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -50,7 +50,7 @@ export class TransactionsCursorResponseCursor {
         {
             "name": "data",
             "baseName": "data",
-            "type": "Array<Transaction>",
+            "type": "Array<ExpandedTransaction>",
             "format": ""
         }    ];
 

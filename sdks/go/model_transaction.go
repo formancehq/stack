@@ -26,8 +26,6 @@ type Transaction struct {
 	Reference *string `json:"reference,omitempty"`
 	Metadata map[string]string `json:"metadata"`
 	Txid int64 `json:"txid"`
-	PreCommitVolumes *map[string]map[string]Volume `json:"preCommitVolumes,omitempty"`
-	PostCommitVolumes *map[string]map[string]Volume `json:"postCommitVolumes,omitempty"`
 }
 
 // NewTransaction instantiates a new Transaction object
@@ -179,70 +177,6 @@ func (o *Transaction) SetTxid(v int64) {
 	o.Txid = v
 }
 
-// GetPreCommitVolumes returns the PreCommitVolumes field value if set, zero value otherwise.
-func (o *Transaction) GetPreCommitVolumes() map[string]map[string]Volume {
-	if o == nil || IsNil(o.PreCommitVolumes) {
-		var ret map[string]map[string]Volume
-		return ret
-	}
-	return *o.PreCommitVolumes
-}
-
-// GetPreCommitVolumesOk returns a tuple with the PreCommitVolumes field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Transaction) GetPreCommitVolumesOk() (*map[string]map[string]Volume, bool) {
-	if o == nil || IsNil(o.PreCommitVolumes) {
-		return nil, false
-	}
-	return o.PreCommitVolumes, true
-}
-
-// HasPreCommitVolumes returns a boolean if a field has been set.
-func (o *Transaction) HasPreCommitVolumes() bool {
-	if o != nil && !IsNil(o.PreCommitVolumes) {
-		return true
-	}
-
-	return false
-}
-
-// SetPreCommitVolumes gets a reference to the given map[string]map[string]Volume and assigns it to the PreCommitVolumes field.
-func (o *Transaction) SetPreCommitVolumes(v map[string]map[string]Volume) {
-	o.PreCommitVolumes = &v
-}
-
-// GetPostCommitVolumes returns the PostCommitVolumes field value if set, zero value otherwise.
-func (o *Transaction) GetPostCommitVolumes() map[string]map[string]Volume {
-	if o == nil || IsNil(o.PostCommitVolumes) {
-		var ret map[string]map[string]Volume
-		return ret
-	}
-	return *o.PostCommitVolumes
-}
-
-// GetPostCommitVolumesOk returns a tuple with the PostCommitVolumes field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Transaction) GetPostCommitVolumesOk() (*map[string]map[string]Volume, bool) {
-	if o == nil || IsNil(o.PostCommitVolumes) {
-		return nil, false
-	}
-	return o.PostCommitVolumes, true
-}
-
-// HasPostCommitVolumes returns a boolean if a field has been set.
-func (o *Transaction) HasPostCommitVolumes() bool {
-	if o != nil && !IsNil(o.PostCommitVolumes) {
-		return true
-	}
-
-	return false
-}
-
-// SetPostCommitVolumes gets a reference to the given map[string]map[string]Volume and assigns it to the PostCommitVolumes field.
-func (o *Transaction) SetPostCommitVolumes(v map[string]map[string]Volume) {
-	o.PostCommitVolumes = &v
-}
-
 func (o Transaction) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -260,12 +194,6 @@ func (o Transaction) ToMap() (map[string]interface{}, error) {
 	}
 	toSerialize["metadata"] = o.Metadata
 	toSerialize["txid"] = o.Txid
-	if !IsNil(o.PreCommitVolumes) {
-		toSerialize["preCommitVolumes"] = o.PreCommitVolumes
-	}
-	if !IsNil(o.PostCommitVolumes) {
-		toSerialize["postCommitVolumes"] = o.PostCommitVolumes
-	}
 	return toSerialize, nil
 }
 

@@ -8,8 +8,8 @@
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
 |**getAccount** | [**AccountResponse**](AccountResponse.md) |  |  [optional] |
-|**createTransaction** | [**TransactionResponse**](TransactionResponse.md) |  |  [optional] |
-|**revertTransaction** | [**TransactionResponse**](TransactionResponse.md) |  |  [optional] |
+|**createTransaction** | [**CreateTransactionResponse**](CreateTransactionResponse.md) |  |  [optional] |
+|**revertTransaction** | [**CreateTransactionResponse**](CreateTransactionResponse.md) |  |  [optional] |
 |**getPayment** | [**PaymentResponse**](PaymentResponse.md) |  |  [optional] |
 |**debitWallet** | [**DebitWalletResponse**](DebitWalletResponse.md) |  |  [optional] |
 |**getWallet** | [**GetWalletResponse**](GetWalletResponse.md) |  |  [optional] |

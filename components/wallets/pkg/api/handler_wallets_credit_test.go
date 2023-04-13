@@ -19,7 +19,7 @@ func TestWalletsCredit(t *testing.T) {
 	type testCase struct {
 		name                    string
 		request                 wallet.CreditRequest
-		postTransactionResult   sdk.TransactionResponse
+		postTransactionResult   sdk.CreateTransactionResponse
 		expectedPostTransaction func(testEnv *testEnv, walletID string) sdk.PostTransaction
 		expectedStatusCode      int
 		expectedErrorCode       string
@@ -153,7 +153,7 @@ func TestWalletsCredit(t *testing.T) {
 				postTransaction sdk.PostTransaction
 			)
 			testEnv = newTestEnv(
-				WithCreateTransaction(func(ctx context.Context, ledger string, p sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+				WithCreateTransaction(func(ctx context.Context, ledger string, p sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					postTransaction = p
 					return &testCase.postTransactionResult, nil

@@ -60,6 +60,7 @@ docs/CreateBalanceResponse.md
 docs/CreateClientResponse.md
 docs/CreateScopeResponse.md
 docs/CreateSecretResponse.md
+docs/CreateTransactionResponse.md
 docs/CreateWalletRequest.md
 docs/CreateWalletResponse.md
 docs/CreateWorkflowResponse.md
@@ -76,11 +77,14 @@ docs/ErrorResponse.md
 docs/ErrorsEnum.md
 docs/ExpandedDebitHold.md
 docs/ExpandedDebitHoldAllOf.md
+docs/ExpandedTransaction.md
+docs/ExpandedTransactionAllOf.md
 docs/GetBalanceResponse.md
 docs/GetHoldResponse.md
 docs/GetHoldsResponse.md
 docs/GetHoldsResponseCursor.md
 docs/GetHoldsResponseCursorAllOf.md
+docs/GetTransactionResponse.md
 docs/GetTransactionsResponse.md
 docs/GetTransactionsResponseCursor.md
 docs/GetTransactionsResponseCursorAllOf.md
@@ -189,7 +193,6 @@ docs/TasksCursorCursorAllOf.md
 docs/TasksCursorCursorAllOfDataInner.md
 docs/Total.md
 docs/Transaction.md
-docs/TransactionResponse.md
 docs/TransactionsApi.md
 docs/TransactionsCursorResponse.md
 docs/TransactionsCursorResponseCursor.md
@@ -309,6 +312,7 @@ src/main/java/com/formance/formance/model/CreateBalanceResponse.java
 src/main/java/com/formance/formance/model/CreateClientResponse.java
 src/main/java/com/formance/formance/model/CreateScopeResponse.java
 src/main/java/com/formance/formance/model/CreateSecretResponse.java
+src/main/java/com/formance/formance/model/CreateTransactionResponse.java
 src/main/java/com/formance/formance/model/CreateWalletRequest.java
 src/main/java/com/formance/formance/model/CreateWalletResponse.java
 src/main/java/com/formance/formance/model/CreateWorkflowResponse.java
@@ -324,11 +328,14 @@ src/main/java/com/formance/formance/model/ErrorResponse.java
 src/main/java/com/formance/formance/model/ErrorsEnum.java
 src/main/java/com/formance/formance/model/ExpandedDebitHold.java
 src/main/java/com/formance/formance/model/ExpandedDebitHoldAllOf.java
+src/main/java/com/formance/formance/model/ExpandedTransaction.java
+src/main/java/com/formance/formance/model/ExpandedTransactionAllOf.java
 src/main/java/com/formance/formance/model/GetBalanceResponse.java
 src/main/java/com/formance/formance/model/GetHoldResponse.java
 src/main/java/com/formance/formance/model/GetHoldsResponse.java
 src/main/java/com/formance/formance/model/GetHoldsResponseCursor.java
 src/main/java/com/formance/formance/model/GetHoldsResponseCursorAllOf.java
+src/main/java/com/formance/formance/model/GetTransactionResponse.java
 src/main/java/com/formance/formance/model/GetTransactionsResponse.java
 src/main/java/com/formance/formance/model/GetTransactionsResponseCursor.java
 src/main/java/com/formance/formance/model/GetTransactionsResponseCursorAllOf.java
@@ -429,7 +436,6 @@ src/main/java/com/formance/formance/model/TasksCursorCursorAllOf.java
 src/main/java/com/formance/formance/model/TasksCursorCursorAllOfDataInner.java
 src/main/java/com/formance/formance/model/Total.java
 src/main/java/com/formance/formance/model/Transaction.java
-src/main/java/com/formance/formance/model/TransactionResponse.java
 src/main/java/com/formance/formance/model/TransactionsCursorResponse.java
 src/main/java/com/formance/formance/model/TransactionsCursorResponseCursor.java
 src/main/java/com/formance/formance/model/TransferRequest.java
