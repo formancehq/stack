@@ -9,7 +9,5 @@ Name | Type | Description | Notes
 **reference** | **string** |  | [optional]
 **metadata** | **array<string,string>** |  |
 **txid** | **int** |  |
-**pre_commit_volumes** | **array<string,array>** |  | [optional]
-**post_commit_volumes** | **array<string,array>** |  | [optional]
 
 [[Back to Model list]](../../README.md#models) [[Back to API list]](../../README.md#endpoints) [[Back to README]](../../README.md)

@@ -50,6 +50,7 @@ export * from '../models/CreateBalanceResponse';
 export * from '../models/CreateClientResponse';
 export * from '../models/CreateScopeResponse';
 export * from '../models/CreateSecretResponse';
+export * from '../models/CreateTransactionResponse';
 export * from '../models/CreateWalletRequest';
 export * from '../models/CreateWalletResponse';
 export * from '../models/CreateWorkflowResponse';
@@ -64,11 +65,14 @@ export * from '../models/ErrorResponse';
 export * from '../models/ErrorsEnum';
 export * from '../models/ExpandedDebitHold';
 export * from '../models/ExpandedDebitHoldAllOf';
+export * from '../models/ExpandedTransaction';
+export * from '../models/ExpandedTransactionAllOf';
 export * from '../models/GetBalanceResponse';
 export * from '../models/GetHoldResponse';
 export * from '../models/GetHoldsResponse';
 export * from '../models/GetHoldsResponseCursor';
 export * from '../models/GetHoldsResponseCursorAllOf';
+export * from '../models/GetTransactionResponse';
 export * from '../models/GetTransactionsResponse';
 export * from '../models/GetTransactionsResponseCursor';
 export * from '../models/GetTransactionsResponseCursorAllOf';
@@ -170,7 +174,6 @@ export * from '../models/TasksCursorCursorAllOf';
 export * from '../models/TasksCursorCursorAllOfDataInner';
 export * from '../models/Total';
 export * from '../models/Transaction';
-export * from '../models/TransactionResponse';
 export * from '../models/TransactionsCursorResponse';
 export * from '../models/TransactionsCursorResponseCursor';
 export * from '../models/TransferRequest';
@@ -250,6 +253,7 @@ import { CreateBalanceResponse } from '../models/CreateBalanceResponse';
 import { CreateClientResponse } from '../models/CreateClientResponse';
 import { CreateScopeResponse } from '../models/CreateScopeResponse';
 import { CreateSecretResponse } from '../models/CreateSecretResponse';
+import { CreateTransactionResponse } from '../models/CreateTransactionResponse';
 import { CreateWalletRequest } from '../models/CreateWalletRequest';
 import { CreateWalletResponse } from '../models/CreateWalletResponse';
 import { CreateWorkflowResponse } from '../models/CreateWorkflowResponse';
@@ -264,11 +268,14 @@ import { ErrorResponse    } from '../models/ErrorResponse';
 import { ErrorsEnum } from '../models/ErrorsEnum';
 import { ExpandedDebitHold } from '../models/ExpandedDebitHold';
 import { ExpandedDebitHoldAllOf } from '../models/ExpandedDebitHoldAllOf';
+import { ExpandedTransaction } from '../models/ExpandedTransaction';
+import { ExpandedTransactionAllOf } from '../models/ExpandedTransactionAllOf';
 import { GetBalanceResponse } from '../models/GetBalanceResponse';
 import { GetHoldResponse } from '../models/GetHoldResponse';
 import { GetHoldsResponse } from '../models/GetHoldsResponse';
 import { GetHoldsResponseCursor } from '../models/GetHoldsResponseCursor';
 import { GetHoldsResponseCursorAllOf } from '../models/GetHoldsResponseCursorAllOf';
+import { GetTransactionResponse } from '../models/GetTransactionResponse';
 import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
@@ -370,7 +377,6 @@ import { TasksCursorCursorAllOf } from '../models/TasksCursorCursorAllOf';
 import { TasksCursorCursorAllOfDataInner         } from '../models/TasksCursorCursorAllOfDataInner';
 import { Total } from '../models/Total';
 import { Transaction } from '../models/Transaction';
-import { TransactionResponse } from '../models/TransactionResponse';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 import { TransactionsCursorResponseCursor } from '../models/TransactionsCursorResponseCursor';
 import { TransferRequest } from '../models/TransferRequest';
@@ -482,6 +488,7 @@ let typeMap: {[index: string]: any} = {
     "CreateClientResponse": CreateClientResponse,
     "CreateScopeResponse": CreateScopeResponse,
     "CreateSecretResponse": CreateSecretResponse,
+    "CreateTransactionResponse": CreateTransactionResponse,
     "CreateWalletRequest": CreateWalletRequest,
     "CreateWalletResponse": CreateWalletResponse,
     "CreateWorkflowResponse": CreateWorkflowResponse,
@@ -495,11 +502,14 @@ let typeMap: {[index: string]: any} = {
     "ErrorResponse": ErrorResponse,
     "ExpandedDebitHold": ExpandedDebitHold,
     "ExpandedDebitHoldAllOf": ExpandedDebitHoldAllOf,
+    "ExpandedTransaction": ExpandedTransaction,
+    "ExpandedTransactionAllOf": ExpandedTransactionAllOf,
     "GetBalanceResponse": GetBalanceResponse,
     "GetHoldResponse": GetHoldResponse,
     "GetHoldsResponse": GetHoldsResponse,
     "GetHoldsResponseCursor": GetHoldsResponseCursor,
     "GetHoldsResponseCursorAllOf": GetHoldsResponseCursorAllOf,
+    "GetTransactionResponse": GetTransactionResponse,
     "GetTransactionsResponse": GetTransactionsResponse,
     "GetTransactionsResponseCursor": GetTransactionsResponseCursor,
     "GetTransactionsResponseCursorAllOf": GetTransactionsResponseCursorAllOf,
@@ -600,7 +610,6 @@ let typeMap: {[index: string]: any} = {
     "TasksCursorCursorAllOfDataInner": TasksCursorCursorAllOfDataInner,
     "Total": Total,
     "Transaction": Transaction,
-    "TransactionResponse": TransactionResponse,
     "TransactionsCursorResponse": TransactionsCursorResponse,
     "TransactionsCursorResponseCursor": TransactionsCursorResponseCursor,
     "TransferRequest": TransferRequest,

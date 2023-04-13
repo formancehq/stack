@@ -171,7 +171,7 @@ null (empty response body)
 
 ## createTransaction
 
-> TransactionResponse createTransaction(ledger, postTransaction, preview)
+> CreateTransactionResponse createTransaction(ledger, postTransaction, preview)
 
 Create a new transaction to a ledger
 
@@ -200,7 +200,7 @@ public class Example {
         PostTransaction postTransaction = new PostTransaction(); // PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript 
         Boolean preview = true; // Boolean | Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
         try {
-            TransactionResponse result = apiInstance.createTransaction(ledger, postTransaction, preview);
+            CreateTransactionResponse result = apiInstance.createTransaction(ledger, postTransaction, preview);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TransactionsApi#createTransaction");
@@ -224,7 +224,7 @@ public class Example {
 
 ### Return type
 
-[**TransactionResponse**](TransactionResponse.md)
+[**CreateTransactionResponse**](CreateTransactionResponse.md)
 
 ### Authorization
 
@@ -245,7 +245,7 @@ public class Example {
 
 ## getTransaction
 
-> TransactionResponse getTransaction(ledger, txid)
+> GetTransactionResponse getTransaction(ledger, txid)
 
 Get transaction from a ledger by its ID
 
@@ -273,7 +273,7 @@ public class Example {
         String ledger = "ledger001"; // String | Name of the ledger.
         Long txid = 1234L; // Long | Transaction ID.
         try {
-            TransactionResponse result = apiInstance.getTransaction(ledger, txid);
+            GetTransactionResponse result = apiInstance.getTransaction(ledger, txid);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TransactionsApi#getTransaction");
@@ -296,7 +296,7 @@ public class Example {
 
 ### Return type
 
-[**TransactionResponse**](TransactionResponse.md)
+[**GetTransactionResponse**](GetTransactionResponse.md)
 
 ### Authorization
 
@@ -407,7 +407,7 @@ public class Example {
 
 ## revertTransaction
 
-> TransactionResponse revertTransaction(ledger, txid)
+> CreateTransactionResponse revertTransaction(ledger, txid)
 
 Revert a ledger transaction by its ID
 
@@ -435,7 +435,7 @@ public class Example {
         String ledger = "ledger001"; // String | Name of the ledger.
         Long txid = 1234L; // Long | Transaction ID.
         try {
-            TransactionResponse result = apiInstance.revertTransaction(ledger, txid);
+            CreateTransactionResponse result = apiInstance.revertTransaction(ledger, txid);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TransactionsApi#revertTransaction");
@@ -458,7 +458,7 @@ public class Example {
 
 ### Return type
 
-[**TransactionResponse**](TransactionResponse.md)
+[**CreateTransactionResponse**](CreateTransactionResponse.md)
 
 ### Authorization
 

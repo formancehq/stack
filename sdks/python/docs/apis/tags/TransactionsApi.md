@@ -370,7 +370,7 @@ Type | Description  | Notes
 
 # **create_transaction**
 <a name="create_transaction"></a>
-> TransactionResponse create_transaction(ledgerpost_transaction)
+> CreateTransactionResponse create_transaction(ledgerpost_transaction)
 
 Create a new transaction to a ledger
 
@@ -380,9 +380,9 @@ Create a new transaction to a ledger
 ```python
 import Formance
 from Formance.apis.tags import transactions_api
-from Formance.model.transaction_response import TransactionResponse
 from Formance.model.error_response import ErrorResponse
 from Formance.model.post_transaction import PostTransaction
+from Formance.model.create_transaction_response import CreateTransactionResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -546,7 +546,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**TransactionResponse**](../../models/TransactionResponse.md) |  | 
+[**CreateTransactionResponse**](../../models/CreateTransactionResponse.md) |  | 
 
 
 #### create_transaction.ApiResponseForDefault
@@ -570,7 +570,7 @@ Type | Description  | Notes
 
 # **get_transaction**
 <a name="get_transaction"></a>
-> TransactionResponse get_transaction(ledgertxid)
+> GetTransactionResponse get_transaction(ledgertxid)
 
 Get transaction from a ledger by its ID
 
@@ -580,8 +580,8 @@ Get transaction from a ledger by its ID
 ```python
 import Formance
 from Formance.apis.tags import transactions_api
-from Formance.model.transaction_response import TransactionResponse
 from Formance.model.error_response import ErrorResponse
+from Formance.model.get_transaction_response import GetTransactionResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -668,7 +668,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**TransactionResponse**](../../models/TransactionResponse.md) |  | 
+[**GetTransactionResponse**](../../models/GetTransactionResponse.md) |  | 
 
 
 #### get_transaction.ApiResponseForDefault
@@ -922,7 +922,7 @@ Type | Description  | Notes
 
 # **revert_transaction**
 <a name="revert_transaction"></a>
-> TransactionResponse revert_transaction(ledgertxid)
+> CreateTransactionResponse revert_transaction(ledgertxid)
 
 Revert a ledger transaction by its ID
 
@@ -932,8 +932,8 @@ Revert a ledger transaction by its ID
 ```python
 import Formance
 from Formance.apis.tags import transactions_api
-from Formance.model.transaction_response import TransactionResponse
 from Formance.model.error_response import ErrorResponse
+from Formance.model.create_transaction_response import CreateTransactionResponse
 from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
@@ -1020,7 +1020,7 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**TransactionResponse**](../../models/TransactionResponse.md) |  | 
+[**CreateTransactionResponse**](../../models/CreateTransactionResponse.md) |  | 
 
 
 #### revert_transaction.ApiResponseForDefault

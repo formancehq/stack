@@ -172,43 +172,11 @@ var _ = Given("An empty environment", func() {
 								NotTo(BeZero())
 							getWorkflowInstanceHistoryStageResponse.Data[0].Output.CreateTransaction.Data.Timestamp = time.Time{}
 							Expect(getWorkflowInstanceHistoryStageResponse.Data[0].Output).To(Equal(&formance.WorkflowInstanceHistoryStageOutput{
-								CreateTransaction: &formance.TransactionResponse{
+								CreateTransaction: &formance.CreateTransactionResponse{
 									Data: formance.Transaction{
 										Postings:  postings,
 										Reference: formance.PtrString(""),
-										Metadata:  map[string]string{},
-										PostCommitVolumes: &map[string]map[string]formance.Volume{
-											"bank": {
-												"EUR/2": formance.Volume{
-													Input:   100,
-													Output:  0,
-													Balance: formance.PtrInt64(100),
-												},
-											},
-											"world": {
-												"EUR/2": formance.Volume{
-													Input:   0,
-													Output:  100,
-													Balance: formance.PtrInt64(-100),
-												},
-											},
-										},
-										PreCommitVolumes: &map[string]map[string]formance.Volume{
-											"bank": {
-												"EUR/2": formance.Volume{
-													Input:   0,
-													Output:  0,
-													Balance: formance.PtrInt64(0),
-												},
-											},
-											"world": {
-												"EUR/2": formance.Volume{
-													Input:   0,
-													Output:  0,
-													Balance: formance.PtrInt64(0),
-												},
-											},
-										},
+										Metadata:  metadata.Metadata{},
 									},
 								},
 							}))

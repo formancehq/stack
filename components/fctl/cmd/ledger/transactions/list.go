@@ -101,7 +101,7 @@ func NewListCommand() *cobra.Command {
 				return nil
 			}
 
-			tableData := fctl.Map(rsp.Cursor.Data, func(tx formance.Transaction) []string {
+			tableData := fctl.Map(rsp.Cursor.Data, func(tx formance.ExpandedTransaction) []string {
 				return []string{
 					fmt.Sprintf("%d", tx.Txid),
 					func() string {

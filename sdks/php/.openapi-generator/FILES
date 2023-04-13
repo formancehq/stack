@@ -71,6 +71,7 @@ docs/Model/CreateBalanceResponse.md
 docs/Model/CreateClientResponse.md
 docs/Model/CreateScopeResponse.md
 docs/Model/CreateSecretResponse.md
+docs/Model/CreateTransactionResponse.md
 docs/Model/CreateWalletRequest.md
 docs/Model/CreateWalletResponse.md
 docs/Model/CreateWorkflowResponse.md
@@ -86,11 +87,14 @@ docs/Model/ErrorResponse.md
 docs/Model/ErrorsEnum.md
 docs/Model/ExpandedDebitHold.md
 docs/Model/ExpandedDebitHoldAllOf.md
+docs/Model/ExpandedTransaction.md
+docs/Model/ExpandedTransactionAllOf.md
 docs/Model/GetBalanceResponse.md
 docs/Model/GetHoldResponse.md
 docs/Model/GetHoldsResponse.md
 docs/Model/GetHoldsResponseCursor.md
 docs/Model/GetHoldsResponseCursorAllOf.md
+docs/Model/GetTransactionResponse.md
 docs/Model/GetTransactionsResponse.md
 docs/Model/GetTransactionsResponseCursor.md
 docs/Model/GetTransactionsResponseCursorAllOf.md
@@ -191,7 +195,6 @@ docs/Model/TasksCursorCursorAllOf.md
 docs/Model/TasksCursorCursorAllOfDataInner.md
 docs/Model/Total.md
 docs/Model/Transaction.md
-docs/Model/TransactionResponse.md
 docs/Model/TransactionsCursorResponse.md
 docs/Model/TransactionsCursorResponseCursor.md
 docs/Model/TransferRequest.md
@@ -290,6 +293,7 @@ lib/Model/CreateBalanceResponse.php
 lib/Model/CreateClientResponse.php
 lib/Model/CreateScopeResponse.php
 lib/Model/CreateSecretResponse.php
+lib/Model/CreateTransactionResponse.php
 lib/Model/CreateWalletRequest.php
 lib/Model/CreateWalletResponse.php
 lib/Model/CreateWorkflowResponse.php
@@ -305,11 +309,14 @@ lib/Model/ErrorResponse.php
 lib/Model/ErrorsEnum.php
 lib/Model/ExpandedDebitHold.php
 lib/Model/ExpandedDebitHoldAllOf.php
+lib/Model/ExpandedTransaction.php
+lib/Model/ExpandedTransactionAllOf.php
 lib/Model/GetBalanceResponse.php
 lib/Model/GetHoldResponse.php
 lib/Model/GetHoldsResponse.php
 lib/Model/GetHoldsResponseCursor.php
 lib/Model/GetHoldsResponseCursorAllOf.php
+lib/Model/GetTransactionResponse.php
 lib/Model/GetTransactionsResponse.php
 lib/Model/GetTransactionsResponseCursor.php
 lib/Model/GetTransactionsResponseCursorAllOf.php
@@ -411,7 +418,6 @@ lib/Model/TasksCursorCursorAllOf.php
 lib/Model/TasksCursorCursorAllOfDataInner.php
 lib/Model/Total.php
 lib/Model/Transaction.php
-lib/Model/TransactionResponse.php
 lib/Model/TransactionsCursorResponse.php
 lib/Model/TransactionsCursorResponseCursor.php
 lib/Model/TransferRequest.php

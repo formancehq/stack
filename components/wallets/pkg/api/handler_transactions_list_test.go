@@ -21,9 +21,9 @@ func TestTransactionsList(t *testing.T) {
 
 	w := wallet.NewWallet(uuid.NewString(), "default", metadata.Metadata{})
 
-	var transactions []sdk.Transaction
+	var transactions []sdk.ExpandedTransaction
 	for i := 0; i < 10; i++ {
-		transactions = append(transactions, sdk.Transaction{
+		transactions = append(transactions, sdk.ExpandedTransaction{
 			Postings: []sdk.Posting{{
 				Amount:      100,
 				Asset:       "USD/2",
@@ -81,16 +81,16 @@ func TestTransactionsList(t *testing.T) {
 	testEnv.Router().ServeHTTP(rec, req)
 
 	require.Equal(t, http.StatusOK, rec.Result().StatusCode)
-	cursor := &sharedapi.Cursor[sdk.Transaction]{}
+	cursor := &sharedapi.Cursor[sdk.ExpandedTransaction]{}
 	readCursor(t, rec, cursor)
 	require.Len(t, cursor.Data, pageSize)
-	require.EqualValues(t, cursor.Data, transactions[:pageSize])
+	require.EqualValues(t, transactions[:pageSize], cursor.Data)
 
 	req = newRequest(t, http.MethodGet, fmt.Sprintf("/transactions?cursor=%s", cursor.Next), nil)
 	rec = httptest.NewRecorder()
 	testEnv.Router().ServeHTTP(rec, req)
-	cursor = &sharedapi.Cursor[sdk.Transaction]{}
+	cursor = &sharedapi.Cursor[sdk.ExpandedTransaction]{}
 	readCursor(t, rec, cursor)
 	require.Len(t, cursor.Data, pageSize)
-	require.EqualValues(t, cursor.Data, transactions[pageSize:pageSize*2])
+	require.EqualValues(t, transactions[pageSize:pageSize*2], cursor.Data)
 }

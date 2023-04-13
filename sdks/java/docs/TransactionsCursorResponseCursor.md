@@ -11,7 +11,7 @@
 |**hasMore** | **Boolean** |  |  |
 |**previous** | **String** |  |  [optional] |
 |**next** | **String** |  |  [optional] |
-|**data** | [**List&lt;Transaction&gt;**](Transaction.md) |  |  |
+|**data** | [**List&lt;ExpandedTransaction&gt;**](ExpandedTransaction.md) |  |  |
 
 
 

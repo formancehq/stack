@@ -25,9 +25,9 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.transaction_response import TransactionResponse
 from Formance.model.error_response import ErrorResponse
 from Formance.model.post_transaction import PostTransaction
+from Formance.model.create_transaction_response import CreateTransactionResponse
 
 # Query params
 PreviewSchema = schemas.BoolSchema
@@ -92,7 +92,7 @@ request_body_post_transaction = api_client.RequestBody(
     },
     required=True,
 )
-SchemaFor200ResponseBodyApplicationJson = TransactionResponse
+SchemaFor200ResponseBodyApplicationJson = CreateTransactionResponse
 
 
 @dataclass

@@ -16,10 +16,10 @@ package com.formance.formance.model;
 import java.util.Objects;
 import java.util.Arrays;
 import com.formance.formance.model.AccountResponse;
+import com.formance.formance.model.CreateTransactionResponse;
 import com.formance.formance.model.DebitWalletResponse;
 import com.formance.formance.model.GetWalletResponse;
 import com.formance.formance.model.PaymentResponse;
-import com.formance.formance.model.TransactionResponse;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -38,11 +38,11 @@ public class WorkflowInstanceHistoryStageOutput {
 
   public static final String SERIALIZED_NAME_CREATE_TRANSACTION = "CreateTransaction";
   @SerializedName(SERIALIZED_NAME_CREATE_TRANSACTION)
-  private TransactionResponse createTransaction;
+  private CreateTransactionResponse createTransaction;
 
   public static final String SERIALIZED_NAME_REVERT_TRANSACTION = "RevertTransaction";
   @SerializedName(SERIALIZED_NAME_REVERT_TRANSACTION)
-  private TransactionResponse revertTransaction;
+  private CreateTransactionResponse revertTransaction;
 
   public static final String SERIALIZED_NAME_GET_PAYMENT = "GetPayment";
   @SerializedName(SERIALIZED_NAME_GET_PAYMENT)
@@ -81,7 +81,7 @@ public class WorkflowInstanceHistoryStageOutput {
   }
 
 
-  public WorkflowInstanceHistoryStageOutput createTransaction(TransactionResponse createTransaction) {
+  public WorkflowInstanceHistoryStageOutput createTransaction(CreateTransactionResponse createTransaction) {
     
     this.createTransaction = createTransaction;
     return this;
@@ -93,17 +93,17 @@ public class WorkflowInstanceHistoryStageOutput {
   **/
   @javax.annotation.Nullable
 
-  public TransactionResponse getCreateTransaction() {
+  public CreateTransactionResponse getCreateTransaction() {
     return createTransaction;
   }
 
 
-  public void setCreateTransaction(TransactionResponse createTransaction) {
+  public void setCreateTransaction(CreateTransactionResponse createTransaction) {
     this.createTransaction = createTransaction;
   }
 
 
-  public WorkflowInstanceHistoryStageOutput revertTransaction(TransactionResponse revertTransaction) {
+  public WorkflowInstanceHistoryStageOutput revertTransaction(CreateTransactionResponse revertTransaction) {
     
     this.revertTransaction = revertTransaction;
     return this;
@@ -115,12 +115,12 @@ public class WorkflowInstanceHistoryStageOutput {
   **/
   @javax.annotation.Nullable
 
-  public TransactionResponse getRevertTransaction() {
+  public CreateTransactionResponse getRevertTransaction() {
     return revertTransaction;
   }
 
 
-  public void setRevertTransaction(TransactionResponse revertTransaction) {
+  public void setRevertTransaction(CreateTransactionResponse revertTransaction) {
     this.revertTransaction = revertTransaction;
   }
 

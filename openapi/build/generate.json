@@ -1312,7 +1312,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TransactionResponse"
+                  "$ref": "#/components/schemas/CreateTransactionResponse"
                 }
               }
             }
@@ -1367,7 +1367,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TransactionResponse"
+                  "$ref": "#/components/schemas/GetTransactionResponse"
                 }
               }
             }
@@ -1481,7 +1481,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TransactionResponse"
+                  "$ref": "#/components/schemas/RevertTransactionResponse"
                 }
               }
             }
@@ -3949,7 +3949,7 @@
               "data": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Transaction"
+                  "$ref": "#/components/schemas/ExpandedTransaction"
                 }
               }
             }
@@ -4264,12 +4264,6 @@
             "type": "integer",
             "format": "int64",
             "minimum": 0
-          },
-          "preCommitVolumes": {
-            "$ref": "#/components/schemas/AggregatedVolumes"
-          },
-          "postCommitVolumes": {
-            "$ref": "#/components/schemas/AggregatedVolumes"
           }
         },
         "required": [
@@ -4277,6 +4271,28 @@
           "timestamp",
           "txid",
           "metadata"
+        ]
+      },
+      "ExpandedTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Transaction"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "preCommitVolumes": {
+                "$ref": "#/components/schemas/AggregatedVolumes"
+              },
+              "postCommitVolumes": {
+                "$ref": "#/components/schemas/AggregatedVolumes"
+              }
+            },
+            "required": [
+              "preCommitVolumes",
+              "postCommitVolumes"
+            ]
+          }
         ]
       },
       "PostTransaction": {
@@ -4380,10 +4396,24 @@
           "date"
         ]
       },
-      "TransactionResponse": {
+      "CreateTransactionResponse": {
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Transaction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ]
+      },
+      "RevertTransactionResponse": {
+        "$ref": "#/components/schemas/CreateTransactionResponse"
+      },
+      "GetTransactionResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ExpandedTransaction"
           }
         },
         "type": "object",
@@ -7068,10 +7098,10 @@
         "$ref": "#/components/schemas/AccountResponse"
       },
       "ActivityCreateTransactionOutput": {
-        "$ref": "#/components/schemas/TransactionResponse"
+        "$ref": "#/components/schemas/CreateTransactionResponse"
       },
       "ActivityRevertTransactionOutput": {
-        "$ref": "#/components/schemas/TransactionResponse"
+        "$ref": "#/components/schemas/RevertTransactionResponse"
       },
       "ActivityGetPaymentOutput": {
         "$ref": "#/components/schemas/PaymentResponse"

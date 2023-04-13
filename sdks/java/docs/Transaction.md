@@ -12,8 +12,6 @@
 |**reference** | **String** |  |  [optional] |
 |**metadata** | **Map&lt;String, String&gt;** |  |  |
 |**txid** | **Long** |  |  |
-|**preCommitVolumes** | **Map&lt;String, Map&lt;String, Volume&gt;&gt;** |  |  [optional] |
-|**postCommitVolumes** | **Map&lt;String, Map&lt;String, Volume&gt;&gt;** |  |  [optional] |
 
 
 

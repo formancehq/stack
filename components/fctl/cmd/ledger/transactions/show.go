@@ -45,7 +45,7 @@ func NewShowCommand() *cobra.Command {
 				return errors.Wrapf(err, "retrieving transaction")
 			}
 
-			return internal.PrintTransaction(cmd.OutOrStdout(), rsp.Data)
+			return internal.PrintExpandedTransaction(cmd.OutOrStdout(), rsp.Data)
 		}),
 	)
 }

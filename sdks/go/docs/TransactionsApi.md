@@ -167,7 +167,7 @@ Name | Type | Description  | Notes
 
 ## CreateTransaction
 
-> TransactionResponse CreateTransaction(ctx, ledger).PostTransaction(postTransaction).Preview(preview).Execute()
+> CreateTransactionResponse CreateTransaction(ctx, ledger).PostTransaction(postTransaction).Preview(preview).Execute()
 
 Create a new transaction to a ledger
 
@@ -195,7 +195,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.CreateTransaction``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `CreateTransaction`: TransactionResponse
+    // response from `CreateTransaction`: CreateTransactionResponse
     fmt.Fprintf(os.Stdout, "Response from `TransactionsApi.CreateTransaction`: %v\n", resp)
 }
 ```
@@ -221,7 +221,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**TransactionResponse**](TransactionResponse.md)
+[**CreateTransactionResponse**](CreateTransactionResponse.md)
 
 ### Authorization
 
@@ -239,7 +239,7 @@ Name | Type | Description  | Notes
 
 ## GetTransaction
 
-> TransactionResponse GetTransaction(ctx, ledger, txid).Execute()
+> GetTransactionResponse GetTransaction(ctx, ledger, txid).Execute()
 
 Get transaction from a ledger by its ID
 
@@ -266,7 +266,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.GetTransaction``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `GetTransaction`: TransactionResponse
+    // response from `GetTransaction`: GetTransactionResponse
     fmt.Fprintf(os.Stdout, "Response from `TransactionsApi.GetTransaction`: %v\n", resp)
 }
 ```
@@ -292,7 +292,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**TransactionResponse**](TransactionResponse.md)
+[**GetTransactionResponse**](GetTransactionResponse.md)
 
 ### Authorization
 
@@ -399,7 +399,7 @@ Name | Type | Description  | Notes
 
 ## RevertTransaction
 
-> TransactionResponse RevertTransaction(ctx, ledger, txid).Execute()
+> CreateTransactionResponse RevertTransaction(ctx, ledger, txid).Execute()
 
 Revert a ledger transaction by its ID
 
@@ -426,7 +426,7 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.RevertTransaction``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `RevertTransaction`: TransactionResponse
+    // response from `RevertTransaction`: CreateTransactionResponse
     fmt.Fprintf(os.Stdout, "Response from `TransactionsApi.RevertTransaction`: %v\n", resp)
 }
 ```
@@ -452,7 +452,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**TransactionResponse**](TransactionResponse.md)
+[**CreateTransactionResponse**](CreateTransactionResponse.md)
 
 ### Authorization
 

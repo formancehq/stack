@@ -356,10 +356,10 @@ func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTran
 		return nil, errors.Wrap(err, "listing transactions")
 	}
 
-	return newListResponse[sdk.Transaction, Transaction](response, func(tx sdk.Transaction) Transaction {
+	return newListResponse[sdk.ExpandedTransaction, Transaction](response, func(tx sdk.ExpandedTransaction) Transaction {
 		return Transaction{
-			Transaction: tx,
-			Ledger:      m.ledgerName,
+			ExpandedTransaction: tx,
+			Ledger:              m.ledgerName,
 		}
 	}), nil
 }
