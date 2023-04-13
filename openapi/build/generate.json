@@ -1374,8 +1374,10 @@
             "description": "Transaction ID.",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0,
+              "example": 1234
             }
           }
         ],
@@ -1427,8 +1429,10 @@
             "description": "Transaction ID.",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0,
+              "example": 1234
             }
           }
         ],
@@ -1484,8 +1488,10 @@
             "description": "Transaction ID.",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "integer",
+              "format": "int64",
+              "minimum": 0,
+              "example": 1234
             }
           }
         ],
@@ -4261,8 +4267,9 @@
             "$ref": "#/components/schemas/ledgerMetadata"
           },
           "txid": {
-            "type": "string",
-            "format": "uuid"
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
           },
           "preCommitVolumes": {
             "$ref": "#/components/schemas/AggregatedVolumes"

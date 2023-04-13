@@ -51,7 +51,7 @@ with Formance.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     path_params = {
         'ledger': "ledger001",
-        'txid': "txid_example",
+        'txid': 1234,
     }
     try:
         # Set the metadata of a transaction by its ID
@@ -64,7 +64,7 @@ with Formance.ApiClient(configuration) as api_client:
     # example passing only optional values
     path_params = {
         'ledger': "ledger001",
-        'txid': "txid_example",
+        'txid': 1234,
     }
     body = LedgerMetadata(
         key="key_example",
@@ -118,7 +118,7 @@ str,  | str,  |  |
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-str, uuid.UUID,  | str,  |  | value must be a uuid
+decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 
 ### Return Types, Responses
 
@@ -607,7 +607,7 @@ with Formance.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     path_params = {
         'ledger': "ledger001",
-        'txid': "txid_example",
+        'txid': 1234,
     }
     try:
         # Get transaction from a ledger by its ID
@@ -648,7 +648,7 @@ str,  | str,  |  |
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-str, uuid.UUID,  | str,  |  | value must be a uuid
+decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 
 ### Return Types, Responses
 
@@ -968,7 +968,7 @@ with Formance.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     path_params = {
         'ledger': "ledger001",
-        'txid': "txid_example",
+        'txid': 1234,
     }
     try:
         # Revert a ledger transaction by its ID
@@ -1009,7 +1009,7 @@ str,  | str,  |  |
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-str, uuid.UUID,  | str,  |  | value must be a uuid
+decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 
 ### Return Types, Responses
 
