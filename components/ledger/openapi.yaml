@@ -505,7 +505,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionResponse'
+                $ref: '#/components/schemas/CreateTransactionResponse'
         default:
           description: Error
           content:
@@ -542,7 +542,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionResponse'
+                $ref: '#/components/schemas/GetTransactionResponse'
         default:
           description: Error
           content:
@@ -619,7 +619,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionResponse'
+                $ref: '#/components/schemas/RevertTransactionResponse'
         default:
           description: Error
           content:
@@ -878,7 +878,7 @@ components:
             data:
               type: array
               items:
-                $ref: '#/components/schemas/Transaction'
+                $ref: '#/components/schemas/ExpandedTransaction'
 
     LogsCursorResponse:
       type: object
@@ -1086,15 +1086,24 @@ components:
           type: integer
           format: int64
           minimum: 0
-        preCommitVolumes:
-          $ref: '#/components/schemas/AggregatedVolumes'
-        postCommitVolumes:
-          $ref: '#/components/schemas/AggregatedVolumes'
       required:
-        - postings
-        - timestamp
-        - txid
-        - metadata
+      - postings
+      - timestamp
+      - txid
+      - metadata
+
+    ExpandedTransaction:
+      allOf:
+      - $ref: '#/components/schemas/Transaction'
+      - type: object
+        properties:
+          preCommitVolumes:
+            $ref: '#/components/schemas/AggregatedVolumes'
+          postCommitVolumes:
+            $ref: '#/components/schemas/AggregatedVolumes'
+        required:
+          - preCommitVolumes
+          - postCommitVolumes
 
     PostTransaction:
       type: object
@@ -1175,13 +1184,24 @@ components:
         - hash
         - date
 
-    TransactionResponse:
+    CreateTransactionResponse:
       properties:
         data:
           $ref: '#/components/schemas/Transaction'
       type: object
       required:
         - data
+
+    RevertTransactionResponse:
+      $ref: '#/components/schemas/CreateTransactionResponse'
+
+    GetTransactionResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/ExpandedTransaction'
+      type: object
+      required:
+      - data
 
     StatsResponse:
       properties:

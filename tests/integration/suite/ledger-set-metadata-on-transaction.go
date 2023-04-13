@@ -15,7 +15,7 @@ var _ = Given("some empty environment", func() {
 		var (
 			timestamp = time.Now().Round(time.Second).UTC()
 			err       error
-			rsp       *formance.TransactionResponse
+			rsp       *formance.CreateTransactionResponse
 		)
 		BeforeEach(func() {
 			// Create a transaction

@@ -16,7 +16,6 @@ package com.formance.formance.model;
 import java.util.Objects;
 import java.util.Arrays;
 import com.formance.formance.model.Posting;
-import com.formance.formance.model.Volume;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -53,14 +52,6 @@ public class Transaction {
   public static final String SERIALIZED_NAME_TXID = "txid";
   @SerializedName(SERIALIZED_NAME_TXID)
   private Long txid;
-
-  public static final String SERIALIZED_NAME_PRE_COMMIT_VOLUMES = "preCommitVolumes";
-  @SerializedName(SERIALIZED_NAME_PRE_COMMIT_VOLUMES)
-  private Map<String, Map<String, Volume>> preCommitVolumes = new HashMap<>();
-
-  public static final String SERIALIZED_NAME_POST_COMMIT_VOLUMES = "postCommitVolumes";
-  @SerializedName(SERIALIZED_NAME_POST_COMMIT_VOLUMES)
-  private Map<String, Map<String, Volume>> postCommitVolumes = new HashMap<>();
 
   public Transaction() {
   }
@@ -186,66 +177,6 @@ public class Transaction {
   }
 
 
-  public Transaction preCommitVolumes(Map<String, Map<String, Volume>> preCommitVolumes) {
-    
-    this.preCommitVolumes = preCommitVolumes;
-    return this;
-  }
-
-  public Transaction putPreCommitVolumesItem(String key, Map<String, Volume> preCommitVolumesItem) {
-    if (this.preCommitVolumes == null) {
-      this.preCommitVolumes = new HashMap<>();
-    }
-    this.preCommitVolumes.put(key, preCommitVolumesItem);
-    return this;
-  }
-
-   /**
-   * Get preCommitVolumes
-   * @return preCommitVolumes
-  **/
-  @javax.annotation.Nullable
-
-  public Map<String, Map<String, Volume>> getPreCommitVolumes() {
-    return preCommitVolumes;
-  }
-
-
-  public void setPreCommitVolumes(Map<String, Map<String, Volume>> preCommitVolumes) {
-    this.preCommitVolumes = preCommitVolumes;
-  }
-
-
-  public Transaction postCommitVolumes(Map<String, Map<String, Volume>> postCommitVolumes) {
-    
-    this.postCommitVolumes = postCommitVolumes;
-    return this;
-  }
-
-  public Transaction putPostCommitVolumesItem(String key, Map<String, Volume> postCommitVolumesItem) {
-    if (this.postCommitVolumes == null) {
-      this.postCommitVolumes = new HashMap<>();
-    }
-    this.postCommitVolumes.put(key, postCommitVolumesItem);
-    return this;
-  }
-
-   /**
-   * Get postCommitVolumes
-   * @return postCommitVolumes
-  **/
-  @javax.annotation.Nullable
-
-  public Map<String, Map<String, Volume>> getPostCommitVolumes() {
-    return postCommitVolumes;
-  }
-
-
-  public void setPostCommitVolumes(Map<String, Map<String, Volume>> postCommitVolumes) {
-    this.postCommitVolumes = postCommitVolumes;
-  }
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -259,14 +190,12 @@ public class Transaction {
         Objects.equals(this.postings, transaction.postings) &&
         Objects.equals(this.reference, transaction.reference) &&
         Objects.equals(this.metadata, transaction.metadata) &&
-        Objects.equals(this.txid, transaction.txid) &&
-        Objects.equals(this.preCommitVolumes, transaction.preCommitVolumes) &&
-        Objects.equals(this.postCommitVolumes, transaction.postCommitVolumes);
+        Objects.equals(this.txid, transaction.txid);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(timestamp, postings, reference, metadata, txid, preCommitVolumes, postCommitVolumes);
+    return Objects.hash(timestamp, postings, reference, metadata, txid);
   }
 
   @Override
@@ -278,8 +207,6 @@ public class Transaction {
     sb.append("    reference: ").append(toIndentedString(reference)).append("\n");
     sb.append("    metadata: ").append(toIndentedString(metadata)).append("\n");
     sb.append("    txid: ").append(toIndentedString(txid)).append("\n");
-    sb.append("    preCommitVolumes: ").append(toIndentedString(preCommitVolumes)).append("\n");
-    sb.append("    postCommitVolumes: ").append(toIndentedString(postCommitVolumes)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -24,14 +24,14 @@ type TransactionsCursorResponseCursor struct {
 	HasMore bool `json:"hasMore"`
 	Previous *string `json:"previous,omitempty"`
 	Next *string `json:"next,omitempty"`
-	Data []Transaction `json:"data"`
+	Data []ExpandedTransaction `json:"data"`
 }
 
 // NewTransactionsCursorResponseCursor instantiates a new TransactionsCursorResponseCursor object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTransactionsCursorResponseCursor(pageSize int64, hasMore bool, data []Transaction) *TransactionsCursorResponseCursor {
+func NewTransactionsCursorResponseCursor(pageSize int64, hasMore bool, data []ExpandedTransaction) *TransactionsCursorResponseCursor {
 	this := TransactionsCursorResponseCursor{}
 	this.PageSize = pageSize
 	this.HasMore = hasMore
@@ -160,9 +160,9 @@ func (o *TransactionsCursorResponseCursor) SetNext(v string) {
 }
 
 // GetData returns the Data field value
-func (o *TransactionsCursorResponseCursor) GetData() []Transaction {
+func (o *TransactionsCursorResponseCursor) GetData() []ExpandedTransaction {
 	if o == nil {
-		var ret []Transaction
+		var ret []ExpandedTransaction
 		return ret
 	}
 
@@ -171,7 +171,7 @@ func (o *TransactionsCursorResponseCursor) GetData() []Transaction {
 
 // GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *TransactionsCursorResponseCursor) GetDataOk() ([]Transaction, bool) {
+func (o *TransactionsCursorResponseCursor) GetDataOk() ([]ExpandedTransaction, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -179,7 +179,7 @@ func (o *TransactionsCursorResponseCursor) GetDataOk() ([]Transaction, bool) {
 }
 
 // SetData sets field value
-func (o *TransactionsCursorResponseCursor) SetData(v []Transaction) {
+func (o *TransactionsCursorResponseCursor) SetData(v []ExpandedTransaction) {
 	o.Data = v
 }
 

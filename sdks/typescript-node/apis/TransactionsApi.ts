@@ -10,9 +10,10 @@ import {canConsumeForm, isCodeInRange} from '../util';
 import {SecurityAuthentication} from '../auth/auth';
 
 
+import { CreateTransactionResponse } from '../models/CreateTransactionResponse';
 import { ErrorResponse } from '../models/ErrorResponse';
+import { GetTransactionResponse } from '../models/GetTransactionResponse';
 import { PostTransaction } from '../models/PostTransaction';
-import { TransactionResponse } from '../models/TransactionResponse';
 import { TransactionsCursorResponse } from '../models/TransactionsCursorResponse';
 
 /**
@@ -492,13 +493,13 @@ export class TransactionsApiResponseProcessor {
      * @params response Response returned by the server for a request to createTransaction
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async createTransaction(response: ResponseContext): Promise<TransactionResponse > {
+     public async createTransaction(response: ResponseContext): Promise<CreateTransactionResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: TransactionResponse = ObjectSerializer.deserialize(
+            const body: CreateTransactionResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "TransactionResponse", ""
-            ) as TransactionResponse;
+                "CreateTransactionResponse", ""
+            ) as CreateTransactionResponse;
             return body;
         }
         if (isCodeInRange("0", response.httpStatusCode)) {
@@ -511,10 +512,10 @@ export class TransactionsApiResponseProcessor {
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: TransactionResponse = ObjectSerializer.deserialize(
+            const body: CreateTransactionResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "TransactionResponse", ""
-            ) as TransactionResponse;
+                "CreateTransactionResponse", ""
+            ) as CreateTransactionResponse;
             return body;
         }
 
@@ -528,13 +529,13 @@ export class TransactionsApiResponseProcessor {
      * @params response Response returned by the server for a request to getTransaction
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async getTransaction(response: ResponseContext): Promise<TransactionResponse > {
+     public async getTransaction(response: ResponseContext): Promise<GetTransactionResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: TransactionResponse = ObjectSerializer.deserialize(
+            const body: GetTransactionResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "TransactionResponse", ""
-            ) as TransactionResponse;
+                "GetTransactionResponse", ""
+            ) as GetTransactionResponse;
             return body;
         }
         if (isCodeInRange("0", response.httpStatusCode)) {
@@ -547,10 +548,10 @@ export class TransactionsApiResponseProcessor {
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: TransactionResponse = ObjectSerializer.deserialize(
+            const body: GetTransactionResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "TransactionResponse", ""
-            ) as TransactionResponse;
+                "GetTransactionResponse", ""
+            ) as GetTransactionResponse;
             return body;
         }
 
@@ -600,13 +601,13 @@ export class TransactionsApiResponseProcessor {
      * @params response Response returned by the server for a request to revertTransaction
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async revertTransaction(response: ResponseContext): Promise<TransactionResponse > {
+     public async revertTransaction(response: ResponseContext): Promise<CreateTransactionResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: TransactionResponse = ObjectSerializer.deserialize(
+            const body: CreateTransactionResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "TransactionResponse", ""
-            ) as TransactionResponse;
+                "CreateTransactionResponse", ""
+            ) as CreateTransactionResponse;
             return body;
         }
         if (isCodeInRange("0", response.httpStatusCode)) {
@@ -619,10 +620,10 @@ export class TransactionsApiResponseProcessor {
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: TransactionResponse = ObjectSerializer.deserialize(
+            const body: CreateTransactionResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "TransactionResponse", ""
-            ) as TransactionResponse;
+                "CreateTransactionResponse", ""
+            ) as CreateTransactionResponse;
             return body;
         }
 

@@ -135,6 +135,8 @@ Formance/model/create_secret_request.py
 Formance/model/create_secret_request.pyi
 Formance/model/create_secret_response.py
 Formance/model/create_secret_response.pyi
+Formance/model/create_transaction_response.py
+Formance/model/create_transaction_response.pyi
 Formance/model/create_wallet_request.py
 Formance/model/create_wallet_request.pyi
 Formance/model/create_wallet_response.py
@@ -165,12 +167,16 @@ Formance/model/errors_enum.py
 Formance/model/errors_enum.pyi
 Formance/model/expanded_debit_hold.py
 Formance/model/expanded_debit_hold.pyi
+Formance/model/expanded_transaction.py
+Formance/model/expanded_transaction.pyi
 Formance/model/get_balance_response.py
 Formance/model/get_balance_response.pyi
 Formance/model/get_hold_response.py
 Formance/model/get_hold_response.pyi
 Formance/model/get_holds_response.py
 Formance/model/get_holds_response.pyi
+Formance/model/get_transaction_response.py
+Formance/model/get_transaction_response.pyi
 Formance/model/get_transactions_response.py
 Formance/model/get_transactions_response.pyi
 Formance/model/get_wallet_response.py
@@ -251,6 +257,8 @@ Formance/model/read_workflow_response.py
 Formance/model/read_workflow_response.pyi
 Formance/model/response.py
 Formance/model/response.pyi
+Formance/model/revert_transaction_response.py
+Formance/model/revert_transaction_response.pyi
 Formance/model/run_workflow_request.py
 Formance/model/run_workflow_request.pyi
 Formance/model/run_workflow_response.py
@@ -321,8 +329,6 @@ Formance/model/tasks_cursor.py
 Formance/model/tasks_cursor.pyi
 Formance/model/transaction.py
 Formance/model/transaction.pyi
-Formance/model/transaction_response.py
-Formance/model/transaction_response.pyi
 Formance/model/transactions_cursor_response.py
 Formance/model/transactions_cursor_response.pyi
 Formance/model/transfer_request.py
@@ -461,6 +467,7 @@ docs/models/CreateScopeRequest.md
 docs/models/CreateScopeResponse.md
 docs/models/CreateSecretRequest.md
 docs/models/CreateSecretResponse.md
+docs/models/CreateTransactionResponse.md
 docs/models/CreateWalletRequest.md
 docs/models/CreateWalletResponse.md
 docs/models/CreateWorkflowRequest.md
@@ -476,9 +483,11 @@ docs/models/Error.md
 docs/models/ErrorResponse.md
 docs/models/ErrorsEnum.md
 docs/models/ExpandedDebitHold.md
+docs/models/ExpandedTransaction.md
 docs/models/GetBalanceResponse.md
 docs/models/GetHoldResponse.md
 docs/models/GetHoldsResponse.md
+docs/models/GetTransactionResponse.md
 docs/models/GetTransactionsResponse.md
 docs/models/GetWalletResponse.md
 docs/models/GetWorkflowInstanceHistoryResponse.md
@@ -519,6 +528,7 @@ docs/models/ReadScopeResponse.md
 docs/models/ReadUserResponse.md
 docs/models/ReadWorkflowResponse.md
 docs/models/Response.md
+docs/models/RevertTransactionResponse.md
 docs/models/RunWorkflowRequest.md
 docs/models/RunWorkflowResponse.md
 docs/models/Scope.md
@@ -554,7 +564,6 @@ docs/models/TaskStripe.md
 docs/models/TaskWise.md
 docs/models/TasksCursor.md
 docs/models/Transaction.md
-docs/models/TransactionResponse.md
 docs/models/TransactionsCursorResponse.md
 docs/models/TransferRequest.md
 docs/models/TransferResponse.md

@@ -85,22 +85,12 @@ class Transaction(
                     format = 'int64'
                     inclusive_minimum = 0
             reference = schemas.StrSchema
-        
-            @staticmethod
-            def preCommitVolumes() -> typing.Type['AggregatedVolumes']:
-                return AggregatedVolumes
-        
-            @staticmethod
-            def postCommitVolumes() -> typing.Type['AggregatedVolumes']:
-                return AggregatedVolumes
             __annotations__ = {
                 "timestamp": timestamp,
                 "postings": postings,
                 "metadata": metadata,
                 "txid": txid,
                 "reference": reference,
-                "preCommitVolumes": preCommitVolumes,
-                "postCommitVolumes": postCommitVolumes,
             }
     
     metadata: 'LedgerMetadata'
@@ -124,15 +114,9 @@ class Transaction(
     def __getitem__(self, name: typing_extensions.Literal["reference"]) -> MetaOapg.properties.reference: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["preCommitVolumes"]) -> 'AggregatedVolumes': ...
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["postCommitVolumes"]) -> 'AggregatedVolumes': ...
-    
-    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["timestamp", "postings", "metadata", "txid", "reference", "preCommitVolumes", "postCommitVolumes", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["timestamp", "postings", "metadata", "txid", "reference", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -153,15 +137,9 @@ class Transaction(
     def get_item_oapg(self, name: typing_extensions.Literal["reference"]) -> typing.Union[MetaOapg.properties.reference, schemas.Unset]: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["preCommitVolumes"]) -> typing.Union['AggregatedVolumes', schemas.Unset]: ...
-    
-    @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["postCommitVolumes"]) -> typing.Union['AggregatedVolumes', schemas.Unset]: ...
-    
-    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["timestamp", "postings", "metadata", "txid", "reference", "preCommitVolumes", "postCommitVolumes", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["timestamp", "postings", "metadata", "txid", "reference", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -173,8 +151,6 @@ class Transaction(
         txid: typing.Union[MetaOapg.properties.txid, decimal.Decimal, int, ],
         timestamp: typing.Union[MetaOapg.properties.timestamp, str, datetime, ],
         reference: typing.Union[MetaOapg.properties.reference, str, schemas.Unset] = schemas.unset,
-        preCommitVolumes: typing.Union['AggregatedVolumes', schemas.Unset] = schemas.unset,
-        postCommitVolumes: typing.Union['AggregatedVolumes', schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'Transaction':
@@ -186,12 +162,9 @@ class Transaction(
             txid=txid,
             timestamp=timestamp,
             reference=reference,
-            preCommitVolumes=preCommitVolumes,
-            postCommitVolumes=postCommitVolumes,
             _configuration=_configuration,
             **kwargs,
         )
 
-from Formance.model.aggregated_volumes import AggregatedVolumes
 from Formance.model.ledger_metadata import LedgerMetadata
 from Formance.model.posting import Posting

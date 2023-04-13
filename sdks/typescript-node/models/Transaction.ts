@@ -11,7 +11,6 @@
  */
 
 import { Posting } from '../models/Posting';
-import { Volume } from '../models/Volume';
 import { HttpFile } from '../http/http';
 
 export class Transaction {
@@ -20,8 +19,6 @@ export class Transaction {
     'reference'?: string;
     'metadata': { [key: string]: string; };
     'txid': number;
-    'preCommitVolumes'?: { [key: string]: { [key: string]: Volume; }; };
-    'postCommitVolumes'?: { [key: string]: { [key: string]: Volume; }; };
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -55,18 +52,6 @@ export class Transaction {
             "baseName": "txid",
             "type": "number",
             "format": "int64"
-        },
-        {
-            "name": "preCommitVolumes",
-            "baseName": "preCommitVolumes",
-            "type": "{ [key: string]: { [key: string]: Volume; }; }",
-            "format": ""
-        },
-        {
-            "name": "postCommitVolumes",
-            "baseName": "postCommitVolumes",
-            "type": "{ [key: string]: { [key: string]: Volume; }; }",
-            "format": ""
         }    ];
 
     static getAttributeTypeMap() {

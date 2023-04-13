@@ -75,6 +75,7 @@ docs/CreateBalanceResponse.md
 docs/CreateClientResponse.md
 docs/CreateScopeResponse.md
 docs/CreateSecretResponse.md
+docs/CreateTransactionResponse.md
 docs/CreateWalletRequest.md
 docs/CreateWalletResponse.md
 docs/CreateWorkflowResponse.md
@@ -91,11 +92,14 @@ docs/ErrorResponse.md
 docs/ErrorsEnum.md
 docs/ExpandedDebitHold.md
 docs/ExpandedDebitHoldAllOf.md
+docs/ExpandedTransaction.md
+docs/ExpandedTransactionAllOf.md
 docs/GetBalanceResponse.md
 docs/GetHoldResponse.md
 docs/GetHoldsResponse.md
 docs/GetHoldsResponseCursor.md
 docs/GetHoldsResponseCursorAllOf.md
+docs/GetTransactionResponse.md
 docs/GetTransactionsResponse.md
 docs/GetTransactionsResponseCursor.md
 docs/GetTransactionsResponseCursorAllOf.md
@@ -203,7 +207,6 @@ docs/TasksCursorCursorAllOf.md
 docs/TasksCursorCursorAllOfDataInner.md
 docs/Total.md
 docs/Transaction.md
-docs/TransactionResponse.md
 docs/TransactionsApi.md
 docs/TransactionsCursorResponse.md
 docs/TransactionsCursorResponseCursor.md
@@ -289,6 +292,7 @@ model_create_balance_response.go
 model_create_client_response.go
 model_create_scope_response.go
 model_create_secret_response.go
+model_create_transaction_response.go
 model_create_wallet_request.go
 model_create_wallet_response.go
 model_create_workflow_response.go
@@ -304,11 +308,14 @@ model_error_response.go
 model_errors_enum.go
 model_expanded_debit_hold.go
 model_expanded_debit_hold_all_of.go
+model_expanded_transaction.go
+model_expanded_transaction_all_of.go
 model_get_balance_response.go
 model_get_hold_response.go
 model_get_holds_response.go
 model_get_holds_response_cursor.go
 model_get_holds_response_cursor_all_of.go
+model_get_transaction_response.go
 model_get_transactions_response.go
 model_get_transactions_response_cursor.go
 model_get_transactions_response_cursor_all_of.go
@@ -408,7 +415,6 @@ model_tasks_cursor_cursor_all_of.go
 model_tasks_cursor_cursor_all_of_data_inner.go
 model_total.go
 model_transaction.go
-model_transaction_response.go
 model_transactions_cursor_response.go
 model_transactions_cursor_response_cursor.go
 model_transfer_request.go

@@ -21,8 +21,8 @@ var _ MappedNullable = &WorkflowInstanceHistoryStageOutput{}
 // WorkflowInstanceHistoryStageOutput struct for WorkflowInstanceHistoryStageOutput
 type WorkflowInstanceHistoryStageOutput struct {
 	GetAccount *AccountResponse `json:"GetAccount,omitempty"`
-	CreateTransaction *TransactionResponse `json:"CreateTransaction,omitempty"`
-	RevertTransaction *TransactionResponse `json:"RevertTransaction,omitempty"`
+	CreateTransaction *CreateTransactionResponse `json:"CreateTransaction,omitempty"`
+	RevertTransaction *CreateTransactionResponse `json:"RevertTransaction,omitempty"`
 	GetPayment *PaymentResponse `json:"GetPayment,omitempty"`
 	DebitWallet *DebitWalletResponse `json:"DebitWallet,omitempty"`
 	GetWallet *GetWalletResponse `json:"GetWallet,omitempty"`
@@ -78,9 +78,9 @@ func (o *WorkflowInstanceHistoryStageOutput) SetGetAccount(v AccountResponse) {
 }
 
 // GetCreateTransaction returns the CreateTransaction field value if set, zero value otherwise.
-func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() TransactionResponse {
+func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() CreateTransactionResponse {
 	if o == nil || IsNil(o.CreateTransaction) {
-		var ret TransactionResponse
+		var ret CreateTransactionResponse
 		return ret
 	}
 	return *o.CreateTransaction
@@ -88,7 +88,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransaction() TransactionR
 
 // GetCreateTransactionOk returns a tuple with the CreateTransaction field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransactionOk() (*TransactionResponse, bool) {
+func (o *WorkflowInstanceHistoryStageOutput) GetCreateTransactionOk() (*CreateTransactionResponse, bool) {
 	if o == nil || IsNil(o.CreateTransaction) {
 		return nil, false
 	}
@@ -104,15 +104,15 @@ func (o *WorkflowInstanceHistoryStageOutput) HasCreateTransaction() bool {
 	return false
 }
 
-// SetCreateTransaction gets a reference to the given TransactionResponse and assigns it to the CreateTransaction field.
-func (o *WorkflowInstanceHistoryStageOutput) SetCreateTransaction(v TransactionResponse) {
+// SetCreateTransaction gets a reference to the given CreateTransactionResponse and assigns it to the CreateTransaction field.
+func (o *WorkflowInstanceHistoryStageOutput) SetCreateTransaction(v CreateTransactionResponse) {
 	o.CreateTransaction = &v
 }
 
 // GetRevertTransaction returns the RevertTransaction field value if set, zero value otherwise.
-func (o *WorkflowInstanceHistoryStageOutput) GetRevertTransaction() TransactionResponse {
+func (o *WorkflowInstanceHistoryStageOutput) GetRevertTransaction() CreateTransactionResponse {
 	if o == nil || IsNil(o.RevertTransaction) {
-		var ret TransactionResponse
+		var ret CreateTransactionResponse
 		return ret
 	}
 	return *o.RevertTransaction
@@ -120,7 +120,7 @@ func (o *WorkflowInstanceHistoryStageOutput) GetRevertTransaction() TransactionR
 
 // GetRevertTransactionOk returns a tuple with the RevertTransaction field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *WorkflowInstanceHistoryStageOutput) GetRevertTransactionOk() (*TransactionResponse, bool) {
+func (o *WorkflowInstanceHistoryStageOutput) GetRevertTransactionOk() (*CreateTransactionResponse, bool) {
 	if o == nil || IsNil(o.RevertTransaction) {
 		return nil, false
 	}
@@ -136,8 +136,8 @@ func (o *WorkflowInstanceHistoryStageOutput) HasRevertTransaction() bool {
 	return false
 }
 
-// SetRevertTransaction gets a reference to the given TransactionResponse and assigns it to the RevertTransaction field.
-func (o *WorkflowInstanceHistoryStageOutput) SetRevertTransaction(v TransactionResponse) {
+// SetRevertTransaction gets a reference to the given CreateTransactionResponse and assigns it to the RevertTransaction field.
+func (o *WorkflowInstanceHistoryStageOutput) SetRevertTransaction(v CreateTransactionResponse) {
 	o.RevertTransaction = &v
 }
 
