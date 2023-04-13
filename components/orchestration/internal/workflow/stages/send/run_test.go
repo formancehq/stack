@@ -145,7 +145,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -167,7 +167,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -252,7 +252,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -274,7 +274,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -296,7 +296,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -368,7 +368,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -390,7 +390,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -426,7 +426,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -464,7 +464,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -486,7 +486,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -578,7 +578,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -659,7 +659,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},
@@ -778,7 +778,7 @@ var (
 						},
 					},
 				},
-				Returns: []any{&sdk.TransactionResponse{
+				Returns: []any{&sdk.CreateTransactionResponse{
 					Data: sdk.Transaction{},
 				}, nil},
 			},

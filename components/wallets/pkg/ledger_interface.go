@@ -27,7 +27,7 @@ type Ledger interface {
 	GetAccount(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error)
 	ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error)
 	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error)
-	CreateTransaction(ctx context.Context, ledger string, postTransaction sdk.PostTransaction) (*sdk.TransactionResponse, error)
+	CreateTransaction(ctx context.Context, ledger string, postTransaction sdk.PostTransaction) (*sdk.CreateTransactionResponse, error)
 }
 
 type DefaultLedger struct {
@@ -61,7 +61,7 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, quer
 	return &ret.Cursor, nil
 }
 
-func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
 	//nolint:bodyclose
 	ret, _, err := d.client.TransactionsApi.
 		CreateTransaction(ctx, ledger).

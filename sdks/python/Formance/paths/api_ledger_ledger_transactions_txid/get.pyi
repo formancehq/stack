@@ -25,8 +25,8 @@ import frozendict  # noqa: F401
 
 from Formance import schemas  # noqa: F401
 
-from Formance.model.transaction_response import TransactionResponse
 from Formance.model.error_response import ErrorResponse
+from Formance.model.get_transaction_response import GetTransactionResponse
 
 # Path params
 LedgerSchema = schemas.StrSchema
@@ -67,7 +67,7 @@ request_path_txid = api_client.PathParameter(
     schema=TxidSchema,
     required=True,
 )
-SchemaFor200ResponseBodyApplicationJson = TransactionResponse
+SchemaFor200ResponseBodyApplicationJson = GetTransactionResponse
 
 
 @dataclass

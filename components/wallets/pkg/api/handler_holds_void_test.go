@@ -41,7 +41,7 @@ func TestHoldsVoid(t *testing.T) {
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, script sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+		WithCreateTransaction(func(ctx context.Context, name string, script sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
 			require.Equal(t, sdk.PostTransaction{
 				Script: &sdk.PostTransactionScript{
 					Plain: wallet.BuildCancelHoldScript("USD"),
@@ -51,7 +51,7 @@ func TestHoldsVoid(t *testing.T) {
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, script)
-			return &sdk.TransactionResponse{}, nil
+			return &sdk.CreateTransactionResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)

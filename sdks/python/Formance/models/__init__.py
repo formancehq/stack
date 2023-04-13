@@ -67,6 +67,7 @@ from Formance.model.create_scope_request import CreateScopeRequest
 from Formance.model.create_scope_response import CreateScopeResponse
 from Formance.model.create_secret_request import CreateSecretRequest
 from Formance.model.create_secret_response import CreateSecretResponse
+from Formance.model.create_transaction_response import CreateTransactionResponse
 from Formance.model.create_wallet_request import CreateWalletRequest
 from Formance.model.create_wallet_response import CreateWalletResponse
 from Formance.model.create_workflow_request import CreateWorkflowRequest
@@ -82,9 +83,11 @@ from Formance.model.error import Error
 from Formance.model.error_response import ErrorResponse
 from Formance.model.errors_enum import ErrorsEnum
 from Formance.model.expanded_debit_hold import ExpandedDebitHold
+from Formance.model.expanded_transaction import ExpandedTransaction
 from Formance.model.get_balance_response import GetBalanceResponse
 from Formance.model.get_hold_response import GetHoldResponse
 from Formance.model.get_holds_response import GetHoldsResponse
+from Formance.model.get_transaction_response import GetTransactionResponse
 from Formance.model.get_transactions_response import GetTransactionsResponse
 from Formance.model.get_wallet_response import GetWalletResponse
 from Formance.model.get_workflow_instance_history_response import GetWorkflowInstanceHistoryResponse
@@ -125,6 +128,7 @@ from Formance.model.read_scope_response import ReadScopeResponse
 from Formance.model.read_user_response import ReadUserResponse
 from Formance.model.read_workflow_response import ReadWorkflowResponse
 from Formance.model.response import Response
+from Formance.model.revert_transaction_response import RevertTransactionResponse
 from Formance.model.run_workflow_request import RunWorkflowRequest
 from Formance.model.run_workflow_response import RunWorkflowResponse
 from Formance.model.scope import Scope
@@ -161,7 +165,6 @@ from Formance.model.task_stripe import TaskStripe
 from Formance.model.task_wise import TaskWise
 from Formance.model.tasks_cursor import TasksCursor
 from Formance.model.transaction import Transaction
-from Formance.model.transaction_response import TransactionResponse
 from Formance.model.transactions_cursor_response import TransactionsCursorResponse
 from Formance.model.transfer_request import TransferRequest
 from Formance.model.transfer_response import TransferResponse

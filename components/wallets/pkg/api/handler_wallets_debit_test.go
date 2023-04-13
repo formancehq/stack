@@ -285,7 +285,7 @@ func TestWalletsDebit(t *testing.T) {
 						}},
 					}, nil
 				}),
-				WithCreateTransaction(func(ctx context.Context, ledger string, p sdk.PostTransaction) (*sdk.TransactionResponse, error) {
+				WithCreateTransaction(func(ctx context.Context, ledger string, p sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					postTransaction = p
 					if testCase.postTransactionError != nil {

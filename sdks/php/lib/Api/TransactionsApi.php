@@ -773,7 +773,7 @@ class TransactionsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\TransactionResponse|\Formance\Model\ErrorResponse
+     * @return \Formance\Model\CreateTransactionResponse|\Formance\Model\ErrorResponse
      */
     public function createTransaction($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
@@ -793,7 +793,7 @@ class TransactionsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\TransactionResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\CreateTransactionResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function createTransactionWithHttpInfo($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
@@ -836,17 +836,17 @@ class TransactionsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\TransactionResponse' === '\SplFileObject') {
+                    if ('\Formance\Model\CreateTransactionResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\TransactionResponse' !== 'string') {
+                        if ('\Formance\Model\CreateTransactionResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\TransactionResponse', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\CreateTransactionResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -867,7 +867,7 @@ class TransactionsApi
                     ];
             }
 
-            $returnType = '\Formance\Model\TransactionResponse';
+            $returnType = '\Formance\Model\CreateTransactionResponse';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -888,7 +888,7 @@ class TransactionsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\TransactionResponse',
+                        '\Formance\Model\CreateTransactionResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -944,7 +944,7 @@ class TransactionsApi
      */
     public function createTransactionAsyncWithHttpInfo($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
-        $returnType = '\Formance\Model\TransactionResponse';
+        $returnType = '\Formance\Model\CreateTransactionResponse';
         $request = $this->createTransactionRequest($ledger, $post_transaction, $preview, $contentType);
 
         return $this->client
@@ -1116,7 +1116,7 @@ class TransactionsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\TransactionResponse|\Formance\Model\ErrorResponse
+     * @return \Formance\Model\GetTransactionResponse|\Formance\Model\ErrorResponse
      */
     public function getTransaction($ledger, $txid, string $contentType = self::contentTypes['getTransaction'][0])
     {
@@ -1135,7 +1135,7 @@ class TransactionsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\TransactionResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\GetTransactionResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function getTransactionWithHttpInfo($ledger, $txid, string $contentType = self::contentTypes['getTransaction'][0])
     {
@@ -1178,17 +1178,17 @@ class TransactionsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\TransactionResponse' === '\SplFileObject') {
+                    if ('\Formance\Model\GetTransactionResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\TransactionResponse' !== 'string') {
+                        if ('\Formance\Model\GetTransactionResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\TransactionResponse', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\GetTransactionResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -1209,7 +1209,7 @@ class TransactionsApi
                     ];
             }
 
-            $returnType = '\Formance\Model\TransactionResponse';
+            $returnType = '\Formance\Model\GetTransactionResponse';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -1230,7 +1230,7 @@ class TransactionsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\TransactionResponse',
+                        '\Formance\Model\GetTransactionResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -1284,7 +1284,7 @@ class TransactionsApi
      */
     public function getTransactionAsyncWithHttpInfo($ledger, $txid, string $contentType = self::contentTypes['getTransaction'][0])
     {
-        $returnType = '\Formance\Model\TransactionResponse';
+        $returnType = '\Formance\Model\GetTransactionResponse';
         $request = $this->getTransactionRequest($ledger, $txid, $contentType);
 
         return $this->client
@@ -1900,7 +1900,7 @@ class TransactionsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return \Formance\Model\TransactionResponse|\Formance\Model\ErrorResponse
+     * @return \Formance\Model\CreateTransactionResponse|\Formance\Model\ErrorResponse
      */
     public function revertTransaction($ledger, $txid, string $contentType = self::contentTypes['revertTransaction'][0])
     {
@@ -1919,7 +1919,7 @@ class TransactionsApi
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of \Formance\Model\TransactionResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
+     * @return array of \Formance\Model\CreateTransactionResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
     public function revertTransactionWithHttpInfo($ledger, $txid, string $contentType = self::contentTypes['revertTransaction'][0])
     {
@@ -1962,17 +1962,17 @@ class TransactionsApi
 
             switch($statusCode) {
                 case 200:
-                    if ('\Formance\Model\TransactionResponse' === '\SplFileObject') {
+                    if ('\Formance\Model\CreateTransactionResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
                         $content = (string) $response->getBody();
-                        if ('\Formance\Model\TransactionResponse' !== 'string') {
+                        if ('\Formance\Model\CreateTransactionResponse' !== 'string') {
                             $content = json_decode($content);
                         }
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, '\Formance\Model\TransactionResponse', []),
+                        ObjectSerializer::deserialize($content, '\Formance\Model\CreateTransactionResponse', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
@@ -1993,7 +1993,7 @@ class TransactionsApi
                     ];
             }
 
-            $returnType = '\Formance\Model\TransactionResponse';
+            $returnType = '\Formance\Model\CreateTransactionResponse';
             if ($returnType === '\SplFileObject') {
                 $content = $response->getBody(); //stream goes to serializer
             } else {
@@ -2014,7 +2014,7 @@ class TransactionsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        '\Formance\Model\TransactionResponse',
+                        '\Formance\Model\CreateTransactionResponse',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -2068,7 +2068,7 @@ class TransactionsApi
      */
     public function revertTransactionAsyncWithHttpInfo($ledger, $txid, string $contentType = self::contentTypes['revertTransaction'][0])
     {
-        $returnType = '\Formance\Model\TransactionResponse';
+        $returnType = '\Formance\Model\CreateTransactionResponse';
         $request = $this->revertTransactionRequest($ledger, $txid, $contentType);
 
         return $this->client

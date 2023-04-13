@@ -15,7 +15,7 @@ package com.formance.formance.model;
 
 import java.util.Objects;
 import java.util.Arrays;
-import com.formance.formance.model.Transaction;
+import com.formance.formance.model.ExpandedTransaction;
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
@@ -48,7 +48,7 @@ public class TransactionsCursorResponseCursor {
 
   public static final String SERIALIZED_NAME_DATA = "data";
   @SerializedName(SERIALIZED_NAME_DATA)
-  private List<Transaction> data = new ArrayList<>();
+  private List<ExpandedTransaction> data = new ArrayList<>();
 
   public TransactionsCursorResponseCursor() {
   }
@@ -143,13 +143,13 @@ public class TransactionsCursorResponseCursor {
   }
 
 
-  public TransactionsCursorResponseCursor data(List<Transaction> data) {
+  public TransactionsCursorResponseCursor data(List<ExpandedTransaction> data) {
     
     this.data = data;
     return this;
   }
 
-  public TransactionsCursorResponseCursor addDataItem(Transaction dataItem) {
+  public TransactionsCursorResponseCursor addDataItem(ExpandedTransaction dataItem) {
     this.data.add(dataItem);
     return this;
   }
@@ -160,12 +160,12 @@ public class TransactionsCursorResponseCursor {
   **/
   @javax.annotation.Nonnull
 
-  public List<Transaction> getData() {
+  public List<ExpandedTransaction> getData() {
     return data;
   }
 
 
-  public void setData(List<Transaction> data) {
+  public void setData(List<ExpandedTransaction> data) {
     this.data = data;
   }
 

@@ -43,12 +43,12 @@ class WorkflowInstanceHistoryStageOutput(
                 return AccountResponse
         
             @staticmethod
-            def CreateTransaction() -> typing.Type['TransactionResponse']:
-                return TransactionResponse
+            def CreateTransaction() -> typing.Type['CreateTransactionResponse']:
+                return CreateTransactionResponse
         
             @staticmethod
-            def RevertTransaction() -> typing.Type['TransactionResponse']:
-                return TransactionResponse
+            def RevertTransaction() -> typing.Type['CreateTransactionResponse']:
+                return CreateTransactionResponse
         
             @staticmethod
             def GetPayment() -> typing.Type['PaymentResponse']:
@@ -74,10 +74,10 @@ class WorkflowInstanceHistoryStageOutput(
     def __getitem__(self, name: typing_extensions.Literal["GetAccount"]) -> 'AccountResponse': ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["CreateTransaction"]) -> 'TransactionResponse': ...
+    def __getitem__(self, name: typing_extensions.Literal["CreateTransaction"]) -> 'CreateTransactionResponse': ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["RevertTransaction"]) -> 'TransactionResponse': ...
+    def __getitem__(self, name: typing_extensions.Literal["RevertTransaction"]) -> 'CreateTransactionResponse': ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["GetPayment"]) -> 'PaymentResponse': ...
@@ -100,10 +100,10 @@ class WorkflowInstanceHistoryStageOutput(
     def get_item_oapg(self, name: typing_extensions.Literal["GetAccount"]) -> typing.Union['AccountResponse', schemas.Unset]: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["CreateTransaction"]) -> typing.Union['TransactionResponse', schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["CreateTransaction"]) -> typing.Union['CreateTransactionResponse', schemas.Unset]: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["RevertTransaction"]) -> typing.Union['TransactionResponse', schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["RevertTransaction"]) -> typing.Union['CreateTransactionResponse', schemas.Unset]: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["GetPayment"]) -> typing.Union['PaymentResponse', schemas.Unset]: ...
@@ -125,8 +125,8 @@ class WorkflowInstanceHistoryStageOutput(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
         GetAccount: typing.Union['AccountResponse', schemas.Unset] = schemas.unset,
-        CreateTransaction: typing.Union['TransactionResponse', schemas.Unset] = schemas.unset,
-        RevertTransaction: typing.Union['TransactionResponse', schemas.Unset] = schemas.unset,
+        CreateTransaction: typing.Union['CreateTransactionResponse', schemas.Unset] = schemas.unset,
+        RevertTransaction: typing.Union['CreateTransactionResponse', schemas.Unset] = schemas.unset,
         GetPayment: typing.Union['PaymentResponse', schemas.Unset] = schemas.unset,
         DebitWallet: typing.Union['DebitWalletResponse', schemas.Unset] = schemas.unset,
         GetWallet: typing.Union['GetWalletResponse', schemas.Unset] = schemas.unset,
@@ -147,7 +147,7 @@ class WorkflowInstanceHistoryStageOutput(
         )
 
 from Formance.model.account_response import AccountResponse
+from Formance.model.create_transaction_response import CreateTransactionResponse
 from Formance.model.debit_wallet_response import DebitWalletResponse
 from Formance.model.get_wallet_response import GetWalletResponse
 from Formance.model.payment_response import PaymentResponse
-from Formance.model.transaction_response import TransactionResponse

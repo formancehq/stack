@@ -9,8 +9,8 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **GetAccount** | [**AccountResponse**](AccountResponse.md) | [**AccountResponse**](AccountResponse.md) |  | [optional] 
-**CreateTransaction** | [**TransactionResponse**](TransactionResponse.md) | [**TransactionResponse**](TransactionResponse.md) |  | [optional] 
-**RevertTransaction** | [**TransactionResponse**](TransactionResponse.md) | [**TransactionResponse**](TransactionResponse.md) |  | [optional] 
+**CreateTransaction** | [**CreateTransactionResponse**](CreateTransactionResponse.md) | [**CreateTransactionResponse**](CreateTransactionResponse.md) |  | [optional] 
+**RevertTransaction** | [**CreateTransactionResponse**](CreateTransactionResponse.md) | [**CreateTransactionResponse**](CreateTransactionResponse.md) |  | [optional] 
 **GetPayment** | [**PaymentResponse**](PaymentResponse.md) | [**PaymentResponse**](PaymentResponse.md) |  | [optional] 
 **DebitWallet** | [**DebitWalletResponse**](DebitWalletResponse.md) | [**DebitWalletResponse**](DebitWalletResponse.md) |  | [optional] 
 **GetWallet** | [**GetWalletResponse**](GetWalletResponse.md) | [**GetWalletResponse**](GetWalletResponse.md) |  | [optional] 
