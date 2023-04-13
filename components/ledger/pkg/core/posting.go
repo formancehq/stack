@@ -16,11 +16,18 @@ type Posting struct {
 	Asset       string   `json:"asset"`
 }
 
-func (p Posting) hashString(buf *buffer) {
+func (p Posting) Marshal(buf *Buffer) {
 	buf.writeString(p.Source)
 	buf.writeString(p.Destination)
-	buf.write(p.Amount.Bytes())
+	buf.writeBigint(p.Amount)
 	buf.writeString(p.Asset)
+}
+
+func (p *Posting) Unmarshal(buf *Buffer) {
+	p.Source = buf.readString()
+	p.Destination = buf.readString()
+	p.Amount = buf.readBigint()
+	p.Asset = buf.readString()
 }
 
 func NewPosting(source string, destination string, asset string, amount *big.Int) Posting {

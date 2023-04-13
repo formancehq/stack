@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME".logs_ingestion (
 CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME".logs_v2 (
     id bigint,
     type smallint,
-    hash character varying(256),
+    hash bytea,
     date timestamp with time zone,
     data bytea,
     reference text,

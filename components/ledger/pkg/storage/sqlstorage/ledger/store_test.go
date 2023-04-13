@@ -350,9 +350,9 @@ func TestGetLastLog(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, lastLog)
 
-	require.Equal(t, tx1.Postings, lastLog.Data.(core.NewTransactionLogPayload).Transaction.Postings)
-	require.Equal(t, tx1.Reference, lastLog.Data.(core.NewTransactionLogPayload).Transaction.Reference)
-	require.Equal(t, tx1.Timestamp, lastLog.Data.(core.NewTransactionLogPayload).Transaction.Timestamp)
+	require.Equal(t, tx1.Postings, lastLog.Data.(*core.NewTransactionLogPayload).Transaction.Postings)
+	require.Equal(t, tx1.Reference, lastLog.Data.(*core.NewTransactionLogPayload).Transaction.Reference)
+	require.Equal(t, tx1.Timestamp, lastLog.Data.(*core.NewTransactionLogPayload).Transaction.Timestamp)
 }
 
 func TestGetLogs(t *testing.T) {
@@ -370,9 +370,9 @@ func TestGetLogs(t *testing.T) {
 
 	require.Equal(t, 3, len(cursor.Data))
 	require.Equal(t, uint64(2), cursor.Data[0].ID)
-	require.Equal(t, tx3.Postings, cursor.Data[0].Data.(core.NewTransactionLogPayload).Transaction.Postings)
-	require.Equal(t, tx3.Reference, cursor.Data[0].Data.(core.NewTransactionLogPayload).Transaction.Reference)
-	require.Equal(t, tx3.Timestamp, cursor.Data[0].Data.(core.NewTransactionLogPayload).Transaction.Timestamp)
+	require.Equal(t, tx3.Postings, cursor.Data[0].Data.(*core.NewTransactionLogPayload).Transaction.Postings)
+	require.Equal(t, tx3.Reference, cursor.Data[0].Data.(*core.NewTransactionLogPayload).Transaction.Reference)
+	require.Equal(t, tx3.Timestamp, cursor.Data[0].Data.(*core.NewTransactionLogPayload).Transaction.Timestamp)
 
 	cursor, err = store.GetLogs(context.Background(), storage.NewLogsQuery().WithPageSize(1))
 	require.NoError(t, err)

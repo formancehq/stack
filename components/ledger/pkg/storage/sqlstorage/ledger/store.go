@@ -31,6 +31,9 @@ type Store struct {
 
 	logsBatchWorker *worker.Worker[*core.Log]
 
+	logsWriteBuffer          *core.Buffer
+	previousLogsWriterBuffer *core.Buffer
+
 	isInitialized bool
 }
 
@@ -137,10 +140,12 @@ func NewStore(
 	storeConfig StoreConfig,
 ) (*Store, error) {
 	s := &Store{
-		schema:      schema,
-		onClose:     onClose,
-		onDelete:    onDelete,
-		storeConfig: storeConfig,
+		schema:                   schema,
+		storeConfig:              storeConfig,
+		onClose:                  onClose,
+		onDelete:                 onDelete,
+		logsWriteBuffer:          core.NewBuffer(make([]byte, 0)),
+		previousLogsWriterBuffer: core.NewBuffer(make([]byte, 0)),
 	}
 
 	logsBatchWorker := worker.NewWorker(s.batchLogs, storeConfig.StoreWorkerConfig)

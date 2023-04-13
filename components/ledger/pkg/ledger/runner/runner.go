@@ -210,10 +210,10 @@ func New(store Store, locker *lock.Locker, cache Cache, compiler *numscript.Comp
 	)
 	if err == nil {
 		switch payload := log.Data.(type) {
-		case core.NewTransactionLogPayload:
+		case *core.NewTransactionLogPayload:
 			lastTxID = &payload.Transaction.ID
 			lastTransactionDate = payload.Transaction.Timestamp
-		case core.RevertedTransactionLogPayload:
+		case *core.RevertedTransactionLogPayload:
 			lastTxID = &payload.RevertTransaction.ID
 			lastTransactionDate = payload.RevertTransaction.Timestamp
 		default:

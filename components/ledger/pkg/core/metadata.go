@@ -53,16 +53,24 @@ func IsReverted(m metadata.Metadata) bool {
 	return false
 }
 
-func hashStringMetadata(buf *buffer, m metadata.Metadata) {
-	if len(m) == 0 {
+func marshalMetadata(buf *Buffer, m metadata.Metadata) {
+	keysOfAccount := collectionutils.Keys(m)
+	buf.writeUInt64(uint64(len(keysOfAccount)))
+	if len(keysOfAccount) == 0 {
 		return
 	}
-	keysOfAccount := collectionutils.Keys(m)
 	if len(m) > 1 {
 		sort.Strings(keysOfAccount)
 	}
 	for _, key := range keysOfAccount {
 		buf.writeString(key)
 		buf.writeString(m[key])
+	}
+}
+
+func unmarshalMetadata(buf *Buffer, m metadata.Metadata) {
+	numberOfEntries := buf.readUInt64()
+	for i := uint64(0); i < numberOfEntries; i++ {
+		m[buf.readString()] = buf.readString()
 	}
 }

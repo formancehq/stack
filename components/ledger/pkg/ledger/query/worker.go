@@ -251,7 +251,7 @@ func buildData(
 	for _, log := range logs {
 		switch log.Type {
 		case core.NewTransactionLogType:
-			payload := log.Data.(core.NewTransactionLogPayload)
+			payload := log.Data.(*core.NewTransactionLogPayload)
 			txVolumeAggregator, err := volumeAggregator.NextTxWithPostings(ctx, payload.Transaction.Postings...)
 			if err != nil {
 				return nil, err
@@ -291,7 +291,7 @@ func buildData(
 			})
 
 		case core.SetMetadataLogType:
-			setMetadata := log.Data.(core.SetMetadataLogPayload)
+			setMetadata := log.Data.(*core.SetMetadataLogPayload)
 			switch setMetadata.TargetType {
 			case core.MetaTargetTypeAccount:
 				addr := setMetadata.TargetID.(string)
@@ -319,7 +319,7 @@ func buildData(
 			})
 
 		case core.RevertedTransactionLogType:
-			payload := log.Data.(core.RevertedTransactionLogPayload)
+			payload := log.Data.(*core.RevertedTransactionLogPayload)
 			id := payload.RevertedTransactionID
 			metadata := core.RevertedMetadata(payload.RevertTransaction.ID)
 			if m, ok := transactionsToUpdate[id]; !ok {

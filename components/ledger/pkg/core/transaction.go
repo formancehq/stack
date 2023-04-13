@@ -41,12 +41,26 @@ func (t *TransactionData) Reverse() TransactionData {
 	return ret
 }
 
-func (d TransactionData) hashString(buf *buffer) {
+func (d TransactionData) Marshal(buf *Buffer) {
 	buf.writeString(d.Reference)
-	buf.writeUInt64(uint64(d.Timestamp.UnixNano()))
-	hashStringMetadata(buf, d.Metadata)
+	buf.writeDate(d.Timestamp)
+	marshalMetadata(buf, d.Metadata)
+	buf.writeUInt64(uint64(len(d.Postings)))
 	for _, posting := range d.Postings {
-		posting.hashString(buf)
+		posting.Marshal(buf)
+	}
+}
+
+func (d *TransactionData) Unmarshal(buf *Buffer) {
+	d.Reference = buf.readString()
+	d.Timestamp = buf.readDate()
+	d.Metadata = metadata.Metadata{}
+	unmarshalMetadata(buf, d.Metadata)
+	numberOfPostings := buf.readUInt64()
+	for i := uint64(0); i < numberOfPostings; i++ {
+		p := Posting{}
+		p.Unmarshal(buf)
+		d.Postings = append(d.Postings, p)
 	}
 }
 
@@ -85,9 +99,14 @@ func (t Transaction) WithMetadata(m metadata.Metadata) Transaction {
 	return t
 }
 
-func (t Transaction) hashString(buf *buffer) {
+func (t Transaction) Marshal(buf *Buffer) {
 	buf.writeUInt64(t.ID)
-	t.TransactionData.hashString(buf)
+	t.TransactionData.Marshal(buf)
+}
+
+func (t *Transaction) Unmarshal(buf *Buffer) {
+	t.ID = buf.readUInt64()
+	t.TransactionData.Unmarshal(buf)
 }
 
 func NewTransaction() Transaction {

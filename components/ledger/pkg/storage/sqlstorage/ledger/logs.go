@@ -2,9 +2,8 @@ package ledger
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
-	"database/sql/driver"
-	"encoding/json"
 
 	"github.com/formancehq/ledger/pkg/core"
 	"github.com/formancehq/ledger/pkg/storage"
@@ -26,7 +25,7 @@ type LogsV2 struct {
 
 	ID        uint64    `bun:"id,unique,type:bigint"`
 	Type      int16     `bun:"type,type:smallint"`
-	Hash      []byte    `bun:"hash,type:varchar(256)"`
+	Hash      []byte    `bun:"hash,type:bytea"`
 	Date      core.Time `bun:"date,type:timestamptz"`
 	Data      []byte    `bun:"data,type:bytea"`
 	Reference string    `bun:"reference,type:text"`
@@ -39,19 +38,27 @@ type LogsIngestion struct {
 	LogId    uint64 `bun:"log_id,type:bigint"`
 }
 
-type RawMessage json.RawMessage
+func ComputeHash(previous, next *core.Buffer) []byte {
 
-func (j RawMessage) Value() (driver.Value, error) {
-	if j == nil {
-		return nil, nil
+	h := sha256.New()
+	_, err := h.Write(previous.Bytes())
+	if err != nil {
+		panic(err)
 	}
-	return string(j), nil
+
+	_, err = h.Write(next.Bytes())
+	if err != nil {
+		panic(err)
+	}
+
+	return h.Sum(nil)
 }
 
 func (s *Store) batchLogs(ctx context.Context, logs []*core.Log) error {
 	recordMetrics := s.instrumentalized(ctx, "batch_logs")
 	defer recordMetrics()
 
+	// TODO(gfyrag): keep in memory
 	previousLog, err := s.GetLastLog(ctx)
 	if err != nil && !storage.IsNotFoundError(err) {
 		return errors.Wrap(err, "reading last log")
@@ -74,28 +81,28 @@ func (s *Store) batchLogs(ctx context.Context, logs []*core.Log) error {
 
 	ls := make([]LogsV2, len(logs))
 	for i, l := range logs {
-		data, err := json.Marshal(l.Data)
-		if err != nil {
-			return errors.Wrap(err, "marshaling log data")
-		}
+		s.previousLogsWriterBuffer, s.logsWriteBuffer = s.logsWriteBuffer, s.previousLogsWriterBuffer
+		s.logsWriteBuffer.Reset()
+		l.Data.Marshal(s.logsWriteBuffer)
 
 		id := uint64(0)
 		if previousLog != nil {
 			id = previousLog.ID + 1
 		}
 		logs[i].ID = id
-		logs[i].ComputeHash(previousLog)
+		logs[i].Hash = ComputeHash(s.previousLogsWriterBuffer, s.logsWriteBuffer)
 
 		ls[i].ID = id
 		ls[i].Type = int16(l.Type)
 		ls[i].Hash = logs[i].Hash
 		ls[i].Date = l.Date
-		ls[i].Data = data
+		ls[i].Data = s.logsWriteBuffer.Bytes()
 		ls[i].Reference = l.Reference
 
 		previousLog = logs[i]
-		_, err = stmt.Exec(ls[i].ID, ls[i].Type, ls[i].Hash, ls[i].Date, RawMessage(ls[i].Data), ls[i].Reference)
+		_, err = stmt.Exec(ls[i].ID, ls[i].Type, ls[i].Hash, ls[i].Date, ls[i].Data, ls[i].Reference)
 		if err != nil {
+
 			return storageerrors.PostgresError(err)
 		}
 	}
@@ -141,7 +148,7 @@ func (s *Store) GetLastLog(ctx context.Context) (*core.Log, error) {
 		return nil, storageerrors.PostgresError(err)
 	}
 
-	payload, err := core.HydrateLog(core.LogType(raw.Type), raw.Data)
+	payload, err := core.HydrateLogFromRaw(core.LogType(raw.Type), raw.Data)
 	if err != nil {
 		return nil, errors.Wrap(err, "hydrating log data")
 	}
@@ -175,7 +182,7 @@ func (s *Store) GetLogs(ctx context.Context, q storage.LogsQuery) (*api.Cursor[c
 				return 0, err
 			}
 
-			payload, err := core.HydrateLog(core.LogType(raw.Type), raw.Data)
+			payload, err := core.HydrateLogFromRaw(core.LogType(raw.Type), raw.Data)
 			if err != nil {
 				return 0, errors.Wrap(err, "hydrating log data")
 			}
@@ -263,7 +270,7 @@ func (s *Store) readLogsRange(ctx context.Context, exec interface {
 
 	logs := make([]core.Log, len(rawLogs))
 	for index, rawLog := range rawLogs {
-		payload, err := core.HydrateLog(core.LogType(rawLog.Type), rawLog.Data)
+		payload, err := core.HydrateLogFromJSON(core.LogType(rawLog.Type), rawLog.Data)
 		if err != nil {
 			return nil, errors.Wrap(err, "hydrating log data")
 		}
@@ -317,7 +324,7 @@ func (s *Store) ReadLogWithReference(ctx context.Context, reference string) (*co
 		return nil, storageerrors.PostgresError(err)
 	}
 
-	payload, err := core.HydrateLog(core.LogType(raw.Type), raw.Data)
+	payload, err := core.HydrateLogFromJSON(core.LogType(raw.Type), raw.Data)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to hydrate log")
 	}
@@ -352,7 +359,7 @@ func (s *Store) ReadLastLogWithType(ctx context.Context, logTypes ...core.LogTyp
 		return nil, storageerrors.PostgresError(err)
 	}
 
-	payload, err := core.HydrateLog(core.LogType(raw.Type), raw.Data)
+	payload, err := core.HydrateLogFromJSON(core.LogType(raw.Type), raw.Data)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to hydrate log")
 	}

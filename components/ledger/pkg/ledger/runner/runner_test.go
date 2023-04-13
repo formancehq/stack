@@ -269,7 +269,7 @@ func TestExecuteScript(t *testing.T) {
 				for ind := range tc.expectedLogs {
 					expectedLog := tc.expectedLogs[ind]
 					switch v := expectedLog.Data.(type) {
-					case core.NewTransactionLogPayload:
+					case *core.NewTransactionLogPayload:
 						v.Transaction.Timestamp = now
 						expectedLog.Data = v
 					}
