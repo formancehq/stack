@@ -74,7 +74,16 @@ class Transaction(
             @staticmethod
             def metadata() -> typing.Type['LedgerMetadata']:
                 return LedgerMetadata
-            txid = schemas.UUIDSchema
+            
+            
+            class txid(
+                schemas.Int64Schema
+            ):
+            
+            
+                class MetaOapg:
+                    format = 'int64'
+                    inclusive_minimum = 0
             reference = schemas.StrSchema
         
             @staticmethod
@@ -161,7 +170,7 @@ class Transaction(
         *_args: typing.Union[dict, frozendict.frozendict, ],
         metadata: 'LedgerMetadata',
         postings: typing.Union[MetaOapg.properties.postings, list, tuple, ],
-        txid: typing.Union[MetaOapg.properties.txid, str, uuid.UUID, ],
+        txid: typing.Union[MetaOapg.properties.txid, decimal.Decimal, int, ],
         timestamp: typing.Union[MetaOapg.properties.timestamp, str, datetime, ],
         reference: typing.Union[MetaOapg.properties.reference, str, schemas.Unset] = schemas.unset,
         preCommitVolumes: typing.Union['AggregatedVolumes', schemas.Unset] = schemas.unset,

@@ -19,7 +19,7 @@ export class Transaction {
     'postings': Array<Posting>;
     'reference'?: string;
     'metadata': { [key: string]: string; };
-    'txid': string;
+    'txid': number;
     'preCommitVolumes'?: { [key: string]: { [key: string]: Volume; }; };
     'postCommitVolumes'?: { [key: string]: { [key: string]: Volume; }; };
 
@@ -53,8 +53,8 @@ export class Transaction {
         {
             "name": "txid",
             "baseName": "txid",
-            "type": "string",
-            "format": "uuid"
+            "type": "number",
+            "format": "int64"
         },
         {
             "name": "preCommitVolumes",

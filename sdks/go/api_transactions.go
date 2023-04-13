@@ -32,7 +32,7 @@ type TransactionsApi interface {
 	@param txid Transaction ID.
 	@return ApiAddMetadataOnTransactionRequest
 	*/
-	AddMetadataOnTransaction(ctx context.Context, ledger string, txid string) ApiAddMetadataOnTransactionRequest
+	AddMetadataOnTransaction(ctx context.Context, ledger string, txid int64) ApiAddMetadataOnTransactionRequest
 
 	// AddMetadataOnTransactionExecute executes the request
 	AddMetadataOnTransactionExecute(r ApiAddMetadataOnTransactionRequest) (*http.Response, error)
@@ -70,7 +70,7 @@ type TransactionsApi interface {
 	@param txid Transaction ID.
 	@return ApiGetTransactionRequest
 	*/
-	GetTransaction(ctx context.Context, ledger string, txid string) ApiGetTransactionRequest
+	GetTransaction(ctx context.Context, ledger string, txid int64) ApiGetTransactionRequest
 
 	// GetTransactionExecute executes the request
 	//  @return TransactionResponse
@@ -99,7 +99,7 @@ type TransactionsApi interface {
 	@param txid Transaction ID.
 	@return ApiRevertTransactionRequest
 	*/
-	RevertTransaction(ctx context.Context, ledger string, txid string) ApiRevertTransactionRequest
+	RevertTransaction(ctx context.Context, ledger string, txid int64) ApiRevertTransactionRequest
 
 	// RevertTransactionExecute executes the request
 	//  @return TransactionResponse
@@ -113,7 +113,7 @@ type ApiAddMetadataOnTransactionRequest struct {
 	ctx context.Context
 	ApiService TransactionsApi
 	ledger string
-	txid string
+	txid int64
 	requestBody *map[string]string
 }
 
@@ -135,7 +135,7 @@ AddMetadataOnTransaction Set the metadata of a transaction by its ID
  @param txid Transaction ID.
  @return ApiAddMetadataOnTransactionRequest
 */
-func (a *TransactionsApiService) AddMetadataOnTransaction(ctx context.Context, ledger string, txid string) ApiAddMetadataOnTransactionRequest {
+func (a *TransactionsApiService) AddMetadataOnTransaction(ctx context.Context, ledger string, txid int64) ApiAddMetadataOnTransactionRequest {
 	return ApiAddMetadataOnTransactionRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -164,6 +164,9 @@ func (a *TransactionsApiService) AddMetadataOnTransactionExecute(r ApiAddMetadat
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.txid < 0 {
+		return nil, reportError("txid must be greater than 0")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
@@ -523,7 +526,7 @@ type ApiGetTransactionRequest struct {
 	ctx context.Context
 	ApiService TransactionsApi
 	ledger string
-	txid string
+	txid int64
 }
 
 func (r ApiGetTransactionRequest) Execute() (*TransactionResponse, *http.Response, error) {
@@ -538,7 +541,7 @@ GetTransaction Get transaction from a ledger by its ID
  @param txid Transaction ID.
  @return ApiGetTransactionRequest
 */
-func (a *TransactionsApiService) GetTransaction(ctx context.Context, ledger string, txid string) ApiGetTransactionRequest {
+func (a *TransactionsApiService) GetTransaction(ctx context.Context, ledger string, txid int64) ApiGetTransactionRequest {
 	return ApiGetTransactionRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -569,6 +572,9 @@ func (a *TransactionsApiService) GetTransactionExecute(r ApiGetTransactionReques
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.txid < 0 {
+		return localVarReturnValue, nil, reportError("txid must be greater than 0")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -847,7 +853,7 @@ type ApiRevertTransactionRequest struct {
 	ctx context.Context
 	ApiService TransactionsApi
 	ledger string
-	txid string
+	txid int64
 }
 
 func (r ApiRevertTransactionRequest) Execute() (*TransactionResponse, *http.Response, error) {
@@ -862,7 +868,7 @@ RevertTransaction Revert a ledger transaction by its ID
  @param txid Transaction ID.
  @return ApiRevertTransactionRequest
 */
-func (a *TransactionsApiService) RevertTransaction(ctx context.Context, ledger string, txid string) ApiRevertTransactionRequest {
+func (a *TransactionsApiService) RevertTransaction(ctx context.Context, ledger string, txid int64) ApiRevertTransactionRequest {
 	return ApiRevertTransactionRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -893,6 +899,9 @@ func (a *TransactionsApiService) RevertTransactionExecute(r ApiRevertTransaction
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.txid < 0 {
+		return localVarReturnValue, nil, reportError("txid must be greater than 0")
+	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

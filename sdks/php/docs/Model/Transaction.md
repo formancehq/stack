@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **postings** | [**\Formance\Model\Posting[]**](Posting.md) |  |
 **reference** | **string** |  | [optional]
 **metadata** | **array<string,string>** |  |
-**txid** | **string** |  |
+**txid** | **int** |  |
 **pre_commit_volumes** | **array<string,array>** |  | [optional]
 **post_commit_volumes** | **array<string,array>** |  | [optional]
 
