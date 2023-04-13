@@ -209,7 +209,7 @@ func (r ApiCountAccountsRequest) Address(address string) ApiCountAccountsRequest
 	return r
 }
 
-// Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
+// Filter accounts by metadata key value pairs. The filter can be used like this metadata[key]&#x3D;value1&amp;metadata[a.nested.key]&#x3D;value2
 func (r ApiCountAccountsRequest) Metadata(metadata map[string]interface{}) ApiCountAccountsRequest {
 	r.metadata = &metadata
 	return r

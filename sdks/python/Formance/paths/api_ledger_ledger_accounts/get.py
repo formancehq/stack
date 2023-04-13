@@ -56,16 +56,7 @@ class PageSizeSchema(
 AfterSchema = schemas.StrSchema
 AddressSchema = schemas.StrSchema
 MetadataSchema = schemas.DictSchema
-
-
-class BalanceSchema(
-    schemas.Int64Schema
-):
-
-
-    class MetaOapg:
-        format = 'int64'
-        inclusive_minimum = 0
+BalanceSchema = schemas.Int64Schema
 
 
 class BalanceOperatorSchema(
