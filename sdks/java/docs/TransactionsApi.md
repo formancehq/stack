@@ -41,7 +41,7 @@ public class Example {
 
         TransactionsApi apiInstance = new TransactionsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
-        UUID txid = UUID.randomUUID(); // UUID | Transaction ID.
+        Long txid = 1234L; // Long | Transaction ID.
         Map<String, String> requestBody = new HashMap(); // Map<String, String> | metadata
         try {
             apiInstance.addMetadataOnTransaction(ledger, txid, requestBody);
@@ -62,7 +62,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
-| **txid** | **UUID**| Transaction ID. | |
+| **txid** | **Long**| Transaction ID. | |
 | **requestBody** | [**Map&lt;String, String&gt;**](String.md)| metadata | [optional] |
 
 ### Return type
@@ -271,7 +271,7 @@ public class Example {
 
         TransactionsApi apiInstance = new TransactionsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
-        UUID txid = UUID.randomUUID(); // UUID | Transaction ID.
+        Long txid = 1234L; // Long | Transaction ID.
         try {
             TransactionResponse result = apiInstance.getTransaction(ledger, txid);
             System.out.println(result);
@@ -292,7 +292,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
-| **txid** | **UUID**| Transaction ID. | |
+| **txid** | **Long**| Transaction ID. | |
 
 ### Return type
 
@@ -435,7 +435,7 @@ public class Example {
 
         TransactionsApi apiInstance = new TransactionsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
-        UUID txid = UUID.randomUUID(); // UUID | Transaction ID.
+        Long txid = 1234L; // Long | Transaction ID.
         try {
             TransactionResponse result = apiInstance.revertTransaction(ledger, txid);
             System.out.println(result);
@@ -456,7 +456,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
-| **txid** | **UUID**| Transaction ID. | |
+| **txid** | **Long**| Transaction ID. | |
 
 ### Return type
 

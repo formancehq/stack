@@ -41,7 +41,11 @@ func NewSetMetadataCommand() *cobra.Command {
 				return err
 			}
 
-			transactionID := args[0]
+			transactionID, err := internal.TransactionIDOrLastN(cmd.Context(), ledgerClient,
+				fctl.GetString(cmd, internal.LedgerFlag), args[0])
+			if err != nil {
+				return err
+			}
 
 			if !fctl.CheckStackApprobation(cmd, stack, "You are about to set a metadata on transaction %d", transactionID) {
 				return fctl.ErrMissingApproval
