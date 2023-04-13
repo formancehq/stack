@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Transaction
@@ -53,7 +52,7 @@ public class Transaction {
 
   public static final String SERIALIZED_NAME_TXID = "txid";
   @SerializedName(SERIALIZED_NAME_TXID)
-  private UUID txid;
+  private Long txid;
 
   public static final String SERIALIZED_NAME_PRE_COMMIT_VOLUMES = "preCommitVolumes";
   @SerializedName(SERIALIZED_NAME_PRE_COMMIT_VOLUMES)
@@ -164,7 +163,7 @@ public class Transaction {
   }
 
 
-  public Transaction txid(UUID txid) {
+  public Transaction txid(Long txid) {
     
     this.txid = txid;
     return this;
@@ -172,16 +171,17 @@ public class Transaction {
 
    /**
    * Get txid
+   * minimum: 0
    * @return txid
   **/
   @javax.annotation.Nonnull
 
-  public UUID getTxid() {
+  public Long getTxid() {
     return txid;
   }
 
 
-  public void setTxid(UUID txid) {
+  public void setTxid(Long txid) {
     this.txid = txid;
   }
 

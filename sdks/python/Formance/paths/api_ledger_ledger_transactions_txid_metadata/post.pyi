@@ -30,12 +30,17 @@ from Formance.model.ledger_metadata import LedgerMetadata
 
 # Path params
 LedgerSchema = schemas.StrSchema
-TxidSchema = schemas.UUIDSchema
+
+
+class TxidSchema(
+    schemas.Int64Schema
+):
+    pass
 RequestRequiredPathParams = typing_extensions.TypedDict(
     'RequestRequiredPathParams',
     {
         'ledger': typing.Union[LedgerSchema, str, ],
-        'txid': typing.Union[TxidSchema, str, uuid.UUID, ],
+        'txid': typing.Union[TxidSchema, decimal.Decimal, int, ],
     }
 )
 RequestOptionalPathParams = typing_extensions.TypedDict(

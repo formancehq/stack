@@ -39,8 +39,12 @@ func NewRevertCommand() *cobra.Command {
 			}
 
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
+			txId, err := internal.TransactionIDOrLastN(cmd.Context(), ledgerClient, ledger, args[0])
+			if err != nil {
+				return err
+			}
 
-			rsp, _, err := ledgerClient.TransactionsApi.RevertTransaction(cmd.Context(), ledger, args[0]).Execute()
+			rsp, _, err := ledgerClient.TransactionsApi.RevertTransaction(cmd.Context(), ledger, txId).Execute()
 			if err != nil {
 				return errors.Wrapf(err, "reverting transaction")
 			}
