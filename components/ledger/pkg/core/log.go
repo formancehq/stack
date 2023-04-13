@@ -35,6 +35,12 @@ func (l LogType) String() string {
 	return ""
 }
 
+// Needed in order to keep the compatibility with the openapi response for
+// ListLogs.
+func (lt LogType) MarshalJSON() ([]byte, error) {
+	return json.Marshal(lt.String())
+}
+
 type hashable interface {
 	hashString(buf *buffer)
 }

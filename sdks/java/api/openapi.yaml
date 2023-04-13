@@ -3934,6 +3934,7 @@ components:
           enum:
           - NEW_TRANSACTION
           - SET_METADATA
+          - REVERTED_TRANSACTION
           type: string
         data:
           properties: {}

@@ -4345,7 +4345,8 @@
             "type": "string",
             "enum": [
               "NEW_TRANSACTION",
-              "SET_METADATA"
+              "SET_METADATA",
+              "REVERTED_TRANSACTION"
             ]
           },
           "data": {

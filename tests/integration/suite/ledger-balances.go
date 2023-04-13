@@ -13,7 +13,7 @@ import (
 )
 
 var _ = Given("some empty environment", func() {
-	When("counting and listing accounts", func() {
+	When("get balances and aggregate balances", func() {
 		var (
 			timestamp1 = time.Now().Add(-10 * time.Hour).Round(time.Second).UTC()
 			timestamp2 = time.Now().Add(-9 * time.Hour).Round(time.Second).UTC()

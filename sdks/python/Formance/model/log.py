@@ -66,6 +66,7 @@ class Log(
                     enum_value_to_name = {
                         "NEW_TRANSACTION": "NEW_TRANSACTION",
                         "SET_METADATA": "SET_METADATA",
+                        "REVERTED_TRANSACTION": "REVERTED_TRANSACTION",
                     }
                 
                 @schemas.classproperty
@@ -75,6 +76,10 @@ class Log(
                 @schemas.classproperty
                 def SET_METADATA(cls):
                     return cls("SET_METADATA")
+                
+                @schemas.classproperty
+                def REVERTED_TRANSACTION(cls):
+                    return cls("REVERTED_TRANSACTION")
             data = schemas.DictSchema
             hash = schemas.StrSchema
             date = schemas.DateTimeSchema
