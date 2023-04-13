@@ -1,6 +1,7 @@
 package transactions
 
 import (
+	"fmt"
 	"time"
 
 	internal "github.com/formancehq/fctl/cmd/ledger/internal"
@@ -105,7 +106,7 @@ func NewListCommand() *cobra.Command {
 
 			tableData := fctl.Map(rsp.Cursor.Data, func(tx formance.Transaction) []string {
 				return []string{
-					tx.Txid,
+					fmt.Sprintf("%d", tx.Txid),
 					func() string {
 						if tx.Reference == nil {
 							return ""

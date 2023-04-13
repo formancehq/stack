@@ -35,7 +35,10 @@ func NewShowCommand() *cobra.Command {
 			}
 
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
-			txId := args[0]
+			txId, err := internal.TransactionIDOrLastN(cmd.Context(), ledgerClient, ledger, args[0])
+			if err != nil {
+				return err
+			}
 
 			rsp, _, err := ledgerClient.TransactionsApi.GetTransaction(cmd.Context(), ledger, txId).Execute()
 			if err != nil {

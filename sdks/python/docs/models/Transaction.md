@@ -10,7 +10,7 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **metadata** | [**LedgerMetadata**](LedgerMetadata.md) | [**LedgerMetadata**](LedgerMetadata.md) |  | 
 **[postings](#postings)** | list, tuple,  | tuple,  |  | 
-**txid** | str, uuid.UUID,  | str,  |  | value must be a uuid
+**txid** | decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 **timestamp** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
 **reference** | str,  | str,  |  | [optional] 
 **preCommitVolumes** | [**AggregatedVolumes**](AggregatedVolumes.md) | [**AggregatedVolumes**](AggregatedVolumes.md) |  | [optional] 

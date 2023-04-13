@@ -26,7 +26,7 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * @param txid Transaction ID.
      * @param requestBody metadata
      */
-    public async addMetadataOnTransaction(ledger: string, txid: string, requestBody?: { [key: string]: string; }, _options?: Configuration): Promise<RequestContext> {
+    public async addMetadataOnTransaction(ledger: string, txid: number, requestBody?: { [key: string]: string; }, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
@@ -231,7 +231,7 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * @param ledger Name of the ledger.
      * @param txid Transaction ID.
      */
-    public async getTransaction(ledger: string, txid: string, _options?: Configuration): Promise<RequestContext> {
+    public async getTransaction(ledger: string, txid: number, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
@@ -384,7 +384,7 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * @param ledger Name of the ledger.
      * @param txid Transaction ID.
      */
-    public async revertTransaction(ledger: string, txid: string, _options?: Configuration): Promise<RequestContext> {
+    public async revertTransaction(ledger: string, txid: number, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
