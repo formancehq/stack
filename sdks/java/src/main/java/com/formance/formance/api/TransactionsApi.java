@@ -89,7 +89,6 @@ public interface TransactionsApi {
    * List transactions from a ledger, sorted by txid in descending order.
    * @param ledger Name of the ledger. (required)
    * @param pageSize The maximum number of results to return per page.  (optional)
-   * @param after Pagination cursor, will return transactions after given txid (in descending order). (optional)
    * @param reference Find transactions by reference field. (optional)
    * @param account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
    * @param source Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
@@ -102,7 +101,7 @@ public interface TransactionsApi {
    */
   @GET("api/ledger/{ledger}/transactions")
   Call<TransactionsCursorResponse> listTransactions(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("after") String after, @retrofit2.http.Query("reference") String reference, @retrofit2.http.Query("account") String account, @retrofit2.http.Query("source") String source, @retrofit2.http.Query("destination") String destination, @retrofit2.http.Query("startTime") OffsetDateTime startTime, @retrofit2.http.Query("endTime") OffsetDateTime endTime, @retrofit2.http.Query("cursor") String cursor, @retrofit2.http.Query("metadata") Map<String, String> metadata
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("reference") String reference, @retrofit2.http.Query("account") String account, @retrofit2.http.Query("source") String source, @retrofit2.http.Query("destination") String destination, @retrofit2.http.Query("startTime") OffsetDateTime startTime, @retrofit2.http.Query("endTime") OffsetDateTime endTime, @retrofit2.http.Query("cursor") String cursor, @retrofit2.http.Query("metadata") Map<String, String> metadata
   );
 
   /**

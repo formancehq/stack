@@ -279,7 +279,6 @@ func TestWalletsDebit(t *testing.T) {
 					return &sdk.AccountsCursorResponseCursor{
 						Data: []sdk.Account{{
 							Address: testEnv.Chart().GetBalanceAccount(walletID, "secondary"),
-							Type:    nil,
 							Metadata: wallet.Balance{
 								Name: "secondary",
 							}.LedgerMetadata(walletID),

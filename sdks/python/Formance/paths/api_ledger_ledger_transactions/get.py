@@ -42,7 +42,6 @@ class PageSizeSchema(
         format = 'int64'
         inclusive_maximum = 1000
         inclusive_minimum = 1
-AfterSchema = schemas.StrSchema
 ReferenceSchema = schemas.StrSchema
 AccountSchema = schemas.StrSchema
 SourceSchema = schemas.StrSchema
@@ -88,7 +87,6 @@ RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
         'pageSize': typing.Union[PageSizeSchema, decimal.Decimal, int, ],
-        'after': typing.Union[AfterSchema, str, ],
         'reference': typing.Union[ReferenceSchema, str, ],
         'account': typing.Union[AccountSchema, str, ],
         'source': typing.Union[SourceSchema, str, ],
@@ -110,12 +108,6 @@ request_query_page_size = api_client.QueryParameter(
     name="pageSize",
     style=api_client.ParameterStyle.FORM,
     schema=PageSizeSchema,
-    explode=True,
-)
-request_query_after = api_client.QueryParameter(
-    name="after",
-    style=api_client.ParameterStyle.FORM,
-    schema=AfterSchema,
     explode=True,
 )
 request_query_reference = api_client.QueryParameter(
@@ -317,7 +309,6 @@ class BaseApi(api_client.Api):
         prefix_separator_iterator = None
         for parameter in (
             request_query_page_size,
-            request_query_after,
             request_query_reference,
             request_query_account,
             request_query_source,

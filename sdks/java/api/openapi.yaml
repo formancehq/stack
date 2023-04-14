@@ -822,16 +822,6 @@ paths:
           minimum: 1
           type: integer
         style: form
-      - description: "Pagination cursor, will return transactions after given txid\
-          \ (in descending order)."
-        explode: true
-        in: query
-        name: after
-        required: false
-        schema:
-          example: "1234"
-          type: string
-        style: form
       - description: Find transactions by reference field.
         explode: true
         in: query
@@ -3397,11 +3387,9 @@ components:
           - metadata:
               admin: "true"
             address: users:001
-            type: virtual
           - metadata:
               admin: "true"
             address: users:001
-            type: virtual
           hasMore: false
           pageSize: 15
       properties:
@@ -3645,13 +3633,9 @@ components:
         metadata:
           admin: "true"
         address: users:001
-        type: virtual
       properties:
         address:
           example: users:001
-          type: string
-        type:
-          example: virtual
           type: string
         metadata:
           additionalProperties:
@@ -7030,11 +7014,9 @@ components:
         - metadata:
             admin: "true"
           address: users:001
-          type: virtual
         - metadata:
             admin: "true"
           address: users:001
-          type: virtual
         hasMore: false
         pageSize: 15
       properties:
