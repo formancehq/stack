@@ -160,9 +160,6 @@ var _ = Given("some empty environment", func() {
 				Metadata: metadata1,
 			}))
 		})
-		It("should be listed on api using pagination", func() {
-
-		})
 	})
 })
 

@@ -32,20 +32,6 @@ CREATE FUNCTION "VAR_LEDGER_NAME".use_account(postings jsonb, account character 
     AS $$ SELECT bool_or(v.value) from ( SELECT "VAR_LEDGER_NAME".use_account_as_source(postings, account) AS value UNION SELECT "VAR_LEDGER_NAME".use_account_as_destination(postings, account) AS value ) v $$;
 
 --statement
-CREATE FUNCTION compute_balance(input numeric, output numeric) RETURNS numeric
-AS $$
-DECLARE
-    balance numeric;
-BEGIN
-    balance := input - output;
-    if balance is null then
-        return 0;
-    else
-        return balance;
-    end if;
-end; $$ language plpgsql;
-
---statement
 CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME".accounts (
     address character varying NOT NULL,
     metadata jsonb DEFAULT '{}'::jsonb,
