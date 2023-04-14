@@ -255,6 +255,7 @@ class Log implements ModelInterface, ArrayAccess, \JsonSerializable
 
     public const TYPE_NEW_TRANSACTION = 'NEW_TRANSACTION';
     public const TYPE_SET_METADATA = 'SET_METADATA';
+    public const TYPE_REVERTED_TRANSACTION = 'REVERTED_TRANSACTION';
 
     /**
      * Gets allowable values of the enum
@@ -266,6 +267,7 @@ class Log implements ModelInterface, ArrayAccess, \JsonSerializable
         return [
             self::TYPE_NEW_TRANSACTION,
             self::TYPE_SET_METADATA,
+            self::TYPE_REVERTED_TRANSACTION,
         ];
     }
 

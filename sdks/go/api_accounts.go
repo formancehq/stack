@@ -431,7 +431,6 @@ type ApiListAccountsRequest struct {
 	ApiService AccountsApi
 	ledger string
 	pageSize *int64
-	after *string
 	address *string
 	metadata *map[string]string
 	balance *int64
@@ -442,12 +441,6 @@ type ApiListAccountsRequest struct {
 // The maximum number of results to return per page. 
 func (r ApiListAccountsRequest) PageSize(pageSize int64) ApiListAccountsRequest {
 	r.pageSize = &pageSize
-	return r
-}
-
-// Pagination cursor, will return accounts after given address, in descending order.
-func (r ApiListAccountsRequest) After(after string) ApiListAccountsRequest {
-	r.after = &after
 	return r
 }
 
@@ -526,9 +519,6 @@ func (a *AccountsApiService) ListAccountsExecute(r ApiListAccountsRequest) (*Acc
 
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
-	}
-	if r.after != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "")
 	}
 	if r.address != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "address", r.address, "")

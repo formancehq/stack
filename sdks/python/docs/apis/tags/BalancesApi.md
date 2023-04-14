@@ -66,7 +66,7 @@ with Formance.ApiClient(configuration) as api_client:
     }
     query_params = {
         'address': "users:001",
-        'after': "users:003",
+        'pageSize': 100,
         'cursor': "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==",
     }
     try:
@@ -96,7 +96,7 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 address | AddressSchema | | optional
-after | AfterSchema | | optional
+pageSize | PageSizeSchema | | optional
 cursor | CursorSchema | | optional
 
 
@@ -107,12 +107,12 @@ Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 str,  | str,  |  | 
 
-# AfterSchema
+# PageSizeSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-str,  | str,  |  | 
+decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 
 # CursorSchema
 

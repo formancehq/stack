@@ -129,8 +129,7 @@ class LogsApi
      * List the logs from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  string $after Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
@@ -140,9 +139,9 @@ class LogsApi
      * @throws \InvalidArgumentException
      * @return \Formance\Model\LogsCursorResponse|\Formance\Model\ErrorResponse
      */
-    public function listLogs($ledger, $page_size = 15, $after = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
+    public function listLogs($ledger, $page_size = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
     {
-        list($response) = $this->listLogsWithHttpInfo($ledger, $page_size, $after, $start_time, $end_time, $cursor, $contentType);
+        list($response) = $this->listLogsWithHttpInfo($ledger, $page_size, $start_time, $end_time, $cursor, $contentType);
         return $response;
     }
 
@@ -152,8 +151,7 @@ class LogsApi
      * List the logs from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  string $after Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
@@ -163,9 +161,9 @@ class LogsApi
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\LogsCursorResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function listLogsWithHttpInfo($ledger, $page_size = 15, $after = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
+    public function listLogsWithHttpInfo($ledger, $page_size = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
     {
-        $request = $this->listLogsRequest($ledger, $page_size, $after, $start_time, $end_time, $cursor, $contentType);
+        $request = $this->listLogsRequest($ledger, $page_size, $start_time, $end_time, $cursor, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -280,8 +278,7 @@ class LogsApi
      * List the logs from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  string $after Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
@@ -290,9 +287,9 @@ class LogsApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listLogsAsync($ledger, $page_size = 15, $after = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
+    public function listLogsAsync($ledger, $page_size = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
     {
-        return $this->listLogsAsyncWithHttpInfo($ledger, $page_size, $after, $start_time, $end_time, $cursor, $contentType)
+        return $this->listLogsAsyncWithHttpInfo($ledger, $page_size, $start_time, $end_time, $cursor, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -306,8 +303,7 @@ class LogsApi
      * List the logs from a ledger
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  string $after Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
@@ -316,10 +312,10 @@ class LogsApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function listLogsAsyncWithHttpInfo($ledger, $page_size = 15, $after = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
+    public function listLogsAsyncWithHttpInfo($ledger, $page_size = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
     {
         $returnType = '\Formance\Model\LogsCursorResponse';
-        $request = $this->listLogsRequest($ledger, $page_size, $after, $start_time, $end_time, $cursor, $contentType);
+        $request = $this->listLogsRequest($ledger, $page_size, $start_time, $end_time, $cursor, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -361,8 +357,7 @@ class LogsApi
      * Create request for operation 'listLogs'
      *
      * @param  string $ledger Name of the ledger. (required)
-     * @param  int $page_size The maximum number of results to return per page. (optional, default to 15)
-     * @param  string $after Pagination cursor, will return the logs after a given ID. (in descending order). (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  \DateTime $start_time Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). (optional)
      * @param  \DateTime $end_time Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
@@ -371,7 +366,7 @@ class LogsApi
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function listLogsRequest($ledger, $page_size = 15, $after = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
+    public function listLogsRequest($ledger, $page_size = null, $start_time = null, $end_time = null, $cursor = null, string $contentType = self::contentTypes['listLogs'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -392,7 +387,6 @@ class LogsApi
 
 
 
-
         $resourcePath = '/api/ledger/{ledger}/logs';
         $formParams = [];
         $queryParams = [];
@@ -405,15 +399,6 @@ class LogsApi
             $page_size,
             'pageSize', // param base name
             'integer', // openApiType
-            'form', // style
-            true, // explode
-            false // required
-        ) ?? []);
-        // query params
-        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $after,
-            'after', // param base name
-            'string', // openApiType
             'form', // style
             true, // explode
             false // required

@@ -483,7 +483,6 @@ with Formance.ApiClient(configuration) as api_client:
     }
     query_params = {
         'pageSize': 100,
-        'after': "users:003",
         'address': "users:.+",
         'metadata': dict(
         "key": "key_example",
@@ -519,7 +518,6 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 pageSize | PageSizeSchema | | optional
-after | AfterSchema | | optional
 address | AddressSchema | | optional
 metadata | MetadataSchema | | optional
 balance | BalanceSchema | | optional
@@ -532,14 +530,7 @@ cursor | CursorSchema | | optional
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-decimal.Decimal, int,  | decimal.Decimal,  |  | if omitted the server will use the default value of 15value must be a 64 bit integer
-
-# AfterSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | 
+decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 
 # AddressSchema
 

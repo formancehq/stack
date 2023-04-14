@@ -195,7 +195,7 @@ try {
 ## `listAccounts()`
 
 ```php
-listAccounts($ledger, $page_size, $after, $address, $metadata, $balance, $balance_operator, $cursor): \Formance\Model\AccountsCursorResponse
+listAccounts($ledger, $page_size, $address, $metadata, $balance, $balance_operator, $cursor): \Formance\Model\AccountsCursorResponse
 ```
 
 List accounts from a ledger
@@ -221,7 +221,6 @@ $apiInstance = new Formance\Api\AccountsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $page_size = 100; // int | The maximum number of results to return per page.
-$after = users:003; // string | Pagination cursor, will return accounts after given address, in descending order.
 $address = users:.+; // string | Filter accounts by address pattern (regular expression placed between ^ and $).
 $metadata = {"admin":"true"}; // array<string,string> | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
 $balance = 2400; // int | Filter accounts by their balance (default operator is gte)
@@ -229,7 +228,7 @@ $balance_operator = gte; // string | Operator used for the filtering of balances
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
 
 try {
-    $result = $apiInstance->listAccounts($ledger, $page_size, $after, $address, $metadata, $balance, $balance_operator, $cursor);
+    $result = $apiInstance->listAccounts($ledger, $page_size, $address, $metadata, $balance, $balance_operator, $cursor);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling AccountsApi->listAccounts: ', $e->getMessage(), PHP_EOL;
@@ -241,8 +240,7 @@ try {
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
-| **page_size** | **int**| The maximum number of results to return per page. | [optional] [default to 15] |
-| **after** | **string**| Pagination cursor, will return accounts after given address, in descending order. | [optional] |
+| **page_size** | **int**| The maximum number of results to return per page. | [optional] |
 | **address** | **string**| Filter accounts by address pattern (regular expression placed between ^ and $). | [optional] |
 | **metadata** | [**array<string,string>**](../Model/string.md)| Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 | **balance** | **int**| Filter accounts by their balance (default operator is gte) | [optional] |

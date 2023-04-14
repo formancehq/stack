@@ -11,7 +11,7 @@ Method | HTTP request | Description
 
 ## GetBalances
 
-> BalancesCursorResponse GetBalances(ctx, ledger).Address(address).After(after).Cursor(cursor).Execute()
+> BalancesCursorResponse GetBalances(ctx, ledger).Address(address).PageSize(pageSize).Cursor(cursor).Execute()
 
 Get the balances from a ledger's account
 
@@ -30,12 +30,12 @@ import (
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
     address := "users:001" // string | Filter balances involving given account, either as source or destination. (optional)
-    after := "users:003" // string | Pagination cursor, will return accounts after given address, in descending order. (optional)
+    pageSize := int64(100) // int64 | The maximum number of results to return per page.  (optional)
     cursor := "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==" // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.BalancesApi.GetBalances(context.Background(), ledger).Address(address).After(after).Cursor(cursor).Execute()
+    resp, r, err := apiClient.BalancesApi.GetBalances(context.Background(), ledger).Address(address).PageSize(pageSize).Cursor(cursor).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `BalancesApi.GetBalances``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -62,7 +62,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **address** | **string** | Filter balances involving given account, either as source or destination. | 
- **after** | **string** | Pagination cursor, will return accounts after given address, in descending order. | 
+ **pageSize** | **int64** | The maximum number of results to return per page.  | 
  **cursor** | **string** | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | 
 
 ### Return type

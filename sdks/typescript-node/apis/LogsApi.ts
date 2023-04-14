@@ -23,19 +23,17 @@ export class LogsApiRequestFactory extends BaseAPIRequestFactory {
      * List the logs from a ledger
      * @param ledger Name of the ledger.
      * @param pageSize The maximum number of results to return per page. 
-     * @param after Pagination cursor, will return the logs after a given ID. (in descending order).
      * @param startTime Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). 
      * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      */
-    public async listLogs(ledger: string, pageSize?: number, after?: string, startTime?: Date, endTime?: Date, cursor?: string, _options?: Configuration): Promise<RequestContext> {
+    public async listLogs(ledger: string, pageSize?: number, startTime?: Date, endTime?: Date, cursor?: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
         if (ledger === null || ledger === undefined) {
             throw new RequiredError("LogsApi", "listLogs", "ledger");
         }
-
 
 
 
@@ -53,11 +51,6 @@ export class LogsApiRequestFactory extends BaseAPIRequestFactory {
         // Query Params
         if (pageSize !== undefined) {
             requestContext.setQueryParam("pageSize", ObjectSerializer.serialize(pageSize, "number", "int64"));
-        }
-
-        // Query Params
-        if (after !== undefined) {
-            requestContext.setQueryParam("after", ObjectSerializer.serialize(after, "string", ""));
         }
 
         // Query Params
