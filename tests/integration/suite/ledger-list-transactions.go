@@ -42,6 +42,9 @@ var _ = Given("some empty environment", func() {
 				}, transactions...)
 			}
 		})
+		AfterEach(func() {
+			transactions = nil
+		})
 		Then(fmt.Sprintf("listing transactions using page size of %d", pageSize), func() {
 			var (
 				rsp *formance.TransactionsCursorResponse

@@ -12,6 +12,7 @@ import (
 
 	"github.com/formancehq/stack/libs/go-libs/collectionutils"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
+	"github.com/pkg/errors"
 )
 
 type LogType int16
@@ -39,6 +40,26 @@ func (l LogType) String() string {
 // ListLogs.
 func (lt LogType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(lt.String())
+}
+
+func (lt *LogType) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+
+	switch s {
+	case "SET_METADATA":
+		*lt = SetMetadataLogType
+	case "NEW_TRANSACTION":
+		*lt = NewTransactionLogType
+	case "REVERTED_TRANSACTION":
+		*lt = RevertedTransactionLogType
+	default:
+		return errors.New("invalid log type")
+	}
+
+	return nil
 }
 
 type hashable interface {

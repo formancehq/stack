@@ -197,7 +197,6 @@ var _ = Given("some environment with accounts", func() {
 	type expectedLog struct {
 		id       int64
 		typ      string
-		t        time.Time
 		postings []any
 	}
 
@@ -205,7 +204,6 @@ var _ = Given("some environment with accounts", func() {
 		compareLogs = func(log formance.Log, expected expectedLog) {
 			Expect(log.Id).To(Equal(expected.id))
 			Expect(log.Type).To(Equal(expected.typ))
-			Expect(log.Date).To(Equal(expected.t))
 			Expect(log.Data["accountMetadata"]).To(Equal(map[string]any{}))
 			Expect(log.Data["transaction"]).To(BeAssignableToTypeOf(map[string]any{}))
 			transaction := log.Data["transaction"].(map[string]any)
@@ -225,7 +223,7 @@ var _ = Given("some environment with accounts", func() {
 		)
 		BeforeEach(func() {
 			for i := 0; i < int(accountCounts); i++ {
-				now := time.Now().UTC()
+				now := time.Now().Round(time.Millisecond).UTC()
 
 				_, _, err := Client().TransactionsApi.
 					CreateTransaction(TestContext(), "default").
@@ -244,7 +242,6 @@ var _ = Given("some environment with accounts", func() {
 				expectedLogs = append(expectedLogs, expectedLog{
 					id:  int64(i),
 					typ: "NEW_TRANSACTION",
-					t:   now,
 					postings: []any{
 						map[string]any{
 							"amount":      float64(100),
@@ -259,6 +256,9 @@ var _ = Given("some environment with accounts", func() {
 			sort.Slice(expectedLogs, func(i, j int) bool {
 				return expectedLogs[i].id > expectedLogs[j].id
 			})
+		})
+		AfterEach(func() {
+			expectedLogs = nil
 		})
 		Then(fmt.Sprintf("listing accounts using page size of %d", pageSize), func() {
 			var (

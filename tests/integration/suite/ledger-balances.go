@@ -153,7 +153,6 @@ var _ = Given("some environment with accounts and transactions", func() {
 			balances []map[string]map[string]int64
 		)
 		BeforeEach(func() {
-
 			for i := 0; i < int(transactionCounts); i++ {
 				now := time.Now()
 				asset := "USD"
@@ -205,6 +204,9 @@ var _ = Given("some environment with accounts and transactions", func() {
 					},
 				},
 			}, balances...)
+		})
+		AfterEach(func() {
+			balances = nil
 		})
 		Then(fmt.Sprintf("listing balances using page size of %d", pageSize), func() {
 			var (

@@ -209,6 +209,9 @@ var _ = Given("some environment with accounts", func() {
 				})
 			}
 		})
+		AfterEach(func() {
+			accounts = nil
+		})
 		Then(fmt.Sprintf("listing accounts using page size of %d", pageSize), func() {
 			var (
 				rsp *formance.AccountsCursorResponse
