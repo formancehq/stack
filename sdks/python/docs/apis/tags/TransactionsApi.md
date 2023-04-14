@@ -750,7 +750,6 @@ with Formance.ApiClient(configuration) as api_client:
     }
     query_params = {
         'pageSize': 100,
-        'after': "1234",
         'reference': "ref:001",
         'account': "users:001",
         'source': "users:001",
@@ -789,7 +788,6 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 pageSize | PageSizeSchema | | optional
-after | AfterSchema | | optional
 reference | ReferenceSchema | | optional
 account | AccountSchema | | optional
 source | SourceSchema | | optional
@@ -806,13 +804,6 @@ metadata | MetadataSchema | | optional
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
-
-# AfterSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | 
 
 # ReferenceSchema
 

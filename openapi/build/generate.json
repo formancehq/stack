@@ -1166,15 +1166,6 @@
             }
           },
           {
-            "name": "after",
-            "in": "query",
-            "description": "Pagination cursor, will return transactions after given txid (in descending order).",
-            "schema": {
-              "type": "string",
-              "example": "1234"
-            }
-          },
-          {
             "name": "reference",
             "in": "query",
             "description": "Find transactions by reference field.",
@@ -4097,10 +4088,6 @@
           "address": {
             "type": "string",
             "example": "users:001"
-          },
-          "type": {
-            "type": "string",
-            "example": "virtual"
           },
           "metadata": {
             "type": "object",

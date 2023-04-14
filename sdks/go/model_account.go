@@ -21,7 +21,6 @@ var _ MappedNullable = &Account{}
 // Account struct for Account
 type Account struct {
 	Address string `json:"address"`
-	Type *string `json:"type,omitempty"`
 	Metadata map[string]string `json:"metadata"`
 }
 
@@ -68,38 +67,6 @@ func (o *Account) SetAddress(v string) {
 	o.Address = v
 }
 
-// GetType returns the Type field value if set, zero value otherwise.
-func (o *Account) GetType() string {
-	if o == nil || IsNil(o.Type) {
-		var ret string
-		return ret
-	}
-	return *o.Type
-}
-
-// GetTypeOk returns a tuple with the Type field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Account) GetTypeOk() (*string, bool) {
-	if o == nil || IsNil(o.Type) {
-		return nil, false
-	}
-	return o.Type, true
-}
-
-// HasType returns a boolean if a field has been set.
-func (o *Account) HasType() bool {
-	if o != nil && !IsNil(o.Type) {
-		return true
-	}
-
-	return false
-}
-
-// SetType gets a reference to the given string and assigns it to the Type field.
-func (o *Account) SetType(v string) {
-	o.Type = &v
-}
-
 // GetMetadata returns the Metadata field value
 func (o *Account) GetMetadata() map[string]string {
 	if o == nil {
@@ -135,9 +102,6 @@ func (o Account) MarshalJSON() ([]byte, error) {
 func (o Account) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["address"] = o.Address
-	if !IsNil(o.Type) {
-		toSerialize["type"] = o.Type
-	}
 	toSerialize["metadata"] = o.Metadata
 	return toSerialize, nil
 }
