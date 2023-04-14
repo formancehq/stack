@@ -269,7 +269,7 @@ try {
 ## `listTransactions()`
 
 ```php
-listTransactions($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata): \Formance\Model\TransactionsCursorResponse
+listTransactions($ledger, $page_size, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata): \Formance\Model\TransactionsCursorResponse
 ```
 
 List transactions from a ledger
@@ -295,7 +295,6 @@ $apiInstance = new Formance\Api\TransactionsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $page_size = 100; // int | The maximum number of results to return per page.
-$after = 1234; // string | Pagination cursor, will return transactions after given txid (in descending order).
 $reference = ref:001; // string | Find transactions by reference field.
 $account = users:001; // string | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
 $source = users:001; // string | Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
@@ -306,7 +305,7 @@ $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter us
 $metadata = {"admin":"true"}; // array<string,string> | Filter transactions by metadata key value pairs.
 
 try {
-    $result = $apiInstance->listTransactions($ledger, $page_size, $after, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata);
+    $result = $apiInstance->listTransactions($ledger, $page_size, $reference, $account, $source, $destination, $start_time, $end_time, $cursor, $metadata);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling TransactionsApi->listTransactions: ', $e->getMessage(), PHP_EOL;
@@ -319,7 +318,6 @@ try {
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
 | **page_size** | **int**| The maximum number of results to return per page. | [optional] |
-| **after** | **string**| Pagination cursor, will return transactions after given txid (in descending order). | [optional] |
 | **reference** | **string**| Find transactions by reference field. | [optional] |
 | **account** | **string**| Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). | [optional] |
 | **source** | **string**| Filter transactions with postings involving given account at source (regular expression placed between ^ and $). | [optional] |

@@ -1894,7 +1894,6 @@ export class ObservableTransactionsApi {
      * List transactions from a ledger
      * @param ledger Name of the ledger.
      * @param pageSize The maximum number of results to return per page. 
-     * @param after Pagination cursor, will return transactions after given txid (in descending order).
      * @param reference Find transactions by reference field.
      * @param account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
      * @param source Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
@@ -1904,8 +1903,8 @@ export class ObservableTransactionsApi {
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      * @param metadata Filter transactions by metadata key value pairs.
      */
-    public listTransactions(ledger: string, pageSize?: number, after?: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, cursor?: string, metadata?: { [key: string]: string; }, _options?: Configuration): Observable<TransactionsCursorResponse> {
-        const requestContextPromise = this.requestFactory.listTransactions(ledger, pageSize, after, reference, account, source, destination, startTime, endTime, cursor, metadata, _options);
+    public listTransactions(ledger: string, pageSize?: number, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, cursor?: string, metadata?: { [key: string]: string; }, _options?: Configuration): Observable<TransactionsCursorResponse> {
+        const requestContextPromise = this.requestFactory.listTransactions(ledger, pageSize, reference, account, source, destination, startTime, endTime, cursor, metadata, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);

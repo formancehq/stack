@@ -276,7 +276,6 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * List transactions from a ledger
      * @param ledger Name of the ledger.
      * @param pageSize The maximum number of results to return per page. 
-     * @param after Pagination cursor, will return transactions after given txid (in descending order).
      * @param reference Find transactions by reference field.
      * @param account Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
      * @param source Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
@@ -286,14 +285,13 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      * @param metadata Filter transactions by metadata key value pairs.
      */
-    public async listTransactions(ledger: string, pageSize?: number, after?: string, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, cursor?: string, metadata?: { [key: string]: string; }, _options?: Configuration): Promise<RequestContext> {
+    public async listTransactions(ledger: string, pageSize?: number, reference?: string, account?: string, source?: string, destination?: string, startTime?: Date, endTime?: Date, cursor?: string, metadata?: { [key: string]: string; }, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
         if (ledger === null || ledger === undefined) {
             throw new RequiredError("TransactionsApi", "listTransactions", "ledger");
         }
-
 
 
 
@@ -316,11 +314,6 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         // Query Params
         if (pageSize !== undefined) {
             requestContext.setQueryParam("pageSize", ObjectSerializer.serialize(pageSize, "number", "int64"));
-        }
-
-        // Query Params
-        if (after !== undefined) {
-            requestContext.setQueryParam("after", ObjectSerializer.serialize(after, "string", ""));
         }
 
         // Query Params

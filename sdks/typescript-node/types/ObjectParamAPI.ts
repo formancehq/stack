@@ -1645,12 +1645,6 @@ export interface TransactionsApiListTransactionsRequest {
      */
     pageSize?: number
     /**
-     * Pagination cursor, will return transactions after given txid (in descending order).
-     * @type string
-     * @memberof TransactionsApilistTransactions
-     */
-    after?: string
-    /**
      * Find transactions by reference field.
      * @type string
      * @memberof TransactionsApilistTransactions
@@ -1760,7 +1754,7 @@ export class ObjectTransactionsApi {
      * @param param the request object
      */
     public listTransactions(param: TransactionsApiListTransactionsRequest, options?: Configuration): Promise<TransactionsCursorResponse> {
-        return this.api.listTransactions(param.ledger, param.pageSize, param.after, param.reference, param.account, param.source, param.destination, param.startTime, param.endTime, param.cursor, param.metadata,  options).toPromise();
+        return this.api.listTransactions(param.ledger, param.pageSize, param.reference, param.account, param.source, param.destination, param.startTime, param.endTime, param.cursor, param.metadata,  options).toPromise();
     }
 
     /**
