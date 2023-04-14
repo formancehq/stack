@@ -10,7 +10,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 ## `listLogs()`
 
 ```php
-listLogs($ledger, $page_size, $after, $start_time, $end_time, $cursor): \Formance\Model\LogsCursorResponse
+listLogs($ledger, $page_size, $start_time, $end_time, $cursor): \Formance\Model\LogsCursorResponse
 ```
 
 List the logs from a ledger
@@ -36,13 +36,12 @@ $apiInstance = new Formance\Api\LogsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $page_size = 100; // int | The maximum number of results to return per page.
-$after = 1234; // string | Pagination cursor, will return the logs after a given ID. (in descending order).
 $start_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute).
 $end_time = new \DateTime("2013-10-20T19:20:30+01:00"); // \DateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute).
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
 
 try {
-    $result = $apiInstance->listLogs($ledger, $page_size, $after, $start_time, $end_time, $cursor);
+    $result = $apiInstance->listLogs($ledger, $page_size, $start_time, $end_time, $cursor);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling LogsApi->listLogs: ', $e->getMessage(), PHP_EOL;
@@ -54,8 +53,7 @@ try {
 | Name | Type | Description  | Notes |
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
-| **page_size** | **int**| The maximum number of results to return per page. | [optional] [default to 15] |
-| **after** | **string**| Pagination cursor, will return the logs after a given ID. (in descending order). | [optional] |
+| **page_size** | **int**| The maximum number of results to return per page. | [optional] |
 | **start_time** | **\DateTime**| Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). | [optional] |
 | **end_time** | **\DateTime**| Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). | [optional] |
 | **cursor** | **string**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. | [optional] |

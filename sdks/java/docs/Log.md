@@ -21,6 +21,7 @@
 |---- | -----|
 | NEW_TRANSACTION | &quot;NEW_TRANSACTION&quot; |
 | SET_METADATA | &quot;SET_METADATA&quot; |
+| REVERTED_TRANSACTION | &quot;REVERTED_TRANSACTION&quot; |
 
 
 

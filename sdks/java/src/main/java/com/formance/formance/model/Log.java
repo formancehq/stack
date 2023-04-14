@@ -39,7 +39,9 @@ public class Log {
   public enum TypeEnum {
     NEW_TRANSACTION("NEW_TRANSACTION"),
     
-    SET_METADATA("SET_METADATA");
+    SET_METADATA("SET_METADATA"),
+    
+    REVERTED_TRANSACTION("REVERTED_TRANSACTION");
 
     private String value;
 

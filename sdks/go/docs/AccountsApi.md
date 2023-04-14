@@ -225,7 +225,7 @@ Name | Type | Description  | Notes
 
 ## ListAccounts
 
-> AccountsCursorResponse ListAccounts(ctx, ledger).PageSize(pageSize).After(after).Address(address).Metadata(metadata).Balance(balance).BalanceOperator(balanceOperator).Cursor(cursor).Execute()
+> AccountsCursorResponse ListAccounts(ctx, ledger).PageSize(pageSize).Address(address).Metadata(metadata).Balance(balance).BalanceOperator(balanceOperator).Cursor(cursor).Execute()
 
 List accounts from a ledger
 
@@ -245,8 +245,7 @@ import (
 
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
-    pageSize := int64(100) // int64 | The maximum number of results to return per page.  (optional) (default to 15)
-    after := "users:003" // string | Pagination cursor, will return accounts after given address, in descending order. (optional)
+    pageSize := int64(100) // int64 | The maximum number of results to return per page.  (optional)
     address := "users:.+" // string | Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
     metadata := map[string]string{"key": map[string]string{"key": "Inner_example"}} // map[string]string | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
     balance := int64(2400) // int64 | Filter accounts by their balance (default operator is gte) (optional)
@@ -255,7 +254,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.AccountsApi.ListAccounts(context.Background(), ledger).PageSize(pageSize).After(after).Address(address).Metadata(metadata).Balance(balance).BalanceOperator(balanceOperator).Cursor(cursor).Execute()
+    resp, r, err := apiClient.AccountsApi.ListAccounts(context.Background(), ledger).PageSize(pageSize).Address(address).Metadata(metadata).Balance(balance).BalanceOperator(balanceOperator).Cursor(cursor).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `AccountsApi.ListAccounts``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -281,8 +280,7 @@ Other parameters are passed through a pointer to a apiListAccountsRequest struct
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **pageSize** | **int64** | The maximum number of results to return per page.  | [default to 15]
- **after** | **string** | Pagination cursor, will return accounts after given address, in descending order. | 
+ **pageSize** | **int64** | The maximum number of results to return per page.  | 
  **address** | **string** | Filter accounts by address pattern (regular expression placed between ^ and $). | 
  **metadata** | **map[string]map[string]string** | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. | 
  **balance** | **int64** | Filter accounts by their balance (default operator is gte) | 

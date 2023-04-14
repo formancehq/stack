@@ -721,12 +721,7 @@
               "properties": {}
             },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           }
         ],
@@ -782,17 +777,7 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            }
-          },
-          {
-            "name": "after",
-            "in": "query",
-            "description": "Pagination cursor, will return accounts after given address, in descending order.",
-            "schema": {
-              "type": "string",
-              "example": "users:003"
+              "maximum": 1000
             }
           },
           {
@@ -817,12 +802,7 @@
               }
             },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           },
           {
@@ -1118,18 +1098,15 @@
             "in": "query",
             "description": "Filter transactions by metadata key value pairs. Nested objects can be used as seen in the example below.",
             "style": "deepObject",
-            "explode": true,
             "schema": {
               "type": "object",
-              "properties": {}
+              "properties": {},
+              "additionalProperties": {
+                "type": "string"
+              }
             },
             "example": {
-              "admin": true,
-              "a": {
-                "nested": {
-                  "key": "value"
-                }
-              }
+              "admin": "true"
             }
           }
         ],
@@ -1185,8 +1162,7 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000,
-              "default": 15
+              "maximum": 1000
             }
           },
           {
@@ -1560,12 +1536,15 @@
             }
           },
           {
-            "name": "after",
+            "name": "pageSize",
             "in": "query",
-            "description": "Pagination cursor, will return accounts after given address, in descending order.",
+            "description": "The maximum number of results to return per page.\n",
+            "example": 100,
             "schema": {
-              "type": "string",
-              "example": "users:003"
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 1000
             }
           },
           {
@@ -1682,17 +1661,7 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            }
-          },
-          {
-            "name": "after",
-            "in": "query",
-            "description": "Pagination cursor, will return the logs after a given ID. (in descending order).",
-            "schema": {
-              "type": "string",
-              "example": "1234"
+              "maximum": 1000
             }
           },
           {
@@ -4399,7 +4368,8 @@
             "type": "string",
             "enum": [
               "NEW_TRANSACTION",
-              "SET_METADATA"
+              "SET_METADATA",
+              "REVERTED_TRANSACTION"
             ]
           },
           "data": {
@@ -6372,6 +6342,9 @@
             "asset": "USD/2",
             "amount": 100
           },
+          "metadata": {
+            "key": ""
+          },
           "sources": []
         }
       },
@@ -6414,6 +6387,9 @@
           "amount": {
             "asset": "USD/2",
             "amount": 100
+          },
+          "metadata": {
+            "key": ""
           },
           "pending": true
         }

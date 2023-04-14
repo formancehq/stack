@@ -32,7 +32,17 @@ from . import path
 
 # Query params
 AddressSchema = schemas.StrSchema
-AfterSchema = schemas.StrSchema
+
+
+class PageSizeSchema(
+    schemas.Int64Schema
+):
+
+
+    class MetaOapg:
+        format = 'int64'
+        inclusive_maximum = 1000
+        inclusive_minimum = 1
 CursorSchema = schemas.StrSchema
 RequestRequiredQueryParams = typing_extensions.TypedDict(
     'RequestRequiredQueryParams',
@@ -43,7 +53,7 @@ RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
         'address': typing.Union[AddressSchema, str, ],
-        'after': typing.Union[AfterSchema, str, ],
+        'pageSize': typing.Union[PageSizeSchema, decimal.Decimal, int, ],
         'cursor': typing.Union[CursorSchema, str, ],
     },
     total=False
@@ -60,10 +70,10 @@ request_query_address = api_client.QueryParameter(
     schema=AddressSchema,
     explode=True,
 )
-request_query_after = api_client.QueryParameter(
-    name="after",
+request_query_page_size = api_client.QueryParameter(
+    name="pageSize",
     style=api_client.ParameterStyle.FORM,
-    schema=AfterSchema,
+    schema=PageSizeSchema,
     explode=True,
 )
 request_query_cursor = api_client.QueryParameter(
@@ -224,7 +234,7 @@ class BaseApi(api_client.Api):
         prefix_separator_iterator = None
         for parameter in (
             request_query_address,
-            request_query_after,
+            request_query_page_size,
             request_query_cursor,
         ):
             parameter_data = query_params.get(parameter.name, schemas.unset)

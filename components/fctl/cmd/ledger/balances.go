@@ -11,13 +11,11 @@ import (
 
 func NewBalancesCommand() *cobra.Command {
 	const (
-		afterFlag   = "after"
 		addressFlag = "address"
 	)
 	return fctl.NewCommand("balances",
 		fctl.WithAliases("balance", "bal", "b"),
 		fctl.WithStringFlag(addressFlag, "", "Filter on specific address"),
-		fctl.WithStringFlag(afterFlag, "", "Filter after specific address"),
 		fctl.WithShortDescription("Read balances"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
@@ -43,7 +41,6 @@ func NewBalancesCommand() *cobra.Command {
 
 			balances, _, err := client.BalancesApi.
 				GetBalances(cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag)).
-				After(fctl.GetString(cmd, afterFlag)).
 				Address(fctl.GetString(cmd, addressFlag)).
 				Execute()
 			if err != nil {

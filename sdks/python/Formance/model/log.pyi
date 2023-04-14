@@ -64,6 +64,10 @@ class Log(
                 @schemas.classproperty
                 def SET_METADATA(cls):
                     return cls("SET_METADATA")
+                
+                @schemas.classproperty
+                def REVERTED_TRANSACTION(cls):
+                    return cls("REVERTED_TRANSACTION")
             data = schemas.DictSchema
             hash = schemas.StrSchema
             date = schemas.DateTimeSchema

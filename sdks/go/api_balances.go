@@ -58,7 +58,7 @@ type ApiGetBalancesRequest struct {
 	ApiService BalancesApi
 	ledger string
 	address *string
-	after *string
+	pageSize *int64
 	cursor *string
 }
 
@@ -68,9 +68,9 @@ func (r ApiGetBalancesRequest) Address(address string) ApiGetBalancesRequest {
 	return r
 }
 
-// Pagination cursor, will return accounts after given address, in descending order.
-func (r ApiGetBalancesRequest) After(after string) ApiGetBalancesRequest {
-	r.after = &after
+// The maximum number of results to return per page. 
+func (r ApiGetBalancesRequest) PageSize(pageSize int64) ApiGetBalancesRequest {
+	r.pageSize = &pageSize
 	return r
 }
 
@@ -124,8 +124,8 @@ func (a *BalancesApiService) GetBalancesExecute(r ApiGetBalancesRequest) (*Balan
 	if r.address != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "address", r.address, "")
 	}
-	if r.after != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "")
+	if r.pageSize != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
 	}
 	if r.cursor != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "cursor", r.cursor, "")

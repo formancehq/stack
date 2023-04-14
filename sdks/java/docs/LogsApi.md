@@ -10,7 +10,7 @@ All URIs are relative to *http://localhost*
 
 ## listLogs
 
-> LogsCursorResponse listLogs(ledger, pageSize, after, startTime, endTime, cursor)
+> LogsCursorResponse listLogs(ledger, pageSize, startTime, endTime, cursor)
 
 List the logs from a ledger
 
@@ -38,13 +38,12 @@ public class Example {
 
         LogsApi apiInstance = new LogsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
-        Long pageSize = 15L; // Long | The maximum number of results to return per page. 
-        String after = "1234"; // String | Pagination cursor, will return the logs after a given ID. (in descending order).
+        Long pageSize = 100L; // Long | The maximum number of results to return per page. 
         OffsetDateTime startTime = OffsetDateTime.now(); // OffsetDateTime | Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \"2023-01-02T15:04:01Z\" includes the first second of 4th minute). 
         OffsetDateTime endTime = OffsetDateTime.now(); // OffsetDateTime | Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \"2023-01-02T15:04:01Z\" excludes the first second of 4th minute). 
         String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
         try {
-            LogsCursorResponse result = apiInstance.listLogs(ledger, pageSize, after, startTime, endTime, cursor);
+            LogsCursorResponse result = apiInstance.listLogs(ledger, pageSize, startTime, endTime, cursor);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling LogsApi#listLogs");
@@ -63,8 +62,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
-| **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] [default to 15] |
-| **after** | **String**| Pagination cursor, will return the logs after a given ID. (in descending order). | [optional] |
+| **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] |
 | **startTime** | **OffsetDateTime**| Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute).  | [optional] |
 | **endTime** | **OffsetDateTime**| Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute).  | [optional] |
 | **cursor** | **String**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | [optional] |

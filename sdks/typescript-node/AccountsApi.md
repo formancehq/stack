@@ -209,8 +209,6 @@ let body:AccountsApiListAccountsRequest = {
   ledger: "ledger001",
   // number | The maximum number of results to return per page.  (optional)
   pageSize: 100,
-  // string | Pagination cursor, will return accounts after given address, in descending order. (optional)
-  after: "users:003",
   // string | Filter accounts by address pattern (regular expression placed between ^ and $). (optional)
   address: "users:.+",
   // { [key: string]: string; } | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. (optional)
@@ -236,8 +234,7 @@ apiInstance.listAccounts(body).then((data:any) => {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
- **pageSize** | [**number**] | The maximum number of results to return per page.  | (optional) defaults to 15
- **after** | [**string**] | Pagination cursor, will return accounts after given address, in descending order. | (optional) defaults to undefined
+ **pageSize** | [**number**] | The maximum number of results to return per page.  | (optional) defaults to undefined
  **address** | [**string**] | Filter accounts by address pattern (regular expression placed between ^ and $). | (optional) defaults to undefined
  **metadata** | **{ [key: string]: string; }** | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. | (optional) defaults to undefined
  **balance** | [**number**] | Filter accounts by their balance (default operator is gte) | (optional) defaults to undefined

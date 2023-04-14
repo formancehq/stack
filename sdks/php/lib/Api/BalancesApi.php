@@ -133,7 +133,7 @@ class BalancesApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Filter balances involving given account, either as source or destination. (optional)
-     * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getBalances'] to see the possible values for this operation
      *
@@ -141,9 +141,9 @@ class BalancesApi
      * @throws \InvalidArgumentException
      * @return \Formance\Model\BalancesCursorResponse|\Formance\Model\ErrorResponse
      */
-    public function getBalances($ledger, $address = null, $after = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
+    public function getBalances($ledger, $address = null, $page_size = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
     {
-        list($response) = $this->getBalancesWithHttpInfo($ledger, $address, $after, $cursor, $contentType);
+        list($response) = $this->getBalancesWithHttpInfo($ledger, $address, $page_size, $cursor, $contentType);
         return $response;
     }
 
@@ -154,7 +154,7 @@ class BalancesApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Filter balances involving given account, either as source or destination. (optional)
-     * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getBalances'] to see the possible values for this operation
      *
@@ -162,9 +162,9 @@ class BalancesApi
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\BalancesCursorResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function getBalancesWithHttpInfo($ledger, $address = null, $after = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
+    public function getBalancesWithHttpInfo($ledger, $address = null, $page_size = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
     {
-        $request = $this->getBalancesRequest($ledger, $address, $after, $cursor, $contentType);
+        $request = $this->getBalancesRequest($ledger, $address, $page_size, $cursor, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -280,16 +280,16 @@ class BalancesApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Filter balances involving given account, either as source or destination. (optional)
-     * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getBalances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getBalancesAsync($ledger, $address = null, $after = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
+    public function getBalancesAsync($ledger, $address = null, $page_size = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
     {
-        return $this->getBalancesAsyncWithHttpInfo($ledger, $address, $after, $cursor, $contentType)
+        return $this->getBalancesAsyncWithHttpInfo($ledger, $address, $page_size, $cursor, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -304,17 +304,17 @@ class BalancesApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Filter balances involving given account, either as source or destination. (optional)
-     * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getBalances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function getBalancesAsyncWithHttpInfo($ledger, $address = null, $after = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
+    public function getBalancesAsyncWithHttpInfo($ledger, $address = null, $page_size = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
     {
         $returnType = '\Formance\Model\BalancesCursorResponse';
-        $request = $this->getBalancesRequest($ledger, $address, $after, $cursor, $contentType);
+        $request = $this->getBalancesRequest($ledger, $address, $page_size, $cursor, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -357,14 +357,14 @@ class BalancesApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Filter balances involving given account, either as source or destination. (optional)
-     * @param  string $after Pagination cursor, will return accounts after given address, in descending order. (optional)
+     * @param  int $page_size The maximum number of results to return per page. (optional)
      * @param  string $cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['getBalances'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function getBalancesRequest($ledger, $address = null, $after = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
+    public function getBalancesRequest($ledger, $address = null, $page_size = null, $cursor = null, string $contentType = self::contentTypes['getBalances'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -375,7 +375,13 @@ class BalancesApi
         }
 
 
-
+        if ($page_size !== null && $page_size > 1000) {
+            throw new \InvalidArgumentException('invalid value for "$page_size" when calling BalancesApi.getBalances, must be smaller than or equal to 1000.');
+        }
+        if ($page_size !== null && $page_size < 1) {
+            throw new \InvalidArgumentException('invalid value for "$page_size" when calling BalancesApi.getBalances, must be bigger than or equal to 1.');
+        }
+        
 
 
         $resourcePath = '/api/ledger/{ledger}/balances';
@@ -396,9 +402,9 @@ class BalancesApi
         ) ?? []);
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $after,
-            'after', // param base name
-            'string', // openApiType
+            $page_size,
+            'pageSize', // param base name
+            'integer', // openApiType
             'form', // style
             true, // explode
             false // required
