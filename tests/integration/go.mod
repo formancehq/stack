@@ -165,6 +165,7 @@ require (
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/uptrace/bun/dialect/sqlitedialect v1.1.12 // indirect
 	github.com/uptrace/bun/driver/sqliteshim v1.1.12 // indirect
+	github.com/uptrace/bun/extra/bunbig v1.1.12 // indirect
 	github.com/uptrace/bun/extra/bundebug v1.1.12 // indirect
 	github.com/uptrace/bun/extra/bunotel v1.1.12 // indirect
 	github.com/uptrace/opentelemetry-go-extra/otellogrus v0.1.21 // indirect
