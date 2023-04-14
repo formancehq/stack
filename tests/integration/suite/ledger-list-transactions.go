@@ -323,17 +323,10 @@ var _ = Given("some empty environment", func() {
 
 			transactionResponse, err = Client().TransactionsApi.
 				CountTransactions(TestContext(), "default").
-				Account("foo:.*").
+				Account("foo:").
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
 			Expect(transactionResponse.Header.Get("Count")).Should(Equal("3"))
-
-			transactionResponse, err = Client().TransactionsApi.
-				CountTransactions(TestContext(), "default").
-				Account("foo:b.*").
-				Execute()
-			Expect(err).ToNot(HaveOccurred())
-			Expect(transactionResponse.Header.Get("Count")).Should(Equal("2"))
 
 			transactionResponse, err = Client().TransactionsApi.
 				CountTransactions(TestContext(), "default").
@@ -344,17 +337,10 @@ var _ = Given("some empty environment", func() {
 
 			transactionResponse, err = Client().TransactionsApi.
 				CountTransactions(TestContext(), "default").
-				Destination("foo:.*").
+				Destination(":baz").
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
-			Expect(transactionResponse.Header.Get("Count")).Should(Equal("3"))
-
-			transactionResponse, err = Client().TransactionsApi.
-				CountTransactions(TestContext(), "default").
-				Destination("foo:b.*").
-				Execute()
-			Expect(err).ToNot(HaveOccurred())
-			Expect(transactionResponse.Header.Get("Count")).Should(Equal("2"))
+			Expect(transactionResponse.Header.Get("Count")).Should(Equal("1"))
 
 			transactionResponse, err = Client().TransactionsApi.
 				CountTransactions(TestContext(), "default").
@@ -365,7 +351,7 @@ var _ = Given("some empty environment", func() {
 
 			transactionResponse, err = Client().TransactionsApi.
 				CountTransactions(TestContext(), "default").
-				Source("foo:.*").
+				Source("foo:").
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
 			Expect(transactionResponse.Header.Get("Count")).Should(Equal("0"))
@@ -449,7 +435,7 @@ var _ = Given("some empty environment", func() {
 
 			transactionCursorResponse, _, err = Client().TransactionsApi.
 				ListTransactions(TestContext(), "default").
-				Account("foo:.*").
+				Account("foo:").
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
 			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(3))
@@ -459,12 +445,13 @@ var _ = Given("some empty environment", func() {
 
 			transactionCursorResponse, _, err = Client().TransactionsApi.
 				ListTransactions(TestContext(), "default").
-				Account("foo:b.*").
+				Account("foo:").
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
-			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(2))
+			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(3))
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t3))
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
+			Expect(transactionCursorResponse.Cursor.Data[2]).Should(Equal(t1))
 
 			transactionCursorResponse, _, err = Client().TransactionsApi.
 				ListTransactions(TestContext(), "default").
@@ -475,22 +462,13 @@ var _ = Given("some empty environment", func() {
 
 			transactionCursorResponse, _, err = Client().TransactionsApi.
 				ListTransactions(TestContext(), "default").
-				Destination("foo:.*").
+				Destination("foo:").
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
 			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(3))
 			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t3))
 			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 			Expect(transactionCursorResponse.Cursor.Data[2]).Should(Equal(t1))
-
-			transactionCursorResponse, _, err = Client().TransactionsApi.
-				ListTransactions(TestContext(), "default").
-				Destination("foo:b.*").
-				Execute()
-			Expect(err).ToNot(HaveOccurred())
-			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(2))
-			Expect(transactionCursorResponse.Cursor.Data[0]).Should(Equal(t3))
-			Expect(transactionCursorResponse.Cursor.Data[1]).Should(Equal(t2))
 
 			transactionCursorResponse, _, err = Client().TransactionsApi.
 				ListTransactions(TestContext(), "default").
@@ -501,7 +479,7 @@ var _ = Given("some empty environment", func() {
 
 			transactionCursorResponse, _, err = Client().TransactionsApi.
 				ListTransactions(TestContext(), "default").
-				Source("foo:.*").
+				Source("foo:").
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
 			Expect(transactionCursorResponse.Cursor.Data).To(HaveLen(0))
