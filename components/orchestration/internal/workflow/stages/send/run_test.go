@@ -51,7 +51,7 @@ func TestSendSchemaValidation(t *testing.T) {
 						Ledger: "default",
 					},
 				},
-				Amount: sdk.Monetary{
+				Amount: &sdk.Monetary{
 					Amount: 100,
 					Asset:  "USD",
 				},
@@ -89,7 +89,7 @@ func TestSendSchemaValidation(t *testing.T) {
 						Balance: "main",
 					},
 				},
-				Amount: sdk.Monetary{
+				Amount: &sdk.Monetary{
 					Asset:  "USD",
 					Amount: 100,
 				},
@@ -109,7 +109,7 @@ var (
 				ID:      "wallet1",
 				Balance: "main",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -216,7 +216,7 @@ var (
 				ID:     "foo",
 				Ledger: "default",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -312,7 +312,7 @@ var (
 				ID:     "foo",
 				Ledger: "default",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -407,7 +407,7 @@ var (
 				ID:     "bar",
 				Ledger: "default",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -443,7 +443,7 @@ var (
 				ID:     "account2",
 				Ledger: "ledger2",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -503,7 +503,7 @@ var (
 				ID:      "bar",
 				Balance: "main",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -546,7 +546,7 @@ var (
 				ID:      "wallet",
 				Balance: "main",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -614,7 +614,7 @@ var (
 				PSP:      "stripe",
 				Metadata: "stripeConnectID",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -676,7 +676,7 @@ var (
 				ID:     "bar",
 				Ledger: "default",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -726,7 +726,7 @@ var (
 				ID:     "account",
 				Ledger: "ledger2",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -795,7 +795,7 @@ var (
 				ID:      "bar",
 				Balance: "main",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -853,7 +853,7 @@ var (
 				ID:      "wallet2",
 				Balance: "main",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
@@ -923,7 +923,7 @@ var (
 				PSP:      "stripe",
 				Metadata: "stripeConnectID",
 			}),
-			Amount: *sdk.NewMonetary("USD", 100),
+			Amount: sdk.NewMonetary("USD", 100),
 		},
 		MockedActivities: []stagestesting.MockedActivity{
 			{
