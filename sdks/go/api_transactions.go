@@ -643,7 +643,6 @@ type ApiListTransactionsRequest struct {
 	ApiService TransactionsApi
 	ledger string
 	pageSize *int64
-	after *string
 	reference *string
 	account *string
 	source *string
@@ -657,12 +656,6 @@ type ApiListTransactionsRequest struct {
 // The maximum number of results to return per page. 
 func (r ApiListTransactionsRequest) PageSize(pageSize int64) ApiListTransactionsRequest {
 	r.pageSize = &pageSize
-	return r
-}
-
-// Pagination cursor, will return transactions after given txid (in descending order).
-func (r ApiListTransactionsRequest) After(after string) ApiListTransactionsRequest {
-	r.after = &after
 	return r
 }
 
@@ -759,9 +752,6 @@ func (a *TransactionsApiService) ListTransactionsExecute(r ApiListTransactionsRe
 
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
-	}
-	if r.after != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "")
 	}
 	if r.reference != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "reference", r.reference, "")

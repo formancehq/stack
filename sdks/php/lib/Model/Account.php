@@ -59,7 +59,6 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
       */
     protected static $openAPITypes = [
         'address' => 'string',
-        'type' => 'string',
         'metadata' => 'array<string,string>'
     ];
 
@@ -72,7 +71,6 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
       */
     protected static $openAPIFormats = [
         'address' => null,
-        'type' => null,
         'metadata' => null
     ];
 
@@ -83,7 +81,6 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
       */
     protected static array $openAPINullables = [
         'address' => false,
-		'type' => false,
 		'metadata' => false
     ];
 
@@ -174,7 +171,6 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     protected static $attributeMap = [
         'address' => 'address',
-        'type' => 'type',
         'metadata' => 'metadata'
     ];
 
@@ -185,7 +181,6 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     protected static $setters = [
         'address' => 'setAddress',
-        'type' => 'setType',
         'metadata' => 'setMetadata'
     ];
 
@@ -196,7 +191,6 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     protected static $getters = [
         'address' => 'getAddress',
-        'type' => 'getType',
         'metadata' => 'getMetadata'
     ];
 
@@ -258,7 +252,6 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
     public function __construct(array $data = null)
     {
         $this->setIfExists('address', $data ?? [], null);
-        $this->setIfExists('type', $data ?? [], null);
         $this->setIfExists('metadata', $data ?? [], null);
     }
 
@@ -333,33 +326,6 @@ class Account implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable address cannot be null');
         }
         $this->container['address'] = $address;
-
-        return $this;
-    }
-
-    /**
-     * Gets type
-     *
-     * @return string|null
-     */
-    public function getType()
-    {
-        return $this->container['type'];
-    }
-
-    /**
-     * Sets type
-     *
-     * @param string|null $type type
-     *
-     * @return self
-     */
-    public function setType($type)
-    {
-        if (is_null($type)) {
-            throw new \InvalidArgumentException('non-nullable type cannot be null');
-        }
-        $this->container['type'] = $type;
 
         return $this;
     }

@@ -71,11 +71,9 @@ class Account(
                         _configuration=_configuration,
                         **kwargs,
                     )
-            type = schemas.StrSchema
             __annotations__ = {
                 "address": address,
                 "metadata": metadata,
-                "type": type,
             }
     
     metadata: MetaOapg.properties.metadata
@@ -88,12 +86,9 @@ class Account(
     def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["type"]) -> MetaOapg.properties.type: ...
-    
-    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["address", "metadata", "type", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["address", "metadata", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -105,12 +100,9 @@ class Account(
     def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["type"]) -> typing.Union[MetaOapg.properties.type, schemas.Unset]: ...
-    
-    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["address", "metadata", "type", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["address", "metadata", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -119,7 +111,6 @@ class Account(
         *_args: typing.Union[dict, frozendict.frozendict, ],
         metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, ],
         address: typing.Union[MetaOapg.properties.address, str, ],
-        type: typing.Union[MetaOapg.properties.type, str, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'Account':
@@ -128,7 +119,6 @@ class Account(
             *_args,
             metadata=metadata,
             address=address,
-            type=type,
             _configuration=_configuration,
             **kwargs,
         )

@@ -33,10 +33,6 @@ public class Account {
   @SerializedName(SERIALIZED_NAME_ADDRESS)
   private String address;
 
-  public static final String SERIALIZED_NAME_TYPE = "type";
-  @SerializedName(SERIALIZED_NAME_TYPE)
-  private String type;
-
   public static final String SERIALIZED_NAME_METADATA = "metadata";
   @SerializedName(SERIALIZED_NAME_METADATA)
   private Map<String, String> metadata = new HashMap<>();
@@ -63,28 +59,6 @@ public class Account {
 
   public void setAddress(String address) {
     this.address = address;
-  }
-
-
-  public Account type(String type) {
-    
-    this.type = type;
-    return this;
-  }
-
-   /**
-   * Get type
-   * @return type
-  **/
-  @javax.annotation.Nullable
-
-  public String getType() {
-    return type;
-  }
-
-
-  public void setType(String type) {
-    this.type = type;
   }
 
 
@@ -125,13 +99,12 @@ public class Account {
     }
     Account account = (Account) o;
     return Objects.equals(this.address, account.address) &&
-        Objects.equals(this.type, account.type) &&
         Objects.equals(this.metadata, account.metadata);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(address, type, metadata);
+    return Objects.hash(address, metadata);
   }
 
   @Override
@@ -139,7 +112,6 @@ public class Account {
     StringBuilder sb = new StringBuilder();
     sb.append("class Account {\n");
     sb.append("    address: ").append(toIndentedString(address)).append("\n");
-    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    metadata: ").append(toIndentedString(metadata)).append("\n");
     sb.append("}");
     return sb.toString();
