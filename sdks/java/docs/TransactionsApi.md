@@ -317,7 +317,7 @@ public class Example {
 
 ## listTransactions
 
-> TransactionsCursorResponse listTransactions(ledger, pageSize, after, reference, account, source, destination, startTime, endTime, cursor, metadata)
+> TransactionsCursorResponse listTransactions(ledger, pageSize, reference, account, source, destination, startTime, endTime, cursor, metadata)
 
 List transactions from a ledger
 
@@ -346,7 +346,6 @@ public class Example {
         TransactionsApi apiInstance = new TransactionsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
         Long pageSize = 100L; // Long | The maximum number of results to return per page. 
-        String after = "1234"; // String | Pagination cursor, will return transactions after given txid (in descending order).
         String reference = "ref:001"; // String | Find transactions by reference field.
         String account = "users:001"; // String | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $).
         String source = "users:001"; // String | Filter transactions with postings involving given account at source (regular expression placed between ^ and $).
@@ -356,7 +355,7 @@ public class Example {
         String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
         Map<String, String> metadata = new HashMap(); // Map<String, String> | Filter transactions by metadata key value pairs.
         try {
-            TransactionsCursorResponse result = apiInstance.listTransactions(ledger, pageSize, after, reference, account, source, destination, startTime, endTime, cursor, metadata);
+            TransactionsCursorResponse result = apiInstance.listTransactions(ledger, pageSize, reference, account, source, destination, startTime, endTime, cursor, metadata);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TransactionsApi#listTransactions");
@@ -376,7 +375,6 @@ public class Example {
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
 | **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] |
-| **after** | **String**| Pagination cursor, will return transactions after given txid (in descending order). | [optional] |
 | **reference** | **String**| Find transactions by reference field. | [optional] |
 | **account** | **String**| Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). | [optional] |
 | **source** | **String**| Filter transactions with postings involving given account at source (regular expression placed between ^ and $). | [optional] |

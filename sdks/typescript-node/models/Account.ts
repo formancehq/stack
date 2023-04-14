@@ -14,7 +14,6 @@ import { HttpFile } from '../http/http';
 
 export class Account {
     'address': string;
-    'type'?: string;
     'metadata': { [key: string]: string; };
 
     static readonly discriminator: string | undefined = undefined;
@@ -23,12 +22,6 @@ export class Account {
         {
             "name": "address",
             "baseName": "address",
-            "type": "string",
-            "format": ""
-        },
-        {
-            "name": "type",
-            "baseName": "type",
             "type": "string",
             "format": ""
         },

@@ -310,7 +310,7 @@ Name | Type | Description  | Notes
 
 ## ListTransactions
 
-> TransactionsCursorResponse ListTransactions(ctx, ledger).PageSize(pageSize).After(after).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).EndTime(endTime).Cursor(cursor).Metadata(metadata).Execute()
+> TransactionsCursorResponse ListTransactions(ctx, ledger).PageSize(pageSize).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).EndTime(endTime).Cursor(cursor).Metadata(metadata).Execute()
 
 List transactions from a ledger
 
@@ -332,7 +332,6 @@ import (
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
     pageSize := int64(100) // int64 | The maximum number of results to return per page.  (optional)
-    after := "1234" // string | Pagination cursor, will return transactions after given txid (in descending order). (optional)
     reference := "ref:001" // string | Find transactions by reference field. (optional)
     account := "users:001" // string | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). (optional)
     source := "users:001" // string | Filter transactions with postings involving given account at source (regular expression placed between ^ and $). (optional)
@@ -344,7 +343,7 @@ func main() {
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.TransactionsApi.ListTransactions(context.Background(), ledger).PageSize(pageSize).After(after).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).EndTime(endTime).Cursor(cursor).Metadata(metadata).Execute()
+    resp, r, err := apiClient.TransactionsApi.ListTransactions(context.Background(), ledger).PageSize(pageSize).Reference(reference).Account(account).Source(source).Destination(destination).StartTime(startTime).EndTime(endTime).Cursor(cursor).Metadata(metadata).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.ListTransactions``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -371,7 +370,6 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **pageSize** | **int64** | The maximum number of results to return per page.  | 
- **after** | **string** | Pagination cursor, will return transactions after given txid (in descending order). | 
  **reference** | **string** | Find transactions by reference field. | 
  **account** | **string** | Filter transactions with postings involving given account, either as source or destination (regular expression placed between ^ and $). | 
  **source** | **string** | Filter transactions with postings involving given account at source (regular expression placed between ^ and $). | 

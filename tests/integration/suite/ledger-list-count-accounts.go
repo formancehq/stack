@@ -68,18 +68,15 @@ var _ = Given("some empty environment", func() {
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(3))
 			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
 				Address:  "foo:foo",
-				Type:     nil,
 				Metadata: metadata1,
 			}))
 			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(formance.Account{
 				Address:  "foo:bar",
-				Type:     nil,
 				Metadata: metadata2,
 			}))
 
 			Expect(accountsCursorResponse.Cursor.Data[2]).To(Equal(formance.Account{
 				Address:  "world",
-				Type:     nil,
 				Metadata: metadata.Metadata{},
 			}))
 		})
@@ -92,12 +89,10 @@ var _ = Given("some empty environment", func() {
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(2))
 			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
 				Address:  "foo:foo",
-				Type:     nil,
 				Metadata: metadata1,
 			}))
 			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(formance.Account{
 				Address:  "foo:bar",
-				Type:     nil,
 				Metadata: metadata2,
 			}))
 
@@ -109,7 +104,6 @@ var _ = Given("some empty environment", func() {
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(1))
 			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
 				Address:  "foo:foo",
-				Type:     nil,
 				Metadata: metadata1,
 			}))
 		})
@@ -123,12 +117,10 @@ var _ = Given("some empty environment", func() {
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(2))
 			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
 				Address:  "foo:bar",
-				Type:     nil,
 				Metadata: metadata2,
 			}))
 			Expect(accountsCursorResponse.Cursor.Data[1]).To(Equal(formance.Account{
 				Address:  "world",
-				Type:     nil,
 				Metadata: metadata.Metadata{},
 			}))
 
@@ -141,7 +133,6 @@ var _ = Given("some empty environment", func() {
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(1))
 			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
 				Address:  "foo:foo",
-				Type:     nil,
 				Metadata: metadata1,
 			}))
 		})
@@ -156,7 +147,6 @@ var _ = Given("some empty environment", func() {
 			Expect(accountsCursorResponse.Cursor.Data).To(HaveLen(1))
 			Expect(accountsCursorResponse.Cursor.Data[0]).To(Equal(formance.Account{
 				Address:  "foo:foo",
-				Type:     nil,
 				Metadata: metadata1,
 			}))
 		})
@@ -204,7 +194,6 @@ var _ = Given("some environment with accounts", func() {
 				Expect(err).ToNot(HaveOccurred())
 				accounts = append(accounts, formance.Account{
 					Address:  fmt.Sprintf("foo:%d", i),
-					Type:     nil,
 					Metadata: m,
 				})
 			}

@@ -19,7 +19,6 @@ func NewListCommand() *cobra.Command {
 		accountFlag     = "account"
 		destinationFlag = "dst"
 		sourceFlag      = "src"
-		afterFlag       = "after"
 		endTimeFlag     = "end"
 		startTimeFlag   = "start"
 	)
@@ -29,7 +28,6 @@ func NewListCommand() *cobra.Command {
 		fctl.WithShortDescription("List transactions"),
 		fctl.WithStringFlag(accountFlag, "", "Filter on account"),
 		fctl.WithStringFlag(destinationFlag, "", "Filter on destination account"),
-		fctl.WithStringFlag(afterFlag, "", "Filter results after given tx id"),
 		fctl.WithStringFlag(endTimeFlag, "", "Consider transactions before date"),
 		fctl.WithStringFlag(startTimeFlag, "", "Consider transactions after date"),
 		fctl.WithStringFlag(sourceFlag, "", "Filter on source account"),
@@ -90,7 +88,6 @@ func NewListCommand() *cobra.Command {
 				Account(fctl.GetString(cmd, accountFlag)).
 				Destination(fctl.GetString(cmd, destinationFlag)).
 				Source(fctl.GetString(cmd, sourceFlag)).
-				After(fctl.GetString(cmd, afterFlag)).
 				EndTime(endTime).
 				StartTime(startTime).
 				Metadata(metadata).
