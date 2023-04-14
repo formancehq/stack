@@ -25,13 +25,13 @@ public interface BalancesApi {
    * 
    * @param ledger Name of the ledger. (required)
    * @param address Filter balances involving given account, either as source or destination. (optional)
-   * @param after Pagination cursor, will return accounts after given address, in descending order. (optional)
+   * @param pageSize The maximum number of results to return per page.  (optional)
    * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  (optional)
    * @return Call&lt;BalancesCursorResponse&gt;
    */
   @GET("api/ledger/{ledger}/balances")
   Call<BalancesCursorResponse> getBalances(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("address") String address, @retrofit2.http.Query("after") String after, @retrofit2.http.Query("cursor") String cursor
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Query("address") String address, @retrofit2.http.Query("pageSize") Long pageSize, @retrofit2.http.Query("cursor") String cursor
   );
 
   /**

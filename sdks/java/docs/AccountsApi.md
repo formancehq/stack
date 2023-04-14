@@ -231,7 +231,7 @@ public class Example {
 
 ## listAccounts
 
-> AccountsCursorResponse listAccounts(ledger, pageSize, after, address, metadata, balance, balanceOperator, cursor)
+> AccountsCursorResponse listAccounts(ledger, pageSize, address, metadata, balance, balanceOperator, cursor)
 
 List accounts from a ledger
 
@@ -259,15 +259,14 @@ public class Example {
 
         AccountsApi apiInstance = new AccountsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
-        Long pageSize = 15L; // Long | The maximum number of results to return per page. 
-        String after = "users:003"; // String | Pagination cursor, will return accounts after given address, in descending order.
+        Long pageSize = 100L; // Long | The maximum number of results to return per page. 
         String address = "users:.+"; // String | Filter accounts by address pattern (regular expression placed between ^ and $).
         Map<String, String> metadata = new HashMap(); // Map<String, String> | Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
         Long balance = 2400L; // Long | Filter accounts by their balance (default operator is gte)
         String balanceOperator = "gte"; // String | Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. 
         String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
         try {
-            AccountsCursorResponse result = apiInstance.listAccounts(ledger, pageSize, after, address, metadata, balance, balanceOperator, cursor);
+            AccountsCursorResponse result = apiInstance.listAccounts(ledger, pageSize, address, metadata, balance, balanceOperator, cursor);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling AccountsApi#listAccounts");
@@ -286,8 +285,7 @@ public class Example {
 | Name | Type | Description  | Notes |
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
-| **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] [default to 15] |
-| **after** | **String**| Pagination cursor, will return accounts after given address, in descending order. | [optional] |
+| **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] |
 | **address** | **String**| Filter accounts by address pattern (regular expression placed between ^ and $). | [optional] |
 | **metadata** | [**Map&lt;String, String&gt;**](String.md)| Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below. | [optional] |
 | **balance** | **Long**| Filter accounts by their balance (default operator is gte) | [optional] |

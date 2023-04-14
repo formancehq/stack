@@ -23,10 +23,10 @@ export class BalancesApiRequestFactory extends BaseAPIRequestFactory {
      * Get the balances from a ledger's account
      * @param ledger Name of the ledger.
      * @param address Filter balances involving given account, either as source or destination.
-     * @param after Pagination cursor, will return accounts after given address, in descending order.
+     * @param pageSize The maximum number of results to return per page. 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      */
-    public async getBalances(ledger: string, address?: string, after?: string, cursor?: string, _options?: Configuration): Promise<RequestContext> {
+    public async getBalances(ledger: string, address?: string, pageSize?: number, cursor?: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
@@ -52,8 +52,8 @@ export class BalancesApiRequestFactory extends BaseAPIRequestFactory {
         }
 
         // Query Params
-        if (after !== undefined) {
-            requestContext.setQueryParam("after", ObjectSerializer.serialize(after, "string", ""));
+        if (pageSize !== undefined) {
+            requestContext.setQueryParam("pageSize", ObjectSerializer.serialize(pageSize, "number", "int64"));
         }
 
         // Query Params

@@ -40,6 +40,18 @@ var _ = Given("some empty environment", func() {
 				Execute()
 			Expect(err).ToNot(HaveOccurred())
 		})
+		It("should fail if the transaction does not exist", func() {
+			metadata := map[string]string{
+				"foo": "bar",
+			}
+
+			resp, err := Client().TransactionsApi.
+				AddMetadataOnTransaction(TestContext(), "default", 666).
+				RequestBody(metadata).
+				Execute()
+			Expect(err).To(HaveOccurred())
+			Expect(resp.StatusCode).To(Equal(404))
+		})
 		Then("adding a metadata", func() {
 			metadata := map[string]string{
 				"foo": "bar",

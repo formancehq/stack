@@ -62,5 +62,5 @@ export class Log {
 }
 
 
-export type LogTypeEnum = "NEW_TRANSACTION" | "SET_METADATA" ;
+export type LogTypeEnum = "NEW_TRANSACTION" | "SET_METADATA" | "REVERTED_TRANSACTION" ;
 

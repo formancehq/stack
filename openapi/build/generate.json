@@ -777,17 +777,7 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            }
-          },
-          {
-            "name": "after",
-            "in": "query",
-            "description": "Pagination cursor, will return accounts after given address, in descending order.",
-            "schema": {
-              "type": "string",
-              "example": "users:003"
+              "maximum": 1000
             }
           },
           {
@@ -1546,12 +1536,15 @@
             }
           },
           {
-            "name": "after",
+            "name": "pageSize",
             "in": "query",
-            "description": "Pagination cursor, will return accounts after given address, in descending order.",
+            "description": "The maximum number of results to return per page.\n",
+            "example": 100,
             "schema": {
-              "type": "string",
-              "example": "users:003"
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1,
+              "maximum": 1000
             }
           },
           {
@@ -1668,17 +1661,7 @@
               "type": "integer",
               "format": "int64",
               "minimum": 1,
-              "maximum": 1000,
-              "default": 15
-            }
-          },
-          {
-            "name": "after",
-            "in": "query",
-            "description": "Pagination cursor, will return the logs after a given ID. (in descending order).",
-            "schema": {
-              "type": "string",
-              "example": "1234"
+              "maximum": 1000
             }
           },
           {
@@ -4385,7 +4368,8 @@
             "type": "string",
             "enum": [
               "NEW_TRANSACTION",
-              "SET_METADATA"
+              "SET_METADATA",
+              "REVERTED_TRANSACTION"
             ]
           },
           "data": {
