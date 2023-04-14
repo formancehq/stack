@@ -80,9 +80,9 @@ func (s Destination) WithAccount(src *LedgerAccountDestination) Destination {
 }
 
 type Send struct {
-	Source      Source       `json:"source"`
-	Destination Destination  `json:"destination"`
-	Amount      sdk.Monetary `json:"amount"`
+	Source      Source        `json:"source"`
+	Destination Destination   `json:"destination"`
+	Amount      *sdk.Monetary `json:"amount,omitempty"`
 }
 
 func (s Send) GetWorkflow() any {
