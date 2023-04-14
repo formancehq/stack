@@ -48,7 +48,6 @@ type ApiListLogsRequest struct {
 	ApiService LogsApi
 	ledger string
 	pageSize *int64
-	after *string
 	startTime *time.Time
 	endTime *time.Time
 	cursor *string
@@ -57,12 +56,6 @@ type ApiListLogsRequest struct {
 // The maximum number of results to return per page. 
 func (r ApiListLogsRequest) PageSize(pageSize int64) ApiListLogsRequest {
 	r.pageSize = &pageSize
-	return r
-}
-
-// Pagination cursor, will return the logs after a given ID. (in descending order).
-func (r ApiListLogsRequest) After(after string) ApiListLogsRequest {
-	r.after = &after
 	return r
 }
 
@@ -129,9 +122,6 @@ func (a *LogsApiService) ListLogsExecute(r ApiListLogsRequest) (*LogsCursorRespo
 
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "")
-	}
-	if r.after != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "after", r.after, "")
 	}
 	if r.startTime != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "startTime", r.startTime, "")

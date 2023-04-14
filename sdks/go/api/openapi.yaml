@@ -503,21 +503,10 @@ paths:
         name: pageSize
         required: false
         schema:
-          default: 15
           format: int64
           maximum: 1000
           minimum: 1
           type: integer
-        style: form
-      - description: "Pagination cursor, will return accounts after given address,\
-          \ in descending order."
-        explode: true
-        in: query
-        name: after
-        required: false
-        schema:
-          example: users:003
-          type: string
         style: form
       - description: Filter accounts by address pattern (regular expression placed
           between ^ and $).
@@ -1215,15 +1204,18 @@ paths:
           example: users:001
           type: string
         style: form
-      - description: "Pagination cursor, will return accounts after given address,\
-          \ in descending order."
+      - description: |
+          The maximum number of results to return per page.
+        example: 100
         explode: true
         in: query
-        name: after
+        name: pageSize
         required: false
         schema:
-          example: users:003
-          type: string
+          format: int64
+          maximum: 1000
+          minimum: 1
+          type: integer
         style: form
       - description: |
           Parameter used in pagination requests. Maximum page size is set to 15.
@@ -1315,21 +1307,10 @@ paths:
         name: pageSize
         required: false
         schema:
-          default: 15
           format: int64
           maximum: 1000
           minimum: 1
           type: integer
-        style: form
-      - description: "Pagination cursor, will return the logs after a given ID. (in\
-          \ descending order)."
-        explode: true
-        in: query
-        name: after
-        required: false
-        schema:
-          example: "1234"
-          type: string
         style: form
       - description: |
           Filter transactions that occurred after this timestamp.
@@ -3483,7 +3464,6 @@ components:
         data:
           additionalProperties:
             format: int64
-            minimum: 0
             type: integer
           example:
             USD: 100
@@ -3640,7 +3620,6 @@ components:
     AssetsBalances:
       additionalProperties:
         format: int64
-        minimum: 0
         type: integer
       example:
         USD: 100
@@ -3845,6 +3824,7 @@ components:
           enum:
           - NEW_TRANSACTION
           - SET_METADATA
+          - REVERTED_TRANSACTION
           type: string
         data:
           properties: {}

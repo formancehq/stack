@@ -274,12 +274,6 @@ export interface AccountsApiListAccountsRequest {
      */
     pageSize?: number
     /**
-     * Pagination cursor, will return accounts after given address, in descending order.
-     * @type string
-     * @memberof AccountsApilistAccounts
-     */
-    after?: string
-    /**
      * Filter accounts by address pattern (regular expression placed between ^ and $).
      * @type string
      * @memberof AccountsApilistAccounts
@@ -348,7 +342,7 @@ export class ObjectAccountsApi {
      * @param param the request object
      */
     public listAccounts(param: AccountsApiListAccountsRequest, options?: Configuration): Promise<AccountsCursorResponse> {
-        return this.api.listAccounts(param.ledger, param.pageSize, param.after, param.address, param.metadata, param.balance, param.balanceOperator, param.cursor,  options).toPromise();
+        return this.api.listAccounts(param.ledger, param.pageSize, param.address, param.metadata, param.balance, param.balanceOperator, param.cursor,  options).toPromise();
     }
 
 }
@@ -370,11 +364,11 @@ export interface BalancesApiGetBalancesRequest {
      */
     address?: string
     /**
-     * Pagination cursor, will return accounts after given address, in descending order.
-     * @type string
+     * The maximum number of results to return per page. 
+     * @type number
      * @memberof BalancesApigetBalances
      */
-    after?: string
+    pageSize?: number
     /**
      * Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      * @type string
@@ -410,7 +404,7 @@ export class ObjectBalancesApi {
      * @param param the request object
      */
     public getBalances(param: BalancesApiGetBalancesRequest, options?: Configuration): Promise<BalancesCursorResponse> {
-        return this.api.getBalances(param.ledger, param.address, param.after, param.cursor,  options).toPromise();
+        return this.api.getBalances(param.ledger, param.address, param.pageSize, param.cursor,  options).toPromise();
     }
 
     /**
@@ -703,12 +697,6 @@ export interface LogsApiListLogsRequest {
      */
     pageSize?: number
     /**
-     * Pagination cursor, will return the logs after a given ID. (in descending order).
-     * @type string
-     * @memberof LogsApilistLogs
-     */
-    after?: string
-    /**
      * Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). 
      * @type Date
      * @memberof LogsApilistLogs
@@ -741,7 +729,7 @@ export class ObjectLogsApi {
      * @param param the request object
      */
     public listLogs(param: LogsApiListLogsRequest, options?: Configuration): Promise<LogsCursorResponse> {
-        return this.api.listLogs(param.ledger, param.pageSize, param.after, param.startTime, param.endTime, param.cursor,  options).toPromise();
+        return this.api.listLogs(param.ledger, param.pageSize, param.startTime, param.endTime, param.cursor,  options).toPromise();
     }
 
 }

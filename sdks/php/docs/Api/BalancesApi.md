@@ -11,7 +11,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 ## `getBalances()`
 
 ```php
-getBalances($ledger, $address, $after, $cursor): \Formance\Model\BalancesCursorResponse
+getBalances($ledger, $address, $page_size, $cursor): \Formance\Model\BalancesCursorResponse
 ```
 
 Get the balances from a ledger's account
@@ -35,11 +35,11 @@ $apiInstance = new Formance\Api\BalancesApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $address = users:001; // string | Filter balances involving given account, either as source or destination.
-$after = users:003; // string | Pagination cursor, will return accounts after given address, in descending order.
+$page_size = 100; // int | The maximum number of results to return per page.
 $cursor = aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ==; // string | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.
 
 try {
-    $result = $apiInstance->getBalances($ledger, $address, $after, $cursor);
+    $result = $apiInstance->getBalances($ledger, $address, $page_size, $cursor);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling BalancesApi->getBalances: ', $e->getMessage(), PHP_EOL;
@@ -52,7 +52,7 @@ try {
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
 | **address** | **string**| Filter balances involving given account, either as source or destination. | [optional] |
-| **after** | **string**| Pagination cursor, will return accounts after given address, in descending order. | [optional] |
+| **page_size** | **int**| The maximum number of results to return per page. | [optional] |
 | **cursor** | **string**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. | [optional] |
 
 ### Return type

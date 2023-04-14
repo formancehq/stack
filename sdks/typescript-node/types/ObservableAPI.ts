@@ -296,15 +296,14 @@ export class ObservableAccountsApi {
      * List accounts from a ledger
      * @param ledger Name of the ledger.
      * @param pageSize The maximum number of results to return per page. 
-     * @param after Pagination cursor, will return accounts after given address, in descending order.
      * @param address Filter accounts by address pattern (regular expression placed between ^ and $).
      * @param metadata Filter accounts by metadata key value pairs. Nested objects can be used as seen in the example below.
      * @param balance Filter accounts by their balance (default operator is gte)
      * @param balanceOperator Operator used for the filtering of balances can be greater than/equal, less than/equal, greater than, less than, equal or not. 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      */
-    public listAccounts(ledger: string, pageSize?: number, after?: string, address?: string, metadata?: { [key: string]: string; }, balance?: number, balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne', cursor?: string, _options?: Configuration): Observable<AccountsCursorResponse> {
-        const requestContextPromise = this.requestFactory.listAccounts(ledger, pageSize, after, address, metadata, balance, balanceOperator, cursor, _options);
+    public listAccounts(ledger: string, pageSize?: number, address?: string, metadata?: { [key: string]: string; }, balance?: number, balanceOperator?: 'gte' | 'lte' | 'gt' | 'lt' | 'e' | 'ne', cursor?: string, _options?: Configuration): Observable<AccountsCursorResponse> {
+        const requestContextPromise = this.requestFactory.listAccounts(ledger, pageSize, address, metadata, balance, balanceOperator, cursor, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);
@@ -344,11 +343,11 @@ export class ObservableBalancesApi {
      * Get the balances from a ledger's account
      * @param ledger Name of the ledger.
      * @param address Filter balances involving given account, either as source or destination.
-     * @param after Pagination cursor, will return accounts after given address, in descending order.
+     * @param pageSize The maximum number of results to return per page. 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      */
-    public getBalances(ledger: string, address?: string, after?: string, cursor?: string, _options?: Configuration): Observable<BalancesCursorResponse> {
-        const requestContextPromise = this.requestFactory.getBalances(ledger, address, after, cursor, _options);
+    public getBalances(ledger: string, address?: string, pageSize?: number, cursor?: string, _options?: Configuration): Observable<BalancesCursorResponse> {
+        const requestContextPromise = this.requestFactory.getBalances(ledger, address, pageSize, cursor, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);
@@ -767,13 +766,12 @@ export class ObservableLogsApi {
      * List the logs from a ledger
      * @param ledger Name of the ledger.
      * @param pageSize The maximum number of results to return per page. 
-     * @param after Pagination cursor, will return the logs after a given ID. (in descending order).
      * @param startTime Filter transactions that occurred after this timestamp. The format is RFC3339 and is inclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; includes the first second of 4th minute). 
      * @param endTime Filter transactions that occurred before this timestamp. The format is RFC3339 and is exclusive (for example, \&quot;2023-01-02T15:04:01Z\&quot; excludes the first second of 4th minute). 
      * @param cursor Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
      */
-    public listLogs(ledger: string, pageSize?: number, after?: string, startTime?: Date, endTime?: Date, cursor?: string, _options?: Configuration): Observable<LogsCursorResponse> {
-        const requestContextPromise = this.requestFactory.listLogs(ledger, pageSize, after, startTime, endTime, cursor, _options);
+    public listLogs(ledger: string, pageSize?: number, startTime?: Date, endTime?: Date, cursor?: string, _options?: Configuration): Observable<LogsCursorResponse> {
+        const requestContextPromise = this.requestFactory.listLogs(ledger, pageSize, startTime, endTime, cursor, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);

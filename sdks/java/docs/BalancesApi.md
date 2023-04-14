@@ -11,7 +11,7 @@ All URIs are relative to *http://localhost*
 
 ## getBalances
 
-> BalancesCursorResponse getBalances(ledger, address, after, cursor)
+> BalancesCursorResponse getBalances(ledger, address, pageSize, cursor)
 
 Get the balances from a ledger&#39;s account
 
@@ -38,10 +38,10 @@ public class Example {
         BalancesApi apiInstance = new BalancesApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
         String address = "users:001"; // String | Filter balances involving given account, either as source or destination.
-        String after = "users:003"; // String | Pagination cursor, will return accounts after given address, in descending order.
+        Long pageSize = 100L; // Long | The maximum number of results to return per page. 
         String cursor = "aHR0cHM6Ly9nLnBhZ2UvTmVrby1SYW1lbj9zaGFyZQ=="; // String | Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set. 
         try {
-            BalancesCursorResponse result = apiInstance.getBalances(ledger, address, after, cursor);
+            BalancesCursorResponse result = apiInstance.getBalances(ledger, address, pageSize, cursor);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling BalancesApi#getBalances");
@@ -61,7 +61,7 @@ public class Example {
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
 | **address** | **String**| Filter balances involving given account, either as source or destination. | [optional] |
-| **after** | **String**| Pagination cursor, will return accounts after given address, in descending order. | [optional] |
+| **pageSize** | **Long**| The maximum number of results to return per page.  | [optional] |
 | **cursor** | **String**| Parameter used in pagination requests. Maximum page size is set to 15. Set to the value of next for the next page of results. Set to the value of previous for the previous page of results. No other parameters can be set when this parameter is set.  | [optional] |
 
 ### Return type
