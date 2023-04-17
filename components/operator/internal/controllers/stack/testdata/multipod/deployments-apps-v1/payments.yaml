@@ -101,7 +101,8 @@ spec:
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst
             initContainers:
-                - args:
+                - command:
+                    - payments
                     - migrate
                   env:
                     - name: POSTGRES_HOST
