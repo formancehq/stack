@@ -210,7 +210,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "55000"
+                      value: "32768"
                     - name: POSTGRES_DATABASE
                       value: stack2-ledger
                     - name: POSTGRES_USERNAME
@@ -808,7 +808,8 @@ spec:
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst
             initContainers:
-                - args:
+                - command:
+                    - payments
                     - migrate
                   env:
                     - name: POSTGRES_HOST
