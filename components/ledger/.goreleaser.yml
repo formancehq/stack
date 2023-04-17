@@ -12,16 +12,13 @@ builds:
       - -X github.com/ledger/ledger/cmd.Commit={{ .ShortCommit }}
       - -X github.com/ledger/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
     env:
-      - CGO_ENABLED=1
-      - CC=x86_64-w64-mingw32-gcc
+      - CGO_ENABLED=0
     goos:
       - windows
     goarch:
       - amd64
-    flags:
-      - -tags=json1
   - binary: ledger
-    id: ledger_linux_amd64
+    id: ledger_linux
     ldflags:
       - -X github.com/ledger/ledger/cmd.BuildDate={{ .Date }}
       - -X github.com/ledger/ledger/cmd.Version={{ .Version }}
@@ -29,51 +26,39 @@ builds:
       - -X github.com/ledger/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
       - -extldflags "-static"
     env:
-      - CGO_ENABLED=1
+      - CGO_ENABLED=0
     goos:
       - linux
     goarch:
       - amd64
-    flags:
-      - -tags=json1,netgo
+      - arm64
   - binary: ledger
-    id: ledger_linux_arm64
+    id: ledger_darwin
     ldflags:
       - -X github.com/ledger/ledger/cmd.BuildDate={{ .Date }}
       - -X github.com/ledger/ledger/cmd.Version={{ .Version }}
       - -X github.com/ledger/ledger/cmd.Commit={{ .ShortCommit }}
       - -X github.com/ledger/ledger/cmd.DefaultSegmentWriteKey={{ .Env.SEGMENT_WRITE_KEY }}
-      - -extldflags "-static"
+      - -s
     env:
-      - CGO_ENABLED=1
-      - CC=aarch64-linux-gnu-gcc
+      - CGO_ENABLED=0
     goos:
-      - linux
+      - darwin
     goarch:
+      - amd64
       - arm64
-    flags:
-      - -tags=json1,netgo
 
 archives:
   - id: "ledger"
     builds:
-      - ledger_linux_amd64
-      - ledger_linux_arm64
+      - ledger_linux
       - ledger_windows
+      - ledger_darwin
     format: tar.gz
     format_overrides:
       - goos: windows
         format: zip
     name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}-{{.Arch}}"
-    replacements:
-      amd64: 64bit
-      386: 32bit
-      arm: ARM
-      arm64: ARM64
-      darwin: macOS
-      linux: Linux
-      windows: Windows
-
 
 checksum:
   name_template: '{{.ProjectName}}_checksums.txt'
@@ -115,8 +100,7 @@ nfpms:
     package_name: ledger
     file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     builds:
-      - ledger_linux_amd64
-      - ledger_linux_arm64
+      - ledger_linux
     homepage: https://formance.com
     maintainer: Maxence Maireaux <maxence@formance.com>
     formats:
