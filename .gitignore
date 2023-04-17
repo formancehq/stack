@@ -10,7 +10,8 @@ go.work
 go.work.sum
 worktrees
 
-**/memprofile.out
-**/profile.out
-*.test
+**/*.out
+**/*.out
+**/*.test
+**/*.stats
 .direnv
