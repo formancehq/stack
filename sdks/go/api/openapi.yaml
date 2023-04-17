@@ -4095,8 +4095,7 @@ components:
         plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\t\
           destination = $user\n)\n"
         vars:
-          vars:
-            user: users:042
+          user: users:042
       properties:
         plain:
           example: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
@@ -4104,8 +4103,7 @@ components:
           type: string
         vars:
           example:
-            vars:
-              user: users:042
+            user: users:042
           properties: {}
           type: object
         reference:
@@ -4329,8 +4327,7 @@ components:
           plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\t\
             destination = $user\n)\n"
           vars:
-            vars:
-              user: users:042
+            user: users:042
         timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         timestamp:
@@ -6368,8 +6365,7 @@ components:
                 plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
                   \tdestination = $user\n)\n"
                 vars:
-                  vars:
-                    user: users:042
+                  user: users:042
               timestamp: 2000-01-23T04:56:07.000+00:00
           RevertTransaction:
             ledger: ledger
@@ -6893,8 +6889,7 @@ components:
                   plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
                     \tdestination = $user\n)\n"
                   vars:
-                    vars:
-                      user: users:042
+                    user: users:042
                 timestamp: 2000-01-23T04:56:07.000+00:00
             RevertTransaction:
               ledger: ledger
@@ -7150,8 +7145,7 @@ components:
                   plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
                     \tdestination = $user\n)\n"
                   vars:
-                    vars:
-                      user: users:042
+                    user: users:042
                 timestamp: 2000-01-23T04:56:07.000+00:00
             RevertTransaction:
               ledger: ledger
@@ -7330,8 +7324,7 @@ components:
             plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
               \tdestination = $user\n)\n"
             vars:
-              vars:
-                user: users:042
+              user: users:042
           timestamp: 2000-01-23T04:56:07.000+00:00
       properties:
         ledger:
@@ -7458,8 +7451,7 @@ components:
               plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
                 \tdestination = $user\n)\n"
               vars:
-                vars:
-                  user: users:042
+                user: users:042
             timestamp: 2000-01-23T04:56:07.000+00:00
         RevertTransaction:
           ledger: ledger
@@ -8024,8 +8016,7 @@ components:
         plain: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\t\
           destination = $user\n)\n"
         vars:
-          vars:
-            user: users:042
+          user: users:042
       properties:
         plain:
           example: "vars {\naccount $user\n}\nsend [COIN 10] (\n\tsource = @world\n\
@@ -8033,8 +8024,7 @@ components:
           type: string
         vars:
           example:
-            vars:
-              user: users:042
+            user: users:042
           properties: {}
           type: object
       required:

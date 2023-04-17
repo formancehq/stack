@@ -4598,9 +4598,7 @@
             "type": "object",
             "properties": {},
             "example": {
-              "vars": {
-                "user": "users:042"
-              }
+              "user": "users:042"
             }
           },
           "reference": {
@@ -4717,9 +4715,7 @@
                 "type": "object",
                 "properties": {},
                 "example": {
-                  "vars": {
-                    "user": "users:042"
-                  }
+                  "user": "users:042"
                 }
               }
             },
