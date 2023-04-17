@@ -63,7 +63,8 @@ func NewRootCommand() *cobra.Command {
 		DisableAutoGenTag: true,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if viper.GetString(storageDriverFlag) == "sqlite" {
-				fmt.Printf("WARNING: SQLite is being deprecated and will not be supported starting from the v2 of the Formance Ledger. Please use Postgres instead.\n")
+				_, _ = fmt.Fprintln(os.Stderr,
+					"WARNING: SQLite is being deprecated and will not be supported starting from the v2 of the Formance Ledger. Please use Postgres instead.")
 			}
 			err := os.MkdirAll(viper.GetString(storageDirFlag), 0700)
 			if err != nil {
