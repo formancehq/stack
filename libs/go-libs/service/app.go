@@ -10,6 +10,7 @@ import (
 )
 
 const DebugFlag = "debug"
+const JsonFormattingLoggerFlag = "json-formatting-logger"
 
 type App struct {
 	options []fx.Option
@@ -37,7 +38,7 @@ func (a *App) Start(ctx context.Context) error {
 }
 
 func (a *App) newFxApp(ctx context.Context) *fx.App {
-	ctx = defaultLoggingContext(ctx, a.output, viper.GetBool(DebugFlag))
+	ctx = defaultLoggingContext(ctx, a.output, viper.GetBool(DebugFlag), viper.GetBool(JsonFormattingLoggerFlag))
 	options := append(a.options,
 		fx.NopLogger,
 		fx.Provide(func() logging.Logger {
