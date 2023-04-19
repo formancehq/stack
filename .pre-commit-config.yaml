@@ -13,6 +13,13 @@ repos:
   - id: check-added-large-files
 - repo: local
   hooks:
+  - id: update-libs
+    name: update libs
+    entry: ./scripts/update-libs.sh
+    description: "Update Libs"
+    language: script
+    files: 'libs/go-libs/*'
+    pass_filenames: false
   - id: update-sdks
     name: update SDKs
     entry: ./scripts/update-sdks.sh
