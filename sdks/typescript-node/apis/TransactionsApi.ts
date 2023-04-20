@@ -603,7 +603,7 @@ export class TransactionsApiResponseProcessor {
      */
      public async revertTransaction(response: ResponseContext): Promise<CreateTransactionResponse > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
-        if (isCodeInRange("200", response.httpStatusCode)) {
+        if (isCodeInRange("201", response.httpStatusCode)) {
             const body: CreateTransactionResponse = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
                 "CreateTransactionResponse", ""

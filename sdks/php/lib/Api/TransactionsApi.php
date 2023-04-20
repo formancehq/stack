@@ -1961,7 +1961,7 @@ class TransactionsApi
             }
 
             switch($statusCode) {
-                case 200:
+                case 201:
                     if ('\Formance\Model\CreateTransactionResponse' === '\SplFileObject') {
                         $content = $response->getBody(); //stream goes to serializer
                     } else {
@@ -2011,7 +2011,7 @@ class TransactionsApi
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
-                case 200:
+                case 201:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
                         '\Formance\Model\CreateTransactionResponse',
