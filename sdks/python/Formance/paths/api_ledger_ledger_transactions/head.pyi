@@ -160,8 +160,8 @@ class CountSchema(
     schemas.Int64Schema
 ):
     pass
-ResponseHeadersFor200 = typing_extensions.TypedDict(
-    'ResponseHeadersFor200',
+ResponseHeadersFor204 = typing_extensions.TypedDict(
+    'ResponseHeadersFor204',
     {
         'Count': CountSchema,
     }
@@ -169,14 +169,14 @@ ResponseHeadersFor200 = typing_extensions.TypedDict(
 
 
 @dataclass
-class ApiResponseFor200(api_client.ApiResponse):
+class ApiResponseFor204(api_client.ApiResponse):
     response: urllib3.HTTPResponse
-    headers: ResponseHeadersFor200
+    headers: ResponseHeadersFor204
     body: schemas.Unset = schemas.unset
 
 
-_response_for_200 = api_client.OpenApiResponse(
-    response_cls=ApiResponseFor200,
+_response_for_204 = api_client.OpenApiResponse(
+    response_cls=ApiResponseFor204,
     headers=[
         count_parameter,
     ]
@@ -216,7 +216,7 @@ class BaseApi(api_client.Api):
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
-        ApiResponseFor200,
+        ApiResponseFor204,
         ApiResponseForDefault,
     ]: ...
 
@@ -241,7 +241,7 @@ class BaseApi(api_client.Api):
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = ...,
     ) -> typing.Union[
-        ApiResponseFor200,
+        ApiResponseFor204,
         ApiResponseForDefault,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
@@ -348,7 +348,7 @@ class CountTransactions(BaseApi):
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
-        ApiResponseFor200,
+        ApiResponseFor204,
         ApiResponseForDefault,
     ]: ...
 
@@ -373,7 +373,7 @@ class CountTransactions(BaseApi):
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = ...,
     ) -> typing.Union[
-        ApiResponseFor200,
+        ApiResponseFor204,
         ApiResponseForDefault,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
@@ -410,7 +410,7 @@ class ApiForhead(BaseApi):
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
     ) -> typing.Union[
-        ApiResponseFor200,
+        ApiResponseFor204,
         ApiResponseForDefault,
     ]: ...
 
@@ -435,7 +435,7 @@ class ApiForhead(BaseApi):
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = ...,
     ) -> typing.Union[
-        ApiResponseFor200,
+        ApiResponseFor204,
         ApiResponseForDefault,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...

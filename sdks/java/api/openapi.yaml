@@ -650,7 +650,7 @@ paths:
           type: object
         style: deepObject
       responses:
-        "200":
+        "204":
           description: OK
           headers:
             Count:
@@ -1013,7 +1013,7 @@ paths:
           type: object
         style: deepObject
       responses:
-        "200":
+        "204":
           description: OK
           headers:
             Count:
