@@ -726,7 +726,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "OK",
             "headers": {
               "Count": {
@@ -1111,7 +1111,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "OK",
             "headers": {
               "Count": {

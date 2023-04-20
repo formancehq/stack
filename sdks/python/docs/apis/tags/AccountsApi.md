@@ -259,16 +259,16 @@ str,  | str,  |  |
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#count_accounts.ApiResponseFor200) | OK
+204 | [ApiResponseFor204](#count_accounts.ApiResponseFor204) | OK
 default | [ApiResponseForDefault](#count_accounts.ApiResponseForDefault) | Error
 
-#### count_accounts.ApiResponseFor200
+#### count_accounts.ApiResponseFor204
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
 body | Unset | body was not defined |
-headers | ResponseHeadersFor200 |  |
-#### ResponseHeadersFor200
+headers | ResponseHeadersFor204 |  |
+#### ResponseHeadersFor204
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------

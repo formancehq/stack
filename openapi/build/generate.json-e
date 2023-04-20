@@ -726,7 +726,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "OK",
             "headers": {
               "Count": {
@@ -1111,7 +1111,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "OK",
             "headers": {
               "Count": {
@@ -1163,15 +1163,6 @@
               "format": "int64",
               "minimum": 1,
               "maximum": 1000
-            }
-          },
-          {
-            "name": "after",
-            "in": "query",
-            "description": "Pagination cursor, will return transactions after given txid (in descending order).",
-            "schema": {
-              "type": "string",
-              "example": "1234"
             }
           },
           {
@@ -1321,7 +1312,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TransactionResponse"
+                  "$ref": "#/components/schemas/CreateTransactionResponse"
                 }
               }
             }
@@ -1376,7 +1367,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TransactionResponse"
+                  "$ref": "#/components/schemas/GetTransactionResponse"
                 }
               }
             }
@@ -1490,7 +1481,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TransactionResponse"
+                  "$ref": "#/components/schemas/RevertTransactionResponse"
                 }
               }
             }
@@ -3958,7 +3949,7 @@
               "data": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/Transaction"
+                  "$ref": "#/components/schemas/ExpandedTransaction"
                 }
               }
             }
@@ -4097,10 +4088,6 @@
           "address": {
             "type": "string",
             "example": "users:001"
-          },
-          "type": {
-            "type": "string",
-            "example": "virtual"
           },
           "metadata": {
             "type": "object",
@@ -4277,12 +4264,6 @@
             "type": "integer",
             "format": "int64",
             "minimum": 0
-          },
-          "preCommitVolumes": {
-            "$ref": "#/components/schemas/AggregatedVolumes"
-          },
-          "postCommitVolumes": {
-            "$ref": "#/components/schemas/AggregatedVolumes"
           }
         },
         "required": [
@@ -4290,6 +4271,28 @@
           "timestamp",
           "txid",
           "metadata"
+        ]
+      },
+      "ExpandedTransaction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Transaction"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "preCommitVolumes": {
+                "$ref": "#/components/schemas/AggregatedVolumes"
+              },
+              "postCommitVolumes": {
+                "$ref": "#/components/schemas/AggregatedVolumes"
+              }
+            },
+            "required": [
+              "preCommitVolumes",
+              "postCommitVolumes"
+            ]
+          }
         ]
       },
       "PostTransaction": {
@@ -4393,10 +4396,24 @@
           "date"
         ]
       },
-      "TransactionResponse": {
+      "CreateTransactionResponse": {
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Transaction"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ]
+      },
+      "RevertTransactionResponse": {
+        "$ref": "#/components/schemas/CreateTransactionResponse"
+      },
+      "GetTransactionResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ExpandedTransaction"
           }
         },
         "type": "object",
@@ -7081,10 +7098,10 @@
         "$ref": "#/components/schemas/AccountResponse"
       },
       "ActivityCreateTransactionOutput": {
-        "$ref": "#/components/schemas/TransactionResponse"
+        "$ref": "#/components/schemas/CreateTransactionResponse"
       },
       "ActivityRevertTransactionOutput": {
-        "$ref": "#/components/schemas/TransactionResponse"
+        "$ref": "#/components/schemas/RevertTransactionResponse"
       },
       "ActivityGetPaymentOutput": {
         "$ref": "#/components/schemas/PaymentResponse"

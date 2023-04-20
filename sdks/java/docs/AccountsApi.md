@@ -153,7 +153,7 @@ null (empty response body)
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-| **200** | OK |  * Count -  <br>  |
+| **204** | OK |  * Count -  <br>  |
 | **0** | Error |  -  |
 
 
