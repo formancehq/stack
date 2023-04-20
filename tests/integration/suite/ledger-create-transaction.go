@@ -232,3 +232,39 @@ var _ = Given("some empty environment", func() {
 		})
 	})
 })
+
+var _ = Given("some empty environment", func() {
+	When("creating a transaction on a ledger with an idempotency key", func() {
+		var (
+			err  error
+			resp *formance.CreateTransactionResponse
+		)
+		createTransaction := func() {
+			resp, _, err = Client().TransactionsApi.
+				CreateTransaction(TestContext(), "default").
+				IdempotencyKey("testing").
+				PostTransaction(formance.PostTransaction{
+					Postings: []formance.Posting{{
+						Amount:      100,
+						Asset:       "USD",
+						Source:      "world",
+						Destination: "alice",
+					}},
+					Metadata: metadata.Metadata{},
+				}).
+				Execute()
+		}
+		BeforeEach(createTransaction)
+		It("should be ok", func() {
+			Expect(err).To(Succeed())
+			Expect(resp.Data.Txid).To(Equal(int64(0)))
+		})
+		Then("replaying with the same IK", func() {
+			BeforeEach(createTransaction)
+			It("should respond with the same tx id", func() {
+				Expect(err).To(Succeed())
+				Expect(resp.Data.Txid).To(Equal(int64(0)))
+			})
+		})
+	})
+})

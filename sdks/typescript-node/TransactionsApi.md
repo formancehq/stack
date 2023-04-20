@@ -31,6 +31,12 @@ let body:TransactionsApiAddMetadataOnTransactionRequest = {
   ledger: "ledger001",
   // number | Transaction ID.
   txid: 1234,
+  // boolean | Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker. (optional)
+  dryRun: true,
+  // boolean | Set async mode. (optional)
+  async: true,
+  // string | Use an idempotency key (optional)
+  idempotencyKey: "Idempotency-Key_example",
   // { [key: string]: string; } | metadata (optional)
   requestBody: {
     "key": "key_example",
@@ -50,6 +56,9 @@ Name | Type | Description  | Notes
  **requestBody** | **{ [key: string]: string; }**| metadata |
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
  **txid** | [**number**] | Transaction ID. | defaults to undefined
+ **dryRun** | [**boolean**] | Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | (optional) defaults to undefined
+ **async** | [**boolean**] | Set async mode. | (optional) defaults to undefined
+ **idempotencyKey** | [**string**] | Use an idempotency key | (optional) defaults to undefined
 
 
 ### Return type
@@ -197,6 +206,10 @@ send [COIN 10] (
   },
   // boolean | Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker. (optional)
   dryRun: true,
+  // boolean | Set async mode. (optional)
+  async: true,
+  // string | Use an idempotency key (optional)
+  idempotencyKey: "Idempotency-Key_example",
 };
 
 apiInstance.createTransaction(body).then((data:any) => {
@@ -212,6 +225,8 @@ Name | Type | Description  | Notes
  **postTransaction** | **PostTransaction**| The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  |
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
  **dryRun** | [**boolean**] | Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | (optional) defaults to undefined
+ **async** | [**boolean**] | Set async mode. | (optional) defaults to undefined
+ **idempotencyKey** | [**string**] | Use an idempotency key | (optional) defaults to undefined
 
 
 ### Return type

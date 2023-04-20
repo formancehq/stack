@@ -226,6 +226,24 @@ export interface AccountsApiAddMetadataToAccountRequest {
      * @memberof AccountsApiaddMetadataToAccount
      */
     requestBody: { [key: string]: string; }
+    /**
+     * Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+     * @type boolean
+     * @memberof AccountsApiaddMetadataToAccount
+     */
+    dryRun?: boolean
+    /**
+     * Set async mode.
+     * @type boolean
+     * @memberof AccountsApiaddMetadataToAccount
+     */
+    async?: boolean
+    /**
+     * Use an idempotency key
+     * @type string
+     * @memberof AccountsApiaddMetadataToAccount
+     */
+    idempotencyKey?: string
 }
 
 export interface AccountsApiCountAccountsRequest {
@@ -321,7 +339,7 @@ export class ObjectAccountsApi {
      * @param param the request object
      */
     public addMetadataToAccount(param: AccountsApiAddMetadataToAccountRequest, options?: Configuration): Promise<void> {
-        return this.api.addMetadataToAccount(param.ledger, param.address, param.requestBody,  options).toPromise();
+        return this.api.addMetadataToAccount(param.ledger, param.address, param.requestBody, param.dryRun, param.async, param.idempotencyKey,  options).toPromise();
     }
 
     /**
@@ -1541,6 +1559,24 @@ export interface TransactionsApiAddMetadataOnTransactionRequest {
      */
     txid: number
     /**
+     * Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+     * @type boolean
+     * @memberof TransactionsApiaddMetadataOnTransaction
+     */
+    dryRun?: boolean
+    /**
+     * Set async mode.
+     * @type boolean
+     * @memberof TransactionsApiaddMetadataOnTransaction
+     */
+    async?: boolean
+    /**
+     * Use an idempotency key
+     * @type string
+     * @memberof TransactionsApiaddMetadataOnTransaction
+     */
+    idempotencyKey?: string
+    /**
      * metadata
      * @type { [key: string]: string; }
      * @memberof TransactionsApiaddMetadataOnTransaction
@@ -1618,6 +1654,18 @@ export interface TransactionsApiCreateTransactionRequest {
      * @memberof TransactionsApicreateTransaction
      */
     dryRun?: boolean
+    /**
+     * Set async mode.
+     * @type boolean
+     * @memberof TransactionsApicreateTransaction
+     */
+    async?: boolean
+    /**
+     * Use an idempotency key
+     * @type string
+     * @memberof TransactionsApicreateTransaction
+     */
+    idempotencyKey?: string
 }
 
 export interface TransactionsApiGetTransactionRequest {
@@ -1725,7 +1773,7 @@ export class ObjectTransactionsApi {
      * @param param the request object
      */
     public addMetadataOnTransaction(param: TransactionsApiAddMetadataOnTransactionRequest, options?: Configuration): Promise<void> {
-        return this.api.addMetadataOnTransaction(param.ledger, param.txid, param.requestBody,  options).toPromise();
+        return this.api.addMetadataOnTransaction(param.ledger, param.txid, param.dryRun, param.async, param.idempotencyKey, param.requestBody,  options).toPromise();
     }
 
     /**
@@ -1741,7 +1789,7 @@ export class ObjectTransactionsApi {
      * @param param the request object
      */
     public createTransaction(param: TransactionsApiCreateTransactionRequest, options?: Configuration): Promise<CreateTransactionResponse> {
-        return this.api.createTransaction(param.ledger, param.postTransaction, param.dryRun,  options).toPromise();
+        return this.api.createTransaction(param.ledger, param.postTransaction, param.dryRun, param.async, param.idempotencyKey,  options).toPromise();
     }
 
     /**
