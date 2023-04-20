@@ -147,7 +147,7 @@ void (empty response body)
 ## `createTransaction()`
 
 ```php
-createTransaction($ledger, $post_transaction, $preview): \Formance\Model\CreateTransactionResponse
+createTransaction($ledger, $post_transaction, $dry_run): \Formance\Model\CreateTransactionResponse
 ```
 
 Create a new transaction to a ledger
@@ -171,10 +171,10 @@ $apiInstance = new Formance\Api\TransactionsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $post_transaction = new \Formance\Model\PostTransaction(); // \Formance\Model\PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript
-$preview = true; // bool | Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
+$dry_run = true; // bool | Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
 
 try {
-    $result = $apiInstance->createTransaction($ledger, $post_transaction, $preview);
+    $result = $apiInstance->createTransaction($ledger, $post_transaction, $dry_run);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling TransactionsApi->createTransaction: ', $e->getMessage(), PHP_EOL;
@@ -187,7 +187,7 @@ try {
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
 | **post_transaction** | [**\Formance\Model\PostTransaction**](../Model/PostTransaction.md)| The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript | |
-| **preview** | **bool**| Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. | [optional] |
+| **dry_run** | **bool**| Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | [optional] |
 
 ### Return type
 

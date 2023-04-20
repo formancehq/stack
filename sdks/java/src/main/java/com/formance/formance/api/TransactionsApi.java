@@ -62,7 +62,7 @@ public interface TransactionsApi {
    * 
    * @param ledger Name of the ledger. (required)
    * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  (required)
-   * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+   * @param dryRun Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
    * @return Call&lt;CreateTransactionResponse&gt;
    */
   @Headers({
@@ -70,7 +70,7 @@ public interface TransactionsApi {
   })
   @POST("api/ledger/{ledger}/transactions")
   Call<CreateTransactionResponse> createTransaction(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Body PostTransaction postTransaction, @retrofit2.http.Query("preview") Boolean preview
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Body PostTransaction postTransaction, @retrofit2.http.Query("dryRun") Boolean dryRun
   );
 
   /**
