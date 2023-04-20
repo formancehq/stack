@@ -1011,11 +1011,11 @@ paths:
           example: ledger001
           type: string
         style: simple
-      - description: Set the preview mode. Preview mode doesn't add the logs to the
+      - description: Set the dryRun mode. dry run mode doesn't add the logs to the
           database or publish a message to the message broker.
         explode: true
         in: query
-        name: preview
+        name: dryRun
         required: false
         schema:
           example: true

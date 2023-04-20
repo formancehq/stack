@@ -171,7 +171,7 @@ null (empty response body)
 
 ## createTransaction
 
-> CreateTransactionResponse createTransaction(ledger, postTransaction, preview)
+> CreateTransactionResponse createTransaction(ledger, postTransaction, dryRun)
 
 Create a new transaction to a ledger
 
@@ -198,9 +198,9 @@ public class Example {
         TransactionsApi apiInstance = new TransactionsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
         PostTransaction postTransaction = new PostTransaction(); // PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript 
-        Boolean preview = true; // Boolean | Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker.
+        Boolean dryRun = true; // Boolean | Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
         try {
-            CreateTransactionResponse result = apiInstance.createTransaction(ledger, postTransaction, preview);
+            CreateTransactionResponse result = apiInstance.createTransaction(ledger, postTransaction, dryRun);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TransactionsApi#createTransaction");
@@ -220,7 +220,7 @@ public class Example {
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
 | **postTransaction** | [**PostTransaction**](PostTransaction.md)| The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  | |
-| **preview** | **Boolean**| Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. | [optional] |
+| **dryRun** | **Boolean**| Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | [optional] |
 
 ### Return type
 

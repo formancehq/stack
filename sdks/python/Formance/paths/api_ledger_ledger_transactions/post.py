@@ -32,7 +32,7 @@ from Formance.model.create_transaction_response import CreateTransactionResponse
 from . import path
 
 # Query params
-PreviewSchema = schemas.BoolSchema
+DryRunSchema = schemas.BoolSchema
 RequestRequiredQueryParams = typing_extensions.TypedDict(
     'RequestRequiredQueryParams',
     {
@@ -41,7 +41,7 @@ RequestRequiredQueryParams = typing_extensions.TypedDict(
 RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
-        'preview': typing.Union[PreviewSchema, bool, ],
+        'dryRun': typing.Union[DryRunSchema, bool, ],
     },
     total=False
 )
@@ -51,10 +51,10 @@ class RequestQueryParams(RequestRequiredQueryParams, RequestOptionalQueryParams)
     pass
 
 
-request_query_preview = api_client.QueryParameter(
-    name="preview",
+request_query_dry_run = api_client.QueryParameter(
+    name="dryRun",
     style=api_client.ParameterStyle.FORM,
-    schema=PreviewSchema,
+    schema=DryRunSchema,
     explode=True,
 )
 # Path params
@@ -244,7 +244,7 @@ class BaseApi(api_client.Api):
 
         prefix_separator_iterator = None
         for parameter in (
-            request_query_preview,
+            request_query_dry_run,
         ):
             parameter_data = query_params.get(parameter.name, schemas.unset)
             if parameter_data is schemas.unset:

@@ -169,9 +169,9 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * Create a new transaction to a ledger
      * @param ledger Name of the ledger.
      * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript 
-     * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+     * @param dryRun Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
      */
-    public async createTransaction(ledger: string, postTransaction: PostTransaction, preview?: boolean, _options?: Configuration): Promise<RequestContext> {
+    public async createTransaction(ledger: string, postTransaction: PostTransaction, dryRun?: boolean, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
@@ -196,8 +196,8 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
 
         // Query Params
-        if (preview !== undefined) {
-            requestContext.setQueryParam("preview", ObjectSerializer.serialize(preview, "boolean", ""));
+        if (dryRun !== undefined) {
+            requestContext.setQueryParam("dryRun", ObjectSerializer.serialize(dryRun, "boolean", ""));
         }
 
 

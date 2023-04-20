@@ -396,7 +396,7 @@ type ApiCreateTransactionRequest struct {
 	ApiService TransactionsApi
 	ledger string
 	postTransaction *PostTransaction
-	preview *bool
+	dryRun *bool
 }
 
 // The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript 
@@ -405,9 +405,9 @@ func (r ApiCreateTransactionRequest) PostTransaction(postTransaction PostTransac
 	return r
 }
 
-// Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
-func (r ApiCreateTransactionRequest) Preview(preview bool) ApiCreateTransactionRequest {
-	r.preview = &preview
+// Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+func (r ApiCreateTransactionRequest) DryRun(dryRun bool) ApiCreateTransactionRequest {
+	r.dryRun = &dryRun
 	return r
 }
 
@@ -455,8 +455,8 @@ func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransaction
 		return localVarReturnValue, nil, reportError("postTransaction is required and must be specified")
 	}
 
-	if r.preview != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "preview", r.preview, "")
+	if r.dryRun != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "dryRun", r.dryRun, "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
