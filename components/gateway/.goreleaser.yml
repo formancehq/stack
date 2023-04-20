@@ -2,7 +2,7 @@ project_name: gateway
 
 monorepo:
   tag_prefix: components/gateway/
-  dir: ./components/gateway
+  dir: ./
 
 builds:
   - binary: gateway

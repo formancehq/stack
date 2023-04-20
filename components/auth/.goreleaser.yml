@@ -2,7 +2,7 @@ project_name: auth
 
 monorepo:
   tag_prefix: components/auth/
-  dir: ./components/auth/
+  dir: ./
 
 builds:
   - binary: auth

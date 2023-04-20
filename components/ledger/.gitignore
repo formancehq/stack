@@ -13,3 +13,4 @@ sdk/sdks
 sqlstorage.test
 ledger.test
 antlr-*-complete.jar
+ledger

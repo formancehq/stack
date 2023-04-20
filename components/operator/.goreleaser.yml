@@ -2,7 +2,7 @@ project_name: operator
 
 monorepo:
   tag_prefix: components/operator/
-  dir: ./components/operator/
+  dir: ./
 
 builds:
   - binary: operator
@@ -104,4 +104,4 @@ docker_manifests:
 after:
   hooks:
   - cmd: make helm-update
-    dir: ./components/operator/
+    dir: ./

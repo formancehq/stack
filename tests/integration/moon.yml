@@ -1,0 +1,11 @@
+type: 'tool'
+language: 'go'
+
+workspace:
+    inheritedTasks:
+        exclude: ['release', 'lint', 'test']
+
+tasks:
+    integration:
+        command: 'task tests'
+        platform: 'system'
