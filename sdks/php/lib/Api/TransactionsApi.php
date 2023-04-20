@@ -768,16 +768,16 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  \Formance\Model\PostTransaction $post_transaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript (required)
-     * @param  bool $preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $dry_run Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransaction'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \Formance\Model\CreateTransactionResponse|\Formance\Model\ErrorResponse
      */
-    public function createTransaction($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
+    public function createTransaction($ledger, $post_transaction, $dry_run = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
-        list($response) = $this->createTransactionWithHttpInfo($ledger, $post_transaction, $preview, $contentType);
+        list($response) = $this->createTransactionWithHttpInfo($ledger, $post_transaction, $dry_run, $contentType);
         return $response;
     }
 
@@ -788,16 +788,16 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  \Formance\Model\PostTransaction $post_transaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript (required)
-     * @param  bool $preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $dry_run Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransaction'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\CreateTransactionResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function createTransactionWithHttpInfo($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
+    public function createTransactionWithHttpInfo($ledger, $post_transaction, $dry_run = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
-        $request = $this->createTransactionRequest($ledger, $post_transaction, $preview, $contentType);
+        $request = $this->createTransactionRequest($ledger, $post_transaction, $dry_run, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -913,15 +913,15 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  \Formance\Model\PostTransaction $post_transaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript (required)
-     * @param  bool $preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $dry_run Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function createTransactionAsync($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
+    public function createTransactionAsync($ledger, $post_transaction, $dry_run = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
-        return $this->createTransactionAsyncWithHttpInfo($ledger, $post_transaction, $preview, $contentType)
+        return $this->createTransactionAsyncWithHttpInfo($ledger, $post_transaction, $dry_run, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -936,16 +936,16 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  \Formance\Model\PostTransaction $post_transaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript (required)
-     * @param  bool $preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $dry_run Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function createTransactionAsyncWithHttpInfo($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
+    public function createTransactionAsyncWithHttpInfo($ledger, $post_transaction, $dry_run = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
         $returnType = '\Formance\Model\CreateTransactionResponse';
-        $request = $this->createTransactionRequest($ledger, $post_transaction, $preview, $contentType);
+        $request = $this->createTransactionRequest($ledger, $post_transaction, $dry_run, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -988,13 +988,13 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  \Formance\Model\PostTransaction $post_transaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript (required)
-     * @param  bool $preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $dry_run Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function createTransactionRequest($ledger, $post_transaction, $preview = null, string $contentType = self::contentTypes['createTransaction'][0])
+    public function createTransactionRequest($ledger, $post_transaction, $dry_run = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -1022,8 +1022,8 @@ class TransactionsApi
 
         // query params
         $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
-            $preview,
-            'preview', // param base name
+            $dry_run,
+            'dryRun', // param base name
             'boolean', // openApiType
             'form', // style
             true, // explode
