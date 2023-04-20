@@ -446,7 +446,7 @@ with Formance.ApiClient(configuration) as api_client:
         'ledger': "ledger001",
     }
     query_params = {
-        'preview': True,
+        'dryRun': True,
     }
     body = PostTransaction(
         timestamp="1970-01-01T00:00:00.00Z",
@@ -504,10 +504,10 @@ Type | Description  | Notes
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-preview | PreviewSchema | | optional
+dryRun | DryRunSchema | | optional
 
 
-# PreviewSchema
+# DryRunSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

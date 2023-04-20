@@ -1848,10 +1848,10 @@ export class ObservableTransactionsApi {
      * Create a new transaction to a ledger
      * @param ledger Name of the ledger.
      * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript 
-     * @param preview Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+     * @param dryRun Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
      */
-    public createTransaction(ledger: string, postTransaction: PostTransaction, preview?: boolean, _options?: Configuration): Observable<CreateTransactionResponse> {
-        const requestContextPromise = this.requestFactory.createTransaction(ledger, postTransaction, preview, _options);
+    public createTransaction(ledger: string, postTransaction: PostTransaction, dryRun?: boolean, _options?: Configuration): Observable<CreateTransactionResponse> {
+        const requestContextPromise = this.requestFactory.createTransaction(ledger, postTransaction, dryRun, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);

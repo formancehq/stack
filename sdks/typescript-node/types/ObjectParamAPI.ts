@@ -1613,11 +1613,11 @@ export interface TransactionsApiCreateTransactionRequest {
      */
     postTransaction: PostTransaction
     /**
-     * Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+     * Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
      * @type boolean
      * @memberof TransactionsApicreateTransaction
      */
-    preview?: boolean
+    dryRun?: boolean
 }
 
 export interface TransactionsApiGetTransactionRequest {
@@ -1741,7 +1741,7 @@ export class ObjectTransactionsApi {
      * @param param the request object
      */
     public createTransaction(param: TransactionsApiCreateTransactionRequest, options?: Configuration): Promise<CreateTransactionResponse> {
-        return this.api.createTransaction(param.ledger, param.postTransaction, param.preview,  options).toPromise();
+        return this.api.createTransaction(param.ledger, param.postTransaction, param.dryRun,  options).toPromise();
     }
 
     /**

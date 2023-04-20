@@ -167,7 +167,7 @@ Name | Type | Description  | Notes
 
 ## CreateTransaction
 
-> CreateTransactionResponse CreateTransaction(ctx, ledger).PostTransaction(postTransaction).Preview(preview).Execute()
+> CreateTransactionResponse CreateTransaction(ctx, ledger).PostTransaction(postTransaction).DryRun(dryRun).Execute()
 
 Create a new transaction to a ledger
 
@@ -186,11 +186,11 @@ import (
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
     postTransaction := *client.NewPostTransaction(map[string]string{"key": "Inner_example"}) // PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript 
-    preview := true // bool | Set the preview mode. Preview mode doesn't add the logs to the database or publish a message to the message broker. (optional)
+    dryRun := true // bool | Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker. (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.TransactionsApi.CreateTransaction(context.Background(), ledger).PostTransaction(postTransaction).Preview(preview).Execute()
+    resp, r, err := apiClient.TransactionsApi.CreateTransaction(context.Background(), ledger).PostTransaction(postTransaction).DryRun(dryRun).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.CreateTransaction``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -217,7 +217,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
  **postTransaction** | [**PostTransaction**](PostTransaction.md) | The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  | 
- **preview** | **bool** | Set the preview mode. Preview mode doesn&#39;t add the logs to the database or publish a message to the message broker. | 
+ **dryRun** | **bool** | Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | 
 
 ### Return type
 
