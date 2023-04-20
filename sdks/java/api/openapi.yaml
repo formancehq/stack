@@ -1194,7 +1194,7 @@ paths:
           type: integer
         style: simple
       responses:
-        "200":
+        "201":
           content:
             application/json:
               schema:
