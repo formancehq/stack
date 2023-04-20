@@ -463,7 +463,7 @@ export class TransactionsApiResponseProcessor {
      */
      public async countTransactions(response: ResponseContext): Promise<void > {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
-        if (isCodeInRange("200", response.httpStatusCode)) {
+        if (isCodeInRange("204", response.httpStatusCode)) {
             return;
         }
         if (isCodeInRange("0", response.httpStatusCode)) {
