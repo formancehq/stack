@@ -13,7 +13,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 ## `addMetadataToAccount()`
 
 ```php
-addMetadataToAccount($ledger, $address, $request_body)
+addMetadataToAccount($ledger, $address, $request_body, $dry_run, $async, $idempotency_key)
 ```
 
 Add metadata to an account
@@ -38,9 +38,12 @@ $apiInstance = new Formance\Api\AccountsApi(
 $ledger = ledger001; // string | Name of the ledger.
 $address = users:001; // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ```
 $request_body = array('key' => 'request_body_example'); // array<string,string> | metadata
+$dry_run = true; // bool | Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
+$async = true; // bool | Set async mode.
+$idempotency_key = 'idempotency_key_example'; // string | Use an idempotency key
 
 try {
-    $apiInstance->addMetadataToAccount($ledger, $address, $request_body);
+    $apiInstance->addMetadataToAccount($ledger, $address, $request_body, $dry_run, $async, $idempotency_key);
 } catch (Exception $e) {
     echo 'Exception when calling AccountsApi->addMetadataToAccount: ', $e->getMessage(), PHP_EOL;
 }
@@ -53,6 +56,9 @@ try {
 | **ledger** | **string**| Name of the ledger. | |
 | **address** | **string**| Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; | |
 | **request_body** | [**array<string,string>**](../Model/string.md)| metadata | |
+| **dry_run** | **bool**| Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | [optional] |
+| **async** | **bool**| Set async mode. | [optional] |
+| **idempotency_key** | **string**| Use an idempotency key | [optional] |
 
 ### Return type
 

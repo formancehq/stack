@@ -33,6 +33,12 @@ let body:AccountsApiAddMetadataToAccountRequest = {
   requestBody: {
     "key": "key_example",
   },
+  // boolean | Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker. (optional)
+  dryRun: true,
+  // boolean | Set async mode. (optional)
+  async: true,
+  // string | Use an idempotency key (optional)
+  idempotencyKey: "Idempotency-Key_example",
 };
 
 apiInstance.addMetadataToAccount(body).then((data:any) => {
@@ -48,6 +54,9 @@ Name | Type | Description  | Notes
  **requestBody** | **{ [key: string]: string; }**| metadata |
  **ledger** | [**string**] | Name of the ledger. | defaults to undefined
  **address** | [**string**] | Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;  | defaults to undefined
+ **dryRun** | [**boolean**] | Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | (optional) defaults to undefined
+ **async** | [**boolean**] | Set async mode. | (optional) defaults to undefined
+ **idempotencyKey** | [**string**] | Use an idempotency key | (optional) defaults to undefined
 
 
 ### Return type

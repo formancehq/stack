@@ -946,6 +946,32 @@
               "type": "string",
               "example": "users:001"
             }
+          },
+          {
+            "name": "dryRun",
+            "in": "query",
+            "description": "Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "async",
+            "in": "query",
+            "description": "Set async mode.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Use an idempotency key",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -1293,6 +1319,23 @@
               "type": "boolean",
               "example": true
             }
+          },
+          {
+            "name": "async",
+            "in": "query",
+            "description": "Set async mode.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Use an idempotency key",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -1413,6 +1456,32 @@
               "format": "int64",
               "minimum": 0,
               "example": 1234
+            }
+          },
+          {
+            "name": "dryRun",
+            "in": "query",
+            "description": "Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "async",
+            "in": "query",
+            "description": "Set async mode.",
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Use an idempotency key",
+            "schema": {
+              "type": "string"
             }
           }
         ],

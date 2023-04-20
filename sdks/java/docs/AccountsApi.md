@@ -13,7 +13,7 @@ All URIs are relative to *http://localhost*
 
 ## addMetadataToAccount
 
-> addMetadataToAccount(ledger, address, requestBody)
+> addMetadataToAccount(ledger, address, requestBody, dryRun, async, idempotencyKey)
 
 Add metadata to an account
 
@@ -41,8 +41,11 @@ public class Example {
         String ledger = "ledger001"; // String | Name of the ledger.
         String address = "users:001"; // String | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
         Map<String, String> requestBody = new HashMap(); // Map<String, String> | metadata
+        Boolean dryRun = true; // Boolean | Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
+        Boolean async = true; // Boolean | Set async mode.
+        String idempotencyKey = "idempotencyKey_example"; // String | Use an idempotency key
         try {
-            apiInstance.addMetadataToAccount(ledger, address, requestBody);
+            apiInstance.addMetadataToAccount(ledger, address, requestBody, dryRun, async, idempotencyKey);
         } catch (ApiException e) {
             System.err.println("Exception when calling AccountsApi#addMetadataToAccount");
             System.err.println("Status code: " + e.getCode());
@@ -62,6 +65,9 @@ public class Example {
 | **ledger** | **String**| Name of the ledger. | |
 | **address** | **String**| Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;  | |
 | **requestBody** | [**Map&lt;String, String&gt;**](String.md)| metadata | |
+| **dryRun** | **Boolean**| Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | [optional] |
+| **async** | **Boolean**| Set async mode. | [optional] |
+| **idempotencyKey** | **String**| Use an idempotency key | [optional] |
 
 ### Return type
 

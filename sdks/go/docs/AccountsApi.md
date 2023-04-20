@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## AddMetadataToAccount
 
-> AddMetadataToAccount(ctx, ledger, address).RequestBody(requestBody).Execute()
+> AddMetadataToAccount(ctx, ledger, address).RequestBody(requestBody).DryRun(dryRun).Async(async).IdempotencyKey(idempotencyKey).Execute()
 
 Add metadata to an account
 
@@ -33,10 +33,13 @@ func main() {
     ledger := "ledger001" // string | Name of the ledger.
     address := "users:001" // string | Exact address of the account. It must match the following regular expressions pattern: ``` ^\\w+(:\\w+)*$ ``` 
     requestBody := map[string]string{"key": "Inner_example"} // map[string]string | metadata
+    dryRun := true // bool | Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker. (optional)
+    async := true // bool | Set async mode. (optional)
+    idempotencyKey := "idempotencyKey_example" // string | Use an idempotency key (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    r, err := apiClient.AccountsApi.AddMetadataToAccount(context.Background(), ledger, address).RequestBody(requestBody).Execute()
+    r, err := apiClient.AccountsApi.AddMetadataToAccount(context.Background(), ledger, address).RequestBody(requestBody).DryRun(dryRun).Async(async).IdempotencyKey(idempotencyKey).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `AccountsApi.AddMetadataToAccount``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -63,6 +66,9 @@ Name | Type | Description  | Notes
 
 
  **requestBody** | **map[string]string** | metadata | 
+ **dryRun** | **bool** | Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | 
+ **async** | **bool** | Set async mode. | 
+ **idempotencyKey** | **string** | Use an idempotency key | 
 
 ### Return type
 
