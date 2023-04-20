@@ -70,7 +70,7 @@ func TestParallelRead(t *testing.T) {
 		require.NoError(t, cache.Stop(context.Background()))
 	}()
 
-	release, err := cache.LockAccounts(context.Background(), "bank")
+	_, release, err := cache.GetAccountWithVolumes(context.Background(), "bank")
 	require.NoError(t, err)
 	defer func() {
 		release()
@@ -79,8 +79,9 @@ func TestParallelRead(t *testing.T) {
 	eg := errgroup.Group{}
 	for i := 0; i < 1000; i++ {
 		eg.Go(func() error {
-			account, err := cache.GetAccountWithVolumes(context.Background(), "bank")
+			account, release, err := cache.GetAccountWithVolumes(context.Background(), "bank")
 			require.NoError(t, err)
+			defer release()
 			require.NotNil(t, account)
 			require.Equal(t, core.AccountWithVolumes{
 				Account: core.Account{
@@ -130,25 +131,26 @@ func TestUpdateVolumes(t *testing.T) {
 		require.NoError(t, cache.Stop(context.Background()))
 	}()
 
-	release, err := cache.LockAccounts(context.Background(), "world", "bank")
+	_, release, err := cache.GetAccountWithVolumes(context.Background(), "world")
 	require.NoError(t, err)
 	defer func() {
 		release()
 	}()
 
-	// Force load accounts
-	_, err = cache.GetAccountWithVolumes(context.Background(), "world")
+	_, release, err = cache.GetAccountWithVolumes(context.Background(), "bank")
 	require.NoError(t, err)
-
-	_, err = cache.GetAccountWithVolumes(context.Background(), "bank")
-	require.NoError(t, err)
+	defer func() {
+		release()
+	}()
 
 	tx := core.NewTransaction().WithPostings(
 		core.NewPosting("world", "bank", "USD", big.NewInt(100)),
 	)
 	cache.UpdateVolumeWithTX(&tx)
-	worldAccount, err := cache.GetAccountWithVolumes(context.Background(), "world")
+	worldAccount, release, err := cache.GetAccountWithVolumes(context.Background(), "world")
 	require.NoError(t, err)
+	defer release()
+
 	require.EqualValues(t, core.AccountWithVolumes{
 		Account: core.Account{
 			Address:  "world",
@@ -159,8 +161,10 @@ func TestUpdateVolumes(t *testing.T) {
 		},
 	}, *worldAccount)
 
-	worldAccount, err = cache.GetAccountWithVolumes(context.Background(), "bank")
+	worldAccount, release, err = cache.GetAccountWithVolumes(context.Background(), "bank")
 	require.NoError(t, err)
+	defer release()
+
 	require.Equal(t, core.AccountWithVolumes{
 		Account: core.Account{
 			Address:  "bank",
@@ -193,16 +197,18 @@ func TestCacheEviction(t *testing.T) {
 		require.NoError(t, cache.Stop(context.Background()))
 	}()
 
-	_, err := cache.GetAccountWithVolumes(context.Background(), "world")
+	_, release, err := cache.GetAccountWithVolumes(context.Background(), "world")
 	require.NoError(t, err)
 	require.Equal(t, 1, cache.Count())
+	release()
 
 	require.Eventually(t, func() bool {
 		return cache.Count() == 0
 	}, 3*evictionPeriod, evictionPeriod)
 
-	_, err = cache.LockAccounts(context.Background(), "world")
+	_, release, err = cache.GetAccountWithVolumes(context.Background(), "world")
 	require.NoError(t, err)
+	defer release()
 
 	<-time.After(2 * evictionPeriod)
 
@@ -240,8 +246,9 @@ func BenchmarkCache(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		pool.Submit(func() {
-			_, err := cache.GetAccountWithVolumes(context.Background(), fmt.Sprintf("account:%d", i%accountsNumber))
+			_, release, err := cache.GetAccountWithVolumes(context.Background(), fmt.Sprintf("account:%d", i%accountsNumber))
 			require.NoError(b, err)
+			defer release()
 		})
 	}
 	pool.StopAndWait()

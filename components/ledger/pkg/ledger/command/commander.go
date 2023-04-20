@@ -23,8 +23,7 @@ type Parameters struct {
 }
 
 type Cache interface {
-	GetAccountWithVolumes(ctx context.Context, address string) (*core.AccountWithVolumes, error)
-	LockAccounts(ctx context.Context, accounts ...string) (cache.Release, error)
+	GetAccountWithVolumes(ctx context.Context, address string) (*core.AccountWithVolumes, cache.Release, error)
 	UpdateVolumeWithTX(tx *core.Transaction)
 	UpdateAccountMetadata(s string, m metadata.Metadata) error
 }
@@ -95,10 +94,10 @@ func (l *Commander) executeTransaction(ctx context.Context, parameters Parameter
 
 	var newTx *core.Transaction
 
-	log, err := l.runCommand(ctx, parameters, func(ctx *executionContext) (*core.Log, error) {
+	log, err := l.runCommand(ctx, parameters, func(executionContext *executionContext) (*core.Log, error) {
 		script.Timestamp = *ts
 
-		program, err := l.compiler.Compile(ctx, script.Plain)
+		program, err := l.compiler.Compile(executionContext, script.Plain)
 		if err != nil {
 			return nil, errorsutil.NewError(ErrCompilationFailed, errors.Wrap(err, "compiling numscript"))
 		}
@@ -110,14 +109,10 @@ func (l *Commander) executeTransaction(ctx context.Context, parameters Parameter
 				errors.Wrap(err, "could not set variables"))
 		}
 
-		involvedAccounts, involvedSources, err := m.ResolveResources(ctx, l.cache)
+		involvedAccounts, involvedSources, err := m.ResolveResources(executionContext.Context, executionContext)
 		if err != nil {
 			return nil, errorsutil.NewError(ErrCompilationFailed,
 				errors.Wrap(err, "could not resolve program resources"))
-		}
-
-		if err := ctx.RetainAccount(involvedAccounts...); err != nil {
-			return nil, err
 		}
 
 		worldFilter := collectionutils.FilterNot(collectionutils.FilterEq("world"))
@@ -126,13 +121,13 @@ func (l *Commander) executeTransaction(ctx context.Context, parameters Parameter
 			Write: collectionutils.Filter(involvedSources, worldFilter),
 		}
 
-		unlock, err := l.locker.Lock(ctx, lockAccounts)
+		unlock, err := l.locker.Lock(executionContext, lockAccounts)
 		if err != nil {
 			return nil, errors.Wrap(err, "locking accounts for tx processing")
 		}
-		defer unlock(ctx)
+		defer unlock(executionContext)
 
-		err = m.ResolveBalances(ctx, l.cache)
+		err = m.ResolveBalances(executionContext, executionContext)
 		if err != nil {
 			return nil, errorsutil.NewError(ErrCompilationFailed,
 				errors.Wrap(err, "could not resolve balances"))
@@ -165,7 +160,6 @@ func (l *Commander) executeTransaction(ctx context.Context, parameters Parameter
 		return log, nil
 	})
 	if err != nil {
-		reserve.Clear(nil)
 		return nil, err
 	}
 

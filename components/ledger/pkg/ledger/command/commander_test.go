@@ -27,14 +27,14 @@ func (m *mockCache) Stop(ctx context.Context) error {
 	return nil
 }
 
-func (m *mockCache) GetAccountWithVolumes(ctx context.Context, address string) (*core.AccountWithVolumes, error) {
+func (m *mockCache) GetAccountWithVolumes(ctx context.Context, address string) (*core.AccountWithVolumes, cache.Release, error) {
 	account, ok := m.accounts[address]
 	if !ok {
 		account = core.NewAccountWithVolumes(address)
 		m.accounts[address] = account
-		return account, nil
+		return account, func() {}, nil
 	}
-	return account, nil
+	return account, func() {}, nil
 }
 
 func (m *mockCache) LockAccounts(ctx context.Context, accounts ...string) (cache.Release, error) {
@@ -43,11 +43,11 @@ func (m *mockCache) LockAccounts(ctx context.Context, accounts ...string) (cache
 
 func (m *mockCache) UpdateVolumeWithTX(transaction *core.Transaction) {
 	for _, posting := range transaction.Postings {
-		sourceAccount, _ := m.GetAccountWithVolumes(context.Background(), posting.Source)
+		sourceAccount, _, _ := m.GetAccountWithVolumes(context.Background(), posting.Source)
 		sourceAccountAsset := sourceAccount.Volumes[posting.Asset].CopyWithZerosIfNeeded()
 		sourceAccountAsset.Output = sourceAccountAsset.Output.Add(sourceAccountAsset.Output, posting.Amount)
 		sourceAccount.Volumes[posting.Asset] = sourceAccountAsset
-		destAccount, _ := m.GetAccountWithVolumes(context.Background(), posting.Destination)
+		destAccount, _, _ := m.GetAccountWithVolumes(context.Background(), posting.Destination)
 		destAccountAsset := destAccount.Volumes[posting.Asset].CopyWithZerosIfNeeded()
 		destAccountAsset.Input = destAccountAsset.Input.Add(destAccountAsset.Input, posting.Amount)
 		destAccount.Volumes[posting.Asset] = destAccountAsset
@@ -331,7 +331,7 @@ func TestCreateTransaction(t *testing.T) {
 				}
 
 				for address, account := range tc.expectedAccounts {
-					accountFromCache, err := ledger.cache.GetAccountWithVolumes(context.Background(), address)
+					accountFromCache, _, err := ledger.cache.GetAccountWithVolumes(context.Background(), address)
 					require.NoError(t, err)
 					require.NotNil(t, accountFromCache)
 					require.Equal(t, account, *accountFromCache)

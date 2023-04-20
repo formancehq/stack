@@ -100,40 +100,22 @@ func (c *Cache) Count() int {
 	return counter
 }
 
-func (c *Cache) LockAccounts(ctx context.Context, address ...string) (Release, error) {
-	entries := make([]*cacheEntry, 0)
-	for _, address := range address {
-		entry, err := c.loadEntry(ctx, address, true)
-		if err != nil {
-			return nil, err
-		}
-		entries = append(entries, entry)
-	}
-
-	released := false
-	return func() {
-		if released {
-			return
-		}
-		released = true
-		for _, entry := range entries {
-			entry.inUse.Add(-1)
-		}
-	}, nil
-}
-
-func (c *Cache) GetAccountWithVolumes(ctx context.Context, address string) (*core.AccountWithVolumes, error) {
+func (c *Cache) GetAccountWithVolumes(ctx context.Context, address string) (*core.AccountWithVolumes, Release, error) {
 	address = strings.TrimPrefix(address, "@")
 
 	entry, err := c.loadEntry(ctx, address, false)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	entry.Lock()
 	defer entry.Unlock()
 	cp := entry.account.Copy()
 
-	return &cp, nil
+	entry.inUse.Add(1)
+
+	return &cp, func() {
+		entry.inUse.Add(-1)
+	}, nil
 }
 
 func (c *Cache) withLockOnAccount(address string, callback func(account *core.AccountWithVolumes)) {
