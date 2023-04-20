@@ -15,7 +15,7 @@ Method | HTTP request | Description
 
 ## AddMetadataOnTransaction
 
-> AddMetadataOnTransaction(ctx, ledger, txid).RequestBody(requestBody).Execute()
+> AddMetadataOnTransaction(ctx, ledger, txid).DryRun(dryRun).Async(async).IdempotencyKey(idempotencyKey).RequestBody(requestBody).Execute()
 
 Set the metadata of a transaction by its ID
 
@@ -34,11 +34,14 @@ import (
 func main() {
     ledger := "ledger001" // string | Name of the ledger.
     txid := int64(1234) // int64 | Transaction ID.
+    dryRun := true // bool | Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker. (optional)
+    async := true // bool | Set async mode. (optional)
+    idempotencyKey := "idempotencyKey_example" // string | Use an idempotency key (optional)
     requestBody := map[string]string{"key": "Inner_example"} // map[string]string | metadata (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    r, err := apiClient.TransactionsApi.AddMetadataOnTransaction(context.Background(), ledger, txid).RequestBody(requestBody).Execute()
+    r, err := apiClient.TransactionsApi.AddMetadataOnTransaction(context.Background(), ledger, txid).DryRun(dryRun).Async(async).IdempotencyKey(idempotencyKey).RequestBody(requestBody).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.AddMetadataOnTransaction``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -64,6 +67,9 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
+ **dryRun** | **bool** | Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | 
+ **async** | **bool** | Set async mode. | 
+ **idempotencyKey** | **string** | Use an idempotency key | 
  **requestBody** | **map[string]string** | metadata | 
 
 ### Return type
@@ -167,7 +173,7 @@ Name | Type | Description  | Notes
 
 ## CreateTransaction
 
-> CreateTransactionResponse CreateTransaction(ctx, ledger).PostTransaction(postTransaction).DryRun(dryRun).Execute()
+> CreateTransactionResponse CreateTransaction(ctx, ledger).PostTransaction(postTransaction).DryRun(dryRun).Async(async).IdempotencyKey(idempotencyKey).Execute()
 
 Create a new transaction to a ledger
 
@@ -187,10 +193,12 @@ func main() {
     ledger := "ledger001" // string | Name of the ledger.
     postTransaction := *client.NewPostTransaction(map[string]string{"key": "Inner_example"}) // PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript 
     dryRun := true // bool | Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker. (optional)
+    async := true // bool | Set async mode. (optional)
+    idempotencyKey := "idempotencyKey_example" // string | Use an idempotency key (optional)
 
     configuration := client.NewConfiguration()
     apiClient := client.NewAPIClient(configuration)
-    resp, r, err := apiClient.TransactionsApi.CreateTransaction(context.Background(), ledger).PostTransaction(postTransaction).DryRun(dryRun).Execute()
+    resp, r, err := apiClient.TransactionsApi.CreateTransaction(context.Background(), ledger).PostTransaction(postTransaction).DryRun(dryRun).Async(async).IdempotencyKey(idempotencyKey).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `TransactionsApi.CreateTransaction``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -218,6 +226,8 @@ Name | Type | Description  | Notes
 
  **postTransaction** | [**PostTransaction**](PostTransaction.md) | The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  | 
  **dryRun** | **bool** | Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | 
+ **async** | **bool** | Set async mode. | 
+ **idempotencyKey** | **string** | Use an idempotency key | 
 
 ### Return type
 

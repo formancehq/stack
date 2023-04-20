@@ -28,6 +28,9 @@ public interface TransactionsApi {
    * 
    * @param ledger Name of the ledger. (required)
    * @param txid Transaction ID. (required)
+   * @param dryRun Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+   * @param async Set async mode. (optional)
+   * @param idempotencyKey Use an idempotency key (optional)
    * @param requestBody metadata (optional)
    * @return Call&lt;Void&gt;
    */
@@ -36,7 +39,7 @@ public interface TransactionsApi {
   })
   @POST("api/ledger/{ledger}/transactions/{txid}/metadata")
   Call<Void> addMetadataOnTransaction(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("txid") Long txid, @retrofit2.http.Body Map<String, String> requestBody
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("txid") Long txid, @retrofit2.http.Query("dryRun") Boolean dryRun, @retrofit2.http.Query("async") Boolean async, @retrofit2.http.Header("Idempotency-Key") String idempotencyKey, @retrofit2.http.Body Map<String, String> requestBody
   );
 
   /**
@@ -63,6 +66,8 @@ public interface TransactionsApi {
    * @param ledger Name of the ledger. (required)
    * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  (required)
    * @param dryRun Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+   * @param async Set async mode. (optional)
+   * @param idempotencyKey Use an idempotency key (optional)
    * @return Call&lt;CreateTransactionResponse&gt;
    */
   @Headers({
@@ -70,7 +75,7 @@ public interface TransactionsApi {
   })
   @POST("api/ledger/{ledger}/transactions")
   Call<CreateTransactionResponse> createTransaction(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Body PostTransaction postTransaction, @retrofit2.http.Query("dryRun") Boolean dryRun
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Body PostTransaction postTransaction, @retrofit2.http.Query("dryRun") Boolean dryRun, @retrofit2.http.Query("async") Boolean async, @retrofit2.http.Header("Idempotency-Key") String idempotencyKey
   );
 
   /**

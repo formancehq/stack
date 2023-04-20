@@ -25,9 +25,12 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * Set the metadata of a transaction by its ID
      * @param ledger Name of the ledger.
      * @param txid Transaction ID.
+     * @param dryRun Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+     * @param async Set async mode.
+     * @param idempotencyKey Use an idempotency key
      * @param requestBody metadata
      */
-    public async addMetadataOnTransaction(ledger: string, txid: number, requestBody?: { [key: string]: string; }, _options?: Configuration): Promise<RequestContext> {
+    public async addMetadataOnTransaction(ledger: string, txid: number, dryRun?: boolean, async?: boolean, idempotencyKey?: string, requestBody?: { [key: string]: string; }, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
@@ -43,6 +46,9 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
 
 
 
+
+
+
         // Path Params
         const localVarPath = '/api/ledger/{ledger}/transactions/{txid}/metadata'
             .replace('{' + 'ledger' + '}', encodeURIComponent(String(ledger)))
@@ -51,6 +57,19 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         // Make Request Context
         const requestContext = _config.baseServer.makeRequestContext(localVarPath, HttpMethod.POST);
         requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
+
+        // Query Params
+        if (dryRun !== undefined) {
+            requestContext.setQueryParam("dryRun", ObjectSerializer.serialize(dryRun, "boolean", ""));
+        }
+
+        // Query Params
+        if (async !== undefined) {
+            requestContext.setQueryParam("async", ObjectSerializer.serialize(async, "boolean", ""));
+        }
+
+        // Header Params
+        requestContext.setHeaderParam("Idempotency-Key", ObjectSerializer.serialize(idempotencyKey, "string", ""));
 
 
         // Body Params
@@ -170,8 +189,10 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
      * @param ledger Name of the ledger.
      * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript 
      * @param dryRun Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+     * @param async Set async mode.
+     * @param idempotencyKey Use an idempotency key
      */
-    public async createTransaction(ledger: string, postTransaction: PostTransaction, dryRun?: boolean, _options?: Configuration): Promise<RequestContext> {
+    public async createTransaction(ledger: string, postTransaction: PostTransaction, dryRun?: boolean, async?: boolean, idempotencyKey?: string, _options?: Configuration): Promise<RequestContext> {
         let _config = _options || this.configuration;
 
         // verify required parameter 'ledger' is not null or undefined
@@ -187,6 +208,8 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
 
 
 
+
+
         // Path Params
         const localVarPath = '/api/ledger/{ledger}/transactions'
             .replace('{' + 'ledger' + '}', encodeURIComponent(String(ledger)));
@@ -199,6 +222,14 @@ export class TransactionsApiRequestFactory extends BaseAPIRequestFactory {
         if (dryRun !== undefined) {
             requestContext.setQueryParam("dryRun", ObjectSerializer.serialize(dryRun, "boolean", ""));
         }
+
+        // Query Params
+        if (async !== undefined) {
+            requestContext.setQueryParam("async", ObjectSerializer.serialize(async, "boolean", ""));
+        }
+
+        // Header Params
+        requestContext.setHeaderParam("Idempotency-Key", ObjectSerializer.serialize(idempotencyKey, "string", ""));
 
 
         // Body Params

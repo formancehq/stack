@@ -183,10 +183,13 @@ address = "users:001" # str | Exact address of the account. It must match the fo
 ledger_metadata = LedgerMetadata(
         key="key_example",
     ) # LedgerMetadata | metadata
+dry_run = True # bool | Set the dry run mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker. (optional)
+_async = True # bool | Set async mode. (optional)
+idempotency_key = "Idempotency-Key_example" # str | Use an idempotency key (optional)
 
     try:
         # Add metadata to an account
-        api_instance.add_metadata_to_account(ledgeraddressledger_metadata)
+        api_instance.add_metadata_to_account(ledgeraddressledger_metadatadry_run=dry_run_async=_asyncidempotency_key=idempotency_key)
     except Formance.ApiException as e:
         print("Exception when calling AccountsApi->add_metadata_to_account: %s\n" % e)
 ```

@@ -226,9 +226,12 @@ export class ObservableAccountsApi {
      * @param ledger Name of the ledger.
      * @param address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; 
      * @param requestBody metadata
+     * @param dryRun Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+     * @param async Set async mode.
+     * @param idempotencyKey Use an idempotency key
      */
-    public addMetadataToAccount(ledger: string, address: string, requestBody: { [key: string]: string; }, _options?: Configuration): Observable<void> {
-        const requestContextPromise = this.requestFactory.addMetadataToAccount(ledger, address, requestBody, _options);
+    public addMetadataToAccount(ledger: string, address: string, requestBody: { [key: string]: string; }, dryRun?: boolean, async?: boolean, idempotencyKey?: string, _options?: Configuration): Observable<void> {
+        const requestContextPromise = this.requestFactory.addMetadataToAccount(ledger, address, requestBody, dryRun, async, idempotencyKey, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);
@@ -1793,10 +1796,13 @@ export class ObservableTransactionsApi {
      * Set the metadata of a transaction by its ID
      * @param ledger Name of the ledger.
      * @param txid Transaction ID.
+     * @param dryRun Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+     * @param async Set async mode.
+     * @param idempotencyKey Use an idempotency key
      * @param requestBody metadata
      */
-    public addMetadataOnTransaction(ledger: string, txid: number, requestBody?: { [key: string]: string; }, _options?: Configuration): Observable<void> {
-        const requestContextPromise = this.requestFactory.addMetadataOnTransaction(ledger, txid, requestBody, _options);
+    public addMetadataOnTransaction(ledger: string, txid: number, dryRun?: boolean, async?: boolean, idempotencyKey?: string, requestBody?: { [key: string]: string; }, _options?: Configuration): Observable<void> {
+        const requestContextPromise = this.requestFactory.addMetadataOnTransaction(ledger, txid, dryRun, async, idempotencyKey, requestBody, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);
@@ -1849,9 +1855,11 @@ export class ObservableTransactionsApi {
      * @param ledger Name of the ledger.
      * @param postTransaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript 
      * @param dryRun Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+     * @param async Set async mode.
+     * @param idempotencyKey Use an idempotency key
      */
-    public createTransaction(ledger: string, postTransaction: PostTransaction, dryRun?: boolean, _options?: Configuration): Observable<CreateTransactionResponse> {
-        const requestContextPromise = this.requestFactory.createTransaction(ledger, postTransaction, dryRun, _options);
+    public createTransaction(ledger: string, postTransaction: PostTransaction, dryRun?: boolean, async?: boolean, idempotencyKey?: string, _options?: Configuration): Observable<CreateTransactionResponse> {
+        const requestContextPromise = this.requestFactory.createTransaction(ledger, postTransaction, dryRun, async, idempotencyKey, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);
