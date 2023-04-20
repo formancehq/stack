@@ -1007,17 +1007,17 @@ decimal.Decimal, int,  | decimal.Decimal,  |  | value must be a 64 bit integer
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#revert_transaction.ApiResponseFor200) | OK
+201 | [ApiResponseFor201](#revert_transaction.ApiResponseFor201) | OK
 default | [ApiResponseForDefault](#revert_transaction.ApiResponseForDefault) | Error
 
-#### revert_transaction.ApiResponseFor200
+#### revert_transaction.ApiResponseFor201
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[SchemaFor200ResponseBodyApplicationJson, ] |  |
+body | typing.Union[SchemaFor201ResponseBodyApplicationJson, ] |  |
 headers | Unset | headers were not defined |
 
-# SchemaFor200ResponseBodyApplicationJson
+# SchemaFor201ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
 [**CreateTransactionResponse**](../../models/CreateTransactionResponse.md) |  | 
