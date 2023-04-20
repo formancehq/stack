@@ -710,6 +710,33 @@ paths:
           example: users:001
           type: string
         style: simple
+      - description: Set the dry run mode. Dry run mode doesn't add the logs to the
+          database or publish a message to the message broker.
+        explode: true
+        in: query
+        name: dryRun
+        required: false
+        schema:
+          example: true
+          type: boolean
+        style: form
+      - description: Set async mode.
+        explode: true
+        in: query
+        name: async
+        required: false
+        schema:
+          example: true
+          type: boolean
+        style: form
+      - description: Use an idempotency key
+        explode: false
+        in: header
+        name: Idempotency-Key
+        required: false
+        schema:
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -1021,6 +1048,23 @@ paths:
           example: true
           type: boolean
         style: form
+      - description: Set async mode.
+        explode: true
+        in: query
+        name: async
+        required: false
+        schema:
+          example: true
+          type: boolean
+        style: form
+      - description: Use an idempotency key
+        explode: false
+        in: header
+        name: Idempotency-Key
+        required: false
+        schema:
+          type: string
+        style: simple
       requestBody:
         content:
           application/json:
@@ -1110,6 +1154,33 @@ paths:
           format: int64
           minimum: 0
           type: integer
+        style: simple
+      - description: Set the dryRun mode. Dry run mode doesn't add the logs to the
+          database or publish a message to the message broker.
+        explode: true
+        in: query
+        name: dryRun
+        required: false
+        schema:
+          example: true
+          type: boolean
+        style: form
+      - description: Set async mode.
+        explode: true
+        in: query
+        name: async
+        required: false
+        schema:
+          example: true
+          type: boolean
+        style: form
+      - description: Use an idempotency key
+        explode: false
+        in: header
+        name: Idempotency-Key
+        required: false
+        schema:
+          type: string
         style: simple
       requestBody:
         content:

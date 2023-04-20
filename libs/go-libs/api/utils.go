@@ -15,28 +15,29 @@ const (
 	ErrorCodeNotFound = "NOT_FOUND"
 )
 
-func writeJSON(w http.ResponseWriter, v any) {
+func writeJSON(w http.ResponseWriter, statusCode int, v any) {
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(v); err != nil {
-		panic(err)
+	w.WriteHeader(statusCode)
+	if v != nil {
+		if err := json.NewEncoder(w).Encode(v); err != nil {
+			panic(err)
+		}
 	}
 }
 
 func NotFound(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusNotFound)
-	writeJSON(w, ErrorResponse{
+	writeJSON(w, http.StatusNotFound, ErrorResponse{
 		ErrorCode:    ErrorCodeNotFound,
 		ErrorMessage: "resource not found",
 	})
 }
 
 func NoContent(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusNoContent)
+	writeJSON(w, http.StatusNoContent, nil)
 }
 
 func BadRequest(w http.ResponseWriter, code string, err error) {
-	w.WriteHeader(http.StatusBadRequest)
-	writeJSON(w, ErrorResponse{
+	writeJSON(w, http.StatusBadRequest, ErrorResponse{
 		ErrorCode:    code,
 		ErrorMessage: err.Error(),
 	})
@@ -45,30 +46,30 @@ func BadRequest(w http.ResponseWriter, code string, err error) {
 func InternalServerError(w http.ResponseWriter, r *http.Request, err error) {
 	logging.FromContext(r.Context()).Error(err)
 
-	w.WriteHeader(http.StatusInternalServerError)
-	writeJSON(w, ErrorResponse{
+	writeJSON(w, http.StatusInternalServerError, ErrorResponse{
 		ErrorCode:    "INTERNAL_ERROR",
 		ErrorMessage: err.Error(),
 	})
 }
 
 func Created(w http.ResponseWriter, v any) {
-	w.WriteHeader(http.StatusCreated)
-	Ok(w, v)
+	writeJSON(w, http.StatusCreated, BaseResponse[any]{
+		Data: &v,
+	})
 }
 
 func RawOk(w http.ResponseWriter, v any) {
-	writeJSON(w, v)
+	writeJSON(w, http.StatusOK, v)
 }
 
 func Ok(w http.ResponseWriter, v any) {
-	RawOk(w, BaseResponse[any]{
+	writeJSON(w, http.StatusOK, BaseResponse[any]{
 		Data: &v,
 	})
 }
 
 func RenderCursor[T any](w http.ResponseWriter, v Cursor[T]) {
-	writeJSON(w, BaseResponse[T]{
+	writeJSON(w, http.StatusOK, BaseResponse[T]{
 		Cursor: &v,
 	})
 }

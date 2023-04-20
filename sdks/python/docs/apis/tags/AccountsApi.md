@@ -51,6 +51,10 @@ with Formance.ApiClient(configuration) as api_client:
         'ledger': "ledger001",
         'address': "users:001",
     }
+    query_params = {
+    }
+    header_params = {
+    }
     body = LedgerMetadata(
         key="key_example",
     )
@@ -58,6 +62,34 @@ with Formance.ApiClient(configuration) as api_client:
         # Add metadata to an account
         api_response = api_instance.add_metadata_to_account(
             path_params=path_params,
+            query_params=query_params,
+            header_params=header_params,
+            body=body,
+        )
+    except Formance.ApiException as e:
+        print("Exception when calling AccountsApi->add_metadata_to_account: %s\n" % e)
+
+    # example passing only optional values
+    path_params = {
+        'ledger': "ledger001",
+        'address': "users:001",
+    }
+    query_params = {
+        'dryRun': True,
+        'async': True,
+    }
+    header_params = {
+        'Idempotency-Key': "Idempotency-Key_example",
+    }
+    body = LedgerMetadata(
+        key="key_example",
+    )
+    try:
+        # Add metadata to an account
+        api_response = api_instance.add_metadata_to_account(
+            path_params=path_params,
+            query_params=query_params,
+            header_params=header_params,
             body=body,
         )
     except Formance.ApiException as e:
@@ -68,6 +100,8 @@ with Formance.ApiClient(configuration) as api_client:
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 body | typing.Union[SchemaForRequestBodyApplicationJson] | required |
+query_params | RequestQueryParams | |
+header_params | RequestHeaderParams | |
 path_params | RequestPathParams | |
 content_type | str | optional, default is 'application/json' | Selects the schema and serialization of the request body
 accept_content_types | typing.Tuple[str] | default is ('application/json', ) | Tells the server the content type(s) that are accepted by the client
@@ -82,6 +116,43 @@ Type | Description  | Notes
 ------------- | ------------- | -------------
 [**LedgerMetadata**](../../models/LedgerMetadata.md) |  | 
 
+
+### query_params
+#### RequestQueryParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+dryRun | DryRunSchema | | optional
+async | ModelAsyncSchema | | optional
+
+
+# DryRunSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+bool,  | BoolClass,  |  | 
+
+# ModelAsyncSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+bool,  | BoolClass,  |  | 
+
+### header_params
+#### RequestHeaderParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+Idempotency-Key | IdempotencyKeySchema | | optional
+
+# IdempotencyKeySchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str,  | str,  |  | 
 
 ### path_params
 #### RequestPathParams

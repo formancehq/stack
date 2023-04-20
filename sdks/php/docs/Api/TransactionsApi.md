@@ -15,7 +15,7 @@ All URIs are relative to http://localhost, except if the operation defines anoth
 ## `addMetadataOnTransaction()`
 
 ```php
-addMetadataOnTransaction($ledger, $txid, $request_body)
+addMetadataOnTransaction($ledger, $txid, $dry_run, $async, $idempotency_key, $request_body)
 ```
 
 Set the metadata of a transaction by its ID
@@ -39,10 +39,13 @@ $apiInstance = new Formance\Api\TransactionsApi(
 );
 $ledger = ledger001; // string | Name of the ledger.
 $txid = 1234; // int | Transaction ID.
+$dry_run = true; // bool | Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
+$async = true; // bool | Set async mode.
+$idempotency_key = 'idempotency_key_example'; // string | Use an idempotency key
 $request_body = array('key' => 'request_body_example'); // array<string,string> | metadata
 
 try {
-    $apiInstance->addMetadataOnTransaction($ledger, $txid, $request_body);
+    $apiInstance->addMetadataOnTransaction($ledger, $txid, $dry_run, $async, $idempotency_key, $request_body);
 } catch (Exception $e) {
     echo 'Exception when calling TransactionsApi->addMetadataOnTransaction: ', $e->getMessage(), PHP_EOL;
 }
@@ -54,6 +57,9 @@ try {
 | ------------- | ------------- | ------------- | ------------- |
 | **ledger** | **string**| Name of the ledger. | |
 | **txid** | **int**| Transaction ID. | |
+| **dry_run** | **bool**| Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | [optional] |
+| **async** | **bool**| Set async mode. | [optional] |
+| **idempotency_key** | **string**| Use an idempotency key | [optional] |
 | **request_body** | [**array<string,string>**](../Model/string.md)| metadata | [optional] |
 
 ### Return type
@@ -147,7 +153,7 @@ void (empty response body)
 ## `createTransaction()`
 
 ```php
-createTransaction($ledger, $post_transaction, $dry_run): \Formance\Model\CreateTransactionResponse
+createTransaction($ledger, $post_transaction, $dry_run, $async, $idempotency_key): \Formance\Model\CreateTransactionResponse
 ```
 
 Create a new transaction to a ledger
@@ -172,9 +178,11 @@ $apiInstance = new Formance\Api\TransactionsApi(
 $ledger = ledger001; // string | Name of the ledger.
 $post_transaction = new \Formance\Model\PostTransaction(); // \Formance\Model\PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript
 $dry_run = true; // bool | Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
+$async = true; // bool | Set async mode.
+$idempotency_key = 'idempotency_key_example'; // string | Use an idempotency key
 
 try {
-    $result = $apiInstance->createTransaction($ledger, $post_transaction, $dry_run);
+    $result = $apiInstance->createTransaction($ledger, $post_transaction, $dry_run, $async, $idempotency_key);
     print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling TransactionsApi->createTransaction: ', $e->getMessage(), PHP_EOL;
@@ -188,6 +196,8 @@ try {
 | **ledger** | **string**| Name of the ledger. | |
 | **post_transaction** | [**\Formance\Model\PostTransaction**](../Model/PostTransaction.md)| The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript | |
 | **dry_run** | **bool**| Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | [optional] |
+| **async** | **bool**| Set async mode. | [optional] |
+| **idempotency_key** | **string**| Use an idempotency key | [optional] |
 
 ### Return type
 

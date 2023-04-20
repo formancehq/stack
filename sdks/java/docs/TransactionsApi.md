@@ -15,7 +15,7 @@ All URIs are relative to *http://localhost*
 
 ## addMetadataOnTransaction
 
-> addMetadataOnTransaction(ledger, txid, requestBody)
+> addMetadataOnTransaction(ledger, txid, dryRun, async, idempotencyKey, requestBody)
 
 Set the metadata of a transaction by its ID
 
@@ -42,9 +42,12 @@ public class Example {
         TransactionsApi apiInstance = new TransactionsApi(defaultClient);
         String ledger = "ledger001"; // String | Name of the ledger.
         Long txid = 1234L; // Long | Transaction ID.
+        Boolean dryRun = true; // Boolean | Set the dryRun mode. Dry run mode doesn't add the logs to the database or publish a message to the message broker.
+        Boolean async = true; // Boolean | Set async mode.
+        String idempotencyKey = "idempotencyKey_example"; // String | Use an idempotency key
         Map<String, String> requestBody = new HashMap(); // Map<String, String> | metadata
         try {
-            apiInstance.addMetadataOnTransaction(ledger, txid, requestBody);
+            apiInstance.addMetadataOnTransaction(ledger, txid, dryRun, async, idempotencyKey, requestBody);
         } catch (ApiException e) {
             System.err.println("Exception when calling TransactionsApi#addMetadataOnTransaction");
             System.err.println("Status code: " + e.getCode());
@@ -63,6 +66,9 @@ public class Example {
 |------------- | ------------- | ------------- | -------------|
 | **ledger** | **String**| Name of the ledger. | |
 | **txid** | **Long**| Transaction ID. | |
+| **dryRun** | **Boolean**| Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | [optional] |
+| **async** | **Boolean**| Set async mode. | [optional] |
+| **idempotencyKey** | **String**| Use an idempotency key | [optional] |
 | **requestBody** | [**Map&lt;String, String&gt;**](String.md)| metadata | [optional] |
 
 ### Return type
@@ -171,7 +177,7 @@ null (empty response body)
 
 ## createTransaction
 
-> CreateTransactionResponse createTransaction(ledger, postTransaction, dryRun)
+> CreateTransactionResponse createTransaction(ledger, postTransaction, dryRun, async, idempotencyKey)
 
 Create a new transaction to a ledger
 
@@ -199,8 +205,10 @@ public class Example {
         String ledger = "ledger001"; // String | Name of the ledger.
         PostTransaction postTransaction = new PostTransaction(); // PostTransaction | The request body must contain at least one of the following objects:   - `postings`: suitable for simple transactions   - `script`: enabling more complex transactions with Numscript 
         Boolean dryRun = true; // Boolean | Set the dryRun mode. dry run mode doesn't add the logs to the database or publish a message to the message broker.
+        Boolean async = true; // Boolean | Set async mode.
+        String idempotencyKey = "idempotencyKey_example"; // String | Use an idempotency key
         try {
-            CreateTransactionResponse result = apiInstance.createTransaction(ledger, postTransaction, dryRun);
+            CreateTransactionResponse result = apiInstance.createTransaction(ledger, postTransaction, dryRun, async, idempotencyKey);
             System.out.println(result);
         } catch (ApiException e) {
             System.err.println("Exception when calling TransactionsApi#createTransaction");
@@ -221,6 +229,8 @@ public class Example {
 | **ledger** | **String**| Name of the ledger. | |
 | **postTransaction** | [**PostTransaction**](PostTransaction.md)| The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript  | |
 | **dryRun** | **Boolean**| Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. | [optional] |
+| **async** | **Boolean**| Set async mode. | [optional] |
+| **idempotencyKey** | **String**| Use an idempotency key | [optional] |
 
 ### Return type
 

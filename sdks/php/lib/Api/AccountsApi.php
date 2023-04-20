@@ -140,15 +140,18 @@ class AccountsApi
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; (required)
      * @param  array<string,string> $request_body metadata (required)
+     * @param  bool $dry_run Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataToAccount'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function addMetadataToAccount($ledger, $address, $request_body, string $contentType = self::contentTypes['addMetadataToAccount'][0])
+    public function addMetadataToAccount($ledger, $address, $request_body, $dry_run = null, $async = null, $idempotency_key = null, string $contentType = self::contentTypes['addMetadataToAccount'][0])
     {
-        $this->addMetadataToAccountWithHttpInfo($ledger, $address, $request_body, $contentType);
+        $this->addMetadataToAccountWithHttpInfo($ledger, $address, $request_body, $dry_run, $async, $idempotency_key, $contentType);
     }
 
     /**
@@ -159,15 +162,18 @@ class AccountsApi
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; (required)
      * @param  array<string,string> $request_body metadata (required)
+     * @param  bool $dry_run Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataToAccount'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
-    public function addMetadataToAccountWithHttpInfo($ledger, $address, $request_body, string $contentType = self::contentTypes['addMetadataToAccount'][0])
+    public function addMetadataToAccountWithHttpInfo($ledger, $address, $request_body, $dry_run = null, $async = null, $idempotency_key = null, string $contentType = self::contentTypes['addMetadataToAccount'][0])
     {
-        $request = $this->addMetadataToAccountRequest($ledger, $address, $request_body, $contentType);
+        $request = $this->addMetadataToAccountRequest($ledger, $address, $request_body, $dry_run, $async, $idempotency_key, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -229,14 +235,17 @@ class AccountsApi
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; (required)
      * @param  array<string,string> $request_body metadata (required)
+     * @param  bool $dry_run Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataToAccount'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function addMetadataToAccountAsync($ledger, $address, $request_body, string $contentType = self::contentTypes['addMetadataToAccount'][0])
+    public function addMetadataToAccountAsync($ledger, $address, $request_body, $dry_run = null, $async = null, $idempotency_key = null, string $contentType = self::contentTypes['addMetadataToAccount'][0])
     {
-        return $this->addMetadataToAccountAsyncWithHttpInfo($ledger, $address, $request_body, $contentType)
+        return $this->addMetadataToAccountAsyncWithHttpInfo($ledger, $address, $request_body, $dry_run, $async, $idempotency_key, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -252,15 +261,18 @@ class AccountsApi
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; (required)
      * @param  array<string,string> $request_body metadata (required)
+     * @param  bool $dry_run Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataToAccount'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function addMetadataToAccountAsyncWithHttpInfo($ledger, $address, $request_body, string $contentType = self::contentTypes['addMetadataToAccount'][0])
+    public function addMetadataToAccountAsyncWithHttpInfo($ledger, $address, $request_body, $dry_run = null, $async = null, $idempotency_key = null, string $contentType = self::contentTypes['addMetadataToAccount'][0])
     {
         $returnType = '';
-        $request = $this->addMetadataToAccountRequest($ledger, $address, $request_body, $contentType);
+        $request = $this->addMetadataToAccountRequest($ledger, $address, $request_body, $dry_run, $async, $idempotency_key, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -291,12 +303,15 @@ class AccountsApi
      * @param  string $ledger Name of the ledger. (required)
      * @param  string $address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60; (required)
      * @param  array<string,string> $request_body metadata (required)
+     * @param  bool $dry_run Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataToAccount'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function addMetadataToAccountRequest($ledger, $address, $request_body, string $contentType = self::contentTypes['addMetadataToAccount'][0])
+    public function addMetadataToAccountRequest($ledger, $address, $request_body, $dry_run = null, $async = null, $idempotency_key = null, string $contentType = self::contentTypes['addMetadataToAccount'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -321,6 +336,9 @@ class AccountsApi
         }
 
 
+
+
+
         $resourcePath = '/api/ledger/{ledger}/accounts/{address}/metadata';
         $formParams = [];
         $queryParams = [];
@@ -328,7 +346,29 @@ class AccountsApi
         $httpBody = '';
         $multipart = false;
 
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $dry_run,
+            'dryRun', // param base name
+            'boolean', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $async,
+            'async', // param base name
+            'boolean', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
 
+        // header params
+        if ($idempotency_key !== null) {
+            $headerParams['Idempotency-Key'] = ObjectSerializer::toHeaderValue($idempotency_key);
+        }
 
         // path params
         if ($ledger !== null) {

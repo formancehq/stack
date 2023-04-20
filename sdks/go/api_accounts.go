@@ -87,11 +87,32 @@ type ApiAddMetadataToAccountRequest struct {
 	ledger string
 	address string
 	requestBody *map[string]string
+	dryRun *bool
+	async *bool
+	idempotencyKey *string
 }
 
 // metadata
 func (r ApiAddMetadataToAccountRequest) RequestBody(requestBody map[string]string) ApiAddMetadataToAccountRequest {
 	r.requestBody = &requestBody
+	return r
+}
+
+// Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+func (r ApiAddMetadataToAccountRequest) DryRun(dryRun bool) ApiAddMetadataToAccountRequest {
+	r.dryRun = &dryRun
+	return r
+}
+
+// Set async mode.
+func (r ApiAddMetadataToAccountRequest) Async(async bool) ApiAddMetadataToAccountRequest {
+	r.async = &async
+	return r
+}
+
+// Use an idempotency key
+func (r ApiAddMetadataToAccountRequest) IdempotencyKey(idempotencyKey string) ApiAddMetadataToAccountRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -140,6 +161,12 @@ func (a *AccountsApiService) AddMetadataToAccountExecute(r ApiAddMetadataToAccou
 		return nil, reportError("requestBody is required and must be specified")
 	}
 
+	if r.dryRun != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "dryRun", r.dryRun, "")
+	}
+	if r.async != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "async", r.async, "")
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -156,6 +183,9 @@ func (a *AccountsApiService) AddMetadataToAccountExecute(r ApiAddMetadataToAccou
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "Idempotency-Key", r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.requestBody

@@ -114,7 +114,28 @@ type ApiAddMetadataOnTransactionRequest struct {
 	ApiService TransactionsApi
 	ledger string
 	txid int64
+	dryRun *bool
+	async *bool
+	idempotencyKey *string
 	requestBody *map[string]string
+}
+
+// Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
+func (r ApiAddMetadataOnTransactionRequest) DryRun(dryRun bool) ApiAddMetadataOnTransactionRequest {
+	r.dryRun = &dryRun
+	return r
+}
+
+// Set async mode.
+func (r ApiAddMetadataOnTransactionRequest) Async(async bool) ApiAddMetadataOnTransactionRequest {
+	r.async = &async
+	return r
+}
+
+// Use an idempotency key
+func (r ApiAddMetadataOnTransactionRequest) IdempotencyKey(idempotencyKey string) ApiAddMetadataOnTransactionRequest {
+	r.idempotencyKey = &idempotencyKey
+	return r
 }
 
 // metadata
@@ -168,6 +189,12 @@ func (a *TransactionsApiService) AddMetadataOnTransactionExecute(r ApiAddMetadat
 		return nil, reportError("txid must be greater than 0")
 	}
 
+	if r.dryRun != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "dryRun", r.dryRun, "")
+	}
+	if r.async != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "async", r.async, "")
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -184,6 +211,9 @@ func (a *TransactionsApiService) AddMetadataOnTransactionExecute(r ApiAddMetadat
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "Idempotency-Key", r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.requestBody
@@ -397,6 +427,8 @@ type ApiCreateTransactionRequest struct {
 	ledger string
 	postTransaction *PostTransaction
 	dryRun *bool
+	async *bool
+	idempotencyKey *string
 }
 
 // The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript 
@@ -408,6 +440,18 @@ func (r ApiCreateTransactionRequest) PostTransaction(postTransaction PostTransac
 // Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker.
 func (r ApiCreateTransactionRequest) DryRun(dryRun bool) ApiCreateTransactionRequest {
 	r.dryRun = &dryRun
+	return r
+}
+
+// Set async mode.
+func (r ApiCreateTransactionRequest) Async(async bool) ApiCreateTransactionRequest {
+	r.async = &async
+	return r
+}
+
+// Use an idempotency key
+func (r ApiCreateTransactionRequest) IdempotencyKey(idempotencyKey string) ApiCreateTransactionRequest {
+	r.idempotencyKey = &idempotencyKey
 	return r
 }
 
@@ -458,6 +502,9 @@ func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransaction
 	if r.dryRun != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "dryRun", r.dryRun, "")
 	}
+	if r.async != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "async", r.async, "")
+	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{"application/json"}
 
@@ -474,6 +521,9 @@ func (a *TransactionsApiService) CreateTransactionExecute(r ApiCreateTransaction
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.idempotencyKey != nil {
+		parameterAddToHeaderOrQuery(localVarHeaderParams, "Idempotency-Key", r.idempotencyKey, "")
 	}
 	// body params
 	localVarPostBody = r.postTransaction

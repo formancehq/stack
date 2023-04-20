@@ -26,6 +26,9 @@ public interface AccountsApi {
    * @param ledger Name of the ledger. (required)
    * @param address Exact address of the account. It must match the following regular expressions pattern: &#x60;&#x60;&#x60; ^\\w+(:\\w+)*$ &#x60;&#x60;&#x60;  (required)
    * @param requestBody metadata (required)
+   * @param dryRun Set the dry run mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+   * @param async Set async mode. (optional)
+   * @param idempotencyKey Use an idempotency key (optional)
    * @return Call&lt;Void&gt;
    */
   @Headers({
@@ -33,7 +36,7 @@ public interface AccountsApi {
   })
   @POST("api/ledger/{ledger}/accounts/{address}/metadata")
   Call<Void> addMetadataToAccount(
-    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("address") String address, @retrofit2.http.Body Map<String, String> requestBody
+    @retrofit2.http.Path("ledger") String ledger, @retrofit2.http.Path("address") String address, @retrofit2.http.Body Map<String, String> requestBody, @retrofit2.http.Query("dryRun") Boolean dryRun, @retrofit2.http.Query("async") Boolean async, @retrofit2.http.Header("Idempotency-Key") String idempotencyKey
   );
 
   /**

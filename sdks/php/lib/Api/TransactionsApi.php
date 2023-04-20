@@ -145,6 +145,9 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $txid Transaction ID. (required)
+     * @param  bool $dry_run Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
@@ -152,9 +155,9 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return void
      */
-    public function addMetadataOnTransaction($ledger, $txid, $request_body = null, string $contentType = self::contentTypes['addMetadataOnTransaction'][0])
+    public function addMetadataOnTransaction($ledger, $txid, $dry_run = null, $async = null, $idempotency_key = null, $request_body = null, string $contentType = self::contentTypes['addMetadataOnTransaction'][0])
     {
-        $this->addMetadataOnTransactionWithHttpInfo($ledger, $txid, $request_body, $contentType);
+        $this->addMetadataOnTransactionWithHttpInfo($ledger, $txid, $dry_run, $async, $idempotency_key, $request_body, $contentType);
     }
 
     /**
@@ -164,6 +167,9 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $txid Transaction ID. (required)
+     * @param  bool $dry_run Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
@@ -171,9 +177,9 @@ class TransactionsApi
      * @throws \InvalidArgumentException
      * @return array of null, HTTP status code, HTTP response headers (array of strings)
      */
-    public function addMetadataOnTransactionWithHttpInfo($ledger, $txid, $request_body = null, string $contentType = self::contentTypes['addMetadataOnTransaction'][0])
+    public function addMetadataOnTransactionWithHttpInfo($ledger, $txid, $dry_run = null, $async = null, $idempotency_key = null, $request_body = null, string $contentType = self::contentTypes['addMetadataOnTransaction'][0])
     {
-        $request = $this->addMetadataOnTransactionRequest($ledger, $txid, $request_body, $contentType);
+        $request = $this->addMetadataOnTransactionRequest($ledger, $txid, $dry_run, $async, $idempotency_key, $request_body, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -234,15 +240,18 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $txid Transaction ID. (required)
+     * @param  bool $dry_run Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function addMetadataOnTransactionAsync($ledger, $txid, $request_body = null, string $contentType = self::contentTypes['addMetadataOnTransaction'][0])
+    public function addMetadataOnTransactionAsync($ledger, $txid, $dry_run = null, $async = null, $idempotency_key = null, $request_body = null, string $contentType = self::contentTypes['addMetadataOnTransaction'][0])
     {
-        return $this->addMetadataOnTransactionAsyncWithHttpInfo($ledger, $txid, $request_body, $contentType)
+        return $this->addMetadataOnTransactionAsyncWithHttpInfo($ledger, $txid, $dry_run, $async, $idempotency_key, $request_body, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -257,16 +266,19 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $txid Transaction ID. (required)
+     * @param  bool $dry_run Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function addMetadataOnTransactionAsyncWithHttpInfo($ledger, $txid, $request_body = null, string $contentType = self::contentTypes['addMetadataOnTransaction'][0])
+    public function addMetadataOnTransactionAsyncWithHttpInfo($ledger, $txid, $dry_run = null, $async = null, $idempotency_key = null, $request_body = null, string $contentType = self::contentTypes['addMetadataOnTransaction'][0])
     {
         $returnType = '';
-        $request = $this->addMetadataOnTransactionRequest($ledger, $txid, $request_body, $contentType);
+        $request = $this->addMetadataOnTransactionRequest($ledger, $txid, $dry_run, $async, $idempotency_key, $request_body, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -296,13 +308,16 @@ class TransactionsApi
      *
      * @param  string $ledger Name of the ledger. (required)
      * @param  int $txid Transaction ID. (required)
+     * @param  bool $dry_run Set the dryRun mode. Dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  array<string,string> $request_body metadata (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['addMetadataOnTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function addMetadataOnTransactionRequest($ledger, $txid, $request_body = null, string $contentType = self::contentTypes['addMetadataOnTransaction'][0])
+    public function addMetadataOnTransactionRequest($ledger, $txid, $dry_run = null, $async = null, $idempotency_key = null, $request_body = null, string $contentType = self::contentTypes['addMetadataOnTransaction'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -324,6 +339,9 @@ class TransactionsApi
         
 
 
+
+
+
         $resourcePath = '/api/ledger/{ledger}/transactions/{txid}/metadata';
         $formParams = [];
         $queryParams = [];
@@ -331,7 +349,29 @@ class TransactionsApi
         $httpBody = '';
         $multipart = false;
 
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $dry_run,
+            'dryRun', // param base name
+            'boolean', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $async,
+            'async', // param base name
+            'boolean', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
 
+        // header params
+        if ($idempotency_key !== null) {
+            $headerParams['Idempotency-Key'] = ObjectSerializer::toHeaderValue($idempotency_key);
+        }
 
         // path params
         if ($ledger !== null) {
@@ -769,15 +809,17 @@ class TransactionsApi
      * @param  string $ledger Name of the ledger. (required)
      * @param  \Formance\Model\PostTransaction $post_transaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript (required)
      * @param  bool $dry_run Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransaction'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return \Formance\Model\CreateTransactionResponse|\Formance\Model\ErrorResponse
      */
-    public function createTransaction($ledger, $post_transaction, $dry_run = null, string $contentType = self::contentTypes['createTransaction'][0])
+    public function createTransaction($ledger, $post_transaction, $dry_run = null, $async = null, $idempotency_key = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
-        list($response) = $this->createTransactionWithHttpInfo($ledger, $post_transaction, $dry_run, $contentType);
+        list($response) = $this->createTransactionWithHttpInfo($ledger, $post_transaction, $dry_run, $async, $idempotency_key, $contentType);
         return $response;
     }
 
@@ -789,15 +831,17 @@ class TransactionsApi
      * @param  string $ledger Name of the ledger. (required)
      * @param  \Formance\Model\PostTransaction $post_transaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript (required)
      * @param  bool $dry_run Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransaction'] to see the possible values for this operation
      *
      * @throws \Formance\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of \Formance\Model\CreateTransactionResponse|\Formance\Model\ErrorResponse, HTTP status code, HTTP response headers (array of strings)
      */
-    public function createTransactionWithHttpInfo($ledger, $post_transaction, $dry_run = null, string $contentType = self::contentTypes['createTransaction'][0])
+    public function createTransactionWithHttpInfo($ledger, $post_transaction, $dry_run = null, $async = null, $idempotency_key = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
-        $request = $this->createTransactionRequest($ledger, $post_transaction, $dry_run, $contentType);
+        $request = $this->createTransactionRequest($ledger, $post_transaction, $dry_run, $async, $idempotency_key, $contentType);
 
         try {
             $options = $this->createHttpClientOption();
@@ -914,14 +958,16 @@ class TransactionsApi
      * @param  string $ledger Name of the ledger. (required)
      * @param  \Formance\Model\PostTransaction $post_transaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript (required)
      * @param  bool $dry_run Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function createTransactionAsync($ledger, $post_transaction, $dry_run = null, string $contentType = self::contentTypes['createTransaction'][0])
+    public function createTransactionAsync($ledger, $post_transaction, $dry_run = null, $async = null, $idempotency_key = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
-        return $this->createTransactionAsyncWithHttpInfo($ledger, $post_transaction, $dry_run, $contentType)
+        return $this->createTransactionAsyncWithHttpInfo($ledger, $post_transaction, $dry_run, $async, $idempotency_key, $contentType)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -937,15 +983,17 @@ class TransactionsApi
      * @param  string $ledger Name of the ledger. (required)
      * @param  \Formance\Model\PostTransaction $post_transaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript (required)
      * @param  bool $dry_run Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function createTransactionAsyncWithHttpInfo($ledger, $post_transaction, $dry_run = null, string $contentType = self::contentTypes['createTransaction'][0])
+    public function createTransactionAsyncWithHttpInfo($ledger, $post_transaction, $dry_run = null, $async = null, $idempotency_key = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
         $returnType = '\Formance\Model\CreateTransactionResponse';
-        $request = $this->createTransactionRequest($ledger, $post_transaction, $dry_run, $contentType);
+        $request = $this->createTransactionRequest($ledger, $post_transaction, $dry_run, $async, $idempotency_key, $contentType);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -989,12 +1037,14 @@ class TransactionsApi
      * @param  string $ledger Name of the ledger. (required)
      * @param  \Formance\Model\PostTransaction $post_transaction The request body must contain at least one of the following objects:   - &#x60;postings&#x60;: suitable for simple transactions   - &#x60;script&#x60;: enabling more complex transactions with Numscript (required)
      * @param  bool $dry_run Set the dryRun mode. dry run mode doesn&#39;t add the logs to the database or publish a message to the message broker. (optional)
+     * @param  bool $async Set async mode. (optional)
+     * @param  string $idempotency_key Use an idempotency key (optional)
      * @param  string $contentType The value for the Content-Type header. Check self::contentTypes['createTransaction'] to see the possible values for this operation
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    public function createTransactionRequest($ledger, $post_transaction, $dry_run = null, string $contentType = self::contentTypes['createTransaction'][0])
+    public function createTransactionRequest($ledger, $post_transaction, $dry_run = null, $async = null, $idempotency_key = null, string $contentType = self::contentTypes['createTransaction'][0])
     {
 
         // verify the required parameter 'ledger' is set
@@ -1010,6 +1060,8 @@ class TransactionsApi
                 'Missing the required parameter $post_transaction when calling createTransaction'
             );
         }
+
+
 
 
 
@@ -1029,7 +1081,20 @@ class TransactionsApi
             true, // explode
             false // required
         ) ?? []);
+        // query params
+        $queryParams = array_merge($queryParams, ObjectSerializer::toQueryValue(
+            $async,
+            'async', // param base name
+            'boolean', // openApiType
+            'form', // style
+            true, // explode
+            false // required
+        ) ?? []);
 
+        // header params
+        if ($idempotency_key !== null) {
+            $headerParams['Idempotency-Key'] = ObjectSerializer::toHeaderValue($idempotency_key);
+        }
 
         // path params
         if ($ledger !== null) {
