@@ -9,3 +9,5 @@ tasks:
     integration:
         command: 'task tests'
         platform: 'system'
+        options:
+            runInCI: false

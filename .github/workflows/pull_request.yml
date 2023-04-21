@@ -136,17 +136,9 @@ jobs:
       - name: 'install go deps'
         run: |
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
-#      - name: 'moon run mod'
-#        run: 'moon run :mod'
-#      - name: 'moon run lint'
-#        run: 'moon run :lint'
-#      - name: 'moon run test'
-#        run: 'moon run :test'
+          go install github.com/onsi/ginkgo/v2/ginkgo@v2.8.3
       - run: 'moon ci'
 #      - run: 'moon ci --job ${{ matrix.index }} --jobTotal 5'
-#        env:
-#          MOONBASE_ACCESS_KEY: ${{ secrets.MOONBASE_ACCESS_KEY }}
-#          MOONBASE_SECRET_KEY: ${{ secrets.MOONBASE_SECRET_KEY }}
       - uses: 'moonrepo/run-report-action@v1'
         if: success() || failure()
         with:
