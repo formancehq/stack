@@ -140,6 +140,8 @@ jobs:
         run: 'moon run :mod'
       - name: 'moon run lint'
         run: 'moon run :lint'
+      - name: 'moon run test'
+        run: 'moon run :test'
 #      - run: 'moon ci --job ${{ matrix.index }} --jobTotal 5'
 #        env:
 #          MOONBASE_ACCESS_KEY: ${{ secrets.MOONBASE_ACCESS_KEY }}
