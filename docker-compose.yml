@@ -74,16 +74,25 @@ services:
       ENCRYPTION_IV: "6f0c77c78a624022"
 
   nats:
-    image: docker.io/bitnami/nats:2
-#    healthcheck:
-#      test: curl -s -f -k http://localhost:8222/varz >/dev/null || exit 1
-#      interval: 30s
-#      timeout: 10s
-#      retries: 5
+    image: nats:2.8.4-alpine
     ports:
-      - '4222:4222'
-      - '6222:6222'
-      - '8222:8222'
+      - 4222:4222
+      - 6222:6222
+      - 8222:8222
+    command: --js
+#  nats:
+#    image: docker.io/bitnami/nats:2
+##    healthcheck:
+##      test: curl -s -f -k http://localhost:8222/varz >/dev/null || exit 1
+##      interval: 30s
+##      timeout: 10s
+##      retries: 5
+#    environment:
+#      NATS_ENABLE_AUTH: false
+#    ports:
+#      - '4222:4222'
+#      - '6222:6222'
+#      - '8222:8222'
 
   postgres:
     image: "postgres:13-alpine"
@@ -179,14 +188,18 @@ services:
       - "5601:5601"
 
   search-ingester:
-    image: "ghcr.io/formancehq/search-ingester:latest"
+    image: "jeffail/benthos:4.12.1"
     restart: always
+    command: "-r /config/resources/*.yaml -t /config/templates/*.yaml -c /config/config.yml --log.level trace streams /config/streams/*.yaml"
     depends_on:
       opensearch:
         condition: service_healthy
       search:
         condition: service_healthy
+    volumes:
+      - ./components/search/benthos:/config
     environment:
+      TOPIC_PREFIX: ""
       NATS_URL : nats:4222
       BROKER: nats
       OPENSEARCH_URL: "http://opensearch:9200"
