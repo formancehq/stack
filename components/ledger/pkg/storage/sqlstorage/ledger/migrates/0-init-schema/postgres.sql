@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME_v2_0_0".logs_v2 (
 );
 
 --statement
-CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME_v2_0_0".migrations (
+CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME_v2_0_0".migrations_v2 (
     version character varying,
     date character varying,
 

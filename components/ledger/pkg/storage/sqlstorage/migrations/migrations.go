@@ -22,10 +22,10 @@ import (
 	"github.com/uptrace/bun"
 )
 
-const migrationsTableName = "migrations"
+const migrationsTableName = "migrations_v2"
 
 type MigrationsTable struct {
-	bun.BaseModel `bun:"migrations,alias:migrations"`
+	bun.BaseModel `bun:"migrations_v2,alias:migrations_v2"`
 
 	Version string `bun:"version,type:varchar,unique"`
 	Date    string `bun:"date,type:varchar"`
