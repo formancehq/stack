@@ -26,11 +26,11 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Create benchs directory
       run: mkdir -p components/ledger/benchs
-    - name: Download v2 benchmarks
+    - name: Download reference benchmarks
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
-        branch: feat/v2
+        branch: main
         path: components/ledger/benchs
         workflow: v2_benchmarks.yml
         name: benchmarks-${{ inputs.mode }}

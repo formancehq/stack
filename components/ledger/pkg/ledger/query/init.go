@@ -68,7 +68,7 @@ func initLedgers(
 				ctxGroup,
 				cfg,
 				_ledger,
-				NewDefaultStore(store),
+				store,
 				monitor,
 				metricsRegistry,
 			); err != nil {

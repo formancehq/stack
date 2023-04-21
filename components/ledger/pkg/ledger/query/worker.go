@@ -172,37 +172,31 @@ func processLogs(
 		return errors.Wrap(err, "building data")
 	}
 
-	if err := store.RunInTransaction(ctx, func(ctx context.Context, tx Store) error {
-		if len(logsData.ensureAccountsExist) > 0 {
-			if err := tx.EnsureAccountsExist(ctx, logsData.ensureAccountsExist); err != nil {
-				return errors.Wrap(err, "ensuring accounts exist")
-			}
+	if len(logsData.ensureAccountsExist) > 0 {
+		if err := store.EnsureAccountsExist(ctx, logsData.ensureAccountsExist); err != nil {
+			return errors.Wrap(err, "ensuring accounts exist")
 		}
-		if len(logsData.accountsToUpdate) > 0 {
-			if err := tx.UpdateAccountsMetadata(ctx, logsData.accountsToUpdate); err != nil {
-				return errors.Wrap(err, "updating accounts metadata")
-			}
+	}
+	if len(logsData.accountsToUpdate) > 0 {
+		if err := store.UpdateAccountsMetadata(ctx, logsData.accountsToUpdate); err != nil {
+			return errors.Wrap(err, "updating accounts metadata")
 		}
+	}
 
-		if len(logsData.transactionsToInsert) > 0 {
-			if err := tx.InsertTransactions(ctx, logsData.transactionsToInsert...); err != nil {
-				return errors.Wrap(err, "inserting transactions")
-			}
+	if len(logsData.transactionsToInsert) > 0 {
+		if err := store.InsertTransactions(ctx, logsData.transactionsToInsert...); err != nil {
+			return errors.Wrap(err, "inserting transactions")
 		}
+	}
 
-		if len(logsData.transactionsToUpdate) > 0 {
-			if err := tx.UpdateTransactionsMetadata(ctx, logsData.transactionsToUpdate...); err != nil {
-				return errors.Wrap(err, "updating transactions")
-			}
+	if len(logsData.transactionsToUpdate) > 0 {
+		if err := store.UpdateTransactionsMetadata(ctx, logsData.transactionsToUpdate...); err != nil {
+			return errors.Wrap(err, "updating transactions")
 		}
+	}
 
-		if len(logsData.volumesToUpdate) > 0 {
-			return tx.UpdateVolumes(ctx, logsData.volumesToUpdate...)
-		}
-
-		return nil
-	}); err != nil {
-		return errorsutil.NewError(ErrStorage, err)
+	if len(logsData.volumesToUpdate) > 0 {
+		return store.UpdateVolumes(ctx, logs[len(logs)-1].ID, logsData.volumesToUpdate...)
 	}
 
 	if m != nil {

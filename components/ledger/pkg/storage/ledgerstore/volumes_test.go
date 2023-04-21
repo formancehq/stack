@@ -44,7 +44,7 @@ func TestVolumes(t *testing.T) {
 			"foo2": foo2,
 		}
 
-		err := store.UpdateVolumes(context.Background(), volumes)
+		err := store.UpdateVolumes(context.Background(), 0, volumes)
 		require.NoError(t, err, "update volumes should not fail")
 
 		assetVolumes, err := store.GetAssetsVolumes(context.Background(), "foo")
@@ -80,7 +80,7 @@ func TestVolumes(t *testing.T) {
 			},
 		}
 
-		err := store.UpdateVolumes(context.Background(), volumes...)
+		err := store.UpdateVolumes(context.Background(), 1, volumes...)
 		require.NoError(t, err, "update volumes should not fail")
 
 		assetVolumes, err := store.GetAssetsVolumes(context.Background(), "foo")

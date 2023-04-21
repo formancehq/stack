@@ -33,10 +33,8 @@ CREATE FUNCTION "VAR_LEDGER_NAME_v2_0_0".use_account(postings jsonb, account cha
 
 --statement
 CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME_v2_0_0".accounts (
-    address character varying NOT NULL,
-    metadata jsonb DEFAULT '{}'::jsonb,
-
-    unique(address)
+    address character varying primary key,
+    metadata jsonb DEFAULT '{}'::jsonb
 );
 
 --statement
@@ -49,14 +47,12 @@ CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME_v2_0_0".logs_ingestion (
 
 --statement
 CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME_v2_0_0".logs_v2 (
-    id bigint,
+    id bigint primary key,
     type smallint,
     hash bytea,
     date timestamp with time zone,
     data jsonb,
-    idempotency_key varchar(255),
-
-    unique(id)
+    idempotency_key varchar(255)
 );
 
 --statement
@@ -69,7 +65,7 @@ CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME_v2_0_0".migrations_v2 (
 
 --statement
 CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME_v2_0_0".transactions (
-    id bigint unique,
+    id bigint unique primary key,
     "timestamp" timestamp with time zone not null,
     reference character varying unique,
     metadata jsonb DEFAULT '{}'::jsonb,
@@ -95,8 +91,9 @@ CREATE TABLE IF NOT EXISTS "VAR_LEDGER_NAME_v2_0_0".volumes (
     asset character varying not null,
     input numeric not null,
     output numeric not null,
+    more_recent_log_id bigint references "VAR_LEDGER_NAME_v2_0_0".logs_v2,
 
-    unique(account, asset)
+    primary key (account, asset)
 );
 
 --statement

@@ -226,7 +226,7 @@ func TestGetAssetsVolumes(t *testing.T) {
 	t.Parallel()
 	store := newLedgerStore(t)
 
-	require.NoError(t, store.UpdateVolumes(context.Background(), core.AccountsAssetsVolumes{
+	require.NoError(t, store.UpdateVolumes(context.Background(), 0, core.AccountsAssetsVolumes{
 		"central_bank": {
 			"USD": {
 				Input:  big.NewInt(100),

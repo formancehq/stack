@@ -110,7 +110,7 @@ func (r *Resolver) GetLedger(ctx context.Context, name string) (*Ledger, error) 
 			return nil, errors.Wrap(err, "registering metrics")
 		}
 
-		queryWorker := query.NewWorker(query.DefaultWorkerConfig, query.NewDefaultStore(store), name, r.monitor, metricsRegistry)
+		queryWorker := query.NewWorker(query.DefaultWorkerConfig, store, name, r.monitor, metricsRegistry)
 		runOrPanic(queryWorker.Run)
 
 		ledger = New(store, locker, queryWorker, r.compiler, metricsRegistry)

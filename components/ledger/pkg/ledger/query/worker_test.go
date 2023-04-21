@@ -16,10 +16,11 @@ import (
 )
 
 type mockStore struct {
-	nextLogID    uint64
-	logs         []*core.PersistedLog
-	accounts     map[string]*core.AccountWithVolumes
-	transactions []*core.ExpandedTransaction
+	nextLogID       uint64
+	logs            []*core.PersistedLog
+	accounts        map[string]*core.AccountWithVolumes
+	transactions    []*core.ExpandedTransaction
+	moreRecentLogID uint64
 }
 
 func (m *mockStore) UpdateAccountsMetadata(ctx context.Context, update []core.Account) error {
@@ -68,7 +69,7 @@ func (m *mockStore) EnsureAccountsExist(ctx context.Context, accounts []string) 
 	return nil
 }
 
-func (m *mockStore) UpdateVolumes(ctx context.Context, updates ...core.AccountsAssetsVolumes) error {
+func (m *mockStore) UpdateVolumes(ctx context.Context, moreRecentLogID uint64, updates ...core.AccountsAssetsVolumes) error {
 	for _, update := range updates {
 		for address, volumes := range update {
 			for asset, assetsVolumes := range volumes {
@@ -76,6 +77,7 @@ func (m *mockStore) UpdateVolumes(ctx context.Context, updates ...core.AccountsA
 			}
 		}
 	}
+	m.moreRecentLogID = moreRecentLogID
 	return nil
 }
 

@@ -14,7 +14,7 @@ func TestGetBalances(t *testing.T) {
 	t.Parallel()
 	store := newLedgerStore(t)
 
-	require.NoError(t, store.UpdateVolumes(context.Background(), core.AccountsAssetsVolumes{
+	require.NoError(t, store.UpdateVolumes(context.Background(), 0, core.AccountsAssetsVolumes{
 		"world": {
 			"USD": core.NewEmptyVolumes().WithOutput(big.NewInt(200)),
 		},
@@ -120,7 +120,7 @@ func TestGetBalancesAggregated(t *testing.T) {
 	t.Parallel()
 	store := newLedgerStore(t)
 
-	require.NoError(t, store.UpdateVolumes(context.Background(), core.AccountsAssetsVolumes{
+	require.NoError(t, store.UpdateVolumes(context.Background(), 0, core.AccountsAssetsVolumes{
 		"world": {
 			"USD": core.NewEmptyVolumes().WithOutput(big.NewInt(200)),
 		},

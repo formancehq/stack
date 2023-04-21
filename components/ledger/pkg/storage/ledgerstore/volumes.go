@@ -16,13 +16,14 @@ const (
 type Volumes struct {
 	bun.BaseModel `bun:"volumes,alias:volumes"`
 
-	Account string `bun:"account,type:varchar,unique:account_asset"`
-	Asset   string `bun:"asset,type:varchar,unique:account_asset"`
-	Input   uint64 `bun:"input,type:numeric"`
-	Output  uint64 `bun:"output,type:numeric"`
+	Account         string `bun:"account,type:varchar,unique:account_asset"`
+	Asset           string `bun:"asset,type:varchar,unique:account_asset"`
+	Input           uint64 `bun:"input,type:numeric"`
+	Output          uint64 `bun:"output,type:numeric"`
+	MoreRecentLogID uint64 `bun:"more_recent_log_id,type:numeric"`
 }
 
-func (s *Store) UpdateVolumes(ctx context.Context, volumes ...core.AccountsAssetsVolumes) error {
+func (s *Store) UpdateVolumes(ctx context.Context, moreRecentLogID uint64, volumes ...core.AccountsAssetsVolumes) error {
 	if !s.isInitialized {
 		return storageerrors.StorageError(storageerrors.ErrStoreNotInitialized)
 	}
@@ -35,10 +36,11 @@ func (s *Store) UpdateVolumes(ctx context.Context, volumes ...core.AccountsAsset
 			for asset, volumes := range accountVolumes {
 				// De-duplicate same volumes to only have the last version
 				volumesMap[account+asset] = &Volumes{
-					Account: account,
-					Asset:   asset,
-					Input:   volumes.Input.Uint64(),
-					Output:  volumes.Output.Uint64(),
+					Account:         account,
+					Asset:           asset,
+					Input:           volumes.Input.Uint64(),
+					Output:          volumes.Output.Uint64(),
+					MoreRecentLogID: moreRecentLogID,
 				}
 			}
 		}
@@ -52,7 +54,8 @@ func (s *Store) UpdateVolumes(ctx context.Context, volumes ...core.AccountsAsset
 	query := s.schema.NewInsert(volumesTableName).
 		Model(&vls).
 		On("CONFLICT (account, asset) DO UPDATE").
-		Set("input = EXCLUDED.input, output = EXCLUDED.output").
+		Set("input = EXCLUDED.input, output = EXCLUDED.output, more_recent_log_id = EXCLUDED.more_recent_log_id").
+		Where(volumesTableName+".more_recent_log_id < ?", moreRecentLogID).
 		String()
 
 	_, err := s.schema.ExecContext(ctx, query)
