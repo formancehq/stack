@@ -105,9 +105,9 @@ jobs:
 
   Moon:
     runs-on: 'ubuntu-latest'
-#    strategy:
-#       matrix:
-#         index: [0, 1, 2, 3, 4]
+    strategy:
+       matrix:
+         index: [0, 1, 2, 3, 4, 5]
     steps:
       - uses: 'actions/checkout@v3'
         with:
@@ -137,8 +137,7 @@ jobs:
         run: |
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
           go install github.com/onsi/ginkgo/v2/ginkgo@v2.8.3
-      - run: 'moon ci'
-#      - run: 'moon ci --job ${{ matrix.index }} --jobTotal 5'
+      - run: 'moon ci --job ${{ matrix.index }} --jobTotal 6'
       - uses: 'moonrepo/run-report-action@v1'
         if: success() || failure()
         with:
