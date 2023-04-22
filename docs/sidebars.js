@@ -401,8 +401,13 @@ const sidebars = {
             },
             {
               type: 'doc',
+              id: 'stack/reference/operator',
+              label: 'Kubernetes / Operator',
+            },
+            {
+              type: 'doc',
               id: 'stack/reference/helm',
-              label: 'Kubernetes / Helm',
+              label: 'Kubernetes / Helm (deprecated)',
             },
             // {
             //   type: 'doc',
