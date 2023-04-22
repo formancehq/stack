@@ -1,0 +1,159 @@
+---
+title: Formance Stack Operator
+description: How to install Formance Stack on K8S with Operator
+---
+import Warning from '../partials/installation/_complexity_warning.mdx';
+
+To facilitate the deployment of the components of the Formance stack, we provide kubernetes operators. 
+
+You can find all the Operator in the [GitHub repository](https://github.com/formancehq/stack/tree/main/components/operator).
+
+<Warning/>
+
+## Dependencies
+
+Deploying the Formance Helm charts requires some downstream dependencies. Our recommendations for specifics of these below.
+
+| Technology | Recommended Implementation | Used by |
+|------------|---------------------------|---------|
+| PostgreSQL | [AWS Aurora](https://aws.amazon.com/rds/aurora/) | Ledger, Payments, Orchestration, Webhooks |
+| Kafka | [RedPanda](https://redpanda.com/), [AWS Managed Kafka](https://aws.amazon.com/msk/) | Ledger, Payments, Search, Webhooks |
+| NATS | [NATS](https://www.synadia.com/) | Ledger, Payments, Search, Webhooks |
+| OpenSearch | [OpenSearch](https://opensearch.org/), [AWS Hosted OpenSearch](https://aws.amazon.com/opensearch/) | Control Dashboard |
+| Traefik | [Traefik](https://traefik.io/) | Main Ingress Proxy |
+| Temporal | [Temporal Cloud](https://temporal.io) | Orchestration |
+
+## Kubernetes requirements
+
+| Requirement | Version |
+|-------------|---------|
+| Kubernetes | >= 1.22 |
+
+## Formance Operator
+
+To deploy the Kubernetes operator in your cluster, the first step is to install it. You can do this by following these steps:
+
+The recommended way of installing the operator is to use Kustomize. However, you can also find a beta Helm template in the repository.
+Run the following command to apply the Kubernetes manifest that includes the operator:
+```shell
+kubectl apply -k https://github.com/formancehq/stack/tree/main/components/operator/config/default
+```
+This will deploy the operator in your cluster and allow you to start using it with the CRDs mentioned earlier.
+
+### Configuration
+A Formance operator is a tool that automates the management of specific resources within a Kubernetes cluster. To operate, the operator uses custom resource definitions (CRDs) that define resources specific to our application.
+
+Using these CRDs, the operator can automate many common tasks such as application updates, version management, configuration management and application scaling. This allows developers to let the operator handle the application management tasks in Kubernetes.
+
+In our case, we use three different types of CRDs:
+
+#### Version
+The "Version" CRD defines the version of our application that we wish to deploy. This allows the operator to manage different deployments based on their version.
+```yaml
+apiVersion: stack.formance.com/v1beta3
+kind: Versions
+metadata:
+    name: default
+spec:
+    auth: latest
+    control: latest
+    gateway: latest
+    ledger: latest
+    orchestration: latest
+    payments: latest
+    search: latest
+    wallets: latest
+    webhooks: latest
+```
+#### Configuration
+The "Configuration" CRD defines the configuration of our application. This includes configuration settings such as listening ports, environment variables, and secrets.
+
+```yaml
+apiVersion: stack.formance.com/v1beta3
+kind: Configuration
+metadata:
+  name: stacks
+spec:
+  broker:
+    nats:
+      url: NATS_URL
+  ingress:
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web
+  light: true
+  services:
+    auth:
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    control: {}
+    ledger:
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    orchestration:
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    payments:
+      encryptionKey: DEFAULT_ENCRYPTION_KEY
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+    search:
+      batching:
+        count: 50
+        period: 1s
+      elasticSearch:
+        host: ELASTICSEARCH_URL
+        pathPrefix: ''
+        port: 443
+        scheme: https
+        tls: {}
+    wallets:
+      debug: false
+      dev: false
+    webhooks:
+      debug: false
+      dev: false
+      postgres:
+        disableSSLMode: true
+        host: POSTGRESQL_HOST
+        port: POSTGRESQL_PORT
+        username: POSTGRESQL_USERNAME
+        password: POSTGRESQL_PASSWORD
+  temporal:
+    address: TEMPORAL_ADDRESSE
+    namespace: TEMPORAL_NAMESPACE
+    tls:
+      crt: TEMPORAL_TLS_CERT
+      key: TEMPORAL_TLS_KEY
+```
+
+#### Stack
+The "Stack" CRD defines the set of resources that make up our application. This includes deployments, services, volumes, and other Kubernetes resources required to run our application.
+
+```yaml
+apiVersion: stack.formance.com/v1beta3
+kind: Stack
+metadata:
+  name: stack
+spec:
+  debug: true
+  dev: true
+  scheme: http
+  host: HOST
+  seed: stacks
+```
