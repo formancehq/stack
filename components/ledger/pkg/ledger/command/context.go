@@ -8,8 +8,8 @@ import (
 
 type executionContext struct {
 	context.Context
-	cache    Cache
-	ingested chan struct{}
+	cache   Cache
+	onClose []func()
 }
 
 // TODO(gfyrag): Explicit retain is not required
@@ -19,23 +19,22 @@ func (ctx *executionContext) RetainAccount(accounts ...string) error {
 	if err != nil {
 		return errors.Wrap(err, "locking accounts into cache")
 	}
-
-	go func() {
-		<-ctx.ingested
+	ctx.onClose = append(ctx.onClose, func() {
 		release()
-	}()
+	})
 
 	return nil
 }
 
-func (ctx *executionContext) SetIngested() {
-	close(ctx.ingested)
+func (ctx *executionContext) Close() {
+	for _, fn := range ctx.onClose {
+		fn()
+	}
 }
 
 func newExecutionContext(ctx context.Context, cache Cache) *executionContext {
 	return &executionContext{
-		Context:  ctx,
-		cache:    cache,
-		ingested: make(chan struct{}),
+		Context: ctx,
+		cache:   cache,
 	}
 }

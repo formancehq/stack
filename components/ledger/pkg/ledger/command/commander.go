@@ -298,29 +298,29 @@ func (c *Commander) runCommand(ctx context.Context, parameters Parameters, exec 
 	execContext := newExecutionContext(ctx, c.cache)
 	log, err := exec(execContext)
 	if err != nil {
-		close(execContext.ingested)
+		execContext.Close()
 		return nil, err
 	}
 	log = log.WithIdempotencyKey(parameters.IdempotencyKey)
 	if parameters.DryRun {
-		execContext.SetIngested()
+		execContext.Close()
 		return log.ComputePersistentLog(nil), nil
 	}
 
 	persistedLog, err := c.store.AppendLog(ctx, log)
 	if err != nil {
-		execContext.SetIngested()
+		execContext.Close()
 		return nil, err
 	}
 	logHolder := core.NewLogHolder(persistedLog)
 	if err := c.logIngester.QueueLog(ctx, logHolder); err != nil {
-		execContext.SetIngested()
+		execContext.Close()
 		return nil, err
 	}
 	if parameters.Async {
 		go func() {
 			<-logHolder.Ingested
-			execContext.SetIngested()
+			execContext.Close()
 		}()
 	} else {
 		select {
@@ -328,7 +328,7 @@ func (c *Commander) runCommand(ctx context.Context, parameters Parameters, exec 
 			return nil, ctx.Err()
 		case <-logHolder.Ingested:
 		}
-		execContext.SetIngested()
+		execContext.Close()
 	}
 
 	return persistedLog, nil
