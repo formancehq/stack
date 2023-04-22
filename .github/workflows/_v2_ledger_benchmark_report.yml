@@ -1,0 +1,68 @@
+on:
+  workflow_call:
+    inputs:
+      mode:
+        required: true
+        type: string
+      branch:
+        required: false
+        type: string
+        default: 'pr'
+
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Install Task
+      uses: arduino/setup-task@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create benchs directory
+      run: mkdir -p components/ledger/benchs
+    - name: Download v2 benchmarks
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{secrets.GITHUB_TOKEN}}
+        branch: feat/v2
+        path: components/ledger/benchs
+        workflow: v2_benchmarks.yml
+        name: benchmarks-${{ inputs.mode }}
+    - name: Download PR benchmarks
+      uses: actions/download-artifact@v3
+      with:
+        path: components/ledger/benchs
+        name: benchmarks-${{ inputs.mode }}
+    - name: Configurating go
+      uses: actions/setup-go@v3
+      with:
+        go-version-file: ./components/ledger/go.mod
+        cache-dependency-path: ./components/ledger/go.sum
+        cache: true
+    - name: Install benchstat
+      run: go install golang.org/x/perf/cmd/benchstat@latest
+    - run: sed -i '4d' components/ledger/benchs/v2-${{ inputs.mode }}.stats # Remove cpu line as the model is not always the same on CI
+    - run: sed -i '4d' components/ledger/benchs/${{ inputs.branch }}-${{ inputs.mode }}.stats # Remove cpu line as the model is not always the same on CI
+    - name: Report results to PR
+      uses: actions/github-script@v6
+      with:
+        script: |
+          let output = ''
+          await exec.exec('task', ['ledger:bench:diff:${{ inputs.mode }}', 'BRANCH=${{ inputs.branch }}'], {
+            listeners: {
+              stdout: data => output += data.toString()
+            }
+          })
+          output = 'Mode ${{ inputs.mode }}: <br/> \r\n ```' + output + '```';
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          })
