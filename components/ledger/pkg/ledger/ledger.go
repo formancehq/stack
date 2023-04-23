@@ -45,10 +45,6 @@ func (l *Ledger) Close(ctx context.Context) error {
 		return errors.Wrap(err, "stopping query worker")
 	}
 
-	if err := l.locker.Stop(ctx); err != nil {
-		return errors.Wrap(err, "stopping cache")
-	}
-
 	if err := l.cache.Stop(ctx); err != nil {
 		return errors.Wrap(err, "stopping cache")
 	}
