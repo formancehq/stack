@@ -87,6 +87,9 @@ jobs:
       labels: formance-ubuntu-latest-8-cores
     needs:
       - Find
+    strategy:
+      matrix:
+        folder: ${{ fromJson(needs.Find.outputs.folders )}}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -97,8 +100,8 @@ jobs:
         uses: docker/setup-buildx-action@v2
       - uses: actions/setup-go@v3
         with:
-          go-version-file: ./components/${{ needs.Extract.outputs.service }}/go.mod
-          cache-dependency-path: ./components/${{ needs.Extract.outputs.service }}/go.sum
+          go-version-file: ./components/${{ matrix.folder }}/go.mod
+          cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
           cache: true
       - run: go mod vendor
       - name: Login to GitHub Container Registry
@@ -112,7 +115,7 @@ jobs:
         with:
           distribution: goreleaser-pro
           version: latest
-          args: release --clean --nightly -f components/${{ needs.Extract.outputs.service }}/.goreleaser.yml
+          args: release --clean --nightly -f components/${{ matrix.folder }}/.goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
