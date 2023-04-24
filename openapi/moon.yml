@@ -1,0 +1,12 @@
+type: 'tool'
+language: 'go'
+
+workspace:
+    inheritedTasks:
+        exclude: ['release', 'lint', 'test']
+
+tasks:
+    build:
+        command: 'task sdk:generate:all'
+        inputs:
+            - '/components/**/openapi.yaml'

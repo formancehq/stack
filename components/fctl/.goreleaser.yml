@@ -2,7 +2,7 @@ project_name: fctl
 
 monorepo:
   tag_prefix: components/fctl/
-  dir: ./components/fctl/
+  dir: ./
 
 builds:
   - binary: fctl

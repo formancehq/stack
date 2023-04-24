@@ -2,7 +2,7 @@ project_name: wallets
 
 monorepo:
   tag_prefix: components/wallets/
-  dir: ./components/wallets/
+  dir: ./
 
 builds:
   - binary: wallets

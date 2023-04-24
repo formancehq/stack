@@ -2,7 +2,7 @@ project_name: search
 
 monorepo:
   tag_prefix: components/search/
-  dir: ./components/search/
+  dir: ./
 
 builds:
   - binary: search

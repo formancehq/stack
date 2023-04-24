@@ -2,7 +2,7 @@ project_name: webhooks
 
 monorepo:
   tag_prefix: components/webhooks/
-  dir: ./components/webhooks/
+  dir: ./
 
 builds:
   - binary: webhooks

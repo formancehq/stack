@@ -2,7 +2,7 @@ project_name: payments
 
 monorepo:
   tag_prefix: components/payments/
-  dir: ./components/payments/
+  dir: ./
 
 builds:
   - binary: payments

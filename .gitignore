@@ -14,3 +14,8 @@ worktrees
 **/*.out
 **/*.test
 **/*.stats
+
+# moon
+.moon/cache
+.moon/docker
+.moon/bin
