@@ -14,4 +14,12 @@ worktrees
 **/*.out
 **/*.test
 **/*.stats
+<<<<<<< HEAD
 .direnv
+=======
+
+# moon
+.moon/cache
+.moon/docker
+.moon/bin
+>>>>>>> 28ebc2dab (feat(v2): Add moon (#252))

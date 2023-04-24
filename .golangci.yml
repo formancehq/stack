@@ -1,0 +1,8 @@
+allow-parallel-runners: true
+run:
+  timeout: 5m
+linters:
+  disable-all: true
+  enable:
+    - gofmt
+    - goimports

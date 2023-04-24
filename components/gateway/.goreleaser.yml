@@ -4,7 +4,7 @@ includes:
       path: ./.goreleaser.default.yaml
 monorepo:
   tag_prefix: components/gateway/
-  dir: ./components/gateway
+  dir: ./
 
 builds:
   - binary: gateway

@@ -5,7 +5,7 @@ includes:
 
 monorepo:
   tag_prefix: components/operator/
-  dir: ./components/operator/
+  dir: ./
 
 builds:
   - binary: operator
@@ -33,4 +33,4 @@ archives:
 after:
   hooks:
   - cmd: make helm-update
-    dir: ./components/operator/
+    dir: ./
