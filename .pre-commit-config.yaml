@@ -13,6 +13,7 @@ repos:
   - id: check-added-large-files
 - repo: local
   hooks:
+<<<<<<< HEAD
   - id: update-libs
     name: update libs
     entry: ./scripts/update-libs.sh
@@ -33,44 +34,11 @@ repos:
     description: "Runs `go fmt`, requires golang"
     language: script
     files: \.go$
+=======
+  - id: moon
+    name: moon
+    entry: moon run :lint :test :mod --affected --status=staged
+    language: system
+    description: "Runs `moon`"
+>>>>>>> 28ebc2dab (feat(v2): Add moon (#252))
     require_serial: true
-  - id: goimports
-    name: goimports
-    entry: ./scripts/goimports.sh
-    files: \.go$
-    description: "Runs `goimports`, requires golang"
-    language: script
-    require_serial: true
-  - id: gomodtidy
-    name: gomodtidy
-    entry: ./scripts/gomodtidy.sh
-    language: script
-    files: \.go$
-    description: "Runs `go mod tidy`, requires golang"
-    require_serial: true
-  - id: golangci-lint
-    name: golangci-lint
-    entry: ./scripts/golangci-lint.sh
-    language: script
-    files: \.go$
-    description: "Runs `golangci-lint`, requires golangci-lint"
-    require_serial: true
-  - id: gotests
-    name: gotests
-    entry: ./scripts/gotests.sh
-    language: script
-    files: \.go$
-    description: "Runs `go test`, requires golang"
-    require_serial: true
-    # Test requires to start a docker compose, we need to remove this need or find a generic way to start/stop dependencies
-    exclude: components/webhooks
-  - id: commitlint
-    name: commitlint
-    description: Commitlint hook
-    language: node
-    entry: commitlint --edit
-    always_run: true
-    pass_filenames: false
-    additional_dependencies: ['@commitlint/config-conventional']
-    stages:
-    - commit-msg

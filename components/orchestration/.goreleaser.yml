@@ -4,7 +4,7 @@ includes:
       path: ./.goreleaser.default.yaml
 monorepo:
   tag_prefix: components/orchestration/
-  dir: ./components/orchestration/
+  dir: ./
 
 builds:
   - binary: orchestration

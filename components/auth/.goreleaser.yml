@@ -5,7 +5,7 @@ includes:
 
 monorepo:
   tag_prefix: components/auth/
-  dir: ./components/auth/
+  dir: ./
 
 builds:
   - binary: auth

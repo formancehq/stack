@@ -1,0 +1,7 @@
+type: 'application'
+language: 'go'
+
+tasks:
+    build:
+        command: 'go build ./'
+        platform: 'system'

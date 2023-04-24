@@ -90,3 +90,4 @@ garden.default.env
 ca.crt
 helm/operator/charts
 helm/operator/templates/rbac/kustomization.yaml
+operator

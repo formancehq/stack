@@ -4,7 +4,7 @@ includes:
       path: ./.goreleaser.default.yaml
 monorepo:
   tag_prefix: components/search/
-  dir: ./components/search/
+  dir: ./
 
 builds:
   - binary: search

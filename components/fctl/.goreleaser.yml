@@ -4,7 +4,7 @@ includes:
       path: ./.goreleaser.default.yaml
 monorepo:
   tag_prefix: components/fctl/
-  dir: ./components/fctl/
+  dir: ./
 
 builds:
   - binary: fctl
