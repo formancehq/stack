@@ -34,6 +34,7 @@ jobs:
         path: components/ledger/benchs
         workflow: v2_benchmarks.yml
         name: benchmarks-${{ inputs.mode }}
+        search_artifacts: true
     - name: Download PR benchmarks
       uses: actions/download-artifact@v3
       with:
