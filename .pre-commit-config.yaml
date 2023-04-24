@@ -19,3 +19,4 @@ repos:
     language: system
     description: "Runs `moon`"
     require_serial: true
+    pass_filenames: false
