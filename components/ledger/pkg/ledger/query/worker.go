@@ -101,7 +101,7 @@ l:
 						return nil
 
 					case w.jobs <- w.pending:
-						w.pending = make([]*core.LogHolder, 0)
+						w.pending = make([]*core.LogHolder, 0, 1024)
 						continue l
 					}
 				}
@@ -277,7 +277,13 @@ func buildData(
 
 			logsData.transactionsToInsert = append(logsData.transactionsToInsert, expandedTx)
 
-			for account := range txVolumeAggregator.PostCommitVolumes {
+		l:
+			for account, volumes := range txVolumeAggregator.PreCommitVolumes {
+				for _, volume := range volumes {
+					if volume.Output.Cmp(core.Zero) != 0 || volume.Input.Cmp(core.Zero) != 0 {
+						continue l
+					}
+				}
 				logsData.ensureAccountsExist = append(logsData.ensureAccountsExist, account)
 			}
 
@@ -387,7 +393,7 @@ func NewWorker(
 	metricsRegistry metrics.PerLedgerMetricsRegistry,
 ) *Worker {
 	return &Worker{
-		pending:             make([]*core.LogHolder, 0),
+		pending:             make([]*core.LogHolder, 0, 1024),
 		jobs:                make(chan []*core.LogHolder),
 		releasedJob:         make(chan struct{}, 1),
 		writeChannel:        make(chan *core.LogHolder, config.ChanSize),
