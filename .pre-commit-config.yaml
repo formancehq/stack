@@ -42,3 +42,4 @@ repos:
     description: "Runs `moon`"
 >>>>>>> 28ebc2dab (feat(v2): Add moon (#252))
     require_serial: true
+    pass_filenames: false
