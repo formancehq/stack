@@ -19,7 +19,7 @@ on:
 
 jobs:
   benchmarks:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v3
       with:
@@ -39,7 +39,7 @@ jobs:
         cache-dependency-path: ./components/ledger/go.sum
         cache: true
     - name: Run benchmarks
-      run: task ledger:bench:${{ inputs.mode }} BRANCH=${{ inputs.branch }} COUNT=${{ inputs.count }} DURATION=${{ inputs.duration }}
+      run: task ledger:bench:${{ inputs.mode }} BRANCH=${{ inputs.branch }} COUNT=${{ inputs.count }} DURATION=${{ inputs.duration }} --exit-code
     - uses: actions/upload-artifact@v3
       with:
         name: benchmarks-${{ inputs.mode }}
