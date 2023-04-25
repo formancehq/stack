@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/ory/dockertest/v3"
+	"github.com/ory/dockertest/v3/docker"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
@@ -121,6 +122,7 @@ type config struct {
 	statusCheckInterval time.Duration
 	maximumWaitingTime  time.Duration
 	context             context.Context
+	hostConfigOptions   []func(hostConfig *docker.HostConfig)
 }
 
 func (c config) validate() error {
@@ -172,6 +174,12 @@ func WithContext(ctx context.Context) option {
 	}
 }
 
+func WithDockerHostConfigOption(opt func(hostConfig *docker.HostConfig)) option {
+	return func(opts *config) {
+		opts.hostConfigOptions = append(opts.hostConfigOptions, opt)
+	}
+}
+
 var defaultOptions = []option{
 	WithStatusCheckInterval(200 * time.Millisecond),
 	WithInitialUser("root", "root"),
@@ -205,7 +213,7 @@ func CreatePostgresServer(opts ...option) error {
 		},
 		Entrypoint: nil,
 		Cmd:        []string{"-c", "superuser-reserved-connections=0"},
-	})
+	}, cfg.hostConfigOptions...)
 	if err != nil {
 		return errors.Wrap(err, "unable to start postgres server container")
 	}
