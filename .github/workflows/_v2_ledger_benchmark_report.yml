@@ -48,14 +48,14 @@ jobs:
         cache: true
     - name: Install benchstat
       run: go install golang.org/x/perf/cmd/benchstat@latest
-    - run: sed -i '4d' components/ledger/benchs/v2-${{ inputs.mode }}.stats # Remove cpu line as the model is not always the same on CI
-    - run: sed -i '4d' components/ledger/benchs/${{ inputs.branch }}-${{ inputs.mode }}.stats # Remove cpu line as the model is not always the same on CI
+#    - run: sed -i '4d' components/ledger/benchs/v2-${{ inputs.mode }}.stats # Remove cpu line as the model is not always the same on CI
+#    - run: sed -i '4d' components/ledger/benchs/${{ inputs.branch }}-${{ inputs.mode }}.stats # Remove cpu line as the model is not always the same on CI
     - name: Report results to PR
       uses: actions/github-script@v6
       with:
         script: |
           let output = ''
-          await exec.exec('task', ['ledger:bench:diff:${{ inputs.mode }}', 'BRANCH=${{ inputs.branch }}'], {
+          await exec.exec('task', ['ledger:bench:diff:${{ inputs.mode }}', 'BRANCH=${{ inputs.branch }}', '--exit-code'], {
             listeners: {
               stdout: data => output += data.toString()
             }
