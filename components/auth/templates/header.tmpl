@@ -1,0 +1,101 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width">
+        <meta charset="utf-8">
+        <title>Formance</title>
+        <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+        <style>
+            body > main {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                min-height: calc(100vh - 7rem);
+                padding: 1rem 0;
+            }
+            article {
+                padding: 0;
+            }
+            article div {
+                padding: 1rem;
+            }
+            ul .light {
+                background: transparent;
+                color: hsl(220, 8%, 15%);
+                border: 0;
+                text-align: left;
+            }
+            ul .light:focus{
+                border: 2px solid hsl(220, 8%, 15%);
+                box-shadow: none;
+            }
+            ul .light:hover{
+                background-color: hsl(220, 26%, 95%)
+            }
+            .shell {
+                background: hsl(220, 8%, 15%);
+                border-radius: 6px;
+            }
+            .shell p {
+                color: hsl(164, 100%, 46%)
+            }
+            @media (min-width: 576px) {
+                body > main {
+                    padding: 1.25rem 0;
+                }
+
+                article div {
+                    padding: 1.25rem;
+                }
+            }
+            @media (min-width: 768px) {
+                body > main {
+                    padding: 1.5rem 0;
+                }
+
+                article div {
+                    padding: 1.5rem;
+                }
+            }
+            @media (min-width: 992px) {
+                body > main {
+                    padding: 1.75rem 0;
+                }
+
+                article div {
+                    padding: 1.75rem;
+                }
+            }
+            @media (min-width: 1200px) {
+                body > main {
+                    padding: 2rem 0;
+                }
+
+                article div {
+                    padding: 2rem;
+                }
+            }
+            article div:nth-of-type(2) {
+                display: none;
+                background-color: hsl(220, 8%, 15%);
+                background-image: url("https://assets.formance.cloud/email/formance-cloud-auth-membership-template.svg");
+                background-position: center;
+                background-size: cover;
+            }
+            .contrast {
+                background-color: hsl(220, 8%, 15%);
+            }
+            @media (min-width: 992px) {
+                .grid > div:nth-of-type(2) {
+                    display: block;
+                }
+            }
+            body > footer {
+                padding: 1rem 0;
+                display: flex;
+                justify-content: center;
+                position: fixed;
+                bottom: 0;
+            }
+        </style>
+    </head>
+    <body>

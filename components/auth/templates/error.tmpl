@@ -1,0 +1,17 @@
+{{template "header.tmpl" . }}
+<main class="container">
+    <article class="grid">
+        <div>
+            <hgroup>
+                <h1>That's an error</h1>
+                <p>If this error persist, ask for help on <a href="https://formance-community.slack.com" target="_blank">Slack</a></h2>
+                <div class="shell">
+                    <p>{{ .Error }}</p>
+                    <p>{{ .ErrorDescription }}</p>
+                </div>
+            </hgroup>
+        </div>
+        <div></div>
+    </article>
+</main>
+{{template "footer.tmpl" .}}
