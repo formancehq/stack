@@ -4,15 +4,13 @@ description: How to install Formance Stack on K8S with Operator
 ---
 import Warning from '../partials/installation/_complexity_warning.mdx';
 
-To facilitate the deployment of the components of the Formance stack, we provide kubernetes operators. 
-
-You can find all the Operator in the [GitHub repository](https://github.com/formancehq/stack/tree/main/components/operator).
+In order to streamline feature-complete deployments the Formance stack, we provide a Kubernetes operator. The operator source code is available on [Github](https://github.com/formancehq/stack/tree/main/components/operator).
 
 <Warning/>
 
 ## Dependencies
 
-Deploying the Formance Helm charts requires some downstream dependencies. Our recommendations for specifics of these below.
+Deploying the Formance Kubes Operator requires some downstream dependencies — here is below our recommendations for each of them:
 
 | Technology | Recommended Implementation | Used by |
 |------------|---------------------------|---------|
@@ -25,6 +23,8 @@ Deploying the Formance Helm charts requires some downstream dependencies. Our re
 
 ## Kubernetes requirements
 
+In addition to the dependencies listed above, the Formance stack requires a Kubernetes cluster with the following minimum requirements:
+
 | Requirement | Version |
 |-------------|---------|
 | Kubernetes | >= 1.22 |
@@ -35,12 +35,15 @@ To deploy the Kubernetes operator in your cluster, the first step is to install 
 
 The recommended way of installing the operator is to use Kustomize. However, you can also find a beta Helm template in the repository.
 Run the following command to apply the Kubernetes manifest that includes the operator:
+
 ```shell
 kubectl apply -k https://github.com/formancehq/stack/tree/main/components/operator/config/default
 ```
+
 This will deploy the operator in your cluster and allow you to start using it with the CRDs mentioned earlier.
 
 ### Configuration
+
 A Formance operator is a tool that automates the management of specific resources within a Kubernetes cluster. To operate, the operator uses custom resource definitions (CRDs) that define resources specific to our application.
 
 Using these CRDs, the operator can automate many common tasks such as application updates, version management, configuration management and application scaling. This allows developers to let the operator handle the application management tasks in Kubernetes.
@@ -48,7 +51,9 @@ Using these CRDs, the operator can automate many common tasks such as applicatio
 In our case, we use three different types of CRDs:
 
 #### Version
+
 The "Version" CRD defines the version of our application that we wish to deploy. This allows the operator to manage different deployments based on their version.
+
 ```yaml
 apiVersion: stack.formance.com/v1beta3
 kind: Versions
@@ -66,6 +71,7 @@ spec:
     webhooks: latest
 ```
 #### Configuration
+
 The "Configuration" CRD defines the configuration of our application. This includes configuration settings such as listening ports, environment variables, and secrets.
 
 ```yaml
@@ -143,6 +149,7 @@ spec:
 ```
 
 #### Stack
+
 The "Stack" CRD defines the set of resources that make up our application. This includes deployments, services, volumes, and other Kubernetes resources required to run our application.
 
 ```yaml
