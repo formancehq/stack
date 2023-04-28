@@ -14,7 +14,7 @@ Webhooks are a way for the Formance Stack to send notifications to your applicat
 <StackCmd>
 
 ```shell
-fctl webhook create "https://example.com/webhook" "ledger.transaction.created"
+fctl webhooks create "https://example.com/webhook" "ledger.committed_transactions"
 ```
 
 ```shell
@@ -25,7 +25,7 @@ curl -X POST \
   -H "Authorization: Bearer $TOKEN" \
   -d '{
     "endpoint": "https://example.com/webhook",
-    "eventTypes": ["ledger.transaction.created"]
+    "eventTypes": ["ledger.committed_transactions"]
 }'
 ```
 
