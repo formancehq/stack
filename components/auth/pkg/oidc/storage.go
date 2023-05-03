@@ -281,7 +281,7 @@ func (s *storageFacade) GetKeySet(ctx context.Context) (*jose.JSONWebKeySet, err
 	}, nil
 }
 
-func (s *storageFacade) findClient(ctx context.Context, clientID string) (ClientWithSecrets, error) {
+func (s *storageFacade) findClient(ctx context.Context, clientID string) (Client, error) {
 	var client *auth.Client
 	for _, staticClient := range s.staticClients {
 		if staticClient.Id == clientID {

@@ -78,16 +78,21 @@ func grantTypeBearer(p JWTAuthorizationGrantExchanger) http.HandlerFunc {
 			return
 		}
 
-		clientID, _, ok := r.BasicAuth()
-		if !ok {
-			op.RequestError(w, r, oidc.ErrInvalidClient().WithDescription("missing authentication").WithParent(err))
-			return
-		}
-
-		client, err := p.Storage().GetClientByClientID(r.Context(), clientID)
-		if err != nil {
-			op.RequestError(w, r, err)
-			return
+		clientID, clientSecret, ok := r.BasicAuth()
+		var client *clientFacade
+		if ok {
+			c, err := p.Storage().GetClientByClientID(r.Context(), clientID)
+			if err != nil {
+				op.RequestError(w, r, err)
+				return
+			}
+			client = c.(*clientFacade)
+			if !client.Client.IsPublic() {
+				if err := client.Client.ValidateSecret(clientSecret); err != nil {
+					op.RequestError(w, r, err)
+					return
+				}
+			}
 		}
 
 		tokenRequest, err := VerifyJWTAssertion(r.Context(), profileRequest.Assertion, p.JWTProfileVerifier())
