@@ -15,10 +15,6 @@ type Client interface {
 	GetPostLogoutRedirectUris() []string
 	IsPublic() bool
 	GetScopes() []string
-}
-
-type ClientWithSecrets interface {
-	Client
 	ValidateSecret(secret string) error
 	IsTrusted() bool
 }
