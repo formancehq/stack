@@ -6,9 +6,9 @@ metadata:
     name: orchestration
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.196
+    clusterIP: 10.0.0.241
     clusterIPs:
-        - 10.0.0.196
+        - 10.0.0.241
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

@@ -6,9 +6,9 @@ metadata:
     name: auth
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.247
+    clusterIP: 10.0.0.233
     clusterIPs:
-        - 10.0.0.247
+        - 10.0.0.233
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

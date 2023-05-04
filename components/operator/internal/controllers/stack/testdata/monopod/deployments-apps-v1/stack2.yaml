@@ -34,7 +34,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "55000"
+                      value: "32769"
                     - name: POSTGRES_DATABASE
                       value: stack2-auth
                     - name: POSTGRES_USERNAME
@@ -130,10 +130,6 @@ spec:
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: control
-                    - name: API_URL_BACK
-                      value: http://example.net/api
-                    - name: API_URL_FRONT
-                      value: http://example.net/api
                     - name: API_URL
                       value: http://example.net/api
                     - name: ENCRYPTION_KEY
@@ -210,7 +206,7 @@ spec:
                     - name: NUMARY_POSTGRES_HOST
                       value: localhost
                     - name: NUMARY_POSTGRES_PORT
-                      value: "55000"
+                      value: "32769"
                     - name: NUMARY_POSTGRES_DATABASE
                       value: stack2-ledger
                     - name: NUMARY_POSTGRES_USERNAME
@@ -282,7 +278,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "55000"
+                      value: "32769"
                     - name: POSTGRES_DATABASE
                       value: stack2-orchestration
                     - name: POSTGRES_USERNAME
@@ -354,7 +350,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "55000"
+                      value: "32769"
                     - name: POSTGRES_DATABASE
                       value: stack2-orchestration
                     - name: POSTGRES_USERNAME
@@ -410,7 +406,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "55000"
+                      value: "32769"
                     - name: POSTGRES_DATABASE
                       value: stack2-payments
                     - name: POSTGRES_USERNAME
@@ -592,7 +588,7 @@ spec:
                     - name: LEDGER_POSTGRES_HOST
                       value: localhost
                     - name: LEDGER_POSTGRES_PORT
-                      value: "55000"
+                      value: "32769"
                     - name: LEDGER_POSTGRES_DATABASE
                       value: stack2-ledger
                     - name: LEDGER_POSTGRES_USERNAME
@@ -684,7 +680,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "55000"
+                      value: "32769"
                     - name: POSTGRES_DATABASE
                       value: stack2-webhooks
                     - name: POSTGRES_USERNAME
@@ -754,7 +750,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "55000"
+                      value: "32769"
                     - name: POSTGRES_DATABASE
                       value: stack2-webhooks
                     - name: POSTGRES_USERNAME
@@ -815,7 +811,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "55000"
+                      value: "32769"
                     - name: POSTGRES_DATABASE
                       value: stack2-payments
                     - name: POSTGRES_USERNAME
