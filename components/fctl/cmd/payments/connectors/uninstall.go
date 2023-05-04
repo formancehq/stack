@@ -4,6 +4,7 @@ import (
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -43,7 +44,7 @@ func NewUninstallCommand() *cobra.Command {
 
 			_, err = client.PaymentsApi.UninstallConnector(cmd.Context(), formance.Connector(args[0])).Execute()
 			if err != nil {
-				return fctl.WrapError(err, "uninstalling connector")
+				return errors.Wrap(err, "uninstalling connector")
 			}
 			pterm.Success.WithWriter(cmd.OutOrStdout()).Printfln("Connector '%s' uninstalled!", args[0])
 			return nil

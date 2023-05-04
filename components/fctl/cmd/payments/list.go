@@ -6,6 +6,7 @@ import (
 
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -39,7 +40,7 @@ func NewListPaymentsCommand() *cobra.Command {
 
 			paymentsCursor, _, err := client.PaymentsApi.ListPayments(cmd.Context()).Execute()
 			if err != nil {
-				return fctl.WrapError(err, "listing payments")
+				return errors.Wrap(err, "listing payments")
 			}
 
 			tableData := fctl.Map(paymentsCursor.Cursor.Data, func(payment formance.Payment) []string {

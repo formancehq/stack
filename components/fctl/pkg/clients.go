@@ -8,6 +8,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func getVersion(cmd *cobra.Command) string {
+	for cmd != nil {
+		if cmd.Version != "" {
+			return cmd.Version
+		}
+		cmd = cmd.Parent()
+	}
+	return "cmd.Version"
+}
+
 func NewMembershipClient(cmd *cobra.Command, cfg *Config) (*membershipclient.APIClient, error) {
 	profile := GetCurrentProfile(cmd, cfg)
 	httpClient := GetHttpClient(cmd)
@@ -18,6 +28,7 @@ func NewMembershipClient(cmd *cobra.Command, cfg *Config) (*membershipclient.API
 	}
 	configuration.AddDefaultHeader("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken))
 	configuration.HTTPClient = httpClient
+	configuration.UserAgent = "fctl/" + getVersion(cmd)
 	configuration.Servers[0].URL = profile.GetMembershipURI()
 	return membershipclient.NewAPIClient(configuration), nil
 }
@@ -32,6 +43,7 @@ func NewStackClient(cmd *cobra.Command, cfg *Config, stack *membershipclient.Sta
 	}
 
 	apiConfig := formance.NewConfiguration()
+	apiConfig.UserAgent = "fctl/" + getVersion(cmd)
 	apiConfig.Servers = formance.ServerConfigurations{{
 		URL: stack.Uri,
 	}}
