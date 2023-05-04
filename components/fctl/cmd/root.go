@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -18,16 +19,12 @@ import (
 	"github.com/formancehq/fctl/cmd/stack"
 	"github.com/formancehq/fctl/cmd/wallets"
 	"github.com/formancehq/fctl/cmd/webhooks"
+	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
-)
-
-const (
-	MaxVersionShift = 2
 )
 
 func NewRootCommand() *cobra.Command {
@@ -62,6 +59,7 @@ func NewRootCommand() *cobra.Command {
 		fctl.WithPersistentBoolFlag(fctl.InsecureTlsFlag, false, "Insecure TLS"),
 		fctl.WithPersistentBoolFlag(fctl.TelemetryFlag, false, "Telemetry enabled"),
 	)
+	cmd.Version = Version
 	return cmd
 }
 
@@ -103,28 +101,26 @@ func extractOpenAPIErrorMessage(err error) error {
 }
 
 func unwrapOpenAPIError(err error) *formance.ErrorResponse {
-	for err != nil {
-		if err, ok := err.(*formance.GenericOpenAPIError); ok {
-			body := err.Body()
-			// Actually, each api redefine errors response
-			// So OpenAPI generator generate an error structure for every service
-			// Manually unmarshal errorResponse allow us to handle only one ErrorResponse
-			// It will be refined once the monorepo fully ready
-			errResponse := api.ErrorResponse{}
-			if err := json.Unmarshal(body, &errResponse); err != nil {
-				return nil
-			}
+	openapiError := &membershipclient.GenericOpenAPIError{}
+	if errors.As(err, &openapiError) {
+		body := openapiError.Body()
+		// Actually, each api redefine errors response
+		// So OpenAPI generator generate an error structure for every service
+		// Manually unmarshal errorResponse allow us to handle only one ErrorResponse
+		// It will be refined once the monorepo fully ready
+		errResponse := api.ErrorResponse{}
+		if err := json.Unmarshal(body, &errResponse); err != nil {
+			return nil
+		}
 
-			if errResponse.ErrorCode != "" {
-				errorCode := formance.ErrorsEnum(errResponse.ErrorCode)
-				return &formance.ErrorResponse{
-					ErrorCode:    &errorCode,
-					ErrorMessage: &errResponse.ErrorMessage,
-					Details:      &errResponse.Details,
-				}
+		if errResponse.ErrorCode != "" {
+			errorCode := formance.ErrorsEnum(errResponse.ErrorCode)
+			return &formance.ErrorResponse{
+				ErrorCode:    &errorCode,
+				ErrorMessage: &errResponse.ErrorMessage,
+				Details:      &errResponse.Details,
 			}
 		}
-		err = errors.Unwrap(err)
 	}
 
 	return nil

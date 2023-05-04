@@ -1,7 +1,6 @@
 package stack
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -10,6 +9,7 @@ import (
 	"github.com/formancehq/fctl/cmd/stack/internal"
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -66,7 +66,7 @@ func NewCreateCommand() *cobra.Command {
 				Tags:       tags,
 			}).Execute()
 			if err != nil {
-				return fctl.WrapError(err, "creating stack")
+				return errors.Wrap(err, "creating stack")
 			}
 
 			profile := fctl.GetCurrentProfile(cmd, cfg)

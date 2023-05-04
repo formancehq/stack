@@ -4,6 +4,7 @@ import (
 	"github.com/formancehq/fctl/cmd/payments/connectors/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
+	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
 )
@@ -38,7 +39,7 @@ func NewGetConfigCommand() *cobra.Command {
 
 			connectorConfig, _, err := client.PaymentsApi.ReadConnectorConfig(cmd.Context(), formance.Connector(args[0])).Execute()
 			if err != nil {
-				return fctl.WrapError(err, "reading connector config")
+				return errors.Wrap(err, "reading connector config")
 			}
 			switch args[0] {
 			case internal.StripeConnector:
