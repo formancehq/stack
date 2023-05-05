@@ -83,16 +83,19 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**BillingSetup**](docs/DefaultApi.md#billingsetup) | **Get** /organizations/{organizationId}/billing/setup | Create a billing setup
 *DefaultApi* | [**CreateInvitation**](docs/DefaultApi.md#createinvitation) | **Post** /organizations/{organizationId}/invitations | Create invitation
 *DefaultApi* | [**CreateOrganization**](docs/DefaultApi.md#createorganization) | **Post** /organizations | Create organization
+*DefaultApi* | [**CreatePrivateRegion**](docs/DefaultApi.md#createprivateregion) | **Post** /organizations/{organizationId}/regions | Create a private region
 *DefaultApi* | [**CreateStack**](docs/DefaultApi.md#createstack) | **Post** /organizations/{organizationId}/stacks | Create stack
 *DefaultApi* | [**DeclineInvitation**](docs/DefaultApi.md#declineinvitation) | **Post** /me/invitations/{invitationId}/reject | Decline invitation
 *DefaultApi* | [**DeleteOrganization**](docs/DefaultApi.md#deleteorganization) | **Delete** /organizations/{organizationId} | Delete organization
+*DefaultApi* | [**DeleteRegion**](docs/DefaultApi.md#deleteregion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
 *DefaultApi* | [**DeleteStack**](docs/DefaultApi.md#deletestack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
+*DefaultApi* | [**GetRegion**](docs/DefaultApi.md#getregion) | **Get** /organizations/{organizationId}/regions/{regionId} | Get region
 *DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /_info | Get server info
 *DefaultApi* | [**ListInvitations**](docs/DefaultApi.md#listinvitations) | **Get** /me/invitations | List invitations of the user
 *DefaultApi* | [**ListOrganizationInvitations**](docs/DefaultApi.md#listorganizationinvitations) | **Get** /organizations/{organizationId}/invitations | List invitations of the organization
 *DefaultApi* | [**ListOrganizations**](docs/DefaultApi.md#listorganizations) | **Get** /organizations | List organizations of the connected user
 *DefaultApi* | [**ListOrganizationsExpanded**](docs/DefaultApi.md#listorganizationsexpanded) | **Get** /organizations/expanded | List organizations of the connected user with expanded data
-*DefaultApi* | [**ListRegions**](docs/DefaultApi.md#listregions) | **Get** /regions | List regions
+*DefaultApi* | [**ListRegions**](docs/DefaultApi.md#listregions) | **Get** /organizations/{organizationId}/regions | List regions
 *DefaultApi* | [**ListStacks**](docs/DefaultApi.md#liststacks) | **Get** /organizations/{organizationId}/stacks | List stacks
 *DefaultApi* | [**ListUsers**](docs/DefaultApi.md#listusers) | **Get** /organizations/{organizationId}/users | List users
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
@@ -102,14 +105,21 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [AnyRegion](docs/AnyRegion.md)
+ - [AnyRegionAllOf](docs/AnyRegionAllOf.md)
  - [BillingPortal](docs/BillingPortal.md)
  - [BillingPortalResponse](docs/BillingPortalResponse.md)
  - [BillingSetup](docs/BillingSetup.md)
  - [BillingSetupResponse](docs/BillingSetupResponse.md)
  - [CreateInvitationResponse](docs/CreateInvitationResponse.md)
  - [CreateOrganizationResponse](docs/CreateOrganizationResponse.md)
+ - [CreatePrivateRegionRequest](docs/CreatePrivateRegionRequest.md)
+ - [CreateStackRequest](docs/CreateStackRequest.md)
+ - [CreateStackRequestAllOf](docs/CreateStackRequestAllOf.md)
  - [CreateStackResponse](docs/CreateStackResponse.md)
+ - [CreatedPrivateRegionResponse](docs/CreatedPrivateRegionResponse.md)
  - [Error](docs/Error.md)
+ - [GetRegionResponse](docs/GetRegionResponse.md)
  - [Invitation](docs/Invitation.md)
  - [ListInvitationsResponse](docs/ListInvitationsResponse.md)
  - [ListOrganizationExpandedResponse](docs/ListOrganizationExpandedResponse.md)
@@ -122,6 +132,11 @@ Class | Method | HTTP request | Description
  - [Organization](docs/Organization.md)
  - [OrganizationAllOf](docs/OrganizationAllOf.md)
  - [OrganizationData](docs/OrganizationData.md)
+ - [PrivateRegion](docs/PrivateRegion.md)
+ - [PrivateRegionAllOf](docs/PrivateRegionAllOf.md)
+ - [PrivateRegionAllOfSecret](docs/PrivateRegionAllOfSecret.md)
+ - [PublicRegion](docs/PublicRegion.md)
+ - [PublicRegionAllOf](docs/PublicRegionAllOf.md)
  - [ReadUserResponse](docs/ReadUserResponse.md)
  - [Region](docs/Region.md)
  - [ServerInfo](docs/ServerInfo.md)

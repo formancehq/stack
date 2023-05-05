@@ -174,7 +174,7 @@ func (p *Profile) GetStackToken(ctx context.Context, httpClient *http.Client, st
 	req.SetBasicAuth(AuthClient, "")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	ret, err := http.DefaultClient.Do(req)
+	ret, err := httpClient.Do(req)
 	if err != nil {
 		return "", err
 	}

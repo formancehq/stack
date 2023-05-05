@@ -3,7 +3,6 @@ package stack
 import (
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/formancehq/fctl/cmd/stack/internal"
@@ -16,18 +15,16 @@ import (
 
 func NewCreateCommand() *cobra.Command {
 	const (
-		productionFlag = "production"
-		unprotectFlag  = "unprotect"
-		tagFlag        = "tag"
-		nowaitFlag     = "no-wait"
+		unprotectFlag = "unprotect"
+		regionFlag    = "region"
+		nowaitFlag    = "no-wait"
 	)
-	return fctl.NewMembershipCommand("create <name>",
+	return fctl.NewMembershipCommand("create [name]",
 		fctl.WithShortDescription("Create a new stack"),
 		fctl.WithAliases("c", "cr"),
-		fctl.WithArgs(cobra.ExactArgs(1)),
-		fctl.WithBoolFlag(productionFlag, false, "Create a production stack"),
+		fctl.WithArgs(cobra.RangeArgs(0, 1)),
 		fctl.WithBoolFlag(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)"),
-		fctl.WithStringSliceFlag(tagFlag, []string{}, "Tags to use to find matching region"),
+		fctl.WithStringFlag(regionFlag, "", "Region on which deploy the stack"),
 		fctl.WithBoolFlag(nowaitFlag, false, "Not wait stack availability"),
 		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
 
@@ -46,24 +43,58 @@ func NewCreateCommand() *cobra.Command {
 				return err
 			}
 
-			production := fctl.GetBool(cmd, productionFlag)
 			protected := !fctl.GetBool(cmd, unprotectFlag)
 			metadata := map[string]string{
 				fctl.ProtectedStackMetadata: fctl.BoolPointerToString(&protected),
 			}
-			tags := make(map[string]string)
-			for _, tagFlagValue := range fctl.GetStringSlice(cmd, tagFlag) {
-				parts := strings.SplitN(tagFlagValue, "=", 2)
-				if len(parts) < 2 {
-					return errors.New("malformed flag --tag")
+
+			name := ""
+			if len(args) > 0 {
+				name = args[0]
+			} else {
+				name, err = pterm.DefaultInteractiveTextInput.WithMultiLine(false).Show("Enter a name")
+				if err != nil {
+					return err
 				}
-				tags[parts[0]] = parts[1]
 			}
-			stack, _, err := apiClient.DefaultApi.CreateStack(cmd.Context(), organization).Body(membershipclient.StackData{
-				Name:       args[0],
-				Production: production,
-				Metadata:   metadata,
-				Tags:       tags,
+
+			region := fctl.GetString(cmd, regionFlag)
+			if region == "" {
+				regions, _, err := apiClient.DefaultApi.ListRegions(cmd.Context(), organization).Execute()
+				if err != nil {
+					return errors.Wrap(err, "listing regions")
+				}
+
+				var options []string
+				for _, region := range regions.Data {
+					privacy := "Private"
+					if region.Public {
+						privacy = "Public "
+					}
+					name := "<noname>"
+					if region.Name != "" {
+						name = region.Name
+					}
+					options = append(options, fmt.Sprintf("%s | %s | %s", region.Id, privacy, name))
+				}
+
+				printer := pterm.DefaultInteractiveSelect.WithOptions(options)
+				selectedOption, err := printer.Show("Please select a region")
+				if err != nil {
+					return err
+				}
+				for i := 0; i < len(options); i++ {
+					if selectedOption == options[i] {
+						region = regions.Data[i].Id
+						break
+					}
+				}
+			}
+
+			stack, _, err := apiClient.DefaultApi.CreateStack(cmd.Context(), organization).CreateStackRequest(membershipclient.CreateStackRequest{
+				Name:     name,
+				Metadata: metadata,
+				RegionID: region,
 			}).Execute()
 			if err != nil {
 				return errors.Wrap(err, "creating stack")

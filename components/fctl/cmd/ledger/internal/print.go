@@ -43,7 +43,7 @@ func PrintTransaction(out io.Writer, transaction formance.Transaction) error {
 	}
 	fmt.Fprintln(out, "")
 
-	fctl.Section.WithWriter(out).Println("Resume")
+	fctl.Section.WithWriter(out).Println("Summary")
 	tableData = pterm.TableData{}
 	tableData = append(tableData, []string{"Account", "Asset", "Movement", "Final balance"})
 	for account, postCommitVolume := range *transaction.PostCommitVolumes {

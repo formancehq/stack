@@ -534,15 +534,125 @@ func (a *DefaultApiService) CreateOrganizationExecute(r ApiCreateOrganizationReq
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiCreateStackRequest struct {
-	ctx            context.Context
-	ApiService     *DefaultApiService
-	organizationId string
-	body           *StackData
+type ApiCreatePrivateRegionRequest struct {
+	ctx                        context.Context
+	ApiService                 *DefaultApiService
+	organizationId             string
+	createPrivateRegionRequest *CreatePrivateRegionRequest
 }
 
-func (r ApiCreateStackRequest) Body(body StackData) ApiCreateStackRequest {
-	r.body = &body
+func (r ApiCreatePrivateRegionRequest) CreatePrivateRegionRequest(createPrivateRegionRequest CreatePrivateRegionRequest) ApiCreatePrivateRegionRequest {
+	r.createPrivateRegionRequest = &createPrivateRegionRequest
+	return r
+}
+
+func (r ApiCreatePrivateRegionRequest) Execute() (*CreatedPrivateRegionResponse, *http.Response, error) {
+	return r.ApiService.CreatePrivateRegionExecute(r)
+}
+
+/*
+CreatePrivateRegion Create a private region
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param organizationId
+	@return ApiCreatePrivateRegionRequest
+*/
+func (a *DefaultApiService) CreatePrivateRegion(ctx context.Context, organizationId string) ApiCreatePrivateRegionRequest {
+	return ApiCreatePrivateRegionRequest{
+		ApiService:     a,
+		ctx:            ctx,
+		organizationId: organizationId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return CreatedPrivateRegionResponse
+func (a *DefaultApiService) CreatePrivateRegionExecute(r ApiCreatePrivateRegionRequest) (*CreatedPrivateRegionResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *CreatedPrivateRegionResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.CreatePrivateRegion")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/organizations/{organizationId}/regions"
+	localVarPath = strings.Replace(localVarPath, "{"+"organizationId"+"}", url.PathEscape(parameterValueToString(r.organizationId, "organizationId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.createPrivateRegionRequest
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiCreateStackRequest struct {
+	ctx                context.Context
+	ApiService         *DefaultApiService
+	organizationId     string
+	createStackRequest *CreateStackRequest
+}
+
+func (r ApiCreateStackRequest) CreateStackRequest(createStackRequest CreateStackRequest) ApiCreateStackRequest {
+	r.createStackRequest = &createStackRequest
 	return r
 }
 
@@ -606,7 +716,7 @@ func (a *DefaultApiService) CreateStackExecute(r ApiCreateStackRequest) (*Create
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.createStackRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -834,6 +944,100 @@ func (a *DefaultApiService) DeleteOrganizationExecute(r ApiDeleteOrganizationReq
 	return localVarHTTPResponse, nil
 }
 
+type ApiDeleteRegionRequest struct {
+	ctx            context.Context
+	ApiService     *DefaultApiService
+	organizationId string
+	regionId       string
+}
+
+func (r ApiDeleteRegionRequest) Execute() (*http.Response, error) {
+	return r.ApiService.DeleteRegionExecute(r)
+}
+
+/*
+DeleteRegion Delete region
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param organizationId
+	@param regionId
+	@return ApiDeleteRegionRequest
+*/
+func (a *DefaultApiService) DeleteRegion(ctx context.Context, organizationId string, regionId string) ApiDeleteRegionRequest {
+	return ApiDeleteRegionRequest{
+		ApiService:     a,
+		ctx:            ctx,
+		organizationId: organizationId,
+		regionId:       regionId,
+	}
+}
+
+// Execute executes the request
+func (a *DefaultApiService) DeleteRegionExecute(r ApiDeleteRegionRequest) (*http.Response, error) {
+	var (
+		localVarHTTPMethod = http.MethodDelete
+		localVarPostBody   interface{}
+		formFiles          []formFile
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.DeleteRegion")
+	if err != nil {
+		return nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/organizations/{organizationId}/regions/{regionId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"organizationId"+"}", url.PathEscape(parameterValueToString(r.organizationId, "organizationId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"regionId"+"}", url.PathEscape(parameterValueToString(r.regionId, "regionId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
+}
+
 type ApiDeleteStackRequest struct {
 	ctx            context.Context
 	ApiService     *DefaultApiService
@@ -926,6 +1130,112 @@ func (a *DefaultApiService) DeleteStackExecute(r ApiDeleteStackRequest) (*http.R
 	}
 
 	return localVarHTTPResponse, nil
+}
+
+type ApiGetRegionRequest struct {
+	ctx            context.Context
+	ApiService     *DefaultApiService
+	organizationId string
+	regionId       string
+}
+
+func (r ApiGetRegionRequest) Execute() (*GetRegionResponse, *http.Response, error) {
+	return r.ApiService.GetRegionExecute(r)
+}
+
+/*
+GetRegion Get region
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param organizationId
+	@param regionId
+	@return ApiGetRegionRequest
+*/
+func (a *DefaultApiService) GetRegion(ctx context.Context, organizationId string, regionId string) ApiGetRegionRequest {
+	return ApiGetRegionRequest{
+		ApiService:     a,
+		ctx:            ctx,
+		organizationId: organizationId,
+		regionId:       regionId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return GetRegionResponse
+func (a *DefaultApiService) GetRegionExecute(r ApiGetRegionRequest) (*GetRegionResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *GetRegionResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultApiService.GetRegion")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/organizations/{organizationId}/regions/{regionId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"organizationId"+"}", url.PathEscape(parameterValueToString(r.organizationId, "organizationId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"regionId"+"}", url.PathEscape(parameterValueToString(r.regionId, "regionId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
 type ApiGetServerInfoRequest struct {
@@ -1453,8 +1763,9 @@ func (a *DefaultApiService) ListOrganizationsExpandedExecute(r ApiListOrganizati
 }
 
 type ApiListRegionsRequest struct {
-	ctx        context.Context
-	ApiService *DefaultApiService
+	ctx            context.Context
+	ApiService     *DefaultApiService
+	organizationId string
 }
 
 func (r ApiListRegionsRequest) Execute() (*ListRegionsResponse, *http.Response, error) {
@@ -1465,12 +1776,14 @@ func (r ApiListRegionsRequest) Execute() (*ListRegionsResponse, *http.Response, 
 ListRegions List regions
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param organizationId
 	@return ApiListRegionsRequest
 */
-func (a *DefaultApiService) ListRegions(ctx context.Context) ApiListRegionsRequest {
+func (a *DefaultApiService) ListRegions(ctx context.Context, organizationId string) ApiListRegionsRequest {
 	return ApiListRegionsRequest{
-		ApiService: a,
-		ctx:        ctx,
+		ApiService:     a,
+		ctx:            ctx,
+		organizationId: organizationId,
 	}
 }
 
@@ -1490,7 +1803,8 @@ func (a *DefaultApiService) ListRegionsExecute(r ApiListRegionsRequest) (*ListRe
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/regions"
+	localVarPath := localBasePath + "/organizations/{organizationId}/regions"
+	localVarPath = strings.Replace(localVarPath, "{"+"organizationId"+"}", url.PathEscape(parameterValueToString(r.organizationId, "organizationId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

@@ -7,13 +7,13 @@ Name | Type | Description | Notes
 **Id** | **string** | Stack ID |
 **OrganizationId** | **string** | Organization ID |
 **Uri** | **string** | Base stack uri |
-**BoundRegion** | Pointer to [**Region**](Region.md) |  | [optional]
+**RegionID** | **string** | The region where the stack is installed |
 
 ## Methods
 
 ### NewStackAllOf
 
-`func NewStackAllOf(id string, organizationId string, uri string, ) *StackAllOf`
+`func NewStackAllOf(id string, organizationId string, uri string, regionID string, ) *StackAllOf`
 
 NewStackAllOf instantiates a new StackAllOf object
 This constructor will assign default values to properties that have it defined,
@@ -88,30 +88,25 @@ and a boolean to check if the value has been set.
 SetUri sets Uri field to given value.
 
 
-### GetBoundRegion
+### GetRegionID
 
-`func (o *StackAllOf) GetBoundRegion() Region`
+`func (o *StackAllOf) GetRegionID() string`
 
-GetBoundRegion returns the BoundRegion field if non-nil, zero value otherwise.
+GetRegionID returns the RegionID field if non-nil, zero value otherwise.
 
-### GetBoundRegionOk
+### GetRegionIDOk
 
-`func (o *StackAllOf) GetBoundRegionOk() (*Region, bool)`
+`func (o *StackAllOf) GetRegionIDOk() (*string, bool)`
 
-GetBoundRegionOk returns a tuple with the BoundRegion field if it's non-nil, zero value otherwise
+GetRegionIDOk returns a tuple with the RegionID field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetBoundRegion
+### SetRegionID
 
-`func (o *StackAllOf) SetBoundRegion(v Region)`
+`func (o *StackAllOf) SetRegionID(v string)`
 
-SetBoundRegion sets BoundRegion field to given value.
+SetRegionID sets RegionID field to given value.
 
-### HasBoundRegion
-
-`func (o *StackAllOf) HasBoundRegion() bool`
-
-HasBoundRegion returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

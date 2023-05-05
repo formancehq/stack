@@ -20,21 +20,17 @@ var _ MappedNullable = &StackData{}
 // StackData struct for StackData
 type StackData struct {
 	// Stack name
-	Name       string            `json:"name"`
-	Tags       map[string]string `json:"tags"`
-	Production bool              `json:"production"`
-	Metadata   map[string]string `json:"metadata"`
+	Name     string            `json:"name"`
+	Metadata map[string]string `json:"metadata"`
 }
 
 // NewStackData instantiates a new StackData object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStackData(name string, tags map[string]string, production bool, metadata map[string]string) *StackData {
+func NewStackData(name string, metadata map[string]string) *StackData {
 	this := StackData{}
 	this.Name = name
-	this.Tags = tags
-	this.Production = production
 	this.Metadata = metadata
 	return &this
 }
@@ -69,54 +65,6 @@ func (o *StackData) GetNameOk() (*string, bool) {
 // SetName sets field value
 func (o *StackData) SetName(v string) {
 	o.Name = v
-}
-
-// GetTags returns the Tags field value
-func (o *StackData) GetTags() map[string]string {
-	if o == nil {
-		var ret map[string]string
-		return ret
-	}
-
-	return o.Tags
-}
-
-// GetTagsOk returns a tuple with the Tags field value
-// and a boolean to check if the value has been set.
-func (o *StackData) GetTagsOk() (*map[string]string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Tags, true
-}
-
-// SetTags sets field value
-func (o *StackData) SetTags(v map[string]string) {
-	o.Tags = v
-}
-
-// GetProduction returns the Production field value
-func (o *StackData) GetProduction() bool {
-	if o == nil {
-		var ret bool
-		return ret
-	}
-
-	return o.Production
-}
-
-// GetProductionOk returns a tuple with the Production field value
-// and a boolean to check if the value has been set.
-func (o *StackData) GetProductionOk() (*bool, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Production, true
-}
-
-// SetProduction sets field value
-func (o *StackData) SetProduction(v bool) {
-	o.Production = v
 }
 
 // GetMetadata returns the Metadata field value
@@ -154,8 +102,6 @@ func (o StackData) MarshalJSON() ([]byte, error) {
 func (o StackData) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
-	toSerialize["tags"] = o.Tags
-	toSerialize["production"] = o.Production
 	toSerialize["metadata"] = o.Metadata
 	return toSerialize, nil
 }
