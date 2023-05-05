@@ -52,10 +52,6 @@ spec:
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
                       value: control
-                    - name: API_URL_BACK
-                      value: http://example.net/api
-                    - name: API_URL_FRONT
-                      value: http://example.net/api
                     - name: API_URL
                       value: http://example.net/api
                     - name: ENCRYPTION_KEY
