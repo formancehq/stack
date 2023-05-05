@@ -139,21 +139,20 @@ jobs:
           # TODO: Discover dynamically
           DOCKER_HOSTNAME: 172.17.0.1
 
-  Docker:
+  GoReleaser:
+    name: GoReleaser
     runs-on:
       group: enterprise/runners
       labels: formance-ubuntu-latest-8-cores
+    needs:
+      - Find
     strategy:
       matrix:
         folder: ${{ fromJson(needs.Find.outputs.folders )}}
-    needs:
-      - Find
     steps:
       - uses: actions/checkout@v3
-      - name: Install Task
-        uses: arduino/setup-task@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -170,14 +169,14 @@ jobs:
           registry: ghcr.io
           username: "NumaryBot"
           password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v4
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v4
         with:
-          file: ./components/${{ matrix.folder }}/Dockerfile
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ghcr.io/formancehq/${{ matrix.folder }}:${{ github.event.pull_request.head.sha }}
-          build-args: |
-            APP_SHA=${{ github.event.pull_request.head.sha }}
-            VERSION=develop
+          distribution: goreleaser-pro
+          version: latest
+          args: release --clean --nightly -f components/${{ matrix.folder }}/.goreleaser.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+          FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
+          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+          SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY_OSS }}
