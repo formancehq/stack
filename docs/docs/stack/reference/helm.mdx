@@ -1,10 +1,14 @@
 ---
-title: Formance Stack Helm Charts
-description: How to install Formance Stack on K8S with Helm
+title: Formance Platform Helm Charts
+description: How to install Formance Platform on K8S with Helm
 ---
 import Warning from '../partials/installation/_complexity_warning.mdx';
 
-To make it easier to deploy Formance Stack components, we provide official Helm charts. To use them, install the Formance repository:
+:::caution
+This deployment method is being deprecated in favor of the [operator-based](/stack/reference/operator) deployment. The charts below will continue to be available for the time being, but will not be updated with new features.
+:::
+
+To make it easier to deploy Formance Platform components, we provide official Helm charts. To use them, install the Formance repository:
 
     helm repo add formance https://helm.formance.com
     helm repo update
@@ -33,7 +37,7 @@ Deploying the Formance Helm charts requires some downstream dependencies. Our re
 | Kubernetes | >= 1.22 |
 | Helm | 3 |
 
-## Formance Stack components
+## Formance Platform components
 
 ### Ledger
 
@@ -90,9 +94,9 @@ Values: [Gateway README.md](https://github.com/numary/helm/blob/main/charts/gate
 helm install gateway formance/gateway
 ```
 
-## Formance Stack chart
+## Formance Platform chart
 
-For development purposes and to help you deploy the entire Formance stack as a whole, we provide a Helm Chart that bundles all the components together.
+For development purposes and to help you deploy the entire Formance Platform as a whole, we provide a Helm Chart that bundles all the components together.
 
 We however *do not* provide the databases and stateful dependencies in this chart, so you have to provision them as a separate step and properly update the values to point to the correct endpoints.
 

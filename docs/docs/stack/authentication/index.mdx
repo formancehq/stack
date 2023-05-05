@@ -1,19 +1,34 @@
 ---
-title: Formance Stack Authentication
-description: How to configure Formance Stack Authentication
+title: Authentication
+description: How to authenticate users and applications against The Formance Platform.
 ---
 import CloudToken from '../../fctl/partials/_cloud_token.mdx';
 import {StackCmd} from '@site/src/components/StackCmd';
 
-The Formance Stack uses the standard OpenID Connect (OIDC) and OAuth 2.0 protocols, along with JSON Web Tokens (JWTs) to authenticate users and applications.
+The Formance Platform uses the standard OpenID Connect (OIDC) and OAuth 2.0 protocols, along with JSON Web Tokens (JWTs) to authenticate users and applications.
 
 ## Clients
 
-The auth service of the Formance Stack authenticates users and applications through clients. Clients are registered in the auth service and are assigned a client ID and secret, which can be traded for a JWT token. The JWT token can then be used to authenticate against the other services of the Formance Stack.
+The auth service of The Formance Platform authenticates users and applications through OAuth clients.
+
+Clients are registered in the auth service, and are assigned a client ID.
+Secrets can be added to clients, which can then be used to generate a JWT token, which can itself subsequently be used to authenticate against the other services of The Formance Platform.
+
+| Client Type | Description | Usage |
+| --- | --- | --- |
+| Dynamic Client | A client created through the auth service API. | Cloud, self-hosted. |
+| Static Client | A client passed to the auth service configuration file | Self-hosted deployments (details) |
+
+## Tokens
+
+| Token Type | Description |
+| --- | --- |
+| Platform Token | A JWT token issued by the Formance Platform, not scoped to any specific environment. |
+| Environment Token | A JWT token issued by the auth service of The Formance Platform, scoped to a specific environment. |
 
 ### Static Clients
 
-If you used the main [docker-compose.yml](https://github.com/formancehq/stack/blob/main/docker-compose.yml) file to run or deploy the Formance Stack, a default static client was automatically provisioned for you, with the following credentials:
+If you used the main [docker-compose.yml](https://github.com/formancehq/stack/blob/main/docker-compose.yml) file to run or deploy The Formance Platform, a default static client was automatically provisioned for you, with the following credentials:
 
 - Client ID: `testing`
 - Client Secret: `testing`
@@ -64,7 +79,7 @@ curl -v http://localhost/api/ledger/quickstart/transactions -H "Authorization: B
 
 ## M2M (Machine to Machine)
 
-The Formance Stack supports the [client_credentials](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/) flow for machine-to-machine authentication. This flow is used to authenticate a client application against the auth service, which then issues a JWT token that can be used to authenticate against the other services of the Formance Stack.
+The Formance Platform supports the [client_credentials](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/) flow for machine-to-machine authentication. This flow is used to authenticate a client application against the auth service, which then issues a JWT token that can be used to authenticate against the other services of The Formance Platform.
 
 Acquiring a token using the `client_credentials` flow is a two-step process:
 
@@ -82,7 +97,7 @@ curl -X POST $tokenUrl -d "client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&gra
 | jq .access_token -r
 ```
 
-Once acquired, the JWT token can be used to authenticate against the other services of the Formance Stack.
+Once acquired, the JWT token can be used to authenticate against the other services of The Formance Platform.
 
 
 <!-- ## Three-legged Flows (User through third-party application) -->

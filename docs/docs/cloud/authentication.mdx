@@ -1,14 +1,14 @@
 ---
-title: Formance Stack Authentication
-description: How to configure Formance Stack Authentication
+title: Authentication
+description: How to configure Formance Platform Authentication
 ---
 import CloudToken from '../fctl/partials/_cloud_token.mdx';
 
-## Authentication types
+Formance Cloud exposes the same authentication types as Open Source Formance Platform. You can use the same authentication types in your Formance Cloud application as you would in a self-hosted Formance Platform, as described in the [Formance Platform Authentication](/stack/authentication) documentation.
 
-Formance Cloud exposes the same authentication types as Formance Stack. You can use the same authentication types in your Formance Cloud application as you would in a locally hosted Formance Stack, as described in the [Formance Stack Authentication](/stack/authentication) documentation.
-
-In addition to those authentication types, Formance Cloud also makes it easier to provision OAuth2 clients, and to generate M2M and personal JWT tokens.
+:::info
+In addition to the standard described in the main documentation, this section describes how to create OAuth2 clients and secrets, and how to provision OAuth2 clients and JWT tokens in the context of Formance Cloud.
+:::
 
 ## Creating clients
 
@@ -54,8 +54,7 @@ client_id=='38072a09-7c00-447e-8ecc-839ba0949ce8'
 
 ## Personal authentication
 
-To authorize API calls from the command line, you can to generate an access token.
-These tokens expire after 5 minutes.
+Personal tokens provide an easy way to authenticate yourself against the Formance Cloud Platform, without having to go through the OAuth2 flow. This method is recommended as a quick way to issue API calls from the command line. Generated tokens are valid for 5 minutes.
 
 <CloudToken />
 
