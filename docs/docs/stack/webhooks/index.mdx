@@ -7,7 +7,7 @@ import TabItem from '@theme/TabItem';
 
 # Formance Webhooks
 
-Webhooks are a way for the Formance Stack to send notifications to your application when certain events occur. For example, you can use webhooks to notify your application when a ledger transaction is created, or when a payment is received.
+Webhooks are a way for The Formance Platform to send notifications to your application when certain events occur. For example, you can use webhooks to notify your application when a ledger transaction is created, or when a payment is received.
 
 ## Creating a Webhook
 
@@ -45,7 +45,7 @@ The following events are available for webhooks:
 
 ## Webhook Signature
 
-The Formance Stack will sign each webhook request with a signature header. This signature can be used to verify that the request was sent by the Formance Stack. For each configured webhook, a secret key will be generated. This secret key can be retrieved directly from the webhook information:
+The Formance Platform will sign each webhook request with a signature header. This signature can be used to verify that the request was sent by The Formance Platform. For each configured webhook, a secret key will be generated. This secret key can be retrieved directly from the webhook information:
 
 ```shell
 fctl webhooks list

@@ -42,6 +42,107 @@ const sidebars = {
       ],
     },
     {
+      label: 'Platform Reference',
+      type: 'category',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        {
+          type: 'doc',
+          id: 'stack/architecture',
+          label: 'Architecture',
+        },
+        {
+          type: 'doc',
+          id: 'stack/deployment',
+          label: 'Deployment',
+        },
+        {
+          type: 'doc',
+          id: 'stack/authentication/index',
+          label: 'Authentication',
+        },
+        {
+          type: 'doc',
+          id: 'stack/sdk/index',
+          label: 'SDKs',
+        },
+        {
+          type: 'doc',
+          id: 'stack/fctl',
+          label: 'Formance CLI',
+        },
+        {
+          type: 'doc',
+          id: 'stack/webhooks/index',
+          label: 'Webhooks',
+        },
+        {
+          type: 'doc',
+          id: 'stack/unambiguous-monetary-notation',
+          label: 'Monetary Notation (UMN)',
+        },
+        {
+          label: 'Cloud',
+          type: 'category',
+          collapsible: true,
+          collapsed: true,
+          items: [
+            {
+              type: 'doc',
+              id: 'cloud/sandboxes',
+              label: 'Sandbox',
+            },
+            {
+              type: 'doc',
+              id: 'cloud/production',
+              label: 'Production',
+            },
+            {
+              type: 'doc',
+              id: 'cloud/authentication',
+              label: 'Authentication',
+            },
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Self-hosting',
+          items: [
+            {
+              type: 'doc',
+              id: 'stack/self-hosted/authentication',
+            },
+            {
+              type: 'doc',
+              id: 'stack/reference/docker',
+              label: 'Docker',
+            },
+            {
+              type: 'doc',
+              id: 'stack/reference/operator',
+              label: 'Kubernetes (operator)',
+            },
+            {
+              type: 'doc',
+              id: 'stack/reference/helm',
+              label: 'Kubernetes (helm)',
+            },
+            // {
+            //   type: 'doc',
+            //   id: 'stack/reference/production',
+            //   label: 'Production checklist',
+            // }
+          ],
+        },
+        // {
+        //   type: 'doc',
+        //   id: 'stack/telemetry/index',
+        //   label: 'Telemetry',
+        // },
+      ],
+    },
+    {
       label: 'Services Reference',
       type: 'category',
       collapsible: true,
@@ -358,109 +459,6 @@ const sidebars = {
           ]
         },
       ]
-    },
-    {
-      label: 'Stack Reference',
-      type: 'category',
-      collapsible: true,
-      collapsed: true,
-      items: [
-        {
-          type: 'doc',
-          id: 'stack/architecture',
-          label: 'Architecture',
-        },
-        {
-          type: 'doc',
-          id: 'stack/authentication/index',
-          label: 'Authentication',
-        },
-        {
-          type: 'doc',
-          id: 'stack/sdk/index',
-          label: 'SDKs',
-        },
-        {
-          type: 'doc',
-          id: 'stack/webhooks/index',
-          label: 'Webhooks',
-        },
-        {
-          type: 'doc',
-          id: 'stack/unambiguous-monetary-notation',
-          label: 'Monetary Notation (UMN)',
-        },
-        {
-          type: 'category',
-          label: 'Self-hosting',
-          items: [
-            {
-              type: 'doc',
-              id: 'stack/reference/docker',
-              label: 'Docker',
-            },
-            {
-              type: 'doc',
-              id: 'stack/reference/operator',
-              label: 'Kubernetes / Operator',
-            },
-            {
-              type: 'doc',
-              id: 'stack/reference/helm',
-              label: 'Kubernetes / Helm (deprecated)',
-            },
-            // {
-            //   type: 'doc',
-            //   id: 'stack/reference/production',
-            //   label: 'Production checklist',
-            // }
-          ],
-        },
-        // {
-        //   type: 'doc',
-        //   id: 'stack/telemetry/index',
-        //   label: 'Telemetry',
-        // },
-      ],
-    },
-    {
-      label: 'Cloud',
-      type: 'category',
-      collapsible: true,
-      collapsed: true,
-      items: [
-        {
-          type: 'doc',
-          id: 'stack/fctl',
-          label: 'Formance CLI',
-        },
-        {
-          type: 'doc',
-          id: 'cloud/sandboxes',
-          label: 'Sandbox environment',
-        },
-        {
-          type: 'doc',
-          id: 'cloud/production',
-          label: 'Production environment',
-        },
-        {
-          type: 'doc',
-          id: 'cloud/authentication',
-          label: 'Authentication',
-        },
-        // {
-        //   type: 'category',
-        //   label: 'Conventions',
-        //   items: [
-        //     {
-        //       type: 'doc',
-        //       id: 'stack/unambiguous-monetary-notation',
-        //       label: 'Monetary Notation',
-        //     }
-        //   ],
-        // },
-      ],
     },
   ],
 };
