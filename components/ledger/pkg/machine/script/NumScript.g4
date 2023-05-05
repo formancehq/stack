@@ -47,7 +47,7 @@ VARIABLE_NAME: '$' [a-z_]+ [a-z0-9_]*;
 ACCOUNT: '@' [a-zA-Z_]+ [a-zA-Z0-9_:]*;
 ASSET: [A-Z/0-9]+;
 
-monetary: LBRACK asset=expression amt=NUMBER RBRACK;
+monetary: LBRACK asset=expression amt=expression RBRACK;
 
 monetaryAll: LBRACK asset=expression '*' RBRACK;
 
@@ -57,7 +57,6 @@ literal
     | NUMBER # LitNumber
     | STRING # LitString
     | PORTION # LitPortion
-    | monetary # LitMonetary
     ;
 
 variable: VARIABLE_NAME;
@@ -66,6 +65,7 @@ expression
     : lhs=expression op=(OP_ADD|OP_SUB) rhs=expression # ExprAddSub
     | lit=literal # ExprLiteral
     | var_=variable # ExprVariable
+    | mon=monetary # ExprMonetaryNew
     ;
 
 allotmentPortion

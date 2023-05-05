@@ -63,8 +63,8 @@ func numscriptParserInit() {
 		10, 2, 11, 7, 11, 2, 12, 7, 12, 2, 13, 7, 13, 2, 14, 7, 14, 2, 15, 7, 15,
 		2, 16, 7, 16, 2, 17, 7, 17, 2, 18, 7, 18, 2, 19, 7, 19, 2, 20, 7, 20, 2,
 		21, 7, 21, 2, 22, 7, 22, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 2, 63, 8, 2, 1, 3, 1,
-		3, 1, 4, 1, 4, 1, 4, 3, 4, 70, 8, 4, 1, 4, 1, 4, 1, 4, 5, 4, 75, 8, 4,
+		1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 3, 2, 62, 8, 2, 1, 3, 1, 3, 1,
+		4, 1, 4, 1, 4, 1, 4, 3, 4, 70, 8, 4, 1, 4, 1, 4, 1, 4, 5, 4, 75, 8, 4,
 		10, 4, 12, 4, 78, 9, 4, 1, 5, 1, 5, 1, 5, 3, 5, 83, 8, 5, 1, 6, 1, 6, 1,
 		6, 1, 6, 1, 6, 1, 6, 1, 6, 4, 6, 92, 8, 6, 11, 6, 12, 6, 93, 1, 6, 1, 6,
 		1, 6, 1, 6, 1, 6, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 1, 7, 4, 7, 107, 8, 7,
@@ -89,22 +89,22 @@ func numscriptParserInit() {
 		5, 22, 277, 8, 22, 10, 22, 12, 22, 280, 9, 22, 1, 22, 1, 22, 1, 22, 0,
 		1, 8, 23, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32,
 		34, 36, 38, 40, 42, 44, 0, 2, 1, 0, 22, 23, 1, 0, 31, 36, 295, 0, 46, 1,
-		0, 0, 0, 2, 51, 1, 0, 0, 0, 4, 62, 1, 0, 0, 0, 6, 64, 1, 0, 0, 0, 8, 69,
+		0, 0, 0, 2, 51, 1, 0, 0, 0, 4, 61, 1, 0, 0, 0, 6, 63, 1, 0, 0, 0, 8, 69,
 		1, 0, 0, 0, 10, 82, 1, 0, 0, 0, 12, 84, 1, 0, 0, 0, 14, 100, 1, 0, 0, 0,
 		16, 115, 1, 0, 0, 0, 18, 120, 1, 0, 0, 0, 20, 125, 1, 0, 0, 0, 22, 127,
 		1, 0, 0, 0, 24, 131, 1, 0, 0, 0, 26, 142, 1, 0, 0, 0, 28, 150, 1, 0, 0,
 		0, 30, 152, 1, 0, 0, 0, 32, 167, 1, 0, 0, 0, 34, 216, 1, 0, 0, 0, 36, 218,
 		1, 0, 0, 0, 38, 234, 1, 0, 0, 0, 40, 236, 1, 0, 0, 0, 42, 242, 1, 0, 0,
 		0, 44, 261, 1, 0, 0, 0, 46, 47, 5, 26, 0, 0, 47, 48, 3, 8, 4, 0, 48, 49,
-		5, 42, 0, 0, 49, 50, 5, 27, 0, 0, 50, 1, 1, 0, 0, 0, 51, 52, 5, 26, 0,
-		0, 52, 53, 3, 8, 4, 0, 53, 54, 5, 1, 0, 0, 54, 55, 5, 27, 0, 0, 55, 3,
-		1, 0, 0, 0, 56, 63, 5, 45, 0, 0, 57, 63, 5, 46, 0, 0, 58, 63, 5, 42, 0,
-		0, 59, 63, 5, 37, 0, 0, 60, 63, 5, 38, 0, 0, 61, 63, 3, 0, 0, 0, 62, 56,
-		1, 0, 0, 0, 62, 57, 1, 0, 0, 0, 62, 58, 1, 0, 0, 0, 62, 59, 1, 0, 0, 0,
-		62, 60, 1, 0, 0, 0, 62, 61, 1, 0, 0, 0, 63, 5, 1, 0, 0, 0, 64, 65, 5, 44,
-		0, 0, 65, 7, 1, 0, 0, 0, 66, 67, 6, 4, -1, 0, 67, 70, 3, 4, 2, 0, 68, 70,
-		3, 6, 3, 0, 69, 66, 1, 0, 0, 0, 69, 68, 1, 0, 0, 0, 70, 76, 1, 0, 0, 0,
-		71, 72, 10, 3, 0, 0, 72, 73, 7, 0, 0, 0, 73, 75, 3, 8, 4, 4, 74, 71, 1,
+		3, 8, 4, 0, 49, 50, 5, 27, 0, 0, 50, 1, 1, 0, 0, 0, 51, 52, 5, 26, 0, 0,
+		52, 53, 3, 8, 4, 0, 53, 54, 5, 1, 0, 0, 54, 55, 5, 27, 0, 0, 55, 3, 1,
+		0, 0, 0, 56, 62, 5, 45, 0, 0, 57, 62, 5, 46, 0, 0, 58, 62, 5, 42, 0, 0,
+		59, 62, 5, 37, 0, 0, 60, 62, 5, 38, 0, 0, 61, 56, 1, 0, 0, 0, 61, 57, 1,
+		0, 0, 0, 61, 58, 1, 0, 0, 0, 61, 59, 1, 0, 0, 0, 61, 60, 1, 0, 0, 0, 62,
+		5, 1, 0, 0, 0, 63, 64, 5, 44, 0, 0, 64, 7, 1, 0, 0, 0, 65, 66, 6, 4, -1,
+		0, 66, 70, 3, 4, 2, 0, 67, 70, 3, 6, 3, 0, 68, 70, 3, 0, 0, 0, 69, 65,
+		1, 0, 0, 0, 69, 67, 1, 0, 0, 0, 69, 68, 1, 0, 0, 0, 70, 76, 1, 0, 0, 0,
+		71, 72, 10, 4, 0, 0, 72, 73, 7, 0, 0, 0, 73, 75, 3, 8, 4, 5, 74, 71, 1,
 		0, 0, 0, 75, 78, 1, 0, 0, 0, 76, 74, 1, 0, 0, 0, 76, 77, 1, 0, 0, 0, 77,
 		9, 1, 0, 0, 0, 78, 76, 1, 0, 0, 0, 79, 83, 5, 38, 0, 0, 80, 83, 3, 6, 3,
 		0, 81, 83, 5, 39, 0, 0, 82, 79, 1, 0, 0, 0, 82, 80, 1, 0, 0, 0, 82, 81,
@@ -177,7 +177,7 @@ func numscriptParserInit() {
 		0, 0, 0, 272, 273, 1, 0, 0, 0, 273, 278, 1, 0, 0, 0, 274, 272, 1, 0, 0,
 		0, 275, 277, 5, 5, 0, 0, 276, 275, 1, 0, 0, 0, 277, 280, 1, 0, 0, 0, 278,
 		276, 1, 0, 0, 0, 278, 279, 1, 0, 0, 0, 279, 281, 1, 0, 0, 0, 280, 278,
-		1, 0, 0, 0, 281, 282, 5, 0, 0, 1, 282, 45, 1, 0, 0, 0, 25, 62, 69, 76,
+		1, 0, 0, 0, 281, 282, 5, 0, 0, 1, 282, 45, 1, 0, 0, 0, 25, 61, 69, 76,
 		82, 93, 108, 115, 120, 125, 129, 138, 150, 161, 167, 191, 211, 216, 234,
 		240, 249, 253, 261, 265, 272, 278,
 	}
@@ -300,17 +300,17 @@ type IMonetaryContext interface {
 	// GetParser returns the parser.
 	GetParser() antlr.Parser
 
-	// GetAmt returns the amt token.
-	GetAmt() antlr.Token
-
-	// SetAmt sets the amt token.
-	SetAmt(antlr.Token)
-
 	// GetAsset returns the asset rule contexts.
 	GetAsset() IExpressionContext
 
+	// GetAmt returns the amt rule contexts.
+	GetAmt() IExpressionContext
+
 	// SetAsset sets the asset rule contexts.
 	SetAsset(IExpressionContext)
+
+	// SetAmt sets the amt rule contexts.
+	SetAmt(IExpressionContext)
 
 	// IsMonetaryContext differentiates from other interfaces.
 	IsMonetaryContext()
@@ -320,7 +320,7 @@ type MonetaryContext struct {
 	*antlr.BaseParserRuleContext
 	parser antlr.Parser
 	asset  IExpressionContext
-	amt    antlr.Token
+	amt    IExpressionContext
 }
 
 func NewEmptyMonetaryContext() *MonetaryContext {
@@ -345,13 +345,13 @@ func NewMonetaryContext(parser antlr.Parser, parent antlr.ParserRuleContext, inv
 
 func (s *MonetaryContext) GetParser() antlr.Parser { return s.parser }
 
-func (s *MonetaryContext) GetAmt() antlr.Token { return s.amt }
-
-func (s *MonetaryContext) SetAmt(v antlr.Token) { s.amt = v }
-
 func (s *MonetaryContext) GetAsset() IExpressionContext { return s.asset }
 
+func (s *MonetaryContext) GetAmt() IExpressionContext { return s.amt }
+
 func (s *MonetaryContext) SetAsset(v IExpressionContext) { s.asset = v }
+
+func (s *MonetaryContext) SetAmt(v IExpressionContext) { s.amt = v }
 
 func (s *MonetaryContext) LBRACK() antlr.TerminalNode {
 	return s.GetToken(NumScriptParserLBRACK, 0)
@@ -361,12 +361,37 @@ func (s *MonetaryContext) RBRACK() antlr.TerminalNode {
 	return s.GetToken(NumScriptParserRBRACK, 0)
 }
 
-func (s *MonetaryContext) Expression() IExpressionContext {
+func (s *MonetaryContext) AllExpression() []IExpressionContext {
+	children := s.GetChildren()
+	len := 0
+	for _, ctx := range children {
+		if _, ok := ctx.(IExpressionContext); ok {
+			len++
+		}
+	}
+
+	tst := make([]IExpressionContext, len)
+	i := 0
+	for _, ctx := range children {
+		if t, ok := ctx.(IExpressionContext); ok {
+			tst[i] = t.(IExpressionContext)
+			i++
+		}
+	}
+
+	return tst
+}
+
+func (s *MonetaryContext) Expression(i int) IExpressionContext {
 	var t antlr.RuleContext
+	j := 0
 	for _, ctx := range s.GetChildren() {
 		if _, ok := ctx.(IExpressionContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
+			if j == i {
+				t = ctx.(antlr.RuleContext)
+				break
+			}
+			j++
 		}
 	}
 
@@ -375,10 +400,6 @@ func (s *MonetaryContext) Expression() IExpressionContext {
 	}
 
 	return t.(IExpressionContext)
-}
-
-func (s *MonetaryContext) NUMBER() antlr.TerminalNode {
-	return s.GetToken(NumScriptParserNUMBER, 0)
 }
 
 func (s *MonetaryContext) GetRuleContext() antlr.RuleContext {
@@ -439,9 +460,9 @@ func (p *NumScriptParser) Monetary() (localctx IMonetaryContext) {
 	{
 		p.SetState(48)
 
-		var _m = p.Match(NumScriptParserNUMBER)
+		var _x = p.expression(0)
 
-		localctx.(*MonetaryContext).amt = _m
+		localctx.(*MonetaryContext).amt = _x
 	}
 	{
 		p.SetState(49)
@@ -777,52 +798,6 @@ func (s *LitAssetContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
-type LitMonetaryContext struct {
-	*LiteralContext
-}
-
-func NewLitMonetaryContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *LitMonetaryContext {
-	var p = new(LitMonetaryContext)
-
-	p.LiteralContext = NewEmptyLiteralContext()
-	p.parser = parser
-	p.CopyFrom(ctx.(*LiteralContext))
-
-	return p
-}
-
-func (s *LitMonetaryContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *LitMonetaryContext) Monetary() IMonetaryContext {
-	var t antlr.RuleContext
-	for _, ctx := range s.GetChildren() {
-		if _, ok := ctx.(IMonetaryContext); ok {
-			t = ctx.(antlr.RuleContext)
-			break
-		}
-	}
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IMonetaryContext)
-}
-
-func (s *LitMonetaryContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(NumScriptListener); ok {
-		listenerT.EnterLitMonetary(s)
-	}
-}
-
-func (s *LitMonetaryContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(NumScriptListener); ok {
-		listenerT.ExitLitMonetary(s)
-	}
-}
-
 type LitNumberContext struct {
 	*LiteralContext
 }
@@ -880,7 +855,7 @@ func (p *NumScriptParser) Literal() (localctx ILiteralContext) {
 		}
 	}()
 
-	p.SetState(62)
+	p.SetState(61)
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
@@ -922,14 +897,6 @@ func (p *NumScriptParser) Literal() (localctx ILiteralContext) {
 		{
 			p.SetState(60)
 			p.Match(NumScriptParserPORTION)
-		}
-
-	case NumScriptParserLBRACK:
-		localctx = NewLitMonetaryContext(p, localctx)
-		p.EnterOuterAlt(localctx, 6)
-		{
-			p.SetState(61)
-			p.Monetary()
 		}
 
 	default:
@@ -1026,7 +993,7 @@ func (p *NumScriptParser) Variable() (localctx IVariableContext) {
 
 	p.EnterOuterAlt(localctx, 1)
 	{
-		p.SetState(64)
+		p.SetState(63)
 		p.Match(NumScriptParserVARIABLE_NAME)
 	}
 
@@ -1279,6 +1246,57 @@ func (s *ExprVariableContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
+type ExprMonetaryNewContext struct {
+	*ExpressionContext
+	mon IMonetaryContext
+}
+
+func NewExprMonetaryNewContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *ExprMonetaryNewContext {
+	var p = new(ExprMonetaryNewContext)
+
+	p.ExpressionContext = NewEmptyExpressionContext()
+	p.parser = parser
+	p.CopyFrom(ctx.(*ExpressionContext))
+
+	return p
+}
+
+func (s *ExprMonetaryNewContext) GetMon() IMonetaryContext { return s.mon }
+
+func (s *ExprMonetaryNewContext) SetMon(v IMonetaryContext) { s.mon = v }
+
+func (s *ExprMonetaryNewContext) GetRuleContext() antlr.RuleContext {
+	return s
+}
+
+func (s *ExprMonetaryNewContext) Monetary() IMonetaryContext {
+	var t antlr.RuleContext
+	for _, ctx := range s.GetChildren() {
+		if _, ok := ctx.(IMonetaryContext); ok {
+			t = ctx.(antlr.RuleContext)
+			break
+		}
+	}
+
+	if t == nil {
+		return nil
+	}
+
+	return t.(IMonetaryContext)
+}
+
+func (s *ExprMonetaryNewContext) EnterRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(NumScriptListener); ok {
+		listenerT.EnterExprMonetaryNew(s)
+	}
+}
+
+func (s *ExprMonetaryNewContext) ExitRule(listener antlr.ParseTreeListener) {
+	if listenerT, ok := listener.(NumScriptListener); ok {
+		listenerT.ExitExprMonetaryNew(s)
+	}
+}
+
 func (p *NumScriptParser) Expression() (localctx IExpressionContext) {
 	return p.expression(0)
 }
@@ -1319,13 +1337,13 @@ func (p *NumScriptParser) expression(_p int) (localctx IExpressionContext) {
 	p.GetErrorHandler().Sync(p)
 
 	switch p.GetTokenStream().LA(1) {
-	case NumScriptParserLBRACK, NumScriptParserSTRING, NumScriptParserPORTION, NumScriptParserNUMBER, NumScriptParserACCOUNT, NumScriptParserASSET:
+	case NumScriptParserSTRING, NumScriptParserPORTION, NumScriptParserNUMBER, NumScriptParserACCOUNT, NumScriptParserASSET:
 		localctx = NewExprLiteralContext(p, localctx)
 		p.SetParserRuleContext(localctx)
 		_prevctx = localctx
 
 		{
-			p.SetState(67)
+			p.SetState(66)
 
 			var _x = p.Literal()
 
@@ -1337,11 +1355,23 @@ func (p *NumScriptParser) expression(_p int) (localctx IExpressionContext) {
 		p.SetParserRuleContext(localctx)
 		_prevctx = localctx
 		{
-			p.SetState(68)
+			p.SetState(67)
 
 			var _x = p.Variable()
 
 			localctx.(*ExprVariableContext).var_ = _x
+		}
+
+	case NumScriptParserLBRACK:
+		localctx = NewExprMonetaryNewContext(p, localctx)
+		p.SetParserRuleContext(localctx)
+		_prevctx = localctx
+		{
+			p.SetState(68)
+
+			var _x = p.Monetary()
+
+			localctx.(*ExprMonetaryNewContext).mon = _x
 		}
 
 	default:
@@ -1364,8 +1394,8 @@ func (p *NumScriptParser) expression(_p int) (localctx IExpressionContext) {
 			p.PushNewRecursionContext(localctx, _startState, NumScriptParserRULE_expression)
 			p.SetState(71)
 
-			if !(p.Precpred(p.GetParserRuleContext(), 3)) {
-				panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 3)", ""))
+			if !(p.Precpred(p.GetParserRuleContext(), 4)) {
+				panic(antlr.NewFailedPredicateException(p, "p.Precpred(p.GetParserRuleContext(), 4)", ""))
 			}
 			{
 				p.SetState(72)
@@ -1388,7 +1418,7 @@ func (p *NumScriptParser) expression(_p int) (localctx IExpressionContext) {
 			{
 				p.SetState(73)
 
-				var _x = p.expression(4)
+				var _x = p.expression(5)
 
 				localctx.(*ExprAddSubContext).rhs = _x
 			}
@@ -5983,7 +6013,7 @@ func (p *NumScriptParser) Expression_Sempred(localctx antlr.RuleContext, predInd
 
 	switch predIndex {
 	case 0:
-		return p.Precpred(p.GetParserRuleContext(), 3)
+		return p.Precpred(p.GetParserRuleContext(), 4)
 
 	default:
 		panic("No predicate with index: " + fmt.Sprint(predIndex))

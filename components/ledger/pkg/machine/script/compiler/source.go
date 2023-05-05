@@ -12,95 +12,43 @@ import (
 type FallbackAccount core.Address
 
 // VisitValueAwareSource returns the resource addresses of all the accounts
-func (p *parseVisitor) VisitValueAwareSource(c parser.IValueAwareSourceContext, pushAsset func(), monAddr *core.Address) (map[core.Address]struct{}, *CompileError) {
-	neededAccounts := map[core.Address]struct{}{}
-	isAll := monAddr == nil
+func (p *parseVisitor) VisitValueAwareSource(c parser.IValueAwareSourceContext, pushAsset func(), monAddr *core.Address) (program.ValueAwareSource, *CompileError) {
 	switch c := c.(type) {
 	case *parser.SrcContext:
-		accounts, _, unbounded, compErr := p.VisitSource(c.Source(), pushAsset, isAll)
-		if compErr != nil {
-			return nil, compErr
-		}
-		for k, v := range accounts {
-			neededAccounts[k] = v
-		}
-		if !isAll {
-			p.PushAddress(*monAddr)
-			err := p.TakeFromSource(unbounded)
-			if err != nil {
-				return nil, LogicError(c, err)
-			}
-		}
+		src, err := p.VisitSource(c.Source())
+		return program.ValueAwareSourceSource{
+			Source: src,
+		}, err
 	case *parser.SrcAllotmentContext:
-		if isAll {
-			return nil, LogicError(c, errors.New("cannot take all balance of an allotment source"))
+		parts := program.ValueAwareSourceAllotment{}
+		portions, err := p.VisitAllotment(c.SourceAllotment(), c.SourceAllotment().GetPortions())
+		if err != nil {
+			return nil, err
 		}
-		p.PushAddress(*monAddr)
-		p.VisitAllotment(c.SourceAllotment(), c.SourceAllotment().GetPortions())
-		p.AppendInstruction(program.OP_ALLOC)
+		// sub_sources := []program.Source{}
 
 		sources := c.SourceAllotment().GetSources()
 		n := len(sources)
 		for i := 0; i < n; i++ {
-			accounts, _, fallback, compErr := p.VisitSource(sources[i], pushAsset, isAll)
+			src, compErr := p.VisitSource(sources[i])
 			if compErr != nil {
 				return nil, compErr
 			}
-			for k, v := range accounts {
-				neededAccounts[k] = v
-			}
-			err := p.Bump(int64(i + 1))
-			if err != nil {
-				return nil, LogicError(c, err)
-			}
-			err = p.TakeFromSource(fallback)
-			if err != nil {
-				return nil, LogicError(c, err)
-			}
+			// sub_sources = append(sub_sources, src)
+			parts = append(parts, program.ValueAwareSourcePart{
+				Portion: portions[i],
+				Source:  src,
+			})
 		}
-		err := p.PushInteger(core.NewNumber(int64(n)))
-		if err != nil {
-			return nil, LogicError(c, err)
-		}
-		p.AppendInstruction(program.OP_FUNDING_ASSEMBLE)
+		return parts, nil
 	}
-	return neededAccounts, nil
-}
-
-func (p *parseVisitor) TakeFromSource(fallback *FallbackAccount) error {
-	if fallback == nil {
-		p.AppendInstruction(program.OP_TAKE)
-		err := p.Bump(1)
-		if err != nil {
-			return err
-		}
-		p.AppendInstruction(program.OP_REPAY)
-	} else {
-		p.AppendInstruction(program.OP_TAKE_MAX)
-		err := p.Bump(1)
-		if err != nil {
-			return err
-		}
-		p.AppendInstruction(program.OP_REPAY)
-		p.PushAddress(core.Address(*fallback))
-		err = p.Bump(2)
-		if err != nil {
-			return err
-		}
-		p.AppendInstruction(program.OP_TAKE_ALWAYS)
-		err = p.PushInteger(core.NewNumber(2))
-		if err != nil {
-			return err
-		}
-		p.AppendInstruction(program.OP_FUNDING_ASSEMBLE)
-	}
-	return nil
+	return nil, nil
 }
 
 // VisitSource returns the resource addresses of all the accounts,
 // the addresses of accounts already emptied,
 // and possibly a fallback account if the source has an unbounded overdraft allowance or contains @world
-func (p *parseVisitor) VisitSource(c parser.ISourceContext, pushAsset func(), isAll bool) (map[core.Address]struct{}, map[core.Address]struct{}, *FallbackAccount, *CompileError) {
+func (p *parseVisitor) VisitSource(c parser.ISourceContext) (program.Source, *CompileError) {
 	neededAccounts := map[core.Address]struct{}{}
 	emptiedAccounts := map[core.Address]struct{}{}
 	var fallback *FallbackAccount

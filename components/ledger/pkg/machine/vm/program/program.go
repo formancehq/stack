@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	OP_ADD            = byte(iota + 1)
+	OP_ADD = byte(iota + 1)
 	OP_SUB
 )
 
@@ -13,34 +13,46 @@ type Expr interface {
 	isExpr()
 }
 
-type ExprLiteral struct{core.Value}
+type ExprLiteral struct{ core.Value }
+
 func (e ExprLiteral) isExpr() {}
 
 type ExprInfix struct {
-	Op byte
+	Op  byte
 	Lhs Expr
 	Rhs Expr
 }
+
 func (e ExprInfix) isExpr() {}
 
 type ExprVariable string
+
 func (e ExprVariable) isExpr() {}
 
 type ExprTake struct {
 	Amount Expr
 	Source ValueAwareSource
 }
+
 func (e ExprTake) isExpr() {}
 
 type ExprTakeAll struct {
-	Asset Expr
+	Asset  Expr
 	Source Source
 }
+
 func (e ExprTakeAll) isExpr() {}
+
+type ExprMonetaryNew struct {
+	Asset  Expr
+	Amount Expr
+}
+
+func (e ExprMonetaryNew) isExpr() {}
 
 type Overdraft struct {
 	Unbounded bool
-	UpTo *Expr // invariant: if unbounbed then up_to == nil
+	UpTo      *Expr // invariant: if unbounbed then up_to == nil
 }
 
 type Source interface {
@@ -48,28 +60,32 @@ type Source interface {
 }
 
 type SourceAccount struct {
-	Account Expr
+	Account   Expr
 	Overdraft *Overdraft
 }
+
 func (s SourceAccount) isSource() {}
 
 type SourceMaxed struct {
 	Source Source
-	Max Expr
+	Max    Expr
 }
+
 func (s SourceMaxed) isSource() {}
 
 type SourceInOrder []Source
+
 func (s SourceInOrder) isSource() {}
 
 type SourceArrayInOrder struct {
-	Expr Expr
+	Array Expr
 }
+
 func (s SourceArrayInOrder) isSource() {}
 
 // invariant: if remaining then expr == nil
 type AllotmentPortion struct {
-	Expr *Expr
+	Expr      Expr
 	Remaining bool
 }
 
@@ -80,16 +96,19 @@ type ValueAwareSource interface {
 type ValueAwareSourceSource struct {
 	Source Source
 }
+
 func (v ValueAwareSourceSource) isValueAwareSource() {}
 
-type ValueAwareSourceAllotment []struct {
+type ValueAwareSourcePart struct {
 	Portion AllotmentPortion
-	Source Source
+	Source  Source
 }
+type ValueAwareSourceAllotment []ValueAwareSourcePart
+
 func (v ValueAwareSourceAllotment) isValueAwareSource() {}
 
 type KeptOrDestination struct {
-	Kept bool
+	Kept        bool
 	Destination Destination
 }
 
@@ -97,7 +116,8 @@ type Destination interface {
 	isDestination()
 }
 
-type DestinationAccount struct {Expr}
+type DestinationAccount struct{ Expr }
+
 func (d DestinationAccount) isDestination() {}
 
 type DestinationInOrder struct {
@@ -107,47 +127,55 @@ type DestinationInOrder struct {
 	}
 	Remaining KeptOrDestination
 }
+
 func (d DestinationInOrder) isDestination() {}
 
 type DestinationAllotment []struct {
 	Portion AllotmentPortion
-	Kod KeptOrDestination
+	Kod     KeptOrDestination
 }
+
 func (d DestinationAllotment) isDestination() {}
 
 type Statement interface {
 	isStatement()
 }
 
-type StatementFail struct {}
+type StatementFail struct{}
+
 func (s StatementFail) isStatement() {}
 
-type StatementPrint struct {Expr}
+type StatementPrint struct{ Expr }
+
 func (s StatementPrint) isStatement() {}
 
 type StatementAllocate struct {
-	Funding Expr
+	Funding     Expr
 	Destination Destination
 }
+
 func (s StatementAllocate) isStatement() {}
 
 type StatementLet struct {
 	Name string
 	Expr Expr
 }
+
 func (s StatementLet) isStatement() {}
 
 type StatementSetTxMeta struct {
-	Key string
+	Key   string
 	Value Expr
 }
+
 func (s StatementSetTxMeta) isStatement() {}
 
 type StatementSetAccountMeta struct {
 	Account Expr
-	Key string
-	Value Expr
+	Key     string
+	Value   Expr
 }
+
 func (s StatementSetAccountMeta) isStatement() {}
 
 type VarOrigin interface {
@@ -156,24 +184,26 @@ type VarOrigin interface {
 
 type VarOriginMeta struct {
 	Account Expr
-	Key string
+	Key     string
 }
+
 func (v VarOriginMeta) isVarOrigin() {}
 
 type VarOriginBalance struct {
 	Account Expr
-	Asset Expr
+	Asset   Expr
 }
+
 func (v VarOriginBalance) isVarOrigin() {}
 
 type VarDecl struct {
-	Ty core.Type
-	Name string
-	Origin *VarOrigin
+	Ty     core.Type
+	Name   string
+	Origin VarOrigin
 }
 
-type Script struct {
-	VarsDecl []VarDecl
+type Program struct {
+	VarsDecl   []VarDecl
 	Statements []Statement
 }
 

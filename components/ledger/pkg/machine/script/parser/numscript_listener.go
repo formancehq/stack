@@ -29,9 +29,6 @@ type NumScriptListener interface {
 	// EnterLitPortion is called when entering the LitPortion production.
 	EnterLitPortion(c *LitPortionContext)
 
-	// EnterLitMonetary is called when entering the LitMonetary production.
-	EnterLitMonetary(c *LitMonetaryContext)
-
 	// EnterVariable is called when entering the variable production.
 	EnterVariable(c *VariableContext)
 
@@ -43,6 +40,9 @@ type NumScriptListener interface {
 
 	// EnterExprVariable is called when entering the ExprVariable production.
 	EnterExprVariable(c *ExprVariableContext)
+
+	// EnterExprMonetaryNew is called when entering the ExprMonetaryNew production.
+	EnterExprMonetaryNew(c *ExprMonetaryNewContext)
 
 	// EnterAllotmentPortionConst is called when entering the AllotmentPortionConst production.
 	EnterAllotmentPortionConst(c *AllotmentPortionConstContext)
@@ -161,9 +161,6 @@ type NumScriptListener interface {
 	// ExitLitPortion is called when exiting the LitPortion production.
 	ExitLitPortion(c *LitPortionContext)
 
-	// ExitLitMonetary is called when exiting the LitMonetary production.
-	ExitLitMonetary(c *LitMonetaryContext)
-
 	// ExitVariable is called when exiting the variable production.
 	ExitVariable(c *VariableContext)
 
@@ -175,6 +172,9 @@ type NumScriptListener interface {
 
 	// ExitExprVariable is called when exiting the ExprVariable production.
 	ExitExprVariable(c *ExprVariableContext)
+
+	// ExitExprMonetaryNew is called when exiting the ExprMonetaryNew production.
+	ExitExprMonetaryNew(c *ExprMonetaryNewContext)
 
 	// ExitAllotmentPortionConst is called when exiting the AllotmentPortionConst production.
 	ExitAllotmentPortionConst(c *AllotmentPortionConstContext)

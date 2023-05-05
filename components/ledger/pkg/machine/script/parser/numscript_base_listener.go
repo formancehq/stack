@@ -63,12 +63,6 @@ func (s *BaseNumScriptListener) EnterLitPortion(ctx *LitPortionContext) {}
 // ExitLitPortion is called when production LitPortion is exited.
 func (s *BaseNumScriptListener) ExitLitPortion(ctx *LitPortionContext) {}
 
-// EnterLitMonetary is called when production LitMonetary is entered.
-func (s *BaseNumScriptListener) EnterLitMonetary(ctx *LitMonetaryContext) {}
-
-// ExitLitMonetary is called when production LitMonetary is exited.
-func (s *BaseNumScriptListener) ExitLitMonetary(ctx *LitMonetaryContext) {}
-
 // EnterVariable is called when production variable is entered.
 func (s *BaseNumScriptListener) EnterVariable(ctx *VariableContext) {}
 
@@ -92,6 +86,12 @@ func (s *BaseNumScriptListener) EnterExprVariable(ctx *ExprVariableContext) {}
 
 // ExitExprVariable is called when production ExprVariable is exited.
 func (s *BaseNumScriptListener) ExitExprVariable(ctx *ExprVariableContext) {}
+
+// EnterExprMonetaryNew is called when production ExprMonetaryNew is entered.
+func (s *BaseNumScriptListener) EnterExprMonetaryNew(ctx *ExprMonetaryNewContext) {}
+
+// ExitExprMonetaryNew is called when production ExprMonetaryNew is exited.
+func (s *BaseNumScriptListener) ExitExprMonetaryNew(ctx *ExprMonetaryNewContext) {}
 
 // EnterAllotmentPortionConst is called when production AllotmentPortionConst is entered.
 func (s *BaseNumScriptListener) EnterAllotmentPortionConst(ctx *AllotmentPortionConstContext) {}
