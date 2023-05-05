@@ -15,43 +15,45 @@ import (
 	"time"
 )
 
-// checks if the Region type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Region{}
+// checks if the PublicRegion type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PublicRegion{}
 
-// Region struct for Region
-type Region struct {
-	Id        string     `json:"id"`
-	BaseUrl   string     `json:"baseUrl"`
-	CreatedAt string     `json:"createdAt"`
-	Active    bool       `json:"active"`
-	LastPing  *time.Time `json:"lastPing,omitempty"`
-	Name      string     `json:"name"`
+// PublicRegion struct for PublicRegion
+type PublicRegion struct {
+	Id         string     `json:"id"`
+	BaseUrl    string     `json:"baseUrl"`
+	CreatedAt  string     `json:"createdAt"`
+	Active     bool       `json:"active"`
+	LastPing   *time.Time `json:"lastPing,omitempty"`
+	Name       string     `json:"name"`
+	Production bool       `json:"production"`
 }
 
-// NewRegion instantiates a new Region object
+// NewPublicRegion instantiates a new PublicRegion object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewRegion(id string, baseUrl string, createdAt string, active bool, name string) *Region {
-	this := Region{}
+func NewPublicRegion(id string, baseUrl string, createdAt string, active bool, name string, production bool) *PublicRegion {
+	this := PublicRegion{}
 	this.Id = id
 	this.BaseUrl = baseUrl
 	this.CreatedAt = createdAt
 	this.Active = active
 	this.Name = name
+	this.Production = production
 	return &this
 }
 
-// NewRegionWithDefaults instantiates a new Region object
+// NewPublicRegionWithDefaults instantiates a new PublicRegion object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewRegionWithDefaults() *Region {
-	this := Region{}
+func NewPublicRegionWithDefaults() *PublicRegion {
+	this := PublicRegion{}
 	return &this
 }
 
 // GetId returns the Id field value
-func (o *Region) GetId() string {
+func (o *PublicRegion) GetId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -62,7 +64,7 @@ func (o *Region) GetId() string {
 
 // GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *Region) GetIdOk() (*string, bool) {
+func (o *PublicRegion) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -70,12 +72,12 @@ func (o *Region) GetIdOk() (*string, bool) {
 }
 
 // SetId sets field value
-func (o *Region) SetId(v string) {
+func (o *PublicRegion) SetId(v string) {
 	o.Id = v
 }
 
 // GetBaseUrl returns the BaseUrl field value
-func (o *Region) GetBaseUrl() string {
+func (o *PublicRegion) GetBaseUrl() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -86,7 +88,7 @@ func (o *Region) GetBaseUrl() string {
 
 // GetBaseUrlOk returns a tuple with the BaseUrl field value
 // and a boolean to check if the value has been set.
-func (o *Region) GetBaseUrlOk() (*string, bool) {
+func (o *PublicRegion) GetBaseUrlOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -94,12 +96,12 @@ func (o *Region) GetBaseUrlOk() (*string, bool) {
 }
 
 // SetBaseUrl sets field value
-func (o *Region) SetBaseUrl(v string) {
+func (o *PublicRegion) SetBaseUrl(v string) {
 	o.BaseUrl = v
 }
 
 // GetCreatedAt returns the CreatedAt field value
-func (o *Region) GetCreatedAt() string {
+func (o *PublicRegion) GetCreatedAt() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -110,7 +112,7 @@ func (o *Region) GetCreatedAt() string {
 
 // GetCreatedAtOk returns a tuple with the CreatedAt field value
 // and a boolean to check if the value has been set.
-func (o *Region) GetCreatedAtOk() (*string, bool) {
+func (o *PublicRegion) GetCreatedAtOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -118,12 +120,12 @@ func (o *Region) GetCreatedAtOk() (*string, bool) {
 }
 
 // SetCreatedAt sets field value
-func (o *Region) SetCreatedAt(v string) {
+func (o *PublicRegion) SetCreatedAt(v string) {
 	o.CreatedAt = v
 }
 
 // GetActive returns the Active field value
-func (o *Region) GetActive() bool {
+func (o *PublicRegion) GetActive() bool {
 	if o == nil {
 		var ret bool
 		return ret
@@ -134,7 +136,7 @@ func (o *Region) GetActive() bool {
 
 // GetActiveOk returns a tuple with the Active field value
 // and a boolean to check if the value has been set.
-func (o *Region) GetActiveOk() (*bool, bool) {
+func (o *PublicRegion) GetActiveOk() (*bool, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -142,12 +144,12 @@ func (o *Region) GetActiveOk() (*bool, bool) {
 }
 
 // SetActive sets field value
-func (o *Region) SetActive(v bool) {
+func (o *PublicRegion) SetActive(v bool) {
 	o.Active = v
 }
 
 // GetLastPing returns the LastPing field value if set, zero value otherwise.
-func (o *Region) GetLastPing() time.Time {
+func (o *PublicRegion) GetLastPing() time.Time {
 	if o == nil || IsNil(o.LastPing) {
 		var ret time.Time
 		return ret
@@ -157,7 +159,7 @@ func (o *Region) GetLastPing() time.Time {
 
 // GetLastPingOk returns a tuple with the LastPing field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Region) GetLastPingOk() (*time.Time, bool) {
+func (o *PublicRegion) GetLastPingOk() (*time.Time, bool) {
 	if o == nil || IsNil(o.LastPing) {
 		return nil, false
 	}
@@ -165,7 +167,7 @@ func (o *Region) GetLastPingOk() (*time.Time, bool) {
 }
 
 // HasLastPing returns a boolean if a field has been set.
-func (o *Region) HasLastPing() bool {
+func (o *PublicRegion) HasLastPing() bool {
 	if o != nil && !IsNil(o.LastPing) {
 		return true
 	}
@@ -174,12 +176,12 @@ func (o *Region) HasLastPing() bool {
 }
 
 // SetLastPing gets a reference to the given time.Time and assigns it to the LastPing field.
-func (o *Region) SetLastPing(v time.Time) {
+func (o *PublicRegion) SetLastPing(v time.Time) {
 	o.LastPing = &v
 }
 
 // GetName returns the Name field value
-func (o *Region) GetName() string {
+func (o *PublicRegion) GetName() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -190,7 +192,7 @@ func (o *Region) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
-func (o *Region) GetNameOk() (*string, bool) {
+func (o *PublicRegion) GetNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -198,11 +200,35 @@ func (o *Region) GetNameOk() (*string, bool) {
 }
 
 // SetName sets field value
-func (o *Region) SetName(v string) {
+func (o *PublicRegion) SetName(v string) {
 	o.Name = v
 }
 
-func (o Region) MarshalJSON() ([]byte, error) {
+// GetProduction returns the Production field value
+func (o *PublicRegion) GetProduction() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.Production
+}
+
+// GetProductionOk returns a tuple with the Production field value
+// and a boolean to check if the value has been set.
+func (o *PublicRegion) GetProductionOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Production, true
+}
+
+// SetProduction sets field value
+func (o *PublicRegion) SetProduction(v bool) {
+	o.Production = v
+}
+
+func (o PublicRegion) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -210,7 +236,7 @@ func (o Region) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Region) ToMap() (map[string]interface{}, error) {
+func (o PublicRegion) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
 	toSerialize["baseUrl"] = o.BaseUrl
@@ -220,41 +246,42 @@ func (o Region) ToMap() (map[string]interface{}, error) {
 		toSerialize["lastPing"] = o.LastPing
 	}
 	toSerialize["name"] = o.Name
+	toSerialize["production"] = o.Production
 	return toSerialize, nil
 }
 
-type NullableRegion struct {
-	value *Region
+type NullablePublicRegion struct {
+	value *PublicRegion
 	isSet bool
 }
 
-func (v NullableRegion) Get() *Region {
+func (v NullablePublicRegion) Get() *PublicRegion {
 	return v.value
 }
 
-func (v *NullableRegion) Set(val *Region) {
+func (v *NullablePublicRegion) Set(val *PublicRegion) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableRegion) IsSet() bool {
+func (v NullablePublicRegion) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableRegion) Unset() {
+func (v *NullablePublicRegion) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableRegion(val *Region) *NullableRegion {
-	return &NullableRegion{value: val, isSet: true}
+func NewNullablePublicRegion(val *PublicRegion) *NullablePublicRegion {
+	return &NullablePublicRegion{value: val, isSet: true}
 }
 
-func (v NullableRegion) MarshalJSON() ([]byte, error) {
+func (v NullablePublicRegion) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableRegion) UnmarshalJSON(src []byte) error {
+func (v *NullablePublicRegion) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

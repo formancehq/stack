@@ -1,4 +1,4 @@
-# StackData
+# CreateStackRequest
 
 ## Properties
 
@@ -6,64 +6,85 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Name** | **string** | Stack name |
 **Metadata** | **map[string]string** |  |
+**RegionID** | **string** |  |
 
 ## Methods
 
-### NewStackData
+### NewCreateStackRequest
 
-`func NewStackData(name string, metadata map[string]string, ) *StackData`
+`func NewCreateStackRequest(name string, metadata map[string]string, regionID string, ) *CreateStackRequest`
 
-NewStackData instantiates a new StackData object
+NewCreateStackRequest instantiates a new CreateStackRequest object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewStackDataWithDefaults
+### NewCreateStackRequestWithDefaults
 
-`func NewStackDataWithDefaults() *StackData`
+`func NewCreateStackRequestWithDefaults() *CreateStackRequest`
 
-NewStackDataWithDefaults instantiates a new StackData object
+NewCreateStackRequestWithDefaults instantiates a new CreateStackRequest object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetName
 
-`func (o *StackData) GetName() string`
+`func (o *CreateStackRequest) GetName() string`
 
 GetName returns the Name field if non-nil, zero value otherwise.
 
 ### GetNameOk
 
-`func (o *StackData) GetNameOk() (*string, bool)`
+`func (o *CreateStackRequest) GetNameOk() (*string, bool)`
 
 GetNameOk returns a tuple with the Name field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetName
 
-`func (o *StackData) SetName(v string)`
+`func (o *CreateStackRequest) SetName(v string)`
 
 SetName sets Name field to given value.
 
 
 ### GetMetadata
 
-`func (o *StackData) GetMetadata() map[string]string`
+`func (o *CreateStackRequest) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *StackData) GetMetadataOk() (*map[string]string, bool)`
+`func (o *CreateStackRequest) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *StackData) SetMetadata(v map[string]string)`
+`func (o *CreateStackRequest) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
+
+
+### GetRegionID
+
+`func (o *CreateStackRequest) GetRegionID() string`
+
+GetRegionID returns the RegionID field if non-nil, zero value otherwise.
+
+### GetRegionIDOk
+
+`func (o *CreateStackRequest) GetRegionIDOk() (*string, bool)`
+
+GetRegionIDOk returns a tuple with the RegionID field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetRegionID
+
+`func (o *CreateStackRequest) SetRegionID(v string)`
+
+SetRegionID sets RegionID field to given value.
 
 
 

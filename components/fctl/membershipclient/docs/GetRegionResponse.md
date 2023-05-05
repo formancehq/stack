@@ -1,46 +1,46 @@
-# ListRegionsResponse
+# GetRegionResponse
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | [**[]AnyRegion**](AnyRegion.md) |  |
+**Data** | [**AnyRegion**](AnyRegion.md) |  |
 
 ## Methods
 
-### NewListRegionsResponse
+### NewGetRegionResponse
 
-`func NewListRegionsResponse(data []AnyRegion, ) *ListRegionsResponse`
+`func NewGetRegionResponse(data AnyRegion, ) *GetRegionResponse`
 
-NewListRegionsResponse instantiates a new ListRegionsResponse object
+NewGetRegionResponse instantiates a new GetRegionResponse object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewListRegionsResponseWithDefaults
+### NewGetRegionResponseWithDefaults
 
-`func NewListRegionsResponseWithDefaults() *ListRegionsResponse`
+`func NewGetRegionResponseWithDefaults() *GetRegionResponse`
 
-NewListRegionsResponseWithDefaults instantiates a new ListRegionsResponse object
+NewGetRegionResponseWithDefaults instantiates a new GetRegionResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *ListRegionsResponse) GetData() []AnyRegion`
+`func (o *GetRegionResponse) GetData() AnyRegion`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *ListRegionsResponse) GetDataOk() (*[]AnyRegion, bool)`
+`func (o *GetRegionResponse) GetDataOk() (*AnyRegion, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *ListRegionsResponse) SetData(v []AnyRegion)`
+`func (o *GetRegionResponse) SetData(v AnyRegion)`
 
 SetData sets Data field to given value.
 

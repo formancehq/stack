@@ -1,4 +1,4 @@
-# Region
+# PublicRegion
 
 ## Properties
 
@@ -10,149 +10,170 @@ Name | Type | Description | Notes
 **Active** | **bool** |  |
 **LastPing** | Pointer to **time.Time** |  | [optional]
 **Name** | **string** |  |
+**Production** | **bool** |  |
 
 ## Methods
 
-### NewRegion
+### NewPublicRegion
 
-`func NewRegion(id string, baseUrl string, createdAt string, active bool, name string, ) *Region`
+`func NewPublicRegion(id string, baseUrl string, createdAt string, active bool, name string, production bool, ) *PublicRegion`
 
-NewRegion instantiates a new Region object
+NewPublicRegion instantiates a new PublicRegion object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewRegionWithDefaults
+### NewPublicRegionWithDefaults
 
-`func NewRegionWithDefaults() *Region`
+`func NewPublicRegionWithDefaults() *PublicRegion`
 
-NewRegionWithDefaults instantiates a new Region object
+NewPublicRegionWithDefaults instantiates a new PublicRegion object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetId
 
-`func (o *Region) GetId() string`
+`func (o *PublicRegion) GetId() string`
 
 GetId returns the Id field if non-nil, zero value otherwise.
 
 ### GetIdOk
 
-`func (o *Region) GetIdOk() (*string, bool)`
+`func (o *PublicRegion) GetIdOk() (*string, bool)`
 
 GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetId
 
-`func (o *Region) SetId(v string)`
+`func (o *PublicRegion) SetId(v string)`
 
 SetId sets Id field to given value.
 
 
 ### GetBaseUrl
 
-`func (o *Region) GetBaseUrl() string`
+`func (o *PublicRegion) GetBaseUrl() string`
 
 GetBaseUrl returns the BaseUrl field if non-nil, zero value otherwise.
 
 ### GetBaseUrlOk
 
-`func (o *Region) GetBaseUrlOk() (*string, bool)`
+`func (o *PublicRegion) GetBaseUrlOk() (*string, bool)`
 
 GetBaseUrlOk returns a tuple with the BaseUrl field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetBaseUrl
 
-`func (o *Region) SetBaseUrl(v string)`
+`func (o *PublicRegion) SetBaseUrl(v string)`
 
 SetBaseUrl sets BaseUrl field to given value.
 
 
 ### GetCreatedAt
 
-`func (o *Region) GetCreatedAt() string`
+`func (o *PublicRegion) GetCreatedAt() string`
 
 GetCreatedAt returns the CreatedAt field if non-nil, zero value otherwise.
 
 ### GetCreatedAtOk
 
-`func (o *Region) GetCreatedAtOk() (*string, bool)`
+`func (o *PublicRegion) GetCreatedAtOk() (*string, bool)`
 
 GetCreatedAtOk returns a tuple with the CreatedAt field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetCreatedAt
 
-`func (o *Region) SetCreatedAt(v string)`
+`func (o *PublicRegion) SetCreatedAt(v string)`
 
 SetCreatedAt sets CreatedAt field to given value.
 
 
 ### GetActive
 
-`func (o *Region) GetActive() bool`
+`func (o *PublicRegion) GetActive() bool`
 
 GetActive returns the Active field if non-nil, zero value otherwise.
 
 ### GetActiveOk
 
-`func (o *Region) GetActiveOk() (*bool, bool)`
+`func (o *PublicRegion) GetActiveOk() (*bool, bool)`
 
 GetActiveOk returns a tuple with the Active field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetActive
 
-`func (o *Region) SetActive(v bool)`
+`func (o *PublicRegion) SetActive(v bool)`
 
 SetActive sets Active field to given value.
 
 
 ### GetLastPing
 
-`func (o *Region) GetLastPing() time.Time`
+`func (o *PublicRegion) GetLastPing() time.Time`
 
 GetLastPing returns the LastPing field if non-nil, zero value otherwise.
 
 ### GetLastPingOk
 
-`func (o *Region) GetLastPingOk() (*time.Time, bool)`
+`func (o *PublicRegion) GetLastPingOk() (*time.Time, bool)`
 
 GetLastPingOk returns a tuple with the LastPing field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetLastPing
 
-`func (o *Region) SetLastPing(v time.Time)`
+`func (o *PublicRegion) SetLastPing(v time.Time)`
 
 SetLastPing sets LastPing field to given value.
 
 ### HasLastPing
 
-`func (o *Region) HasLastPing() bool`
+`func (o *PublicRegion) HasLastPing() bool`
 
 HasLastPing returns a boolean if a field has been set.
 
 ### GetName
 
-`func (o *Region) GetName() string`
+`func (o *PublicRegion) GetName() string`
 
 GetName returns the Name field if non-nil, zero value otherwise.
 
 ### GetNameOk
 
-`func (o *Region) GetNameOk() (*string, bool)`
+`func (o *PublicRegion) GetNameOk() (*string, bool)`
 
 GetNameOk returns a tuple with the Name field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetName
 
-`func (o *Region) SetName(v string)`
+`func (o *PublicRegion) SetName(v string)`
 
 SetName sets Name field to given value.
+
+
+### GetProduction
+
+`func (o *PublicRegion) GetProduction() bool`
+
+GetProduction returns the Production field if non-nil, zero value otherwise.
+
+### GetProductionOk
+
+`func (o *PublicRegion) GetProductionOk() (*bool, bool)`
+
+GetProductionOk returns a tuple with the Production field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetProduction
+
+`func (o *PublicRegion) SetProduction(v bool)`
+
+SetProduction sets Production field to given value.
 
 
 

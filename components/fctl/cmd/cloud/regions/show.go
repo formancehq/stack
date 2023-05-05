@@ -1,10 +1,8 @@
 package regions
 
 import (
-	"errors"
-	"fmt"
+	"time"
 
-	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/pterm/pterm"
 	"github.com/spf13/cobra"
@@ -26,40 +24,28 @@ func NewShowCommand() *cobra.Command {
 				return err
 			}
 
-			regionsResponse, _, err := apiClient.DefaultApi.ListRegions(cmd.Context()).Execute()
+			organizationID, err := fctl.ResolveOrganizationID(cmd, cfg)
 			if err != nil {
 				return err
 			}
 
-			//TODO: Add GET /regions/<id> on membership
-
-			var region *membershipclient.Region
-			for _, r := range regionsResponse.Data {
-				if r.Id == args[0] {
-					region = &r
-				}
-			}
-			if region == nil {
-				return errors.New("region not found")
+			response, _, err := apiClient.DefaultApi.GetRegion(cmd.Context(), organizationID, args[0]).Execute()
+			if err != nil {
+				return err
 			}
 
 			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Information")
 			tableData := pterm.TableData{}
-			tableData = append(tableData, []string{pterm.LightCyan("ID"), region.Id})
-			tableData = append(tableData, []string{pterm.LightCyan("Base URL"), region.BaseUrl})
-
-			if err := pterm.DefaultTable.
-				WithWriter(cmd.OutOrStdout()).
-				WithData(tableData).
-				Render(); err != nil {
-				return err
+			tableData = append(tableData, []string{pterm.LightCyan("ID"), response.Data.Id})
+			tableData = append(tableData, []string{pterm.LightCyan("Name"), response.Data.Name})
+			tableData = append(tableData, []string{pterm.LightCyan("Base URL"), response.Data.BaseUrl})
+			tableData = append(tableData, []string{pterm.LightCyan("Active: "), fctl.BoolToString(response.Data.Active)})
+			tableData = append(tableData, []string{pterm.LightCyan("Public: "), fctl.BoolToString(response.Data.Public)})
+			if response.Data.Creator != nil {
+				tableData = append(tableData, []string{pterm.LightCyan("Creator"), response.Data.Creator.Email})
 			}
-
-			fmt.Fprintln(cmd.OutOrStdout())
-			fctl.Section.WithWriter(cmd.OutOrStdout()).Println("Tags")
-			tableData = pterm.TableData{}
-			for k, v := range region.Tags {
-				tableData = append(tableData, []string{pterm.LightCyan(k), v})
+			if response.Data.LastPing != nil {
+				tableData = append(tableData, []string{pterm.LightCyan("Base URL"), response.Data.LastPing.Format(time.RFC3339)})
 			}
 
 			return pterm.DefaultTable.

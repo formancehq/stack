@@ -336,7 +336,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateInvitationResponse'
-  /regions:
+  /organizations/{organizationId}/regions:
+    parameters:
+    - name: organizationId
+      in: path
+      schema:
+        type: string
+      required: true
+
     get:
       summary: List regions
       operationId: listRegions
@@ -347,7 +354,49 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ListRegionsResponse'
-
+    post:
+      summary: Create a private region
+      operationId: createPrivateRegion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePrivateRegionRequest'
+      responses:
+        200:
+          description: Created region
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedPrivateRegionResponse'
+  /organizations/{organizationId}/regions/{regionId}:
+    parameters:
+    - name: organizationId
+      in: path
+      schema:
+        type: string
+      required: true
+    - name: regionId
+      in: path
+      schema:
+        type: string
+      required: true
+    get:
+      summary: Get region
+      operationId: getRegion
+      responses:
+        200:
+          description: Get a specific region
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRegionResponse'
+    delete:
+      summary: Delete region
+      operationId: deleteRegion
+      responses:
+        204:
+          description: Delete a specific region
 security:
 - oauth2: []
 
@@ -363,6 +412,67 @@ components:
             openid: Enable OIDC
             email: Ask email access
   schemas:
+    CreatePrivateRegionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+      - name
+    CreatedPrivateRegionResponse:
+      properties:
+        data:
+          $ref: '#/components/schemas/PrivateRegion'
+      required:
+      - data
+    PrivateRegion:
+      allOf:
+      - $ref: '#/components/schemas/Region'
+      - type: object
+        properties:
+          clientID:
+            type: string
+          organizationID:
+            type: string
+          creatorID:
+            type: string
+          secret:
+            type: object
+            properties:
+              lastDigits:
+                type: string
+              clear:
+                type: string
+        required:
+        - clientID
+        - organizationID
+        - creatorID
+    PublicRegion:
+      allOf:
+      - $ref: '#/components/schemas/Region'
+      - type: object
+        properties:
+          production:
+            type: boolean
+        required:
+        - production
+    AnyRegion:
+      allOf:
+      - $ref: '#/components/schemas/Region'
+      - type: object
+        properties:
+          clientID:
+            type: string
+          organizationID:
+            type: string
+          creator:
+            $ref: '#/components/schemas/User'
+          production:
+            type: boolean
+          public:
+            type: boolean
+        required:
+        - public
     OrganizationData:
       type: object
       required:
@@ -389,19 +499,11 @@ components:
       type: object
       required:
       - name
-      - tags
-      - production
       - metadata
       properties:
         name:
           type: string
           description: Stack name
-        tags:
-          type: object
-          additionalProperties:
-            type: string
-        production:
-          type: bool
         metadata:
           type: object
           additionalProperties:
@@ -430,6 +532,7 @@ components:
         - id
         - organizationId
         - uri
+        - regionID
         properties:
           id:
             type: string
@@ -440,8 +543,9 @@ components:
           uri:
             type: string
             description: Base stack uri
-          boundRegion:
-            $ref: '#/components/schemas/Region'
+          regionID:
+            type: string
+            description: The region where the stack is installed
     UserData:
       type: object
       properties:
@@ -506,7 +610,14 @@ components:
         data:
           $ref: '#/components/schemas/UserArray'
     CreateStackRequest:
-      $ref: '#/components/schemas/StackData'
+      allOf:
+      - $ref: '#/components/schemas/StackData'
+      - type: object
+        properties:
+          regionID:
+            type: string
+        required:
+        - regionID
     CreateStackResponse:
       type: object
       properties:
@@ -534,12 +645,12 @@ components:
     Error:
       type: object
       properties:
-        errorCode:
+        error_code:
           type: string
-        errorMessage:
+        error_message:
           type: string
       required:
-      - errorCode
+      - error_code
     Invitation:
       type: object
       properties:
@@ -572,15 +683,23 @@ components:
       required:
       - id
       - baseUrl
-      - tags
+      - active
+      - createdAt
+      - name
       properties:
         id:
           type: string
-        tags:
-          type: object
-          additionalProperties:
-            type: string
         baseUrl:
+          type: string
+        createdAt:
+          type: string
+          format: datetime
+        active:
+          type: boolean
+        lastPing:
+          type: string
+          format: date-time
+        name:
           type: string
     ListOrganizationExpandedResponse:
       type: object
@@ -604,7 +723,16 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/Region'
+            $ref: '#/components/schemas/AnyRegion'
+      required:
+      - data
+    GetRegionResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/AnyRegion'
+      required:
+      - data
     ServerInfo:
       type: object
       required:

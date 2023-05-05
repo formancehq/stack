@@ -19,15 +19,16 @@ var _ MappedNullable = &ListRegionsResponse{}
 
 // ListRegionsResponse struct for ListRegionsResponse
 type ListRegionsResponse struct {
-	Data []Region `json:"data,omitempty"`
+	Data []AnyRegion `json:"data"`
 }
 
 // NewListRegionsResponse instantiates a new ListRegionsResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListRegionsResponse() *ListRegionsResponse {
+func NewListRegionsResponse(data []AnyRegion) *ListRegionsResponse {
 	this := ListRegionsResponse{}
+	this.Data = data
 	return &this
 }
 
@@ -39,35 +40,27 @@ func NewListRegionsResponseWithDefaults() *ListRegionsResponse {
 	return &this
 }
 
-// GetData returns the Data field value if set, zero value otherwise.
-func (o *ListRegionsResponse) GetData() []Region {
-	if o == nil || IsNil(o.Data) {
-		var ret []Region
+// GetData returns the Data field value
+func (o *ListRegionsResponse) GetData() []AnyRegion {
+	if o == nil {
+		var ret []AnyRegion
 		return ret
 	}
+
 	return o.Data
 }
 
-// GetDataOk returns a tuple with the Data field value if set, nil otherwise
+// GetDataOk returns a tuple with the Data field value
 // and a boolean to check if the value has been set.
-func (o *ListRegionsResponse) GetDataOk() ([]Region, bool) {
-	if o == nil || IsNil(o.Data) {
+func (o *ListRegionsResponse) GetDataOk() ([]AnyRegion, bool) {
+	if o == nil {
 		return nil, false
 	}
 	return o.Data, true
 }
 
-// HasData returns a boolean if a field has been set.
-func (o *ListRegionsResponse) HasData() bool {
-	if o != nil && !IsNil(o.Data) {
-		return true
-	}
-
-	return false
-}
-
-// SetData gets a reference to the given []Region and assigns it to the Data field.
-func (o *ListRegionsResponse) SetData(v []Region) {
+// SetData sets field value
+func (o *ListRegionsResponse) SetData(v []AnyRegion) {
 	o.Data = v
 }
 
@@ -81,9 +74,7 @@ func (o ListRegionsResponse) MarshalJSON() ([]byte, error) {
 
 func (o ListRegionsResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Data) {
-		toSerialize["data"] = o.Data
-	}
+	toSerialize["data"] = o.Data
 	return toSerialize, nil
 }
 

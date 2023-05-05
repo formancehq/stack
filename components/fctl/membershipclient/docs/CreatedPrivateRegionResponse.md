@@ -1,46 +1,46 @@
-# ListRegionsResponse
+# CreatedPrivateRegionResponse
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | [**[]AnyRegion**](AnyRegion.md) |  |
+**Data** | [**PrivateRegion**](PrivateRegion.md) |  |
 
 ## Methods
 
-### NewListRegionsResponse
+### NewCreatedPrivateRegionResponse
 
-`func NewListRegionsResponse(data []AnyRegion, ) *ListRegionsResponse`
+`func NewCreatedPrivateRegionResponse(data PrivateRegion, ) *CreatedPrivateRegionResponse`
 
-NewListRegionsResponse instantiates a new ListRegionsResponse object
+NewCreatedPrivateRegionResponse instantiates a new CreatedPrivateRegionResponse object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewListRegionsResponseWithDefaults
+### NewCreatedPrivateRegionResponseWithDefaults
 
-`func NewListRegionsResponseWithDefaults() *ListRegionsResponse`
+`func NewCreatedPrivateRegionResponseWithDefaults() *CreatedPrivateRegionResponse`
 
-NewListRegionsResponseWithDefaults instantiates a new ListRegionsResponse object
+NewCreatedPrivateRegionResponseWithDefaults instantiates a new CreatedPrivateRegionResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *ListRegionsResponse) GetData() []AnyRegion`
+`func (o *CreatedPrivateRegionResponse) GetData() PrivateRegion`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *ListRegionsResponse) GetDataOk() (*[]AnyRegion, bool)`
+`func (o *CreatedPrivateRegionResponse) GetDataOk() (*PrivateRegion, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *ListRegionsResponse) SetData(v []AnyRegion)`
+`func (o *CreatedPrivateRegionResponse) SetData(v PrivateRegion)`
 
 SetData sets Data field to given value.
 

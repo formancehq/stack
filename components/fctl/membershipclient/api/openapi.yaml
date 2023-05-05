@@ -378,9 +378,17 @@ paths:
                 $ref: '#/components/schemas/CreateInvitationResponse'
           description: Invitation created
       summary: Create invitation
-  /regions:
+  /organizations/{organizationId}/regions:
     get:
       operationId: listRegions
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
       responses:
         "200":
           content:
@@ -389,8 +397,107 @@ paths:
                 $ref: '#/components/schemas/ListRegionsResponse'
           description: List of the regions
       summary: List regions
+    post:
+      operationId: createPrivateRegion
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePrivateRegionRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedPrivateRegionResponse'
+          description: Created region
+      summary: Create a private region
+  /organizations/{organizationId}/regions/{regionId}:
+    delete:
+      operationId: deleteRegion
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: regionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: Delete a specific region
+      summary: Delete region
+    get:
+      operationId: getRegion
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: regionId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetRegionResponse'
+          description: Get a specific region
+      summary: Get region
 components:
   schemas:
+    CreatePrivateRegionRequest:
+      example:
+        name: name
+      properties:
+        name:
+          type: string
+      required:
+      - name
+      type: object
+    CreatedPrivateRegionResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/PrivateRegion'
+      required:
+      - data
+    PrivateRegion:
+      allOf:
+      - $ref: '#/components/schemas/Region'
+      - $ref: '#/components/schemas/PrivateRegion_allOf'
+    PublicRegion:
+      allOf:
+      - $ref: '#/components/schemas/Region'
+      - $ref: '#/components/schemas/PublicRegion_allOf'
+    AnyRegion:
+      allOf:
+      - $ref: '#/components/schemas/Region'
+      - $ref: '#/components/schemas/AnyRegion_allOf'
     OrganizationData:
       example:
         name: name
@@ -406,23 +513,10 @@ components:
       - $ref: '#/components/schemas/OrganizationData'
       - $ref: '#/components/schemas/Organization_allOf'
     StackData:
-      example:
-        metadata:
-          key: metadata
-        production: ""
-        name: name
-        tags:
-          key: tags
       properties:
         name:
           description: Stack name
           type: string
-        tags:
-          additionalProperties:
-            type: string
-          type: object
-        production:
-          type: bool
         metadata:
           additionalProperties:
             type: string
@@ -430,8 +524,6 @@ components:
       required:
       - metadata
       - name
-      - production
-      - tags
       type: object
     BillingPortal:
       example:
@@ -541,7 +633,9 @@ components:
           type: array
       type: object
     CreateStackRequest:
-      $ref: '#/components/schemas/StackData'
+      allOf:
+      - $ref: '#/components/schemas/StackData'
+      - $ref: '#/components/schemas/CreateStackRequest_allOf'
     CreateStackResponse:
       example:
         data: null
@@ -636,24 +730,27 @@ components:
       - userEmail
       type: object
     Region:
-      example:
-        baseUrl: baseUrl
-        id: id
-        tags:
-          key: tags
       properties:
         id:
           type: string
-        tags:
-          additionalProperties:
-            type: string
-          type: object
         baseUrl:
           type: string
+        createdAt:
+          format: datetime
+          type: string
+        active:
+          type: boolean
+        lastPing:
+          format: date-time
+          type: string
+        name:
+          type: string
       required:
+      - active
       - baseUrl
+      - createdAt
       - id
-      - tags
+      - name
       type: object
     ListOrganizationExpandedResponse:
       example:
@@ -669,19 +766,24 @@ components:
     ListRegionsResponse:
       example:
         data:
-        - baseUrl: baseUrl
-          id: id
-          tags:
-            key: tags
-        - baseUrl: baseUrl
-          id: id
-          tags:
-            key: tags
+        - null
+        - null
       properties:
         data:
           items:
-            $ref: '#/components/schemas/Region'
+            $ref: '#/components/schemas/AnyRegion'
           type: array
+      required:
+      - data
+      type: object
+    GetRegionResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/AnyRegion'
+      required:
+      - data
       type: object
     ServerInfo:
       example:
@@ -692,6 +794,54 @@ components:
       required:
       - version
       type: object
+    PrivateRegion_allOf_secret:
+      properties:
+        lastDigits:
+          type: string
+        clear:
+          type: string
+      type: object
+      example: null
+    PrivateRegion_allOf:
+      properties:
+        clientID:
+          type: string
+        organizationID:
+          type: string
+        creatorID:
+          type: string
+        secret:
+          $ref: '#/components/schemas/PrivateRegion_allOf_secret'
+      required:
+      - clientID
+      - creatorID
+      - organizationID
+      type: object
+      example: null
+    PublicRegion_allOf:
+      properties:
+        production:
+          type: boolean
+      required:
+      - production
+      type: object
+      example: null
+    AnyRegion_allOf:
+      properties:
+        clientID:
+          type: string
+        organizationID:
+          type: string
+        creator:
+          $ref: '#/components/schemas/User'
+        production:
+          type: boolean
+        public:
+          type: boolean
+      required:
+      - public
+      type: object
+      example: null
     Organization_allOf:
       properties:
         id:
@@ -716,11 +866,13 @@ components:
         uri:
           description: Base stack uri
           type: string
-        boundRegion:
-          $ref: '#/components/schemas/Region'
+        regionID:
+          description: The region where the stack is installed
+          type: string
       required:
       - id
       - organizationId
+      - regionID
       - uri
       type: object
       example: null
@@ -731,6 +883,14 @@ components:
           type: string
       required:
       - id
+      type: object
+      example: null
+    CreateStackRequest_allOf:
+      properties:
+        regionID:
+          type: string
+      required:
+      - regionID
       type: object
       example: null
     ListOrganizationExpandedResponse_data_inner_allOf:

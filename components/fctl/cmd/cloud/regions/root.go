@@ -6,12 +6,14 @@ import (
 )
 
 func NewCommand() *cobra.Command {
-	return fctl.NewCommand("regions",
+	return fctl.NewMembershipCommand("regions",
 		fctl.WithAliases("region", "reg"),
 		fctl.WithShortDescription("Regions management"),
 		fctl.WithChildCommands(
 			NewListCommand(),
 			NewShowCommand(),
+			NewCreateCommand(),
+			NewDeleteCommand(),
 		),
 	)
 }
