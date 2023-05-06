@@ -16,35 +16,6 @@ type parseVisitor struct {
 	vars        map[string]core.Type
 }
 
-// // Allocates constants if it hasn't already been,
-// // and returns its resource address.
-// func (p *parseVisitor) findConstant(constant program.Constant) (*core.Address, bool) {
-// 	for i := 0; i < len(p.resources); i++ {
-// 		if c, ok := p.resources[i].(program.Constant); ok {
-// 			if core.ValueEquals(c.Inner, constant.Inner) {
-// 				addr := core.Address(i)
-// 				return &addr, true
-// 			}
-// 		}
-// 	}
-// 	return nil, false
-// }
-
-// func (p *parseVisitor) AllocateResource(res program.Resource) (*core.Address, error) {
-// 	if c, ok := res.(program.Constant); ok {
-// 		idx, ok := p.findConstant(c)
-// 		if ok {
-// 			return idx, nil
-// 		}
-// 	}
-// 	if len(p.resources) >= 65536 {
-// 		return nil, errors.New("number of unique constants exceeded 65536")
-// 	}
-// 	p.resources = append(p.resources, res)
-// 	addr := core.NewAddress(uint16(len(p.resources) - 1))
-// 	return &addr, nil
-// }
-
 func (p *parseVisitor) isWorld(expr parser.IExpressionContext) bool {
 	if lit, ok := expr.(*parser.ExprLiteralContext); ok {
 		_, value, _ := p.VisitLit(lit.GetLit())
@@ -53,19 +24,6 @@ func (p *parseVisitor) isWorld(expr parser.IExpressionContext) bool {
 		return false
 	}
 }
-
-// func (p *parseVisitor) VisitVariable(c parser.IVariableContext, push bool) (core.Type, *core.Address, *CompileError) {
-// 	name := c.GetText()[1:] // strip '$' prefix
-// 	if idx, ok := p.varIdx[name]; ok {
-// 		res := p.resources[idx]
-// 		if push {
-// 			p.PushAddress(idx)
-// 		}
-// 		return res.GetType(), &idx, nil
-// 	} else {
-// 		return 0, nil, LogicError(c, errors.New("variable not declared"))
-// 	}
-// }
 
 func (p *parseVisitor) VisitExprTy(c parser.IExpressionContext, ty core.Type) (program.Expr, *CompileError) {
 	exprTy, expr, err := p.VisitExpr(c)
@@ -143,9 +101,7 @@ func (p *parseVisitor) VisitLit(c parser.ILiteralContext) (core.Type, core.Value
 		}
 		return core.TypeNumber, number, nil
 	case *parser.LitStringContext:
-		str := program.Constant{
-			Inner: core.String(strings.Trim(c.GetText(), `"`)),
-		}
+		str := core.String(strings.Trim(c.GetText(), `"`))
 		return core.TypeString, str, nil
 	case *parser.LitPortionContext:
 		portion, err := core.ParsePortionSpecific(c.GetText())
