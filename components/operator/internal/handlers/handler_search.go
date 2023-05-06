@@ -34,7 +34,7 @@ func init() {
 									resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Host,
 									resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Port,
 									resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.PathPrefix)),
-								modules.Env("OPEN_SEARCH_SCHEME", resolveContext.Stack.Spec.Scheme),
+								modules.Env("OPEN_SEARCH_SCHEME", resolveContext.Configuration.Spec.Services.Search.ElasticSearchConfig.Scheme),
 								modules.Env("ES_INDICES", resolveContext.Stack.Name),
 								modules.Env("MAPPING_INIT_DISABLED", "true"),
 							)
