@@ -26,7 +26,7 @@ func (p *parseVisitor) VisitAllotment(c antlr.ParserRuleContext, portions []pars
 			rat := *portion.Specific
 			total.Add(&rat, total)
 			res_portions = append(res_portions, program.AllotmentPortion{
-				Expr:      &program.ExprLiteral{portion},
+				Expr:      program.ExprLiteral{Value: *portion},
 				Remaining: false,
 			})
 		case *parser.AllotmentPortionVarContext:

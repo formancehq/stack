@@ -45,19 +45,14 @@ type parseVisitor struct {
 // 	return &addr, nil
 // }
 
-// func (p *parseVisitor) isWorld(addr core.Address) bool {
-// 	idx := int(addr)
-// 	if idx < len(p.resources) {
-// 		if c, ok := p.resources[idx].(program.Constant); ok {
-// 			if acc, ok := c.Inner.(core.AccountAddress); ok {
-// 				if string(acc) == "world" {
-// 					return true
-// 				}
-// 			}
-// 		}
-// 	}
-// 	return false
-// }
+func (p *parseVisitor) isWorld(expr parser.IExpressionContext) bool {
+	if lit, ok := expr.(*parser.ExprLiteralContext); ok {
+		_, value, _ := p.VisitLit(lit.GetLit())
+		return core.ValueEquals(value, core.AccountAddress("world"))
+	} else {
+		return false
+	}
+}
 
 // func (p *parseVisitor) VisitVariable(c parser.IVariableContext, push bool) (core.Type, *core.Address, *CompileError) {
 // 	name := c.GetText()[1:] // strip '$' prefix
@@ -97,7 +92,7 @@ func (p *parseVisitor) VisitExpr(c parser.IExpressionContext) (core.Type, progra
 		if ty != core.TypeNumber {
 			return 0, nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
 		}
-		return core.TypeNumber, &program.ExprInfix{
+		return core.TypeNumber, program.ExprInfix{
 			Op:  0,
 			Lhs: lhs,
 			Rhs: rhs,
@@ -107,7 +102,7 @@ func (p *parseVisitor) VisitExpr(c parser.IExpressionContext) (core.Type, progra
 		if err != nil {
 			return 0, nil, err
 		}
-		return ty, program.ExprLiteral{value}, nil
+		return ty, program.ExprLiteral{Value: value}, nil
 	case *parser.ExprVariableContext:
 		name := c.GetVar_().GetText()[1:] // strip '$' prefix
 		if ty, ok := p.vars[name]; ok {
@@ -157,55 +152,57 @@ func (p *parseVisitor) VisitLit(c parser.ILiteralContext) (core.Type, core.Value
 		if err != nil {
 			return 0, nil, LogicError(c, err)
 		}
-		return core.TypePortion, portion, nil
+		return core.TypePortion, *portion, nil
 	default:
 		return 0, nil, InternalError(c)
 	}
 }
 
-func (p *parseVisitor) VisitSend(c *parser.SendContext) (program.Statement, *CompileError) {
-	// var (
-	// 	accounts map[core.Address]struct{}
-	// 	addr     *core.Address
-	// 	compErr  *CompileError
-	// 	typ      core.Type
-	// )
-
-	if monAll := c.GetMonAll(); monAll != nil {
-		source, has_fallback, err := p.VisitSource(c.GetSrc())
-		if err != nil {
-			return nil, err
-		}
-		if has_fallback {
-			return nil, LogicError(c, errors.New("cannot take all balance of an unlimited source"))
-		}
-		return program.StatementAllocate{
-			Funding:     nil,
-			Destination: nil,
-		}, nil
-	} else if mon := c.GetMon(); mon != nil {
-		mon, err := p.VisitExprTy(mon, core.TypeMonetary)
-		if err != nil {
-			return nil, err
-		}
-		value_aware_source, err := p.VisitValueAwareSource(c.GetSrc())
-		if err != nil {
-			return nil, err
-		}
-		destination, err := p.VisitDestination(c.GetSrc())
-		if err != nil {
-			return nil, err
-		}
-		return program.StatementAllocate{
-			Funding: program.ExprTake{
-				Amount: mon,
-				Source: value_aware_source,
-			},
-			Destination: destination,
-		}, nil
+func (p *parseVisitor) VisitSend(c *parser.SendContext) (*program.StatementAllocate, *CompileError) {
+	mon, err := p.VisitExprTy(c.GetMon(), core.TypeMonetary)
+	if err != nil {
+		return nil, err
 	}
+	value_aware_source, err := p.VisitValueAwareSource(c.GetSrc())
+	if err != nil {
+		return nil, err
+	}
+	destination, err := p.VisitDestination(c.GetDest())
+	if err != nil {
+		return nil, err
+	}
+	return &program.StatementAllocate{
+		Funding: program.ExprTake{
+			Amount: mon,
+			Source: value_aware_source,
+		},
+		Destination: destination,
+	}, nil
+}
 
-	return nil, InternalError(c)
+func (p *parseVisitor) VisitSendAll(c *parser.SendAllContext) (*program.StatementAllocate, *CompileError) {
+	source, has_fallback, err := p.VisitSource(c.GetSrc())
+	if err != nil {
+		return nil, err
+	}
+	asset, err := p.VisitExprTy(c.GetMonAll().GetAsset(), core.TypeAsset)
+	if err != nil {
+		return nil, err
+	}
+	if has_fallback {
+		return nil, LogicError(c, errors.New("cannot take all balance of an unlimited source"))
+	}
+	destination, err := p.VisitDestination(c.GetDest())
+	if err != nil {
+		return nil, err
+	}
+	return &program.StatementAllocate{
+		Funding: program.ExprTakeAll{
+			Asset:  asset,
+			Source: source,
+		},
+		Destination: destination,
+	}, nil
 }
 
 func (p *parseVisitor) VisitSetTxMeta(ctx *parser.SetTxMetaContext) (*program.StatementSetTxMeta, *CompileError) {
@@ -243,7 +240,7 @@ func (p *parseVisitor) VisitPrint(ctx *parser.PrintContext) (program.Statement, 
 	if err != nil {
 		return nil, err
 	}
-	return program.StatementPrint{expr}, nil
+	return program.StatementPrint{Expr: expr}, nil
 }
 
 func (p *parseVisitor) VisitVars(c *parser.VarListDeclContext) ([]program.VarDecl, *CompileError) {

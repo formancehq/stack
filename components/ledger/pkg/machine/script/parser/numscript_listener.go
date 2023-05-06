@@ -122,6 +122,9 @@ type NumScriptListener interface {
 	// EnterSend is called when entering the Send production.
 	EnterSend(c *SendContext)
 
+	// EnterSendAll is called when entering the SendAll production.
+	EnterSendAll(c *SendAllContext)
+
 	// EnterType_ is called when entering the type_ production.
 	EnterType_(c *Type_Context)
 
@@ -253,6 +256,9 @@ type NumScriptListener interface {
 
 	// ExitSend is called when exiting the Send production.
 	ExitSend(c *SendContext)
+
+	// ExitSendAll is called when exiting the SendAll production.
+	ExitSendAll(c *SendAllContext)
 
 	// ExitType_ is called when exiting the type_ production.
 	ExitType_(c *Type_Context)

@@ -13,7 +13,9 @@ type Expr interface {
 	isExpr()
 }
 
-type ExprLiteral struct{ core.Value }
+type ExprLiteral struct {
+	Value core.Value
+}
 
 func (e ExprLiteral) isExpr() {}
 
@@ -116,24 +118,27 @@ type Destination interface {
 	isDestination()
 }
 
-type DestinationAccount struct{ Expr }
+type DestinationAccount struct{ Expr Expr }
 
 func (d DestinationAccount) isDestination() {}
 
+type DestinationInOrderPart struct {
+	Max Expr
+	Kod KeptOrDestination
+}
+
 type DestinationInOrder struct {
-	Parts []struct {
-		Max Expr
-		Kod KeptOrDestination
-	}
+	Parts     []DestinationInOrderPart
 	Remaining KeptOrDestination
 }
 
 func (d DestinationInOrder) isDestination() {}
 
-type DestinationAllotment []struct {
+type DestinationAllotmentPart struct {
 	Portion AllotmentPortion
 	Kod     KeptOrDestination
 }
+type DestinationAllotment []DestinationAllotmentPart
 
 func (d DestinationAllotment) isDestination() {}
 
@@ -145,7 +150,7 @@ type StatementFail struct{}
 
 func (s StatementFail) isStatement() {}
 
-type StatementPrint struct{ Expr }
+type StatementPrint struct{ Expr Expr }
 
 func (s StatementPrint) isStatement() {}
 

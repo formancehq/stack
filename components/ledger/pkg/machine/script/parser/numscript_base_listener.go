@@ -255,6 +255,12 @@ func (s *BaseNumScriptListener) EnterSend(ctx *SendContext) {}
 // ExitSend is called when production Send is exited.
 func (s *BaseNumScriptListener) ExitSend(ctx *SendContext) {}
 
+// EnterSendAll is called when production SendAll is entered.
+func (s *BaseNumScriptListener) EnterSendAll(ctx *SendAllContext) {}
+
+// ExitSendAll is called when production SendAll is exited.
+func (s *BaseNumScriptListener) ExitSendAll(ctx *SendAllContext) {}
+
 // EnterType_ is called when production type_ is entered.
 func (s *BaseNumScriptListener) EnterType_(ctx *Type_Context) {}
 

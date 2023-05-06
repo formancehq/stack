@@ -32,7 +32,7 @@ func NewMachine(ledger LedgerReader, vars map[string]core.Value) Machine {
 	}
 }
 
-func (m Machine) Run(script program.Program) {
+func (m *Machine) Run(script program.Program) {
 	for _, var_decl := range script.VarsDecl {
 		switch o := var_decl.Origin.(type) {
 		case program.VarOriginMeta:
@@ -46,26 +46,26 @@ func (m Machine) Run(script program.Program) {
 			m.vars[var_decl.Name] = balance
 		case nil:
 		default:
-			panic("ice")
+			panic("internal error")
 		}
 	}
 
 	for _, stmt := range script.Statements {
 		switch s := stmt.(type) {
-		case program.StatementFail:
+		case *program.StatementFail:
 			panic("fail")
-		case program.StatementPrint:
+		case *program.StatementPrint:
 			fmt.Printf("%v\n", s.Expr)
-		case program.StatementAllocate:
+		case *program.StatementAllocate:
 			funding := EvalAs[core.Funding](m, s.Funding)
 			m.Allocate(funding, s.Destination)
-		case program.StatementLet:
+		case *program.StatementLet:
 			value := m.Eval(s.Expr)
 			m.vars[s.Name] = value
-		case program.StatementSetTxMeta:
+		case *program.StatementSetTxMeta:
 			value := m.Eval(s.Value)
 			m.TxMeta[s.Key] = value
-		case program.StatementSetAccountMeta:
+		case *program.StatementSetAccountMeta:
 			account := EvalAs[core.AccountAddress](m, s.Account)
 			value := m.Eval(s.Value)
 			if _, ok := m.AccountMeta[account]; !ok {
@@ -73,12 +73,12 @@ func (m Machine) Run(script program.Program) {
 			}
 			m.AccountMeta[account][s.Key] = value
 		default:
-			panic("ice")
+			panic("internal error")
 		}
 	}
 }
 
-func (m Machine) Send(funding core.Funding, account core.AccountAddress) {
+func (m *Machine) Send(funding core.Funding, account core.AccountAddress) {
 	for _, part := range funding.Parts {
 		m.Postings = append(m.Postings, core.Posting{
 			Source:      string(part.Account),
@@ -89,7 +89,7 @@ func (m Machine) Send(funding core.Funding, account core.AccountAddress) {
 	}
 }
 
-func (m Machine) Allocate(funding core.Funding, destination program.Destination) {
+func (m *Machine) Allocate(funding core.Funding, destination program.Destination) {
 	switch d := destination.(type) {
 	case program.DestinationAccount:
 		account := EvalAs[core.AccountAddress](m, d.Expr)
@@ -109,7 +109,7 @@ func (m Machine) Allocate(funding core.Funding, destination program.Destination)
 			if part.Portion.Remaining {
 				portions = append(portions, core.NewPortionRemaining())
 			} else {
-				portion := EvalAs[core.Portion](m, *part.Portion.Expr)
+				portion := EvalAs[core.Portion](m, part.Portion.Expr)
 				portions = append(portions, portion)
 			}
 			sub_dests = append(sub_dests, part.Kod)
@@ -129,7 +129,7 @@ func (m Machine) Allocate(funding core.Funding, destination program.Destination)
 	}
 }
 
-func (m Machine) AllocateOrKeep(funding core.Funding, kod program.KeptOrDestination) {
+func (m *Machine) AllocateOrKeep(funding core.Funding, kod program.KeptOrDestination) {
 	if kod.Kept {
 		m.Repay(funding)
 	} else {
@@ -137,13 +137,13 @@ func (m Machine) AllocateOrKeep(funding core.Funding, kod program.KeptOrDestinat
 	}
 }
 
-func (m Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon core.Monetary) core.Funding {
+func (m *Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon core.Monetary) core.Funding {
 	var err error
 	switch s := source.(type) {
 	case program.ValueAwareSourceSource:
 		available, fallback := m.TakeFromSource(s.Source, mon.Asset)
 		taken, remainder := available.TakeMax(mon.Amount)
-		if taken.Total() != mon.Amount {
+		if !taken.Total().Eq(mon.Amount) {
 			missing := core.Monetary{
 				Asset:  mon.Asset,
 				Amount: mon.Amount.Sub(taken.Total()),
@@ -155,22 +155,20 @@ func (m Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon c
 					panic("??")
 				}
 			} else {
-				panic("insufficient funds")
+				panic(fmt.Sprintf("insufficient funds: needed %v and got %v", mon.Amount, taken.Total()))
 			}
 		}
 		m.Repay(remainder)
 		return taken
 	case program.ValueAwareSourceAllotment:
 		portions := make([]core.Portion, 0)
-		sub_sources := make([]program.ValueAwareSource, 0)
 		for _, part := range s {
 			if part.Portion.Remaining {
 				portions = append(portions, core.NewPortionRemaining())
 			} else {
-				portion := EvalAs[core.Portion](m, *part.Portion.Expr)
+				portion := EvalAs[core.Portion](m, part.Portion.Expr)
 				portions = append(portions, portion)
 			}
-			sub_sources = append(sub_sources, part.Source)
 		}
 		allotment, err := core.NewAllotment(portions)
 		if err != nil {
@@ -181,7 +179,7 @@ func (m Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon c
 			Parts: make([]core.FundingPart, 0),
 		}
 		for i, amt := range allotment.Allocate(mon.Amount) {
-			taken := m.TakeFromValueAwareSource(s[i].Source, core.Monetary{Asset: mon.Asset, Amount: amt})
+			taken := m.TakeFromValueAwareSource(program.ValueAwareSourceSource{Source: s[i].Source}, core.Monetary{Asset: mon.Asset, Amount: amt})
 			funding, err = funding.Concat(taken)
 			if err != nil {
 				panic("funding error")
@@ -193,7 +191,7 @@ func (m Machine) TakeFromValueAwareSource(source program.ValueAwareSource, mon c
 	}
 }
 
-func (m Machine) TakeFromSource(source program.Source, asset core.Asset) (core.Funding, *core.AccountAddress) {
+func (m *Machine) TakeFromSource(source program.Source, asset core.Asset) (core.Funding, *core.AccountAddress) {
 	var err error
 	switch s := source.(type) {
 	case program.SourceAccount:
@@ -274,17 +272,17 @@ func (m Machine) TakeFromSource(source program.Source, asset core.Asset) (core.F
 	}
 }
 
-func (m Machine) Repay(funding core.Funding) {
+func (m *Machine) Repay(funding core.Funding) {
 	for _, part := range funding.Parts {
 		balance := m.BalanceOf(part.Account, funding.Asset)
-		balance = balance.Add(part.Amount)
+		*balance = *balance.Add(part.Amount)
 	}
 }
 
-func (m Machine) WithdrawAll(account core.AccountAddress, asset core.Asset, overdraft core.Number) core.Funding {
+func (m *Machine) WithdrawAll(account core.AccountAddress, asset core.Asset, overdraft core.Number) core.Funding {
 	balance := m.BalanceOf(account, asset)
 	withdrawn := balance.Sub(overdraft)
-	balance = balance.Sub(overdraft)
+	*balance = *balance.Sub(overdraft)
 	return core.Funding{
 		Asset: asset,
 		Parts: []core.FundingPart{
@@ -296,9 +294,9 @@ func (m Machine) WithdrawAll(account core.AccountAddress, asset core.Asset, over
 	}
 }
 
-func (m Machine) WithdrawAlways(account core.AccountAddress, mon core.Monetary) core.Funding {
+func (m *Machine) WithdrawAlways(account core.AccountAddress, mon core.Monetary) core.Funding {
 	balance := m.BalanceOf(account, mon.Asset)
-	balance = balance.Sub(mon.Amount)
+	*balance = *balance.Sub(mon.Amount)
 	return core.Funding{
 		Asset: mon.Asset,
 		Parts: []core.FundingPart{
@@ -310,7 +308,7 @@ func (m Machine) WithdrawAlways(account core.AccountAddress, mon core.Monetary) 
 	}
 }
 
-func (m Machine) BalanceOf(account core.AccountAddress, asset core.Asset) core.Number {
+func (m *Machine) BalanceOf(account core.AccountAddress, asset core.Asset) core.Number {
 	if _, ok := m.balances[account]; !ok {
 		m.balances[account] = make(map[core.Asset]core.Number)
 	}
@@ -320,11 +318,45 @@ func (m Machine) BalanceOf(account core.AccountAddress, asset core.Asset) core.N
 	return m.balances[account][asset]
 }
 
-func (i Machine) Eval(expr program.Expr) core.Value {
-	panic("todo")
+func (m *Machine) Eval(expr program.Expr) core.Value {
+	switch expr := expr.(type) {
+	case program.ExprLiteral:
+		return expr.Value
+	case program.ExprInfix:
+		switch expr.Op {
+		case program.OP_ADD:
+			lhs := EvalAs[core.Number](m, expr.Lhs)
+			rhs := EvalAs[core.Number](m, expr.Rhs)
+			return lhs.Add(rhs)
+		case program.OP_SUB:
+			lhs := EvalAs[core.Number](m, expr.Lhs)
+			rhs := EvalAs[core.Number](m, expr.Rhs)
+			return lhs.Sub(rhs)
+		}
+	case program.ExprMonetaryNew:
+		asset := EvalAs[core.Asset](m, expr.Asset)
+		amount := EvalAs[core.Number](m, expr.Amount)
+		return core.Monetary{
+			Asset:  asset,
+			Amount: amount,
+		}
+	case program.ExprVariable:
+		return m.vars[string(expr)]
+	case program.ExprTake:
+		amt := EvalAs[core.Monetary](m, expr.Amount)
+		return m.TakeFromValueAwareSource(expr.Source, amt)
+	case program.ExprTakeAll:
+		asset := EvalAs[core.Asset](m, expr.Asset)
+		funding, fallback := m.TakeFromSource(expr.Source, asset)
+		if fallback != nil {
+			panic("oops infinite money")
+		}
+		return funding
+	}
+	panic("nope")
 }
 
-func EvalAs[T core.Value](i Machine, expr program.Expr) T {
+func EvalAs[T core.Value](i *Machine, expr program.Expr) T {
 	x := i.Eval(expr)
 	if v, ok := x.(T); ok {
 		return v

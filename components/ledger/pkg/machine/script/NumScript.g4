@@ -135,9 +135,12 @@ statement
     | SET_TX_META '(' key=STRING ',' value=expression ')' # SetTxMeta
     | SET_ACCOUNT_META '(' acc=expression ',' key=STRING ',' value=expression ')' # SetAccountMeta
     | FAIL # Fail
-    | SEND (mon=expression | monAll=monetaryAll) LPAREN NEWLINE
+    | SEND mon=expression LPAREN NEWLINE
         ( SOURCE '=' src=valueAwareSource NEWLINE DESTINATION '=' dest=destination
         | DESTINATION '=' dest=destination NEWLINE SOURCE '=' src=valueAwareSource) NEWLINE RPAREN # Send
+    | SEND monAll=monetaryAll LPAREN NEWLINE
+        ( SOURCE '=' src=source NEWLINE DESTINATION '=' dest=destination
+        | DESTINATION '=' dest=destination NEWLINE SOURCE '=' src=source) NEWLINE RPAREN # SendAll
     ;
 
 type_

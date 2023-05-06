@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/numary/ledger/pkg/core"
@@ -27,54 +28,37 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Print(program)
 
-	m := vm.NewMachine(*program)
-	m.Debug = true
+	s, _ := json.MarshalIndent(program, "", "\t")
+	fmt.Println(string(s))
 
-	if err = m.SetVars(map[string]core.Value{
+	ledger := vm.MockupLedger(map[string]vm.MockupAccount{
+		"alice": {
+			Balances: map[string]core.MonetaryInt{
+				"COIN": *core.NewMonetaryInt(10),
+			},
+			Meta: map[string]core.Value{},
+		},
+		"bob": {
+			Balances: map[string]core.MonetaryInt{
+				"COIN": *core.NewMonetaryInt(100),
+			},
+			Meta: map[string]core.Value{},
+		},
+	})
+
+	m := vm.NewMachine(ledger, map[string]core.Value{
 		"dest": core.AccountAddress("charlie"),
-	}); err != nil {
-		panic(err)
-	}
+	})
 
-	initialBalances := map[string]map[string]*core.MonetaryInt{
-		"alice": {"COIN": core.NewMonetaryInt(10)},
-		"bob":   {"COIN": core.NewMonetaryInt(100)},
-	}
+	m.Run(*program)
 
-	{
-		ch, err := m.ResolveResources()
-		if err != nil {
-			panic(err)
-		}
-		for req := range ch {
-			if req.Error != nil {
-				panic(req.Error)
-			}
-		}
+	fmt.Println("Postings:")
+	for _, posting := range m.Postings {
+		fmt.Printf("[%v %v] %v -> %v\n", posting.Asset, posting.Amount, posting.Source, posting.Destination)
 	}
-
-	{
-		ch, err := m.ResolveBalances()
-		if err != nil {
-			panic(err)
-		}
-		for req := range ch {
-			val := initialBalances[req.Account][req.Asset]
-			if req.Error != nil {
-				panic(req.Error)
-			}
-			req.Response <- val
-		}
+	fmt.Println("Tx Meta:")
+	for key, value := range m.TxMeta {
+		fmt.Printf("%v: %v", key, value)
 	}
-
-	exitCode, err := m.Execute()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Exit code:", exitCode)
-	fmt.Println(m.Postings)
-	fmt.Println(m.TxMeta)
 }
