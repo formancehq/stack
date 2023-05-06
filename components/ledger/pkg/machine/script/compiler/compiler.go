@@ -50,8 +50,15 @@ func (p *parseVisitor) VisitExpr(c parser.IExpressionContext) (core.Type, progra
 		if ty != core.TypeNumber {
 			return 0, nil, LogicError(c, errors.New("tried to do arithmetic with wrong type"))
 		}
+		var op byte
+		switch c.GetOp().GetTokenType() {
+		case parser.NumScriptLexerOP_ADD:
+			op = program.OP_ADD
+		case parser.NumScriptLexerOP_SUB:
+			op = program.OP_SUB
+		}
 		return core.TypeNumber, program.ExprInfix{
-			Op:  0,
+			Op:  op,
 			Lhs: lhs,
 			Rhs: rhs,
 		}, nil
@@ -114,7 +121,7 @@ func (p *parseVisitor) VisitLit(c parser.ILiteralContext) (core.Type, core.Value
 	}
 }
 
-func (p *parseVisitor) VisitSend(c *parser.SendContext) (*program.StatementAllocate, *CompileError) {
+func (p *parseVisitor) VisitSend(c *parser.SendContext) (program.Statement, *CompileError) {
 	mon, err := p.VisitExprTy(c.GetMon(), core.TypeMonetary)
 	if err != nil {
 		return nil, err
@@ -127,7 +134,7 @@ func (p *parseVisitor) VisitSend(c *parser.SendContext) (*program.StatementAlloc
 	if err != nil {
 		return nil, err
 	}
-	return &program.StatementAllocate{
+	return program.StatementAllocate{
 		Funding: program.ExprTake{
 			Amount: mon,
 			Source: value_aware_source,
@@ -136,7 +143,7 @@ func (p *parseVisitor) VisitSend(c *parser.SendContext) (*program.StatementAlloc
 	}, nil
 }
 
-func (p *parseVisitor) VisitSendAll(c *parser.SendAllContext) (*program.StatementAllocate, *CompileError) {
+func (p *parseVisitor) VisitSendAll(c *parser.SendAllContext) (program.Statement, *CompileError) {
 	source, has_fallback, err := p.VisitSource(c.GetSrc())
 	if err != nil {
 		return nil, err
@@ -152,7 +159,7 @@ func (p *parseVisitor) VisitSendAll(c *parser.SendAllContext) (*program.Statemen
 	if err != nil {
 		return nil, err
 	}
-	return &program.StatementAllocate{
+	return program.StatementAllocate{
 		Funding: program.ExprTakeAll{
 			Asset:  asset,
 			Source: source,
@@ -161,19 +168,19 @@ func (p *parseVisitor) VisitSendAll(c *parser.SendAllContext) (*program.Statemen
 	}, nil
 }
 
-func (p *parseVisitor) VisitSetTxMeta(ctx *parser.SetTxMetaContext) (*program.StatementSetTxMeta, *CompileError) {
+func (p *parseVisitor) VisitSetTxMeta(ctx *parser.SetTxMetaContext) (program.Statement, *CompileError) {
 	_, value, err := p.VisitExpr(ctx.GetValue())
 	if err != nil {
 		return nil, err
 	}
-	return &program.StatementSetTxMeta{
+	return program.StatementSetTxMeta{
 		Key:   strings.Trim(ctx.GetKey().GetText(), `"`),
 		Value: value,
 	}, nil
 
 }
 
-func (p *parseVisitor) VisitSetAccountMeta(ctx *parser.SetAccountMetaContext) (*program.StatementSetAccountMeta, *CompileError) {
+func (p *parseVisitor) VisitSetAccountMeta(ctx *parser.SetAccountMetaContext) (program.Statement, *CompileError) {
 	account, err := p.VisitExprTy(ctx.GetAcc(), core.TypeAccount)
 	if err != nil {
 		return nil, err
@@ -184,7 +191,7 @@ func (p *parseVisitor) VisitSetAccountMeta(ctx *parser.SetAccountMetaContext) (*
 		return nil, err
 	}
 
-	return &program.StatementSetAccountMeta{
+	return program.StatementSetAccountMeta{
 		Account: account,
 		Key:     strings.Trim(ctx.GetKey().GetText(), `"`),
 		Value:   value,
