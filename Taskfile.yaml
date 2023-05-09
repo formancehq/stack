@@ -38,6 +38,7 @@ tasks:
       - task orchestration:tests
       - task payments:tests
       - task search:tests
+      - task stargate:tests
       - task wallets:tests
       - task webhooks:tests
       - task ledger:tests
@@ -51,6 +52,7 @@ tasks:
       - task orchestration:lint
       - task payments:lint
       - task search:lint
+      - task stargate:lint
       - task wallets:lint
       - task webhooks:lint
       - task ledger:lint
@@ -83,6 +85,9 @@ includes:
   wallets:
     taskfile: ./components/wallets
     dir: ./components/wallets
+  stargate:
+    taskfile: ./components/stargate
+    dir: ./components/stargate
   webhooks:
     taskfile: ./components/webhooks
     dir: ./components/webhooks
