@@ -1,0 +1,16 @@
+version: '3'
+
+vars:
+  COMPONENT:
+    sh: cat go.mod |head -1|cut -d \  -f2|cut -d / -f 3
+
+tasks:
+  tests:
+    cmds:
+      - go test -p 1 -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
+  lint:
+    cmds:
+    - golangci-lint run -v --fix
+  build:
+    cmds:
+    - go build

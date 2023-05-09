@@ -1,0 +1,30 @@
+project_name: membership-agent
+includes:
+  - from_file:
+      path: ./.goreleaser.default.yaml
+monorepo:
+  tag_prefix: components/membership-agent/
+  dir: ./components/membership-agent/
+
+builds:
+  - binary: membership-agent
+    id: membership-agent
+    ldflags:
+      - -X github.com/formancehq/membership-agent/cmd.BuildDate={{ .Date }}
+      - -X github.com/formancehq/membership-agent/cmd.Version={{ .Version }}
+      - -X github.com/formancehq/membership-agent/cmd.Commit={{ .ShortCommit }}
+      - -extldflags "-static"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: "{{.ProjectName}}"
+    builds:
+      - membership-agent
+    format: tar.gz
+    name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
