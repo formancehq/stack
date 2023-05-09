@@ -74,6 +74,13 @@ func RenderCursor[T any](w http.ResponseWriter, v Cursor[T]) {
 	})
 }
 
+func WriteResponse(w http.ResponseWriter, status int, body []byte) {
+	w.WriteHeader(status)
+	if _, err := w.Write(body); err != nil {
+		panic(err)
+	}
+}
+
 func CursorFromListResponse[T any, V any](w http.ResponseWriter, query ListQuery[V], response *ListResponse[T]) {
 	RenderCursor(w, Cursor[T]{
 		PageSize: query.Limit,

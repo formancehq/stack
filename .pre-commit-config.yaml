@@ -1,5 +1,5 @@
 fail_fast: true
-exclude: ^sdks/|openapi/build|components/payments/client|components/auth/authclient|components/agent/chart|components/operator/helm
+exclude: ^sdks/|openapi/build|components/payments/client|components/auth/authclient|components/agent/chart|components/stargate/internal/api|components/operator/helm
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
