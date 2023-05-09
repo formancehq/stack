@@ -3,7 +3,7 @@ package delegatedauth
 import (
 	"net/http"
 
-	"github.com/zitadel/oidc/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
 	"go.uber.org/fx"
 )
 

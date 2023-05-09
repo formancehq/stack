@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	httphelper "github.com/zitadel/oidc/pkg/http"
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
+	httphelper "github.com/zitadel/oidc/v2/pkg/http"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 	"gopkg.in/square/go-jose.v2"
 )
 
@@ -52,7 +52,7 @@ func VerifyJWTAssertion(ctx context.Context, assertion string, v JWTProfileVerif
 	accessTokenVerifier := op.NewAccessTokenVerifier(v.DelegatedIssuer(), &openIDKeySet{
 		v.JSONWebKeySet(),
 	})
-	if _, err := op.VerifyAccessToken(ctx, assertion, accessTokenVerifier); err != nil {
+	if _, err := op.VerifyAccessToken[*oidc.TokenClaims](ctx, assertion, accessTokenVerifier); err != nil {
 		return nil, err
 	}
 
@@ -70,7 +70,7 @@ type JWTAuthorizationGrantExchanger interface {
 	JWTProfileVerifier() JWTProfileVerifier
 }
 
-func grantTypeBearer(p JWTAuthorizationGrantExchanger) http.HandlerFunc {
+func grantTypeBearer(issuer string, p JWTAuthorizationGrantExchanger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		profileRequest, err := op.ParseJWTProfileGrantRequest(r, p.Decoder())
 		if err != nil {
@@ -106,24 +106,24 @@ func grantTypeBearer(p JWTAuthorizationGrantExchanger) http.HandlerFunc {
 			op.RequestError(w, r, err)
 			return
 		}
-		resp, err := CreateJWTTokenResponse(r.Context(), tokenRequest, p, client)
+		resp, err := CreateJWTTokenResponse(r.Context(), issuer, tokenRequest, p, client)
 		if err != nil {
 			op.RequestError(w, r, err)
 			return
 		}
+
 		httphelper.MarshalJSON(w, resp)
 	}
 }
 
-func CreateJWTTokenResponse(ctx context.Context, tokenRequest *oidc.JWTTokenRequest, creator op.TokenCreator, client op.Client) (*oidc.AccessTokenResponse, error) {
+func CreateJWTTokenResponse(ctx context.Context, issuer string, tokenRequest *oidc.JWTTokenRequest, creator op.TokenCreator, client op.Client) (*oidc.AccessTokenResponse, error) {
 	id, exp, err := creator.Storage().CreateAccessToken(ctx, tokenRequest)
 	if err != nil {
 		return nil, err
 	}
 
 	tokenRequest.Audience = oidc.Audience{}
-	accessToken, err := op.CreateJWT(ctx, creator.Issuer(), tokenRequest, exp, id,
-		creator.Signer(), client, creator.Storage())
+	accessToken, err := op.CreateJWT(ctx, issuer, tokenRequest, exp, id, client, creator.Storage())
 	if err != nil {
 		return nil, err
 	}

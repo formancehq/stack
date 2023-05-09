@@ -4,9 +4,9 @@ import (
 	"time"
 
 	"github.com/formancehq/auth/pkg/delegatedauth"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 )
 
 type Client interface {
@@ -80,7 +80,7 @@ func (c *clientFacade) GrantTypes() []oidc.GrantType {
 
 // LoginURL will be called to redirect the user (agent) to the login UI
 // you could implement some logic here to redirect the users to different login UIs depending on the client
-func (c *clientFacade) LoginURL(t op.LoginType, id string) string {
+func (c *clientFacade) LoginURL(id string) string {
 	return rp.AuthURL(delegatedauth.DelegatedState{
 		AuthRequestID: id,
 	}.EncodeAsUrlParam(), c.relyingParty)

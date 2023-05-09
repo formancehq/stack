@@ -11,11 +11,10 @@ package authclient
 
 import (
 	"context"
-	"testing"
-
-	openapiclient "github.com/formancehq/auth/authclient"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
+	openapiclient "github.com/formancehq/auth/authclient"
 )
 
 func Test_authclient_ScopesApiService(t *testing.T) {
@@ -25,7 +24,7 @@ func Test_authclient_ScopesApiService(t *testing.T) {
 
 	t.Run("Test ScopesApiService AddTransientScope", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var scopeId interface{}
 		var transientScopeId interface{}
@@ -39,7 +38,7 @@ func Test_authclient_ScopesApiService(t *testing.T) {
 
 	t.Run("Test ScopesApiService CreateScope", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.ScopesApi.CreateScope(context.Background()).Execute()
 
@@ -51,7 +50,7 @@ func Test_authclient_ScopesApiService(t *testing.T) {
 
 	t.Run("Test ScopesApiService DeleteScope", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var scopeId interface{}
 
@@ -64,7 +63,7 @@ func Test_authclient_ScopesApiService(t *testing.T) {
 
 	t.Run("Test ScopesApiService DeleteTransientScope", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var scopeId interface{}
 		var transientScopeId interface{}
@@ -78,7 +77,7 @@ func Test_authclient_ScopesApiService(t *testing.T) {
 
 	t.Run("Test ScopesApiService ListScopes", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.ScopesApi.ListScopes(context.Background()).Execute()
 
@@ -90,7 +89,7 @@ func Test_authclient_ScopesApiService(t *testing.T) {
 
 	t.Run("Test ScopesApiService ReadScope", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var scopeId interface{}
 
@@ -104,7 +103,7 @@ func Test_authclient_ScopesApiService(t *testing.T) {
 
 	t.Run("Test ScopesApiService UpdateScope", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var scopeId interface{}
 
