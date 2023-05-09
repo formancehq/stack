@@ -12,7 +12,6 @@ import (
 	"net/http/httptest"
 	"net/http/httputil"
 	"net/url"
-	"os"
 	"testing"
 	"time"
 
@@ -24,17 +23,14 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/oauth2-proxy/mockoidc"
 	"github.com/stretchr/testify/require"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/client/rs"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/client/rs"
+	zoidc "github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 	"golang.org/x/oauth2/clientcredentials"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
-
-func init() {
-	os.Setenv(op.OidcDevMode, "true")
-}
 
 type user struct {
 	*mockoidc.MockUser
@@ -54,7 +50,7 @@ func (u *user) Userinfo(scope []string) ([]byte, error) {
 	return json.Marshal(m)
 }
 
-func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, provider op.OpenIDProvider)) {
+func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, issuer string, provider op.OpenIDProvider)) {
 	// Create a mock OIDC server which will always return a default user
 	mockOIDC, err := mockoidc.Run()
 	require.NoError(t, err)
@@ -95,7 +91,7 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	require.NoError(t, err)
 
 	// Construct our oidc provider
-	provider, err := oidc.NewOpenIDProvider(context.TODO(), storageFacade, serverUrl, mockOIDC.Issuer(), *keySet)
+	provider, err := oidc.NewOpenIDProvider(storageFacade, serverUrl, mockOIDC.Issuer(), *keySet)
 	require.NoError(t, err)
 
 	// Create the router
@@ -114,11 +110,11 @@ func withServer(t *testing.T, fn func(m *mockoidc.MockOIDC, storage *sqlstorage.
 	}()
 	defer providerHttpServer.Close()
 
-	fn(mockOIDC, storage, provider)
+	fn(mockOIDC, storage, serverUrl, provider)
 }
 
 func Test3LeggedFlow(t *testing.T) {
-	withServer(t, func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, provider op.OpenIDProvider) {
+	withServer(t, func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, issuer string, provider op.OpenIDProvider) {
 		// Create ou http server for our client (a web application for example)
 		codeChan := make(chan string, 1) // Just store codes coming from our provider inside a chan
 		clientHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -134,7 +130,7 @@ func Test3LeggedFlow(t *testing.T) {
 		require.NoError(t, storage.SaveClient(context.TODO(), *client))
 
 		// As our client is a relying party, we can use the library to get some helpers
-		clientRelyingParty, err := rp.NewRelyingPartyOIDC(provider.Issuer(), client.Id, clear, client.RedirectURIs[0], []string{"openid", "email"})
+		clientRelyingParty, err := rp.NewRelyingPartyOIDC(issuer, client.Id, clear, client.RedirectURIs[0], []string{"openid", "email"})
 		require.NoError(t, err)
 
 		m.QueueUser(&user{
@@ -154,7 +150,7 @@ func Test3LeggedFlow(t *testing.T) {
 		// As the mock automatically accept login response, we should have received a code
 		case code := <-codeChan:
 			// And this code is used to get a token
-			tokens, err := rp.CodeExchange(context.TODO(), code, clientRelyingParty)
+			tokens, err := rp.CodeExchange[*zoidc.IDTokenClaims](context.TODO(), code, clientRelyingParty)
 			require.NoError(t, err)
 			require.Equal(t, time.Until(tokens.Expiry).Round(oidc.ExpirationToken3Legged), oidc.ExpirationToken3Legged)
 
@@ -165,12 +161,12 @@ func Test3LeggedFlow(t *testing.T) {
 			_, clear = secondaryClient.GenerateNewSecret(auth.SecretCreate{}) // Need to generate a secret
 			require.NoError(t, storage.SaveClient(context.TODO(), *secondaryClient))
 
-			resourceServer, err := rs.NewResourceServerClientCredentials(provider.Issuer(), secondaryClient.Id, clear)
+			resourceServer, err := rs.NewResourceServerClientCredentials(issuer, secondaryClient.Id, clear)
 			require.NoError(t, err)
 
 			introspection, err := rs.Introspect(context.TODO(), resourceServer, tokens.AccessToken)
 			require.NoError(t, err)
-			require.True(t, introspection.IsActive())
+			require.True(t, introspection.Active)
 
 			user, err := storage.FindUser(context.TODO(), tokens.IDTokenClaims.GetSubject())
 			require.NoError(t, err)
@@ -210,7 +206,7 @@ func (r RoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 var _ http.RoundTripper = RoundTripper{}
 
 func TestJWTAssertions(t *testing.T) {
-	withServer(t, func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, provider op.OpenIDProvider) {
+	withServer(t, func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, issuer string, provider op.OpenIDProvider) {
 
 		// Create a OAuth2 client which represent our client application
 		client := auth.NewClient(auth.ClientOptions{})
@@ -218,11 +214,11 @@ func TestJWTAssertions(t *testing.T) {
 		require.NoError(t, storage.SaveClient(context.TODO(), *client))
 
 		// As our client is a relying party, we can use the library to get some helpers
-		clientRelyingParty, err := rp.NewRelyingPartyOIDC(provider.Issuer(), client.Id, clear, "", []string{"openid", "email"})
+		clientRelyingParty, err := rp.NewRelyingPartyOIDC(m.Issuer(), client.Id, clear, "", []string{"openid", "email"})
 		require.NoError(t, err)
 
 		token, err := m.Keypair.SignJWT(jwt.MapClaims{
-			"aud": []string{provider.Issuer()},
+			"aud": []string{m.Issuer()},
 			"exp": time.Now().Add(5 * time.Minute).Unix(),
 			"iss": m.Issuer(),
 		})
@@ -246,7 +242,7 @@ func TestJWTAssertions(t *testing.T) {
 }
 
 func TestClientCredentials(t *testing.T) {
-	withServer(t, func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, provider op.OpenIDProvider) {
+	withServer(t, func(m *mockoidc.MockOIDC, storage *sqlstorage.Storage, issuer string, provider op.OpenIDProvider) {
 
 		// Create a OAuth2 client which represent our client application
 		client := auth.NewClient(auth.ClientOptions{})
@@ -254,7 +250,7 @@ func TestClientCredentials(t *testing.T) {
 		require.NoError(t, storage.SaveClient(context.TODO(), *client))
 
 		// As our client is a relying party, we can use the library to get some helpers
-		clientRelyingParty, err := rp.NewRelyingPartyOIDC(provider.Issuer(), client.Id, clear, "", []string{"openid", "email"})
+		clientRelyingParty, err := rp.NewRelyingPartyOIDC(issuer, client.Id, clear, "", []string{"openid", "email"})
 		require.NoError(t, err)
 
 		// Create a OAuth2 client which represent our client application

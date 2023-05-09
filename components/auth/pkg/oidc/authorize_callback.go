@@ -8,8 +8,9 @@ import (
 	auth "github.com/formancehq/auth/pkg"
 	"github.com/formancehq/auth/pkg/delegatedauth"
 	"github.com/google/uuid"
-	"github.com/zitadel/oidc/pkg/client/rp"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/client/rp"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 )
 
 //go:embed templates
@@ -46,7 +47,7 @@ func authorizeCallbackHandler(
 			panic(err)
 		}
 
-		tokens, err := rp.CodeExchange(r.Context(), r.URL.Query().Get("code"), relyingParty)
+		tokens, err := rp.CodeExchange[*oidc.IDTokenClaims](r.Context(), r.URL.Query().Get("code"), relyingParty)
 		if err != nil {
 			panic(err)
 		}
@@ -60,8 +61,8 @@ func authorizeCallbackHandler(
 		if err != nil {
 			user = &auth.User{
 				ID:      uuid.NewString(),
-				Subject: userInfos.GetSubject(),
-				Email:   userInfos.GetEmail(),
+				Subject: userInfos.Subject,
+				Email:   userInfos.Email,
 			}
 			if err := storage.SaveUser(r.Context(), *user); err != nil {
 				panic(err)
@@ -74,7 +75,7 @@ func authorizeCallbackHandler(
 			panic(err)
 		}
 
-		w.Header().Set("Location", op.AuthCallbackURL(provider)(state.AuthRequestID))
+		w.Header().Set("Location", op.AuthCallbackURL(provider)(r.Context(), state.AuthRequestID))
 		w.WriteHeader(http.StatusFound)
 	}
 }

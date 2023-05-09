@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/formancehq/auth/pkg/delegatedauth"
-	"github.com/zitadel/oidc/pkg/client"
+	"github.com/zitadel/oidc/v2/pkg/client"
 	"gopkg.in/square/go-jose.v2"
 )
 

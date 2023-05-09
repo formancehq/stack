@@ -11,11 +11,10 @@ package authclient
 
 import (
 	"context"
-	"testing"
-
-	openapiclient "github.com/formancehq/auth/authclient"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"testing"
+	openapiclient "github.com/formancehq/auth/authclient"
 )
 
 func Test_authclient_UsersApiService(t *testing.T) {
@@ -25,7 +24,7 @@ func Test_authclient_UsersApiService(t *testing.T) {
 
 	t.Run("Test UsersApiService ListUsers", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		resp, httpRes, err := apiClient.UsersApi.ListUsers(context.Background()).Execute()
 
@@ -37,7 +36,7 @@ func Test_authclient_UsersApiService(t *testing.T) {
 
 	t.Run("Test UsersApiService ReadUser", func(t *testing.T) {
 
-		t.Skip("skip test") // remove to run test
+		t.Skip("skip test")  // remove to run test
 
 		var userId interface{}
 

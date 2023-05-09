@@ -19,10 +19,10 @@ var _ MappedNullable = &ClientSecret{}
 
 // ClientSecret struct for ClientSecret
 type ClientSecret struct {
-	LastDigits interface{}            `json:"lastDigits"`
-	Name       interface{}            `json:"name"`
-	Id         interface{}            `json:"id"`
-	Metadata   map[string]interface{} `json:"metadata,omitempty"`
+	LastDigits interface{} `json:"lastDigits"`
+	Name interface{} `json:"name"`
+	Id interface{} `json:"id"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 // NewClientSecret instantiates a new ClientSecret object
@@ -60,7 +60,7 @@ func (o *ClientSecret) GetLastDigits() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientSecret) GetLastDigitsOk() (*interface{}, bool) {
-	if o == nil || isNil(o.LastDigits) {
+	if o == nil || IsNil(o.LastDigits) {
 		return nil, false
 	}
 	return &o.LastDigits, true
@@ -86,7 +86,7 @@ func (o *ClientSecret) GetName() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientSecret) GetNameOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Name) {
+	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
 	return &o.Name, true
@@ -112,7 +112,7 @@ func (o *ClientSecret) GetId() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientSecret) GetIdOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Id) {
+	if o == nil || IsNil(o.Id) {
 		return nil, false
 	}
 	return &o.Id, true
@@ -136,7 +136,7 @@ func (o *ClientSecret) GetMetadata() map[string]interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ClientSecret) GetMetadataOk() (*map[string]interface{}, bool) {
-	if o == nil || isNil(o.Metadata) {
+	if o == nil || IsNil(o.Metadata) {
 		return nil, false
 	}
 	return &o.Metadata, true
@@ -144,7 +144,7 @@ func (o *ClientSecret) GetMetadataOk() (*map[string]interface{}, bool) {
 
 // HasMetadata returns a boolean if a field has been set.
 func (o *ClientSecret) HasMetadata() bool {
-	if o != nil && isNil(o.Metadata) {
+	if o != nil && IsNil(o.Metadata) {
 		return true
 	}
 
@@ -157,7 +157,7 @@ func (o *ClientSecret) SetMetadata(v map[string]interface{}) {
 }
 
 func (o ClientSecret) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -216,3 +216,5 @@ func (v *NullableClientSecret) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+
