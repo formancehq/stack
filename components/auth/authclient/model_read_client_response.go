@@ -52,7 +52,7 @@ func (o *ReadClientResponse) GetData() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ReadClientResponse) GetDataOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Data) {
+	if o == nil || IsNil(o.Data) {
 		return nil, false
 	}
 	return &o.Data, true
@@ -60,7 +60,7 @@ func (o *ReadClientResponse) GetDataOk() (*interface{}, bool) {
 
 // HasData returns a boolean if a field has been set.
 func (o *ReadClientResponse) HasData() bool {
-	if o != nil && isNil(o.Data) {
+	if o != nil && IsNil(o.Data) {
 		return true
 	}
 
@@ -73,7 +73,7 @@ func (o *ReadClientResponse) SetData(v interface{}) {
 }
 
 func (o ReadClientResponse) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -123,3 +123,5 @@ func (v *NullableReadClientResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

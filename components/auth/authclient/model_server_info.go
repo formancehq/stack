@@ -55,7 +55,7 @@ func (o *ServerInfo) GetVersion() interface{} {
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *ServerInfo) GetVersionOk() (*interface{}, bool) {
-	if o == nil || isNil(o.Version) {
+	if o == nil || IsNil(o.Version) {
 		return nil, false
 	}
 	return &o.Version, true
@@ -67,7 +67,7 @@ func (o *ServerInfo) SetVersion(v interface{}) {
 }
 
 func (o ServerInfo) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -117,3 +117,5 @@ func (v *NullableServerInfo) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | Pointer to **interface{}** |  | [optional]
-**Subject** | Pointer to **interface{}** |  | [optional]
-**Email** | Pointer to **interface{}** |  | [optional]
+**Id** | Pointer to **interface{}** |  | [optional] 
+**Subject** | Pointer to **interface{}** |  | [optional] 
+**Email** | Pointer to **interface{}** |  | [optional] 
 
 ## Methods
 
@@ -134,3 +134,5 @@ HasEmail returns a boolean if a field has been set.
 UnsetEmail ensures that no value is present for Email, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

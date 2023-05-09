@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 )
 
 func verifyAccessToken(r *http.Request, o op.OpenIDProvider) error {
@@ -28,7 +28,7 @@ func verifyAccessToken(r *http.Request, o op.OpenIDProvider) error {
 	token := strings.TrimPrefix(authHeader, strings.ToLower(oidc.PrefixBearer))
 	token = strings.TrimPrefix(token, oidc.PrefixBearer)
 
-	if _, err := op.VerifyAccessToken(r.Context(), token, o.AccessTokenVerifier()); err != nil {
+	if _, err := op.VerifyAccessToken[*oidc.AccessTokenClaims](r.Context(), token, o.AccessTokenVerifier(r.Context())); err != nil {
 		return ErrVerifyAuthToken
 	}
 

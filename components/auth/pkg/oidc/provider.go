@@ -1,13 +1,12 @@
 package oidc
 
 import (
-	"context"
 	"crypto/sha256"
 	"net/http"
 	"time"
 
-	"github.com/zitadel/oidc/pkg/oidc"
-	"github.com/zitadel/oidc/pkg/op"
+	"github.com/zitadel/oidc/v2/pkg/oidc"
+	"github.com/zitadel/oidc/v2/pkg/op"
 	"golang.org/x/text/language"
 	"gopkg.in/square/go-jose.v2"
 )
@@ -48,11 +47,12 @@ type provider struct {
 	op.OpenIDProvider
 	delegatedIssuerJsonWebKeySet jose.JSONWebKeySet
 	delegatedIssuer              string
+	issuer                       string
 }
 
 func (p provider) JWTProfileVerifier() JWTProfileVerifier {
 	return &verifier{
-		issuer:          p.Issuer(),
+		issuer:          p.issuer,
 		delegatedIssuer: p.delegatedIssuer,
 		mat:             time.Hour,
 		offset:          0,
@@ -62,10 +62,9 @@ func (p provider) JWTProfileVerifier() JWTProfileVerifier {
 
 var _ JWTAuthorizationGrantExchanger = (*provider)(nil)
 
-func NewOpenIDProvider(ctx context.Context, storage op.Storage, issuer, delegatedIssuer string, delegatedIssuerJsonWebKeySet jose.JSONWebKeySet) (op.OpenIDProvider, error) {
+func NewOpenIDProvider(storage op.Storage, issuer, delegatedIssuer string, delegatedIssuerJsonWebKeySet jose.JSONWebKeySet) (op.OpenIDProvider, error) {
 	var p op.OpenIDProvider
-	p, err := op.NewOpenIDProvider(ctx, &op.Config{
-		Issuer:                   issuer,
+	p, err := op.NewOpenIDProvider(issuer, &op.Config{
 		CryptoKey:                sha256.Sum256([]byte("test")),
 		DefaultLogoutRedirectURI: pathLoggedOut,
 		CodeMethodS256:           true,
@@ -80,7 +79,8 @@ func NewOpenIDProvider(ctx context.Context, storage op.Storage, issuer, delegate
 			// as the library does not implement what we needs
 			if r.URL.Path == op.DefaultEndpoints.Token.Relative() &&
 				r.FormValue("grant_type") == string(oidc.GrantTypeBearer) {
-				grantTypeBearer(&provider{
+				grantTypeBearer(issuer, &provider{
+					issuer:                       issuer,
 					OpenIDProvider:               p,
 					delegatedIssuerJsonWebKeySet: delegatedIssuerJsonWebKeySet,
 					delegatedIssuer:              delegatedIssuer,
@@ -90,6 +90,6 @@ func NewOpenIDProvider(ctx context.Context, storage op.Storage, issuer, delegate
 			handler.ServeHTTP(w, r)
 		})
 
-	}))
+	}), op.WithAllowInsecure())
 	return p, err
 }

@@ -4,13 +4,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Public** | Pointer to **interface{}** |  | [optional]
-**RedirectUris** | Pointer to **interface{}** |  | [optional]
-**Description** | Pointer to **interface{}** |  | [optional]
-**Name** | **interface{}** |  |
-**Trusted** | Pointer to **interface{}** |  | [optional]
-**PostLogoutRedirectUris** | Pointer to **interface{}** |  | [optional]
-**Metadata** | Pointer to  |  | [optional]
+**Public** | Pointer to **interface{}** |  | [optional] 
+**RedirectUris** | Pointer to **interface{}** |  | [optional] 
+**Description** | Pointer to **interface{}** |  | [optional] 
+**Name** | **interface{}** |  | 
+**Trusted** | Pointer to **interface{}** |  | [optional] 
+**PostLogoutRedirectUris** | Pointer to **interface{}** |  | [optional] 
+**Metadata** | Pointer to  |  | [optional] 
 
 ## Methods
 
@@ -273,3 +273,5 @@ HasMetadata returns a boolean if a field has been set.
 UnsetMetadata ensures that no value is present for Metadata, not even an explicit nil
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+
