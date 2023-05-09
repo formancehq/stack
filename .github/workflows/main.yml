@@ -115,7 +115,7 @@ jobs:
         with:
           distribution: goreleaser-pro
           version: latest
-          args: release --clean --nightly -f components/${{ matrix.folder }}/.goreleaser.yml
+          args: release --clean --snapshot --nightly -f components/${{ matrix.folder }}/.goreleaser.yml
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
