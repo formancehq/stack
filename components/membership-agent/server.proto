@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+option go_package = "github.com/formancehq/membership/internal/grpc/generated";
+
+package server;
+
+service Server {
+  rpc Connect(ConnectRequest) returns (stream ConnectResponse) {}
+}
+
+message ConnectRequest {
+  string id = 1;
+  map<string, string> tags = 2;
+  string baseUrl = 3;
+  bool production = 4;
+}
+
+message ConnectResponse {
+  oneof message {
+    Connected connected = 1;
+    CreatedStack createdStack = 2;
+    DeletedStack deletedStack = 3;
+    Ping ping = 4;
+    UpdateUsageReport updateUsageReport = 5;
+  }
+}
+
+message Connected {}
+
+message Ping {}
+
+message CreatedStack {
+  string clusterName = 1;
+  string seed = 2;
+  AuthConfig authConfig = 3;
+  repeated AuthClient staticClients = 4;
+}
+
+message DeletedStack {
+  string clusterName = 1;
+}
+
+message UpdateUsageReport {
+  string clusterName = 1;
+  string stripeKey = 2;
+  string stripeSubscriptionId = 3;
+}
+
+message AuthConfig {
+  string clientId = 1;
+  string clientSecret = 2;
+  string issuer = 3;
+}
+
+message AuthClient {
+  bool public = 1;
+  string id = 2;
+}
