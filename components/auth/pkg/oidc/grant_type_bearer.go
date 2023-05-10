@@ -122,7 +122,6 @@ func CreateJWTTokenResponse(ctx context.Context, issuer string, tokenRequest *oi
 		return nil, err
 	}
 
-	tokenRequest.Audience = oidc.Audience{}
 	accessToken, err := op.CreateJWT(ctx, issuer, tokenRequest, exp, id, client, creator.Storage())
 	if err != nil {
 		return nil, err
