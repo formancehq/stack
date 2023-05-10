@@ -304,6 +304,8 @@ func (p *parseVisitor) VisitScript(c parser.IScriptContext) (*program.Program, *
 				stmt = program.StatementFail{}
 			case *parser.SendContext:
 				stmt, err = p.VisitSend(c)
+			case *parser.SendAllContext:
+				stmt, err = p.VisitSendAll(c)
 			case *parser.SetTxMetaContext:
 				stmt, err = p.VisitSetTxMeta(c)
 			case *parser.SetAccountMetaContext:

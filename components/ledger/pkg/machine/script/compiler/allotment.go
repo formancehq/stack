@@ -15,7 +15,7 @@ func (p *parseVisitor) VisitAllotment(c antlr.ParserRuleContext, portions []pars
 	total := big.NewRat(0, 1)
 	hasVariable := false
 	hasRemaining := false
-	for i := len(portions) - 1; i >= 0; i-- {
+	for i := 0; i < len(portions); i++ {
 		c := portions[i]
 		switch c := c.(type) {
 		case *parser.AllotmentPortionConstContext:
