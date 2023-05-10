@@ -33,6 +33,9 @@ func NewClientFacade(client Client, relyingParty rp.RelyingParty) *clientFacade 
 
 // GetID must return the client_id
 func (c *clientFacade) GetID() string {
+	if c == nil {
+		return ""
+	}
 	return c.Client.GetID()
 }
 
