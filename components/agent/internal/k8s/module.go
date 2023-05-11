@@ -2,7 +2,7 @@ package k8s
 
 import (
 	"github.com/formancehq/operator/pkg/client/v1beta3"
-	"github.com/formancehq/stack/components/membership-agent/internal/grpc"
+	"github.com/formancehq/stack/components/agent/internal/grpc"
 	"go.uber.org/fx"
 )
 

@@ -1,8 +1,8 @@
 global:
-  serviceName: membership-agent
+  serviceName: agent
 
 image:
-  repository: ghcr.io/formancehq/membership-agent
+  repository: ghcr.io/formancehq/agent
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest

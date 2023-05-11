@@ -6,7 +6,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      {{- include "membership-agent.selectorLabels" . | nindent 6 }}
+      {{- include "agent.selectorLabels" . | nindent 6 }}
   strategy:
     # Stop before recreate as each agent has an id and the server will not allow the connection if an agent is already connected
     type: Recreate
@@ -17,7 +17,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "membership-agent.selectorLabels" . | nindent 8 }}
+        {{- include "agent.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -33,7 +33,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-          - membership-agent
+          - agent
           env:
             - name: DEBUG
               value: "{{.Values.debug}}"

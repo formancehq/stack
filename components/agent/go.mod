@@ -1,4 +1,4 @@
-module github.com/formancehq/stack/components/membership-agent
+module github.com/formancehq/stack/components/agent
 
 go 1.19
 

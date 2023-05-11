@@ -8,8 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
-	innerGrpc "github.com/formancehq/stack/components/membership-agent/internal/grpc"
-	"github.com/formancehq/stack/components/membership-agent/internal/k8s"
+	innerGrpc "github.com/formancehq/stack/components/agent/internal/grpc"
+	"github.com/formancehq/stack/components/agent/internal/k8s"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	sharedotlptraces "github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
 	"github.com/formancehq/stack/libs/go-libs/service"
