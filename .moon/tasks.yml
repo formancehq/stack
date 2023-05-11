@@ -35,13 +35,14 @@ tasks:
     test:
         command: 'task tests'
         platform: 'system'
-#    release:
-#        command: 'goreleaser release --clean --snapshot --skip-docker -f .goreleaser.yml'
-#        platform: 'system'
-#        outputs:
-#            - 'dist'
-#        env:
-#            SEGMENT_WRITE_KEY: 'toto'
+    build:
+        command: 'goreleaser release --clean --nightly --skip-publish -f .goreleaser.yml'
+        platform: 'system'
+        outputs:
+            - 'dist'
+        env:
+            SEGMENT_WRITE_KEY: 'toto'
+            GITHUB_TOKEN: 'toto'
     mod:
         command: 'go mod tidy'
         platform: 'system'

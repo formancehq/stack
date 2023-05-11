@@ -1,10 +1,10 @@
 project_name: agent
 includes:
   - from_file:
-      path: ./.goreleaser.default.yaml
+      path: ./../../.goreleaser.default.yaml
 monorepo:
   tag_prefix: components/agent/
-  dir: ./components/agent/
+  dir: ./
 
 builds:
   - binary: agent

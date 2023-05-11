@@ -1,7 +1,7 @@
 project_name: fctl
 includes:
   - from_file:
-      path: ./.goreleaser.default.yaml
+      path: ./../../.goreleaser.default.yaml
 monorepo:
   tag_prefix: components/fctl/
   dir: ./
