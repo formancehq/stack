@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
-	"github.com/formancehq/stack/components/membership-agent/internal/grpc/generated"
+	"github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go/v74"

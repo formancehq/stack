@@ -2,7 +2,7 @@
 package main
 
 import (
-	"github.com/formancehq/stack/components/membership-agent/cmd"
+	"github.com/formancehq/stack/components/agent/cmd"
 	"github.com/joho/godotenv"
 )
 

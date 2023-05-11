@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/url"
 
-	membershipgrpc "github.com/formancehq/stack/components/membership-agent/internal/grpc/generated"
+	membershipgrpc "github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"

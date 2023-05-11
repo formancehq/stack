@@ -92,6 +92,6 @@ includes:
   integration:
     taskfile: ./tests/integration
     dir: ./tests/integration
-  membership-agent:
-    taskfile: ./tests/membership-agent
-    dir: ./tests/membership-agent
+  agent:
+    taskfile: ./components/agent
+    dir: ./components/agent

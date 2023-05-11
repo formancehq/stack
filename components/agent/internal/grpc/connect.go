@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	membershipgrpc "github.com/formancehq/stack/components/membership-agent/internal/grpc/generated"
+	membershipgrpc "github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	sharedlogging "github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"

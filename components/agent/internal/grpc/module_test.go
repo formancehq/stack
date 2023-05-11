@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/formancehq/operator/apis/stack/v1beta3"
-	"github.com/formancehq/stack/components/membership-agent/internal/grpc/generated"
+	"github.com/formancehq/stack/components/agent/internal/grpc/generated"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/fx"
