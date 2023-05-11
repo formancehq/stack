@@ -3,7 +3,7 @@ language: 'go'
 
 workspace:
     inheritedTasks:
-        exclude: ['release', 'lint', 'test']
+        exclude: ['release', 'lint', 'test', 'build']
 
 tasks:
     integration:
