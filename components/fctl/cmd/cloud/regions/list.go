@@ -52,11 +52,11 @@ func NewListCommand() *cobra.Command {
 						if i.Creator != nil {
 							return i.Creator.Email
 						}
-						return ""
+						return "Formance Cloud"
 					}(),
 				}
 			})
-			tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Base url", "Public", "Active", "Last ping", "Creator"})
+			tableData = fctl.Prepend(tableData, []string{"ID", "Name", "Base url", "Public", "Active", "Last ping", "Owner"})
 			return pterm.DefaultTable.
 				WithHasHeader().
 				WithWriter(cmd.OutOrStdout()).
