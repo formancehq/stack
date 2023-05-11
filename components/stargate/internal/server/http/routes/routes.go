@@ -45,7 +45,7 @@ func NewRouter(
 		router.Use(otelchi.Middleware("stargate"))
 		router.Get("/_info", stargateController.GetInfo)
 
-		router.HandleFunc("/", stargateController.HandleCalls)
+		router.HandleFunc("/*", stargateController.HandleCalls)
 	})
 
 	return router

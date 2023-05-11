@@ -39,8 +39,10 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	subject := getNatsSubject(organizationID, stackID)
-	resp, err := s.natsConn.RequestWithContext(ctx, subject, buf)
+	subject := GetNatsSubject(organizationID, stackID)
+	// requestCtx, cancel := context.WithTimeout(ctx, s.config.natsRequestTimeout)
+	// defer cancel()
+	resp, err := s.natsConn.Request(subject, buf, s.config.natsRequestTimeout)
 	if err != nil {
 		ResponseError(w, r, errors.Wrapf(err, "failed to send message"))
 		return
@@ -68,7 +70,7 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func getNatsSubject(organizationID, stackID string) string {
+func GetNatsSubject(organizationID, stackID string) string {
 	return organizationID + "." + stackID
 }
 

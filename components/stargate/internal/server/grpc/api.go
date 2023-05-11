@@ -9,13 +9,13 @@ import (
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/opentelemetry"
-	"github.com/gogo/protobuf/proto"
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 type Server struct {
@@ -44,19 +44,17 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	ctx := stream.Context()
 	organizationID, stackID, err := orgaAndStackIDFromIncomingContext(ctx)
 	if err != nil {
-		return err
+		return status.Errorf(codes.InvalidArgument, "cannot get organization and stack id from contex metadata: %v", err)
 	}
 
 	waitingResponses := sync.Map{}
-	subject := getNatsSubject(organizationID, stackID)
+	subject := GetNatsSubject(organizationID, stackID)
 	sub, err := s.natsConn.QueueSubscribeSync(subject, subject)
 	if err != nil {
 		return status.Errorf(codes.Internal, "cannot subscribe to nats subject")
 	}
 
 	eg, ctx := errgroup.WithContext(ctx)
-
-	// TODO(polo): handle ping/pong messages
 
 	eg.Go(func() error {
 		for {
@@ -127,7 +125,7 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	return nil
 }
 
-func getNatsSubject(organizationID, stackID string) string {
+func GetNatsSubject(organizationID, stackID string) string {
 	return organizationID + "." + stackID
 }
 
