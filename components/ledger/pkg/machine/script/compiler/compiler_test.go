@@ -191,7 +191,7 @@ func TestSetTxMetaVars(t *testing.T) {
 			Program: Program{
 				VarsDecl: []VarDecl{
 					{
-						Ty:   core.TypePortion,
+						Typ:  core.TypePortion,
 						Name: "commission",
 					},
 				},
@@ -221,7 +221,7 @@ func TestComments(t *testing.T) {
 			Program: Program{
 				VarsDecl: []VarDecl{
 					{
-						Ty:   core.TypeAccount,
+						Typ:  core.TypeAccount,
 						Name: "a",
 					},
 				},
@@ -527,11 +527,11 @@ func TestMetadata(t *testing.T) {
 			Program: Program{
 				VarsDecl: []VarDecl{
 					{
-						Ty:   core.TypeAccount,
+						Typ:  core.TypeAccount,
 						Name: "sale",
 					},
 					{
-						Ty:   core.TypeAccount,
+						Typ:  core.TypeAccount,
 						Name: "seller",
 						Origin: VarOriginMeta{
 							Account: ExprVariable("sale"),
@@ -539,7 +539,7 @@ func TestMetadata(t *testing.T) {
 						},
 					},
 					{
-						Ty:   core.TypePortion,
+						Typ:  core.TypePortion,
 						Name: "commission",
 						Origin: VarOriginMeta{
 							Account: ExprVariable("seller"),
@@ -978,7 +978,7 @@ func TestSetAccountMeta(t *testing.T) {
 				Program: Program{
 					VarsDecl: []VarDecl{
 						{
-							Ty:   core.TypeAccount,
+							Typ:  core.TypeAccount,
 							Name: "acc",
 						},
 					},
@@ -1056,7 +1056,7 @@ func TestVariableBalance(t *testing.T) {
 				Program: Program{
 					VarsDecl: []VarDecl{
 						{
-							Ty:   core.TypeMonetary,
+							Typ:  core.TypeMonetary,
 							Name: "bal",
 							Origin: VarOriginBalance{
 								Account: ExprLiteral{Value: core.AccountAddress("alice")},
@@ -1096,11 +1096,11 @@ func TestVariableBalance(t *testing.T) {
 				Program: Program{
 					VarsDecl: []VarDecl{
 						{
-							Ty:   core.TypeAccount,
+							Typ:  core.TypeAccount,
 							Name: "acc",
 						},
 						{
-							Ty:   core.TypeMonetary,
+							Typ:  core.TypeMonetary,
 							Name: "bal",
 							Origin: VarOriginBalance{
 								Account: ExprVariable("acc"),
@@ -1241,11 +1241,11 @@ func TestVariableAsset(t *testing.T) {
 			Program: Program{
 				VarsDecl: []VarDecl{
 					{
-						Ty:   core.TypeAsset,
+						Typ:  core.TypeAsset,
 						Name: "ass",
 					},
 					{
-						Ty:   core.TypeMonetary,
+						Typ:  core.TypeMonetary,
 						Name: "bal",
 						Origin: VarOriginBalance{
 							Account: ExprLiteral{Value: core.AccountAddress("alice")},

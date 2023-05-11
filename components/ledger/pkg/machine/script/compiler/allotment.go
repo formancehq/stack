@@ -10,7 +10,7 @@ import (
 	"github.com/numary/ledger/pkg/machine/vm/program"
 )
 
-func (p *parseVisitor) VisitAllotment(c antlr.ParserRuleContext, portions []parser.IAllotmentPortionContext) ([]program.AllotmentPortion, *CompileError) {
+func (p *parseVisitor) CompileAllotment(c antlr.ParserRuleContext, portions []parser.IAllotmentPortionContext) ([]program.AllotmentPortion, *CompileError) {
 	res_portions := []program.AllotmentPortion{}
 	total := big.NewRat(0, 1)
 	hasVariable := false

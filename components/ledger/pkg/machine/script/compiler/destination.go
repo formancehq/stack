@@ -6,10 +6,10 @@ import (
 	"github.com/numary/ledger/pkg/machine/vm/program"
 )
 
-func (p *parseVisitor) VisitDestination(c parser.IDestinationContext) (program.Destination, *CompileError) {
+func (p *parseVisitor) CompileDestination(c parser.IDestinationContext) (program.Destination, *CompileError) {
 	switch c := c.(type) {
 	case *parser.DestAccountContext:
-		account, err := p.VisitExprTy(c.Expression(), core.TypeAccount)
+		account, err := p.CompileExprTy(c.Expression(), core.TypeAccount)
 		if err != nil {
 			return nil, err
 		}
@@ -19,7 +19,7 @@ func (p *parseVisitor) VisitDestination(c parser.IDestinationContext) (program.D
 		dests := c.DestinationInOrder().GetDests()
 		amounts := c.DestinationInOrder().GetAmounts()
 		for i := 0; i < len(dests); i++ {
-			amount, err := p.VisitExprTy(amounts[i], core.TypeMonetary)
+			amount, err := p.CompileExprTy(amounts[i], core.TypeMonetary)
 			if err != nil {
 				return nil, err
 			}
@@ -42,7 +42,7 @@ func (p *parseVisitor) VisitDestination(c parser.IDestinationContext) (program.D
 		}, nil
 	case *parser.DestAllotmentContext:
 		parts := []program.DestinationAllotmentPart{}
-		portions, err := p.VisitAllotment(c, c.DestinationAllotment().GetPortions())
+		portions, err := p.CompileAllotment(c, c.DestinationAllotment().GetPortions())
 		if err != nil {
 			return nil, err
 		}
@@ -64,7 +64,7 @@ func (p *parseVisitor) VisitDestination(c parser.IDestinationContext) (program.D
 func (p *parseVisitor) VisitKeptOrDestination(c parser.IKeptOrDestinationContext) (*program.KeptOrDestination, *CompileError) {
 	switch c := c.(type) {
 	case *parser.IsDestinationContext:
-		dest, err := p.VisitDestination(c.Destination())
+		dest, err := p.CompileDestination(c.Destination())
 		if err != nil {
 			return nil, err
 		}

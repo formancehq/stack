@@ -10,24 +10,24 @@ import (
 
 type FallbackAccount core.Address
 
-// VisitValueAwareSource returns the resource addresses of all the accounts
-func (p *parseVisitor) VisitValueAwareSource(c parser.IValueAwareSourceContext) (program.ValueAwareSource, *CompileError) {
+// CompileValueAwareSource returns the resource addresses of all the accounts
+func (p *parseVisitor) CompileValueAwareSource(c parser.IValueAwareSourceContext) (program.ValueAwareSource, *CompileError) {
 	switch c := c.(type) {
 	case *parser.SrcContext:
-		src, _, err := p.VisitSource(c.Source())
+		src, _, err := p.CompileSource(c.Source())
 		return program.ValueAwareSourceSource{
 			Source: src,
 		}, err
 	case *parser.SrcAllotmentContext:
 		parts := program.ValueAwareSourceAllotment{}
-		portions, err := p.VisitAllotment(c.SourceAllotment(), c.SourceAllotment().GetPortions())
+		portions, err := p.CompileAllotment(c.SourceAllotment(), c.SourceAllotment().GetPortions())
 		if err != nil {
 			return nil, err
 		}
 		sources := c.SourceAllotment().GetSources()
 		n := len(sources)
 		for i := 0; i < n; i++ {
-			src, _, compErr := p.VisitSource(sources[i])
+			src, _, compErr := p.CompileSource(sources[i])
 			if compErr != nil {
 				return nil, compErr
 			}
@@ -41,14 +41,14 @@ func (p *parseVisitor) VisitValueAwareSource(c parser.IValueAwareSourceContext) 
 	return nil, nil
 }
 
-// VisitSource returns the resource addresses of all the accounts,
+// CompileSource returns the resource addresses of all the accounts,
 // the addresses of accounts already emptied,
 // and possibly a fallback account if the source has an unbounded overdraft allowance or contains @world
-func (p *parseVisitor) VisitSource(c parser.ISourceContext) (program.Source, bool, *CompileError) {
+func (p *parseVisitor) CompileSource(c parser.ISourceContext) (program.Source, bool, *CompileError) {
 	fallback := false
 	switch c := c.(type) {
 	case *parser.SrcAccountContext:
-		account, compErr := p.VisitExprTy(c.SourceAccount().GetAccount(), core.TypeAccount)
+		account, compErr := p.CompileExprTy(c.SourceAccount().GetAccount(), core.TypeAccount)
 		if compErr != nil {
 			return nil, false, compErr
 		}
@@ -62,7 +62,7 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext) (program.Source, boo
 			}
 			switch c := c.SourceAccount().GetOverdraft().(type) {
 			case *parser.SrcAccountOverdraftSpecificContext:
-				mon, err := p.VisitExprTy(c.GetSpecific(), core.TypeMonetary)
+				mon, err := p.CompileExprTy(c.GetSpecific(), core.TypeMonetary)
 				if err != nil {
 					return nil, false, err
 				}
@@ -82,11 +82,11 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext) (program.Source, boo
 			Overdraft: overdraft,
 		}, fallback, nil
 	case *parser.SrcMaxedContext:
-		src, _, err := p.VisitSource(c.SourceMaxed().GetSrc())
+		src, _, err := p.CompileSource(c.SourceMaxed().GetSrc())
 		if err != nil {
 			return nil, false, err
 		}
-		max, err := p.VisitExprTy(c.SourceMaxed().GetMax(), core.TypeMonetary)
+		max, err := p.CompileExprTy(c.SourceMaxed().GetMax(), core.TypeMonetary)
 		if err != nil {
 			return nil, false, err
 		}
@@ -105,7 +105,7 @@ func (p *parseVisitor) VisitSource(c parser.ISourceContext) (program.Source, boo
 			if fallback {
 				return nil, false, LogicError(c, errors.New("source is already unlimited at this point"))
 			}
-			subsource, subsource_fallback, err := p.VisitSource(sources[i])
+			subsource, subsource_fallback, err := p.CompileSource(sources[i])
 			if err != nil {
 				return nil, false, err
 			}

@@ -51,7 +51,10 @@ func main() {
 		"dest": core.AccountAddress("charlie"),
 	})
 
-	m.Run(*program)
+	err = m.Run(*program)
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Println("Postings:")
 	for _, posting := range m.Postings {

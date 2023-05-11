@@ -1,6 +1,9 @@
 package program
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/numary/ledger/pkg/core"
 )
 
@@ -202,7 +205,7 @@ type VarOriginBalance struct {
 func (v VarOriginBalance) isVarOrigin() {}
 
 type VarDecl struct {
-	Ty     core.Type
+	Typ    core.Type
 	Name   string
 	Origin VarOrigin
 }
@@ -260,26 +263,27 @@ type Program struct {
 // 	return variables, nil
 // }
 
-// func (p *Program) ParseVariablesJSON(vars map[string]json.RawMessage) (map[string]core.Value, error) {
-// 	variables := make(map[string]core.Value)
-// 	for _, res := range p.Resources {
-// 		if param, ok := res.(Variable); ok {
-// 			data, ok := vars[param.Name]
-// 			if !ok {
-// 				return nil, fmt.Errorf("missing variable $%s", param.Name)
-// 			}
-// 			val, err := core.NewValueFromJSON(param.Typ, data)
-// 			if err != nil {
-// 				return nil, fmt.Errorf(
-// 					"invalid JSON value for variable $%s of type %v: %w",
-// 					param.Name, param.Typ, err)
-// 			}
-// 			variables[param.Name] = *val
-// 			delete(vars, param.Name)
-// 		}
-// 	}
-// 	for name := range vars {
-// 		return nil, fmt.Errorf("extraneous variable $%s", name)
-// 	}
-// 	return variables, nil
-// }
+func (p *Program) ParseVariablesJSON(vars map[string]json.RawMessage) (map[string]core.Value, error) {
+	variables := make(map[string]core.Value)
+	for _, var_decl := range p.VarsDecl {
+		if var_decl.Origin != nil {
+			continue
+		}
+		data, ok := vars[var_decl.Name]
+		if !ok {
+			return nil, fmt.Errorf("missing variable $%s", var_decl.Name)
+		}
+		val, err := core.NewValueFromJSON(var_decl.Typ, data)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"invalid JSON value for variable $%s of type %v: %w",
+				var_decl.Name, var_decl.Typ, err)
+		}
+		variables[var_decl.Name] = *val
+		delete(vars, var_decl.Name)
+	}
+	for name := range vars {
+		return nil, fmt.Errorf("extraneous variable $%s", name)
+	}
+	return variables, nil
+}
