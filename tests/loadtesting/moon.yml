@@ -3,4 +3,4 @@ language: 'go'
 
 workspace:
     inheritedTasks:
-        exclude: ['release', 'lint', 'test', 'build']
+        exclude: ['lint', 'test']

@@ -3,10 +3,10 @@ language: 'go'
 
 workspace:
     inheritedTasks:
-        exclude: ['release', 'lint', 'test', 'build']
+        exclude: ['lint', 'test']
 
 tasks:
-    integration:
+    tests:
         command: 'task tests'
         platform: 'system'
         options:

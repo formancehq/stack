@@ -1,5 +1,5 @@
 fail_fast: true
-exclude: ^sdks/|openapi/build|components/payments/client|components/auth/authclient|components/agent/chart
+exclude: ^sdks/|openapi/build|components/payments/client|components/auth/authclient|components/agent/chart|components/operator/helm
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
@@ -11,6 +11,13 @@ repos:
     exclude: services/orchestration/examples
     args: [--allow-multiple-documents]
   - id: check-added-large-files
+  - id: fix-byte-order-marker
+  - id: check-case-conflict
+  - id: check-merge-conflict
+  - id: check-symlinks
+  - id: detect-aws-credentials
+  - id: detect-private-key
+    exclude: components/operator/garden|components/auth/cmd/serve.go
 - repo: local
   hooks:
   - id: moon

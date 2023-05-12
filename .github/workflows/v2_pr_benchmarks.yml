@@ -3,9 +3,9 @@ on:
   pull_request:
     types: [ assigned, opened, synchronize, reopened ]
     paths:
-    - 'components/ledger/**'
+      - 'components/ledger/**'
     branches:
-    - feat/v2
+      - main
 
 jobs:
   benchmarks-sync:
@@ -19,12 +19,12 @@ jobs:
   benchmarks-sync-diff:
     uses: ./.github/workflows/_v2_ledger_benchmark_report.yml
     needs:
-    - benchmarks-sync
+      - benchmarks-sync
     with:
       mode: sync
   benchmarks-async-diff:
     uses: ./.github/workflows/_v2_ledger_benchmark_report.yml
     needs:
-    - benchmarks-async
+      - benchmarks-async
     with:
       mode: async

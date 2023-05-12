@@ -1,12 +1,16 @@
 type: 'tool'
-language: 'go'
-
-workspace:
-    inheritedTasks:
-        exclude: ['release', 'lint', 'test', 'build']
+language: 'javascript'
 
 tasks:
+    deps:
+        command: 'task sdk:build'
+        platform: 'system'
+        options:
+            runInCI: false
     build:
         command: 'task sdk:generate:all'
+        platform: 'system'
+        deps:
+            - 'openapi:deps'
         inputs:
             - '/components/**/openapi.yaml'

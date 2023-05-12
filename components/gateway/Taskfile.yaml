@@ -11,7 +11,7 @@ tasks:
 
   lint:
     cmds:
-    - golangci-lint run --fix
+    - golangci-lint run --fix --allow-parallel-runners --config ./../../.golangci.yml
 
   build:
     cmds:

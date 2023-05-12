@@ -10,7 +10,7 @@ RUN GOOS=linux go build -o wallets \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Commit=${APP_SHA}" ./
 
-FROM ubuntu:jammy
+FROM ubuntu:22.04
 RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /src/components/wallets/wallets /wallets
 EXPOSE 3068
