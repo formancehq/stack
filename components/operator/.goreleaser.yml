@@ -30,7 +30,7 @@ archives:
     format: tar.gz
     name_template: "{{.ProjectName}}_{{.Os}}-{{.Arch}}"
 
-after:
-  hooks:
-  - cmd: make helm-update
-    dir: ./
+#after:
+#  hooks:
+#  - cmd: make helm-update
+#    dir: ./

@@ -1,6 +1,2 @@
 type: 'library'
 language: 'go'
-
-workspace:
-    inheritedTasks:
-        exclude: ['release', 'build']

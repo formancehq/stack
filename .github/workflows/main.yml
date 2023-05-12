@@ -1,155 +1,54 @@
-name: Default - Main
+name: Default
 on:
+  pull_request:
+    types: [ assigned, opened, synchronize, reopened ]
   push:
     branches:
       - main
+      - feat/v2
+
 jobs:
-  Find:
-    runs-on: ubuntu-latest
-    outputs:
-      folders: ${{ steps.find.outputs.folders }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: echo "folders=$(node .github/actions/find-directory/index.js)" >> $GITHUB_OUTPUT
-        id: find
+#  TestsIntegration:
+#    runs-on: 'ubuntu-latest'
+#    steps:
+#      - uses: 'actions/checkout@v3'
+#        with:
+#          fetch-depth: 0
+#      - name: Setup Env
+#        uses: ./.github/actions/env
+#        with:
+#          os: ${{ runner.os }}
+#          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+#      - run: 'moon run integration:tests'
+#        env:
+#          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY_FOR_TEST }}
+#          DOCKER_HOSTNAME: 172.17.0.1
+#      - uses: 'moonrepo/run-report-action@v1'
+#        if: success() || failure()
+#        with:
+#          access-token: ${{ secrets.GITHUB_TOKEN }}
 
-  Lint:
-    runs-on: ubuntu-latest
+  Moon:
+    runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        folder: ${{ fromJson(needs.Find.outputs.folders )}}
-    needs:
-      - Find
+        index: [ 0, 1, 2, 3, 4, 5 ]
     steps:
-      - uses: actions/checkout@v3
+      - uses: 'actions/checkout@v3'
         with:
           fetch-depth: 0
-      - name: Install Task
-        uses: arduino/setup-task@v1
+      - name: Setup Env
+        uses: ./.github/actions/env
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: ./components/${{ matrix.folder }}/go.mod
-          cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
-          cache: true
-      - name: go mod vendor
-        run: |
-          cd ./components/${{ matrix.folder }}
-          go mod vendor
-      - run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.51.2
-      - run: task ${{ matrix.folder }}:lint
-
-  Tests:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        folder: ${{ fromJson(needs.Find.outputs.folders )}}
-    needs:
-      - Find
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Install Task
-        uses: arduino/setup-task@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: ./components/${{ matrix.folder }}/go.mod
-          cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
-          cache: true
-      - name: go mod vendor
-        run: |
-          cd ./components/${{ matrix.folder }}
-          go mod vendor
-      - run: task ${{ matrix.folder }}:tests
-      - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          directory: ./components/${{ matrix.folder }}
-          fail_ci_if_error: false # optional (default = false)
-          verbose: true # optional (default = false)
-          flags: ${{ matrix.folder }}
-
-  GoReleaser:
-    name: GoReleaser
-    runs-on:
-      group: enterprise/runners
-      labels: formance-ubuntu-latest-8-cores
-    needs:
-      - Find
-    strategy:
-      matrix:
-        folder: ${{ fromJson(needs.Find.outputs.folders )}}
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - uses: actions/setup-go@v3
-        with:
-          go-version-file: ./components/${{ matrix.folder }}/go.mod
-          cache-dependency-path: ./components/${{ matrix.folder }}/go.sum
-          cache: true
-      - run: go mod vendor
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: "NumaryBot"
-          password: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v4
-        with:
-          distribution: goreleaser-pro
-          version: latest
-          args: release --clean --snapshot --nightly -f components/${{ matrix.folder }}/.goreleaser.yml
+          os: ${{ runner.os }}
+          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - run: 'moon ci --job ${{ matrix.index }} --jobTotal 6'
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY_OSS }}
-
-  TestsIntegration:
-    runs-on: ubuntu-latest
-    needs:
-    - Tests
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    - uses: actions/setup-go@v3
-      with:
-        go-version-file: ./tests/integration/go.mod
-        cache-dependency-path: ./tests/integration/go.sum
-        cache: true
-    - name: Install Task
-      uses: arduino/setup-task@v1
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-    # TOneverDO: Try to use a fixed Ginkgo version, Ginkgo infer it from the go.mod project (see https://onsi.github.io/ginkgo/#installing-ginkgo)
-    - run: |
-        go install github.com/onsi/ginkgo/v2/ginkgo &&
-        sudo ln -s $(go env GOPATH)/bin/ginkgo /usr/bin/ginkgo
-      working-directory: tests/integration
-    - run: task integration:tests
-      env:
-        STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY_FOR_TEST }}
-        # TODO: Discover dynamically
-        DOCKER_HOSTNAME: 172.17.0.1
+      - uses: 'moonrepo/run-report-action@v1'
+        if: success() || failure()
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}

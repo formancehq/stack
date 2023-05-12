@@ -2,15 +2,18 @@ name: Ledger benchmarks - V2
 on:
   push:
     branches:
-    - feat/v2 # TODO: Replace by main when merged on main
+      - main
+    paths:
+      - 'components/ledger/**'
+
 jobs:
   benchmarks-sync:
     uses: ./.github/workflows/_v2_ledger_benchmark.yml
     with:
       mode: sync
-      branch: v2 # TODO: Replace by main when merged on main
+      branch: main
   benchmarks-async:
     uses: ./.github/workflows/_v2_ledger_benchmark.yml
     with:
       mode: async
-      branch: v2 # TODO: Replace by main when merged on main
+      branch: main

@@ -28,21 +28,3 @@ fileGroups:
 #
 # This setting requires a map, where the key is a unique name for the task,
 # and the value is an object of task parameters.
-tasks:
-    lint:
-        command: 'golangci-lint run --fix --allow-parallel-runners --config ./../../.golangci.yml'
-        platform: 'system'
-    test:
-        command: 'task tests'
-        platform: 'system'
-    build:
-        command: 'goreleaser release --clean --nightly --skip-publish -f .goreleaser.yml'
-        platform: 'system'
-        outputs:
-            - 'dist'
-        env:
-            SEGMENT_WRITE_KEY: 'toto'
-            GITHUB_TOKEN: 'toto'
-    mod:
-        command: 'go mod tidy'
-        platform: 'system'

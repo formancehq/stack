@@ -10,7 +10,7 @@ tasks:
       - go test -p 1 -coverpkg ./... -coverprofile coverage.out -covermode atomic ./...
   lint:
     cmds:
-    - golangci-lint run -v --fix
+    - golangci-lint run --fix --allow-parallel-runners --config ./../../.golangci.yml
   build:
     cmds:
     - go build

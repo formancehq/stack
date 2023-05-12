@@ -17,7 +17,7 @@ tasks:
 
   lint:
     cmds:
-      - golangci-lint run {{if eq .VERBOSE "true"}}-v{{end}} --fix
+      - golangci-lint run --fix --allow-parallel-runners --config ./../../.golangci.yml
 
   tests:
     deps: [run-docker-compose]
