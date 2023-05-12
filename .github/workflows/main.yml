@@ -48,8 +48,8 @@ jobs:
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
           GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
           SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY_OSS }}
-          MOONBASE_ACCESS_KEY: ${{ secrets.MOONBASE_ACCESS_KEY }}
-          MOONBASE_SECRET_KEY: ${{ secrets.MOONBASE_SECRET_KEY }}
+          MOONBASE_ACCESS_KEY: "${{ secrets.MOONBASE_ACCESS_KEY }}"
+          MOONBASE_SECRET_KEY: "${{ secrets.MOONBASE_SECRET_KEY }}"
       - uses: 'moonrepo/run-report-action@v1'
         if: success() || failure()
         with:
