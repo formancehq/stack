@@ -13,4 +13,6 @@ tasks:
 
   helm:
     cmds:
+      - make kustomize
+      - make controller-gen
       - make helm-update

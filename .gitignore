@@ -20,3 +20,4 @@ worktrees
 .moon/cache
 .moon/docker
 .moon/bin
+.moon/go
