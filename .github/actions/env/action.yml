@@ -17,12 +17,14 @@ runs:
       uses: docker/setup-buildx-action@v2
     - uses: 'actions/setup-node@v3'
     - uses: 'actions/setup-go@v4'
-    - name: Cache Moon
-      id: cache-moon
+      with:
+        go-version: '>=1.20'
+    - name: Cache Go Moon
+      id: cache-go-moon
       uses: actions/cache@v3
       with:
-        path: .moon/cache
-        key: ${{ inputs.os }}-moon-cache
+        path: .moon/go
+        key: ${{ inputs.os }}-go-moon-cache
     - name: Install Task
       uses: arduino/setup-task@v1
       with:
