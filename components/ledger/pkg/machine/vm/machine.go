@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -37,7 +38,17 @@ func NewMachine(ledger LedgerReader, vars map[string]core.Value) Machine {
 	}
 }
 
-func (m *Machine) Run(script program.Program) error {
+func (m *Machine) checkVar(value core.Value) error {
+	switch v := value.(type) {
+	case core.Monetary:
+		if v.Amount.Ltz() {
+			return fmt.Errorf("monetary amounts must be non-negative but is %v", v.Amount)
+		}
+	}
+	return nil
+}
+
+func (m *Machine) Execute(script program.Program) error {
 	for _, var_decl := range script.VarsDecl {
 		switch o := var_decl.Origin.(type) {
 		case program.VarOriginMeta:
@@ -46,6 +57,10 @@ func (m *Machine) Run(script program.Program) error {
 				return err
 			}
 			value := m.ledger.GetMeta(*account, o.Key)
+			err = m.checkVar(value)
+			if err != nil {
+				return fmt.Errorf("failed to get metadata of account %s for key %s: %s", account, o.Key, err)
+			}
 			m.vars[var_decl.Name] = value
 		case program.VarOriginBalance:
 			account, err := EvalAs[core.AccountAddress](m, o.Account)
@@ -56,9 +71,20 @@ func (m *Machine) Run(script program.Program) error {
 			if err != nil {
 				return err
 			}
-			balance := m.ledger.GetBalance(*account, *asset)
+			balance := core.Monetary{
+				Asset:  *asset,
+				Amount: m.ledger.GetBalance(*account, *asset),
+			}
+			err = m.checkVar(balance)
+			if err != nil {
+				return fmt.Errorf("failed to get balance of account %s for asset %s: %s", account, asset, err)
+			}
 			m.vars[var_decl.Name] = balance
 		case nil:
+			err := m.checkVar(m.vars[var_decl.Name])
+			if err != nil {
+				return fmt.Errorf("variable passed is incorrect: %s", err)
+			}
 		default:
 			return errors.New(InternalError)
 		}
@@ -80,7 +106,10 @@ func (m *Machine) Run(script program.Program) error {
 			if err != nil {
 				return err
 			}
-			m.Allocate(*funding, s.Destination)
+			err = m.Allocate(*funding, s.Destination)
+			if err != nil {
+				return err
+			}
 		case program.StatementLet:
 			value, err := m.Eval(s.Expr)
 			if err != nil {
@@ -124,6 +153,8 @@ func (m *Machine) Send(funding core.Funding, account core.AccountAddress) {
 			Asset:       string(funding.Asset),
 			Amount:      part.Amount,
 		})
+		bal := m.BalanceOf(account, funding.Asset)
+		*bal = *bal.Add(part.Amount)
 	}
 }
 
@@ -357,8 +388,8 @@ func (m *Machine) Repay(funding core.Funding) {
 
 func (m *Machine) WithdrawAll(account core.AccountAddress, asset core.Asset, overdraft core.Number) core.Funding {
 	balance := m.BalanceOf(account, asset)
-	withdrawn := balance.Sub(overdraft)
-	*balance = *balance.Sub(overdraft)
+	withdrawn := balance.Add(overdraft)
+	*balance = *overdraft.Neg()
 	return core.Funding{
 		Asset: asset,
 		Parts: []core.FundingPart{
@@ -471,5 +502,51 @@ func EvalAs[T core.Value](i *Machine, expr program.Expr) (*T, error) {
 	if v, ok := x.(T); ok {
 		return &v, nil
 	}
-	return nil, fmt.Errorf("internal interpreter error: extected type '%T' and got '%T'", *new(T), x)
+	return nil, fmt.Errorf("internal interpreter error: expected type '%T' and got '%T'", *new(T), x)
+}
+
+type Metadata map[string]any
+
+func (m *Machine) GetTxMetaJSON() Metadata {
+	meta := make(Metadata)
+	for k, v := range m.TxMeta {
+		valJSON, err := json.Marshal(v)
+		if err != nil {
+			panic(err)
+		}
+		v, err := json.Marshal(core.ValueJSON{
+			Type:  v.GetType().String(),
+			Value: valJSON,
+		})
+		if err != nil {
+			panic(err)
+		}
+		meta[k] = v
+	}
+	return meta
+}
+
+func (m *Machine) GetAccountsMetaJSON() Metadata {
+	res := Metadata{}
+	for account, meta := range m.AccountMeta {
+		for k, v := range meta {
+			if _, ok := res[account.String()]; !ok {
+				res[account.String()] = map[string][]byte{}
+			}
+			valJSON, err := json.Marshal(v)
+			if err != nil {
+				panic(err)
+			}
+			v, err := json.Marshal(core.ValueJSON{
+				Type:  v.GetType().String(),
+				Value: valJSON,
+			})
+			if err != nil {
+				panic(err)
+			}
+			res[account.String()].(map[string][]byte)[k] = v
+		}
+	}
+
+	return res
 }

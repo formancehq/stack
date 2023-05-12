@@ -51,7 +51,7 @@ func main() {
 		"dest": core.AccountAddress("charlie"),
 	})
 
-	err = m.Run(*program)
+	err = m.Execute(*program)
 	if err != nil {
 		panic(err)
 	}

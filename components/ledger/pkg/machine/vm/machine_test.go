@@ -96,9 +96,10 @@ func (c *TestCase) setMeta(account, key string, value core.Value) {
 
 func test(t *testing.T, tc TestCase) {
 	m := NewMachine(tc.ledger, tc.vars)
-	err := m.Run(tc.program)
+	err := m.Execute(tc.program)
 	if tc.expected.Error != "" {
 		require.ErrorContains(t, err, tc.expected.Error)
+		return
 	} else {
 		require.NoError(t, err)
 	}
@@ -633,6 +634,7 @@ func TestTrackBalances2(t *testing.T) {
 	tc.expected = CaseResult{
 		Printed:  []core.Value{},
 		Postings: []core.Posting{},
+		Error:    "insufficient funds",
 	}
 	test(t, tc)
 }
@@ -710,570 +712,441 @@ func TestSourceAllotment(t *testing.T) {
 	test(t, tc)
 }
 
-// func TestSourceOverlapping(t *testing.T) {
-// 	tc := NewTestCase()
-// 	tc.compile(t, `send [COIN 99] (
-// 		source = {
-// 			15% from {
-// 				@b
-// 				@a
-// 			}
-// 			30% from @a
-// 			remaining from @a
-// 		}
-// 		destination = @world
-// 	)`)
-// 	tc.setBalance("a", "COIN", 99)
-// 	tc.setBalance("b", "COIN", 3)
-// 	tc.expected = CaseResult{
-// 		Printed: []core.Value{},
-// 		Postings: []Posting{
-// 			{
-// 				Asset:       "COIN",
-// 				Amount:      core.NewMonetaryInt(3),
-// 				Source:      "b",
-// 				Destination: "world",
-// 			},
-// 			{
-// 				Asset:       "COIN",
-// 				Amount:      core.NewMonetaryInt(96),
-// 				Source:      "a",
-// 				Destination: "world",
-// 			},
-// 		},
-// 		ExitCode: EXIT_OK,
-// 	}
-// 	test(t, tc)
-// }
+func TestSourceOverlapping(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `send [COIN 99] (
+		source = {
+			15% from {
+				@b
+				@a
+			}
+			30% from @a
+			remaining from @a
+		}
+		destination = @world
+	)`)
+	tc.setBalance("a", "COIN", 99)
+	tc.setBalance("b", "COIN", 3)
+	tc.expected = CaseResult{
+		Printed: []core.Value{},
+		Postings: []core.Posting{
+			{
+				Asset:       "COIN",
+				Amount:      core.NewMonetaryInt(3),
+				Source:      "b",
+				Destination: "world",
+			},
+			{
+				Asset:       "COIN",
+				Amount:      core.NewMonetaryInt(96),
+				Source:      "a",
+				Destination: "world",
+			},
+		},
+	}
+	test(t, tc)
+}
 
-// func TestSourceComplex(t *testing.T) {
-// 	tc := NewTestCase()
-// 	tc.compile(t, `vars {
-// 		monetary $max
-// 	}
-// 	send [COIN 200] (
-// 		source = {
-// 			50% from {
-// 				max [COIN 4] from @a
-// 				@b
-// 				@c
-// 			}
-// 			remaining from max $max from @d
-// 		}
-// 		destination = @platform
-// 	)`)
-// 	tc.setVarsFromJSON(t, `{
-// 		"max": {
-// 			"asset": "COIN",
-// 			"amount": 120
-// 		}
-// 	}`)
-// 	tc.setBalance("a", "COIN", 1000)
-// 	tc.setBalance("b", "COIN", 40)
-// 	tc.setBalance("c", "COIN", 1000)
-// 	tc.setBalance("d", "COIN", 1000)
-// 	tc.expected = CaseResult{
-// 		Printed: []core.Value{},
-// 		Postings: []Posting{
-// 			{
-// 				Asset:       "COIN",
-// 				Amount:      core.NewMonetaryInt(4),
-// 				Source:      "a",
-// 				Destination: "platform",
-// 			},
-// 			{
-// 				Asset:       "COIN",
-// 				Amount:      core.NewMonetaryInt(40),
-// 				Source:      "b",
-// 				Destination: "platform",
-// 			},
-// 			{
-// 				Asset:       "COIN",
-// 				Amount:      core.NewMonetaryInt(56),
-// 				Source:      "c",
-// 				Destination: "platform",
-// 			},
-// 			{
-// 				Asset:       "COIN",
-// 				Amount:      core.NewMonetaryInt(100),
-// 				Source:      "d",
-// 				Destination: "platform",
-// 			},
-// 		},
-// 		ExitCode: EXIT_OK,
-// 	}
-// 	test(t, tc)
-// }
+func TestSourceComplex(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `vars {
+		monetary $max
+	}
+	send [COIN 200] (
+		source = {
+			50% from {
+				max [COIN 4] from @a
+				@b
+				@c
+			}
+			remaining from max $max from @d
+		}
+		destination = @platform
+	)`)
+	tc.setVarsFromJSON(t, `{
+		"max": {
+			"asset": "COIN",
+			"amount": 120
+		}
+	}`)
+	tc.setBalance("a", "COIN", 1000)
+	tc.setBalance("b", "COIN", 40)
+	tc.setBalance("c", "COIN", 1000)
+	tc.setBalance("d", "COIN", 1000)
+	tc.expected = CaseResult{
+		Printed: []core.Value{},
+		Postings: []core.Posting{
+			{
+				Asset:       "COIN",
+				Amount:      core.NewMonetaryInt(4),
+				Source:      "a",
+				Destination: "platform",
+			},
+			{
+				Asset:       "COIN",
+				Amount:      core.NewMonetaryInt(40),
+				Source:      "b",
+				Destination: "platform",
+			},
+			{
+				Asset:       "COIN",
+				Amount:      core.NewMonetaryInt(56),
+				Source:      "c",
+				Destination: "platform",
+			},
+			{
+				Asset:       "COIN",
+				Amount:      core.NewMonetaryInt(100),
+				Source:      "d",
+				Destination: "platform",
+			},
+		},
+	}
+	test(t, tc)
+}
 
-// func TestDestinationComplex(t *testing.T) {
-// 	tc := NewTestCase()
-// 	tc.compile(t, `send [COIN 100] (
-// 		source = @world
-// 		destination = {
-// 			20% to @a
-// 			20% kept
-// 			60% to {
-// 				max [COIN 10] to @b
-// 				remaining to @c
-// 			}
-// 		}
-// 	)`)
-// 	tc.expected = CaseResult{
-// 		Printed: []core.Value{},
-// 		Postings: []Posting{
-// 			{
-// 				Asset:       "COIN",
-// 				Amount:      core.NewMonetaryInt(20),
-// 				Source:      "world",
-// 				Destination: "a",
-// 			},
-// 			{
-// 				Asset:       "COIN",
-// 				Amount:      core.NewMonetaryInt(10),
-// 				Source:      "world",
-// 				Destination: "b",
-// 			},
-// 			{
-// 				Asset:       "COIN",
-// 				Amount:      core.NewMonetaryInt(50),
-// 				Source:      "world",
-// 				Destination: "c",
-// 			},
-// 		},
-// 		ExitCode: EXIT_OK,
-// 	}
-// 	test(t, tc)
-// }
+func TestDestinationComplex(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `send [COIN 100] (
+		source = @world
+		destination = {
+			20% to @a
+			20% kept
+			60% to {
+				max [COIN 10] to @b
+				remaining to @c
+			}
+		}
+	)`)
+	tc.expected = CaseResult{
+		Printed: []core.Value{},
+		Postings: []core.Posting{
+			{
+				Asset:       "COIN",
+				Amount:      core.NewMonetaryInt(20),
+				Source:      "world",
+				Destination: "a",
+			},
+			{
+				Asset:       "COIN",
+				Amount:      core.NewMonetaryInt(10),
+				Source:      "world",
+				Destination: "b",
+			},
+			{
+				Asset:       "COIN",
+				Amount:      core.NewMonetaryInt(50),
+				Source:      "world",
+				Destination: "c",
+			},
+		},
+	}
+	test(t, tc)
+}
 
-// func TestNeededBalances(t *testing.T) {
-// 	p, err := compiler.Compile(`vars {
-// 		account $a
-// 	}
-// 	send [GEM 15] (
-// 		source = {
-// 			$a
-// 			@b
-// 			@world
-// 		}
-// 		destination = @c
-// 	)`)
+func TestSetTxMeta(t *testing.T) {
+	p, err := compiler.Compile(`
+	set_tx_meta("aaa", @platform)
+	set_tx_meta("bbb", GEM)
+	set_tx_meta("ccc", 45)
+	set_tx_meta("ddd", "hello")
+	set_tx_meta("eee", [COIN 30])
+	set_tx_meta("fff", 15%)
+	`)
+	require.NoError(t, err)
 
-// 	if err != nil {
-// 		t.Fatalf("did not expect error on Compile, got: %v", err)
-// 	}
+	m := NewMachine(NewMockupLedger(), map[string]core.Value{})
 
-// 	m := NewMachine(*p)
+	err = m.Execute(*p)
+	require.NoError(t, err)
 
-// 	err = m.SetVars(map[string]core.Value{
-// 		"a": core.AccountAddress("a"),
-// 	})
-// 	if err != nil {
-// 		t.Fatalf("did not expect error on SetVars, got: %v", err)
-// 	}
-// 	{
-// 		ch, err := m.ResolveResources()
-// 		if err != nil {
-// 			t.Fatalf("did not expect error on ResolveResources, got: %v", err)
-// 		}
-// 		for range ch {
-// 			t.Fatalf("did not expect to need any metadata")
-// 		}
-// 	}
+	expectedMeta := map[string]json.RawMessage{
+		"aaa": json.RawMessage(`{"type":"account","value":"platform"}`),
+		"bbb": json.RawMessage(`{"type":"asset","value":"GEM"}`),
+		"ccc": json.RawMessage(`{"type":"number","value":45}`),
+		"ddd": json.RawMessage(`{"type":"string","value":"hello"}`),
+		"eee": json.RawMessage(`{"type":"monetary","value":{"asset":"COIN","amount":30}}`),
+		"fff": json.RawMessage(`{"type":"portion","value":{"remaining":false,"specific":"3/20"}}`),
+	}
 
-// 	expected := map[string]map[string]struct{}{
-// 		"a": {
-// 			"GEM": {},
-// 		},
-// 		"b": {
-// 			"GEM": {},
-// 		},
-// 	}
-// 	{
-// 		ch, err := m.ResolveBalances()
-// 		if err != nil {
-// 			t.Fatalf("did not expect error on ResolveBalances, got: %v", err)
-// 		}
-// 		for req := range ch {
-// 			if req.Error != nil {
-// 				t.Fatalf("did not expect error in balance request: %v", req.Error)
-// 			}
-// 			if _, ok := expected[req.Account][req.Asset]; ok {
-// 				delete(expected[req.Account], req.Asset)
-// 				if len(expected[req.Account]) == 0 {
-// 					delete(expected, req.Account)
-// 				}
-// 				req.Response <- core.NewMonetaryInt(0)
-// 			} else {
-// 				t.Fatalf("did not expect to need %v balance of %v", req.Asset, req.Account)
-// 			}
-// 		}
-// 	}
-// 	if len(expected) != 0 {
-// 		t.Fatalf("some balances were not requested: %v", expected)
-// 	}
-// }
+	resMeta := m.GetTxMetaJSON()
+	assert.Equal(t, 6, len(resMeta))
 
-// func TestSetTxMeta(t *testing.T) {
-// 	p, err := compiler.Compile(`
-// 	set_tx_meta("aaa", @platform)
-// 	set_tx_meta("bbb", GEM)
-// 	set_tx_meta("ccc", 45)
-// 	set_tx_meta("ddd", "hello")
-// 	set_tx_meta("eee", [COIN 30])
-// 	set_tx_meta("fff", 15%)
-// 	`)
-// 	require.NoError(t, err)
+	for key, val := range resMeta {
+		assert.Equal(t, string(expectedMeta[key]), string(val.([]byte)))
+	}
+}
 
-// 	m := NewMachine(*p)
+func TestSetAccountMeta(t *testing.T) {
+	t.Run("all types", func(t *testing.T) {
+		p, err := compiler.Compile(`
+			set_account_meta(@platform, "aaa", @platform)
+			set_account_meta(@platform, "bbb", GEM)
+			set_account_meta(@platform, "ccc", 45)
+			set_account_meta(@platform, "ddd", "hello")
+			set_account_meta(@platform, "eee", [COIN 30])
+			set_account_meta(@platform, "fff", 15%)`)
+		require.NoError(t, err)
 
-// 	{
-// 		ch, err := m.ResolveResources()
-// 		require.NoError(t, err)
-// 		for req := range ch {
-// 			require.NoError(t, req.Error)
-// 		}
-// 	}
+		m := NewMachine(NewMockupLedger(), map[string]core.Value{})
 
-// 	{
-// 		ch, err := m.ResolveBalances()
-// 		require.NoError(t, err)
-// 		for req := range ch {
-// 			require.NoError(t, req.Error)
-// 		}
-// 	}
+		err = m.Execute(*p)
+		require.NoError(t, err)
 
-// 	exitCode, err := m.Execute()
-// 	require.NoError(t, err)
-// 	require.Equal(t, EXIT_OK, exitCode)
+		expectedMeta := map[string]json.RawMessage{
+			"aaa": json.RawMessage(`{"type":"account","value":"platform"}`),
+			"bbb": json.RawMessage(`{"type":"asset","value":"GEM"}`),
+			"ccc": json.RawMessage(`{"type":"number","value":45}`),
+			"ddd": json.RawMessage(`{"type":"string","value":"hello"}`),
+			"eee": json.RawMessage(`{"type":"monetary","value":{"asset":"COIN","amount":30}}`),
+			"fff": json.RawMessage(`{"type":"portion","value":{"remaining":false,"specific":"3/20"}}`),
+		}
 
-// 	expectedMeta := map[string]json.RawMessage{
-// 		"aaa": json.RawMessage(`{"type":"account","value":"platform"}`),
-// 		"bbb": json.RawMessage(`{"type":"asset","value":"GEM"}`),
-// 		"ccc": json.RawMessage(`{"type":"number","value":45}`),
-// 		"ddd": json.RawMessage(`{"type":"string","value":"hello"}`),
-// 		"eee": json.RawMessage(`{"type":"monetary","value":{"asset":"COIN","amount":30}}`),
-// 		"fff": json.RawMessage(`{"type":"portion","value":{"remaining":false,"specific":"3/20"}}`),
-// 	}
+		resMeta := m.GetAccountsMetaJSON()
+		assert.Equal(t, 1, len(resMeta))
 
-// 	resMeta := m.GetTxMetaJSON()
-// 	assert.Equal(t, 6, len(resMeta))
+		for acc, meta := range resMeta {
+			assert.Equal(t, "@platform", acc)
+			m := meta.(map[string][]byte)
+			assert.Equal(t, 6, len(m))
+			for key, val := range m {
+				assert.Equal(t, string(expectedMeta[key]), string(val))
+			}
+		}
+	})
 
-// 	for key, val := range resMeta {
-// 		assert.Equal(t, string(expectedMeta[key]), string(val.([]byte)))
-// 	}
-// }
+	t.Run("with vars", func(t *testing.T) {
+		p, err := compiler.Compile(`
+			vars {
+				account $acc
+			}
+			send [EUR/2 100] (
+				source = @world
+				destination = $acc
+			)
+			set_account_meta($acc, "fees", 1%)
+		`)
+		require.NoError(t, err)
 
-// func TestSetAccountMeta(t *testing.T) {
-// 	t.Run("all types", func(t *testing.T) {
-// 		p, err := compiler.Compile(`
-// 			set_account_meta(@platform, "aaa", @platform)
-// 			set_account_meta(@platform, "bbb", GEM)
-// 			set_account_meta(@platform, "ccc", 45)
-// 			set_account_meta(@platform, "ddd", "hello")
-// 			set_account_meta(@platform, "eee", [COIN 30])
-// 			set_account_meta(@platform, "fff", 15%)`)
-// 		require.NoError(t, err)
+		m := NewMachine(NewMockupLedger(), map[string]core.Value{
+			"acc": core.AccountAddress("test"),
+		})
 
-// 		m := NewMachine(*p)
+		err = m.Execute(*p)
+		require.NoError(t, err)
 
-// 		{
-// 			ch, err := m.ResolveResources()
-// 			require.NoError(t, err)
-// 			for req := range ch {
-// 				require.NoError(t, req.Error)
-// 			}
-// 		}
+		expectedMeta := map[string]json.RawMessage{
+			"fees": json.RawMessage(`{"type":"portion","value":{"remaining":false,"specific":"1/100"}}`),
+		}
 
-// 		{
-// 			ch, err := m.ResolveBalances()
-// 			require.NoError(t, err)
-// 			for req := range ch {
-// 				require.NoError(t, req.Error)
-// 			}
-// 		}
+		resMeta := m.GetAccountsMetaJSON()
+		assert.Equal(t, 1, len(resMeta))
 
-// 		exitCode, err := m.Execute()
-// 		require.NoError(t, err)
-// 		require.Equal(t, EXIT_OK, exitCode)
+		for acc, meta := range resMeta {
+			assert.Equal(t, "@test", acc)
+			m := meta.(map[string][]byte)
+			assert.Equal(t, 1, len(m))
+			for key, val := range m {
+				assert.Equal(t, string(expectedMeta[key]), string(val))
+			}
+		}
+	})
+}
 
-// 		expectedMeta := map[string]json.RawMessage{
-// 			"aaa": json.RawMessage(`{"type":"account","value":"platform"}`),
-// 			"bbb": json.RawMessage(`{"type":"asset","value":"GEM"}`),
-// 			"ccc": json.RawMessage(`{"type":"number","value":45}`),
-// 			"ddd": json.RawMessage(`{"type":"string","value":"hello"}`),
-// 			"eee": json.RawMessage(`{"type":"monetary","value":{"asset":"COIN","amount":30}}`),
-// 			"fff": json.RawMessage(`{"type":"portion","value":{"remaining":false,"specific":"3/20"}}`),
-// 		}
+func TestVariableBalance(t *testing.T) {
+	script := `
+		vars {
+		  monetary $initial = balance(@A, USD/2)
+		}
+		send [USD/2 100] (
+		  source = {
+			@A
+			@C
+		  }
+		  destination = {
+			max $initial to @B
+			remaining to @D
+		  }
+		)`
 
-// 		resMeta := m.GetAccountsMetaJSON()
-// 		assert.Equal(t, 1, len(resMeta))
+	t.Run("1", func(t *testing.T) {
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.setBalance("A", "USD/2", 40)
+		tc.setBalance("C", "USD/2", 90)
+		tc.expected = CaseResult{
+			Printed: []core.Value{},
+			Postings: []core.Posting{
+				{
+					Asset:       "USD/2",
+					Amount:      core.NewMonetaryInt(40),
+					Source:      "A",
+					Destination: "B",
+				},
+				{
+					Asset:       "USD/2",
+					Amount:      core.NewMonetaryInt(60),
+					Source:      "C",
+					Destination: "D",
+				},
+			},
+		}
+		test(t, tc)
+	})
 
-// 		for acc, meta := range resMeta {
-// 			assert.Equal(t, "@platform", acc)
-// 			m := meta.(map[string][]byte)
-// 			assert.Equal(t, 6, len(m))
-// 			for key, val := range m {
-// 				assert.Equal(t, string(expectedMeta[key]), string(val))
-// 			}
-// 		}
-// 	})
+	t.Run("2", func(t *testing.T) {
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.setBalance("A", "USD/2", 400)
+		tc.setBalance("C", "USD/2", 90)
+		tc.expected = CaseResult{
+			Printed: []core.Value{},
+			Postings: []core.Posting{
+				{
+					Asset:       "USD/2",
+					Amount:      core.NewMonetaryInt(100),
+					Source:      "A",
+					Destination: "B",
+				},
+			},
+		}
+		test(t, tc)
+	})
 
-// 	t.Run("with vars", func(t *testing.T) {
-// 		p, err := compiler.Compile(`
-// 			vars {
-// 				account $acc
-// 			}
-// 			send [EUR/2 100] (
-// 				source = @world
-// 				destination = $acc
-// 			)
-// 			set_account_meta($acc, "fees", 1%)
-// 		`)
-// 		require.NoError(t, err)
+	script = `
+		vars {
+		  account $acc
+		  monetary $initial = balance($acc, USD/2)
+		}
+		send [USD/2 100] (
+		  source = {
+			$acc
+			@C
+		  }
+		  destination = {
+			max $initial to @B
+			remaining to @D
+		  }
+		)`
 
-// 		m := NewMachine(*p)
+	t.Run("3", func(t *testing.T) {
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.setBalance("A", "USD/2", 40)
+		tc.setBalance("C", "USD/2", 90)
+		tc.setVarsFromJSON(t, `{"acc": "A"}`)
+		tc.expected = CaseResult{
+			Printed: []core.Value{},
+			Postings: []core.Posting{
+				{
+					Asset:       "USD/2",
+					Amount:      core.NewMonetaryInt(40),
+					Source:      "A",
+					Destination: "B",
+				},
+				{
+					Asset:       "USD/2",
+					Amount:      core.NewMonetaryInt(60),
+					Source:      "C",
+					Destination: "D",
+				},
+			},
+		}
+		test(t, tc)
+	})
 
-// 		require.NoError(t, m.SetVars(map[string]core.Value{
-// 			"acc": core.AccountAddress("test"),
-// 		}))
+	t.Run("4", func(t *testing.T) {
+		tc := NewTestCase()
+		tc.compile(t, script)
+		tc.setBalance("A", "USD/2", 400)
+		tc.setBalance("C", "USD/2", 90)
+		tc.setVarsFromJSON(t, `{"acc": "A"}`)
+		tc.expected = CaseResult{
+			Printed: []core.Value{},
+			Postings: []core.Posting{
+				{
+					Asset:       "USD/2",
+					Amount:      core.NewMonetaryInt(100),
+					Source:      "A",
+					Destination: "B",
+				},
+			},
+		}
+		test(t, tc)
+	})
 
-// 		{
-// 			ch, err := m.ResolveResources()
-// 			require.NoError(t, err)
-// 			for req := range ch {
-// 				require.NoError(t, req.Error)
-// 			}
-// 		}
+	t.Run("5", func(t *testing.T) {
+		tc := NewTestCase()
+		tc.compile(t, `
+		vars {
+			monetary $max = balance(@maxAcc, COIN)
+		}
+		send [COIN 200] (
+			source = {
+				50% from {
+					max [COIN 4] from @a
+					@b
+					@c
+				}
+				remaining from max $max from @d
+			}
+			destination = @platform
+		)`)
+		tc.setBalance("maxAcc", "COIN", 120)
+		tc.setBalance("a", "COIN", 1000)
+		tc.setBalance("b", "COIN", 40)
+		tc.setBalance("c", "COIN", 1000)
+		tc.setBalance("d", "COIN", 1000)
+		tc.expected = CaseResult{
+			Printed: []core.Value{},
+			Postings: []core.Posting{
+				{
+					Asset:       "COIN",
+					Amount:      core.NewMonetaryInt(4),
+					Source:      "a",
+					Destination: "platform",
+				},
+				{
+					Asset:       "COIN",
+					Amount:      core.NewMonetaryInt(40),
+					Source:      "b",
+					Destination: "platform",
+				},
+				{
+					Asset:       "COIN",
+					Amount:      core.NewMonetaryInt(56),
+					Source:      "c",
+					Destination: "platform",
+				},
+				{
+					Asset:       "COIN",
+					Amount:      core.NewMonetaryInt(100),
+					Source:      "d",
+					Destination: "platform",
+				},
+			},
+		}
+		test(t, tc)
+	})
 
-// 		{
-// 			ch, err := m.ResolveBalances()
-// 			require.NoError(t, err)
-// 			for req := range ch {
-// 				require.NoError(t, req.Error)
-// 			}
-// 		}
-
-// 		exitCode, err := m.Execute()
-// 		require.NoError(t, err)
-// 		require.Equal(t, EXIT_OK, exitCode)
-
-// 		expectedMeta := map[string]json.RawMessage{
-// 			"fees": json.RawMessage(`{"type":"portion","value":{"remaining":false,"specific":"1/100"}}`),
-// 		}
-
-// 		resMeta := m.GetAccountsMetaJSON()
-// 		assert.Equal(t, 1, len(resMeta))
-
-// 		for acc, meta := range resMeta {
-// 			assert.Equal(t, "@test", acc)
-// 			m := meta.(map[string][]byte)
-// 			assert.Equal(t, 1, len(m))
-// 			for key, val := range m {
-// 				assert.Equal(t, string(expectedMeta[key]), string(val))
-// 			}
-// 		}
-// 	})
-// }
-
-// func TestVariableBalance(t *testing.T) {
-// 	script := `
-// 		vars {
-// 		  monetary $initial = balance(@A, USD/2)
-// 		}
-// 		send [USD/2 100] (
-// 		  source = {
-// 			@A
-// 			@C
-// 		  }
-// 		  destination = {
-// 			max $initial to @B
-// 			remaining to @D
-// 		  }
-// 		)`
-
-// 	t.Run("1", func(t *testing.T) {
-// 		tc := NewTestCase()
-// 		tc.compile(t, script)
-// 		tc.setBalance("A", "USD/2", 40)
-// 		tc.setBalance("C", "USD/2", 90)
-// 		tc.expected = CaseResult{
-// 			Printed: []core.Value{},
-// 			Postings: []Posting{
-// 				{
-// 					Asset:       "USD/2",
-// 					Amount:      core.NewMonetaryInt(40),
-// 					Source:      "A",
-// 					Destination: "B",
-// 				},
-// 				{
-// 					Asset:       "USD/2",
-// 					Amount:      core.NewMonetaryInt(60),
-// 					Source:      "C",
-// 					Destination: "D",
-// 				},
-// 			},
-// 			ExitCode: EXIT_OK,
-// 		}
-// 		test(t, tc)
-// 	})
-
-// 	t.Run("2", func(t *testing.T) {
-// 		tc := NewTestCase()
-// 		tc.compile(t, script)
-// 		tc.setBalance("A", "USD/2", 400)
-// 		tc.setBalance("C", "USD/2", 90)
-// 		tc.expected = CaseResult{
-// 			Printed: []core.Value{},
-// 			Postings: []Posting{
-// 				{
-// 					Asset:       "USD/2",
-// 					Amount:      core.NewMonetaryInt(100),
-// 					Source:      "A",
-// 					Destination: "B",
-// 				},
-// 			},
-// 			ExitCode: EXIT_OK,
-// 		}
-// 		test(t, tc)
-// 	})
-
-// 	script = `
-// 		vars {
-// 		  account $acc
-// 		  monetary $initial = balance($acc, USD/2)
-// 		}
-// 		send [USD/2 100] (
-// 		  source = {
-// 			$acc
-// 			@C
-// 		  }
-// 		  destination = {
-// 			max $initial to @B
-// 			remaining to @D
-// 		  }
-// 		)`
-
-// 	t.Run("3", func(t *testing.T) {
-// 		tc := NewTestCase()
-// 		tc.compile(t, script)
-// 		tc.setBalance("A", "USD/2", 40)
-// 		tc.setBalance("C", "USD/2", 90)
-// 		tc.setVarsFromJSON(t, `{"acc": "A"}`)
-// 		tc.expected = CaseResult{
-// 			Printed: []core.Value{},
-// 			Postings: []Posting{
-// 				{
-// 					Asset:       "USD/2",
-// 					Amount:      core.NewMonetaryInt(40),
-// 					Source:      "A",
-// 					Destination: "B",
-// 				},
-// 				{
-// 					Asset:       "USD/2",
-// 					Amount:      core.NewMonetaryInt(60),
-// 					Source:      "C",
-// 					Destination: "D",
-// 				},
-// 			},
-// 			ExitCode: EXIT_OK,
-// 		}
-// 		test(t, tc)
-// 	})
-
-// 	t.Run("4", func(t *testing.T) {
-// 		tc := NewTestCase()
-// 		tc.compile(t, script)
-// 		tc.setBalance("A", "USD/2", 400)
-// 		tc.setBalance("C", "USD/2", 90)
-// 		tc.setVarsFromJSON(t, `{"acc": "A"}`)
-// 		tc.expected = CaseResult{
-// 			Printed: []core.Value{},
-// 			Postings: []Posting{
-// 				{
-// 					Asset:       "USD/2",
-// 					Amount:      core.NewMonetaryInt(100),
-// 					Source:      "A",
-// 					Destination: "B",
-// 				},
-// 			},
-// 			ExitCode: EXIT_OK,
-// 		}
-// 		test(t, tc)
-// 	})
-
-// 	t.Run("5", func(t *testing.T) {
-// 		tc := NewTestCase()
-// 		tc.compile(t, `
-// 		vars {
-// 			monetary $max = balance(@maxAcc, COIN)
-// 		}
-// 		send [COIN 200] (
-// 			source = {
-// 				50% from {
-// 					max [COIN 4] from @a
-// 					@b
-// 					@c
-// 				}
-// 				remaining from max $max from @d
-// 			}
-// 			destination = @platform
-// 		)`)
-// 		tc.setBalance("maxAcc", "COIN", 120)
-// 		tc.setBalance("a", "COIN", 1000)
-// 		tc.setBalance("b", "COIN", 40)
-// 		tc.setBalance("c", "COIN", 1000)
-// 		tc.setBalance("d", "COIN", 1000)
-// 		tc.expected = CaseResult{
-// 			Printed: []core.Value{},
-// 			Postings: []Posting{
-// 				{
-// 					Asset:       "COIN",
-// 					Amount:      core.NewMonetaryInt(4),
-// 					Source:      "a",
-// 					Destination: "platform",
-// 				},
-// 				{
-// 					Asset:       "COIN",
-// 					Amount:      core.NewMonetaryInt(40),
-// 					Source:      "b",
-// 					Destination: "platform",
-// 				},
-// 				{
-// 					Asset:       "COIN",
-// 					Amount:      core.NewMonetaryInt(56),
-// 					Source:      "c",
-// 					Destination: "platform",
-// 				},
-// 				{
-// 					Asset:       "COIN",
-// 					Amount:      core.NewMonetaryInt(100),
-// 					Source:      "d",
-// 					Destination: "platform",
-// 				},
-// 			},
-// 			ExitCode: EXIT_OK,
-// 		}
-// 		test(t, tc)
-// 	})
-
-// 	t.Run("send negative monetary", func(t *testing.T) {
-// 		tc := NewTestCase()
-// 		script = `
-// 		vars {
-// 		  monetary $amount = balance(@world, USD/2)
-// 		}
-// 		send $amount (
-// 		  source = @A
-// 		  destination = @B
-// 		)`
-// 		tc.compile(t, script)
-// 		tc.setBalance("world", "USD/2", -40)
-// 		tc.expected = CaseResult{
-// 			Error: "must be non-negative",
-// 		}
-// 		test(t, tc)
-// 	})
-// }
+	t.Run("send negative monetary", func(t *testing.T) {
+		tc := NewTestCase()
+		script = `
+		vars {
+		  monetary $amount = balance(@world, USD/2)
+		}
+		send $amount (
+		  source = @A
+		  destination = @B
+		)`
+		tc.compile(t, script)
+		tc.setBalance("world", "USD/2", -40)
+		tc.expected = CaseResult{
+			Error: "must be non-negative",
+		}
+		test(t, tc)
+	})
+}
 
 // func TestVariablesParsing(t *testing.T) {
 // 	t.Run("account", func(t *testing.T) {
@@ -1563,29 +1436,29 @@ func TestSourceAllotment(t *testing.T) {
 // 	})
 // }
 
-// func TestVariablesErrors(t *testing.T) {
-// 	tc := NewTestCase()
-// 	tc.compile(t, `vars {
-// 		monetary $mon
-// 	}
-// 	send $mon (
-// 		source = @alice
-// 		destination = @bob
-// 	)`)
-// 	tc.setBalance("alice", "COIN", 10)
-// 	tc.vars = map[string]core.Value{
-// 		"mon": core.Monetary{
-// 			Asset:  "COIN",
-// 			Amount: core.NewMonetaryInt(-1),
-// 		},
-// 	}
-// 	tc.expected = CaseResult{
-// 		Printed:  []core.Value{},
-// 		Postings: []Posting{},
-// 		Error:    "negative amount",
-// 	}
-// 	test(t, tc)
-// }
+func TestVariablesErrors(t *testing.T) {
+	tc := NewTestCase()
+	tc.compile(t, `vars {
+		monetary $mon
+	}
+	send $mon (
+		source = @alice
+		destination = @bob
+	)`)
+	tc.setBalance("alice", "COIN", 10)
+	tc.vars = map[string]core.Value{
+		"mon": core.Monetary{
+			Asset:  "COIN",
+			Amount: core.NewMonetaryInt(-1),
+		},
+	}
+	tc.expected = CaseResult{
+		Printed:  []core.Value{},
+		Postings: []core.Posting{},
+		Error:    "non-negative",
+	}
+	test(t, tc)
+}
 
 // func TestMachine(t *testing.T) {
 // 	p, err := compiler.Compile(`

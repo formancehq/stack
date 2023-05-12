@@ -14,7 +14,7 @@ func (l MockupLedger) GetBalance(account core.AccountAddress, asset core.Asset) 
 }
 
 func (l MockupLedger) GetMeta(account core.AccountAddress, key string) core.Value {
-	return l[string(account)].Balances[key]
+	return l[string(account)].Meta[key]
 }
 
 type MockupAccount struct {
