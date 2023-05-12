@@ -14,3 +14,7 @@ tasks:
   build:
     cmds:
     - go build
+
+  helm:
+    cmds:
+      - echo "ok"

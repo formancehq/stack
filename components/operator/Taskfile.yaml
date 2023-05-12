@@ -9,4 +9,8 @@ tasks:
 
   lint:
     cmds:
-    - golangci-lint run --fix --allow-parallel-runners --config ./../../.golangci.yml
+      - golangci-lint run --fix --allow-parallel-runners --config ./../../.golangci.yml
+
+  helm:
+    cmds:
+      - make helm-update

@@ -21,6 +21,8 @@ fileGroups:
     - '**/openapi.yaml'
     - '**/openapi'
     - '**/Taskfile.yaml'
+  helm:
+    - '**/helm/*'
 
 # A task is an action that is ran within the context of a project, and wraps
 # around an npm or system command. Tasks that are defined here and inherited by all projects
