@@ -1,11 +1,22 @@
 package metadata
 
 import (
+	"bytes"
 	"database/sql/driver"
 	"encoding/json"
 	"reflect"
+	"strconv"
+	"sync"
 
 	"github.com/imdario/mergo"
+)
+
+var (
+	bufferPool = sync.Pool{
+		New: func() any {
+			return bytes.NewBuffer(make([]byte, 0, 1024))
+		},
+	}
 )
 
 type Metadata map[string]string
@@ -59,10 +70,27 @@ func (m1 Metadata) Copy() Metadata {
 	return ret
 }
 
-func ComputeMetadata(key, value string) Metadata {
-	return Metadata{
-		key: value,
+func (m1 Metadata) MarshalJSON() ([]byte, error) {
+	buffer := bufferPool.Get().(*bytes.Buffer)
+	defer func() {
+		buffer.Reset()
+		bufferPool.Put(buffer)
+	}()
+
+	buffer.WriteString(`{`)
+	if len(m1) > 0 {
+		for k, v := range m1 {
+			buffer.WriteByte('"')
+			buffer.WriteString(k)
+			buffer.WriteString(`":"`)
+			buffer.WriteString(strconv.Quote(v))
+			buffer.WriteString(`",`)
+		}
+		buffer.UnreadByte()
 	}
+	buffer.WriteString(`}`)
+
+	return buffer.Bytes(), nil
 }
 
 func MarshalValue(v any) string {

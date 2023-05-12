@@ -60,11 +60,7 @@ type account string
 var _ driver.Valuer = account("")
 
 func (m1 account) Value() (driver.Value, error) {
-	ret, err := json.Marshal(strings.Split(string(m1), ":"))
-	if err != nil {
-		return nil, err
-	}
-	return string(ret), nil
+	return `["` + strings.ReplaceAll(string(m1), ":", `","`) + `"]`, nil
 }
 
 // Scan - Implement the database/sql scanner interface

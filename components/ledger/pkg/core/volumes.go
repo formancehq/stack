@@ -1,9 +1,19 @@
 package core
 
 import (
+	"bytes"
 	"database/sql/driver"
 	"encoding/json"
 	"math/big"
+	"sync"
+)
+
+var (
+	marshalBufferPool = sync.Pool{
+		New: func() any {
+			return bytes.NewBuffer(make([]byte, 0, 1024))
+		},
+	}
 )
 
 type Volumes struct {
@@ -51,6 +61,24 @@ type VolumesWithBalance struct {
 	Input   *big.Int `json:"input"`
 	Output  *big.Int `json:"output"`
 	Balance *big.Int `json:"balance"`
+}
+
+func (v VolumesWithBalance) MarshalJSON() ([]byte, error) {
+	buffer := marshalBufferPool.Get().(*bytes.Buffer)
+	defer func() {
+		buffer.Reset()
+		marshalBufferPool.Put(buffer)
+	}()
+
+	buffer.WriteString(`{"input":"`)
+	buffer.WriteString(v.Input.String())
+	buffer.WriteString(`", "output":"`)
+	buffer.WriteString(v.Output.String())
+	buffer.WriteString(`", "balance":"`)
+	buffer.WriteString(v.Balance.String())
+	buffer.WriteString(`"}`)
+
+	return buffer.Bytes(), nil
 }
 
 func (v Volumes) MarshalJSON() ([]byte, error) {
@@ -213,6 +241,38 @@ func (a *AccountsAssetsVolumes) Scan(value interface{}) error {
 	default:
 		panic("not handled type")
 	}
+}
+
+func (t AccountsAssetsVolumes) Value() (driver.Value, error) {
+	buffer := bufferPool.Get().(*buffer)
+	defer func() {
+		buffer.reset()
+		bufferPool.Put(buffer)
+	}()
+	buffer.writeString("{")
+	first := true
+	for account, assetsVolumes := range t {
+		if !first {
+			buffer.writeString(`,`)
+		}
+		buffer.writeString(`"`)
+		buffer.writeString(account)
+		buffer.writeString(`":{`)
+		for asset, volumes := range assetsVolumes {
+			buffer.writeString(`"`)
+			buffer.writeString(asset)
+			buffer.writeString(`":{"input":"`)
+			buffer.writeString(volumes.Input.String())
+			buffer.writeString(`","output":"`)
+			buffer.writeString(volumes.Output.String())
+			buffer.writeString(`"}`)
+		}
+		buffer.writeString(`}`)
+		first = false
+	}
+	buffer.writeString("}")
+
+	return buffer.bytes(), nil
 }
 
 func (a AccountsAssetsVolumes) copy() AccountsAssetsVolumes {
