@@ -191,10 +191,11 @@ var walletDebitTestCases = []testCase{
 			return wallet.PostTransaction{
 				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(
-					testEnv.Chart().GetBalanceAccount(walletID, "coupon1"),
-					testEnv.Chart().GetBalanceAccount(walletID, "coupon2"),
-					testEnv.Chart().GetBalanceAccount(walletID, "main"),
-				),
+						testEnv.Chart().GetBalanceAccount(walletID, "coupon1"),
+						testEnv.Chart().GetBalanceAccount(walletID, "coupon4"),
+						testEnv.Chart().GetBalanceAccount(walletID, "coupon2"),
+						testEnv.Chart().GetBalanceAccount(walletID, "main"),
+					),
 					Vars: map[string]interface{}{
 						"destination": "world",
 						"amount": map[string]any{
@@ -287,7 +288,8 @@ func TestWalletsDebit(t *testing.T) {
 							{
 								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon2"),
 								Metadata: wallet.Balance{
-									Name: "coupon2",
+									Name:     "coupon2",
+									Priority: 10,
 								}.LedgerMetadata(walletID),
 							},
 							{
@@ -305,8 +307,13 @@ func TestWalletsDebit(t *testing.T) {
 								}.LedgerMetadata(walletID),
 							},
 							{
+								Address: testEnv.Chart().GetBalanceAccount(walletID, "coupon4"),
+								Metadata: wallet.Balance{
+									Name: "coupon4",
+								}.LedgerMetadata(walletID),
+							},
+							{
 								Address: testEnv.Chart().GetBalanceAccount(walletID, "main"),
-
 								Metadata: wallet.Balance{
 									Name: "main",
 								}.LedgerMetadata(walletID),

@@ -943,6 +943,9 @@ components:
         expiresAt:
           type: string
           format: date-time
+        priority:
+          type: integer
+          format: int64
     BalanceWithAssets:
       allOf:
       - $ref: '#/components/schemas/Balance'

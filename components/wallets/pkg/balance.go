@@ -1,9 +1,11 @@
 package wallet
 
 import (
+	"fmt"
 	"math/big"
 	"net/http"
 	"regexp"
+	"strconv"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -16,6 +18,7 @@ type CreateBalance struct {
 	WalletID  string     `json:"walletID"`
 	Name      string     `json:"name"`
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+	Priority  int        `json:"priority"`
 }
 
 func (c *CreateBalance) Validate() error {
@@ -36,6 +39,7 @@ func (c *CreateBalance) Bind(r *http.Request) error {
 type Balance struct {
 	Name      string     `json:"name,omitempty"`
 	ExpiresAt *time.Time `json:"expiresAt"`
+	Priority  int        `json:"priority"`
 }
 
 func (b Balance) LedgerMetadata(walletID string) metadata.Metadata {
@@ -44,6 +48,7 @@ func (b Balance) LedgerMetadata(walletID string) metadata.Metadata {
 		MetadataKeyWalletBalance:    TrueValue,
 		MetadataKeyBalanceName:      b.Name,
 		MetadataKeyBalanceExpiresAt: "",
+		MetadataKeyBalancePriority:  fmt.Sprint(b.Priority),
 	}
 	if b.ExpiresAt != nil {
 		m[MetadataKeyBalanceExpiresAt] = b.ExpiresAt.Format(time.RFC3339Nano)
@@ -66,6 +71,10 @@ func (b Balances) Len() int {
 
 func (b Balances) Less(i, j int) bool {
 	switch {
+	case b[i].Name == "main":
+		return false
+	case b[j].Name == "main":
+		return true
 	case b[i].ExpiresAt == nil && b[j].ExpiresAt != nil:
 		return false
 	case b[i].ExpiresAt != nil && b[j].ExpiresAt == nil:
@@ -73,7 +82,7 @@ func (b Balances) Less(i, j int) bool {
 	case b[i].ExpiresAt != nil && b[j].ExpiresAt != nil:
 		return b[i].ExpiresAt.Before(*b[j].ExpiresAt)
 	case b[i].ExpiresAt == nil && b[j].ExpiresAt == nil:
-		return b[i].Name < b[j].Name
+		return b[i].Priority < b[j].Priority
 	}
 	panic("Should not happen")
 }
@@ -92,9 +101,21 @@ func BalanceFromAccount(account Account) Balance {
 		}
 		expiresAt = &parsedExpiresAt
 	}
+	priorityRaw := GetMetadata(account, MetadataKeyBalancePriority)
+	var (
+		priority int64
+		err      error
+	)
+	if priorityRaw != "" {
+		priority, err = strconv.ParseInt(priorityRaw, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+	}
 	return Balance{
 		Name:      GetMetadata(account, MetadataKeyBalanceName),
 		ExpiresAt: expiresAt,
+		Priority:  int(priority),
 	}
 }
 
