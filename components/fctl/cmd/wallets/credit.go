@@ -8,7 +8,6 @@ import (
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
-	"github.com/spf13/cobra"
 )
 
 func NewCreditWalletCommand() *cobra.Command {
@@ -54,7 +53,7 @@ func NewCreditWalletCommand() *cobra.Command {
 
 			amountStr := args[0]
 			asset := args[1]
-			walletID, err := internal.RetrieveWalletIDFromName(cmd, client)
+			walletID, err := internal.RetrieveWalletID(cmd, client)
 			if err != nil {
 				return err
 			}
