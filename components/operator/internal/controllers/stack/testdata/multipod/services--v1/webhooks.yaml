@@ -6,9 +6,9 @@ metadata:
     name: webhooks
     namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.211
+    clusterIP: 10.0.0.139
     clusterIPs:
-        - 10.0.0.211
+        - 10.0.0.139
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

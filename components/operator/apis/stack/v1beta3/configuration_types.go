@@ -35,8 +35,10 @@ type ConfigurationServicesSpec struct {
 	Wallets       WalletsSpec       `json:"wallets,omitempty"`
 	Orchestration OrchestrationSpec `json:"orchestration,omitempty"`
 	Search        SearchSpec        `json:"search,omitempty"`
-	Stargate      StargateSpec      `json:"stargate,omitempty"`
 	Auth          AuthSpec          `json:"auth,omitempty"`
+
+	// +optional
+	Stargate StargateSpec `json:"stargate,omitempty"`
 }
 
 func (in *ConfigurationServicesSpec) List() []string {

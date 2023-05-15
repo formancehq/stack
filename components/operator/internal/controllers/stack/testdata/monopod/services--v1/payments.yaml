@@ -6,9 +6,9 @@ metadata:
     name: payments
     namespace: orga2-stack2
 spec:
-    clusterIP: 10.0.0.233
+    clusterIP: 10.0.0.171
     clusterIPs:
-        - 10.0.0.233
+        - 10.0.0.171
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

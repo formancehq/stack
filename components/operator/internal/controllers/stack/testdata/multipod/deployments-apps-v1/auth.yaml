@@ -34,7 +34,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32830"
+                      value: "32839"
                     - name: POSTGRES_DATABASE
                       value: orga1-stack1-auth
                     - name: POSTGRES_USERNAME

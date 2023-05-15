@@ -26,6 +26,10 @@ func init() {
 	}
 	modules.Register("stargate", modules.Module{
 		Services: func(ctx modules.Context) modules.Services {
+			if ctx.Stack.Spec.Stargate == nil {
+				return modules.Services{}
+			}
+
 			return modules.Services{
 				{
 					AuthConfiguration: func(resolveContext modules.PrepareContext) stackv1beta3.ClientConfiguration {

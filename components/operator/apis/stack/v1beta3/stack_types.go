@@ -104,9 +104,11 @@ type StackSpec struct {
 	DevProperties `json:",inline"`
 	Seed          string `json:"seed"`
 	// +kubebuilder:validation:Required
-	Host     string              `json:"host"`
-	Auth     StackAuthSpec       `json:"auth"`
-	Stargate StackStargateConfig `json:"stargate"`
+	Host string        `json:"host"`
+	Auth StackAuthSpec `json:"auth"`
+
+	// +optional
+	Stargate *StackStargateConfig `json:"stargate"`
 
 	// +optional
 	Versions string `json:"versions"`

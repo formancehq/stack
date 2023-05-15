@@ -49,6 +49,7 @@ var _ = Describe("When creating a stack", func() {
 				Versions: versions.Name,
 				Host:     "example.net",
 				Scheme:   "http",
+				Stargate: &stackv1beta3.StackStargateConfig{},
 			},
 		}
 

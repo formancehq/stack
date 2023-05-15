@@ -1947,7 +1947,6 @@ spec:
             - auth
             - host
             - seed
-            - stargate
             type: object
           status:
             properties:
