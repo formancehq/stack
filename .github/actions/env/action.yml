@@ -19,12 +19,12 @@ runs:
     - uses: 'actions/setup-go@v4'
       with:
         go-version: '>=1.20'
-    - name: Cache Go Moon
-      id: cache-go-moon
-      uses: actions/cache@v3
-      with:
-        path: .moon/go
-        key: ${{ inputs.os }}-go-moon-cache
+#    - name: Cache Go Moon
+#      id: cache-go-moon
+#      uses: actions/cache@v3
+#      with:
+#        path: .moon/go
+#        key: ${{ inputs.os }}-go-moon-cache
     - name: Install Task
       uses: arduino/setup-task@v1
       with:
@@ -37,8 +37,8 @@ runs:
         distribution: goreleaser-pro
         version: latest
         install-only: true
-    - name: direnv action
-      uses: HatsuneMiku3939/direnv-action@v1
+#    - name: direnv action
+#      uses: HatsuneMiku3939/direnv-action@v1
     - name: 'install go deps'
       shell: bash
       run: |
