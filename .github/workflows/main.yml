@@ -45,7 +45,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        index: [ 0, 1, 2, 3, 4, 5 ]
+        index: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
     steps:
       - uses: 'actions/checkout@v3'
         with:
@@ -55,7 +55,7 @@ jobs:
         with:
           os: ${{ runner.os }}
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: 'moon ci --job ${{ matrix.index }} --jobTotal 6'
+      - run: 'moon ci --job ${{ matrix.index }} --jobTotal 10'
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
