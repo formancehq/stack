@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -55,7 +56,7 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "nominal",
 		request: wallet.DebitRequest{
-			Amount: wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
 			return sdk.PostTransaction{
@@ -76,7 +77,7 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with custom destination as ledger account",
 		request: wallet.DebitRequest{
-			Amount:      wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:      wallet.NewMonetary(big.NewInt(100), "USD"),
 			Destination: wallet.Ptr(wallet.NewLedgerAccountSubject("account1")),
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
@@ -98,7 +99,7 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with custom destination as wallet",
 		request: wallet.DebitRequest{
-			Amount:      wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:      wallet.NewMonetary(big.NewInt(100), "USD"),
 			Destination: wallet.Ptr(wallet.NewWalletSubject("wallet1", "")),
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
@@ -120,7 +121,7 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with insufficient funds",
 		request: wallet.DebitRequest{
-			Amount: wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 		},
 		postTransactionError: &apiErrorMock{
 			ErrorCode: sdk.INSUFFICIENT_FUND,
@@ -131,7 +132,7 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with debit hold",
 		request: wallet.DebitRequest{
-			Amount:  wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:  wallet.NewMonetary(big.NewInt(100), "USD"),
 			Pending: true,
 			Metadata: map[string]string{
 				"foo": "bar",
@@ -160,7 +161,7 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with custom balance as source",
 		request: wallet.DebitRequest{
-			Amount:   wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:   wallet.NewMonetary(big.NewInt(100), "USD"),
 			Balances: []string{"secondary"},
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
@@ -182,7 +183,7 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with wildcard balance as source",
 		request: wallet.DebitRequest{
-			Amount:   wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:   wallet.NewMonetary(big.NewInt(100), "USD"),
 			Balances: []string{"*"},
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
@@ -204,7 +205,7 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with wildcard plus another source",
 		request: wallet.DebitRequest{
-			Amount:   wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:   wallet.NewMonetary(big.NewInt(100), "USD"),
 			Balances: []string{"*", "secondary"},
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
@@ -228,7 +229,7 @@ var walletDebitTestCases = []testCase{
 	{
 		name: "with custom balance as destination",
 		request: wallet.DebitRequest{
-			Amount:      wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+			Amount:      wallet.NewMonetary(big.NewInt(100), "USD"),
 			Destination: wallet.Ptr(wallet.NewWalletSubject("wallet1", "secondary")),
 		},
 		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
