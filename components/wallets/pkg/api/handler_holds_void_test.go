@@ -2,11 +2,11 @@ package api
 
 import (
 	"context"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -24,26 +24,28 @@ func TestHoldsVoid(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetHoldAccount(hold.ID), account)
 
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  testEnv.Chart().GetHoldAccount(hold.ID),
-				Metadata: hold.LedgerMetadata(testEnv.Chart()),
-				Balances: map[string]int64{
-					"USD": 100,
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  testEnv.Chart().GetHoldAccount(hold.ID),
+					Metadata: hold.LedgerMetadata(testEnv.Chart()),
 				},
-				Volumes: map[string]map[string]int64{
+				Balances: map[string]*big.Int{
+					"USD": big.NewInt(100),
+				},
+				Volumes: map[string]map[string]*big.Int{
 					"USD": {
-						"input": 100,
+						"input": big.NewInt(100),
 					},
 				},
 			}, nil
 		}),
-		WithCreateTransaction(func(ctx context.Context, name string, script sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
-			require.Equal(t, sdk.PostTransaction{
-				Script: &sdk.PostTransactionScript{
+		WithCreateTransaction(func(ctx context.Context, name string, script wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
+			require.Equal(t, wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildCancelHoldScript("USD"),
 					Vars: map[string]interface{}{
 						"hold": testEnv.Chart().GetHoldAccount(hold.ID),
@@ -51,7 +53,7 @@ func TestHoldsVoid(t *testing.T) {
 				},
 				Metadata: wallet.TransactionMetadata(nil),
 			}, script)
-			return &sdk.CreateTransactionResponse{}, nil
+			return &wallet.CreateTransactionResponse{}, nil
 		}),
 	)
 	testEnv.Router().ServeHTTP(rec, req)

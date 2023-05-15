@@ -22,7 +22,7 @@ export class AssetHolder {
             "name": "assets",
             "baseName": "assets",
             "type": "{ [key: string]: number; }",
-            "format": ""
+            "format": "int64"
         }    ];
 
     static getAttributeTypeMap() {

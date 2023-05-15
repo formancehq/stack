@@ -123,8 +123,8 @@ func (m *Manager) Debit(ctx context.Context, debit Debit) (*DebitHold, error) {
 		}
 	}
 
-	postTransaction := sdk.PostTransaction{
-		Script: &sdk.PostTransactionScript{
+	postTransaction := PostTransaction{
+		Script: &PostTransactionScript{
 			Plain: BuildDebitWalletScript(sources...),
 			Vars: map[string]interface{}{
 				"destination": dest.getAccount(m.chart),
@@ -160,7 +160,7 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 		return ErrHoldNotFound
 	}
 
-	hold := ExpandedDebitHoldFromLedgerAccount(account)
+	hold := ExpandedDebitHoldFromLedgerAccount(*account)
 	if hold.Remaining.Uint64() == 0 {
 		return ErrClosedHold
 	}
@@ -170,8 +170,8 @@ func (m *Manager) ConfirmHold(ctx context.Context, debit ConfirmHold) error {
 		return err
 	}
 
-	postTransaction := sdk.PostTransaction{
-		Script: &sdk.PostTransactionScript{
+	postTransaction := PostTransaction{
+		Script: &PostTransactionScript{
 			Plain: BuildConfirmHoldScript(debit.Final, hold.Asset),
 			Vars: map[string]interface{}{
 				"hold": m.chart.GetHoldAccount(debit.HoldID),
@@ -197,13 +197,13 @@ func (m *Manager) VoidHold(ctx context.Context, void VoidHold) error {
 		return errors.Wrap(err, "getting account")
 	}
 
-	hold := ExpandedDebitHoldFromLedgerAccount(account)
+	hold := ExpandedDebitHoldFromLedgerAccount(*account)
 	if hold.IsClosed() {
 		return ErrClosedHold
 	}
 
-	postTransaction := sdk.PostTransaction{
-		Script: &sdk.PostTransactionScript{
+	postTransaction := PostTransaction{
+		Script: &PostTransactionScript{
 			Plain: BuildCancelHoldScript(hold.Asset),
 			Vars: map[string]interface{}{
 				"hold": m.chart.GetHoldAccount(void.HoldID),
@@ -230,8 +230,8 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 		}
 	}
 
-	postTransaction := sdk.PostTransaction{
-		Script: &sdk.PostTransactionScript{
+	postTransaction := PostTransaction{
+		Script: &PostTransactionScript{
 			Plain: BuildCreditWalletScript(credit.Sources.ResolveAccounts(m.chart)...),
 			Vars: map[string]interface{}{
 				"destination": credit.destinationAccount(m.chart),
@@ -255,7 +255,7 @@ func (m *Manager) Credit(ctx context.Context, credit Credit) error {
 	return nil
 }
 
-func (m *Manager) CreateTransaction(ctx context.Context, postTransaction sdk.PostTransaction) error {
+func (m *Manager) CreateTransaction(ctx context.Context, postTransaction PostTransaction) error {
 	if _, err := m.client.CreateTransaction(ctx, m.ledgerName, postTransaction); err != nil {
 		apiErr, ok := err.(GenericOpenAPIError)
 		if ok {
@@ -333,7 +333,7 @@ func (m *Manager) ListBalances(ctx context.Context, query ListQuery[ListBalances
 
 func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTransactions]) (*ListResponse[Transaction], error) {
 	var (
-		response *sdk.TransactionsCursorResponseCursor
+		response *TransactionsCursorResponseCursor
 		err      error
 	)
 	if query.PaginationToken == "" {
@@ -356,7 +356,7 @@ func (m *Manager) ListTransactions(ctx context.Context, query ListQuery[ListTran
 		return nil, errors.Wrap(err, "listing transactions")
 	}
 
-	return newListResponse[sdk.ExpandedTransaction, Transaction](response, func(tx sdk.ExpandedTransaction) Transaction {
+	return newListResponse[ExpandedTransaction, Transaction](response, func(tx ExpandedTransaction) Transaction {
 		return Transaction{
 			ExpandedTransaction: tx,
 			Ledger:              m.ledgerName,
@@ -422,7 +422,7 @@ func (m *Manager) GetWallet(ctx context.Context, id string) (*WithBalances, erro
 		return nil, ErrWalletNotFound
 	}
 
-	return Ptr(WithBalancesFromAccount(m.ledgerName, account)), nil
+	return Ptr(WithBalancesFromAccount(m.ledgerName, *account)), nil
 }
 
 func (m *Manager) GetHold(ctx context.Context, id string) (*ExpandedDebitHold, error) {
@@ -431,7 +431,7 @@ func (m *Manager) GetHold(ctx context.Context, id string) (*ExpandedDebitHold, e
 		return nil, err
 	}
 
-	return Ptr(ExpandedDebitHoldFromLedgerAccount(account)), nil
+	return Ptr(ExpandedDebitHoldFromLedgerAccount(*account)), nil
 }
 
 func (m *Manager) CreateBalance(ctx context.Context, data *CreateBalance) (*Balance, error) {
@@ -469,7 +469,7 @@ func (m *Manager) GetBalance(ctx context.Context, walletID string, balanceName s
 		return nil, ErrBalanceNotExists
 	}
 
-	return Ptr(ExpandedBalanceFromAccount(account)), nil
+	return Ptr(ExpandedBalanceFromAccount(*account)), nil
 }
 
 type mapAccountListQuery struct {
@@ -479,7 +479,7 @@ type mapAccountListQuery struct {
 
 func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountListQuery, mapper mapper[Account, TO]) (*ListResponse[TO], error) {
 	var (
-		response *sdk.AccountsCursorResponseCursor
+		response *AccountsCursorResponseCursor
 		err      error
 	)
 	if query.PaginationToken == "" {
@@ -496,8 +496,8 @@ func mapAccountList[TO any](ctx context.Context, r *Manager, query mapAccountLis
 		return nil, err
 	}
 
-	return newListResponse[sdk.Account, TO](response, func(item sdk.Account) TO {
-		return mapper(&item)
+	return newListResponse[Account, TO](response, func(item Account) TO {
+		return mapper(item)
 	}), nil
 }
 

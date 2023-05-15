@@ -756,10 +756,13 @@ components:
       properties:
         input:
           type: integer
+          format: int64
         output:
           type: integer
+          format: int64
         balance:
           type: integer
+          format: int64
       required:
       - input
       - output
@@ -900,7 +903,8 @@ components:
         assets:
           type: object
           additionalProperties:
-            type: number
+            type: integer
+            format: int64
     Balance:
       type: object
       required:

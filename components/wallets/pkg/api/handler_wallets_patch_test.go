@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -32,12 +31,14 @@ func TestWalletsPatch(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+		WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetMainBalanceAccount(w.ID), account)
-			return &sdk.AccountWithVolumesAndBalances{
-				Address:  account,
-				Metadata: w.LedgerMetadata(),
+			return &wallet.AccountWithVolumesAndBalances{
+				Account: wallet.Account{
+					Address:  account,
+					Metadata: w.LedgerMetadata(),
+				},
 			}, nil
 		}),
 		WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, md metadata.Metadata) error {

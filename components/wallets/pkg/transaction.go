@@ -2,12 +2,35 @@ package wallet
 
 import (
 	"encoding/json"
-
-	sdk "github.com/formancehq/formance-sdk-go"
+	"math/big"
+	"time"
 )
 
+type Volume struct {
+	Input   *big.Int `json:"input"`
+	Output  *big.Int `json:"output"`
+	Balance *big.Int `json:"balance,omitempty"`
+}
+
+type Posting struct {
+	Amount      *big.Int `json:"amount"`
+	Asset       string   `json:"asset"`
+	Destination string   `json:"destination"`
+	Source      string   `json:"source"`
+}
+
+type ExpandedTransaction struct {
+	Timestamp         time.Time                    `json:"timestamp"`
+	Postings          []Posting                    `json:"postings"`
+	Reference         *string                      `json:"reference,omitempty"`
+	Metadata          map[string]string            `json:"metadata"`
+	Txid              int64                        `json:"txid"`
+	PreCommitVolumes  map[string]map[string]Volume `json:"preCommitVolumes"`
+	PostCommitVolumes map[string]map[string]Volume `json:"postCommitVolumes"`
+}
+
 type Transaction struct {
-	sdk.ExpandedTransaction
+	ExpandedTransaction
 	Ledger string `json:"ledger"`
 }
 

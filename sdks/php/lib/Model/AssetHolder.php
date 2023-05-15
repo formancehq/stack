@@ -58,7 +58,7 @@ class AssetHolder implements ModelInterface, ArrayAccess, \JsonSerializable
       * @var string[]
       */
     protected static $openAPITypes = [
-        'assets' => 'array<string,float>'
+        'assets' => 'array<string,int>'
     ];
 
     /**
@@ -69,7 +69,7 @@ class AssetHolder implements ModelInterface, ArrayAccess, \JsonSerializable
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'assets' => null
+        'assets' => 'int64'
     ];
 
     /**
@@ -296,7 +296,7 @@ class AssetHolder implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Gets assets
      *
-     * @return array<string,float>
+     * @return array<string,int>
      */
     public function getAssets()
     {
@@ -306,7 +306,7 @@ class AssetHolder implements ModelInterface, ArrayAccess, \JsonSerializable
     /**
      * Sets assets
      *
-     * @param array<string,float> $assets assets
+     * @param array<string,int> $assets assets
      *
      * @return self
      */

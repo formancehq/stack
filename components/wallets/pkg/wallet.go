@@ -2,6 +2,7 @@ package wallet
 
 import (
 	"encoding/json"
+	"math/big"
 	"net/http"
 	"time"
 
@@ -41,7 +42,7 @@ type Wallet struct {
 
 type WithBalances struct {
 	Wallet
-	Balances map[string]int64 `json:"balances"`
+	Balances map[string]*big.Int `json:"balances"`
 }
 
 func (w *WithBalances) UnmarshalJSON(data []byte) error {
@@ -120,13 +121,9 @@ func FromAccount(ledger string, account Account) Wallet {
 	}
 }
 
-func WithBalancesFromAccount(ledger string, account interface {
-	Account
-	GetBalances() map[string]int64
-},
-) WithBalances {
+func WithBalancesFromAccount(ledger string, account AccountWithVolumesAndBalances) WithBalances {
 	return WithBalances{
-		Wallet:   FromAccount(ledger, account),
+		Wallet:   FromAccount(ledger, account.Account),
 		Balances: account.GetBalances(),
 	}
 }

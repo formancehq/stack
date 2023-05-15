@@ -4886,7 +4886,7 @@ components:
         balances:
           main:
             assets:
-              key: 0.8008281904610115
+              key: 0
         name: name
         id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
@@ -4985,7 +4985,7 @@ components:
           balances:
             main:
               assets:
-                key: 0.8008281904610115
+                key: 0
           name: name
           id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
@@ -5127,10 +5127,13 @@ components:
         balance: 80
       properties:
         input:
+          format: int64
           type: integer
         output:
+          format: int64
           type: integer
         balance:
+          format: int64
           type: integer
       required:
       - balance
@@ -5261,11 +5264,12 @@ components:
     AssetHolder:
       example:
         assets:
-          key: 0.8008281904610115
+          key: 0
       properties:
         assets:
           additionalProperties:
-            type: number
+            format: int64
+            type: integer
           type: object
       required:
       - assets
@@ -5546,7 +5550,7 @@ components:
               balances:
                 main:
                   assets:
-                    key: 0.8008281904610115
+                    key: 0
               name: name
               id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
         input:
@@ -5973,7 +5977,7 @@ components:
                 balances:
                   main:
                     assets:
-                      key: 0.8008281904610115
+                      key: 0
                 name: name
                 id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           input:
@@ -6132,7 +6136,7 @@ components:
                 balances:
                   main:
                     assets:
-                      key: 0.8008281904610115
+                      key: 0
                 name: name
                 id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
           input:
@@ -6602,7 +6606,7 @@ components:
             balances:
               main:
                 assets:
-                  key: 0.8008281904610115
+                  key: 0
             name: name
             id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
       properties:
@@ -7206,7 +7210,7 @@ components:
       example:
         main:
           assets:
-            key: 0.8008281904610115
+            key: 0
       properties:
         main:
           $ref: '#/components/schemas/AssetHolder'

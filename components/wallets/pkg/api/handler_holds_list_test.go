@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"testing"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	sharedapi "github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
@@ -30,7 +29,7 @@ func TestHoldsList(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
+		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*wallet.AccountsCursorResponseCursor, error) {
 			require.Equal(t, pageSize, query.Limit)
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.EqualValues(t, metadata.Metadata{
@@ -38,14 +37,14 @@ func TestHoldsList(t *testing.T) {
 			}, query.Metadata)
 
 			hasMore := false
-			accounts := make([]sdk.Account, 0)
-			for _, wallet := range holds[:pageSize] {
-				accounts = append(accounts, sdk.Account{
-					Address:  testEnv.Chart().GetMainBalanceAccount(wallet.ID),
-					Metadata: wallet.LedgerMetadata(testEnv.Chart()),
+			accounts := make([]wallet.Account, 0)
+			for _, hold := range holds[:pageSize] {
+				accounts = append(accounts, wallet.Account{
+					Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
+					Metadata: hold.LedgerMetadata(testEnv.Chart()),
 				})
 			}
-			return &sdk.AccountsCursorResponseCursor{
+			return &wallet.AccountsCursorResponseCursor{
 				PageSize: 5,
 				HasMore:  hasMore,
 				Data:     accounts,
@@ -76,7 +75,7 @@ func TestHoldsListWithPagination(t *testing.T) {
 
 	var testEnv *testEnv
 	testEnv = newTestEnv(
-		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
+		WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*wallet.AccountsCursorResponseCursor, error) {
 			if query.Cursor != "" {
 				page, err := strconv.ParseInt(query.Cursor, 10, 64)
 				if err != nil {
@@ -84,23 +83,23 @@ func TestHoldsListWithPagination(t *testing.T) {
 				}
 
 				if page >= numberOfPages-1 {
-					return &sdk.AccountsCursorResponseCursor{}, nil
+					return &wallet.AccountsCursorResponseCursor{}, nil
 				}
 				hasMore := page < numberOfPages-1
 				previous := fmt.Sprint(page - 1)
 				next := fmt.Sprint(page + 1)
-				accounts := make([]sdk.Account, 0)
+				accounts := make([]wallet.Account, 0)
 				for _, hold := range holds[page*pageSize : (page+1)*pageSize] {
-					accounts = append(accounts, sdk.Account{
+					accounts = append(accounts, wallet.Account{
 						Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
 						Metadata: hold.LedgerMetadata(testEnv.Chart()),
 					})
 				}
-				return &sdk.AccountsCursorResponseCursor{
+				return &wallet.AccountsCursorResponseCursor{
 					PageSize: pageSize,
 					HasMore:  hasMore,
-					Previous: &previous,
-					Next:     &next,
+					Previous: previous,
+					Next:     next,
 					Data:     accounts,
 				}, nil
 			}
@@ -114,17 +113,17 @@ func TestHoldsListWithPagination(t *testing.T) {
 
 			hasMore := true
 			next := "1"
-			accounts := make([]sdk.Account, 0)
-			for _, wallet := range holds[:pageSize] {
-				accounts = append(accounts, sdk.Account{
-					Address:  testEnv.Chart().GetMainBalanceAccount(wallet.ID),
-					Metadata: wallet.LedgerMetadata(testEnv.Chart()),
+			accounts := make([]wallet.Account, 0)
+			for _, hold := range holds[:pageSize] {
+				accounts = append(accounts, wallet.Account{
+					Address:  testEnv.Chart().GetMainBalanceAccount(hold.ID),
+					Metadata: hold.LedgerMetadata(testEnv.Chart()),
 				})
 			}
-			return &sdk.AccountsCursorResponseCursor{
+			return &wallet.AccountsCursorResponseCursor{
 				PageSize: pageSize,
 				HasMore:  hasMore,
-				Next:     &next,
+				Next:     next,
 				Data:     accounts,
 			}, nil
 		}),

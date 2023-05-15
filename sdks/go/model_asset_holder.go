@@ -20,14 +20,14 @@ var _ MappedNullable = &AssetHolder{}
 
 // AssetHolder struct for AssetHolder
 type AssetHolder struct {
-	Assets map[string]float32 `json:"assets"`
+	Assets map[string]int64 `json:"assets"`
 }
 
 // NewAssetHolder instantiates a new AssetHolder object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAssetHolder(assets map[string]float32) *AssetHolder {
+func NewAssetHolder(assets map[string]int64) *AssetHolder {
 	this := AssetHolder{}
 	this.Assets = assets
 	return &this
@@ -42,9 +42,9 @@ func NewAssetHolderWithDefaults() *AssetHolder {
 }
 
 // GetAssets returns the Assets field value
-func (o *AssetHolder) GetAssets() map[string]float32 {
+func (o *AssetHolder) GetAssets() map[string]int64 {
 	if o == nil {
-		var ret map[string]float32
+		var ret map[string]int64
 		return ret
 	}
 
@@ -53,7 +53,7 @@ func (o *AssetHolder) GetAssets() map[string]float32 {
 
 // GetAssetsOk returns a tuple with the Assets field value
 // and a boolean to check if the value has been set.
-func (o *AssetHolder) GetAssetsOk() (*map[string]float32, bool) {
+func (o *AssetHolder) GetAssetsOk() (*map[string]int64, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -61,7 +61,7 @@ func (o *AssetHolder) GetAssetsOk() (*map[string]float32, bool) {
 }
 
 // SetAssets sets field value
-func (o *AssetHolder) SetAssets(v map[string]float32) {
+func (o *AssetHolder) SetAssets(v map[string]int64) {
 	o.Assets = v
 }
 

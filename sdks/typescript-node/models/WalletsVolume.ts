@@ -24,19 +24,19 @@ export class WalletsVolume {
             "name": "input",
             "baseName": "input",
             "type": "number",
-            "format": ""
+            "format": "int64"
         },
         {
             "name": "output",
             "baseName": "output",
             "type": "number",
-            "format": ""
+            "format": "int64"
         },
         {
             "name": "balance",
             "baseName": "balance",
             "type": "number",
-            "format": ""
+            "format": "int64"
         }    ];
 
     static getAttributeTypeMap() {

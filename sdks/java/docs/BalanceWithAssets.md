@@ -8,7 +8,7 @@
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
 |**name** | **String** |  |  |
-|**assets** | **Map&lt;String, BigDecimal&gt;** |  |  |
+|**assets** | **Map&lt;String, Long&gt;** |  |  |
 
 
 
