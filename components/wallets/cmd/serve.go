@@ -29,7 +29,11 @@ func newServeCommand() *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			options := []fx.Option{
-				wallet.Module(viper.GetString(ledgerNameFlag), viper.GetString(accountPrefixFlag)),
+				wallet.Module(
+					viper.GetString(stackURLFlag)+"/api/ledger",
+					viper.GetString(ledgerNameFlag),
+					viper.GetString(accountPrefixFlag),
+				),
 				api.Module(sharedapi.ServiceInfo{
 					Version: Version,
 				}, viper.GetString(listenFlag)),
