@@ -71,9 +71,9 @@ class WalletsVolume implements ModelInterface, ArrayAccess, \JsonSerializable
       * @psalm-var array<string, string|null>
       */
     protected static $openAPIFormats = [
-        'input' => null,
-        'output' => null,
-        'balance' => null
+        'input' => 'int64',
+        'output' => 'int64',
+        'balance' => 'int64'
     ];
 
     /**

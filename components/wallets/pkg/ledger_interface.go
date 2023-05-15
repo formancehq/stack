@@ -5,7 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"time"
 
 	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
@@ -26,12 +28,82 @@ type ListTransactionsQuery struct {
 	Account     string
 }
 
+type TransactionsCursorResponseCursor struct {
+	PageSize int64                 `json:"pageSize"`
+	HasMore  bool                  `json:"hasMore"`
+	Previous string                `json:"previous,omitempty"`
+	Next     string                `json:"next,omitempty"`
+	Data     []ExpandedTransaction `json:"data"`
+}
+
+func (c TransactionsCursorResponseCursor) GetData() []ExpandedTransaction {
+	return c.Data
+}
+func (c TransactionsCursorResponseCursor) GetNext() string {
+	return c.Next
+}
+func (c TransactionsCursorResponseCursor) GetPrevious() string {
+	return c.Previous
+}
+func (c TransactionsCursorResponseCursor) GetHasMore() bool {
+	return c.HasMore
+}
+
+type TransactionsCursorResponse struct {
+	Cursor TransactionsCursorResponseCursor `json:"cursor"`
+}
+
+type CreateTransactionResponse struct {
+	Data Transaction `json:"data"`
+}
+
+type PostTransactionScript struct {
+	Plain string         `json:"plain"`
+	Vars  map[string]any `json:"vars,omitempty"`
+}
+
+type PostTransaction struct {
+	Timestamp *time.Time             `json:"timestamp,omitempty"`
+	Postings  []Posting              `json:"postings,omitempty"`
+	Script    *PostTransactionScript `json:"script,omitempty"`
+	Reference *string                `json:"reference,omitempty"`
+	Metadata  map[string]string      `json:"metadata"`
+}
+
+type AccountsCursorResponseCursor struct {
+	PageSize int64     `json:"pageSize"`
+	HasMore  bool      `json:"hasMore"`
+	Previous string    `json:"previous,omitempty"`
+	Next     string    `json:"next,omitempty"`
+	Data     []Account `json:"data"`
+}
+
+func (c AccountsCursorResponseCursor) GetData() []Account {
+	return c.Data
+}
+
+func (c AccountsCursorResponseCursor) GetNext() string {
+	return c.Next
+}
+
+func (c AccountsCursorResponseCursor) GetPrevious() string {
+	return c.Previous
+}
+
+func (c AccountsCursorResponseCursor) GetHasMore() bool {
+	return c.HasMore
+}
+
+type AccountsCursorResponse struct {
+	Cursor AccountsCursorResponseCursor `json:"cursor"`
+}
+
 type Ledger interface {
 	AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error
-	GetAccount(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error)
-	ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error)
-	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error)
-	CreateTransaction(ctx context.Context, ledger string, postTransaction sdk.PostTransaction) (*sdk.CreateTransactionResponse, error)
+	GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error)
+	ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*AccountsCursorResponseCursor, error)
+	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*TransactionsCursorResponseCursor, error)
+	CreateTransaction(ctx context.Context, ledger string, postTransaction PostTransaction) (*CreateTransactionResponse, error)
 }
 
 type DefaultLedger struct {
@@ -39,12 +111,12 @@ type DefaultLedger struct {
 	baseUrl string
 }
 
-func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*sdk.TransactionsCursorResponseCursor, error) {
+func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*TransactionsCursorResponseCursor, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s/transactions", d.baseUrl, ledger), nil)
 	if err != nil {
 		panic(err)
 	}
-	req = req.WithContext(req.Context())
+	req = req.WithContext(ctx)
 	urlValues := req.URL.Query()
 
 	if query.Cursor == "" {
@@ -77,7 +149,7 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, quer
 		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
 	}
 
-	ret := &sdk.TransactionsCursorResponse{}
+	ret := &TransactionsCursorResponse{}
 	if err := json.NewDecoder(httpResponse.Body).Decode(ret); err != nil {
 		return nil, err
 	}
@@ -85,7 +157,7 @@ func (d DefaultLedger) ListTransactions(ctx context.Context, ledger string, quer
 	return &ret.Cursor, nil
 }
 
-func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
+func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, transaction PostTransaction) (*CreateTransactionResponse, error) {
 
 	data, err := json.Marshal(transaction)
 	if err != nil {
@@ -96,7 +168,7 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 	if err != nil {
 		panic(err)
 	}
-	req = req.WithContext(req.Context())
+	req = req.WithContext(ctx)
 
 	httpResponse, err := d.client.Do(req)
 	if err != nil {
@@ -112,12 +184,28 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
 	}
 
-	ret := &sdk.CreateTransactionResponse{}
-	if err := json.NewDecoder(httpResponse.Body).Decode(ret); err != nil {
+	// TODO(gfyrag): Remove when ledger v2 will be released
+	type v1Response struct {
+		Data []Transaction `json:"data"`
+	}
+
+	data, err = io.ReadAll(httpResponse.Body)
+	if err != nil {
 		return nil, err
 	}
 
-	return ret, err
+	v1 := &v1Response{}
+	if err := json.Unmarshal(data, v1); err != nil {
+		v2 := &CreateTransactionResponse{}
+		if err := json.Unmarshal(data, v2); err != nil {
+			return nil, err
+		}
+		return v2, nil
+	}
+
+	return &CreateTransactionResponse{
+		Data: v1.Data[0],
+	}, nil
 }
 
 func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error {
@@ -131,7 +219,7 @@ func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account
 	if err != nil {
 		panic(err)
 	}
-	req = req.WithContext(req.Context())
+	req = req.WithContext(ctx)
 
 	httpResponse, err := d.client.Do(req)
 	if err != nil {
@@ -150,12 +238,12 @@ func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account
 	return err
 }
 
-func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s/accounts/%s", d.baseUrl, ledger, account), nil)
 	if err != nil {
 		panic(err)
 	}
-	req = req.WithContext(req.Context())
+	req = req.WithContext(ctx)
 
 	httpResponse, err := d.client.Do(req)
 	if err != nil {
@@ -171,7 +259,11 @@ func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (
 		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
 	}
 
-	ret := &sdk.AccountResponse{}
+	type accountResponse struct {
+		Data AccountWithVolumesAndBalances `json:"data"`
+	}
+
+	ret := &accountResponse{}
 	if err := json.NewDecoder(httpResponse.Body).Decode(ret); err != nil {
 		return nil, err
 	}
@@ -179,12 +271,12 @@ func (d DefaultLedger) GetAccount(ctx context.Context, ledger, account string) (
 	return &ret.Data, nil
 }
 
-func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
+func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*AccountsCursorResponseCursor, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s/accounts", d.baseUrl, ledger), nil)
 	if err != nil {
 		panic(err)
 	}
-	req = req.WithContext(req.Context())
+	req = req.WithContext(ctx)
 	urlValues := req.URL.Query()
 
 	if query.Cursor == "" {
@@ -214,7 +306,7 @@ func (d DefaultLedger) ListAccounts(ctx context.Context, ledger string, query Li
 		return nil, fmt.Errorf("%s", errorResponse.ErrorMessage)
 	}
 
-	ret := &sdk.AccountsCursorResponse{}
+	ret := &AccountsCursorResponse{}
 	if err := json.NewDecoder(httpResponse.Body).Decode(ret); err != nil {
 		return nil, err
 	}

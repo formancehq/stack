@@ -29,20 +29,20 @@ import java.io.IOException;
 public class WalletsVolume {
   public static final String SERIALIZED_NAME_INPUT = "input";
   @SerializedName(SERIALIZED_NAME_INPUT)
-  private Integer input;
+  private Long input;
 
   public static final String SERIALIZED_NAME_OUTPUT = "output";
   @SerializedName(SERIALIZED_NAME_OUTPUT)
-  private Integer output;
+  private Long output;
 
   public static final String SERIALIZED_NAME_BALANCE = "balance";
   @SerializedName(SERIALIZED_NAME_BALANCE)
-  private Integer balance;
+  private Long balance;
 
   public WalletsVolume() {
   }
 
-  public WalletsVolume input(Integer input) {
+  public WalletsVolume input(Long input) {
     
     this.input = input;
     return this;
@@ -54,17 +54,17 @@ public class WalletsVolume {
   **/
   @javax.annotation.Nonnull
 
-  public Integer getInput() {
+  public Long getInput() {
     return input;
   }
 
 
-  public void setInput(Integer input) {
+  public void setInput(Long input) {
     this.input = input;
   }
 
 
-  public WalletsVolume output(Integer output) {
+  public WalletsVolume output(Long output) {
     
     this.output = output;
     return this;
@@ -76,17 +76,17 @@ public class WalletsVolume {
   **/
   @javax.annotation.Nonnull
 
-  public Integer getOutput() {
+  public Long getOutput() {
     return output;
   }
 
 
-  public void setOutput(Integer output) {
+  public void setOutput(Long output) {
     this.output = output;
   }
 
 
-  public WalletsVolume balance(Integer balance) {
+  public WalletsVolume balance(Long balance) {
     
     this.balance = balance;
     return this;
@@ -98,12 +98,12 @@ public class WalletsVolume {
   **/
   @javax.annotation.Nonnull
 
-  public Integer getBalance() {
+  public Long getBalance() {
     return balance;
   }
 
 
-  public void setBalance(Integer balance) {
+  public void setBalance(Long balance) {
     this.balance = balance;
   }
 

@@ -21,14 +21,14 @@ var _ MappedNullable = &BalanceWithAssets{}
 // BalanceWithAssets struct for BalanceWithAssets
 type BalanceWithAssets struct {
 	Name string `json:"name"`
-	Assets map[string]float32 `json:"assets"`
+	Assets map[string]int64 `json:"assets"`
 }
 
 // NewBalanceWithAssets instantiates a new BalanceWithAssets object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewBalanceWithAssets(name string, assets map[string]float32) *BalanceWithAssets {
+func NewBalanceWithAssets(name string, assets map[string]int64) *BalanceWithAssets {
 	this := BalanceWithAssets{}
 	this.Name = name
 	this.Assets = assets
@@ -68,9 +68,9 @@ func (o *BalanceWithAssets) SetName(v string) {
 }
 
 // GetAssets returns the Assets field value
-func (o *BalanceWithAssets) GetAssets() map[string]float32 {
+func (o *BalanceWithAssets) GetAssets() map[string]int64 {
 	if o == nil {
-		var ret map[string]float32
+		var ret map[string]int64
 		return ret
 	}
 
@@ -79,7 +79,7 @@ func (o *BalanceWithAssets) GetAssets() map[string]float32 {
 
 // GetAssetsOk returns a tuple with the Assets field value
 // and a boolean to check if the value has been set.
-func (o *BalanceWithAssets) GetAssetsOk() (*map[string]float32, bool) {
+func (o *BalanceWithAssets) GetAssetsOk() (*map[string]int64, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -87,7 +87,7 @@ func (o *BalanceWithAssets) GetAssetsOk() (*map[string]float32, bool) {
 }
 
 // SetAssets sets field value
-func (o *BalanceWithAssets) SetAssets(v map[string]float32) {
+func (o *BalanceWithAssets) SetAssets(v map[string]int64) {
 	o.Assets = v
 }
 

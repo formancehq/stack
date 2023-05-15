@@ -8,6 +8,7 @@ import (
 	"github.com/formancehq/formance-sdk-go"
 	"github.com/pkg/errors"
 	"github.com/pterm/pterm"
+	cobra "github.com/spf13/cobra"
 )
 
 func NewCreditWalletCommand() *cobra.Command {
@@ -62,7 +63,7 @@ func NewCreditWalletCommand() *cobra.Command {
 				return errors.New("You need to specify wallet id using --id or --name flags")
 			}
 
-			amount, err := strconv.ParseInt(amountStr, 10, 32)
+			amount, err := strconv.ParseUint(amountStr, 10, 64)
 			if err != nil {
 				return errors.Wrap(err, "parsing amount")
 			}
@@ -84,7 +85,7 @@ func NewCreditWalletCommand() *cobra.Command {
 			_, err = client.WalletsApi.CreditWallet(cmd.Context(), walletID).CreditWalletRequest(formance.CreditWalletRequest{
 				Amount: formance.Monetary{
 					Asset:  asset,
-					Amount: amount,
+					Amount: int64(amount),
 				},
 				Metadata: metadata,
 				Sources:  sources,

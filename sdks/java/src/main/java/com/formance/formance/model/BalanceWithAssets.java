@@ -21,7 +21,6 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +35,7 @@ public class BalanceWithAssets {
 
   public static final String SERIALIZED_NAME_ASSETS = "assets";
   @SerializedName(SERIALIZED_NAME_ASSETS)
-  private Map<String, BigDecimal> assets = new HashMap<>();
+  private Map<String, Long> assets = new HashMap<>();
 
   public BalanceWithAssets() {
   }
@@ -63,13 +62,13 @@ public class BalanceWithAssets {
   }
 
 
-  public BalanceWithAssets assets(Map<String, BigDecimal> assets) {
+  public BalanceWithAssets assets(Map<String, Long> assets) {
     
     this.assets = assets;
     return this;
   }
 
-  public BalanceWithAssets putAssetsItem(String key, BigDecimal assetsItem) {
+  public BalanceWithAssets putAssetsItem(String key, Long assetsItem) {
     this.assets.put(key, assetsItem);
     return this;
   }
@@ -80,12 +79,12 @@ public class BalanceWithAssets {
   **/
   @javax.annotation.Nonnull
 
-  public Map<String, BigDecimal> getAssets() {
+  public Map<String, Long> getAssets() {
     return assets;
   }
 
 
-  public void setAssets(Map<String, BigDecimal> assets) {
+  public void setAssets(Map<String, Long> assets) {
     this.assets = assets;
   }
 

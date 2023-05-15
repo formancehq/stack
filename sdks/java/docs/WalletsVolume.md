@@ -7,9 +7,9 @@
 
 | Name | Type | Description | Notes |
 |------------ | ------------- | ------------- | -------------|
-|**input** | **Integer** |  |  |
-|**output** | **Integer** |  |  |
-|**balance** | **Integer** |  |  |
+|**input** | **Long** |  |  |
+|**output** | **Long** |  |  |
+|**balance** | **Long** |  |  |
 
 
 

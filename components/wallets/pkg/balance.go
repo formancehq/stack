@@ -1,6 +1,7 @@
 package wallet
 
 import (
+	"math/big"
 	"net/http"
 	"regexp"
 
@@ -56,16 +57,12 @@ func BalanceFromAccount(account Account) Balance {
 
 type ExpandedBalance struct {
 	Balance
-	Assets map[string]int64 `json:"assets"`
+	Assets map[string]*big.Int `json:"assets"`
 }
 
-func ExpandedBalanceFromAccount(account interface {
-	Account
-	GetBalances() map[string]int64
-},
-) ExpandedBalance {
+func ExpandedBalanceFromAccount(account AccountWithVolumesAndBalances) ExpandedBalance {
 	return ExpandedBalance{
-		Balance: BalanceFromAccount(account),
+		Balance: BalanceFromAccount(account.Account),
 		Assets:  account.GetBalances(),
 	}
 }

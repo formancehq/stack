@@ -10,7 +10,6 @@ import (
 	"net/http/httputil"
 
 	"github.com/TylerBrock/colorjson"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/cobra"
 )
 
@@ -28,6 +27,9 @@ func (fn RoundTripperFn) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 func printBody(data []byte) {
+	if len(data) == 0 {
+		return
+	}
 	raw := make(map[string]any)
 	if err := json.Unmarshal(data, &raw); err == nil {
 		f := colorjson.NewFormatter()
@@ -38,7 +40,6 @@ func printBody(data []byte) {
 		}
 		fmt.Println(string(colorized))
 	} else {
-		spew.Dump(err)
 		fmt.Println(string(data))
 	}
 }

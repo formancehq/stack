@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -20,8 +19,8 @@ func TestWalletsCredit(t *testing.T) {
 	type testCase struct {
 		name                    string
 		request                 wallet.CreditRequest
-		postTransactionResult   sdk.CreateTransactionResponse
-		expectedPostTransaction func(testEnv *testEnv, walletID string) sdk.PostTransaction
+		postTransactionResult   wallet.CreateTransactionResponse
+		expectedPostTransaction func(testEnv *testEnv, walletID string) wallet.PostTransaction
 		expectedStatusCode      int
 		expectedErrorCode       string
 	}
@@ -34,9 +33,9 @@ func TestWalletsCredit(t *testing.T) {
 					"foo": "bar",
 				},
 			},
-			expectedPostTransaction: func(testEnv *testEnv, walletID string) sdk.PostTransaction {
-				return sdk.PostTransaction{
-					Script: &sdk.PostTransactionScript{
+			expectedPostTransaction: func(testEnv *testEnv, walletID string) wallet.PostTransaction {
+				return wallet.PostTransaction{
+					Script: &wallet.PostTransactionScript{
 						Plain: wallet.BuildCreditWalletScript("world"),
 						Vars: map[string]interface{}{
 							"destination": testEnv.chart.GetMainBalanceAccount(walletID),
@@ -61,9 +60,9 @@ func TestWalletsCredit(t *testing.T) {
 					wallet.NewWalletSubject("wallet1", ""),
 				},
 			},
-			expectedPostTransaction: func(testEnv *testEnv, walletID string) sdk.PostTransaction {
-				return sdk.PostTransaction{
-					Script: &sdk.PostTransactionScript{
+			expectedPostTransaction: func(testEnv *testEnv, walletID string) wallet.PostTransaction {
+				return wallet.PostTransaction{
+					Script: &wallet.PostTransactionScript{
 						Plain: wallet.BuildCreditWalletScript(
 							"emitter1",
 							testEnv.Chart().GetMainBalanceAccount("wallet1"),
@@ -88,9 +87,9 @@ func TestWalletsCredit(t *testing.T) {
 					wallet.NewWalletSubject("emitter1", "secondary"),
 				},
 			},
-			expectedPostTransaction: func(testEnv *testEnv, walletID string) sdk.PostTransaction {
-				return sdk.PostTransaction{
-					Script: &sdk.PostTransactionScript{
+			expectedPostTransaction: func(testEnv *testEnv, walletID string) wallet.PostTransaction {
+				return wallet.PostTransaction{
+					Script: &wallet.PostTransactionScript{
 						Plain: wallet.BuildCreditWalletScript(
 							testEnv.Chart().GetBalanceAccount("emitter1", "secondary"),
 						),
@@ -112,9 +111,9 @@ func TestWalletsCredit(t *testing.T) {
 				Amount:  wallet.NewMonetary(big.NewInt(100), "USD"),
 				Balance: "secondary",
 			},
-			expectedPostTransaction: func(testEnv *testEnv, walletID string) sdk.PostTransaction {
-				return sdk.PostTransaction{
-					Script: &sdk.PostTransactionScript{
+			expectedPostTransaction: func(testEnv *testEnv, walletID string) wallet.PostTransaction {
+				return wallet.PostTransaction{
+					Script: &wallet.PostTransactionScript{
 						Plain: wallet.BuildCreditWalletScript("world"),
 						Vars: map[string]interface{}{
 							"destination": testEnv.Chart().GetBalanceAccount(walletID, "secondary"),
@@ -151,22 +150,24 @@ func TestWalletsCredit(t *testing.T) {
 
 			var (
 				testEnv         *testEnv
-				postTransaction sdk.PostTransaction
+				postTransaction wallet.PostTransaction
 			)
 			testEnv = newTestEnv(
-				WithCreateTransaction(func(ctx context.Context, ledger string, p sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
+				WithCreateTransaction(func(ctx context.Context, ledger string, p wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					postTransaction = p
 					return &testCase.postTransactionResult, nil
 				}),
-				WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
+				WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
 					if testEnv.Chart().GetBalanceAccount(walletID, secondaryBalance.Name) == account {
-						return &sdk.AccountWithVolumesAndBalances{
-							Address:  account,
-							Metadata: secondaryBalance.LedgerMetadata(walletID),
+						return &wallet.AccountWithVolumesAndBalances{
+							Account: wallet.Account{
+								Address:  account,
+								Metadata: secondaryBalance.LedgerMetadata(walletID),
+							},
 						}, nil
 					}
-					return &sdk.AccountWithVolumesAndBalances{}, nil
+					return &wallet.AccountWithVolumesAndBalances{}, nil
 				}),
 			)
 			testEnv.Router().ServeHTTP(rec, req)

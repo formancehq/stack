@@ -6,7 +6,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	sdk "github.com/formancehq/formance-sdk-go"
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	wallet "github.com/formancehq/wallets/pkg"
 	"github.com/google/uuid"
@@ -69,8 +68,8 @@ func TestBalancesCreate(t *testing.T) {
 					appliedMetadata = metadata
 					return nil
 				}),
-				WithGetAccount(func(ctx context.Context, ledger, account string) (*sdk.AccountWithVolumesAndBalances, error) {
-					return &sdk.AccountWithVolumesAndBalances{}, nil
+				WithGetAccount(func(ctx context.Context, ledger, account string) (*wallet.AccountWithVolumesAndBalances, error) {
+					return &wallet.AccountWithVolumesAndBalances{}, nil
 				}),
 			)
 			testEnv.Router().ServeHTTP(rec, req)

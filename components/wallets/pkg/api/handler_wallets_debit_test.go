@@ -19,7 +19,7 @@ type testCase struct {
 	name                    string
 	request                 wallet.DebitRequest
 	postTransactionError    *apiErrorMock
-	expectedPostTransaction func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction
+	expectedPostTransaction func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction
 	expectedStatusCode      int
 	expectedErrorCode       string
 }
@@ -58,9 +58,9 @@ var walletDebitTestCases = []testCase{
 		request: wallet.DebitRequest{
 			Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 		},
-		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
-			return sdk.PostTransaction{
-				Script: &sdk.PostTransactionScript{
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": wallet.DefaultDebitDest.Identifier,
@@ -80,9 +80,9 @@ var walletDebitTestCases = []testCase{
 			Amount:      wallet.NewMonetary(big.NewInt(100), "USD"),
 			Destination: wallet.Ptr(wallet.NewLedgerAccountSubject("account1")),
 		},
-		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
-			return sdk.PostTransaction{
-				Script: &sdk.PostTransactionScript{
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": "account1",
@@ -102,9 +102,9 @@ var walletDebitTestCases = []testCase{
 			Amount:      wallet.NewMonetary(big.NewInt(100), "USD"),
 			Destination: wallet.Ptr(wallet.NewWalletSubject("wallet1", "")),
 		},
-		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
-			return sdk.PostTransaction{
-				Script: &sdk.PostTransactionScript{
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": testEnv.Chart().GetMainBalanceAccount("wallet1"),
@@ -139,9 +139,9 @@ var walletDebitTestCases = []testCase{
 			},
 			Description: "a first tx",
 		},
-		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
-			return sdk.PostTransaction{
-				Script: &sdk.PostTransactionScript{
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": testEnv.Chart().GetHoldAccount(h.ID),
@@ -164,9 +164,9 @@ var walletDebitTestCases = []testCase{
 			Amount:   wallet.NewMonetary(big.NewInt(100), "USD"),
 			Balances: []string{"secondary"},
 		},
-		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
-			return sdk.PostTransaction{
-				Script: &sdk.PostTransactionScript{
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
 					Vars: map[string]interface{}{
 						"destination": "world",
@@ -186,9 +186,9 @@ var walletDebitTestCases = []testCase{
 			Amount:   wallet.NewMonetary(big.NewInt(100), "USD"),
 			Balances: []string{"*"},
 		},
-		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
-			return sdk.PostTransaction{
-				Script: &sdk.PostTransactionScript{
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
 					Vars: map[string]interface{}{
 						"destination": "world",
@@ -208,9 +208,9 @@ var walletDebitTestCases = []testCase{
 			Amount:   wallet.NewMonetary(big.NewInt(100), "USD"),
 			Balances: []string{"*", "secondary"},
 		},
-		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
-			return sdk.PostTransaction{
-				Script: &sdk.PostTransactionScript{
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetBalanceAccount(walletID, "secondary")),
 					Vars: map[string]interface{}{
 						"destination": "world",
@@ -232,9 +232,9 @@ var walletDebitTestCases = []testCase{
 			Amount:      wallet.NewMonetary(big.NewInt(100), "USD"),
 			Destination: wallet.Ptr(wallet.NewWalletSubject("wallet1", "secondary")),
 		},
-		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) sdk.PostTransaction {
-			return sdk.PostTransaction{
-				Script: &sdk.PostTransactionScript{
+		expectedPostTransaction: func(testEnv *testEnv, walletID string, h *wallet.DebitHold) wallet.PostTransaction {
+			return wallet.PostTransaction{
+				Script: &wallet.PostTransactionScript{
 					Plain: wallet.BuildDebitWalletScript(testEnv.Chart().GetMainBalanceAccount(walletID)),
 					Vars: map[string]interface{}{
 						"destination": testEnv.Chart().GetBalanceAccount("wallet1", "secondary"),
@@ -263,7 +263,7 @@ func TestWalletsDebit(t *testing.T) {
 
 			var (
 				testEnv             *testEnv
-				postTransaction     sdk.PostTransaction
+				postTransaction     wallet.PostTransaction
 				holdAccount         string
 				holdAccountMetadata metadata.Metadata
 			)
@@ -274,11 +274,11 @@ func TestWalletsDebit(t *testing.T) {
 					holdAccountMetadata = m
 					return nil
 				}),
-				WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*sdk.AccountsCursorResponseCursor, error) {
+				WithListAccounts(func(ctx context.Context, ledger string, query wallet.ListAccountsQuery) (*wallet.AccountsCursorResponseCursor, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					require.Equal(t, query.Metadata, wallet.BalancesMetadataFilter(walletID))
-					return &sdk.AccountsCursorResponseCursor{
-						Data: []sdk.Account{{
+					return &wallet.AccountsCursorResponseCursor{
+						Data: []wallet.Account{{
 							Address: testEnv.Chart().GetBalanceAccount(walletID, "secondary"),
 							Metadata: wallet.Balance{
 								Name: "secondary",
@@ -286,7 +286,7 @@ func TestWalletsDebit(t *testing.T) {
 						}},
 					}, nil
 				}),
-				WithCreateTransaction(func(ctx context.Context, ledger string, p sdk.PostTransaction) (*sdk.CreateTransactionResponse, error) {
+				WithCreateTransaction(func(ctx context.Context, ledger string, p wallet.PostTransaction) (*wallet.CreateTransactionResponse, error) {
 					require.Equal(t, testEnv.LedgerName(), ledger)
 					postTransaction = p
 					if testCase.postTransactionError != nil {

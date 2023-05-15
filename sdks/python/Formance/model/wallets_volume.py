@@ -42,9 +42,9 @@ class WalletsVolume(
         }
         
         class properties:
-            input = schemas.IntSchema
-            output = schemas.IntSchema
-            balance = schemas.IntSchema
+            input = schemas.Int64Schema
+            output = schemas.Int64Schema
+            balance = schemas.Int64Schema
             __annotations__ = {
                 "input": input,
                 "output": output,

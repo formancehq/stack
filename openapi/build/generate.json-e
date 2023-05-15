@@ -6289,13 +6289,16 @@
         "type": "object",
         "properties": {
           "input": {
-            "type": "integer"
+            "type": "integer",
+            "format": "int64"
           },
           "output": {
-            "type": "integer"
+            "type": "integer",
+            "format": "int64"
           },
           "balance": {
-            "type": "integer"
+            "type": "integer",
+            "format": "int64"
           }
         },
         "required": [
@@ -6489,7 +6492,8 @@
           "assets": {
             "type": "object",
             "additionalProperties": {
-              "type": "number"
+              "type": "integer",
+              "format": "int64"
             }
           }
         }

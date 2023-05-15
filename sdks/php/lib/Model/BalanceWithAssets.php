@@ -59,7 +59,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
       */
     protected static $openAPITypes = [
         'name' => 'string',
-        'assets' => 'array<string,float>'
+        'assets' => 'array<string,int>'
     ];
 
     /**
@@ -71,7 +71,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
       */
     protected static $openAPIFormats = [
         'name' => null,
-        'assets' => null
+        'assets' => 'int64'
     ];
 
     /**
@@ -333,7 +333,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Gets assets
      *
-     * @return array<string,float>
+     * @return array<string,int>
      */
     public function getAssets()
     {
@@ -343,7 +343,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
     /**
      * Sets assets
      *
-     * @param array<string,float> $assets assets
+     * @param array<string,int> $assets assets
      *
      * @return self
      */

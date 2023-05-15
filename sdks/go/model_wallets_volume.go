@@ -20,16 +20,16 @@ var _ MappedNullable = &WalletsVolume{}
 
 // WalletsVolume struct for WalletsVolume
 type WalletsVolume struct {
-	Input int32 `json:"input"`
-	Output int32 `json:"output"`
-	Balance int32 `json:"balance"`
+	Input int64 `json:"input"`
+	Output int64 `json:"output"`
+	Balance int64 `json:"balance"`
 }
 
 // NewWalletsVolume instantiates a new WalletsVolume object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewWalletsVolume(input int32, output int32, balance int32) *WalletsVolume {
+func NewWalletsVolume(input int64, output int64, balance int64) *WalletsVolume {
 	this := WalletsVolume{}
 	this.Input = input
 	this.Output = output
@@ -46,9 +46,9 @@ func NewWalletsVolumeWithDefaults() *WalletsVolume {
 }
 
 // GetInput returns the Input field value
-func (o *WalletsVolume) GetInput() int32 {
+func (o *WalletsVolume) GetInput() int64 {
 	if o == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 
@@ -57,7 +57,7 @@ func (o *WalletsVolume) GetInput() int32 {
 
 // GetInputOk returns a tuple with the Input field value
 // and a boolean to check if the value has been set.
-func (o *WalletsVolume) GetInputOk() (*int32, bool) {
+func (o *WalletsVolume) GetInputOk() (*int64, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -65,14 +65,14 @@ func (o *WalletsVolume) GetInputOk() (*int32, bool) {
 }
 
 // SetInput sets field value
-func (o *WalletsVolume) SetInput(v int32) {
+func (o *WalletsVolume) SetInput(v int64) {
 	o.Input = v
 }
 
 // GetOutput returns the Output field value
-func (o *WalletsVolume) GetOutput() int32 {
+func (o *WalletsVolume) GetOutput() int64 {
 	if o == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 
@@ -81,7 +81,7 @@ func (o *WalletsVolume) GetOutput() int32 {
 
 // GetOutputOk returns a tuple with the Output field value
 // and a boolean to check if the value has been set.
-func (o *WalletsVolume) GetOutputOk() (*int32, bool) {
+func (o *WalletsVolume) GetOutputOk() (*int64, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -89,14 +89,14 @@ func (o *WalletsVolume) GetOutputOk() (*int32, bool) {
 }
 
 // SetOutput sets field value
-func (o *WalletsVolume) SetOutput(v int32) {
+func (o *WalletsVolume) SetOutput(v int64) {
 	o.Output = v
 }
 
 // GetBalance returns the Balance field value
-func (o *WalletsVolume) GetBalance() int32 {
+func (o *WalletsVolume) GetBalance() int64 {
 	if o == nil {
-		var ret int32
+		var ret int64
 		return ret
 	}
 
@@ -105,7 +105,7 @@ func (o *WalletsVolume) GetBalance() int32 {
 
 // GetBalanceOk returns a tuple with the Balance field value
 // and a boolean to check if the value has been set.
-func (o *WalletsVolume) GetBalanceOk() (*int32, bool) {
+func (o *WalletsVolume) GetBalanceOk() (*int64, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -113,7 +113,7 @@ func (o *WalletsVolume) GetBalanceOk() (*int32, bool) {
 }
 
 // SetBalance sets field value
-func (o *WalletsVolume) SetBalance(v int32) {
+func (o *WalletsVolume) SetBalance(v int64) {
 	o.Balance = v
 }
 
