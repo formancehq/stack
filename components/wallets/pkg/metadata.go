@@ -21,6 +21,7 @@ const (
 	MetadataKeyHoldDestination       = "destination"
 	MetadataKeyBalanceName           = "wallets/balances/name"
 	MetadataKeyBalanceExpiresAt      = "wallets/balances/expiresAt"
+	MetadataKeyBalancePriority       = "wallets/balances/priority"
 	MetadataKeyWalletBalance         = "wallets/balances"
 	MetadataKeyCreatedAt             = "wallets/createdAt"
 
