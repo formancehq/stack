@@ -8,7 +8,7 @@ metadata:
         formance.com/monopod: "false"
         stack: "true"
     name: orchestration
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
     progressDeadlineSeconds: 600
     replicas: 1
@@ -32,9 +32,9 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32769"
+                      value: "32830"
                     - name: POSTGRES_DATABASE
-                      value: stack1-orchestration
+                      value: orga1-stack1-orchestration
                     - name: POSTGRES_USERNAME
                       value: root
                     - name: POSTGRES_PASSWORD
@@ -69,7 +69,7 @@ spec:
                     - name: POSTGRES_DSN
                       value: $(POSTGRES_URI)
                     - name: TEMPORAL_TASK_QUEUE
-                      value: stack1
+                      value: orga1-stack1
                     - name: TEMPORAL_ADDRESS
                     - name: TEMPORAL_NAMESPACE
                     - name: TEMPORAL_SSL_CLIENT_KEY

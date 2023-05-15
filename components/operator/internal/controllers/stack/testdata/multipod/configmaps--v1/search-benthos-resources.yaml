@@ -28,4 +28,4 @@ metadata:
     labels:
         stack: "true"
     name: search-benthos-resources
-    namespace: stack1
+    namespace: orga1-stack1

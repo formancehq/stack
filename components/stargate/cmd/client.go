@@ -32,9 +32,9 @@ const (
 	KeepAliveClientParamPermitWithoutStreamFlag = "keepalive-client-param-permit-without-stream"
 
 	AuthRefreshTokenDurationBeforeExpireTimeFlag = "auth-refresh-token-duration-before-expire-time"
-	AuthClientIDFlag                             = "auth-client-id"
-	AuthClientSecretFlag                         = "auth-client-secret"
-	AuthEndpointFlag                             = "auth-endpoint"
+	StargateAuthClientIDFlag                     = "stargate-auth-client-id"
+	StargateAuthClientSecretFlag                 = "stargate-auth-client-secret"
+	StargateAuthIssuerURLFlag                    = "stargate-auth-issuer-url"
 )
 
 func newClient() *cobra.Command {
@@ -85,10 +85,10 @@ func resolveClientOptions(v *viper.Viper) []fx.Option {
 		}),
 		fx.Provide(func() interceptors.Config {
 			return interceptors.NewConfig(
+				viper.GetString(StargateAuthIssuerURLFlag),
 				viper.GetDuration(AuthRefreshTokenDurationBeforeExpireTimeFlag),
-				viper.GetString(AuthClientIDFlag),
-				viper.GetString(AuthClientSecretFlag),
-				viper.GetString(AuthEndpointFlag),
+				viper.GetString(StargateAuthClientIDFlag),
+				viper.GetString(StargateAuthClientSecretFlag),
 			)
 		}),
 		client.Module(viper.GetString(stargateServerURLFlag)),

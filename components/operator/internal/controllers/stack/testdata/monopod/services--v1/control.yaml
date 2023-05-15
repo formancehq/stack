@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: control
     name: control
-    namespace: stack2
+    namespace: orga2-stack2
 spec:
-    clusterIP: 10.0.0.104
+    clusterIP: 10.0.0.34
     clusterIPs:
-        - 10.0.0.104
+        - 10.0.0.34
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 3000
     selector:
-        app.kubernetes.io/name: stack2
+        app.kubernetes.io/name: orga2-stack2
     sessionAffinity: None
     type: ClusterIP
 status:

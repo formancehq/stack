@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: search
     name: search
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.131
+    clusterIP: 10.0.0.125
     clusterIPs:
-        - 10.0.0.131
+        - 10.0.0.125
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

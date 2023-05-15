@@ -8,7 +8,7 @@ metadata:
         formance.com/monopod: "false"
         stack: "true"
     name: wallets
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
     progressDeadlineSeconds: 600
     replicas: 1

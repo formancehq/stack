@@ -9,6 +9,7 @@ resources:
 - bases/components.formance.com_searches.yaml
 - bases/components.formance.com_controls.yaml
 - bases/components.formance.com_wallets.yaml
+- bases/components.formance.com_stargates.yaml
 - bases/components.formance.com_counterparties.yaml
 - bases/auth.components.formance.com_clients.yaml
 - bases/auth.components.formance.com_scopes.yaml

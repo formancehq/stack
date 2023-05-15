@@ -92,13 +92,21 @@ type StackAuthSpec struct {
 	StaticClients []StaticClient `json:"staticClients,omitempty"`
 }
 
+type StackStargateConfig struct {
+	StargateServerURL string `json:"stargateServerURL"`
+	AuthClientID      string `json:"authClientId"`
+	AuthClientSecret  string `json:"authClientSecret"`
+	AuthIssuerURL     string `json:"authIssuerURL"`
+}
+
 // StackSpec defines the desired state of Stack
 type StackSpec struct {
 	DevProperties `json:",inline"`
 	Seed          string `json:"seed"`
 	// +kubebuilder:validation:Required
-	Host string        `json:"host"`
-	Auth StackAuthSpec `json:"auth"`
+	Host     string              `json:"host"`
+	Auth     StackAuthSpec       `json:"auth"`
+	Stargate StackStargateConfig `json:"stargate"`
 
 	// +optional
 	Versions string `json:"versions"`

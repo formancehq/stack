@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: ledger
     name: ledger
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.35
+    clusterIP: 10.0.0.97
     clusterIPs:
-        - 10.0.0.35
+        - 10.0.0.97
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

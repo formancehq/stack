@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: orchestration
     name: orchestration
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.162
+    clusterIP: 10.0.0.23
     clusterIPs:
-        - 10.0.0.162
+        - 10.0.0.23
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

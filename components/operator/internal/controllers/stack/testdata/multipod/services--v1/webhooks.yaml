@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: webhooks
     name: webhooks
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.125
+    clusterIP: 10.0.0.211
     clusterIPs:
-        - 10.0.0.125
+        - 10.0.0.211
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

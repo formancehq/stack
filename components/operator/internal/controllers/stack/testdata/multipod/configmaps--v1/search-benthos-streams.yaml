@@ -455,4 +455,4 @@ metadata:
     labels:
         stack: "true"
     name: search-benthos-streams
-    namespace: stack1
+    namespace: orga1-stack1

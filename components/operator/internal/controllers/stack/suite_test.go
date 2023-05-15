@@ -129,6 +129,7 @@ func NewDumbVersions() *v1beta3.Versions {
 			Auth:          "latest",
 			Webhooks:      "latest",
 			Wallets:       "latest",
+			Stargate:      "latest",
 			Orchestration: "latest",
 		},
 	}
@@ -157,7 +158,8 @@ func NewDumbConfiguration() *v1beta3.Configuration {
 				Webhooks: v1beta3.WebhooksSpec{
 					Postgres: NewPostgresConfig(),
 				},
-				Wallets: v1beta3.WalletsSpec{},
+				Stargate: v1beta3.StargateSpec{},
+				Wallets:  v1beta3.WalletsSpec{},
 				Orchestration: v1beta3.OrchestrationSpec{
 					Postgres: NewPostgresConfig(),
 				},

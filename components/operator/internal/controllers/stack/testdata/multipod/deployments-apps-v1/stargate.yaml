@@ -7,7 +7,7 @@ metadata:
     labels:
         formance.com/monopod: "false"
         stack: "true"
-    name: webhooks
+    name: stargate
     namespace: orga1-stack1
 spec:
     progressDeadlineSeconds: 600
@@ -15,7 +15,7 @@ spec:
     revisionHistoryLimit: 10
     selector:
         matchLabels:
-            app.kubernetes.io/name: webhooks
+            app.kubernetes.io/name: stargate
     strategy:
         rollingUpdate:
             maxSurge: 25%
@@ -25,26 +25,10 @@ spec:
         metadata:
             creationTimestamp: null
             labels:
-                app.kubernetes.io/name: webhooks
+                app.kubernetes.io/name: stargate
         spec:
             containers:
                 - env:
-                    - name: POSTGRES_HOST
-                      value: localhost
-                    - name: POSTGRES_PORT
-                      value: "32830"
-                    - name: POSTGRES_DATABASE
-                      value: orga1-stack1-webhooks
-                    - name: POSTGRES_USERNAME
-                      value: root
-                    - name: POSTGRES_PASSWORD
-                      value: root
-                    - name: POSTGRES_NO_DATABASE_URI
-                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
-                    - name: POSTGRES_URI
-                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
-                    - name: HTTP_BIND_ADDRESS_SERVER
-                      value: :8080
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -67,32 +51,20 @@ spec:
                     - name: STACK_URL
                       value: http://example.net
                     - name: OTEL_SERVICE_NAME
-                      value: webhooks
-                    - name: BROKER
-                      value: kafka
-                    - name: PUBLISHER_KAFKA_ENABLED
-                      value: "true"
-                    - name: PUBLISHER_KAFKA_BROKER
-                      value: kafka:1234
-                    - name: STORAGE_POSTGRES_CONN_STRING
-                      value: $(POSTGRES_URI)
-                  image: ghcr.io/formancehq/webhooks:latest
+                      value: stargate
+                    - name: ORGANIZATION_ID
+                      value: orga1
+                    - name: STACK_ID
+                      value: stack1
+                    - name: STARGATE_SERVER_URL
+                    - name: GATEWAY_URL
+                      value: http://gateway:8000
+                    - name: STARGATE_AUTH_CLIENT_ID
+                    - name: STARGATE_AUTH_CLIENT_SECRET
+                    - name: STARGATE_AUTH_ISSUER_URL
+                  image: ghcr.io/formancehq/stargate:latest
                   imagePullPolicy: Always
-                  livenessProbe:
-                    failureThreshold: 10
-                    httpGet:
-                        path: /_healthcheck
-                        port: 8080
-                        scheme: HTTP
-                    initialDelaySeconds: 1
-                    periodSeconds: 2
-                    successThreshold: 1
-                    timeoutSeconds: 30
-                  name: webhooks
-                  ports:
-                    - containerPort: 8080
-                      name: http
-                      protocol: TCP
+                  name: stargate
                   resources: {}
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File

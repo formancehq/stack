@@ -121,4 +121,4 @@ metadata:
     labels:
         stack: "true"
     name: search-benthos-templates
-    namespace: stack2
+    namespace: orga2-stack2

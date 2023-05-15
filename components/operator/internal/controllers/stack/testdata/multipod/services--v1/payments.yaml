@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: payments
     name: payments
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.34
+    clusterIP: 10.0.0.205
     clusterIPs:
-        - 10.0.0.34
+        - 10.0.0.205
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
