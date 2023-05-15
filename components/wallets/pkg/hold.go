@@ -1,6 +1,8 @@
 package wallet
 
 import (
+	"math/big"
+
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 	"github.com/google/uuid"
 )
@@ -64,8 +66,8 @@ func DebitHoldFromLedgerAccount(account Account) DebitHold {
 
 type ExpandedDebitHold struct {
 	DebitHold
-	OriginalAmount MonetaryInt `json:"originalAmount"`
-	Remaining      MonetaryInt `json:"remaining"`
+	OriginalAmount *big.Int `json:"originalAmount"`
+	Remaining      *big.Int `json:"remaining"`
 }
 
 func (h ExpandedDebitHold) IsClosed() bool {
@@ -81,14 +83,14 @@ func ExpandedDebitHoldFromLedgerAccount(account interface {
 	hold := ExpandedDebitHold{
 		DebitHold: DebitHoldFromLedgerAccount(account),
 	}
-	hold.OriginalAmount = *NewMonetaryInt(account.GetVolumes()[hold.Asset]["input"])
-	hold.Remaining = *NewMonetaryInt(account.GetBalances()[hold.Asset])
+	hold.OriginalAmount = big.NewInt(account.GetVolumes()[hold.Asset]["input"])
+	hold.Remaining = big.NewInt(account.GetBalances()[hold.Asset])
 	return hold
 }
 
 type ConfirmHold struct {
 	HoldID    string `json:"holdID"`
-	Amount    MonetaryInt
+	Amount    *big.Int
 	Reference string
 	Final     bool
 }

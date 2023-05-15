@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"math/big"
 	"net/http"
 
 	wallet "github.com/formancehq/wallets/pkg"
@@ -29,7 +30,7 @@ func (m *MainHandler) confirmHoldHandler(w http.ResponseWriter, r *http.Request)
 
 	err := m.manager.ConfirmHold(r.Context(), wallet.ConfirmHold{
 		HoldID: chi.URLParam(r, "holdID"),
-		Amount: *wallet.NewMonetaryInt(data.Amount),
+		Amount: big.NewInt(data.Amount),
 		Final:  data.Final,
 	})
 	if err != nil {

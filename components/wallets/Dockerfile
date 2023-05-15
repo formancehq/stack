@@ -2,10 +2,13 @@ FROM golang:1.19 AS builder
 ARG APP_SHA
 ARG VERSION
 WORKDIR /src
-COPY . .
+COPY sdks/go /src/sdks/go
+COPY libs /src/libs
+COPY components/wallets /src/components/wallets
 WORKDIR /src/components/wallets
-RUN go mod download
-RUN GOOS=linux go build -o wallets \
+RUN --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
+    --mount=type=cache,id=gomodcache,target=/go/pkg/mod \
+    GOOS=linux go build -o wallets \
     -ldflags="-X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Version=${VERSION} \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.BuildDate=$(date +%s) \
     -X $(cat go.mod |head -1|cut -d \  -f2)/cmd.Commit=${APP_SHA}" ./

@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -28,7 +29,7 @@ func TestWalletsCredit(t *testing.T) {
 		{
 			name: "nominal",
 			request: wallet.CreditRequest{
-				Amount: wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+				Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 				Metadata: metadata.Metadata{
 					"foo": "bar",
 				},
@@ -54,7 +55,7 @@ func TestWalletsCredit(t *testing.T) {
 		{
 			name: "with source list",
 			request: wallet.CreditRequest{
-				Amount: wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+				Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 				Sources: []wallet.Subject{
 					wallet.NewLedgerAccountSubject("emitter1"),
 					wallet.NewWalletSubject("wallet1", ""),
@@ -82,7 +83,7 @@ func TestWalletsCredit(t *testing.T) {
 		{
 			name: "with secondary balance from source",
 			request: wallet.CreditRequest{
-				Amount: wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+				Amount: wallet.NewMonetary(big.NewInt(100), "USD"),
 				Sources: []wallet.Subject{
 					wallet.NewWalletSubject("emitter1", "secondary"),
 				},
@@ -108,7 +109,7 @@ func TestWalletsCredit(t *testing.T) {
 		{
 			name: "with secondary balance as destination",
 			request: wallet.CreditRequest{
-				Amount:  wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+				Amount:  wallet.NewMonetary(big.NewInt(100), "USD"),
 				Balance: "secondary",
 			},
 			expectedPostTransaction: func(testEnv *testEnv, walletID string) sdk.PostTransaction {
@@ -130,7 +131,7 @@ func TestWalletsCredit(t *testing.T) {
 		{
 			name: "with not existing secondary balance as destination",
 			request: wallet.CreditRequest{
-				Amount:  wallet.NewMonetary(wallet.NewMonetaryInt(100), "USD"),
+				Amount:  wallet.NewMonetary(big.NewInt(100), "USD"),
 				Balance: "not-existing",
 			},
 			expectedStatusCode: http.StatusBadRequest,

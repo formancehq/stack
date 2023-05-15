@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"math/big"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -51,7 +52,7 @@ func TestHoldsGet(t *testing.T) {
 	readResponse(t, rec, &ret)
 	require.EqualValues(t, wallet.ExpandedDebitHold{
 		DebitHold:      hold,
-		OriginalAmount: *wallet.NewMonetaryInt(100),
-		Remaining:      *wallet.NewMonetaryInt(50),
+		OriginalAmount: big.NewInt(100),
+		Remaining:      big.NewInt(50),
 	}, ret)
 }
