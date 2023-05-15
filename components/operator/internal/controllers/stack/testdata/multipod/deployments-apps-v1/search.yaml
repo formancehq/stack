@@ -8,7 +8,7 @@ metadata:
         formance.com/monopod: "false"
         stack: "true"
     name: search
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
     progressDeadlineSeconds: 600
     replicas: 1
@@ -57,12 +57,12 @@ spec:
                     - name: OPENSEARCH_URL
                       value: http://elasticsearch:9200
                     - name: OPENSEARCH_INDEX
-                      value: stack1
+                      value: orga1-stack1
                     - name: OPENSEARCH_BATCHING_COUNT
                       value: "0"
                     - name: OPENSEARCH_BATCHING_PERIOD
                     - name: TOPIC_PREFIX
-                      value: stack1-
+                      value: orga1-stack1-
                     - name: KAFKA_ADDRESS
                       value: kafka:1234
                     - name: OPEN_SEARCH_SERVICE
@@ -70,7 +70,7 @@ spec:
                     - name: OPEN_SEARCH_SCHEME
                       value: http
                     - name: ES_INDICES
-                      value: stack1
+                      value: orga1-stack1
                     - name: MAPPING_INIT_DISABLED
                       value: "true"
                   image: ghcr.io/formancehq/search:latest

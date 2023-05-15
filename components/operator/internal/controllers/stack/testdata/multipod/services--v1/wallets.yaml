@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: wallets
     name: wallets
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.203
+    clusterIP: 10.0.0.194
     clusterIPs:
-        - 10.0.0.203
+        - 10.0.0.194
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

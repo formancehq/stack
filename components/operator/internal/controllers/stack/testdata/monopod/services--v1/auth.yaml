@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: auth
     name: auth
-    namespace: stack2
+    namespace: orga2-stack2
 spec:
-    clusterIP: 10.0.0.233
+    clusterIP: 10.0.0.92
     clusterIPs:
-        - 10.0.0.233
+        - 10.0.0.92
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 10001
     selector:
-        app.kubernetes.io/name: stack2
+        app.kubernetes.io/name: orga2-stack2
     sessionAffinity: None
     type: ClusterIP
 status:

@@ -1925,6 +1925,22 @@ spec:
                 type: string
               seed:
                 type: string
+              stargate:
+                properties:
+                  authClientId:
+                    type: string
+                  authClientSecret:
+                    type: string
+                  authIssuerURL:
+                    type: string
+                  stargateServerURL:
+                    type: string
+                required:
+                - authClientId
+                - authClientSecret
+                - authIssuerURL
+                - stargateServerURL
+                type: object
               versions:
                 type: string
             required:

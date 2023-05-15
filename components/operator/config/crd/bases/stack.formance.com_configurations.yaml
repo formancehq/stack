@@ -4372,6 +4372,13 @@ spec:
                     required:
                     - elasticSearch
                     type: object
+                  stargate:
+                    properties:
+                      debug:
+                        type: boolean
+                      dev:
+                        type: boolean
+                    type: object
                   wallets:
                     properties:
                       debug:

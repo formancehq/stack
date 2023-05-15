@@ -22,10 +22,10 @@ type Config struct {
 }
 
 func NewConfig(
+	endpoint string,
 	refreshTokenDurationBeforeExpireTime time.Duration,
 	clientID string,
 	clientSecret string,
-	endpoint string,
 ) Config {
 	return Config{
 		refreshTokenDurationBeforeExpireTime: refreshTokenDurationBeforeExpireTime,

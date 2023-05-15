@@ -5,7 +5,7 @@ metadata:
     labels:
         stack: "true"
     name: gateway
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
     rules:
         - host: example.net

@@ -55,7 +55,7 @@ func NewRootCommand() *cobra.Command {
 
 	client.Flags().String(organizationIDFlag, "", "Organization ID")
 	client.Flags().String(stackIDFlag, "", "Stack ID")
-	client.Flags().String(stargateServerURLFlag, "toto", "Stargate server URL")
+	client.Flags().String(stargateServerURLFlag, "", "Stargate server URL")
 	client.Flags().String(gatewayURLFlag, "", "Gateway URL")
 	client.Flags().Int(workerPoolMaxWorkersFlag, 100, "Max worker pool size")
 	client.Flags().Int(workerPoolMaxTasksFlag, 10000, "Max worker pool tasks")
@@ -67,9 +67,9 @@ func NewRootCommand() *cobra.Command {
 	client.Flags().Duration(KeepAliveClientParamTimeoutFlag, time.Second, "Keepalive client param timeout")
 	client.Flags().Bool(KeepAliveClientParamPermitWithoutStreamFlag, true, "Keepalive client param permit without stream")
 	client.Flags().Duration(AuthRefreshTokenDurationBeforeExpireTimeFlag, 30*time.Second, "Auth refresh token duration")
-	client.Flags().String(AuthClientIDFlag, "", "Auth client ID")
-	client.Flags().String(AuthClientSecretFlag, "", "Auth client secret")
-	client.Flags().String(AuthEndpointFlag, "", "Auth URL")
+	client.Flags().String(StargateAuthClientIDFlag, "", "Stargate auth client ID")
+	client.Flags().String(StargateAuthClientSecretFlag, "", "Stargate auth client secret")
+	client.Flags().String(StargateAuthIssuerURLFlag, "", "Stargate auth issuer")
 	if err := viper.BindPFlags(client.Flags()); err != nil {
 		panic(err)
 	}

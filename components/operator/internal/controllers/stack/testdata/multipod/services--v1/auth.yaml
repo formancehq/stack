@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: auth
     name: auth
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.2
+    clusterIP: 10.0.0.166
     clusterIPs:
-        - 10.0.0.2
+        - 10.0.0.166
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

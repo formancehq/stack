@@ -15,4 +15,4 @@ metadata:
     labels:
         stack: "true"
     name: search-benthos-global
-    namespace: stack1
+    namespace: orga1-stack1

@@ -31,6 +31,15 @@ data:
               PostLogoutRedirectUris: []
               scopes:
                 - openid
+              id: stargate
+              secrets:
+                - mocked-secret
+            - public: false
+              description: null
+              redirectUris: []
+              PostLogoutRedirectUris: []
+              scopes:
+                - openid
               id: wallets
               secrets:
                 - mocked-secret
@@ -39,4 +48,4 @@ metadata:
     labels:
         stack: "true"
     name: auth-config
-    namespace: stack2
+    namespace: orga2-stack2
