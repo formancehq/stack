@@ -1,5 +1,5 @@
 fail_fast: true
-exclude: ^sdks/|openapi/build|components/payments/client|components/auth/authclient|components/agent/chart|components/operator/helm
+exclude: ^sdks/|openapi/build|components/payments/client|components/auth/authclient|components/agent/chart|components/stargate/internal/api|components/operator/helm
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
@@ -16,6 +16,7 @@ repos:
   - id: check-merge-conflict
   - id: check-symlinks
   - id: detect-aws-credentials
+    args: [--allow-missing-credentials]
   - id: detect-private-key
     exclude: components/operator/garden|components/auth/cmd/serve.go
 - repo: local

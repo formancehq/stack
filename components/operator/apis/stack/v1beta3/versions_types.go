@@ -43,6 +43,8 @@ type VersionsSpec struct {
 	Orchestration string `json:"orchestration"`
 	// +optional
 	Gateway string `json:"gateway"`
+	// +optional
+	Stargate string `json:"stargate"`
 }
 
 // VersionsStatus defines the observed state of Versions

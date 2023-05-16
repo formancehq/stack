@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: webhooks
     name: webhooks
-    namespace: stack2
+    namespace: orga2-stack2
 spec:
-    clusterIP: 10.0.0.96
+    clusterIP: 10.0.0.55
     clusterIPs:
-        - 10.0.0.96
+        - 10.0.0.55
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -20,7 +20,7 @@ spec:
           protocol: TCP
           targetPort: 10006
     selector:
-        app.kubernetes.io/name: stack2
+        app.kubernetes.io/name: orga2-stack2
     sessionAffinity: None
     type: ClusterIP
 status:

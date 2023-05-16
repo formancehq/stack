@@ -8,7 +8,7 @@ metadata:
         formance.com/monopod: "false"
         stack: "true"
     name: auth
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
     progressDeadlineSeconds: 600
     replicas: 1
@@ -34,9 +34,9 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32769"
+                      value: "32839"
                     - name: POSTGRES_DATABASE
-                      value: stack1-auth
+                      value: orga1-stack1-auth
                     - name: POSTGRES_USERNAME
                       value: root
                     - name: POSTGRES_PASSWORD

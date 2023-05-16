@@ -42,13 +42,14 @@ var _ = Describe("When creating a stack", func() {
 		versions = NewDumbVersions()
 		*stack = stackv1beta3.Stack{
 			ObjectMeta: v1.ObjectMeta{
-				Name: "stack1",
+				Name: "orga1-stack1",
 			},
 			Spec: stackv1beta3.StackSpec{
 				Seed:     configuration.Name,
 				Versions: versions.Name,
 				Host:     "example.net",
 				Scheme:   "http",
+				Stargate: &stackv1beta3.StackStargateConfig{},
 			},
 		}
 
@@ -75,7 +76,7 @@ var _ = Describe("When creating a stack", func() {
 	})
 	Context("with light mode", func() {
 		BeforeEach(func() {
-			stack.Name = "stack2"
+			stack.Name = "orga2-stack2"
 			configuration.Spec.LightMode = true
 		})
 		It("should be ok", func() {

@@ -4,11 +4,11 @@ metadata:
     labels:
         app.kubernetes.io/service-name: search-benthos
     name: search-benthos
-    namespace: stack1
+    namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.201
+    clusterIP: 10.0.0.182
     clusterIPs:
-        - 10.0.0.201
+        - 10.0.0.182
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
