@@ -27,9 +27,6 @@ jobs:
 
   Release:
     runs-on: 'ubuntu-latest'
-    strategy:
-      matrix:
-        index: [0, 1, 2, 3, 4, 5]
     needs:
       - Extract
     steps:
@@ -44,16 +41,8 @@ jobs:
         with:
           os: ${{ runner.os }}
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: 'moon ci --job ${{ matrix.index }} --jobTotal 6'
-        env:
-          GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-          FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
-          GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
-          SEGMENT_WRITE_KEY: ${{ secrets.SEGMENT_WRITE_KEY_OSS }}
-      - uses: 'moonrepo/run-report-action@v1'
-        if: success() || failure()
-        with:
-          access-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: 'moon run ${{ needs.Extract.outputs.service }}:lint'
+      - run: 'moon run ${{ needs.Extract.outputs.service }}:test'
       - run: 'moon run ${{ needs.Extract.outputs.service }}:release'
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
