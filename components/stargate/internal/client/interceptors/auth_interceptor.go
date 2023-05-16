@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/pkg/errors"
 	"golang.org/x/oauth2/clientcredentials"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -116,7 +117,7 @@ func (a *AuthInterceptor) refreshToken() (time.Time, error) {
 
 	token, err := config.Token(context.Background())
 	if err != nil {
-		return time.Time{}, err
+		return time.Time{}, errors.Wrapf(err, "cannot fetch token")
 	}
 
 	a.accessToken = token.AccessToken
