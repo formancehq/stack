@@ -6,11 +6,12 @@ import (
 	"net"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	stargateserver "github.com/formancehq/stack/components/stargate/internal/server/grpc"
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/opentelemetry"
-	natsserver "github.com/nats-io/nats-server/test"
+	natsServer "github.com/nats-io/nats-server/v2/server"
 	"github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
@@ -29,11 +30,18 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	s := natsserver.RunDefaultServer()
-	defer s.Shutdown()
+	server, err := natsServer.NewServer(&natsServer.Options{
+		Host:      "0.0.0.0",
+		Port:      4322,
+		JetStream: true,
+	})
+	if err != nil {
+		panic(err)
+	}
 
-	var err error
-	nc, err = nats.Connect(nats.DefaultURL)
+	server.Start()
+
+	nc, err = nats.Connect("nats://127.0.0.1:4322")
 	if err != nil {
 		panic(err)
 	}
@@ -50,6 +58,8 @@ func TestMain(m *testing.M) {
 	}()
 
 	code := m.Run()
+
+	server.Shutdown()
 
 	os.Exit(code)
 }
@@ -87,6 +97,7 @@ func (c *Client) RunStream(t *testing.T, ctx context.Context, organizationID, st
 	ctx = metadata.AppendToOutgoingContext(ctx, "organization-id", organizationID, "stack-id", stackID)
 	stream, err := c.stargateClient.Stargate(ctx)
 	require.NoError(t, err)
+	time.Sleep(100 * time.Millisecond)
 
 	incomingMessageChan := make(chan *api.StargateServerMessage)
 	go func() {
