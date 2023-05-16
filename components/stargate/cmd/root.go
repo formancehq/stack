@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
@@ -52,6 +53,9 @@ func NewRootCommand() *cobra.Command {
 	if err := viper.BindPFlags(server.Flags()); err != nil {
 		panic(err)
 	}
+	if err := viper.BindPFlags(server.PersistentFlags()); err != nil {
+		panic(err)
+	}
 
 	client.Flags().String(organizationIDFlag, "", "Organization ID")
 	client.Flags().String(stackIDFlag, "", "Stack ID")
@@ -73,6 +77,9 @@ func NewRootCommand() *cobra.Command {
 	if err := viper.BindPFlags(client.Flags()); err != nil {
 		panic(err)
 	}
+	if err := viper.BindPFlags(client.PersistentFlags()); err != nil {
+		panic(err)
+	}
 
 	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")
 
@@ -82,6 +89,11 @@ func NewRootCommand() *cobra.Command {
 	if err := viper.BindPFlags(root.PersistentFlags()); err != nil {
 		panic(err)
 	}
+	if err := viper.BindPFlags(root.Flags()); err != nil {
+		panic(err)
+	}
+
+	BindEnv(viper.GetViper())
 
 	return root
 }
@@ -94,4 +106,11 @@ func Execute() {
 
 		os.Exit(1)
 	}
+}
+
+var EnvVarReplacer = strings.NewReplacer(".", "_", "-", "_")
+
+func BindEnv(v *viper.Viper) {
+	v.SetEnvKeyReplacer(EnvVarReplacer)
+	v.AutomaticEnv()
 }
