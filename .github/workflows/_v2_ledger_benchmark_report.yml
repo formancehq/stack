@@ -26,11 +26,11 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Create benchs directory
       run: mkdir -p components/ledger/benchs
-    - name: Download v2 benchmarks
+    - name: Download benchmarks
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
-        branch: feat/v2
+        branch: main
         path: components/ledger/benchs
         workflow: v2_benchmarks.yml
         name: benchmarks-${{ inputs.mode }}
@@ -48,8 +48,6 @@ jobs:
         cache: true
     - name: Install benchstat
       run: go install golang.org/x/perf/cmd/benchstat@latest
-#    - run: sed -i '4d' components/ledger/benchs/v2-${{ inputs.mode }}.stats # Remove cpu line as the model is not always the same on CI
-#    - run: sed -i '4d' components/ledger/benchs/${{ inputs.branch }}-${{ inputs.mode }}.stats # Remove cpu line as the model is not always the same on CI
     - name: Report results to PR
       uses: actions/github-script@v6
       with:
