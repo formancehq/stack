@@ -41,6 +41,13 @@ func (a *AuthInterceptor) StreamServerInterceptor() grpc.StreamServerInterceptor
 	) error {
 		ctx := ss.Context()
 
+		method := info.FullMethod
+		switch method {
+		case "/grpc.reflection.v1alpha.ServerReflection/ServerReflectionInfo":
+			return handler(srv, ss)
+		default:
+		}
+
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			a.metricsRegistry.UnAuthenticatedCalls().Add(ctx, 1)

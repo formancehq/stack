@@ -19,6 +19,7 @@ import (
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/reflection"
 )
 
 func Module(
@@ -115,6 +116,7 @@ func newGrpcServer(
 
 	api.RegisterStargateServiceServer(grpcSrv, srv)
 	grpc_health_v1.RegisterHealthServer(grpcSrv, health.NewServer())
+	reflection.Register(grpcSrv)
 
 	return grpcSrv
 }
