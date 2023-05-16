@@ -19,9 +19,9 @@ func init() {
 			modules.Env("STACK_ID", stackID),
 			modules.Env("STARGATE_SERVER_URL", resolveContext.Stack.Spec.Stargate.StargateServerURL),
 			modules.Env("GATEWAY_URL", "http://gateway:"+strconv.Itoa(int(resolveContext.RegisteredModules["gateway"].Module.Services(resolveContext.Context)[0].Port))),
-			modules.Env("STARGATE_AUTH_CLIENT_ID", resolveContext.Stack.Spec.Stargate.AuthClientID),
-			modules.Env("STARGATE_AUTH_CLIENT_SECRET", resolveContext.Stack.Spec.Stargate.AuthClientSecret),
-			modules.Env("STARGATE_AUTH_ISSUER_URL", resolveContext.Stack.Spec.Stargate.AuthIssuerURL),
+			modules.Env("STARGATE_AUTH_CLIENT_ID", resolveContext.Stack.Spec.Auth.DelegatedOIDCServer.ClientID),
+			modules.Env("STARGATE_AUTH_CLIENT_SECRET", resolveContext.Stack.Spec.Auth.DelegatedOIDCServer.ClientSecret),
+			modules.Env("STARGATE_AUTH_ISSUER_URL", resolveContext.Stack.Spec.Auth.DelegatedOIDCServer.Issuer),
 		)
 	}
 	modules.Register("stargate", modules.Module{

@@ -94,9 +94,6 @@ type StackAuthSpec struct {
 
 type StackStargateConfig struct {
 	StargateServerURL string `json:"stargateServerURL"`
-	AuthClientID      string `json:"authClientId"`
-	AuthClientSecret  string `json:"authClientSecret"`
-	AuthIssuerURL     string `json:"authIssuerURL"`
 }
 
 // StackSpec defines the desired state of Stack
