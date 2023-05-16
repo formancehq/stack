@@ -29,7 +29,8 @@ const (
 
 func newServeCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "serve",
+		Use:     "serve",
+		Aliases: []string{"server"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return bindFlagsToViper(cmd)
 		},
