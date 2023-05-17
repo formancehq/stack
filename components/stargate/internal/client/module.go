@@ -2,6 +2,9 @@ package client
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"fmt"
 	"time"
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
@@ -11,17 +14,23 @@ import (
 	"go.opentelemetry.io/otel/metric"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
 )
 
-func Module(serverURL string) fx.Option {
+func Module(
+	serverURL string,
+	tlsEnabled bool,
+	tlsCACertificate string,
+	tlsInsecureSkipVerify bool,
+) fx.Option {
 	options := make([]fx.Option, 0)
 
 	options = append(options,
 		fx.Provide(interceptors.NewAuthInterceptor),
 		fx.Provide(func(l logging.Logger, kc keepalive.ClientParameters, authInterceptor *interceptors.AuthInterceptor) (api.StargateServiceClient, error) {
-			return newGrpcClient(l, serverURL, kc, authInterceptor)
+			return newGrpcClient(l, serverURL, tlsEnabled, tlsCACertificate, tlsInsecureSkipVerify, kc, authInterceptor)
 		}),
 		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
 		fx.Provide(opentelemetry.RegisterMetricsRegistry),
@@ -69,13 +78,39 @@ func NewKeepAliveClientParams(
 func newGrpcClient(
 	logger logging.Logger,
 	serverURL string,
+	tlsEnabled bool,
+	tlsCACertificate string,
+	tlsInsecureSkipVerify bool,
 	kc keepalive.ClientParameters,
 	authInterceptors *interceptors.AuthInterceptor,
 ) (api.StargateServiceClient, error) {
+	var credential credentials.TransportCredentials
+	if !tlsEnabled {
+		logger.Infof("TLS not enabled")
+		credential = insecure.NewCredentials()
+	} else {
+		certPool := x509.NewCertPool()
+		if tlsCACertificate != "" {
+			logger.Infof("Load server certificate from config")
+			if !certPool.AppendCertsFromPEM([]byte(tlsCACertificate)) {
+				return nil, fmt.Errorf("failed to add server CA's certificate")
+			}
+		}
+
+		if tlsInsecureSkipVerify {
+			logger.Infof("Disable certificate checks")
+		}
+
+		credential = credentials.NewTLS(&tls.Config{
+			InsecureSkipVerify: tlsInsecureSkipVerify,
+			RootCAs:            certPool,
+		})
+	}
+
 	conn, err := grpc.Dial(
 		serverURL,
 		grpc.WithStreamInterceptor(authInterceptors.StreamClientInterceptor()),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithTransportCredentials(credential),
 		grpc.WithKeepaliveParams(kc),
 	)
 	if err != nil {

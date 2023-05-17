@@ -36,6 +36,9 @@ const (
 	StargateAuthClientSecretFlag                 = "stargate-auth-client-secret"
 	StargateAuthIssuerURLFlag                    = "stargate-auth-issuer-url"
 	StargateAuthMaxRetriesFlag                   = "stargate-auth-max-retries"
+	TlsEnabledFlag                               = "tls-enabled"
+	TlsInsecureSkipVerifyFlag                    = "tls-insecure-skip-verify"
+	TlsCACertificateFlag                         = "tls-ca-cert"
 )
 
 func newClient() *cobra.Command {
@@ -93,7 +96,12 @@ func resolveClientOptions(v *viper.Viper) []fx.Option {
 				viper.GetInt(StargateAuthMaxRetriesFlag),
 			)
 		}),
-		client.Module(viper.GetString(stargateServerURLFlag)),
+		client.Module(
+			viper.GetString(stargateServerURLFlag),
+			viper.GetBool(TlsEnabledFlag),
+			viper.GetString(TlsCACertificateFlag),
+			viper.GetBool(TlsInsecureSkipVerifyFlag),
+		),
 	)
 
 	return options
