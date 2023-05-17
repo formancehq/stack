@@ -35,7 +35,7 @@ func Module(
 		}),
 		fx.Provide(NewServer),
 		fx.Provide(newGrpcServer),
-		fx.Invoke(func(lc fx.Lifecycle, srv *grpc.Server) {
+		fx.Invoke(func(lc fx.Lifecycle, srv *grpc.Server, l logging.Logger) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					listener, err := net.Listen("tcp", bind)
@@ -44,6 +44,7 @@ func Module(
 					}
 
 					go func() {
+						l.Infof("gRPC server listening on %s", bind)
 						err := srv.Serve(listener)
 						if err != nil && err != grpc.ErrServerStopped {
 							panic(err)

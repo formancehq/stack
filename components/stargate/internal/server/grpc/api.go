@@ -9,6 +9,7 @@ import (
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/opentelemetry"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
 	"golang.org/x/sync/errgroup"
@@ -21,15 +22,18 @@ import (
 type Server struct {
 	api.UnimplementedStargateServiceServer
 
+	logger          logging.Logger
 	natsConn        *nats.Conn
 	metricsRegistry opentelemetry.MetricsRegistry
 }
 
 func NewServer(
+	logger logging.Logger,
 	natsConn *nats.Conn,
 	metricsRegistry opentelemetry.MetricsRegistry,
 ) *Server {
 	return &Server{
+		logger:          logger,
 		natsConn:        natsConn,
 		metricsRegistry: metricsRegistry,
 	}
@@ -46,6 +50,15 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	if err != nil {
 		return status.Errorf(codes.InvalidArgument, "cannot get organization and stack id from contex metadata: %v", err)
 	}
+
+	s.logger.WithFields(map[string]any{
+		"organization_id": organizationID,
+		"stack_id":        stackID,
+	}).Infof("new stargate connection")
+	defer s.logger.WithFields(map[string]any{
+		"organization_id": organizationID,
+		"stack_id":        stackID,
+	}).Infof("stargate connection closed")
 
 	waitingResponses := sync.Map{}
 	subject := GetNatsSubject(organizationID, stackID)

@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/client/interceptors"
 	"github.com/formancehq/stack/components/stargate/internal/client/opentelemetry"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/metric"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
@@ -19,8 +20,8 @@ func Module(serverURL string) fx.Option {
 
 	options = append(options,
 		fx.Provide(interceptors.NewAuthInterceptor),
-		fx.Provide(func(kc keepalive.ClientParameters, authInterceptor *interceptors.AuthInterceptor) (api.StargateServiceClient, error) {
-			return newGrpcClient(serverURL, kc, authInterceptor)
+		fx.Provide(func(l logging.Logger, kc keepalive.ClientParameters, authInterceptor *interceptors.AuthInterceptor) (api.StargateServiceClient, error) {
+			return newGrpcClient(l, serverURL, kc, authInterceptor)
 		}),
 		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
 		fx.Provide(opentelemetry.RegisterMetricsRegistry),
@@ -66,6 +67,7 @@ func NewKeepAliveClientParams(
 }
 
 func newGrpcClient(
+	logger logging.Logger,
 	serverURL string,
 	kc keepalive.ClientParameters,
 	authInterceptors *interceptors.AuthInterceptor,
@@ -77,6 +79,7 @@ func newGrpcClient(
 		grpc.WithKeepaliveParams(kc),
 	)
 	if err != nil {
+		logger.Errorf("failed to connect to stargate server '%s': %s", serverURL, err)
 		return nil, err
 	}
 
