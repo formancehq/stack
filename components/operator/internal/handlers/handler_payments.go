@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/formancehq/operator/apis/stack/v1beta3"
 	"github.com/formancehq/operator/internal/modules"
+	"github.com/rogpeppe/go-internal/semver"
 )
 
 func init() {
@@ -19,6 +20,14 @@ func init() {
 			return ctx.Configuration.Spec.Services.Payments.Postgres
 		},
 		Services: func(ctx modules.Context) modules.Services {
+			version := ctx.Versions.Spec.Control
+			migrateCommand := []string{"payments", "migrate"}
+			if semver.IsValid(version) {
+				version := semver.Compare(version, "v0.6.3")
+				if version > 0 {
+					migrateCommand = append(migrateCommand, "up")
+				}
+			}
 			return modules.Services{{
 				InjectPostgresVariables: true,
 				HasVersionEndpoint:      true,
@@ -37,7 +46,7 @@ func init() {
 						Name:    "migrate",
 						Image:   modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
 						Env:     env(resolveContext),
-						Command: []string{"payments", "migrate"},
+						Command: migrateCommand,
 					}}
 				},
 			}}

@@ -15,6 +15,8 @@ import (
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type mockServer struct {
@@ -30,6 +32,23 @@ func (m *mockServer) Connect(request *generated.ConnectRequest, server generated
 
 type k8sClient struct {
 	stacks map[string]*v1beta3.Stack
+}
+
+func (k *k8sClient) Get(ctx context.Context, name string, options metav1.GetOptions) (*v1beta3.Stack, error) {
+	stack, ok := k.stacks[name]
+	if !ok {
+		return nil, &apierrors.StatusError{
+			ErrStatus: metav1.Status{
+				Reason: metav1.StatusReasonNotFound,
+			},
+		}
+	}
+	return stack, nil
+}
+
+func (k *k8sClient) Update(ctx context.Context, stack *v1beta3.Stack) (*v1beta3.Stack, error) {
+	k.stacks[stack.Name] = stack
+	return stack, nil
 }
 
 func (k *k8sClient) Create(ctx context.Context, stack *v1beta3.Stack) (*v1beta3.Stack, error) {
@@ -82,7 +101,7 @@ func TestModule(t *testing.T) {
 		return mockServer.connectServer != nil
 	}, time.Second, 100*time.Millisecond)
 
-	createdStack := generated.CreatedStack{
+	createdStack := generated.Stack{
 		ClusterName: uuid.NewString(),
 		Seed:        uuid.NewString(),
 		AuthConfig: &generated.AuthConfig{
@@ -96,8 +115,8 @@ func TestModule(t *testing.T) {
 		}},
 	}
 	require.NoError(t, mockServer.connectServer.Send(&generated.ConnectResponse{
-		Message: &generated.ConnectResponse_CreatedStack{
-			CreatedStack: &createdStack,
+		Message: &generated.ConnectResponse_ExistingStack{
+			ExistingStack: &createdStack,
 		},
 	}))
 	require.Eventually(t, func() bool {

@@ -27,5 +27,6 @@ func newClient(config *rest.Config) (*clientv1beta3.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return clientv1beta3.NewClient(client), nil
 }
