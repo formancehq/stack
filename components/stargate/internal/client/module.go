@@ -89,11 +89,18 @@ func newGrpcClient(
 		logger.Infof("TLS not enabled")
 		credential = insecure.NewCredentials()
 	} else {
-		certPool := x509.NewCertPool()
+		var certPool *x509.CertPool
 		if tlsCACertificate != "" {
+			certPool := x509.NewCertPool()
 			logger.Infof("Load server certificate from config")
 			if !certPool.AppendCertsFromPEM([]byte(tlsCACertificate)) {
 				return nil, fmt.Errorf("failed to add server CA's certificate")
+			}
+		} else {
+			var err error
+			certPool, err = x509.SystemCertPool()
+			if err != nil {
+				return nil, err
 			}
 		}
 
