@@ -72,7 +72,6 @@ var rootCmd = &cobra.Command{
 		}
 
 		id := viper.GetString(idFlag)
-
 		if id == "" {
 			return errors.New("missing id")
 		}

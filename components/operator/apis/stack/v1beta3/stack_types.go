@@ -105,7 +105,7 @@ type StackSpec struct {
 	Auth StackAuthSpec `json:"auth"`
 
 	// +optional
-	Stargate *StackStargateConfig `json:"stargate"`
+	Stargate *StackStargateConfig `json:"stargate,omitempty"`
 
 	// +optional
 	Versions string `json:"versions"`

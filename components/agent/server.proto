@@ -18,7 +18,7 @@ message ConnectRequest {
 message ConnectResponse {
   oneof message {
     Connected connected = 1;
-    CreatedStack createdStack = 2;
+    Stack existingStack = 2;
     DeletedStack deletedStack = 3;
     Ping ping = 4;
     UpdateUsageReport updateUsageReport = 5;
@@ -29,11 +29,17 @@ message Connected {}
 
 message Ping {}
 
-message CreatedStack {
+message Stack {
   string clusterName = 1;
   string seed = 2;
   AuthConfig authConfig = 3;
   repeated AuthClient staticClients = 4;
+  StargateConfig stargateConfig = 5;
+}
+
+message StargateConfig {
+  bool enabled = 1;
+  string url = 2;
 }
 
 message DeletedStack {

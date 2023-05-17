@@ -2,6 +2,8 @@
 FROM golang:1.19-alpine AS builder
 WORKDIR /src
 RUN apk update && apk add git
+COPY libs/go-libs libs/go-libs
+COPY components/operator components/operator
 COPY components/agent components/agent
 WORKDIR components/agent
 
