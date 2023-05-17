@@ -23,7 +23,7 @@ repos:
   hooks:
   - id: moon
     name: moon
-    entry: moon run :lint :test :mod :helm --affected --status=staged
+    entry: moon run :lint :test :mod :helm :sync --affected --status=staged
     language: system
     description: "Runs `moon`"
     require_serial: true
