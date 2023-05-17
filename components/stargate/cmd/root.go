@@ -74,6 +74,7 @@ func NewRootCommand() *cobra.Command {
 	client.Flags().String(StargateAuthClientIDFlag, "", "Stargate auth client ID")
 	client.Flags().String(StargateAuthClientSecretFlag, "", "Stargate auth client secret")
 	client.Flags().String(StargateAuthIssuerURLFlag, "", "Stargate auth issuer")
+	client.Flags().Int(StargateAuthMaxRetriesFlag, 3, "Stargate auth max retries")
 	if err := viper.BindPFlags(client.Flags()); err != nil {
 		panic(err)
 	}
