@@ -32,7 +32,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32814"
+                      value: "32815"
                     - name: POSTGRES_DATABASE
                       value: stack1-webhooks
                     - name: POSTGRES_USERNAME

@@ -185,7 +185,7 @@ data:
         pipeline:
           processors:
           - bloblang: |
-              meta ledger = this.payload.ledger
+              meta ledger = this.ledger
               meta batchSize = 100
           - postgres_query:
               service: ledger
@@ -259,7 +259,7 @@ data:
         pipeline:
           processors:
           - bloblang: |
-              meta ledger = this.payload.ledger
+              meta ledger = this.ledger
               meta batchSize = 100
           - postgres_query:
               service: ledger
@@ -329,7 +329,7 @@ data:
         pipeline:
           processors:
           - bloblang: |
-              meta ledger = this.payload.ledger
+              meta ledger = this.ledger
               meta batchSize = 100
           - postgres_query:
               service: ledger
