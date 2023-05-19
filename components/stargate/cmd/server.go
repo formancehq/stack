@@ -21,8 +21,9 @@ const (
 	serviceGrpcAddrFlag = "grpc-addr"
 	serviceHttpAddrFlag = "http-addr"
 
-	natsRequestTimeout = "nats-request-timeout"
-	jwksURLFlag        = "jwks-url"
+	natsRequestTimeout         = "nats-request-timeout"
+	authIssuerURLFlag          = "auth-issuer-url"
+	maxRetriesJWKSFetchingFlag = "max-retries-jwks-fetching"
 
 	KeepAlivePolicyMinTimeFlag                    = "keepalive-policy-min-time"
 	KeepAlivePolicyPermitWithoutStreamFlag        = "keepalive-policy-permit-without-stream"
@@ -82,7 +83,11 @@ func resolveServerOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option 
 				viper.GetDuration(KeepAliveServerParamTimeoutFlag),
 			)
 		}),
-		grpc.Module(viper.GetString(serviceGrpcAddrFlag), viper.GetString(jwksURLFlag)),
+		grpc.Module(
+			viper.GetString(serviceGrpcAddrFlag),
+			viper.GetString(authIssuerURLFlag),
+			viper.GetInt(maxRetriesJWKSFetchingFlag),
+		),
 	)
 
 	return append(options, userOptions...)

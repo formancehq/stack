@@ -2,12 +2,15 @@ package interceptors
 
 import (
 	"context"
+	"net/http"
 	"strings"
 
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/opentelemetry"
 	"github.com/golang-jwt/jwt"
+	"github.com/hashicorp/go-retryablehttp"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/pkg/errors"
+	"github.com/zitadel/oidc/pkg/client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -22,12 +25,14 @@ var (
 
 type AuthInterceptor struct {
 	jwksURL         string
+	httpClient      *http.Client
 	metricsRegistry opentelemetry.MetricsRegistry
 }
 
-func NewAuthInterceptor(jwksURL string, metricsRegistry opentelemetry.MetricsRegistry) *AuthInterceptor {
+func NewAuthInterceptor(jwksURL string, maxRetriesJWKSFetchting int, metricsRegistry opentelemetry.MetricsRegistry) *AuthInterceptor {
 	return &AuthInterceptor{
 		jwksURL:         jwksURL,
+		httpClient:      newHttpClient(maxRetriesJWKSFetchting),
 		metricsRegistry: metricsRegistry,
 	}
 }
@@ -79,7 +84,12 @@ func (a *AuthInterceptor) valid(authorization []string) bool {
 }
 
 func (a *AuthInterceptor) getKey(token *jwt.Token) (interface{}, error) {
-	set, err := jwk.Fetch(context.Background(), a.jwksURL)
+	discoveryConfiguration, err := client.Discover(a.jwksURL, a.httpClient)
+	if err != nil {
+		return nil, err
+	}
+
+	set, err := jwk.Fetch(context.Background(), discoveryConfiguration.JwksURI)
 	if err != nil {
 		return nil, err
 	}
@@ -101,4 +111,10 @@ func (a *AuthInterceptor) getKey(token *jwt.Token) (interface{}, error) {
 	}
 
 	return pubkey, nil
+}
+
+func newHttpClient(maxRetries int) *http.Client {
+	retryClient := retryablehttp.NewClient()
+	retryClient.RetryMax = maxRetries
+	return retryClient.StandardClient()
 }

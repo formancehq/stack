@@ -113,15 +113,20 @@ func (c *Client) Run(ctx context.Context) error {
 		"organization_id": c.config.OrganizationID,
 		"stack_id":        c.config.StackID,
 	}).Info("connecting to stargate server...")
-	defer c.logger.WithFields(map[string]any{
-		"organization_id": c.config.OrganizationID,
-		"stack_id":        c.config.StackID,
-	}).Info("disconnected from stargate server")
 
 	stream, err := c.stargateClient.Stargate(ctx)
 	if err != nil {
 		return err
 	}
+
+	c.logger.WithFields(map[string]any{
+		"organization_id": c.config.OrganizationID,
+		"stack_id":        c.config.StackID,
+	}).Info("connected to stargate server")
+	defer c.logger.WithFields(map[string]any{
+		"organization_id": c.config.OrganizationID,
+		"stack_id":        c.config.StackID,
+	}).Info("disconnected from stargate server")
 
 	responseChan := make(chan *ResponseChanEvent, c.config.ChanSize)
 	eg, ctx := errgroup.WithContext(ctx)

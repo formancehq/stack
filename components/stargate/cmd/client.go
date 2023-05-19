@@ -35,7 +35,6 @@ const (
 	StargateAuthClientIDFlag                     = "stargate-auth-client-id"
 	StargateAuthClientSecretFlag                 = "stargate-auth-client-secret"
 	StargateAuthIssuerURLFlag                    = "stargate-auth-issuer-url"
-	StargateAuthMaxRetriesFlag                   = "stargate-auth-max-retries"
 	TlsEnabledFlag                               = "tls-enabled"
 	TlsInsecureSkipVerifyFlag                    = "tls-insecure-skip-verify"
 	TlsCACertificateFlag                         = "tls-ca-cert"
@@ -93,7 +92,6 @@ func resolveClientOptions(v *viper.Viper) []fx.Option {
 				viper.GetDuration(AuthRefreshTokenDurationBeforeExpireTimeFlag),
 				viper.GetString(StargateAuthClientIDFlag),
 				viper.GetString(StargateAuthClientSecretFlag),
-				viper.GetInt(StargateAuthMaxRetriesFlag),
 			)
 		}),
 		client.Module(

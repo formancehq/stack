@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hashicorp/go-retryablehttp"
 	"github.com/pkg/errors"
 	"github.com/zitadel/oidc/pkg/client"
 	"golang.org/x/oauth2/clientcredentials"
@@ -20,10 +19,9 @@ const (
 type Config struct {
 	refreshTokenDurationBeforeExpireTime time.Duration
 
-	clientID                 string
-	clientSecret             string
-	endpoint                 string
-	maxRetriesTokenFetchting int
+	clientID     string
+	clientSecret string
+	endpoint     string
 }
 
 func NewConfig(
@@ -31,20 +29,18 @@ func NewConfig(
 	refreshTokenDurationBeforeExpireTime time.Duration,
 	clientID string,
 	clientSecret string,
-	maxRetriesTokenFetchting int,
 ) Config {
 	return Config{
 		refreshTokenDurationBeforeExpireTime: refreshTokenDurationBeforeExpireTime,
 		clientID:                             clientID,
 		clientSecret:                         clientSecret,
 		endpoint:                             endpoint,
-		maxRetriesTokenFetchting:             maxRetriesTokenFetchting,
 	}
 }
 
 type AuthInterceptor struct {
 	config     Config
-	httpClient *http.Client `json:"-"`
+	httpClient *http.Client
 
 	accessToken string
 	closeChan   chan struct{}
@@ -52,8 +48,8 @@ type AuthInterceptor struct {
 
 func NewAuthInterceptor(config Config) (*AuthInterceptor, error) {
 	i := &AuthInterceptor{
-		httpClient: newHttpClient(config.maxRetriesTokenFetchting),
 		config:     config,
+		httpClient: &http.Client{},
 		closeChan:  make(chan struct{}),
 	}
 
@@ -136,10 +132,4 @@ func (a *AuthInterceptor) refreshToken() (time.Time, error) {
 	a.accessToken = token.AccessToken
 
 	return token.Expiry, nil
-}
-
-func newHttpClient(maxRetries int) *http.Client {
-	retryClient := retryablehttp.NewClient()
-	retryClient.RetryMax = maxRetries
-	return retryClient.StandardClient()
 }
