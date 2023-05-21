@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	benthosImage = "jeffail/benthos:4.12.1"
+	benthosImage = "ghcr.io/formancehq/benthos:4.12.1"
 )
 
 func init() {
