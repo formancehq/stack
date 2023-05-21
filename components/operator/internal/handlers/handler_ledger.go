@@ -56,8 +56,8 @@ func init() {
 						).Append(modules.BrokerEnvVarsWithPrefix(resolveContext.Configuration.Spec.Broker, "ledger")...)
 
 						return modules.Container{
-							Liveness: modules.LivenessLegacy,
-							Image:    modules.GetImage("ledger", resolveContext.Versions.Spec.Ledger),
+							Resources: modules.ResourceSizeSmall(),
+							Image:     modules.GetImage("ledger", resolveContext.Versions.Spec.Ledger),
 							Env: env.Append(
 								modules.Env("STORAGE_POSTGRES_CONN_STRING", "$(NUMARY_POSTGRES_URI)"),
 							),

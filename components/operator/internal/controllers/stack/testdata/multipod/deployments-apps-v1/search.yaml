@@ -90,7 +90,10 @@ spec:
                     - containerPort: 8080
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst
