@@ -65,7 +65,10 @@ spec:
                   image: ghcr.io/formancehq/stargate:latest
                   imagePullPolicy: Always
                   name: stargate
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst

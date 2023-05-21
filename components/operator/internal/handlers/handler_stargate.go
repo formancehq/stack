@@ -38,8 +38,9 @@ func init() {
 					},
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
-							Env:   stargateClientEnvVars(resolveContext),
-							Image: modules.GetImage("stargate", resolveContext.Versions.Spec.Stargate),
+							Env:       stargateClientEnvVars(resolveContext),
+							Image:     modules.GetImage("stargate", resolveContext.Versions.Spec.Stargate),
+							Resources: modules.ResourceSizeSmall(),
 						}
 					},
 				},

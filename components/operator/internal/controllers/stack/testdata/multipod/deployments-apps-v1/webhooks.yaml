@@ -32,7 +32,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32770"
+                      value: "32779"
                     - name: POSTGRES_DATABASE
                       value: orga1-stack1-webhooks
                     - name: POSTGRES_USERNAME
@@ -93,7 +93,10 @@ spec:
                     - containerPort: 8080
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst

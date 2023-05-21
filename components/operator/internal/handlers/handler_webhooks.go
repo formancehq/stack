@@ -21,8 +21,9 @@ func init() {
 					ListenEnvVar:            "HTTP_BIND_ADDRESS_SERVER",
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
-							Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
-							Env:   webhooksEnvVars(resolveContext.Configuration),
+							Image:     modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
+							Env:       webhooksEnvVars(resolveContext.Configuration),
+							Resources: modules.ResourceSizeSmall(),
 						}
 					},
 				},
@@ -40,7 +41,8 @@ func init() {
 									resolveContext.Stack.GetServiceName("payments"),
 								}, " ")),
 							),
-							Args: []string{"worker"},
+							Args:      []string{"worker"},
+							Resources: modules.ResourceSizeSmall(),
 						}
 					},
 				},
