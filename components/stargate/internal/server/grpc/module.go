@@ -25,17 +25,18 @@ import (
 func Module(
 	bind string,
 	jwksURL string,
+	maxRetriesJWKSFetching int,
 ) fx.Option {
 	options := make([]fx.Option, 0)
 
 	options = append(options,
 		fx.Provide(opentelemetry.RegisterMetricsRegistry),
 		fx.Provide(func(metricsRegistry opentelemetry.MetricsRegistry) *interceptors.AuthInterceptor {
-			return interceptors.NewAuthInterceptor(jwksURL, metricsRegistry)
+			return interceptors.NewAuthInterceptor(jwksURL, maxRetriesJWKSFetching, metricsRegistry)
 		}),
 		fx.Provide(NewServer),
 		fx.Provide(newGrpcServer),
-		fx.Invoke(func(lc fx.Lifecycle, srv *grpc.Server) {
+		fx.Invoke(func(lc fx.Lifecycle, srv *grpc.Server, l logging.Logger) {
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
 					listener, err := net.Listen("tcp", bind)
@@ -44,6 +45,7 @@ func Module(
 					}
 
 					go func() {
+						l.Infof("gRPC server listening on %s", bind)
 						err := srv.Serve(listener)
 						if err != nil && err != grpc.ErrServerStopped {
 							panic(err)

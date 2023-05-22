@@ -41,7 +41,8 @@ func NewRootCommand() *cobra.Command {
 	publish.InitCLIFlags(server)
 	server.Flags().String(serviceHttpAddrFlag, "localhost:8080", "Listen address for http API")
 	server.Flags().String(serviceGrpcAddrFlag, "localhost:3068", "Listen address for grpc API")
-	server.Flags().String(jwksURLFlag, "", "JWKS URL")
+	server.Flags().String(authIssuerURLFlag, "", "JWKS URL")
+	server.Flags().Int(maxRetriesJWKSFetchingFlag, 3, "Max retries for fetching JWKS")
 	server.Flags().Duration(natsRequestTimeout, 10*time.Second, "NATS request timeout (in seconds)")
 	server.Flags().Duration(KeepAlivePolicyMinTimeFlag, 5*time.Second, "Keepalive policy min time")
 	server.Flags().Bool(KeepAlivePolicyPermitWithoutStreamFlag, true, "Keepalive policy permit without stream")
@@ -74,6 +75,9 @@ func NewRootCommand() *cobra.Command {
 	client.Flags().String(StargateAuthClientIDFlag, "", "Stargate auth client ID")
 	client.Flags().String(StargateAuthClientSecretFlag, "", "Stargate auth client secret")
 	client.Flags().String(StargateAuthIssuerURLFlag, "", "Stargate auth issuer")
+	client.Flags().Bool(TlsEnabledFlag, true, "TLS enabled")
+	client.Flags().String(TlsCACertificateFlag, "", "TLS cert file")
+	client.Flags().Bool(TlsInsecureSkipVerifyFlag, false, "TLS insecure skip verify")
 	if err := viper.BindPFlags(client.Flags()); err != nil {
 		panic(err)
 	}

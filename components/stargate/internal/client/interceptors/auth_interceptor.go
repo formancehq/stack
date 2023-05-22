@@ -2,9 +2,11 @@ package interceptors
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/zitadel/oidc/pkg/client"
 	"golang.org/x/oauth2/clientcredentials"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -37,7 +39,8 @@ func NewConfig(
 }
 
 type AuthInterceptor struct {
-	config Config
+	config     Config
+	httpClient *http.Client
 
 	accessToken string
 	closeChan   chan struct{}
@@ -45,8 +48,9 @@ type AuthInterceptor struct {
 
 func NewAuthInterceptor(config Config) (*AuthInterceptor, error) {
 	i := &AuthInterceptor{
-		config:    config,
-		closeChan: make(chan struct{}),
+		config:     config,
+		httpClient: &http.Client{},
+		closeChan:  make(chan struct{}),
 	}
 
 	return i, nil
@@ -109,10 +113,15 @@ func (a *AuthInterceptor) ScheduleRefreshToken() error {
 }
 
 func (a *AuthInterceptor) refreshToken() (time.Time, error) {
+	discoveryConfiguration, err := client.Discover(a.config.endpoint, a.httpClient)
+	if err != nil {
+		return time.Time{}, err
+	}
+
 	config := clientcredentials.Config{
 		ClientID:     a.config.clientID,
 		ClientSecret: a.config.clientSecret,
-		TokenURL:     a.config.endpoint,
+		TokenURL:     discoveryConfiguration.TokenEndpoint,
 	}
 
 	token, err := config.Token(context.Background())

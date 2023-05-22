@@ -7,6 +7,7 @@ import (
 	"github.com/formancehq/stack/components/stargate/internal/server/http/routes"
 	"github.com/formancehq/stack/libs/go-libs/health"
 	"github.com/formancehq/stack/libs/go-libs/httpserver"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	app "github.com/formancehq/stack/libs/go-libs/service"
 	"github.com/go-chi/chi/v5"
 	"github.com/spf13/viper"
@@ -20,7 +21,7 @@ func Module(bind string) fx.Option {
 		fx.Provide(controllers.NewStargateController),
 		health.Module(),
 
-		fx.Invoke(func(lc fx.Lifecycle, h chi.Router) {
+		fx.Invoke(func(lc fx.Lifecycle, h chi.Router, l logging.Logger) {
 			if viper.GetBool(app.DebugFlag) {
 				wrappedRouter := chi.NewRouter()
 				wrappedRouter.Use(middlewares.Log())
@@ -28,6 +29,7 @@ func Module(bind string) fx.Option {
 				h = wrappedRouter
 			}
 
+			l.Infof("HTTP server listening on %s", bind)
 			lc.Append(httpserver.NewHook(bind, h))
 		}),
 	)

@@ -11,6 +11,7 @@ import (
 	"github.com/alitto/pond"
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/client/opentelemetry"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"go.opentelemetry.io/otel/attribute"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/metadata"
@@ -59,6 +60,7 @@ func NewClientConfig(
 }
 
 type Client struct {
+	logger         logging.Logger
 	config         Config
 	stargateClient api.StargateServiceClient
 	httpClient     *http.Client
@@ -68,6 +70,7 @@ type Client struct {
 }
 
 func NewClient(
+	l logging.Logger,
 	stargateClient api.StargateServiceClient,
 	clientConfig Config,
 	workerPoolConfig WorkerPoolConfig,
@@ -80,6 +83,7 @@ func NewClient(
 	clientConfig.GatewayUrl = strings.TrimSuffix(clientConfig.GatewayUrl, "/")
 
 	return &Client{
+		logger:          l,
 		stargateClient:  stargateClient,
 		config:          clientConfig,
 		workerPool:      pond.New(workerPoolConfig.MaxWorkers, workerPoolConfig.MaxTasks),
@@ -97,16 +101,32 @@ type ResponseChanEvent struct {
 }
 
 func (c *Client) Run(ctx context.Context) error {
+	c.logger.Info("starting client...")
+
 	ctx = metadata.AppendToOutgoingContext(
 		ctx,
 		"organization-id", c.config.OrganizationID,
 		"stack-id", c.config.OrganizationID,
 	)
 
+	c.logger.WithFields(map[string]any{
+		"organization_id": c.config.OrganizationID,
+		"stack_id":        c.config.StackID,
+	}).Info("connecting to stargate server...")
+
 	stream, err := c.stargateClient.Stargate(ctx)
 	if err != nil {
 		return err
 	}
+
+	c.logger.WithFields(map[string]any{
+		"organization_id": c.config.OrganizationID,
+		"stack_id":        c.config.StackID,
+	}).Info("connected to stargate server")
+	defer c.logger.WithFields(map[string]any{
+		"organization_id": c.config.OrganizationID,
+		"stack_id":        c.config.StackID,
+	}).Info("disconnected from stargate server")
 
 	responseChan := make(chan *ResponseChanEvent, c.config.ChanSize)
 	eg, ctx := errgroup.WithContext(ctx)
@@ -120,6 +140,10 @@ func (c *Client) Run(ctx context.Context) error {
 
 				return err
 			}
+
+			c.logger.WithFields(map[string]any{
+				"event": in,
+			}).Debug("received message from server")
 
 			c.workerPool.Submit(func() {
 				out := c.Forward(ctx, in)
@@ -142,6 +166,10 @@ func (c *Client) Run(ctx context.Context) error {
 					// Note: how should we handle errors here?
 					return response.err
 				}
+
+				c.logger.WithFields(map[string]any{
+					"response": response,
+				}).Debug("sending response message to server")
 
 				err := stream.Send(response.msg)
 				if err != nil {
