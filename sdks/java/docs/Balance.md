@@ -9,6 +9,7 @@
 |------------ | ------------- | ------------- | -------------|
 |**name** | **String** |  |  |
 |**expiresAt** | **OffsetDateTime** |  |  [optional] |
+|**priority** | **Long** |  |  [optional] |
 
 
 

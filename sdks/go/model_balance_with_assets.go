@@ -23,6 +23,7 @@ var _ MappedNullable = &BalanceWithAssets{}
 type BalanceWithAssets struct {
 	Name string `json:"name"`
 	ExpiresAt *time.Time `json:"expiresAt,omitempty"`
+	Priority *int64 `json:"priority,omitempty"`
 	Assets map[string]int64 `json:"assets"`
 }
 
@@ -101,6 +102,38 @@ func (o *BalanceWithAssets) SetExpiresAt(v time.Time) {
 	o.ExpiresAt = &v
 }
 
+// GetPriority returns the Priority field value if set, zero value otherwise.
+func (o *BalanceWithAssets) GetPriority() int64 {
+	if o == nil || IsNil(o.Priority) {
+		var ret int64
+		return ret
+	}
+	return *o.Priority
+}
+
+// GetPriorityOk returns a tuple with the Priority field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *BalanceWithAssets) GetPriorityOk() (*int64, bool) {
+	if o == nil || IsNil(o.Priority) {
+		return nil, false
+	}
+	return o.Priority, true
+}
+
+// HasPriority returns a boolean if a field has been set.
+func (o *BalanceWithAssets) HasPriority() bool {
+	if o != nil && !IsNil(o.Priority) {
+		return true
+	}
+
+	return false
+}
+
+// SetPriority gets a reference to the given int64 and assigns it to the Priority field.
+func (o *BalanceWithAssets) SetPriority(v int64) {
+	o.Priority = &v
+}
+
 // GetAssets returns the Assets field value
 func (o *BalanceWithAssets) GetAssets() map[string]int64 {
 	if o == nil {
@@ -138,6 +171,9 @@ func (o BalanceWithAssets) ToMap() (map[string]interface{}, error) {
 	toSerialize["name"] = o.Name
 	if !IsNil(o.ExpiresAt) {
 		toSerialize["expiresAt"] = o.ExpiresAt
+	}
+	if !IsNil(o.Priority) {
+		toSerialize["priority"] = o.Priority
 	}
 	toSerialize["assets"] = o.Assets
 	return toSerialize, nil

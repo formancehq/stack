@@ -11,12 +11,14 @@
 """
 
 from Formance.paths.api_auth__info.get import GetServerInfo
+from Formance.paths.versions.get import GetVersions
 from Formance.paths.api_payments__info.get import PaymentsgetServerInfo
 from Formance.paths.api_search__info.get import SearchgetServerInfo
 
 
 class DefaultApi(
     GetServerInfo,
+    GetVersions,
     PaymentsgetServerInfo,
     SearchgetServerInfo,
 ):

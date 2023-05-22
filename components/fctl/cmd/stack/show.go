@@ -68,7 +68,17 @@ func NewShowCommand() *cobra.Command {
 				return errStackNotFound
 			}
 
-			return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, cfg), stack)
+			stackClient, err := fctl.NewStackClient(cmd, cfg, stack)
+			if err != nil {
+				return err
+			}
+
+			versions, _, err := stackClient.DefaultApi.GetVersions(cmd.Context()).Execute()
+			if err != nil {
+				return err
+			}
+
+			return internal.PrintStackInformation(cmd.OutOrStdout(), fctl.GetCurrentProfile(cmd, cfg), stack, versions)
 		}),
 	)
 }

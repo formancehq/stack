@@ -36,6 +36,24 @@
     }
   ],
   "paths": {
+    "/versions": {
+      "get": {
+        "summary": "Show stack version information",
+        "operationId": "getVersions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetVersionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/auth/_info": {
       "get": {
         "summary": "Get server info",
@@ -3633,19 +3651,48 @@
     }
   },
   "components": {
-    "securitySchemes": {
-      "Authorization": {
-        "type": "oauth2",
-        "flows": {
-          "clientCredentials": {
-            "tokenUrl": "",
-            "refreshUrl": "",
-            "scopes": {}
-          }
-        }
-      }
-    },
     "schemas": {
+      "Version": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "health": {
+            "type": "bool"
+          }
+        },
+        "required": [
+          "name",
+          "version",
+          "health"
+        ]
+      },
+      "GetVersionsResponse": {
+        "type": "object",
+        "properties": {
+          "region": {
+            "type": "string"
+          },
+          "env": {
+            "type": "string"
+          },
+          "versions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Version"
+            }
+          }
+        },
+        "required": [
+          "region",
+          "env",
+          "versions"
+        ]
+      },
       "Metadata": {
         "type": "object",
         "additionalProperties": {}
@@ -6554,6 +6601,10 @@
           "expiresAt": {
             "type": "string",
             "format": "date-time"
+          },
+          "priority": {
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
@@ -7330,6 +7381,18 @@
           },
           "GetWallet": {
             "$ref": "#/components/schemas/ActivityGetWalletOutput"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Authorization": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "",
+            "refreshUrl": "",
+            "scopes": {}
           }
         }
       }

@@ -6,22 +6,33 @@ import (
 
 	"github.com/formancehq/fctl/membershipclient"
 	fctl "github.com/formancehq/fctl/pkg"
+	"github.com/formancehq/formance-sdk-go"
+	"github.com/iancoleman/strcase"
 	"github.com/pterm/pterm"
 )
 
-func PrintStackInformation(out io.Writer, profile *fctl.Profile, stack *membershipclient.Stack) error {
+func PrintStackInformation(out io.Writer, profile *fctl.Profile, stack *membershipclient.Stack, versions *formance.GetVersionsResponse) error {
 	baseUrlStr := profile.ServicesBaseUrl(stack).String()
 
 	fctl.Section.WithWriter(out).Println("Information")
 	tableData := pterm.TableData{}
-	tableData = append(tableData, []string{pterm.LightCyan("ID"), stack.Id})
-	tableData = append(tableData, []string{pterm.LightCyan("Name"), stack.Name})
-	tableData = append(tableData, []string{pterm.LightCyan("Region"), stack.RegionID})
-	tableData = append(tableData, []string{pterm.LightCyan("Ledger URI"), fmt.Sprintf("%s/api/ledger", baseUrlStr)})
-	tableData = append(tableData, []string{pterm.LightCyan("Payments URI"), fmt.Sprintf("%s/api/payments", baseUrlStr)})
-	tableData = append(tableData, []string{pterm.LightCyan("Search URI"), fmt.Sprintf("%s/api/search", baseUrlStr)})
-	tableData = append(tableData, []string{pterm.LightCyan("Auth URI"), fmt.Sprintf("%s/api/auth", baseUrlStr)})
-	tableData = append(tableData, []string{pterm.LightCyan("Wallets URI"), fmt.Sprintf("%s/api/wallets", baseUrlStr)})
+	tableData = append(tableData, []string{pterm.LightCyan("ID"), stack.Id, ""})
+	tableData = append(tableData, []string{pterm.LightCyan("Name"), stack.Name, ""})
+	tableData = append(tableData, []string{pterm.LightCyan("Region"), stack.RegionID, ""})
+	if err := pterm.DefaultTable.
+		WithWriter(out).
+		WithData(tableData).
+		Render(); err != nil {
+		return err
+	}
+
+	fctl.Println()
+	fctl.Section.WithWriter(out).Println("Versions")
+	tableData = pterm.TableData{}
+	for _, service := range versions.Versions {
+		tableData = append(tableData, []string{pterm.LightCyan(strcase.ToCamel(service.Name)), service.Version,
+			fmt.Sprintf("%s/api/%s", baseUrlStr, service.Name)})
+	}
 	if err := pterm.DefaultTable.
 		WithWriter(out).
 		WithData(tableData).

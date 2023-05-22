@@ -91,7 +91,7 @@ func NewCreateCommand() *cobra.Command {
 				}
 			}
 
-			stack, _, err := apiClient.DefaultApi.CreateStack(cmd.Context(), organization).CreateStackRequest(membershipclient.CreateStackRequest{
+			stackResponse, _, err := apiClient.DefaultApi.CreateStack(cmd.Context(), organization).CreateStackRequest(membershipclient.CreateStackRequest{
 				Name:     name,
 				Metadata: metadata,
 				RegionID: region,
@@ -108,7 +108,7 @@ func NewCreateCommand() *cobra.Command {
 					return err
 				}
 
-				if err := waitStackReady(cmd, profile, stack.Data); err != nil {
+				if err := waitStackReady(cmd, profile, stackResponse.Data); err != nil {
 					return err
 				}
 
@@ -118,9 +118,19 @@ func NewCreateCommand() *cobra.Command {
 			}
 
 			fctl.BasicTextCyan.WithWriter(cmd.OutOrStdout()).Printfln("Your dashboard will be reachable on: %s",
-				profile.ServicesBaseUrl(stack.Data).String())
+				profile.ServicesBaseUrl(stackResponse.Data).String())
 
-			return internal.PrintStackInformation(cmd.OutOrStdout(), profile, stack.Data)
+			stackClient, err := fctl.NewStackClient(cmd, cfg, stackResponse.Data)
+			if err != nil {
+				return err
+			}
+
+			versions, _, err := stackClient.DefaultApi.GetVersions(cmd.Context()).Execute()
+			if err != nil {
+				return err
+			}
+
+			return internal.PrintStackInformation(cmd.OutOrStdout(), profile, stackResponse.Data, versions)
 		}),
 	)
 }

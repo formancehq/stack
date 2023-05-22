@@ -1,6 +1,7 @@
 import typing_extensions
 
 from Formance.paths import PathValues
+from Formance.apis.paths.versions import Versions
 from Formance.apis.paths.api_auth__info import ApiAuthInfo
 from Formance.apis.paths.api_auth_clients import ApiAuthClients
 from Formance.apis.paths.api_auth_clients_client_id import ApiAuthClientsClientId
@@ -74,6 +75,7 @@ from Formance.apis.paths.api_orchestration_instances_instance_id_stages_number_h
 PathToApi = typing_extensions.TypedDict(
     'PathToApi',
     {
+        PathValues.VERSIONS: Versions,
         PathValues.API_AUTH__INFO: ApiAuthInfo,
         PathValues.API_AUTH_CLIENTS: ApiAuthClients,
         PathValues.API_AUTH_CLIENTS_CLIENT_ID: ApiAuthClientsClientId,
@@ -148,6 +150,7 @@ PathToApi = typing_extensions.TypedDict(
 
 path_to_api = PathToApi(
     {
+        PathValues.VERSIONS: Versions,
         PathValues.API_AUTH__INFO: ApiAuthInfo,
         PathValues.API_AUTH_CLIENTS: ApiAuthClients,
         PathValues.API_AUTH_CLIENTS_CLIENT_ID: ApiAuthClientsClientId,

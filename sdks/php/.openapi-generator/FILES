@@ -98,6 +98,7 @@ docs/Model/GetTransactionResponse.md
 docs/Model/GetTransactionsResponse.md
 docs/Model/GetTransactionsResponseCursor.md
 docs/Model/GetTransactionsResponseCursorAllOf.md
+docs/Model/GetVersionsResponse.md
 docs/Model/GetWalletResponse.md
 docs/Model/GetWalletSummaryResponse.md
 docs/Model/GetWorkflowInstanceHistoryResponse.md
@@ -204,6 +205,7 @@ docs/Model/TransfersResponse.md
 docs/Model/TransfersResponseDataInner.md
 docs/Model/UpdateWalletRequest.md
 docs/Model/User.md
+docs/Model/Version.md
 docs/Model/Volume.md
 docs/Model/Wallet.md
 docs/Model/WalletSubject.md
@@ -321,6 +323,7 @@ lib/Model/GetTransactionResponse.php
 lib/Model/GetTransactionsResponse.php
 lib/Model/GetTransactionsResponseCursor.php
 lib/Model/GetTransactionsResponseCursorAllOf.php
+lib/Model/GetVersionsResponse.php
 lib/Model/GetWalletResponse.php
 lib/Model/GetWalletSummaryResponse.php
 lib/Model/GetWorkflowInstanceHistoryResponse.php
@@ -428,6 +431,7 @@ lib/Model/TransfersResponse.php
 lib/Model/TransfersResponseDataInner.php
 lib/Model/UpdateWalletRequest.php
 lib/Model/User.php
+lib/Model/Version.php
 lib/Model/Volume.php
 lib/Model/Wallet.php
 lib/Model/WalletSubject.php

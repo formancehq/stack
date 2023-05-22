@@ -80,6 +80,7 @@ import { GetTransactionResponse } from '../models/GetTransactionResponse';
 import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
+import { GetVersionsResponse } from '../models/GetVersionsResponse';
 import { GetWalletResponse } from '../models/GetWalletResponse';
 import { GetWalletSummaryResponse } from '../models/GetWalletSummaryResponse';
 import { GetWorkflowInstanceHistoryResponse } from '../models/GetWorkflowInstanceHistoryResponse';
@@ -187,6 +188,7 @@ import { TransfersResponse } from '../models/TransfersResponse';
 import { TransfersResponseDataInner } from '../models/TransfersResponseDataInner';
 import { UpdateWalletRequest } from '../models/UpdateWalletRequest';
 import { User } from '../models/User';
+import { Version } from '../models/Version';
 import { Volume } from '../models/Volume';
 import { Wallet } from '../models/Wallet';
 import { WalletSubject } from '../models/WalletSubject';
@@ -663,6 +665,28 @@ export class ObservableDefaultApi {
                     middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
                 }
                 return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getServerInfo(rsp)));
+            }));
+    }
+
+    /**
+     * Show stack version information
+     */
+    public getVersions(_options?: Configuration): Observable<GetVersionsResponse> {
+        const requestContextPromise = this.requestFactory.getVersions(_options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (let middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (let middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getVersions(rsp)));
             }));
     }
 

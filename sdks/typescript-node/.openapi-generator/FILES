@@ -119,6 +119,7 @@ models/GetTransactionResponse.ts
 models/GetTransactionsResponse.ts
 models/GetTransactionsResponseCursor.ts
 models/GetTransactionsResponseCursorAllOf.ts
+models/GetVersionsResponse.ts
 models/GetWalletResponse.ts
 models/GetWalletSummaryResponse.ts
 models/GetWorkflowInstanceHistoryResponse.ts
@@ -227,6 +228,7 @@ models/TransfersResponse.ts
 models/TransfersResponseDataInner.ts
 models/UpdateWalletRequest.ts
 models/User.ts
+models/Version.ts
 models/Volume.ts
 models/Wallet.ts
 models/WalletSubject.ts

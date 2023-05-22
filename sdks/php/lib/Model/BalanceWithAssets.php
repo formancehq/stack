@@ -60,6 +60,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
     protected static $openAPITypes = [
         'name' => 'string',
         'expires_at' => '\DateTime',
+        'priority' => 'int',
         'assets' => 'array<string,int>'
     ];
 
@@ -73,6 +74,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
     protected static $openAPIFormats = [
         'name' => null,
         'expires_at' => 'date-time',
+        'priority' => 'int64',
         'assets' => 'int64'
     ];
 
@@ -84,6 +86,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
     protected static array $openAPINullables = [
         'name' => false,
 		'expires_at' => false,
+		'priority' => false,
 		'assets' => false
     ];
 
@@ -175,6 +178,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
     protected static $attributeMap = [
         'name' => 'name',
         'expires_at' => 'expiresAt',
+        'priority' => 'priority',
         'assets' => 'assets'
     ];
 
@@ -186,6 +190,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
     protected static $setters = [
         'name' => 'setName',
         'expires_at' => 'setExpiresAt',
+        'priority' => 'setPriority',
         'assets' => 'setAssets'
     ];
 
@@ -197,6 +202,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
     protected static $getters = [
         'name' => 'getName',
         'expires_at' => 'getExpiresAt',
+        'priority' => 'getPriority',
         'assets' => 'getAssets'
     ];
 
@@ -259,6 +265,7 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
     {
         $this->setIfExists('name', $data ?? [], null);
         $this->setIfExists('expires_at', $data ?? [], null);
+        $this->setIfExists('priority', $data ?? [], null);
         $this->setIfExists('assets', $data ?? [], null);
     }
 
@@ -360,6 +367,33 @@ class BalanceWithAssets implements ModelInterface, ArrayAccess, \JsonSerializabl
             throw new \InvalidArgumentException('non-nullable expires_at cannot be null');
         }
         $this->container['expires_at'] = $expires_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets priority
+     *
+     * @return int|null
+     */
+    public function getPriority()
+    {
+        return $this->container['priority'];
+    }
+
+    /**
+     * Sets priority
+     *
+     * @param int|null $priority priority
+     *
+     * @return self
+     */
+    public function setPriority($priority)
+    {
+        if (is_null($priority)) {
+            throw new \InvalidArgumentException('non-nullable priority cannot be null');
+        }
+        $this->container['priority'] = $priority;
 
         return $this;
     }

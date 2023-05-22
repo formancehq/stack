@@ -79,6 +79,7 @@ import { GetTransactionResponse } from '../models/GetTransactionResponse';
 import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
+import { GetVersionsResponse } from '../models/GetVersionsResponse';
 import { GetWalletResponse } from '../models/GetWalletResponse';
 import { GetWalletSummaryResponse } from '../models/GetWalletSummaryResponse';
 import { GetWorkflowInstanceHistoryResponse } from '../models/GetWorkflowInstanceHistoryResponse';
@@ -186,6 +187,7 @@ import { TransfersResponse } from '../models/TransfersResponse';
 import { TransfersResponseDataInner } from '../models/TransfersResponseDataInner';
 import { UpdateWalletRequest } from '../models/UpdateWalletRequest';
 import { User } from '../models/User';
+import { Version } from '../models/Version';
 import { Volume } from '../models/Volume';
 import { Wallet } from '../models/Wallet';
 import { WalletSubject } from '../models/WalletSubject';
@@ -635,6 +637,9 @@ import { DefaultApiRequestFactory, DefaultApiResponseProcessor} from "../apis/De
 export interface DefaultApiGetServerInfoRequest {
 }
 
+export interface DefaultApiGetVersionsRequest {
+}
+
 export interface DefaultApiPaymentsgetServerInfoRequest {
 }
 
@@ -654,6 +659,14 @@ export class ObjectDefaultApi {
      */
     public getServerInfo(param: DefaultApiGetServerInfoRequest = {}, options?: Configuration): Promise<ServerInfo> {
         return this.api.getServerInfo( options).toPromise();
+    }
+
+    /**
+     * Show stack version information
+     * @param param the request object
+     */
+    public getVersions(param: DefaultApiGetVersionsRequest = {}, options?: Configuration): Promise<GetVersionsResponse> {
+        return this.api.getVersions( options).toPromise();
     }
 
     /**

@@ -44,6 +44,35 @@ components:
           tokenUrl: ''
           refreshUrl: ''
           scopes: {}
+  schemas:
+    Version:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        health:
+          type: bool
+      required:
+      - name
+      - version
+      - health
+    GetVersionsResponse:
+      type: object
+      properties:
+        region:
+          type: string
+        env:
+          type: string
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
+      required:
+      - region
+      - env
+      - versions
 
 x-tagGroups:
   - name: Auth
@@ -84,3 +113,16 @@ x-tagGroups:
   - name: Orchestration
     tags:
       - Orchestration
+
+paths:
+  /versions:
+    get:
+      summary: Show stack version information
+      operationId: getVersions
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetVersionsResponse'

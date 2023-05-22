@@ -6,6 +6,7 @@ import enum
 
 
 class PathValues(str, enum.Enum):
+    VERSIONS = "/versions"
     API_AUTH__INFO = "/api/auth/_info"
     API_AUTH_CLIENTS = "/api/auth/clients"
     API_AUTH_CLIENTS_CLIENT_ID = "/api/auth/clients/{clientId}"

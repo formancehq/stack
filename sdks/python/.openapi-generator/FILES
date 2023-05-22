@@ -179,6 +179,8 @@ Formance/model/get_transaction_response.py
 Formance/model/get_transaction_response.pyi
 Formance/model/get_transactions_response.py
 Formance/model/get_transactions_response.pyi
+Formance/model/get_versions_response.py
+Formance/model/get_versions_response.pyi
 Formance/model/get_wallet_response.py
 Formance/model/get_wallet_response.pyi
 Formance/model/get_wallet_summary_response.py
@@ -351,6 +353,8 @@ Formance/model/update_scope_response.py
 Formance/model/update_scope_response.pyi
 Formance/model/user.py
 Formance/model/user.pyi
+Formance/model/version.py
+Formance/model/version.pyi
 Formance/model/volume.py
 Formance/model/volume.pyi
 Formance/model/volumes.py
@@ -493,6 +497,7 @@ docs/models/GetHoldResponse.md
 docs/models/GetHoldsResponse.md
 docs/models/GetTransactionResponse.md
 docs/models/GetTransactionsResponse.md
+docs/models/GetVersionsResponse.md
 docs/models/GetWalletResponse.md
 docs/models/GetWalletSummaryResponse.md
 docs/models/GetWorkflowInstanceHistoryResponse.md
@@ -579,6 +584,7 @@ docs/models/UpdateClientResponse.md
 docs/models/UpdateScopeRequest.md
 docs/models/UpdateScopeResponse.md
 docs/models/User.md
+docs/models/Version.md
 docs/models/Volume.md
 docs/models/Volumes.md
 docs/models/Wallet.md

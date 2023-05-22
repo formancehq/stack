@@ -38,6 +38,10 @@ public class BalanceWithAssets {
   @SerializedName(SERIALIZED_NAME_EXPIRES_AT)
   private OffsetDateTime expiresAt;
 
+  public static final String SERIALIZED_NAME_PRIORITY = "priority";
+  @SerializedName(SERIALIZED_NAME_PRIORITY)
+  private Long priority;
+
   public static final String SERIALIZED_NAME_ASSETS = "assets";
   @SerializedName(SERIALIZED_NAME_ASSETS)
   private Map<String, Long> assets = new HashMap<>();
@@ -89,6 +93,28 @@ public class BalanceWithAssets {
   }
 
 
+  public BalanceWithAssets priority(Long priority) {
+    
+    this.priority = priority;
+    return this;
+  }
+
+   /**
+   * Get priority
+   * @return priority
+  **/
+  @javax.annotation.Nullable
+
+  public Long getPriority() {
+    return priority;
+  }
+
+
+  public void setPriority(Long priority) {
+    this.priority = priority;
+  }
+
+
   public BalanceWithAssets assets(Map<String, Long> assets) {
     
     this.assets = assets;
@@ -127,12 +153,13 @@ public class BalanceWithAssets {
     BalanceWithAssets balanceWithAssets = (BalanceWithAssets) o;
     return Objects.equals(this.name, balanceWithAssets.name) &&
         Objects.equals(this.expiresAt, balanceWithAssets.expiresAt) &&
+        Objects.equals(this.priority, balanceWithAssets.priority) &&
         Objects.equals(this.assets, balanceWithAssets.assets);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, expiresAt, assets);
+    return Objects.hash(name, expiresAt, priority, assets);
   }
 
   @Override
@@ -141,6 +168,7 @@ public class BalanceWithAssets {
     sb.append("class BalanceWithAssets {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    expiresAt: ").append(toIndentedString(expiresAt)).append("\n");
+    sb.append("    priority: ").append(toIndentedString(priority)).append("\n");
     sb.append("    assets: ").append(toIndentedString(assets)).append("\n");
     sb.append("}");
     return sb.toString();
