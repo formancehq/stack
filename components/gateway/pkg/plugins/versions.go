@@ -145,6 +145,24 @@ type serviceInfo struct {
 	Health  bool   `json:"health"`
 }
 
+type backendServiceInfo struct {
+	serviceInfo
+	// Deprecated: ledger v1
+	Data struct {
+		Version string `json:"version"`
+	}
+}
+
+func (info backendServiceInfo) GetVersion() string {
+	if info.Data.Version != "" {
+		return info.Data.Version
+	}
+	if info.Version != "" {
+		return info.Version
+	}
+	return "unknown"
+}
+
 type versionsResponse struct {
 	Region   string         `json:"region"`
 	Env      string         `json:"env"`
@@ -240,7 +258,7 @@ func serviceVersion(
 	httpClient *http.Client,
 	versionEndpoint string,
 ) (string, error) {
-	sInfo := &serviceInfo{}
+	sInfo := &backendServiceInfo{}
 
 	resp, err := serviceCall(ctx, httpClient, versionEndpoint)
 	if err != nil {
@@ -261,11 +279,7 @@ func serviceVersion(
 		return "", fmt.Errorf("failed to unmarshal response body for %s: %w", versionEndpoint, err)
 	}
 
-	if sInfo.Version == "" {
-		sInfo.Version = "unknown"
-	}
-
-	return sInfo.Version, nil
+	return sInfo.GetVersion(), nil
 }
 
 func serviceHealth(
