@@ -33,17 +33,14 @@ jobs:
       - uses: 'actions/checkout@v3'
         with:
           fetch-depth: 0
-      - uses: 'actions/checkout@v3'
-        with:
-          fetch-depth: 0
       - name: Setup Env
         uses: ./.github/actions/env
         with:
           os: ${{ runner.os }}
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: 'moon run ${{ needs.Extract.outputs.service }}:lint'
-      - run: 'moon run ${{ needs.Extract.outputs.service }}:test'
-      - run: 'moon run ${{ needs.Extract.outputs.service }}:release'
+      - run: 'devbox run -- moon run ${{ needs.Extract.outputs.service }}:lint'
+      - run: 'devbox run -- moon run ${{ needs.Extract.outputs.service }}:test'
+      - run: 'devbox run -- moon run ${{ needs.Extract.outputs.service }}:release'
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
