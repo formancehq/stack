@@ -26,8 +26,8 @@ func TestStargateController(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	organizationID := "test_orga"
-	stackID := "test_stack"
+	organizationID := "testorgatest"
+	stackID := "test"
 
 	natsSubject := utils.GetNatsSubject(organizationID, stackID)
 	sc := controllers.NewStargateController(
@@ -42,7 +42,6 @@ func TestStargateController(t *testing.T) {
 		method             string
 		queryParams        url.Values
 		url                string
-		headers            http.Header
 		response           service.StargateClientMessage
 		expectedStatusCode int
 		expectedHeaders    http.Header
@@ -56,11 +55,7 @@ func TestStargateController(t *testing.T) {
 			queryParams: url.Values{
 				"metadata[roles]": []string{"admin"},
 			},
-			headers: http.Header{
-				// Fake token generated with https://jwt.io/
-				"authorization": []string{"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25faWQiOiJ0ZXN0X29yZ2EiLCJzdGFja19pZCI6InRlc3Rfc3RhY2sifQ.07CA_C9K7oQq9tTuvEsIHh7Pkm90PexX7mff_AbkreQ"},
-			},
-			url: "http://" + organizationID + "-" + stackID + ".staging.formance.cloud/api/ledger",
+			url: "http://test.staging.formance.cloud/" + organizationID + "/" + stackID + "/api/ledger",
 			response: service.StargateClientMessage{
 				Event: &service.StargateClientMessage_ApiCallResponse{
 					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
@@ -82,11 +77,7 @@ func TestStargateController(t *testing.T) {
 			queryParams: url.Values{
 				"metadata[roles]": []string{"admin"},
 			},
-			headers: http.Header{
-				// Fake token generated with https://jwt.io/
-				"authorization": []string{"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25faWQiOiJub3RfZm91bmQiLCJzdGFja19pZCI6Im5vdF9mb3VuZCJ9.AaA1CpDf4-YWd-sUzdWBEFtVKYiH019nzJ5JQxJdMjI"},
-			},
-			url: "http://" + "notfound" + "-" + "notfound" + ".staging.formance.cloud/api/ledger",
+			url: "http://test.staging.formance.cloud/notfoundtest/test/api/ledger",
 			response: service.StargateClientMessage{
 				Event: &service.StargateClientMessage_ApiCallResponse{
 					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
@@ -104,12 +95,58 @@ func TestStargateController(t *testing.T) {
 			expectedBody: []byte{},
 		},
 		{
+			name:   "wrong organization id and stack id bis",
+			method: http.MethodGet,
+			queryParams: url.Values{
+				"metadata[roles]": []string{"admin"},
+			},
+			url: "http://test.staging.formance.cloud/api/ledger",
+			response: service.StargateClientMessage{
+				Event: &service.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
+						StatusCode: 204,
+						Body:       []byte{},
+						Headers:    map[string]*service.Values{},
+					},
+				},
+			},
+			expectedStatusCode: 400,
+			expectedHeaders: http.Header{
+				"Vary":         []string{"Origin"},
+				"Content-Type": []string{"application/json"},
+			},
+			expectedBody: []byte("{\"errorCode\":\"VALIDATION\",\"errorMessage\":\"validation error\"}\n"),
+		},
+		{
+			name:   "wrong organization id and stack id with numbers",
+			method: http.MethodGet,
+			queryParams: url.Values{
+				"metadata[roles]": []string{"admin"},
+			},
+			url: "http://test.staging.formance.cloud/" + organizationID + "/1234/api/ledger",
+			response: service.StargateClientMessage{
+				Event: &service.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
+						StatusCode: 204,
+						Body:       []byte{},
+						Headers:    map[string]*service.Values{},
+					},
+				},
+			},
+			expectedStatusCode: 400,
+			expectedHeaders: http.Header{
+				"Vary":         []string{"Origin"},
+				"Content-Type": []string{"application/json"},
+			},
+			expectedBody: []byte("{\"errorCode\":\"VALIDATION\",\"errorMessage\":\"validation error\"}\n"),
+		},
+		{
 			name:   "failure, wrong url without orga and stack ids",
 			method: http.MethodPost,
 			queryParams: url.Values{
 				"metadata[roles]": []string{"admin"},
 			},
-			url: "http://test.staging.formance.cloud/api/ledger",
+			url: "http://test.staging.formance.cloud/",
 			response: service.StargateClientMessage{
 				Event: &service.StargateClientMessage_ApiCallResponse{
 					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
@@ -152,11 +189,6 @@ func TestStargateController(t *testing.T) {
 		req := httptest.NewRequest(testCase.method, testCase.url, nil)
 		rec := httptest.NewRecorder()
 		req.URL.RawQuery = testCase.queryParams.Encode()
-		for key, headers := range testCase.headers {
-			for _, value := range headers {
-				req.Header.Add(key, value)
-			}
-		}
 
 		router.ServeHTTP(rec, req)
 

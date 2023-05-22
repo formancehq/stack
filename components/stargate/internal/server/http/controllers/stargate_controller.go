@@ -3,16 +3,18 @@ package controllers
 import (
 	"io"
 	"net/http"
+	"regexp"
 	"strings"
 
 	service "github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/formancehq/stack/libs/go-libs/api"
-	"github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/protobuf/proto"
 )
+
+var IsLetter = regexp.MustCompile(`^[a-z]+$`).MatchString
 
 func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -73,32 +75,24 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 }
 
 func getOrganizationAndStackID(r *http.Request) (string, string, error) {
-	authHeader := r.Header.Get("authorization")
-	if authHeader == "" {
-		return "", "", errors.Wrapf(ErrValidation, "missing authorization header")
+	paths := strings.Split(r.URL.Path, "/")
+	if len(paths) < 3 {
+		return "", "", errors.Wrapf(ErrValidation, "invalid path, missing organizationID and stackID")
 	}
 
-	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-
-	// The token will be verified by the client directly, we just need here to
-	// parse it and check if the organizationID and stackID are present.
-	parser := jwt.Parser{}
-	token, _, err := parser.ParseUnverified(tokenString, jwt.MapClaims{})
-	if err != nil {
-		return "", "", errors.Wrapf(ErrValidation, "invalid authorization header")
+	organizationID := paths[1]
+	if len(organizationID) != 12 || !IsLetter(organizationID) {
+		return "", "", errors.Wrapf(ErrValidation, "invalid organizationID")
 	}
 
-	mapClaims := token.Claims.(jwt.MapClaims)
-	organizationID, ok := mapClaims["organization_id"].(string)
-	if !ok {
-		return "", "", errors.Wrapf(ErrValidation, "organization_id not found in token")
+	stackID := paths[2]
+	if len(stackID) != 4 || !IsLetter(stackID) {
+		return "", "", errors.Wrapf(ErrValidation, "invalid stackID")
 	}
 
-	stackID, ok := mapClaims["stack_id"].(string)
-	if !ok {
-		return "", "", errors.Wrapf(ErrValidation, "stack_id not found in token")
-	}
+	paths = append(paths[:1], paths[3:]...)
 
+	r.URL.Path = strings.Join(paths, "/")
 	return organizationID, stackID, nil
 }
 
