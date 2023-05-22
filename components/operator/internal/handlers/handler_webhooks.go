@@ -30,6 +30,7 @@ func init() {
 					Name:                    "worker",
 					InjectPostgresVariables: true,
 					ListenEnvVar:            "HTTP_BIND_ADDRESS_WORKER",
+					Liveness:                modules.LivenessDisable,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
 							Image: modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
@@ -39,8 +40,7 @@ func init() {
 									resolveContext.Stack.GetServiceName("payments"),
 								}, " ")),
 							),
-							Args:     []string{"worker"},
-							Liveness: modules.LivenessDisable,
+							Args: []string{"worker"},
 						}
 					},
 				},

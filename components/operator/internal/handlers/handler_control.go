@@ -15,6 +15,7 @@ func init() {
 				Secured:    true,
 				Port:       3000,
 				ExposeHTTP: true,
+				Liveness:   modules.LivenessDisable,
 				AuthConfiguration: func(resolveContext modules.PrepareContext) stackv1beta3.ClientConfiguration {
 					return stackv1beta3.NewClientConfiguration().
 						WithAdditionalScopes("profile", "email", "offline").
@@ -43,10 +44,9 @@ func init() {
 						modules.EnvFromBool("UNSECURE_COOKIES", resolveContext.Stack.Spec.Dev),
 					}
 					return modules.Container{
-						Name:     "control",
-						Image:    modules.GetImage("control", resolveContext.Versions.Spec.Control),
-						Env:      env,
-						Liveness: modules.LivenessDisable,
+						Name:  "control",
+						Image: modules.GetImage("control", resolveContext.Versions.Spec.Control),
+						Env:   env,
 					}
 				},
 			}}

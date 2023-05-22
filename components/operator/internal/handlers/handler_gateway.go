@@ -20,6 +20,7 @@ func init() {
 				Port:       gatewayPort,
 				Path:       "/",
 				ExposeHTTP: true,
+				Liveness:   modules.LivenessDisable,
 				Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
 					return modules.Configs{
 						"config": modules.Config{
@@ -38,8 +39,7 @@ func init() {
 							"--config", resolveContext.GetConfig("config").GetMountPath() + "/Caddyfile",
 							"--adapter", "caddyfile",
 						},
-						Image:    modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
-						Liveness: modules.LivenessDisable,
+						Image: modules.GetImage("gateway", resolveContext.Versions.Spec.Gateway),
 						Env: modules.NewEnv().Append(
 							modules.Env(
 								"OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
@@ -60,8 +60,9 @@ func createCaddyfile(context modules.ServiceInstallContext) string {
 	type service struct {
 		Name string
 		*modules.Service
-		Port     int32
-		Hostname string
+		Port       int32
+		Hostname   string
+		HealthPath string
 	}
 
 	servicesMap := make(map[string]service, 0)
@@ -79,15 +80,20 @@ func createCaddyfile(context modules.ServiceInstallContext) string {
 			if s.Name != "" {
 				serviceName += "-" + s.Name
 			}
+			healthPath := "_healthcheck"
+			if s.Liveness == modules.LivenessLegacy {
+				healthPath = "_health"
+			}
 			hostname := serviceName
 			if context.Configuration.Spec.LightMode {
 				hostname = "127.0.0.1"
 			}
 			servicesMap[serviceName] = service{
-				Name:     serviceName,
-				Service:  s,
-				Port:     usedPort,
-				Hostname: hostname,
+				Name:       serviceName,
+				Service:    s,
+				Port:       usedPort,
+				Hostname:   hostname,
+				HealthPath: healthPath,
 			}
 			keys = append(keys, serviceName)
 		}
@@ -198,7 +204,7 @@ const caddyfile = `(cors) {
 			endpoints {
 				{{- range $i, $service := .Services }}
 					{{- if $service.HasVersionEndpoint }}
-				{{ $service.Name }} http://{{ $service.Hostname }}:{{ $service.Port }}/_info http://{{ $service.Hostname }}:{{ $service.Port }}/_healthcheck
+				{{ $service.Name }} http://{{ $service.Hostname }}:{{ $service.Port }}/_info http://{{ $service.Hostname }}:{{ $service.Port }}/{{ $service.HealthPath }}
 					{{- end }}
 				{{- end }}
 			}

@@ -34,11 +34,11 @@ func init() {
 				ListenEnvVar:            "LISTEN",
 				ExposeHTTP:              true,
 				NeedTopic:               true,
+				Liveness:                modules.LivenessLegacy,
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 					return modules.Container{
-						Env:      env(resolveContext),
-						Image:    modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
-						Liveness: modules.LivenessLegacy,
+						Env:   env(resolveContext),
+						Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
 					}
 				},
 				InitContainer: func(resolveContext modules.ContainerResolutionContext) []modules.Container {

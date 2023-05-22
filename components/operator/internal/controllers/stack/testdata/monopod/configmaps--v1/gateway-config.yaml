@@ -82,7 +82,7 @@ data:
         				auth http://127.0.0.1:10001/_info http://127.0.0.1:10001/_healthcheck
         				ledger http://127.0.0.1:10002/_info http://127.0.0.1:10002/_healthcheck
         				orchestration http://127.0.0.1:8080/_info http://127.0.0.1:8080/_healthcheck
-        				payments http://127.0.0.1:10003/_info http://127.0.0.1:10003/_healthcheck
+        				payments http://127.0.0.1:10003/_info http://127.0.0.1:10003/_health
         				search http://127.0.0.1:10004/_info http://127.0.0.1:10004/_healthcheck
         				wallets http://127.0.0.1:10005/_info http://127.0.0.1:10005/_healthcheck
         				webhooks http://127.0.0.1:10006/_info http://127.0.0.1:10006/_healthcheck

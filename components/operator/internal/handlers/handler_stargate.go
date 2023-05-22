@@ -32,14 +32,14 @@ func init() {
 
 			return modules.Services{
 				{
+					Liveness: modules.LivenessDisable,
 					AuthConfiguration: func(resolveContext modules.PrepareContext) stackv1beta3.ClientConfiguration {
 						return stackv1beta3.NewClientConfiguration()
 					},
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
-							Env:      stargateClientEnvVars(resolveContext),
-							Image:    modules.GetImage("stargate", resolveContext.Versions.Spec.Stargate),
-							Liveness: modules.LivenessDisable,
+							Env:   stargateClientEnvVars(resolveContext),
+							Image: modules.GetImage("stargate", resolveContext.Versions.Spec.Stargate),
 						}
 					},
 				},

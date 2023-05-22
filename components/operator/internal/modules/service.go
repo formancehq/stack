@@ -291,6 +291,7 @@ type Service struct {
 	Path                    string
 	InjectPostgresVariables bool
 	HasVersionEndpoint      bool
+	Liveness                Liveness
 	AuthConfiguration       func(resolveContext PrepareContext) stackv1beta3.ClientConfiguration
 	Configs                 func(resolveContext ServiceInstallContext) Configs
 	Secrets                 func(resolveContext ServiceInstallContext) Secrets
@@ -553,7 +554,7 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 		}
 		c.VolumeMounts = ret
 
-		switch container.Liveness {
+		switch service.Liveness {
 		case LivenessDefault:
 			c.LivenessProbe = common.DefaultLiveness(service.GetUsedPort())
 		case LivenessLegacy:
