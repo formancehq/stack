@@ -8,7 +8,6 @@ import (
 	"github.com/formancehq/fctl/cmd/ledger/internal"
 	fctl "github.com/formancehq/fctl/pkg"
 	"github.com/formancehq/formance-sdk-go"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -105,20 +104,20 @@ func NewCommand() *cobra.Command {
 			}
 
 			ledger := fctl.GetString(cmd, internal.LedgerFlag)
-			response, _, err := client.TransactionsApi.CreateTransaction(cmd.Context(), ledger).
-				PostTransaction(formance.PostTransaction{
-					Script: &formance.PostTransactionScript{
-						Plain: script,
-						Vars:  vars,
-					},
-					Metadata:  metadata,
-					Reference: &reference,
-				}).Execute()
+
+			tx, err := internal.CreateTransaction(client, cmd.Context(), ledger, formance.PostTransaction{
+				Script: &formance.PostTransactionScript{
+					Plain: script,
+					Vars:  vars,
+				},
+				Metadata:  metadata,
+				Reference: &reference,
+			})
 			if err != nil {
-				return errors.Wrapf(err, "executing numscript")
+				return err
 			}
 
-			return internal.PrintTransaction(cmd.OutOrStdout(), response.Data)
+			return internal.PrintTransaction(cmd.OutOrStdout(), *tx)
 		}),
 	)
 }

@@ -70,24 +70,21 @@ func NewSendCommand() *cobra.Command {
 			}
 
 			reference := fctl.GetString(cmd, referenceFlag)
-			response, _, err := ledgerClient.TransactionsApi.
-				CreateTransaction(cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag)).
-				PostTransaction(formance.PostTransaction{
-					Postings: []formance.Posting{{
-						Amount:      amount,
-						Asset:       asset,
-						Destination: destination,
-						Source:      source,
-					}},
-					Reference: &reference,
-					Metadata:  metadata,
-				}).
-				Execute()
+			tx, err := internal.CreateTransaction(ledgerClient, cmd.Context(), fctl.GetString(cmd, internal.LedgerFlag), formance.PostTransaction{
+				Postings: []formance.Posting{{
+					Amount:      amount,
+					Asset:       asset,
+					Destination: destination,
+					Source:      source,
+				}},
+				Reference: &reference,
+				Metadata:  metadata,
+			})
 			if err != nil {
 				return err
 			}
 
-			return internal.PrintTransaction(cmd.OutOrStdout(), response.Data)
+			return internal.PrintTransaction(cmd.OutOrStdout(), *tx)
 		}),
 	)
 }
