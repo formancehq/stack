@@ -20,11 +20,11 @@ func init() {
 			return ctx.Configuration.Spec.Services.Payments.Postgres
 		},
 		Services: func(ctx modules.Context) modules.Services {
-			version := ctx.Versions.Spec.Control
+			version := ctx.Versions.Spec.Payments
 			migrateCommand := []string{"payments", "migrate"}
 			if semver.IsValid(version) {
-				version := semver.Compare(version, "v0.6.3")
-				if version > 0 {
+				version := semver.Compare(version, "v0.7.0")
+				if version < 0 {
 					migrateCommand = append(migrateCommand, "up")
 				}
 			}

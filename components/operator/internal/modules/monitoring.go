@@ -7,29 +7,29 @@ import (
 	"github.com/formancehq/operator/internal/controllerutils"
 )
 
-func MonitoringEnvVarsWithPrefix(m stackv1beta3.MonitoringSpec) ContainerEnv {
+func MonitoringEnvVarsWithPrefix(m stackv1beta3.MonitoringSpec, prefix string) ContainerEnv {
 	if m.Traces != nil {
-		return monitoringTracesEnvVars(m.Traces)
+		return monitoringTracesEnvVars(m.Traces, prefix)
 	}
 	return ContainerEnv{}
 }
 
-func monitoringTracesEnvVars(traces *stackv1beta3.TracesSpec) ContainerEnv {
+func monitoringTracesEnvVars(traces *stackv1beta3.TracesSpec, prefix string) ContainerEnv {
 	if traces.Otlp != nil {
-		return monitoringTracesOTLPEnvVars(traces.Otlp)
+		return monitoringTracesOTLPEnvVars(traces.Otlp, prefix)
 	}
 	return ContainerEnv{}
 }
 
-func monitoringTracesOTLPEnvVars(otlp *stackv1beta3.TracesOtlpSpec) ContainerEnv {
+func monitoringTracesOTLPEnvVars(otlp *stackv1beta3.TracesOtlpSpec, prefix string) ContainerEnv {
 	return ContainerEnv{
-		Env("OTEL_TRACES", "true"),
-		Env("OTEL_TRACES_EXPORTER", "otlp"),
-		EnvFromBool("OTEL_TRACES_EXPORTER_OTLP_INSECURE", otlp.Insecure),
-		Env("OTEL_TRACES_EXPORTER_OTLP_MODE", otlp.Mode),
-		Env("OTEL_TRACES_PORT", fmt.Sprint(otlp.Port)),
-		Env("OTEL_TRACES_ENDPOINT", otlp.Endpoint),
-		Env("OTEL_TRACES_EXPORTER_OTLP_ENDPOINT", controllerutils.ComputeEnvVar("", "%s:%s", "OTEL_TRACES_ENDPOINT", "OTEL_TRACES_PORT")),
-		Env("OTEL_RESOURCE_ATTRIBUTES", otlp.ResourceAttributes),
+		Env(fmt.Sprintf("%sOTEL_TRACES", prefix), "true"),
+		Env(fmt.Sprintf("%sOTEL_TRACES_EXPORTER", prefix), "otlp"),
+		EnvFromBool(fmt.Sprintf("%sOTEL_TRACES_EXPORTER_OTLP_INSECURE", prefix), otlp.Insecure),
+		Env(fmt.Sprintf("%sOTEL_TRACES_EXPORTER_OTLP_MODE", prefix), otlp.Mode),
+		Env(fmt.Sprintf("%sOTEL_TRACES_PORT", prefix), fmt.Sprint(otlp.Port)),
+		Env(fmt.Sprintf("%sOTEL_TRACES_ENDPOINT", prefix), otlp.Endpoint),
+		Env(fmt.Sprintf("%sOTEL_TRACES_EXPORTER_OTLP_ENDPOINT", prefix), controllerutils.ComputeEnvVar(prefix, "%s:%s", "OTEL_TRACES_ENDPOINT", "OTEL_TRACES_PORT")),
+		Env(fmt.Sprintf("%sOTEL_RESOURCE_ATTRIBUTES", prefix), otlp.ResourceAttributes),
 	}
 }
