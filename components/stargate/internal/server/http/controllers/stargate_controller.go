@@ -6,7 +6,9 @@ import (
 	"strings"
 
 	service "github.com/formancehq/stack/components/stargate/internal/api"
+	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/formancehq/stack/libs/go-libs/api"
+	"github.com/golang-jwt/jwt"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/protobuf/proto"
@@ -14,7 +16,7 @@ import (
 
 func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	organizationID, stackID, err := getOrganizationAndStackID(r.Host)
+	organizationID, stackID, err := getOrganizationAndStackID(r)
 	if err != nil {
 		ResponseError(w, r, err)
 		return
@@ -39,7 +41,7 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	subject := GetNatsSubject(organizationID, stackID)
+	subject := utils.GetNatsSubject(organizationID, stackID)
 	// requestCtx, cancel := context.WithTimeout(ctx, s.config.natsRequestTimeout)
 	// defer cancel()
 	resp, err := s.natsConn.Request(subject, buf, s.config.natsRequestTimeout)
@@ -70,23 +72,34 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func GetNatsSubject(organizationID, stackID string) string {
-	return organizationID + "." + stackID
-}
-
-func getOrganizationAndStackID(host string) (string, string, error) {
-	hostSplit := strings.Split(host, ".")
-	if len(hostSplit) < 1 {
-		return "", "", errors.Wrapf(ErrValidation, "invalid host: %s", host)
-		// ResponseError(w, r, errors.Wrapf(ErrValidation, "invalid host: %s", r.Host))
+func getOrganizationAndStackID(r *http.Request) (string, string, error) {
+	authHeader := r.Header.Get("authorization")
+	if authHeader == "" {
+		return "", "", errors.Wrapf(ErrValidation, "missing authorization header")
 	}
 
-	l := strings.Split(hostSplit[0], "-")
-	if len(l) != 2 {
-		return "", "", errors.Wrapf(ErrValidation, "invalid host: %s", host)
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	// The token will be verified by the client directly, we just need here to
+	// parse it and check if the organizationID and stackID are present.
+	parser := jwt.Parser{}
+	token, _, err := parser.ParseUnverified(tokenString, jwt.MapClaims{})
+	if err != nil {
+		return "", "", errors.Wrapf(ErrValidation, "invalid authorization header")
 	}
 
-	return l[0], l[1], nil
+	mapClaims := token.Claims.(jwt.MapClaims)
+	organizationID, ok := mapClaims["organization_id"].(string)
+	if !ok {
+		return "", "", errors.Wrapf(ErrValidation, "organization_id not found in token")
+	}
+
+	stackID, ok := mapClaims["stack_id"].(string)
+	if !ok {
+		return "", "", errors.Wrapf(ErrValidation, "stack_id not found in token")
+	}
+
+	return organizationID, stackID, nil
 }
 
 func requestToProto(r *http.Request) (*service.StargateServerMessage, error) {

@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/stack/components/stargate/internal/server/http/controllers"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/opentelemetry"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/routes"
+	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -25,10 +26,10 @@ func TestStargateController(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	organizationID := "test1"
-	stackID := "test1"
+	organizationID := "test_orga"
+	stackID := "test_stack"
 
-	natsSubject := controllers.GetNatsSubject(organizationID, stackID)
+	natsSubject := utils.GetNatsSubject(organizationID, stackID)
 	sc := controllers.NewStargateController(
 		nc,
 		opentelemetry.NewNoOpMetricsRegistry(),
@@ -41,6 +42,7 @@ func TestStargateController(t *testing.T) {
 		method             string
 		queryParams        url.Values
 		url                string
+		headers            http.Header
 		response           service.StargateClientMessage
 		expectedStatusCode int
 		expectedHeaders    http.Header
@@ -53,6 +55,10 @@ func TestStargateController(t *testing.T) {
 			method: http.MethodGet,
 			queryParams: url.Values{
 				"metadata[roles]": []string{"admin"},
+			},
+			headers: http.Header{
+				// Fake token generated with https://jwt.io/
+				"authorization": []string{"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25faWQiOiJ0ZXN0X29yZ2EiLCJzdGFja19pZCI6InRlc3Rfc3RhY2sifQ.07CA_C9K7oQq9tTuvEsIHh7Pkm90PexX7mff_AbkreQ"},
 			},
 			url: "http://" + organizationID + "-" + stackID + ".staging.formance.cloud/api/ledger",
 			response: service.StargateClientMessage{
@@ -75,6 +81,10 @@ func TestStargateController(t *testing.T) {
 			method: http.MethodGet,
 			queryParams: url.Values{
 				"metadata[roles]": []string{"admin"},
+			},
+			headers: http.Header{
+				// Fake token generated with https://jwt.io/
+				"authorization": []string{"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvcmdhbml6YXRpb25faWQiOiJub3RfZm91bmQiLCJzdGFja19pZCI6Im5vdF9mb3VuZCJ9.AaA1CpDf4-YWd-sUzdWBEFtVKYiH019nzJ5JQxJdMjI"},
 			},
 			url: "http://" + "notfound" + "-" + "notfound" + ".staging.formance.cloud/api/ledger",
 			response: service.StargateClientMessage{
@@ -142,15 +152,20 @@ func TestStargateController(t *testing.T) {
 		req := httptest.NewRequest(testCase.method, testCase.url, nil)
 		rec := httptest.NewRecorder()
 		req.URL.RawQuery = testCase.queryParams.Encode()
+		for key, headers := range testCase.headers {
+			for _, value := range headers {
+				req.Header.Add(key, value)
+			}
+		}
 
 		router.ServeHTTP(rec, req)
 
 		recBody, err := io.ReadAll(rec.Body)
 		require.NoError(t, err)
 
-		require.Equal(t, rec.Result().StatusCode, testCase.expectedStatusCode)
-		require.Equal(t, recBody, testCase.expectedBody)
-		require.Equal(t, rec.Result().Header, testCase.expectedHeaders)
+		require.Equal(t, testCase.expectedStatusCode, rec.Result().StatusCode, "test '%s' failed", testCase.name)
+		require.Equal(t, testCase.expectedBody, recBody, "test '%s' failed", testCase.name)
+		require.Equal(t, testCase.expectedHeaders, rec.Result().Header, "test '%s' failed", testCase.name)
 
 		err = sub.Unsubscribe()
 		require.NoError(t, err)

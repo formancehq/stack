@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
-	"github.com/formancehq/stack/components/stargate/internal/server/grpc"
+	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -125,7 +125,7 @@ func TestStream(t *testing.T) {
 			}
 		}()
 
-		resp, err := nc.Request(grpc.GetNatsSubject(organizationID, stackID), data, 30*time.Second)
+		resp, err := nc.Request(utils.GetNatsSubject(organizationID, stackID), data, 30*time.Second)
 		cancel()
 		require.NoError(t, err)
 
