@@ -59,7 +59,8 @@ class Balance implements ModelInterface, ArrayAccess, \JsonSerializable
       */
     protected static $openAPITypes = [
         'name' => 'string',
-        'expires_at' => '\DateTime'
+        'expires_at' => '\DateTime',
+        'priority' => 'int'
     ];
 
     /**
@@ -71,7 +72,8 @@ class Balance implements ModelInterface, ArrayAccess, \JsonSerializable
       */
     protected static $openAPIFormats = [
         'name' => null,
-        'expires_at' => 'date-time'
+        'expires_at' => 'date-time',
+        'priority' => 'int64'
     ];
 
     /**
@@ -81,7 +83,8 @@ class Balance implements ModelInterface, ArrayAccess, \JsonSerializable
       */
     protected static array $openAPINullables = [
         'name' => false,
-		'expires_at' => false
+		'expires_at' => false,
+		'priority' => false
     ];
 
     /**
@@ -171,7 +174,8 @@ class Balance implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     protected static $attributeMap = [
         'name' => 'name',
-        'expires_at' => 'expiresAt'
+        'expires_at' => 'expiresAt',
+        'priority' => 'priority'
     ];
 
     /**
@@ -181,7 +185,8 @@ class Balance implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     protected static $setters = [
         'name' => 'setName',
-        'expires_at' => 'setExpiresAt'
+        'expires_at' => 'setExpiresAt',
+        'priority' => 'setPriority'
     ];
 
     /**
@@ -191,7 +196,8 @@ class Balance implements ModelInterface, ArrayAccess, \JsonSerializable
      */
     protected static $getters = [
         'name' => 'getName',
-        'expires_at' => 'getExpiresAt'
+        'expires_at' => 'getExpiresAt',
+        'priority' => 'getPriority'
     ];
 
     /**
@@ -253,6 +259,7 @@ class Balance implements ModelInterface, ArrayAccess, \JsonSerializable
     {
         $this->setIfExists('name', $data ?? [], null);
         $this->setIfExists('expires_at', $data ?? [], null);
+        $this->setIfExists('priority', $data ?? [], null);
     }
 
     /**
@@ -350,6 +357,33 @@ class Balance implements ModelInterface, ArrayAccess, \JsonSerializable
             throw new \InvalidArgumentException('non-nullable expires_at cannot be null');
         }
         $this->container['expires_at'] = $expires_at;
+
+        return $this;
+    }
+
+    /**
+     * Gets priority
+     *
+     * @return int|null
+     */
+    public function getPriority()
+    {
+        return $this->container['priority'];
+    }
+
+    /**
+     * Sets priority
+     *
+     * @param int|null $priority priority
+     *
+     * @return self
+     */
+    public function setPriority($priority)
+    {
+        if (is_null($priority)) {
+            throw new \InvalidArgumentException('non-nullable priority cannot be null');
+        }
+        $this->container['priority'] = $priority;
 
         return $this;
     }

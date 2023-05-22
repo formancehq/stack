@@ -103,6 +103,7 @@ docs/GetTransactionResponse.md
 docs/GetTransactionsResponse.md
 docs/GetTransactionsResponseCursor.md
 docs/GetTransactionsResponseCursorAllOf.md
+docs/GetVersionsResponse.md
 docs/GetWalletResponse.md
 docs/GetWalletSummaryResponse.md
 docs/GetWorkflowInstanceHistoryResponse.md
@@ -219,6 +220,7 @@ docs/TransfersResponseDataInner.md
 docs/UpdateWalletRequest.md
 docs/User.md
 docs/UsersApi.md
+docs/Version.md
 docs/Volume.md
 docs/Wallet.md
 docs/WalletSubject.md
@@ -321,6 +323,7 @@ model_get_transaction_response.go
 model_get_transactions_response.go
 model_get_transactions_response_cursor.go
 model_get_transactions_response_cursor_all_of.go
+model_get_versions_response.go
 model_get_wallet_response.go
 model_get_wallet_summary_response.go
 model_get_workflow_instance_history_response.go
@@ -427,6 +430,7 @@ model_transfers_response.go
 model_transfers_response_data_inner.go
 model_update_wallet_request.go
 model_user.go
+model_version.go
 model_volume.go
 model_wallet.go
 model_wallet_subject.go

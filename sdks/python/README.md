@@ -285,6 +285,7 @@ Class | Method | HTTP request | Description
 *WebhooksApi* | [**insert_config**](docs/apis/tags/WebhooksApi.md#insert_config) | **post** /api/webhooks/configs | Insert a new config
 *WebhooksApi* | [**test_config**](docs/apis/tags/WebhooksApi.md#test_config) | **get** /api/webhooks/configs/{id}/test | Test one config
 *DefaultApi* | [**get_server_info**](docs/apis/tags/DefaultApi.md#get_server_info) | **get** /api/auth/_info | Get server info
+*DefaultApi* | [**get_versions**](docs/apis/tags/DefaultApi.md#get_versions) | **get** /versions | Show stack version information
 *DefaultApi* | [**paymentsget_server_info**](docs/apis/tags/DefaultApi.md#paymentsget_server_info) | **get** /api/payments/_info | Get server info
 *DefaultApi* | [**searchget_server_info**](docs/apis/tags/DefaultApi.md#searchget_server_info) | **get** /api/search/_info | Get server info
 
@@ -368,6 +369,7 @@ Class | Method | HTTP request | Description
  - [GetHoldsResponse](docs/models/GetHoldsResponse.md)
  - [GetTransactionResponse](docs/models/GetTransactionResponse.md)
  - [GetTransactionsResponse](docs/models/GetTransactionsResponse.md)
+ - [GetVersionsResponse](docs/models/GetVersionsResponse.md)
  - [GetWalletResponse](docs/models/GetWalletResponse.md)
  - [GetWalletSummaryResponse](docs/models/GetWalletSummaryResponse.md)
  - [GetWorkflowInstanceHistoryResponse](docs/models/GetWorkflowInstanceHistoryResponse.md)
@@ -454,6 +456,7 @@ Class | Method | HTTP request | Description
  - [UpdateScopeRequest](docs/models/UpdateScopeRequest.md)
  - [UpdateScopeResponse](docs/models/UpdateScopeResponse.md)
  - [User](docs/models/User.md)
+ - [Version](docs/models/Version.md)
  - [Volume](docs/models/Volume.md)
  - [Volumes](docs/models/Volumes.md)
  - [Wallet](docs/models/Wallet.md)

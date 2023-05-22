@@ -76,6 +76,7 @@ export * from '../models/GetTransactionResponse';
 export * from '../models/GetTransactionsResponse';
 export * from '../models/GetTransactionsResponseCursor';
 export * from '../models/GetTransactionsResponseCursorAllOf';
+export * from '../models/GetVersionsResponse';
 export * from '../models/GetWalletResponse';
 export * from '../models/GetWalletSummaryResponse';
 export * from '../models/GetWorkflowInstanceHistoryResponse';
@@ -183,6 +184,7 @@ export * from '../models/TransfersResponse';
 export * from '../models/TransfersResponseDataInner';
 export * from '../models/UpdateWalletRequest';
 export * from '../models/User';
+export * from '../models/Version';
 export * from '../models/Volume';
 export * from '../models/Wallet';
 export * from '../models/WalletSubject';
@@ -280,6 +282,7 @@ import { GetTransactionResponse } from '../models/GetTransactionResponse';
 import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
+import { GetVersionsResponse } from '../models/GetVersionsResponse';
 import { GetWalletResponse } from '../models/GetWalletResponse';
 import { GetWalletSummaryResponse } from '../models/GetWalletSummaryResponse';
 import { GetWorkflowInstanceHistoryResponse } from '../models/GetWorkflowInstanceHistoryResponse';
@@ -387,6 +390,7 @@ import { TransfersResponse } from '../models/TransfersResponse';
 import { TransfersResponseDataInner } from '../models/TransfersResponseDataInner';
 import { UpdateWalletRequest } from '../models/UpdateWalletRequest';
 import { User } from '../models/User';
+import { Version } from '../models/Version';
 import { Volume } from '../models/Volume';
 import { Wallet } from '../models/Wallet';
 import { WalletSubject } from '../models/WalletSubject';
@@ -515,6 +519,7 @@ let typeMap: {[index: string]: any} = {
     "GetTransactionsResponse": GetTransactionsResponse,
     "GetTransactionsResponseCursor": GetTransactionsResponseCursor,
     "GetTransactionsResponseCursorAllOf": GetTransactionsResponseCursorAllOf,
+    "GetVersionsResponse": GetVersionsResponse,
     "GetWalletResponse": GetWalletResponse,
     "GetWalletSummaryResponse": GetWalletSummaryResponse,
     "GetWorkflowInstanceHistoryResponse": GetWorkflowInstanceHistoryResponse,
@@ -621,6 +626,7 @@ let typeMap: {[index: string]: any} = {
     "TransfersResponseDataInner": TransfersResponseDataInner,
     "UpdateWalletRequest": UpdateWalletRequest,
     "User": User,
+    "Version": Version,
     "Volume": Volume,
     "Wallet": Wallet,
     "WalletSubject": WalletSubject,

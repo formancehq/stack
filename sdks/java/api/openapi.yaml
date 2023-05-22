@@ -33,6 +33,18 @@ servers:
 security:
 - Authorization: []
 paths:
+  /versions:
+    get:
+      operationId: getVersions
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetVersionsResponse'
+          description: OK
+      summary: Show stack version information
+      x-accepts: application/json
   /api/auth/_info:
     get:
       operationId: getServerInfo
@@ -3266,6 +3278,48 @@ components:
             $ref: '#/components/schemas/Error'
       description: General error
   schemas:
+    Version:
+      example:
+        name: name
+        health: ""
+        version: version
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+        health:
+          type: bool
+      required:
+      - health
+      - name
+      - version
+      type: object
+    GetVersionsResponse:
+      example:
+        versions:
+        - name: name
+          health: ""
+          version: version
+        - name: name
+          health: ""
+          version: version
+        region: region
+        env: env
+      properties:
+        region:
+          type: string
+        env:
+          type: string
+        versions:
+          items:
+            $ref: '#/components/schemas/Version'
+          type: array
+      required:
+      - env
+      - region
+      - versions
+      type: object
     Metadata:
       additionalProperties: {}
       type: object
@@ -5417,6 +5471,7 @@ components:
     Balance:
       example:
         name: name
+        priority: 0
         expiresAt: 2000-01-23T04:56:07.000+00:00
       properties:
         name:
@@ -5424,6 +5479,9 @@ components:
         expiresAt:
           format: date-time
           type: string
+        priority:
+          format: int64
+          type: integer
       required:
       - name
       type: object
@@ -5496,6 +5554,7 @@ components:
       example:
         data:
           name: name
+          priority: 0
           expiresAt: 2000-01-23T04:56:07.000+00:00
       properties:
         data:

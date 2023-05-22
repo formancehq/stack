@@ -15,6 +15,7 @@ import { HttpFile } from '../http/http';
 export class Balance {
     'name': string;
     'expiresAt'?: Date;
+    'priority'?: number;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -30,6 +31,12 @@ export class Balance {
             "baseName": "expiresAt",
             "type": "Date",
             "format": "date-time"
+        },
+        {
+            "name": "priority",
+            "baseName": "priority",
+            "type": "number",
+            "format": "int64"
         }    ];
 
     static getAttributeTypeMap() {

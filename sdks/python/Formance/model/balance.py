@@ -42,9 +42,11 @@ class Balance(
         class properties:
             name = schemas.StrSchema
             expiresAt = schemas.DateTimeSchema
+            priority = schemas.Int64Schema
             __annotations__ = {
                 "name": name,
                 "expiresAt": expiresAt,
+                "priority": priority,
             }
     
     name: MetaOapg.properties.name
@@ -56,9 +58,12 @@ class Balance(
     def __getitem__(self, name: typing_extensions.Literal["expiresAt"]) -> MetaOapg.properties.expiresAt: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["priority"]) -> MetaOapg.properties.priority: ...
+    
+    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["name", "expiresAt", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["name", "expiresAt", "priority", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -70,9 +75,12 @@ class Balance(
     def get_item_oapg(self, name: typing_extensions.Literal["expiresAt"]) -> typing.Union[MetaOapg.properties.expiresAt, schemas.Unset]: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["priority"]) -> typing.Union[MetaOapg.properties.priority, schemas.Unset]: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["name", "expiresAt", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["name", "expiresAt", "priority", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -81,6 +89,7 @@ class Balance(
         *_args: typing.Union[dict, frozendict.frozendict, ],
         name: typing.Union[MetaOapg.properties.name, str, ],
         expiresAt: typing.Union[MetaOapg.properties.expiresAt, str, datetime, schemas.Unset] = schemas.unset,
+        priority: typing.Union[MetaOapg.properties.priority, decimal.Decimal, int, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'Balance':
@@ -89,6 +98,7 @@ class Balance(
             *_args,
             name=name,
             expiresAt=expiresAt,
+            priority=priority,
             _configuration=_configuration,
             **kwargs,
         )

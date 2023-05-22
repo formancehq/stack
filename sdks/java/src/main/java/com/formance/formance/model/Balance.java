@@ -36,6 +36,10 @@ public class Balance {
   @SerializedName(SERIALIZED_NAME_EXPIRES_AT)
   private OffsetDateTime expiresAt;
 
+  public static final String SERIALIZED_NAME_PRIORITY = "priority";
+  @SerializedName(SERIALIZED_NAME_PRIORITY)
+  private Long priority;
+
   public Balance() {
   }
 
@@ -83,6 +87,28 @@ public class Balance {
   }
 
 
+  public Balance priority(Long priority) {
+    
+    this.priority = priority;
+    return this;
+  }
+
+   /**
+   * Get priority
+   * @return priority
+  **/
+  @javax.annotation.Nullable
+
+  public Long getPriority() {
+    return priority;
+  }
+
+
+  public void setPriority(Long priority) {
+    this.priority = priority;
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -93,12 +119,13 @@ public class Balance {
     }
     Balance balance = (Balance) o;
     return Objects.equals(this.name, balance.name) &&
-        Objects.equals(this.expiresAt, balance.expiresAt);
+        Objects.equals(this.expiresAt, balance.expiresAt) &&
+        Objects.equals(this.priority, balance.priority);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, expiresAt);
+    return Objects.hash(name, expiresAt, priority);
   }
 
   @Override
@@ -107,6 +134,7 @@ public class Balance {
     sb.append("class Balance {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    expiresAt: ").append(toIndentedString(expiresAt)).append("\n");
+    sb.append("    priority: ").append(toIndentedString(priority)).append("\n");
     sb.append("}");
     return sb.toString();
   }

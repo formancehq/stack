@@ -79,6 +79,7 @@ import { GetTransactionResponse } from '../models/GetTransactionResponse';
 import { GetTransactionsResponse } from '../models/GetTransactionsResponse';
 import { GetTransactionsResponseCursor } from '../models/GetTransactionsResponseCursor';
 import { GetTransactionsResponseCursorAllOf } from '../models/GetTransactionsResponseCursorAllOf';
+import { GetVersionsResponse } from '../models/GetVersionsResponse';
 import { GetWalletResponse } from '../models/GetWalletResponse';
 import { GetWalletSummaryResponse } from '../models/GetWalletSummaryResponse';
 import { GetWorkflowInstanceHistoryResponse } from '../models/GetWorkflowInstanceHistoryResponse';
@@ -186,6 +187,7 @@ import { TransfersResponse } from '../models/TransfersResponse';
 import { TransfersResponseDataInner } from '../models/TransfersResponseDataInner';
 import { UpdateWalletRequest } from '../models/UpdateWalletRequest';
 import { User } from '../models/User';
+import { Version } from '../models/Version';
 import { Volume } from '../models/Volume';
 import { Wallet } from '../models/Wallet';
 import { WalletSubject } from '../models/WalletSubject';
@@ -438,6 +440,14 @@ export class PromiseDefaultApi {
      */
     public getServerInfo(_options?: Configuration): Promise<ServerInfo> {
         const result = this.api.getServerInfo(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Show stack version information
+     */
+    public getVersions(_options?: Configuration): Promise<GetVersionsResponse> {
+        const result = this.api.getVersions(_options);
         return result.toPromise();
     }
 

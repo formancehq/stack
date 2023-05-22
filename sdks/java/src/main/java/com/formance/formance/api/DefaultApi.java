@@ -9,6 +9,7 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okhttp3.MultipartBody;
 
+import com.formance.formance.model.GetVersionsResponse;
 import com.formance.formance.model.ServerInfo;
 
 import java.util.ArrayList;
@@ -25,6 +26,15 @@ public interface DefaultApi {
    */
   @GET("api/auth/_info")
   Call<ServerInfo> getServerInfo();
+    
+
+  /**
+   * Show stack version information
+   * 
+   * @return Call&lt;GetVersionsResponse&gt;
+   */
+  @GET("versions")
+  Call<GetVersionsResponse> getVersions();
     
 
   /**

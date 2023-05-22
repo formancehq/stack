@@ -89,6 +89,7 @@ from Formance.model.get_hold_response import GetHoldResponse
 from Formance.model.get_holds_response import GetHoldsResponse
 from Formance.model.get_transaction_response import GetTransactionResponse
 from Formance.model.get_transactions_response import GetTransactionsResponse
+from Formance.model.get_versions_response import GetVersionsResponse
 from Formance.model.get_wallet_response import GetWalletResponse
 from Formance.model.get_wallet_summary_response import GetWalletSummaryResponse
 from Formance.model.get_workflow_instance_history_response import GetWorkflowInstanceHistoryResponse
@@ -175,6 +176,7 @@ from Formance.model.update_client_response import UpdateClientResponse
 from Formance.model.update_scope_request import UpdateScopeRequest
 from Formance.model.update_scope_response import UpdateScopeResponse
 from Formance.model.user import User
+from Formance.model.version import Version
 from Formance.model.volume import Volume
 from Formance.model.volumes import Volumes
 from Formance.model.wallet import Wallet

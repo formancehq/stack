@@ -108,6 +108,7 @@ Class | Method | HTTP request | Description
 *ClientsApi* | [**readClient**](docs/Api/ClientsApi.md#readclient) | **GET** /api/auth/clients/{clientId} | Read client
 *ClientsApi* | [**updateClient**](docs/Api/ClientsApi.md#updateclient) | **PUT** /api/auth/clients/{clientId} | Update client
 *DefaultApi* | [**getServerInfo**](docs/Api/DefaultApi.md#getserverinfo) | **GET** /api/auth/_info | Get server info
+*DefaultApi* | [**getVersions**](docs/Api/DefaultApi.md#getversions) | **GET** /versions | Show stack version information
 *DefaultApi* | [**paymentsgetServerInfo**](docs/Api/DefaultApi.md#paymentsgetserverinfo) | **GET** /api/payments/_info | Get server info
 *DefaultApi* | [**searchgetServerInfo**](docs/Api/DefaultApi.md#searchgetserverinfo) | **GET** /api/search/_info | Get server info
 *LedgerApi* | [**getLedgerInfo**](docs/Api/LedgerApi.md#getledgerinfo) | **GET** /api/ledger/{ledger}/_info | Get information about a ledger
@@ -261,6 +262,7 @@ Class | Method | HTTP request | Description
 - [GetTransactionsResponse](docs/Model/GetTransactionsResponse.md)
 - [GetTransactionsResponseCursor](docs/Model/GetTransactionsResponseCursor.md)
 - [GetTransactionsResponseCursorAllOf](docs/Model/GetTransactionsResponseCursorAllOf.md)
+- [GetVersionsResponse](docs/Model/GetVersionsResponse.md)
 - [GetWalletResponse](docs/Model/GetWalletResponse.md)
 - [GetWalletSummaryResponse](docs/Model/GetWalletSummaryResponse.md)
 - [GetWorkflowInstanceHistoryResponse](docs/Model/GetWorkflowInstanceHistoryResponse.md)
@@ -367,6 +369,7 @@ Class | Method | HTTP request | Description
 - [TransfersResponseDataInner](docs/Model/TransfersResponseDataInner.md)
 - [UpdateWalletRequest](docs/Model/UpdateWalletRequest.md)
 - [User](docs/Model/User.md)
+- [Version](docs/Model/Version.md)
 - [Volume](docs/Model/Volume.md)
 - [Wallet](docs/Model/Wallet.md)
 - [WalletSubject](docs/Model/WalletSubject.md)

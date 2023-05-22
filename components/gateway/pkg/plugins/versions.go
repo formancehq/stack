@@ -248,6 +248,7 @@ func (v *versionsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		res.Versions = append(res.Versions, version)
 	}
 
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(res); err != nil {
 		v.logger.Error("failed to encode response", zap.Error(err))
 	}

@@ -88,6 +88,7 @@ docs/GetTransactionResponse.md
 docs/GetTransactionsResponse.md
 docs/GetTransactionsResponseCursor.md
 docs/GetTransactionsResponseCursorAllOf.md
+docs/GetVersionsResponse.md
 docs/GetWalletResponse.md
 docs/GetWalletSummaryResponse.md
 docs/GetWorkflowInstanceHistoryResponse.md
@@ -204,6 +205,7 @@ docs/TransfersResponseDataInner.md
 docs/UpdateWalletRequest.md
 docs/User.md
 docs/UsersApi.md
+docs/Version.md
 docs/Volume.md
 docs/Wallet.md
 docs/WalletSubject.md
@@ -340,6 +342,7 @@ src/main/java/com/formance/formance/model/GetTransactionResponse.java
 src/main/java/com/formance/formance/model/GetTransactionsResponse.java
 src/main/java/com/formance/formance/model/GetTransactionsResponseCursor.java
 src/main/java/com/formance/formance/model/GetTransactionsResponseCursorAllOf.java
+src/main/java/com/formance/formance/model/GetVersionsResponse.java
 src/main/java/com/formance/formance/model/GetWalletResponse.java
 src/main/java/com/formance/formance/model/GetWalletSummaryResponse.java
 src/main/java/com/formance/formance/model/GetWorkflowInstanceHistoryResponse.java
@@ -446,6 +449,7 @@ src/main/java/com/formance/formance/model/TransfersResponse.java
 src/main/java/com/formance/formance/model/TransfersResponseDataInner.java
 src/main/java/com/formance/formance/model/UpdateWalletRequest.java
 src/main/java/com/formance/formance/model/User.java
+src/main/java/com/formance/formance/model/Version.java
 src/main/java/com/formance/formance/model/Volume.java
 src/main/java/com/formance/formance/model/Wallet.java
 src/main/java/com/formance/formance/model/WalletSubject.java
