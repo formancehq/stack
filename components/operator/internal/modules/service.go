@@ -299,7 +299,8 @@ type Service struct {
 	InitContainer           func(resolveContext ContainerResolutionContext) []Container
 	NeedTopic               bool
 
-	usedPort int32
+	usedPort  int32
+	EnvPrefix string
 }
 
 func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
@@ -500,33 +501,38 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 	env := NewEnv()
 	if service.InjectPostgresVariables {
 		env = env.Append(
-			DefaultPostgresEnvVarsWithPrefix(*ctx.Postgres, ctx.Stack.GetServiceName(ctx.Module), "")...,
+			DefaultPostgresEnvVarsWithPrefix(*ctx.Postgres, ctx.Stack.GetServiceName(ctx.Module), service.EnvPrefix)...,
 		)
 	}
 	if service.ListenEnvVar != "" {
 		env = env.Append(
-			Env(service.ListenEnvVar, fmt.Sprintf(":%d", service.usedPort)),
+			Env(fmt.Sprintf("%s%s", service.EnvPrefix, service.ListenEnvVar), fmt.Sprintf(":%d", service.usedPort)),
 		)
 	}
 
 	if ctx.Configuration.Spec.Monitoring != nil {
 		env = env.Append(
-			MonitoringEnvVarsWithPrefix(*ctx.Configuration.Spec.Monitoring)...,
+			MonitoringEnvVarsWithPrefix(*ctx.Configuration.Spec.Monitoring, service.EnvPrefix)...,
 		)
 	}
 
 	if !init {
 		env = env.Append(
-			Env("DEBUG", fmt.Sprintf("%v", ctx.Stack.Spec.Debug)),
-			Env("DEV", fmt.Sprintf("%v", ctx.Stack.Spec.Dev)),
+			Env(fmt.Sprintf("%sDEBUG", service.EnvPrefix), fmt.Sprintf("%v", ctx.Stack.Spec.Debug)),
+			Env(fmt.Sprintf("%sDEV", service.EnvPrefix), fmt.Sprintf("%v", ctx.Stack.Spec.Dev)),
 			// TODO: the stack url is a full url, we can target the gateway. Need to find how to generalize this
 			// as the gateway is a component like another
-			Env("STACK_URL", ctx.Stack.URL()),
-			Env("OTEL_SERVICE_NAME", serviceName),
+			Env(fmt.Sprintf("%sSTACK_URL", service.EnvPrefix), ctx.Stack.URL()),
+			Env(fmt.Sprintf("%sOTEL_SERVICE_NAME", service.EnvPrefix), serviceName),
 		)
 	}
 
-	c.Env = env.Append(container.Env...).ToCoreEnv()
+	for _, envVar := range container.Env {
+		envVar.Name = fmt.Sprintf("%s%s", service.EnvPrefix, envVar.Name)
+		env = append(env, envVar)
+	}
+
+	c.Env = env.ToCoreEnv()
 
 	if !init {
 		ret := make([]corev1.VolumeMount, 0)

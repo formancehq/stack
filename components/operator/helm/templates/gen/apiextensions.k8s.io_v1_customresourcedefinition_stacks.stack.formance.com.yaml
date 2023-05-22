@@ -1936,6 +1936,13 @@ spec:
                 type: string
               seed:
                 type: string
+              stargate:
+                properties:
+                  stargateServerURL:
+                    type: string
+                required:
+                - stargateServerURL
+                type: object
               versions:
                 type: string
             required:

@@ -2,7 +2,6 @@
 FROM golang:1.19-alpine as builder
 WORKDIR /src
 ENV CGO_ENABLED=0
-ENV GOOS=linux
 COPY libs/go-libs libs/go-libs
 COPY components/search components/search
 COPY components/operator components/operator
@@ -10,9 +9,6 @@ WORKDIR /src/components/operator
 RUN --mount=type=cache,id=gobuild,target=/root/.cache/go-build \
     --mount=type=cache,id=gomodcache,target=/go/pkg/mod \
     go build -v -a -o manager main.go
-
-FROM golang:1.19-alpine as reloader
-RUN go install github.com/cosmtrek/air@latest
 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
