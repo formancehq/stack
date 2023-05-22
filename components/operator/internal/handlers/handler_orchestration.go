@@ -42,12 +42,12 @@ func init() {
 				{
 					Name:                    "worker",
 					InjectPostgresVariables: true,
+					Liveness:                modules.LivenessDisable,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
-							Env:      orchestrationEnvVars(resolveContext),
-							Image:    modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
-							Args:     []string{"worker"},
-							Liveness: modules.LivenessDisable,
+							Env:   orchestrationEnvVars(resolveContext),
+							Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+							Args:  []string{"worker"},
 						}
 					},
 				},

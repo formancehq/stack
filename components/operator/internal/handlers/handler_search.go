@@ -54,6 +54,7 @@ func init() {
 					Name:       "benthos",
 					Port:       4195,
 					ExposeHTTP: true,
+					Liveness:   modules.LivenessDisable,
 					Configs: func(resolveContext modules.ServiceInstallContext) modules.Configs {
 						ret := modules.Configs{}
 
@@ -116,7 +117,6 @@ func init() {
 								"--log.level", "trace", "streams",
 								resolveContext.GetConfig("streams").GetMountPath() + "/*.yaml",
 							},
-							Liveness:             modules.LivenessDisable,
 							DisableRollingUpdate: true,
 						}
 					},

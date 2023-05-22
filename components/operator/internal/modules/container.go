@@ -6,6 +6,5 @@ type Container struct {
 	Env                  ContainerEnv
 	Image                string
 	Name                 string
-	Liveness             Liveness
 	DisableRollingUpdate bool
 }
