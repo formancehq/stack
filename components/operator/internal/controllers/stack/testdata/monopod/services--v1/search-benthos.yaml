@@ -6,9 +6,9 @@ metadata:
     name: search-benthos
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.59
+    clusterIP: 10.0.0.45
     clusterIPs:
-        - 10.0.0.59
+        - 10.0.0.45
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
