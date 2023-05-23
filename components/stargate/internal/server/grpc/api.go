@@ -9,6 +9,7 @@ import (
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/opentelemetry"
+	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
@@ -61,7 +62,7 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	}).Infof("stargate connection closed")
 
 	waitingResponses := sync.Map{}
-	subject := GetNatsSubject(organizationID, stackID)
+	subject := utils.GetNatsSubject(organizationID, stackID)
 	sub, err := s.natsConn.QueueSubscribeSync(subject, subject)
 	if err != nil {
 		return status.Errorf(codes.Internal, "cannot subscribe to nats subject")
@@ -136,10 +137,6 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	}
 
 	return nil
-}
-
-func GetNatsSubject(organizationID, stackID string) string {
-	return organizationID + "." + stackID
 }
 
 func orgaAndStackIDFromIncomingContext(ctx context.Context) (string, string, error) {

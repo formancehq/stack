@@ -3,18 +3,22 @@ package controllers
 import (
 	"io"
 	"net/http"
+	"regexp"
 	"strings"
 
 	service "github.com/formancehq/stack/components/stargate/internal/api"
+	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/formancehq/stack/libs/go-libs/api"
 	"github.com/pkg/errors"
 	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/protobuf/proto"
 )
 
+var IsLetter = regexp.MustCompile(`^[a-z]+$`).MatchString
+
 func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	organizationID, stackID, err := getOrganizationAndStackID(r.Host)
+	organizationID, stackID, err := getOrganizationAndStackID(r)
 	if err != nil {
 		ResponseError(w, r, err)
 		return
@@ -39,7 +43,7 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	subject := GetNatsSubject(organizationID, stackID)
+	subject := utils.GetNatsSubject(organizationID, stackID)
 	// requestCtx, cancel := context.WithTimeout(ctx, s.config.natsRequestTimeout)
 	// defer cancel()
 	resp, err := s.natsConn.Request(subject, buf, s.config.natsRequestTimeout)
@@ -70,23 +74,26 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-func GetNatsSubject(organizationID, stackID string) string {
-	return organizationID + "." + stackID
-}
-
-func getOrganizationAndStackID(host string) (string, string, error) {
-	hostSplit := strings.Split(host, ".")
-	if len(hostSplit) < 1 {
-		return "", "", errors.Wrapf(ErrValidation, "invalid host: %s", host)
-		// ResponseError(w, r, errors.Wrapf(ErrValidation, "invalid host: %s", r.Host))
+func getOrganizationAndStackID(r *http.Request) (string, string, error) {
+	paths := strings.Split(r.URL.Path, "/")
+	if len(paths) < 3 {
+		return "", "", errors.Wrapf(ErrValidation, "invalid path, missing organizationID and stackID")
 	}
 
-	l := strings.Split(hostSplit[0], "-")
-	if len(l) != 2 {
-		return "", "", errors.Wrapf(ErrValidation, "invalid host: %s", host)
+	organizationID := paths[1]
+	if len(organizationID) != 12 || !IsLetter(organizationID) {
+		return "", "", errors.Wrapf(ErrValidation, "invalid organizationID")
 	}
 
-	return l[0], l[1], nil
+	stackID := paths[2]
+	if len(stackID) != 4 || !IsLetter(stackID) {
+		return "", "", errors.Wrapf(ErrValidation, "invalid stackID")
+	}
+
+	paths = append(paths[:1], paths[3:]...)
+
+	r.URL.Path = strings.Join(paths, "/")
+	return organizationID, stackID, nil
 }
 
 func requestToProto(r *http.Request) (*service.StargateServerMessage, error) {

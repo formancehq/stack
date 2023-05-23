@@ -12,6 +12,7 @@ import (
 	"github.com/formancehq/stack/components/stargate/internal/server/http/controllers"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/opentelemetry"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/routes"
+	"github.com/formancehq/stack/components/stargate/internal/utils"
 	"github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -25,10 +26,10 @@ func TestStargateController(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	organizationID := "test1"
-	stackID := "test1"
+	organizationID := "testorgatest"
+	stackID := "test"
 
-	natsSubject := controllers.GetNatsSubject(organizationID, stackID)
+	natsSubject := utils.GetNatsSubject(organizationID, stackID)
 	sc := controllers.NewStargateController(
 		nc,
 		opentelemetry.NewNoOpMetricsRegistry(),
@@ -54,7 +55,7 @@ func TestStargateController(t *testing.T) {
 			queryParams: url.Values{
 				"metadata[roles]": []string{"admin"},
 			},
-			url: "http://" + organizationID + "-" + stackID + ".staging.formance.cloud/api/ledger",
+			url: "http://test.staging.formance.cloud/" + organizationID + "/" + stackID + "/api/ledger",
 			response: service.StargateClientMessage{
 				Event: &service.StargateClientMessage_ApiCallResponse{
 					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
@@ -76,7 +77,7 @@ func TestStargateController(t *testing.T) {
 			queryParams: url.Values{
 				"metadata[roles]": []string{"admin"},
 			},
-			url: "http://" + "notfound" + "-" + "notfound" + ".staging.formance.cloud/api/ledger",
+			url: "http://test.staging.formance.cloud/notfoundtest/test/api/ledger",
 			response: service.StargateClientMessage{
 				Event: &service.StargateClientMessage_ApiCallResponse{
 					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
@@ -94,12 +95,58 @@ func TestStargateController(t *testing.T) {
 			expectedBody: []byte{},
 		},
 		{
+			name:   "wrong organization id and stack id bis",
+			method: http.MethodGet,
+			queryParams: url.Values{
+				"metadata[roles]": []string{"admin"},
+			},
+			url: "http://test.staging.formance.cloud/api/ledger",
+			response: service.StargateClientMessage{
+				Event: &service.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
+						StatusCode: 204,
+						Body:       []byte{},
+						Headers:    map[string]*service.Values{},
+					},
+				},
+			},
+			expectedStatusCode: 400,
+			expectedHeaders: http.Header{
+				"Vary":         []string{"Origin"},
+				"Content-Type": []string{"application/json"},
+			},
+			expectedBody: []byte("{\"errorCode\":\"VALIDATION\",\"errorMessage\":\"validation error\"}\n"),
+		},
+		{
+			name:   "wrong organization id and stack id with numbers",
+			method: http.MethodGet,
+			queryParams: url.Values{
+				"metadata[roles]": []string{"admin"},
+			},
+			url: "http://test.staging.formance.cloud/" + organizationID + "/1234/api/ledger",
+			response: service.StargateClientMessage{
+				Event: &service.StargateClientMessage_ApiCallResponse{
+					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
+						StatusCode: 204,
+						Body:       []byte{},
+						Headers:    map[string]*service.Values{},
+					},
+				},
+			},
+			expectedStatusCode: 400,
+			expectedHeaders: http.Header{
+				"Vary":         []string{"Origin"},
+				"Content-Type": []string{"application/json"},
+			},
+			expectedBody: []byte("{\"errorCode\":\"VALIDATION\",\"errorMessage\":\"validation error\"}\n"),
+		},
+		{
 			name:   "failure, wrong url without orga and stack ids",
 			method: http.MethodPost,
 			queryParams: url.Values{
 				"metadata[roles]": []string{"admin"},
 			},
-			url: "http://test.staging.formance.cloud/api/ledger",
+			url: "http://test.staging.formance.cloud/",
 			response: service.StargateClientMessage{
 				Event: &service.StargateClientMessage_ApiCallResponse{
 					ApiCallResponse: &service.StargateClientMessage_APICallResponse{
@@ -148,9 +195,9 @@ func TestStargateController(t *testing.T) {
 		recBody, err := io.ReadAll(rec.Body)
 		require.NoError(t, err)
 
-		require.Equal(t, rec.Result().StatusCode, testCase.expectedStatusCode)
-		require.Equal(t, recBody, testCase.expectedBody)
-		require.Equal(t, rec.Result().Header, testCase.expectedHeaders)
+		require.Equal(t, testCase.expectedStatusCode, rec.Result().StatusCode, "test '%s' failed", testCase.name)
+		require.Equal(t, testCase.expectedBody, recBody, "test '%s' failed", testCase.name)
+		require.Equal(t, testCase.expectedHeaders, rec.Result().Header, "test '%s' failed", testCase.name)
 
 		err = sub.Unsubscribe()
 		require.NoError(t, err)
