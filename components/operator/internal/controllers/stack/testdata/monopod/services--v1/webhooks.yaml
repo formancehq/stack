@@ -16,9 +16,9 @@ spec:
     ports:
         - appProtocol: http
           name: http
-          port: 10006
+          port: 10007
           protocol: TCP
-          targetPort: 10006
+          targetPort: 10007
     selector:
         app.kubernetes.io/name: orga2-stack2
     sessionAffinity: None

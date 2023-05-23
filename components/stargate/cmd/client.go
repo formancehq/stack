@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/formancehq/stack/components/stargate/internal/client"
+	"github.com/formancehq/stack/components/stargate/internal/client/controllers"
 	"github.com/formancehq/stack/components/stargate/internal/client/interceptors"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlpmetrics"
 	"github.com/formancehq/stack/libs/go-libs/otlp/otlptraces"
@@ -15,6 +16,8 @@ import (
 const (
 	organizationIDFlag = "organization-id"
 	stackIDFlag        = "stack-id"
+
+	bindFlag = "bind"
 
 	stargateServerURLFlag = "stargate-server-url"
 	gatewayURLFlag        = "gateway-url"
@@ -94,7 +97,11 @@ func resolveClientOptions(v *viper.Viper) []fx.Option {
 				viper.GetString(StargateAuthClientSecretFlag),
 			)
 		}),
+		fx.Provide(func() controllers.StargateControllerConfig {
+			return controllers.NewStargateControllerConfig(Version)
+		}),
 		client.Module(
+			viper.GetString(bindFlag),
 			viper.GetString(stargateServerURLFlag),
 			viper.GetBool(TlsEnabledFlag),
 			viper.GetString(TlsCACertificateFlag),

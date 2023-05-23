@@ -60,6 +60,7 @@ func NewRootCommand() *cobra.Command {
 
 	client.Flags().String(organizationIDFlag, "", "Organization ID")
 	client.Flags().String(stackIDFlag, "", "Stack ID")
+	client.Flags().String(bindFlag, ":8080", "Listen address for http API")
 	client.Flags().String(stargateServerURLFlag, "", "Stargate server URL")
 	client.Flags().String(gatewayURLFlag, "", "Gateway URL")
 	client.Flags().Int(workerPoolMaxWorkersFlag, 100, "Max worker pool size")

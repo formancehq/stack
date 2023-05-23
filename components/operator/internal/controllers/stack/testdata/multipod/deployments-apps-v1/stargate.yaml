@@ -29,6 +29,8 @@ spec:
         spec:
             containers:
                 - env:
+                    - name: BIND
+                      value: :8080
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -64,7 +66,21 @@ spec:
                     - name: STARGATE_AUTH_ISSUER_URL
                   image: ghcr.io/formancehq/stargate:latest
                   imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 8080
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
                   name: stargate
+                  ports:
+                    - containerPort: 8080
+                      name: http
+                      protocol: TCP
                   resources:
                     requests:
                         cpu: 10m

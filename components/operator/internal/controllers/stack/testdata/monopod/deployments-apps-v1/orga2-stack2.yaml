@@ -649,6 +649,8 @@ spec:
                       name: search-benthos-templates
                       readOnly: true
                 - env:
+                    - name: BIND
+                      value: :10005
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -684,7 +686,21 @@ spec:
                     - name: STARGATE_AUTH_ISSUER_URL
                   image: ghcr.io/formancehq/stargate:latest
                   imagePullPolicy: Always
+                  livenessProbe:
+                    failureThreshold: 20
+                    httpGet:
+                        path: /_healthcheck
+                        port: 10005
+                        scheme: HTTP
+                    initialDelaySeconds: 1
+                    periodSeconds: 2
+                    successThreshold: 1
+                    timeoutSeconds: 30
                   name: stargate
+                  ports:
+                    - containerPort: 10005
+                      name: http
+                      protocol: TCP
                   resources:
                     requests:
                         cpu: 10m
@@ -693,7 +709,7 @@ spec:
                   terminationMessagePolicy: File
                 - env:
                     - name: LISTEN
-                      value: :10005
+                      value: :10006
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -729,7 +745,7 @@ spec:
                     failureThreshold: 20
                     httpGet:
                         path: /_healthcheck
-                        port: 10005
+                        port: 10006
                         scheme: HTTP
                     initialDelaySeconds: 1
                     periodSeconds: 2
@@ -737,7 +753,7 @@ spec:
                     timeoutSeconds: 30
                   name: wallets
                   ports:
-                    - containerPort: 10005
+                    - containerPort: 10006
                       name: http
                       protocol: TCP
                   resources:
@@ -762,7 +778,7 @@ spec:
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
                     - name: HTTP_BIND_ADDRESS_SERVER
-                      value: :10006
+                      value: :10007
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -800,7 +816,7 @@ spec:
                     failureThreshold: 20
                     httpGet:
                         path: /_healthcheck
-                        port: 10006
+                        port: 10007
                         scheme: HTTP
                     initialDelaySeconds: 1
                     periodSeconds: 2
@@ -808,7 +824,7 @@ spec:
                     timeoutSeconds: 30
                   name: webhooks
                   ports:
-                    - containerPort: 10006
+                    - containerPort: 10007
                       name: http
                       protocol: TCP
                   resources:
