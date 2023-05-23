@@ -37,8 +37,9 @@ func init() {
 				Liveness:                modules.LivenessLegacy,
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 					return modules.Container{
-						Env:   env(resolveContext),
-						Image: modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+						Env:       env(resolveContext),
+						Image:     modules.GetImage("payments", resolveContext.Versions.Spec.Payments),
+						Resources: modules.ResourceSizeSmall(),
 					}
 				},
 				InitContainer: func(resolveContext modules.ContainerResolutionContext) []modules.Container {
