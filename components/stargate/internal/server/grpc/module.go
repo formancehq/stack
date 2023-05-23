@@ -31,8 +31,8 @@ func Module(
 
 	options = append(options,
 		fx.Provide(opentelemetry.RegisterMetricsRegistry),
-		fx.Provide(func(metricsRegistry opentelemetry.MetricsRegistry) *interceptors.AuthInterceptor {
-			return interceptors.NewAuthInterceptor(jwksURL, maxRetriesJWKSFetching, metricsRegistry)
+		fx.Provide(func(logger logging.Logger, metricsRegistry opentelemetry.MetricsRegistry) *interceptors.AuthInterceptor {
+			return interceptors.NewAuthInterceptor(logger, jwksURL, maxRetriesJWKSFetching, metricsRegistry)
 		}),
 		fx.Provide(NewServer),
 		fx.Provide(newGrpcServer),

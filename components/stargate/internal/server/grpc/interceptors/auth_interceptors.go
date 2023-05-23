@@ -3,9 +3,11 @@ package interceptors
 import (
 	"context"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/opentelemetry"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/golang-jwt/jwt"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/lestrrat-go/jwx/jwk"
@@ -21,16 +23,25 @@ var (
 	ErrMissingMetadata = errors.New("missing metadata")
 	ErrInvalidToken    = errors.New("invalid token")
 	ErrFetchingJWKKeys = errors.New("error fetching JWK keys")
+
+	IsLetter = regexp.MustCompile(`^[a-z]+$`).MatchString
 )
 
 type AuthInterceptor struct {
+	logger          logging.Logger
 	jwksURL         string
 	httpClient      *http.Client
 	metricsRegistry opentelemetry.MetricsRegistry
 }
 
-func NewAuthInterceptor(jwksURL string, maxRetriesJWKSFetchting int, metricsRegistry opentelemetry.MetricsRegistry) *AuthInterceptor {
+func NewAuthInterceptor(
+	logger logging.Logger,
+	jwksURL string,
+	maxRetriesJWKSFetchting int,
+	metricsRegistry opentelemetry.MetricsRegistry,
+) *AuthInterceptor {
 	return &AuthInterceptor{
+		logger:          logger,
 		jwksURL:         jwksURL,
 		httpClient:      newHttpClient(maxRetriesJWKSFetchting),
 		metricsRegistry: metricsRegistry,
@@ -76,11 +87,58 @@ func (a *AuthInterceptor) valid(authorization []string) bool {
 	token := strings.TrimPrefix(authorization[0], "Bearer ")
 	t, err := jwt.Parse(token, a.getKey)
 	if err != nil {
-		// TODO(polo): should we panic ?
+		a.logger.Errorf("error parsing token: %v", err)
 		return false
 	}
 
-	return t.Valid
+	if !t.Valid {
+		return false
+	}
+
+	claims, ok := t.Claims.(jwt.MapClaims)
+	if !ok {
+		a.logger.Error("invalid claims format")
+		return false
+	}
+
+	audience := ""
+	switch v := claims["aud"].(type) {
+	case string:
+		audience = v
+	case []interface{}:
+		if len(v) == 0 {
+			a.logger.Errorf("invalid type for audience %v", v)
+			return false
+		}
+		audience, ok = v[0].(string)
+		if !ok {
+			a.logger.Errorf("invalid type for audience %v", v)
+			return false
+		}
+	default:
+		a.logger.Errorf("invalid type for audience %v", claims["aud"])
+		return false
+	}
+
+	l := strings.Split(audience, "_")
+	if len(l) != 3 {
+		a.logger.Errorf("invalid audience format: %s", audience)
+		return false
+	}
+
+	organizationID := l[1]
+	if len(organizationID) != 12 || !IsLetter(organizationID) {
+		a.logger.Errorf("invalid organization_id format: %s for audience: %s", organizationID, audience)
+		return false
+	}
+
+	stackID := l[2]
+	if len(stackID) != 4 || !IsLetter(stackID) {
+		a.logger.Errorf("invalid stack_id format: %s for audience: %s", stackID, audience)
+		return false
+	}
+
+	return true
 }
 
 func (a *AuthInterceptor) getKey(token *jwt.Token) (interface{}, error) {
