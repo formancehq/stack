@@ -20,16 +20,16 @@ var _ MappedNullable = &PrivateRegion{}
 
 // PrivateRegion struct for PrivateRegion
 type PrivateRegion struct {
-	Id             string                    `json:"id"`
-	BaseUrl        string                    `json:"baseUrl"`
-	CreatedAt      string                    `json:"createdAt"`
-	Active         bool                      `json:"active"`
-	LastPing       *time.Time                `json:"lastPing,omitempty"`
-	Name           string                    `json:"name"`
-	ClientID       string                    `json:"clientID"`
-	OrganizationID string                    `json:"organizationID"`
-	CreatorID      string                    `json:"creatorID"`
-	Secret         *PrivateRegionAllOfSecret `json:"secret,omitempty"`
+	Id string `json:"id"`
+	BaseUrl string `json:"baseUrl"`
+	CreatedAt string `json:"createdAt"`
+	Active bool `json:"active"`
+	LastPing *time.Time `json:"lastPing,omitempty"`
+	Name string `json:"name"`
+	ClientID string `json:"clientID"`
+	OrganizationID string `json:"organizationID"`
+	CreatorID string `json:"creatorID"`
+	Secret *PrivateRegionAllOfSecret `json:"secret,omitempty"`
 }
 
 // NewPrivateRegion instantiates a new PrivateRegion object
@@ -314,7 +314,7 @@ func (o *PrivateRegion) SetSecret(v PrivateRegionAllOfSecret) {
 }
 
 func (o PrivateRegion) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

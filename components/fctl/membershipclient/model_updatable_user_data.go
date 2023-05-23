@@ -14,59 +14,33 @@ import (
 	"encoding/json"
 )
 
-// checks if the UserData type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &UserData{}
+// checks if the UpdatableUserData type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &UpdatableUserData{}
 
-// UserData struct for UserData
-type UserData struct {
-	Email string `json:"email"`
+// UpdatableUserData struct for UpdatableUserData
+type UpdatableUserData struct {
 	Metadata *map[string]string `json:"metadata,omitempty"`
 }
 
-// NewUserData instantiates a new UserData object
+// NewUpdatableUserData instantiates a new UpdatableUserData object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewUserData(email string) *UserData {
-	this := UserData{}
-	this.Email = email
+func NewUpdatableUserData() *UpdatableUserData {
+	this := UpdatableUserData{}
 	return &this
 }
 
-// NewUserDataWithDefaults instantiates a new UserData object
+// NewUpdatableUserDataWithDefaults instantiates a new UpdatableUserData object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewUserDataWithDefaults() *UserData {
-	this := UserData{}
+func NewUpdatableUserDataWithDefaults() *UpdatableUserData {
+	this := UpdatableUserData{}
 	return &this
-}
-
-// GetEmail returns the Email field value
-func (o *UserData) GetEmail() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.Email
-}
-
-// GetEmailOk returns a tuple with the Email field value
-// and a boolean to check if the value has been set.
-func (o *UserData) GetEmailOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.Email, true
-}
-
-// SetEmail sets field value
-func (o *UserData) SetEmail(v string) {
-	o.Email = v
 }
 
 // GetMetadata returns the Metadata field value if set, zero value otherwise.
-func (o *UserData) GetMetadata() map[string]string {
+func (o *UpdatableUserData) GetMetadata() map[string]string {
 	if o == nil || IsNil(o.Metadata) {
 		var ret map[string]string
 		return ret
@@ -76,7 +50,7 @@ func (o *UserData) GetMetadata() map[string]string {
 
 // GetMetadataOk returns a tuple with the Metadata field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *UserData) GetMetadataOk() (*map[string]string, bool) {
+func (o *UpdatableUserData) GetMetadataOk() (*map[string]string, bool) {
 	if o == nil || IsNil(o.Metadata) {
 		return nil, false
 	}
@@ -84,7 +58,7 @@ func (o *UserData) GetMetadataOk() (*map[string]string, bool) {
 }
 
 // HasMetadata returns a boolean if a field has been set.
-func (o *UserData) HasMetadata() bool {
+func (o *UpdatableUserData) HasMetadata() bool {
 	if o != nil && !IsNil(o.Metadata) {
 		return true
 	}
@@ -93,11 +67,11 @@ func (o *UserData) HasMetadata() bool {
 }
 
 // SetMetadata gets a reference to the given map[string]string and assigns it to the Metadata field.
-func (o *UserData) SetMetadata(v map[string]string) {
+func (o *UpdatableUserData) SetMetadata(v map[string]string) {
 	o.Metadata = &v
 }
 
-func (o UserData) MarshalJSON() ([]byte, error) {
+func (o UpdatableUserData) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -105,47 +79,46 @@ func (o UserData) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o UserData) ToMap() (map[string]interface{}, error) {
+func (o UpdatableUserData) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["email"] = o.Email
 	if !IsNil(o.Metadata) {
 		toSerialize["metadata"] = o.Metadata
 	}
 	return toSerialize, nil
 }
 
-type NullableUserData struct {
-	value *UserData
+type NullableUpdatableUserData struct {
+	value *UpdatableUserData
 	isSet bool
 }
 
-func (v NullableUserData) Get() *UserData {
+func (v NullableUpdatableUserData) Get() *UpdatableUserData {
 	return v.value
 }
 
-func (v *NullableUserData) Set(val *UserData) {
+func (v *NullableUpdatableUserData) Set(val *UpdatableUserData) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableUserData) IsSet() bool {
+func (v NullableUpdatableUserData) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableUserData) Unset() {
+func (v *NullableUpdatableUserData) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableUserData(val *UserData) *NullableUserData {
-	return &NullableUserData{value: val, isSet: true}
+func NewNullableUpdatableUserData(val *UpdatableUserData) *NullableUpdatableUserData {
+	return &NullableUpdatableUserData{value: val, isSet: true}
 }
 
-func (v NullableUserData) MarshalJSON() ([]byte, error) {
+func (v NullableUpdatableUserData) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableUserData) UnmarshalJSON(src []byte) error {
+func (v *NullableUpdatableUserData) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

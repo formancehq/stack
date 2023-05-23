@@ -20,7 +20,7 @@ var _ MappedNullable = &StackData{}
 // StackData struct for StackData
 type StackData struct {
 	// Stack name
-	Name     string            `json:"name"`
+	Name string `json:"name"`
 	Metadata map[string]string `json:"metadata"`
 }
 
@@ -92,7 +92,7 @@ func (o *StackData) SetMetadata(v map[string]string) {
 }
 
 func (o StackData) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

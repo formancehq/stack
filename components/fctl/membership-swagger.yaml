@@ -104,20 +104,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/ListUsersResponse'
   /organizations/{organizationId}/users/{userId}:
+    parameters:
+    - name: organizationId
+      in: path
+      schema:
+        type: string
+      required: true
+    - name: userId
+      in: path
+      schema:
+        type: string
+      required: true
+
     get:
       summary: Read user
       operationId: readUser
-      parameters:
-      - name: organizationId
-        in: path
-        schema:
-          type: string
-        required: true
-      - name: userId
-        in: path
-        schema:
-          type: string
-        required: true
       responses:
         200:
           description: Read a user
@@ -125,6 +126,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReadUserResponse'
+    put:
+      summary: Update user
+      operationId: updateUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        200:
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserResponse'
+    delete:
+      summary: Unlink user from organization
+      operationId: unlinkUserFromOrganization
+      description: |
+        The owner of the organization can remove anyone while each user can leave any organization where it is not owner.
+      responses:
+        204:
+          description: User unlinked from organization
+        403:
+          description: Not allowed
+        400:
+          description: Cannot remove the owner of the organization
   /organizations/{organizationId}/billing/portal:
     get:
       summary: Access to the billing portal
@@ -242,6 +270,45 @@ paths:
       responses:
         204:
           description: Stack deleted
+
+  /organizations/{organizationId}/stacks/{stackId}/stargate/enable:
+    parameters:
+    - name: organizationId
+      in: path
+      schema:
+        type: string
+      required: true
+    - name: stackId
+      in: path
+      schema:
+        type: string
+      required: true
+    put:
+      summary: Enable stargate on a stack
+      operationId: enableStargate
+      responses:
+        204:
+          description: OK
+
+  /organizations/{organizationId}/stacks/{stackId}/stargate/disable:
+    parameters:
+    - name: organizationId
+      in: path
+      schema:
+        type: string
+      required: true
+    - name: stackId
+      in: path
+      schema:
+        type: string
+      required: true
+    put:
+      summary: Disable stargate on a stack
+      operationId: disableStargate
+      responses:
+        204:
+          description: OK
+
   /me/invitations:
     get:
       summary: List invitations of the user
@@ -397,6 +464,32 @@ paths:
       responses:
         204:
           description: Delete a specific region
+  /me:
+    get:
+      summary: Read user
+      operationId: readConnectedUser
+      responses:
+        200:
+          description: Read a user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadUserResponse'
+    put:
+      summary: Update user
+      operationId: updateConnectedUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        200:
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserResponse'
 security:
 - oauth2: []
 
@@ -443,6 +536,8 @@ components:
                 type: string
               clear:
                 type: string
+            required:
+            - lastDigits
         required:
         - clientID
         - organizationID
@@ -533,6 +628,7 @@ components:
         - organizationId
         - uri
         - regionID
+        - stargateEnabled
         properties:
           id:
             type: string
@@ -546,13 +642,27 @@ components:
           regionID:
             type: string
             description: The region where the stack is installed
-    UserData:
+          stargateEnabled:
+            type: boolean
+    UpdatableUserData:
       type: object
       properties:
-        email:
-          type: string
-      required:
-      - email
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    UserData:
+      allOf:
+      - type: object
+        properties:
+          email:
+            type: string
+          metadata:
+            type: object
+            additionalProperties: true
+        required:
+        - email
+      - $ref: '#/components/schemas/UpdatableUserData'
     User:
       allOf:
       - $ref: '#/components/schemas/UserData'
@@ -740,3 +850,12 @@ components:
       properties:
         version:
           type: string
+    UpdateUserRequest:
+      $ref: '#/components/schemas/UpdatableUserData'
+    UpdateUserResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/User'
+      required:
+      - data

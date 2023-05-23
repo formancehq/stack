@@ -20,17 +20,17 @@ var _ MappedNullable = &AnyRegion{}
 
 // AnyRegion struct for AnyRegion
 type AnyRegion struct {
-	Id             string     `json:"id"`
-	BaseUrl        string     `json:"baseUrl"`
-	CreatedAt      string     `json:"createdAt"`
-	Active         bool       `json:"active"`
-	LastPing       *time.Time `json:"lastPing,omitempty"`
-	Name           string     `json:"name"`
-	ClientID       *string    `json:"clientID,omitempty"`
-	OrganizationID *string    `json:"organizationID,omitempty"`
-	Creator        *User      `json:"creator,omitempty"`
-	Production     *bool      `json:"production,omitempty"`
-	Public         bool       `json:"public"`
+	Id string `json:"id"`
+	BaseUrl string `json:"baseUrl"`
+	CreatedAt string `json:"createdAt"`
+	Active bool `json:"active"`
+	LastPing *time.Time `json:"lastPing,omitempty"`
+	Name string `json:"name"`
+	ClientID *string `json:"clientID,omitempty"`
+	OrganizationID *string `json:"organizationID,omitempty"`
+	Creator *User `json:"creator,omitempty"`
+	Production *bool `json:"production,omitempty"`
+	Public bool `json:"public"`
 }
 
 // NewAnyRegion instantiates a new AnyRegion object
@@ -361,7 +361,7 @@ func (o *AnyRegion) SetPublic(v bool) {
 }
 
 func (o AnyRegion) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

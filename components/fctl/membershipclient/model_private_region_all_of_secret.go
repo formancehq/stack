@@ -19,16 +19,17 @@ var _ MappedNullable = &PrivateRegionAllOfSecret{}
 
 // PrivateRegionAllOfSecret struct for PrivateRegionAllOfSecret
 type PrivateRegionAllOfSecret struct {
-	LastDigits *string `json:"lastDigits,omitempty"`
-	Clear      *string `json:"clear,omitempty"`
+	LastDigits string `json:"lastDigits"`
+	Clear *string `json:"clear,omitempty"`
 }
 
 // NewPrivateRegionAllOfSecret instantiates a new PrivateRegionAllOfSecret object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPrivateRegionAllOfSecret() *PrivateRegionAllOfSecret {
+func NewPrivateRegionAllOfSecret(lastDigits string) *PrivateRegionAllOfSecret {
 	this := PrivateRegionAllOfSecret{}
+	this.LastDigits = lastDigits
 	return &this
 }
 
@@ -40,36 +41,28 @@ func NewPrivateRegionAllOfSecretWithDefaults() *PrivateRegionAllOfSecret {
 	return &this
 }
 
-// GetLastDigits returns the LastDigits field value if set, zero value otherwise.
+// GetLastDigits returns the LastDigits field value
 func (o *PrivateRegionAllOfSecret) GetLastDigits() string {
-	if o == nil || IsNil(o.LastDigits) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.LastDigits
+
+	return o.LastDigits
 }
 
-// GetLastDigitsOk returns a tuple with the LastDigits field value if set, nil otherwise
+// GetLastDigitsOk returns a tuple with the LastDigits field value
 // and a boolean to check if the value has been set.
 func (o *PrivateRegionAllOfSecret) GetLastDigitsOk() (*string, bool) {
-	if o == nil || IsNil(o.LastDigits) {
+	if o == nil {
 		return nil, false
 	}
-	return o.LastDigits, true
+	return &o.LastDigits, true
 }
 
-// HasLastDigits returns a boolean if a field has been set.
-func (o *PrivateRegionAllOfSecret) HasLastDigits() bool {
-	if o != nil && !IsNil(o.LastDigits) {
-		return true
-	}
-
-	return false
-}
-
-// SetLastDigits gets a reference to the given string and assigns it to the LastDigits field.
+// SetLastDigits sets field value
 func (o *PrivateRegionAllOfSecret) SetLastDigits(v string) {
-	o.LastDigits = &v
+	o.LastDigits = v
 }
 
 // GetClear returns the Clear field value if set, zero value otherwise.
@@ -105,7 +98,7 @@ func (o *PrivateRegionAllOfSecret) SetClear(v string) {
 }
 
 func (o PrivateRegionAllOfSecret) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -114,9 +107,7 @@ func (o PrivateRegionAllOfSecret) MarshalJSON() ([]byte, error) {
 
 func (o PrivateRegionAllOfSecret) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.LastDigits) {
-		toSerialize["lastDigits"] = o.LastDigits
-	}
+	toSerialize["lastDigits"] = o.LastDigits
 	if !IsNil(o.Clear) {
 		toSerialize["clear"] = o.Clear
 	}

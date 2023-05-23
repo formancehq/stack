@@ -66,7 +66,7 @@ func (o *BillingPortal) SetUrl(v string) {
 }
 
 func (o BillingPortal) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

@@ -10,12 +10,13 @@ Name | Type | Description | Notes
 **OrganizationId** | **string** | Organization ID |
 **Uri** | **string** | Base stack uri |
 **RegionID** | **string** | The region where the stack is installed |
+**StargateEnabled** | **bool** |  |
 
 ## Methods
 
 ### NewStack
 
-`func NewStack(name string, metadata map[string]string, id string, organizationId string, uri string, regionID string, ) *Stack`
+`func NewStack(name string, metadata map[string]string, id string, organizationId string, uri string, regionID string, stargateEnabled bool, ) *Stack`
 
 NewStack instantiates a new Stack object
 This constructor will assign default values to properties that have it defined,
@@ -148,6 +149,26 @@ and a boolean to check if the value has been set.
 `func (o *Stack) SetRegionID(v string)`
 
 SetRegionID sets RegionID field to given value.
+
+
+### GetStargateEnabled
+
+`func (o *Stack) GetStargateEnabled() bool`
+
+GetStargateEnabled returns the StargateEnabled field if non-nil, zero value otherwise.
+
+### GetStargateEnabledOk
+
+`func (o *Stack) GetStargateEnabledOk() (*bool, bool)`
+
+GetStargateEnabledOk returns a tuple with the StargateEnabled field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetStargateEnabled
+
+`func (o *Stack) SetStargateEnabled(v bool)`
+
+SetStargateEnabled sets StargateEnabled field to given value.
 
 
 

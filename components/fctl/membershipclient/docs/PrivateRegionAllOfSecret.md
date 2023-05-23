@@ -4,14 +4,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**LastDigits** | Pointer to **string** |  | [optional]
+**LastDigits** | **string** |  |
 **Clear** | Pointer to **string** |  | [optional]
 
 ## Methods
 
 ### NewPrivateRegionAllOfSecret
 
-`func NewPrivateRegionAllOfSecret() *PrivateRegionAllOfSecret`
+`func NewPrivateRegionAllOfSecret(lastDigits string, ) *PrivateRegionAllOfSecret`
 
 NewPrivateRegionAllOfSecret instantiates a new PrivateRegionAllOfSecret object
 This constructor will assign default values to properties that have it defined,
@@ -45,11 +45,6 @@ and a boolean to check if the value has been set.
 
 SetLastDigits sets LastDigits field to given value.
 
-### HasLastDigits
-
-`func (o *PrivateRegionAllOfSecret) HasLastDigits() bool`
-
-HasLastDigits returns a boolean if a field has been set.
 
 ### GetClear
 

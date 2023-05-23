@@ -65,7 +65,7 @@ func (o *CreatedPrivateRegionResponse) SetData(v PrivateRegion) {
 }
 
 func (o CreatedPrivateRegionResponse) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
