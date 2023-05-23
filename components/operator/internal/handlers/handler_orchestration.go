@@ -34,8 +34,9 @@ func init() {
 					InjectPostgresVariables: true,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
-							Env:   orchestrationEnvVars(resolveContext),
-							Image: modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+							Env:       orchestrationEnvVars(resolveContext),
+							Image:     modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+							Resources: modules.ResourceSizeSmall(),
 						}
 					},
 				},
@@ -44,10 +45,11 @@ func init() {
 					InjectPostgresVariables: true,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
-							Env:      orchestrationEnvVars(resolveContext),
-							Image:    modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
-							Args:     []string{"worker"},
-							Liveness: modules.LivenessDisable,
+							Env:       orchestrationEnvVars(resolveContext),
+							Image:     modules.GetImage("orchestration", resolveContext.Versions.Spec.Orchestration),
+							Args:      []string{"worker"},
+							Liveness:  modules.LivenessDisable,
+							Resources: modules.ResourceSizeSmall(),
 						}
 					},
 				},

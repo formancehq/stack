@@ -6,9 +6,9 @@ metadata:
     name: search
     namespace: stack2
 spec:
-    clusterIP: 10.0.0.93
+    clusterIP: 10.0.0.120
     clusterIPs:
-        - 10.0.0.93
+        - 10.0.0.120
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

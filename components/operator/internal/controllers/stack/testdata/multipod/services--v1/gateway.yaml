@@ -6,9 +6,9 @@ metadata:
     name: gateway
     namespace: stack1
 spec:
-    clusterIP: 10.0.0.61
+    clusterIP: 10.0.0.229
     clusterIPs:
-        - 10.0.0.61
+        - 10.0.0.229
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

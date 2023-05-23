@@ -493,9 +493,10 @@ func (service Service) createContainer(ctx ContainerResolutionContext, container
 			}
 			return serviceName
 		}(),
-		Image:   container.Image,
-		Command: container.Command,
-		Args:    container.Args,
+		Image:     container.Image,
+		Command:   container.Command,
+		Args:      container.Args,
+		Resources: container.Resources,
 	}
 	env := NewEnv()
 	if service.InjectPostgresVariables {

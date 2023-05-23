@@ -45,8 +45,9 @@ func init() {
 							)
 						}
 						return modules.Container{
-							Env:   env,
-							Image: modules.GetImage("search", resolveContext.Versions.Spec.Search),
+							Env:       env,
+							Image:     modules.GetImage("search", resolveContext.Versions.Spec.Search),
+							Resources: modules.ResourceSizeSmall(),
 						}
 					},
 				},
@@ -118,6 +119,7 @@ func init() {
 							},
 							Liveness:             modules.LivenessDisable,
 							DisableRollingUpdate: true,
+							Resources:            modules.ResourceSizeSmall(),
 						}
 					},
 					InitContainer: func(resolveContext modules.ContainerResolutionContext) []modules.Container {

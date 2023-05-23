@@ -29,6 +29,7 @@ func init() {
 						Env: env.Append(
 							modules.Env("NUMARY_STORAGE_POSTGRES_CONN_STRING", "$(NUMARY_POSTGRES_URI)"),
 						),
+						Resources: modules.ResourceSizeSmall(),
 					}
 				},
 			}}

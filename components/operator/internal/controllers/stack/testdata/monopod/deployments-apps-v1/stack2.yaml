@@ -34,7 +34,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32781"
+                      value: "32783"
                     - name: POSTGRES_DATABASE
                       value: stack2-auth
                     - name: POSTGRES_USERNAME
@@ -99,7 +99,10 @@ spec:
                     - containerPort: 10001
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                   volumeMounts:
@@ -151,7 +154,10 @@ spec:
                     - containerPort: 3000
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 100m
+                        memory: 512Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - args:
@@ -195,7 +201,10 @@ spec:
                     - containerPort: 8000
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                   volumeMounts:
@@ -206,7 +215,7 @@ spec:
                     - name: NUMARY_POSTGRES_HOST
                       value: localhost
                     - name: NUMARY_POSTGRES_PORT
-                      value: "32781"
+                      value: "32783"
                     - name: NUMARY_POSTGRES_DATABASE
                       value: stack2-ledger
                     - name: NUMARY_POSTGRES_USERNAME
@@ -271,14 +280,17 @@ spec:
                     - containerPort: 10002
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - env:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32781"
+                      value: "32783"
                     - name: POSTGRES_DATABASE
                       value: stack2-orchestration
                     - name: POSTGRES_USERNAME
@@ -341,7 +353,10 @@ spec:
                     - containerPort: 8080
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - args:
@@ -350,7 +365,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32781"
+                      value: "32783"
                     - name: POSTGRES_DATABASE
                       value: stack2-orchestration
                     - name: POSTGRES_USERNAME
@@ -399,14 +414,17 @@ spec:
                   image: ghcr.io/formancehq/orchestration:latest
                   imagePullPolicy: Always
                   name: orchestration-worker
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - env:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32781"
+                      value: "32783"
                     - name: POSTGRES_DATABASE
                       value: stack2-payments
                     - name: POSTGRES_USERNAME
@@ -535,7 +553,10 @@ spec:
                     - containerPort: 10004
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - command:
@@ -588,7 +609,7 @@ spec:
                     - name: LEDGER_POSTGRES_HOST
                       value: localhost
                     - name: LEDGER_POSTGRES_PORT
-                      value: "32781"
+                      value: "32783"
                     - name: LEDGER_POSTGRES_DATABASE
                       value: stack2-ledger
                     - name: LEDGER_POSTGRES_USERNAME
@@ -608,7 +629,10 @@ spec:
                     - containerPort: 4195
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                   volumeMounts:
@@ -673,14 +697,17 @@ spec:
                     - containerPort: 10005
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - env:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32781"
+                      value: "32783"
                     - name: POSTGRES_DATABASE
                       value: stack2-webhooks
                     - name: POSTGRES_USERNAME
@@ -741,7 +768,10 @@ spec:
                     - containerPort: 10006
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - args:
@@ -750,7 +780,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32781"
+                      value: "32783"
                     - name: POSTGRES_DATABASE
                       value: stack2-webhooks
                     - name: POSTGRES_USERNAME
@@ -799,7 +829,10 @@ spec:
                   image: ghcr.io/formancehq/webhooks:latest
                   imagePullPolicy: Always
                   name: webhooks-worker
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
             dnsPolicy: ClusterFirst
@@ -811,7 +844,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32781"
+                      value: "32783"
                     - name: POSTGRES_DATABASE
                       value: stack2-payments
                     - name: POSTGRES_USERNAME
@@ -853,7 +886,10 @@ spec:
                   image: ghcr.io/formancehq/payments:latest
                   imagePullPolicy: Always
                   name: migrate
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - args:

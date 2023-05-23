@@ -46,6 +46,7 @@ func init() {
 								"http://$(OTEL_TRACES_EXPORTER_OTLP_ENDPOINT)",
 							),
 						),
+						Resources: modules.ResourceSizeSmall(),
 					}
 				},
 			}}
