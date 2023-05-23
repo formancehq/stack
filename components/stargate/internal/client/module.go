@@ -8,9 +8,17 @@ import (
 	"time"
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
+	"github.com/formancehq/stack/components/stargate/internal/client/controllers"
 	"github.com/formancehq/stack/components/stargate/internal/client/interceptors"
 	"github.com/formancehq/stack/components/stargate/internal/client/opentelemetry"
+	"github.com/formancehq/stack/components/stargate/internal/client/routes"
+	"github.com/formancehq/stack/components/stargate/internal/server/http/middlewares"
+	"github.com/formancehq/stack/libs/go-libs/health"
+	"github.com/formancehq/stack/libs/go-libs/httpserver"
 	"github.com/formancehq/stack/libs/go-libs/logging"
+	app "github.com/formancehq/stack/libs/go-libs/service"
+	"github.com/go-chi/chi/v5"
+	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel/metric"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
@@ -20,6 +28,7 @@ import (
 )
 
 func Module(
+	bind string,
 	serverURL string,
 	tlsEnabled bool,
 	tlsCACertificate string,
@@ -28,6 +37,21 @@ func Module(
 	options := make([]fx.Option, 0)
 
 	options = append(options,
+		fx.Provide(routes.NewRouter),
+		fx.Provide(controllers.NewStargateController),
+		health.Module(),
+		fx.Invoke(func(lc fx.Lifecycle, h chi.Router, l logging.Logger) {
+			if viper.GetBool(app.DebugFlag) {
+				wrappedRouter := chi.NewRouter()
+				wrappedRouter.Use(middlewares.Log())
+				wrappedRouter.Mount("/", h)
+				h = wrappedRouter
+			}
+
+			l.Infof("HTTP server listening on %s", bind)
+			lc.Append(httpserver.NewHook(bind, h))
+		}),
+
 		fx.Provide(interceptors.NewAuthInterceptor),
 		fx.Provide(func(l logging.Logger, kc keepalive.ClientParameters, authInterceptor *interceptors.AuthInterceptor) (api.StargateServiceClient, error) {
 			return newGrpcClient(l, serverURL, tlsEnabled, tlsCACertificate, tlsInsecureSkipVerify, kc, authInterceptor)

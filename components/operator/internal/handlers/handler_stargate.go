@@ -32,7 +32,10 @@ func init() {
 
 			return modules.Services{
 				{
-					Liveness: modules.LivenessDisable,
+					ListenEnvVar:       "BIND",
+					HasVersionEndpoint: true,
+					ExposeHTTP:         true,
+					Liveness:           modules.LivenessDefault,
 					AuthConfiguration: func(resolveContext modules.PrepareContext) stackv1beta3.ClientConfiguration {
 						return stackv1beta3.NewClientConfiguration()
 					},
