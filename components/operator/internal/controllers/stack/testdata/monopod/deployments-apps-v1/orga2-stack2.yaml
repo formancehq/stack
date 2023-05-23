@@ -34,7 +34,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32802"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-auth
                     - name: POSTGRES_USERNAME
@@ -215,7 +215,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32802"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-ledger
                     - name: POSTGRES_USERNAME
@@ -287,7 +287,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32802"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-orchestration
                     - name: POSTGRES_USERNAME
@@ -362,7 +362,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32802"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-orchestration
                     - name: POSTGRES_USERNAME
@@ -421,7 +421,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32802"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-payments
                     - name: POSTGRES_USERNAME
@@ -609,7 +609,7 @@ spec:
                     - name: LEDGER_POSTGRES_HOST
                       value: localhost
                     - name: LEDGER_POSTGRES_PORT
-                      value: "32779"
+                      value: "32802"
                     - name: LEDGER_POSTGRES_DATABASE
                       value: orga2-stack2-ledger
                     - name: LEDGER_POSTGRES_USERNAME
@@ -649,67 +649,8 @@ spec:
                       name: search-benthos-templates
                       readOnly: true
                 - env:
-                    - name: BIND
-                      value: :10005
-                    - name: OTEL_TRACES
-                      value: "true"
-                    - name: OTEL_TRACES_EXPORTER
-                      value: otlp
-                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
-                      value: "true"
-                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
-                      value: grpc
-                    - name: OTEL_TRACES_PORT
-                      value: "4317"
-                    - name: OTEL_TRACES_ENDPOINT
-                      value: localhost
-                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
-                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
-                    - name: OTEL_RESOURCE_ATTRIBUTES
-                    - name: DEBUG
-                      value: "false"
-                    - name: DEV
-                      value: "false"
-                    - name: STACK_URL
-                      value: http://example.net
-                    - name: OTEL_SERVICE_NAME
-                      value: stargate
-                    - name: ORGANIZATION_ID
-                      value: orga2
-                    - name: STACK_ID
-                      value: stack2
-                    - name: STARGATE_SERVER_URL
-                    - name: GATEWAY_URL
-                      value: http://gateway:8000
-                    - name: STARGATE_AUTH_CLIENT_ID
-                    - name: STARGATE_AUTH_CLIENT_SECRET
-                    - name: STARGATE_AUTH_ISSUER_URL
-                  image: ghcr.io/formancehq/stargate:latest
-                  imagePullPolicy: Always
-                  livenessProbe:
-                    failureThreshold: 20
-                    httpGet:
-                        path: /_healthcheck
-                        port: 10005
-                        scheme: HTTP
-                    initialDelaySeconds: 1
-                    periodSeconds: 2
-                    successThreshold: 1
-                    timeoutSeconds: 30
-                  name: stargate
-                  ports:
-                    - containerPort: 10005
-                      name: http
-                      protocol: TCP
-                  resources:
-                    requests:
-                        cpu: 10m
-                        memory: 40Mi
-                  terminationMessagePath: /dev/termination-log
-                  terminationMessagePolicy: File
-                - env:
                     - name: LISTEN
-                      value: :10006
+                      value: :10005
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -745,7 +686,7 @@ spec:
                     failureThreshold: 20
                     httpGet:
                         path: /_healthcheck
-                        port: 10006
+                        port: 10005
                         scheme: HTTP
                     initialDelaySeconds: 1
                     periodSeconds: 2
@@ -753,7 +694,7 @@ spec:
                     timeoutSeconds: 30
                   name: wallets
                   ports:
-                    - containerPort: 10006
+                    - containerPort: 10005
                       name: http
                       protocol: TCP
                   resources:
@@ -766,7 +707,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32802"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-webhooks
                     - name: POSTGRES_USERNAME
@@ -778,7 +719,7 @@ spec:
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
                     - name: HTTP_BIND_ADDRESS_SERVER
-                      value: :10007
+                      value: :10006
                     - name: OTEL_TRACES
                       value: "true"
                     - name: OTEL_TRACES_EXPORTER
@@ -816,7 +757,7 @@ spec:
                     failureThreshold: 20
                     httpGet:
                         path: /_healthcheck
-                        port: 10007
+                        port: 10006
                         scheme: HTTP
                     initialDelaySeconds: 1
                     periodSeconds: 2
@@ -824,7 +765,7 @@ spec:
                     timeoutSeconds: 30
                   name: webhooks
                   ports:
-                    - containerPort: 10007
+                    - containerPort: 10006
                       name: http
                       protocol: TCP
                   resources:
@@ -839,7 +780,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32802"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-webhooks
                     - name: POSTGRES_USERNAME
@@ -903,7 +844,7 @@ spec:
                     - name: POSTGRES_HOST
                       value: localhost
                     - name: POSTGRES_PORT
-                      value: "32779"
+                      value: "32802"
                     - name: POSTGRES_DATABASE
                       value: orga2-stack2-payments
                     - name: POSTGRES_USERNAME

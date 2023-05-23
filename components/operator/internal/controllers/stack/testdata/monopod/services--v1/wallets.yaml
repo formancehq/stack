@@ -6,9 +6,9 @@ metadata:
     name: wallets
     namespace: orga2-stack2
 spec:
-    clusterIP: 10.0.0.215
+    clusterIP: 10.0.0.90
     clusterIPs:
-        - 10.0.0.215
+        - 10.0.0.90
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
@@ -16,9 +16,9 @@ spec:
     ports:
         - appProtocol: http
           name: http
-          port: 10006
+          port: 10005
           protocol: TCP
-          targetPort: 10006
+          targetPort: 10005
     selector:
         app.kubernetes.io/name: orga2-stack2
     sessionAffinity: None
