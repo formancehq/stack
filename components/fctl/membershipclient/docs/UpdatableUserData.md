@@ -1,73 +1,52 @@
-# UserData
+# UpdatableUserData
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Email** | **string** |  |
 **Metadata** | Pointer to **map[string]string** |  | [optional]
 
 ## Methods
 
-### NewUserData
+### NewUpdatableUserData
 
-`func NewUserData(email string, ) *UserData`
+`func NewUpdatableUserData() *UpdatableUserData`
 
-NewUserData instantiates a new UserData object
+NewUpdatableUserData instantiates a new UpdatableUserData object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewUserDataWithDefaults
+### NewUpdatableUserDataWithDefaults
 
-`func NewUserDataWithDefaults() *UserData`
+`func NewUpdatableUserDataWithDefaults() *UpdatableUserData`
 
-NewUserDataWithDefaults instantiates a new UserData object
+NewUpdatableUserDataWithDefaults instantiates a new UpdatableUserData object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetEmail
-
-`func (o *UserData) GetEmail() string`
-
-GetEmail returns the Email field if non-nil, zero value otherwise.
-
-### GetEmailOk
-
-`func (o *UserData) GetEmailOk() (*string, bool)`
-
-GetEmailOk returns a tuple with the Email field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetEmail
-
-`func (o *UserData) SetEmail(v string)`
-
-SetEmail sets Email field to given value.
-
-
 ### GetMetadata
 
-`func (o *UserData) GetMetadata() map[string]string`
+`func (o *UpdatableUserData) GetMetadata() map[string]string`
 
 GetMetadata returns the Metadata field if non-nil, zero value otherwise.
 
 ### GetMetadataOk
 
-`func (o *UserData) GetMetadataOk() (*map[string]string, bool)`
+`func (o *UpdatableUserData) GetMetadataOk() (*map[string]string, bool)`
 
 GetMetadataOk returns a tuple with the Metadata field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetMetadata
 
-`func (o *UserData) SetMetadata(v map[string]string)`
+`func (o *UpdatableUserData) SetMetadata(v map[string]string)`
 
 SetMetadata sets Metadata field to given value.
 
 ### HasMetadata
 
-`func (o *UserData) HasMetadata() bool`
+`func (o *UpdatableUserData) HasMetadata() bool`
 
 HasMetadata returns a boolean if a field has been set.
 

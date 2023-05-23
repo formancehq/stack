@@ -20,7 +20,7 @@ var _ MappedNullable = &Stack{}
 // Stack struct for Stack
 type Stack struct {
 	// Stack name
-	Name     string            `json:"name"`
+	Name string `json:"name"`
 	Metadata map[string]string `json:"metadata"`
 	// Stack ID
 	Id string `json:"id"`
@@ -30,13 +30,14 @@ type Stack struct {
 	Uri string `json:"uri"`
 	// The region where the stack is installed
 	RegionID string `json:"regionID"`
+	StargateEnabled bool `json:"stargateEnabled"`
 }
 
 // NewStack instantiates a new Stack object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStack(name string, metadata map[string]string, id string, organizationId string, uri string, regionID string) *Stack {
+func NewStack(name string, metadata map[string]string, id string, organizationId string, uri string, regionID string, stargateEnabled bool) *Stack {
 	this := Stack{}
 	this.Name = name
 	this.Metadata = metadata
@@ -44,6 +45,7 @@ func NewStack(name string, metadata map[string]string, id string, organizationId
 	this.OrganizationId = organizationId
 	this.Uri = uri
 	this.RegionID = regionID
+	this.StargateEnabled = stargateEnabled
 	return &this
 }
 
@@ -199,8 +201,32 @@ func (o *Stack) SetRegionID(v string) {
 	o.RegionID = v
 }
 
+// GetStargateEnabled returns the StargateEnabled field value
+func (o *Stack) GetStargateEnabled() bool {
+	if o == nil {
+		var ret bool
+		return ret
+	}
+
+	return o.StargateEnabled
+}
+
+// GetStargateEnabledOk returns a tuple with the StargateEnabled field value
+// and a boolean to check if the value has been set.
+func (o *Stack) GetStargateEnabledOk() (*bool, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.StargateEnabled, true
+}
+
+// SetStargateEnabled sets field value
+func (o *Stack) SetStargateEnabled(v bool) {
+	o.StargateEnabled = v
+}
+
 func (o Stack) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -215,6 +241,7 @@ func (o Stack) ToMap() (map[string]interface{}, error) {
 	toSerialize["organizationId"] = o.OrganizationId
 	toSerialize["uri"] = o.Uri
 	toSerialize["regionID"] = o.RegionID
+	toSerialize["stargateEnabled"] = o.StargateEnabled
 	return toSerialize, nil
 }
 

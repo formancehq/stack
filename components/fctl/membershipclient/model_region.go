@@ -20,12 +20,12 @@ var _ MappedNullable = &Region{}
 
 // Region struct for Region
 type Region struct {
-	Id        string     `json:"id"`
-	BaseUrl   string     `json:"baseUrl"`
-	CreatedAt string     `json:"createdAt"`
-	Active    bool       `json:"active"`
-	LastPing  *time.Time `json:"lastPing,omitempty"`
-	Name      string     `json:"name"`
+	Id string `json:"id"`
+	BaseUrl string `json:"baseUrl"`
+	CreatedAt string `json:"createdAt"`
+	Active bool `json:"active"`
+	LastPing *time.Time `json:"lastPing,omitempty"`
+	Name string `json:"name"`
 }
 
 // NewRegion instantiates a new Region object
@@ -203,7 +203,7 @@ func (o *Region) SetName(v string) {
 }
 
 func (o Region) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

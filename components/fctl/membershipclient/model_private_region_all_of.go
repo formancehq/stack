@@ -19,10 +19,10 @@ var _ MappedNullable = &PrivateRegionAllOf{}
 
 // PrivateRegionAllOf struct for PrivateRegionAllOf
 type PrivateRegionAllOf struct {
-	ClientID       string                    `json:"clientID"`
-	OrganizationID string                    `json:"organizationID"`
-	CreatorID      string                    `json:"creatorID"`
-	Secret         *PrivateRegionAllOfSecret `json:"secret,omitempty"`
+	ClientID string `json:"clientID"`
+	OrganizationID string `json:"organizationID"`
+	CreatorID string `json:"creatorID"`
+	Secret *PrivateRegionAllOfSecret `json:"secret,omitempty"`
 }
 
 // NewPrivateRegionAllOf instantiates a new PrivateRegionAllOf object
@@ -150,7 +150,7 @@ func (o *PrivateRegionAllOf) SetSecret(v PrivateRegionAllOfSecret) {
 }
 
 func (o PrivateRegionAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

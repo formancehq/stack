@@ -20,9 +20,9 @@ var _ MappedNullable = &CreateStackRequest{}
 // CreateStackRequest struct for CreateStackRequest
 type CreateStackRequest struct {
 	// Stack name
-	Name     string            `json:"name"`
+	Name string `json:"name"`
 	Metadata map[string]string `json:"metadata"`
-	RegionID string            `json:"regionID"`
+	RegionID string `json:"regionID"`
 }
 
 // NewCreateStackRequest instantiates a new CreateStackRequest object
@@ -118,7 +118,7 @@ func (o *CreateStackRequest) SetRegionID(v string) {
 }
 
 func (o CreateStackRequest) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

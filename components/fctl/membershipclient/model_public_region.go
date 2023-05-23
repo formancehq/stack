@@ -20,13 +20,13 @@ var _ MappedNullable = &PublicRegion{}
 
 // PublicRegion struct for PublicRegion
 type PublicRegion struct {
-	Id         string     `json:"id"`
-	BaseUrl    string     `json:"baseUrl"`
-	CreatedAt  string     `json:"createdAt"`
-	Active     bool       `json:"active"`
-	LastPing   *time.Time `json:"lastPing,omitempty"`
-	Name       string     `json:"name"`
-	Production bool       `json:"production"`
+	Id string `json:"id"`
+	BaseUrl string `json:"baseUrl"`
+	CreatedAt string `json:"createdAt"`
+	Active bool `json:"active"`
+	LastPing *time.Time `json:"lastPing,omitempty"`
+	Name string `json:"name"`
+	Production bool `json:"production"`
 }
 
 // NewPublicRegion instantiates a new PublicRegion object
@@ -229,7 +229,7 @@ func (o *PublicRegion) SetProduction(v bool) {
 }
 
 func (o PublicRegion) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

@@ -65,7 +65,7 @@ func (o *GetRegionResponse) SetData(v AnyRegion) {
 }
 
 func (o GetRegionResponse) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

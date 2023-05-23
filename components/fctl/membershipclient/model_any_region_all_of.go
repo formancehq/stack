@@ -19,11 +19,11 @@ var _ MappedNullable = &AnyRegionAllOf{}
 
 // AnyRegionAllOf struct for AnyRegionAllOf
 type AnyRegionAllOf struct {
-	ClientID       *string `json:"clientID,omitempty"`
+	ClientID *string `json:"clientID,omitempty"`
 	OrganizationID *string `json:"organizationID,omitempty"`
-	Creator        *User   `json:"creator,omitempty"`
-	Production     *bool   `json:"production,omitempty"`
-	Public         bool    `json:"public"`
+	Creator *User `json:"creator,omitempty"`
+	Production *bool `json:"production,omitempty"`
+	Public bool `json:"public"`
 }
 
 // NewAnyRegionAllOf instantiates a new AnyRegionAllOf object
@@ -197,7 +197,7 @@ func (o *AnyRegionAllOf) SetPublic(v bool) {
 }
 
 func (o AnyRegionAllOf) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
+	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}

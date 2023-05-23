@@ -89,6 +89,8 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**DeleteOrganization**](docs/DefaultApi.md#deleteorganization) | **Delete** /organizations/{organizationId} | Delete organization
 *DefaultApi* | [**DeleteRegion**](docs/DefaultApi.md#deleteregion) | **Delete** /organizations/{organizationId}/regions/{regionId} | Delete region
 *DefaultApi* | [**DeleteStack**](docs/DefaultApi.md#deletestack) | **Delete** /organizations/{organizationId}/stacks/{stackId} | Delete stack
+*DefaultApi* | [**DisableStargate**](docs/DefaultApi.md#disablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/disable | Disable stargate on a stack
+*DefaultApi* | [**EnableStargate**](docs/DefaultApi.md#enablestargate) | **Put** /organizations/{organizationId}/stacks/{stackId}/stargate/enable | Enable stargate on a stack
 *DefaultApi* | [**GetRegion**](docs/DefaultApi.md#getregion) | **Get** /organizations/{organizationId}/regions/{regionId} | Get region
 *DefaultApi* | [**GetServerInfo**](docs/DefaultApi.md#getserverinfo) | **Get** /_info | Get server info
 *DefaultApi* | [**ListInvitations**](docs/DefaultApi.md#listinvitations) | **Get** /me/invitations | List invitations of the user
@@ -98,9 +100,13 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ListRegions**](docs/DefaultApi.md#listregions) | **Get** /organizations/{organizationId}/regions | List regions
 *DefaultApi* | [**ListStacks**](docs/DefaultApi.md#liststacks) | **Get** /organizations/{organizationId}/stacks | List stacks
 *DefaultApi* | [**ListUsers**](docs/DefaultApi.md#listusers) | **Get** /organizations/{organizationId}/users | List users
+*DefaultApi* | [**ReadConnectedUser**](docs/DefaultApi.md#readconnecteduser) | **Get** /me | Read user
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
 *DefaultApi* | [**ReadStack**](docs/DefaultApi.md#readstack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Read stack
 *DefaultApi* | [**ReadUser**](docs/DefaultApi.md#readuser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
+*DefaultApi* | [**UnlinkUserFromOrganization**](docs/DefaultApi.md#unlinkuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
+*DefaultApi* | [**UpdateConnectedUser**](docs/DefaultApi.md#updateconnecteduser) | **Put** /me | Update user
+*DefaultApi* | [**UpdateUser**](docs/DefaultApi.md#updateuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
 
 
 ## Documentation For Models
@@ -143,9 +149,12 @@ Class | Method | HTTP request | Description
  - [Stack](docs/Stack.md)
  - [StackAllOf](docs/StackAllOf.md)
  - [StackData](docs/StackData.md)
+ - [UpdatableUserData](docs/UpdatableUserData.md)
+ - [UpdateUserResponse](docs/UpdateUserResponse.md)
  - [User](docs/User.md)
  - [UserAllOf](docs/UserAllOf.md)
  - [UserData](docs/UserData.md)
+ - [UserDataAllOf](docs/UserDataAllOf.md)
 
 
 ## Documentation For Authorization

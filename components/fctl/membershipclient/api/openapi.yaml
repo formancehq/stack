@@ -110,6 +110,33 @@ paths:
           description: List of users
       summary: List users
   /organizations/{organizationId}/users/{userId}:
+    delete:
+      description: |
+        The owner of the organization can remove anyone while each user can leave any organization where it is not owner.
+      operationId: unlinkUserFromOrganization
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: User unlinked from organization
+        "403":
+          description: Not allowed
+        "400":
+          description: Cannot remove the owner of the organization
+      summary: Unlink user from organization
     get:
       operationId: readUser
       parameters:
@@ -135,6 +162,36 @@ paths:
                 $ref: '#/components/schemas/ReadUserResponse'
           description: Read a user
       summary: Read user
+    put:
+      operationId: updateUser
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserResponse'
+          description: Updated user
+      summary: Update user
   /organizations/{organizationId}/billing/portal:
     get:
       operationId: billingPortal
@@ -268,6 +325,50 @@ paths:
                 $ref: '#/components/schemas/ReadStackResponse'
           description: OK
       summary: Read stack
+  /organizations/{organizationId}/stacks/{stackId}/stargate/enable:
+    put:
+      operationId: enableStargate
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: OK
+      summary: Enable stargate on a stack
+  /organizations/{organizationId}/stacks/{stackId}/stargate/disable:
+    put:
+      operationId: disableStargate
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "204":
+          description: OK
+      summary: Disable stargate on a stack
   /me/invitations:
     get:
       operationId: listInvitations
@@ -467,6 +568,32 @@ paths:
                 $ref: '#/components/schemas/GetRegionResponse'
           description: Get a specific region
       summary: Get region
+  /me:
+    get:
+      operationId: readConnectedUser
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadUserResponse'
+          description: Read a user
+      summary: Read user
+    put:
+      operationId: updateConnectedUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserResponse'
+          description: Updated user
+      summary: Update user
 components:
   schemas:
     CreatePrivateRegionRequest:
@@ -549,13 +676,20 @@ components:
       allOf:
       - $ref: '#/components/schemas/StackData'
       - $ref: '#/components/schemas/Stack_allOf'
-    UserData:
+    UpdatableUserData:
+      example:
+        metadata:
+          key: metadata
       properties:
-        email:
-          type: string
-      required:
-      - email
+        metadata:
+          additionalProperties:
+            type: string
+          type: object
       type: object
+    UserData:
+      allOf:
+      - $ref: '#/components/schemas/UserData_allOf'
+      - $ref: '#/components/schemas/UpdatableUserData'
     User:
       allOf:
       - $ref: '#/components/schemas/UserData'
@@ -794,12 +928,25 @@ components:
       required:
       - version
       type: object
+    UpdateUserRequest:
+      $ref: '#/components/schemas/UpdatableUserData'
+    UpdateUserResponse:
+      example:
+        data: null
+      properties:
+        data:
+          $ref: '#/components/schemas/User'
+      required:
+      - data
+      type: object
     PrivateRegion_allOf_secret:
       properties:
         lastDigits:
           type: string
         clear:
           type: string
+      required:
+      - lastDigits
       type: object
       example: null
     PrivateRegion_allOf:
@@ -869,11 +1016,25 @@ components:
         regionID:
           description: The region where the stack is installed
           type: string
+        stargateEnabled:
+          type: boolean
       required:
       - id
       - organizationId
       - regionID
+      - stargateEnabled
       - uri
+      type: object
+      example: null
+    UserData_allOf:
+      properties:
+        email:
+          type: string
+        metadata:
+          additionalProperties: true
+          type: object
+      required:
+      - email
       type: object
       example: null
     User_allOf:
