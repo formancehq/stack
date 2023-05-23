@@ -226,6 +226,38 @@ func (client *client) Start(ctx context.Context) error {
 				if err := client.k8sClient.Delete(ctx, msg.DeletedStack.ClusterName); err != nil {
 					sharedlogging.FromContext(ctx).Errorf("creating deleting cluster side: %s", err)
 				}
+			case *generated.ConnectResponse_DisabledStack:
+				existingStack, err := client.k8sClient.Get(ctx, msg.DisabledStack.ClusterName, metav1.GetOptions{})
+				if err != nil {
+					if controllererrors.IsNotFound(err) {
+						sharedlogging.FromContext(ctx).Infof("cannot disable not existing stack: %s", msg.DisabledStack.ClusterName)
+						continue
+					}
+					sharedlogging.FromContext(ctx).Errorf("reading stack cluster side: %s", err)
+					continue
+				}
+				existingStack.Spec.Disabled = true
+				if _, err := client.k8sClient.Update(ctx, existingStack); err != nil {
+					sharedlogging.FromContext(ctx).Errorf("updating stack cluster side: %s", err)
+					continue
+				}
+				sharedlogging.FromContext(ctx).Infof("stack %s updated", msg.DisabledStack.ClusterName)
+			case *generated.ConnectResponse_EnabledStack:
+				existingStack, err := client.k8sClient.Get(ctx, msg.EnabledStack.ClusterName, metav1.GetOptions{})
+				if err != nil {
+					if controllererrors.IsNotFound(err) {
+						sharedlogging.FromContext(ctx).Infof("cannot enable not existing stack: %s", msg.EnabledStack.ClusterName)
+						continue
+					}
+					sharedlogging.FromContext(ctx).Errorf("reading stack cluster side: %s", err)
+					continue
+				}
+				existingStack.Spec.Disabled = false
+				if _, err := client.k8sClient.Update(ctx, existingStack); err != nil {
+					sharedlogging.FromContext(ctx).Errorf("updating stack cluster side: %s", err)
+					continue
+				}
+				sharedlogging.FromContext(ctx).Infof("stack %s updated", msg.EnabledStack.ClusterName)
 			case *generated.ConnectResponse_UpdateUsageReport:
 				total, err := CountDocument(msg.UpdateUsageReport.ClusterName)
 				if err != nil {

@@ -113,6 +113,9 @@ type StackSpec struct {
 	// +optional
 	// +kubebuilder:default:="http"
 	Scheme string `json:"scheme"`
+
+	// +optional
+	Disabled bool `json:"disabled"`
 }
 
 type ControlAuthentication struct {

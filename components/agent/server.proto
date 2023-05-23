@@ -22,6 +22,8 @@ message ConnectResponse {
     DeletedStack deletedStack = 3;
     Ping ping = 4;
     UpdateUsageReport updateUsageReport = 5;
+    DisabledStack disabledStack = 6;
+    EnabledStack enabledStack = 7;
   }
 }
 
@@ -43,6 +45,14 @@ message StargateConfig {
 }
 
 message DeletedStack {
+  string clusterName = 1;
+}
+
+message DisabledStack {
+  string clusterName = 1;
+}
+
+message EnabledStack {
   string clusterName = 1;
 }
 
