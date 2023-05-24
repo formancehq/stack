@@ -15,9 +15,14 @@ message StargateServerMessage {
     map<string, Values> headers = 5;
   }
 
+  message Ping {}
+
   string correlation_id = 1;
 
-  oneof event { APICall api_call = 101; }
+  oneof event {
+    APICall api_call = 101;
+    Ping ping = 102;
+  }
 }
 
 message StargateClientMessage {
@@ -27,9 +32,14 @@ message StargateClientMessage {
     map<string, Values> headers = 3;
   }
 
+  message Pong {}
+
   string correlation_id = 1;
 
-  oneof event { APICallResponse api_call_response = 101; }
+  oneof event {
+    APICallResponse api_call_response = 101;
+    Pong pong = 102;
+  }
 }
 
 service StargateService {
