@@ -3,4 +3,3 @@ RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lis
 COPY agent /usr/bin/agent
 ENV OTEL_SERVICE_NAME agent
 ENTRYPOINT ["/usr/bin/agent"]
-CMD ["server"]
