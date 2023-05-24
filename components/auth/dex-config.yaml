@@ -29,23 +29,46 @@ staticClients:
       - 'http://localhost:8080/authorize/callback'
     name: 'Auth Gateway'
     secret: ZXhhbXBsZS1hcHAtc2VjcmV0
+  - id: postman
+    redirectURIs:
+      - 'https://oauth.pstmn.io/v1/callback'
+    name: 'Postman'
+    secret: ZXhhbXBsZS1hcHAtc2VjcmV0
 
-enablePasswordDB: true
+enablePasswordDB: false
 
-staticPasswords:
-  - email: 'user1@orga1.com'
-    username: 'user1'
-    userID: '00000000-0000-0000-0000-000000000011'
-    hash: '$2y$10$z6QSp/RU./kG6z3IauPaF.qDjRfkOIuP2dx5xb8GGvU/uBzU7wTEC' # user1
-  - email: 'user2@orga1.com'
-    hash: '$2y$10$VDnbwmixVIV9ZG3Z8BkomOgakiJ6WyYDQY.x3Tpxu2.qHrWCFaU6q' # user2
-    username: 'user2'
-    userID: '00000000-0000-0000-0000-000000000012'
-  - email: 'user1@orga2.com'
-    username: 'user1'
-    userID: '00000000-0000-0000-0000-000000000021'
-    hash: '$2y$10$z6QSp/RU./kG6z3IauPaF.qDjRfkOIuP2dx5xb8GGvU/uBzU7wTEC' # user1
-  - email: 'user2@orga2.com'
-    hash: '$2y$10$VDnbwmixVIV9ZG3Z8BkomOgakiJ6WyYDQY.x3Tpxu2.qHrWCFaU6q' # user2
-    username: 'user2'
-    userID: '00000000-0000-0000-0000-000000000022'
+connectors:
+  - type: github
+    id: github
+    name: GitHub
+    config:
+      clientID: foo
+      clientSecret: bar
+      redirectURI: http://localhost:5556/callback
+  - type: oidc
+    id: google
+    name: Google
+    config:
+      issuer: https://accounts.google.com
+      clientID: foo
+      clientSecret: bar
+      redirectURI: http://localhost:5556/callback
+
+# Uncomment for static password
+#staticPasswords:
+#  - email: 'user1@orga1.com'
+#    username: 'user1'
+#    userID: '00000000-0000-0000-0000-000000000011'
+#    hash: '$2y$10$z6QSp/RU./kG6z3IauPaF.qDjRfkOIuP2dx5xb8GGvU/uBzU7wTEC' # user1
+#  - email: 'user2@orga1.com'
+#    hash: '$2y$10$VDnbwmixVIV9ZG3Z8BkomOgakiJ6WyYDQY.x3Tpxu2.qHrWCFaU6q' # user2
+#    username: 'user2'
+#    userID: '00000000-0000-0000-0000-000000000012'
+#  - email: 'user1@orga2.com'
+#    username: 'user1'
+#    userID: '00000000-0000-0000-0000-000000000021'
+#    hash: '$2y$10$z6QSp/RU./kG6z3IauPaF.qDjRfkOIuP2dx5xb8GGvU/uBzU7wTEC' # user1
+#  - email: 'user2@orga2.com'
+#    hash: '$2y$10$VDnbwmixVIV9ZG3Z8BkomOgakiJ6WyYDQY.x3Tpxu2.qHrWCFaU6q' # user2
+#    username: 'user2'
+#    userID: '00000000-0000-0000-0000-000000000022'
