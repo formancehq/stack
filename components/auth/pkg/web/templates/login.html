@@ -1,16 +1,65 @@
 {{ template "header.html" . }}
 
-<h1>Sign in to Formance</h1>
-<div class="card">
-  {{ range $c := .Connectors }}
-  <a href="{{ $c.URL }}" target="_self">
-    <button class="button--secondary">
-      <span class="button__icon button__icon--{{ $c.Type }}"></span>
-      <span class="button__text">Login with {{ $c.Name }}</span>
-    </button>
-  </a>
-  <span class="box"></span>
-  {{ end }}
-</div>
+<div class="main">
+  <div class="block__left">
+    <img src="{{ url .ReqPath "static/img/formance/logo.svg" }}" alt="Logo">
+    <h1 class="block__left--title mt">Get started in seconds with our cloud products</h1>
+    <div class="mt">
+      <img src="{{ url .ReqPath "static/img/formance/ledgers.svg" }}" alt="Ledgers">
+      <img src="{{ url .ReqPath "static/img/formance/payments.svg" }}" alt="Payments">
+      <img src="{{ url .ReqPath "static/img/formance/wallets.svg" }}" alt="Wallets">
+      <img src="{{ url .ReqPath "static/img/formance/flows.svg" }}" alt="FLows">
+    </div>
+  </div>
+  <div class="block__right">
+    <div class="block__right--main">
+      <h1 class="block__right--title mt">Formance Cloud</h1>
+      <h3 class="block__right--subtitle">Sign in and start building today for free</h3>
+      <div class="form mt">
+        {{ range $c := .Connectors }}
+        <a href="{{ $c.URL }}" target="_self">
+          {{ if (eq $c.Type "github") }}
+          <button class="button--primary">
+            <span class="button__icon button__icon--{{ $c.Type }}"></span>
+            <span class="button__text">Sign in with {{ $c.Name }}</span>
+          </button>
+          {{ else }}
+          <button class="button--secondary">
+            <span class="button__icon button__icon--{{ $c.Type }}"></span>
+            <span class="button__text">Sign in with {{ $c.Name }}</span>
+          </button>
+          {{ end }}
+        </a>
+        {{ end }}
+
+        <a href="" target="_self">
+          <button class="button--secondary button--secondary--github">
+            <span class="button__icon button__icon--github"></span>
+            <span class="button__text">Sign in with Github</span>
+          </button>
+        </a>
+        <a href="" target="_self">
+          <button class="button--secondary">
+            <span class="button__icon button__icon--google"></span>
+            <span class="button__text">Sign in with Google</span>
+          </button>
+        </a>
+        <p class="block__right--registered">Not registered yet? Sign-in above first to create your account</p>
+      </div>
+    </div>
+    <div class="block__right--footer">
+      <p class="block__right--help">Trouble signing in?
+        <a target="_blank" class="block__right--support" href="https://formance-community.slack.com/">Help and Support</a>
+      </p>
+      <div class="block__right--legal">
+        <p>Formance 2023</p>
+        <div>
+          <a href="https://status.formance.com/" target="_blank">Platform Status</a>
+          <a href="https://www.formance.com/terms" target="_blank">Terms of Use</a>
+          <a href="https://www.formance.com/security" target="_blank">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
 {{ template "footer.html" . }}

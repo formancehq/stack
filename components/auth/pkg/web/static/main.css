@@ -2,10 +2,17 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+
 body {
   margin: 0;
   font-family: Inter, sans-serif;
-  background-color: #F9F9F9;
+  background-color: #FFFFFF;
   height: 100%;
   width: 100%;
   -webkit-font-smoothing: antialiased;
@@ -36,6 +43,16 @@ input {
   border-radius: 6px;
 }
 
+.mt {
+  margin-top: 32px;
+}
+
+.main {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
 .container {
   display: flex; /* establish flex container */
   flex-direction: column; /* make main-axis vertical */
@@ -45,14 +62,96 @@ input {
   width: 100%;
 }
 
-.card {
-  padding: 40px;
-  max-width: 500px;
-  box-shadow: 0 4px 2px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-  max-height: 355px;
-  background-color: #FFFFFF;
-  border-radius: 6px;
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.block__left--title {
+  font-family: Inter, serif;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-align: left;
+  width: 450px;
+  margin-top: 42px;
+}
+
+.block__right--title {
+  font-family: Inter, serif;
+  font-weight: 600;
+  color: #161719;
+  text-align: center;
+  padding:0;
+  margin-bottom: 8px;
+}
+
+.block__right--subtitle {
+  font-family: Inter, serif;
+  font-weight: 300;
+  color: #818890;
+  text-align: center;
+  margin: 0;
+  padding:0;
+}
+
+.block__right--registered {
+  font-family: Inter, serif;
+  font-weight: 100;
+  color: #818890;
+  text-align: center;
+  width: 320px;
+  font-size: 16px;
+}
+
+
+.block__right--help {
+  text-align: center;
+  font-family: Inter, serif;
+  color: #818890;
+  margin-top: 64px;
+  font-size: 16px;
+  font-weight: 100;
+  margin-bottom: 62px;
+}
+
+.block__right--support {
+  font-weight: 800;
+  color: #161719;
+}
+
+.block__left {
+  padding: 32px;
+  flex: 1;
+  background-image: url(../static/img/formance/background.svg);
+  background-repeat: no-repeat;
+}
+
+.block__right {
+  flex: 1;
+  margin-top: 84px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.block__right--footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.block__right--legal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #CDCDCD;
+
+}
+.block__right--legal p, .block__right--legal a {
+  font-family: Inter, serif;
+  color: #818890;
   font-size: 14px;
 }
 
@@ -103,14 +202,15 @@ input {
 
 .button__text {
   font-style: normal;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 16px;
   margin-top: 10px;
   display: block;
+  font-family: Inter, serif;
 }
 
 .button__icon--google {
-  background-image: url(../static/img/google-icon.svg);;
+  background-image: url(../static/img/google-icon.svg);
 }
 .button__icon--local {
   background-image: url(../static/img/email-icon.svg);
@@ -119,7 +219,7 @@ input {
   background-image: url(../static/img/email-icon-light.svg);
 }
 .button__icon--github {
-  background-image: url(../static/img/github-icon.svg);
+  background-image: url(../static/img/github.svg);
 }
 .button__icon--gitlab {
   background-image: url(../static/img/gitlab-icon.svg);
