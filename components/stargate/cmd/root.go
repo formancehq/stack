@@ -44,13 +44,6 @@ func NewRootCommand() *cobra.Command {
 	server.Flags().String(authIssuerURLFlag, "", "JWKS URL")
 	server.Flags().Int(maxRetriesJWKSFetchingFlag, 3, "Max retries for fetching JWKS")
 	server.Flags().Duration(natsRequestTimeout, 10*time.Second, "NATS request timeout (in seconds)")
-	server.Flags().Duration(KeepAlivePolicyMinTimeFlag, 5*time.Second, "Keepalive policy min time")
-	server.Flags().Bool(KeepAlivePolicyPermitWithoutStreamFlag, true, "Keepalive policy permit without stream")
-	server.Flags().Duration(KeepAliveServerParamMaxConnectionIdleFlag, 15*time.Second, "Keepalive policy permit without stream")
-	server.Flags().Duration(KeepAliveServerParamMaxConnectionAgeFlag, 30*time.Second, "Keepalive policy permit without stream")
-	server.Flags().Duration(KeepAliveServerParamMaxConnectionAgeGraceFlag, 5*time.Second, "Keepalive policy permit without stream")
-	server.Flags().Duration(KeepAliveServerParamTimeFlag, 5*time.Second, "Keepalive policy permit without stream")
-	server.Flags().Duration(KeepAliveServerParamTimeoutFlag, 1*time.Second, "Keepalive policy permit without stream")
 	if err := viper.BindPFlags(server.Flags()); err != nil {
 		panic(err)
 	}
@@ -60,7 +53,7 @@ func NewRootCommand() *cobra.Command {
 
 	client.Flags().String(organizationIDFlag, "", "Organization ID")
 	client.Flags().String(stackIDFlag, "", "Stack ID")
-	client.Flags().String(bindFlag, ":8080", "Listen address for http API")
+	client.Flags().String(bindFlag, "0.0.0.0:8080", "Listen address for http API")
 	client.Flags().String(stargateServerURLFlag, "", "Stargate server URL")
 	client.Flags().String(gatewayURLFlag, "", "Gateway URL")
 	client.Flags().Int(workerPoolMaxWorkersFlag, 100, "Max worker pool size")
@@ -69,9 +62,6 @@ func NewRootCommand() *cobra.Command {
 	client.Flags().Duration(HTTPClientTimeoutFlag, 10*time.Second, "HTTP client timeout")
 	client.Flags().Int(HTTPClientMaxIdleConnsFlag, 100, "HTTP client max idle conns")
 	client.Flags().Int(HTTPClientMaxIdleConnsPerHostFlag, 2, "HTTP client max idle conns per host")
-	client.Flags().Duration(KeepAliveClientParamTimeFlag, 10*time.Second, "Keepalive client param time")
-	client.Flags().Duration(KeepAliveClientParamTimeoutFlag, time.Second, "Keepalive client param timeout")
-	client.Flags().Bool(KeepAliveClientParamPermitWithoutStreamFlag, true, "Keepalive client param permit without stream")
 	client.Flags().Duration(AuthRefreshTokenDurationBeforeExpireTimeFlag, 30*time.Second, "Auth refresh token duration")
 	client.Flags().String(StargateAuthClientIDFlag, "", "Stargate auth client ID")
 	client.Flags().String(StargateAuthClientSecretFlag, "", "Stargate auth client secret")

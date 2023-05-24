@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"time"
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/client/controllers"
@@ -24,7 +23,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/keepalive"
 )
 
 func Module(
@@ -53,8 +51,8 @@ func Module(
 		}),
 
 		fx.Provide(interceptors.NewAuthInterceptor),
-		fx.Provide(func(l logging.Logger, kc keepalive.ClientParameters, authInterceptor *interceptors.AuthInterceptor) (api.StargateServiceClient, error) {
-			return newGrpcClient(l, serverURL, tlsEnabled, tlsCACertificate, tlsInsecureSkipVerify, kc, authInterceptor)
+		fx.Provide(func(l logging.Logger, authInterceptor *interceptors.AuthInterceptor) (api.StargateServiceClient, error) {
+			return newGrpcClient(l, serverURL, tlsEnabled, tlsCACertificate, tlsInsecureSkipVerify, authInterceptor)
 		}),
 		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
 		fx.Provide(opentelemetry.RegisterMetricsRegistry),
@@ -87,25 +85,12 @@ func Module(
 	return fx.Options(options...)
 }
 
-func NewKeepAliveClientParams(
-	keepAliveClientParamTime time.Duration,
-	keepAliveClientParamTimeout time.Duration,
-	keepAliveClientParamPermisWithoutStream bool,
-) keepalive.ClientParameters {
-	return keepalive.ClientParameters{
-		Time:                keepAliveClientParamTime,
-		Timeout:             keepAliveClientParamTimeout,
-		PermitWithoutStream: keepAliveClientParamPermisWithoutStream,
-	}
-}
-
 func newGrpcClient(
 	logger logging.Logger,
 	serverURL string,
 	tlsEnabled bool,
 	tlsCACertificate string,
 	tlsInsecureSkipVerify bool,
-	kc keepalive.ClientParameters,
 	authInterceptors *interceptors.AuthInterceptor,
 ) (api.StargateServiceClient, error) {
 	var credential credentials.TransportCredentials
@@ -142,7 +127,6 @@ func newGrpcClient(
 		serverURL,
 		grpc.WithStreamInterceptor(authInterceptors.StreamClientInterceptor()),
 		grpc.WithTransportCredentials(credential),
-		grpc.WithKeepaliveParams(kc),
 	)
 	if err != nil {
 		logger.Errorf("failed to connect to stargate server '%s': %s", serverURL, err)
