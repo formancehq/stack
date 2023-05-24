@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 	"net"
-	"time"
+	"net/http"
 
 	"github.com/formancehq/stack/components/stargate/internal/api"
 	"github.com/formancehq/stack/components/stargate/internal/server/grpc/interceptors"
@@ -14,11 +14,11 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/fx"
+	"golang.org/x/net/http2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
-	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -36,67 +36,44 @@ func Module(
 		}),
 		fx.Provide(NewServer),
 		fx.Provide(newGrpcServer),
-		fx.Invoke(func(lc fx.Lifecycle, srv *grpc.Server, l logging.Logger) {
+		fx.Invoke(func(lc fx.Lifecycle, grpcServer *grpc.Server, l logging.Logger) error {
+			l.Infof("gRPC server listening on %s", bind)
+			listener, err := net.Listen("tcp", bind)
+			if err != nil {
+				return err
+			}
+			srv := &http2.Server{}
+
 			lc.Append(fx.Hook{
 				OnStart: func(ctx context.Context) error {
-					listener, err := net.Listen("tcp", bind)
-					if err != nil {
-						return err
-					}
-
 					go func() {
-						l.Infof("gRPC server listening on %s", bind)
-						err := srv.Serve(listener)
-						if err != nil && err != grpc.ErrServerStopped {
-							panic(err)
+						for {
+							conn, err := listener.Accept()
+							if err != nil {
+								panic(err)
+							}
+
+							go srv.ServeConn(conn, &http2.ServeConnOpts{
+								Handler: http.HandlerFunc(grpcServer.ServeHTTP),
+							})
 						}
 					}()
-
 					return nil
 				},
 				OnStop: func(ctx context.Context) error {
-					srv.GracefulStop()
-					srv.Stop()
-
-					return nil
+					return listener.Close()
 				},
 			})
+
+			return nil
 		}),
 	)
 
 	return fx.Options(options...)
 }
 
-func NewKeepAlivePolicy(
-	keepAlivePolicyMinTimeFlag time.Duration,
-	keepAlivePolicyPermitWithoutStreamFlag bool,
-) keepalive.EnforcementPolicy {
-	return keepalive.EnforcementPolicy{
-		MinTime:             keepAlivePolicyMinTimeFlag,
-		PermitWithoutStream: keepAlivePolicyPermitWithoutStreamFlag,
-	}
-}
-
-func NewKeepAliveServerParams(
-	keepAliveParamMaxConnectionIdleFlag time.Duration,
-	keepAliveParamMaxConnectionAgeFlag time.Duration,
-	keepAliveParamMaxConnectionAgeGraceFlag time.Duration,
-	keepAliveParamTimeFlag time.Duration,
-	keepAliveParamTimeoutFlag time.Duration,
-) keepalive.ServerParameters {
-	return keepalive.ServerParameters{
-		MaxConnectionIdle:     keepAliveParamMaxConnectionIdleFlag,
-		MaxConnectionAge:      keepAliveParamMaxConnectionAgeFlag,
-		MaxConnectionAgeGrace: keepAliveParamMaxConnectionAgeGraceFlag,
-		Time:                  keepAliveParamTimeFlag,
-		Timeout:               keepAliveParamTimeoutFlag,
-	}
-}
-
 func newGrpcServer(
 	srv *Server,
-	kaep keepalive.EnforcementPolicy,
-	kasp keepalive.ServerParameters,
 	l logging.Logger,
 	authInterceptor *interceptors.AuthInterceptor,
 ) *grpc.Server {
@@ -106,8 +83,6 @@ func newGrpcServer(
 	}
 
 	grpcSrv := grpc.NewServer(
-		grpc.KeepaliveEnforcementPolicy(kaep),
-		grpc.KeepaliveParams(kasp),
 		grpc.ChainStreamInterceptor(
 			otelgrpc.StreamServerInterceptor(),
 			grpclogging.StreamServerInterceptor(interceptorLogger(l)),

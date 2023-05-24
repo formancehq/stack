@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/viper"
 	"go.opentelemetry.io/otel/metric"
 	"go.uber.org/fx"
-	"google.golang.org/grpc/keepalive"
 )
 
 const (
@@ -24,14 +23,6 @@ const (
 	natsRequestTimeout         = "nats-request-timeout"
 	authIssuerURLFlag          = "auth-issuer-url"
 	maxRetriesJWKSFetchingFlag = "max-retries-jwks-fetching"
-
-	KeepAlivePolicyMinTimeFlag                    = "keepalive-policy-min-time"
-	KeepAlivePolicyPermitWithoutStreamFlag        = "keepalive-policy-permit-without-stream"
-	KeepAliveServerParamMaxConnectionIdleFlag     = "keepalive-server-param-max-connection-idle"
-	KeepAliveServerParamMaxConnectionAgeFlag      = "keepalive-server-param-max-connection-age"
-	KeepAliveServerParamMaxConnectionAgeGraceFlag = "keepalive-server-param-max-connection-age-grace"
-	KeepAliveServerParamTimeFlag                  = "keepalive-server-param-time"
-	KeepAliveServerParamTimeoutFlag               = "keepalive-server-param-timeout"
 )
 
 func newServer() *cobra.Command {
@@ -68,21 +59,6 @@ func resolveServerOptions(v *viper.Viper, userOptions ...fx.Option) []fx.Option 
 		fx.Provide(fx.Annotate(metric.NewNoopMeterProvider, fx.As(new(metric.MeterProvider)))),
 		http.Module(viper.GetString(serviceHttpAddrFlag)),
 
-		fx.Provide(func() keepalive.EnforcementPolicy {
-			return grpc.NewKeepAlivePolicy(
-				viper.GetDuration(KeepAlivePolicyMinTimeFlag),
-				viper.GetBool(KeepAlivePolicyPermitWithoutStreamFlag),
-			)
-		}),
-		fx.Provide(func() keepalive.ServerParameters {
-			return grpc.NewKeepAliveServerParams(
-				viper.GetDuration(KeepAliveServerParamMaxConnectionIdleFlag),
-				viper.GetDuration(KeepAliveServerParamMaxConnectionAgeFlag),
-				viper.GetDuration(KeepAliveServerParamMaxConnectionAgeGraceFlag),
-				viper.GetDuration(KeepAliveServerParamTimeFlag),
-				viper.GetDuration(KeepAliveServerParamTimeoutFlag),
-			)
-		}),
 		grpc.Module(
 			viper.GetString(serviceGrpcAddrFlag),
 			viper.GetString(authIssuerURLFlag),

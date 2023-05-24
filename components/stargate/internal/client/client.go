@@ -106,7 +106,7 @@ func (c *Client) Run(ctx context.Context) error {
 	ctx = metadata.AppendToOutgoingContext(
 		ctx,
 		"organization-id", c.config.OrganizationID,
-		"stack-id", c.config.OrganizationID,
+		"stack-id", c.config.StackID,
 	)
 
 	c.logger.WithFields(map[string]any{
@@ -165,6 +165,10 @@ func (c *Client) Run(ctx context.Context) error {
 				if response.err != nil {
 					// Note: how should we handle errors here?
 					return response.err
+				}
+
+				if response.msg == nil {
+					continue
 				}
 
 				c.logger.WithFields(map[string]any{
@@ -249,8 +253,22 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 				}},
 			},
 		}
+	case *api.StargateServerMessage_Ping_:
+		return &ResponseChanEvent{
+			err: nil,
+			msg: &api.StargateClientMessage{
+				CorrelationId: in.CorrelationId,
+				Event: &api.StargateClientMessage_Pong_{
+					Pong: &api.StargateClientMessage_Pong{},
+				},
+			},
+		}
 	}
-	return nil
+
+	return &ResponseChanEvent{
+		err: nil,
+		msg: nil,
+	}
 }
 
 func (c *Client) Close() error {

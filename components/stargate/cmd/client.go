@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
-	"google.golang.org/grpc/keepalive"
 )
 
 const (
@@ -29,10 +28,6 @@ const (
 	HTTPClientTimeoutFlag             = "http-client-timeout"
 	HTTPClientMaxIdleConnsFlag        = "http-client-max-idle-conns"
 	HTTPClientMaxIdleConnsPerHostFlag = "http-client-max-idle-conns-per-host"
-
-	KeepAliveClientParamTimeFlag                = "keepalive-client-param-time"
-	KeepAliveClientParamTimeoutFlag             = "keepalive-client-param-timeout"
-	KeepAliveClientParamPermitWithoutStreamFlag = "keepalive-client-param-permit-without-stream"
 
 	AuthRefreshTokenDurationBeforeExpireTimeFlag = "auth-refresh-token-duration-before-expire-time"
 	StargateAuthClientIDFlag                     = "stargate-auth-client-id"
@@ -82,13 +77,6 @@ func resolveClientOptions(v *viper.Viper) []fx.Option {
 			)
 		}),
 
-		fx.Provide(func() keepalive.ClientParameters {
-			return client.NewKeepAliveClientParams(
-				viper.GetDuration(KeepAliveClientParamTimeFlag),
-				viper.GetDuration(KeepAliveClientParamTimeoutFlag),
-				viper.GetBool(KeepAliveClientParamPermitWithoutStreamFlag),
-			)
-		}),
 		fx.Provide(func() interceptors.Config {
 			return interceptors.NewConfig(
 				viper.GetString(StargateAuthIssuerURLFlag),

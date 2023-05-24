@@ -45,6 +45,10 @@ type waitingResponse struct {
 	sendAt time.Time
 }
 
+type waitingPingResponse struct {
+	resp chan struct{}
+}
+
 func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	ctx := stream.Context()
 	organizationID, stackID, err := orgaAndStackIDFromIncomingContext(ctx)
@@ -52,16 +56,17 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 		return status.Errorf(codes.InvalidArgument, "cannot get organization and stack id from contex metadata: %v", err)
 	}
 
-	s.logger.WithFields(map[string]any{
+	logger := s.logger.WithFields(map[string]any{
 		"organization_id": organizationID,
 		"stack_id":        stackID,
-	}).Infof("new stargate connection")
-	defer s.logger.WithFields(map[string]any{
-		"organization_id": organizationID,
-		"stack_id":        stackID,
-	}).Infof("stargate connection closed")
+	})
+
+	logger.Infof("new stargate connection")
+	defer logger.Infof("stargate connection closed")
 
 	waitingResponses := sync.Map{}
+	waitingPingResponses := sync.Map{}
+
 	subject := utils.GetNatsSubject(organizationID, stackID)
 	sub, err := s.natsConn.QueueSubscribeSync(subject, subject)
 	if err != nil {
@@ -111,22 +116,73 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 				return err
 			}
 
-			entry, ok := waitingResponses.LoadAndDelete(in.CorrelationId)
-			if !ok {
-				s.metricsRegistry.CorrelationIDNotFound().Add(ctx, 1)
-				continue
+			switch in.Event.(type) {
+			case *api.StargateClientMessage_ApiCallResponse:
+				logger.Debugf("stream api call response received")
+
+				entry, ok := waitingResponses.LoadAndDelete(in.CorrelationId)
+				if !ok {
+					s.metricsRegistry.CorrelationIDNotFound().Add(ctx, 1)
+					continue
+				}
+				wr := entry.(waitingResponse)
+
+				s.metricsRegistry.GRPCLatencies().Record(ctx, time.Since(wr.sendAt).Milliseconds())
+
+				data, err := proto.Marshal(in)
+				if err != nil {
+					return err
+				}
+
+				if err := wr.msg.Respond(data); err != nil {
+					return err
+				}
+			case *api.StargateClientMessage_Pong_:
+				logger.Debugf("stream pong received")
+
+				entry, ok := waitingPingResponses.LoadAndDelete(in.CorrelationId)
+				if !ok {
+					continue
+				}
+
+				wpr := entry.(waitingPingResponse)
+				close(wpr.resp)
 			}
-			wr := entry.(waitingResponse)
+		}
+	})
 
-			s.metricsRegistry.GRPCLatencies().Record(ctx, time.Since(wr.sendAt).Milliseconds())
+	// We have to implement a ping/pong system to detect dead connections.
+	// We cannot use grpc keepalive to do that because AWS ALB does not support
+	// raw HTTP/2 frames.
+	// c.f.: https://stackoverflow.com/questions/66818645/http2-ping-frames-over-aws-alb-grpc-keepalive-ping
+	eg.Go(func() error {
+		for {
+			select {
+			case <-time.After(10 * time.Second):
+				correlationID := uuid.New().String()
+				resp := make(chan struct{})
+				waitingPingResponses.Store(correlationID, waitingPingResponse{
+					resp: resp,
+				})
 
-			data, err := proto.Marshal(in)
-			if err != nil {
-				return err
-			}
+				logger.Debugf("sending ping")
 
-			if err := wr.msg.Respond(data); err != nil {
-				return err
+				if err := stream.Send(&api.StargateServerMessage{
+					CorrelationId: correlationID,
+					Event:         &api.StargateServerMessage_Ping_{Ping: &api.StargateServerMessage_Ping{}},
+				}); err != nil {
+					return err
+				}
+
+				select {
+				case <-time.After(10 * time.Second):
+					logger.Debugf("ping timeout")
+					return status.Errorf(codes.DeadlineExceeded, "ping timeout")
+				case <-resp:
+					// Pong received, do nothing
+				}
+			case <-ctx.Done():
+				return nil
 			}
 		}
 	})
