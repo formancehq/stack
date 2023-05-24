@@ -21,25 +21,25 @@ jobs:
 #          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
 
 
-  #  TestsIntegration:
-#    runs-on: 'ubuntu-latest'
-#    steps:
-#      - uses: 'actions/checkout@v3'
-#        with:
-#          fetch-depth: 0
-#      - name: Setup Env
-#        uses: ./.github/actions/env
-#        with:
-#          os: ${{ runner.os }}
-#          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-#      - run: 'moon run integration:tests'
-#        env:
-#          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY_FOR_TEST }}
-#          DOCKER_HOSTNAME: 172.17.0.1
-#      - uses: 'moonrepo/run-report-action@v1'
-#        if: success() || failure()
-#        with:
-#          access-token: ${{ secrets.GITHUB_TOKEN }}
+  TestsIntegration:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@v3'
+        with:
+          fetch-depth: 0
+      - name: Setup Env
+        uses: ./.github/actions/env
+        with:
+          os: ${{ runner.os }}
+          token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
+      - run: 'devbox run -- moon run integration:tests'
+        env:
+          STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY_FOR_TEST }}
+          DOCKER_HOSTNAME: 172.17.0.1
+      - uses: 'moonrepo/run-report-action@v1'
+        if: success() || failure()
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
 
   Moon:
     runs-on: 'ubuntu-latest'
@@ -55,7 +55,7 @@ jobs:
         with:
           os: ${{ runner.os }}
           token: ${{ secrets.NUMARY_GITHUB_TOKEN }}
-      - run: 'moon ci --job ${{ matrix.index }} --jobTotal 10'
+      - run: 'devbox run -- moon ci --job ${{ matrix.index }} --jobTotal 10'
         env:
           GITHUB_TOKEN: ${{ secrets.NUMARY_GITHUB_TOKEN }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}

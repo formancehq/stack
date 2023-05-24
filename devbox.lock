@@ -1,0 +1,37 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "ginkgo@2.8.3": {
+      "last_modified": "2023-02-28T22:11:13Z",
+      "resolved": "github:NixOS/nixpkgs/995edc972ad3a1e291ac22d74b9610821357175f#ginkgo",
+      "version": "2.8.3"
+    },
+    "go-task@3.24.0": {
+      "last_modified": "2023-05-01T16:53:22Z",
+      "resolved": "github:NixOS/nixpkgs/8670e496ffd093b60e74e7fa53526aa5920d09eb#go-task",
+      "version": "3.24.0"
+    },
+    "go@1.20.3": {
+      "last_modified": "2023-05-01T16:53:22Z",
+      "resolved": "github:NixOS/nixpkgs/8670e496ffd093b60e74e7fa53526aa5920d09eb#go",
+      "version": "1.20.3"
+    },
+    "golangci-lint@1.52.2": {
+      "last_modified": "2023-05-01T16:53:22Z",
+      "resolved": "github:NixOS/nixpkgs/8670e496ffd093b60e74e7fa53526aa5920d09eb#golangci-lint",
+      "version": "1.52.2"
+    },
+    "nodejs@18.16.0": {
+      "last_modified": "2023-05-01T16:53:22Z",
+      "resolved": "github:NixOS/nixpkgs/8670e496ffd093b60e74e7fa53526aa5920d09eb#nodejs",
+      "version": "18.16.0"
+    },
+    "path:nix#moon": {},
+    "path:nix#speakeasy": {},
+    "yarn@1.22.19": {
+      "last_modified": "2023-05-01T16:53:22Z",
+      "resolved": "github:NixOS/nixpkgs/8670e496ffd093b60e74e7fa53526aa5920d09eb#yarn",
+      "version": "1.22.19"
+    }
+  }
+}

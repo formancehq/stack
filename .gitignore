@@ -21,3 +21,5 @@ worktrees
 .moon/docker
 .moon/bin
 .moon/go
+
+.devbox
