@@ -61,13 +61,14 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 		"stack_id":        stackID,
 	})
 
-	logger.Infof("new stargate connection")
-	defer logger.Infof("stargate connection closed")
+	logger.Infof("[GRPC] new stargate connection")
+	defer logger.Infof("[GRPC] stargate connection closed")
 
 	waitingResponses := sync.Map{}
 	waitingPingResponses := sync.Map{}
 
 	subject := utils.GetNatsSubject(organizationID, stackID)
+	logger.Debugf("[GRPC] subscribing to nats subject %s", subject)
 	sub, err := s.natsConn.QueueSubscribeSync(subject, subject)
 	if err != nil {
 		return status.Errorf(codes.Internal, "cannot subscribe to nats subject")
@@ -118,7 +119,7 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 
 			switch in.Event.(type) {
 			case *api.StargateClientMessage_ApiCallResponse:
-				logger.Debugf("stream api call response received")
+				logger.Debugf("[GRPC] stream api call response received")
 
 				entry, ok := waitingResponses.LoadAndDelete(in.CorrelationId)
 				if !ok {
@@ -138,8 +139,6 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 					return err
 				}
 			case *api.StargateClientMessage_Pong_:
-				logger.Debugf("stream pong received")
-
 				entry, ok := waitingPingResponses.LoadAndDelete(in.CorrelationId)
 				if !ok {
 					continue
@@ -165,8 +164,6 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 					resp: resp,
 				})
 
-				logger.Debugf("sending ping")
-
 				if err := stream.Send(&api.StargateServerMessage{
 					CorrelationId: correlationID,
 					Event:         &api.StargateServerMessage_Ping_{Ping: &api.StargateServerMessage_Ping{}},
@@ -176,7 +173,7 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 
 				select {
 				case <-time.After(10 * time.Second):
-					logger.Debugf("ping timeout")
+					logger.Debugf("[GRPC] ping timeout")
 					return status.Errorf(codes.DeadlineExceeded, "ping timeout")
 				case <-resp:
 					// Pong received, do nothing
