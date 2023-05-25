@@ -1,46 +1,46 @@
-# CreatedPrivateRegionResponse
+# GetRegionResponse
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Data** | [**PrivateRegion**](PrivateRegion.md) |  | 
+**Data** | [**AnyRegion**](AnyRegion.md) |  | 
 
 ## Methods
 
-### NewCreatedPrivateRegionResponse
+### NewGetRegionResponse
 
-`func NewCreatedPrivateRegionResponse(data PrivateRegion, ) *CreatedPrivateRegionResponse`
+`func NewGetRegionResponse(data AnyRegion, ) *GetRegionResponse`
 
-NewCreatedPrivateRegionResponse instantiates a new CreatedPrivateRegionResponse object
+NewGetRegionResponse instantiates a new GetRegionResponse object
 This constructor will assign default values to properties that have it defined,
 and makes sure properties required by API are set, but the set of arguments
 will change when the set of required properties is changed
 
-### NewCreatedPrivateRegionResponseWithDefaults
+### NewGetRegionResponseWithDefaults
 
-`func NewCreatedPrivateRegionResponseWithDefaults() *CreatedPrivateRegionResponse`
+`func NewGetRegionResponseWithDefaults() *GetRegionResponse`
 
-NewCreatedPrivateRegionResponseWithDefaults instantiates a new CreatedPrivateRegionResponse object
+NewGetRegionResponseWithDefaults instantiates a new GetRegionResponse object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
 ### GetData
 
-`func (o *CreatedPrivateRegionResponse) GetData() PrivateRegion`
+`func (o *GetRegionResponse) GetData() AnyRegion`
 
 GetData returns the Data field if non-nil, zero value otherwise.
 
 ### GetDataOk
 
-`func (o *CreatedPrivateRegionResponse) GetDataOk() (*PrivateRegion, bool)`
+`func (o *GetRegionResponse) GetDataOk() (*AnyRegion, bool)`
 
 GetDataOk returns a tuple with the Data field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetData
 
-`func (o *CreatedPrivateRegionResponse) SetData(v PrivateRegion)`
+`func (o *GetRegionResponse) SetData(v AnyRegion)`
 
 SetData sets Data field to given value.
 

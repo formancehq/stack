@@ -4,11 +4,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ClientID** | Pointer to **string** |  | [optional]
-**OrganizationID** | Pointer to **string** |  | [optional]
-**Creator** | Pointer to [**User**](User.md) |  | [optional]
-**Production** | Pointer to **bool** |  | [optional]
-**Public** | **bool** |  |
+**ClientID** | Pointer to **string** |  | [optional] 
+**OrganizationID** | Pointer to **string** |  | [optional] 
+**Creator** | Pointer to [**User**](User.md) |  | [optional] 
+**Production** | Pointer to **bool** |  | [optional] 
+**Public** | **bool** |  | 
 
 ## Methods
 
@@ -151,3 +151,5 @@ SetPublic sets Public field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

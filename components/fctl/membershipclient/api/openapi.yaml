@@ -241,6 +241,14 @@ paths:
         schema:
           type: string
         style: simple
+      - description: Include deleted stacks
+        explode: true
+        in: query
+        name: deleted
+        required: false
+        schema:
+          type: boolean
+        style: form
       responses:
         "200":
           content:
@@ -325,6 +333,32 @@ paths:
                 $ref: '#/components/schemas/ReadStackResponse'
           description: OK
       summary: Read stack
+  /organizations/{organizationId}/stacks/{stackId}/restore:
+    put:
+      operationId: restoreStack
+      parameters:
+      - explode: false
+        in: path
+        name: organizationId
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: stackId
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStackResponse'
+          description: OK
+      summary: Restore stack
   /organizations/{organizationId}/stacks/{stackId}/stargate/enable:
     put:
       operationId: enableStargate
@@ -779,6 +813,8 @@ components:
       type: object
     ReadStackResponse:
       $ref: '#/components/schemas/CreateStackResponse'
+    RestoreStackResponse:
+      $ref: '#/components/schemas/CreateStackResponse'
     ReadUserResponse:
       example:
         data: null
@@ -1018,6 +1054,9 @@ components:
           type: string
         stargateEnabled:
           type: boolean
+        deletedAt:
+          format: date-time
+          type: string
       required:
       - id
       - organizationId
