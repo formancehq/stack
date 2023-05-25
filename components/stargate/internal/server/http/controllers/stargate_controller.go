@@ -17,6 +17,8 @@ import (
 var IsLetter = regexp.MustCompile(`^[a-z]+$`).MatchString
 
 func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request) {
+	s.logger.Debugf("[HTTP] received call: %s", r.URL.Path)
+
 	ctx := r.Context()
 	organizationID, stackID, err := getOrganizationAndStackID(r)
 	if err != nil {
@@ -44,11 +46,11 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 	}
 
 	subject := utils.GetNatsSubject(organizationID, stackID)
-	// requestCtx, cancel := context.WithTimeout(ctx, s.config.natsRequestTimeout)
-	// defer cancel()
+	s.logger.Debugf("[HTTP] sending message to %s with path: %s", subject, r.URL.Path)
 	resp, err := s.natsConn.Request(subject, buf, s.config.natsRequestTimeout)
 	if err != nil {
-		ResponseError(w, r, errors.Wrapf(err, "failed to send message"))
+		s.logger.Errorf("[HTTP] error sending message to %s with path: %s", subject, r.URL.Path)
+		ResponseError(w, r, ErrNoResponders)
 		return
 	}
 
@@ -57,6 +59,8 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 		ResponseError(w, r, errors.Wrapf(err, "failed to unmarshal response"))
 		return
 	}
+
+	s.logger.Debugf("[HTTP] received response for %s with path: %s", subject, r.URL.Path)
 
 	switch ev := response.Event.(type) {
 	case *service.StargateClientMessage_ApiCallResponse:

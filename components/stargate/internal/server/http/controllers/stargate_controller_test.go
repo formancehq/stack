@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/stack/components/stargate/internal/server/http/opentelemetry"
 	"github.com/formancehq/stack/components/stargate/internal/server/http/routes"
 	"github.com/formancehq/stack/components/stargate/internal/utils"
+	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -32,6 +33,7 @@ func TestStargateController(t *testing.T) {
 	natsSubject := utils.GetNatsSubject(organizationID, stackID)
 	sc := controllers.NewStargateController(
 		nc,
+		logging.Testing(),
 		opentelemetry.NewNoOpMetricsRegistry(),
 		controllers.NewStargateControllerConfig("test", 1*time.Second),
 	)
@@ -87,7 +89,7 @@ func TestStargateController(t *testing.T) {
 					},
 				},
 			},
-			expectedStatusCode: 500,
+			expectedStatusCode: 524,
 			expectedHeaders: http.Header{
 				"Vary":         []string{"Origin"},
 				"Content-Type": []string{"application/json"},

@@ -17,7 +17,8 @@ const (
 )
 
 var (
-	ErrValidation = errors.New("validation error")
+	ErrValidation   = errors.New("validation error")
+	ErrNoResponders = errors.New("no responders")
 )
 
 func ResponseError(w http.ResponseWriter, r *http.Request, err error) {
@@ -47,6 +48,8 @@ func coreErrorToErrorCode(err error) (int, string, string) {
 		return http.StatusBadRequest, errValidation, ""
 	case errors.Is(err, context.Canceled):
 		return http.StatusInternalServerError, errContextCancelled, ""
+	case errors.Is(err, ErrNoResponders):
+		return 524, errInternal, ""
 	default:
 		return http.StatusInternalServerError, errInternal, ""
 	}
