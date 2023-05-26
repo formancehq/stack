@@ -6,9 +6,9 @@ metadata:
     name: auth
     namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.12
+    clusterIP: 10.0.0.230
     clusterIPs:
-        - 10.0.0.12
+        - 10.0.0.230
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
