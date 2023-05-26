@@ -2,6 +2,7 @@ package otlpmetrics
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/formancehq/stack/libs/go-libs/otlp"
@@ -113,6 +114,7 @@ func MetricsModule(cfg ModuleConfig) fx.Option {
 		switch mode {
 		case otlp.ModeGRPC:
 			if cfg.OTLPConfig != nil {
+				fmt.Println(cfg.OTLPConfig.Endpoint, cfg.OTLPConfig.Insecure)
 				if cfg.OTLPConfig.Endpoint != "" {
 					options = append(options, ProvideOTLPMetricsGRPCOption(func() otlpmetricgrpc.Option {
 						return otlpmetricgrpc.WithEndpoint(cfg.OTLPConfig.Endpoint)
