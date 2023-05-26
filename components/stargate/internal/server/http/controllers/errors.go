@@ -21,7 +21,7 @@ var (
 	ErrNoResponders = errors.New("no responders")
 )
 
-func ResponseError(w http.ResponseWriter, r *http.Request, err error) {
+func ResponseError(w http.ResponseWriter, r *http.Request, err error) int {
 	status, code, details := coreErrorToErrorCode(err)
 
 	baseError := errors.Cause(err)
@@ -40,6 +40,8 @@ func ResponseError(w http.ResponseWriter, r *http.Request, err error) {
 	} else {
 		logging.FromContext(r.Context()).Errorf("internal server error: %s", err)
 	}
+
+	return status
 }
 
 func coreErrorToErrorCode(err error) (int, string, string) {

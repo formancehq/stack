@@ -26,22 +26,26 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	var status int
 	attrs := []attribute.KeyValue{
 		attribute.String("organization_id", organizationID),
 		attribute.String("stack_id", stackID),
 		attribute.String("path", r.URL.Path),
 	}
-	s.metricsRegistry.ReceivedHTTPCallByPath().Add(ctx, 1, attrs...)
+	defer func() {
+		attrs = append(attrs, attribute.Int("status", status))
+		s.metricsRegistry.ReceivedHTTPCallByPath().Add(ctx, 1, attrs...)
+	}()
 
 	msg, err := requestToProto(r)
 	if err != nil {
-		ResponseError(w, r, errors.Wrapf(err, "failed to parse request"))
+		status = ResponseError(w, r, errors.Wrapf(err, "failed to parse request"))
 		return
 	}
 
 	buf, err := proto.Marshal(msg)
 	if err != nil {
-		ResponseError(w, r, errors.Wrapf(err, "failed to marshal message"))
+		status = ResponseError(w, r, errors.Wrapf(err, "failed to marshal message"))
 		return
 	}
 
@@ -50,13 +54,13 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 	resp, err := s.natsConn.Request(subject, buf, s.config.natsRequestTimeout)
 	if err != nil {
 		s.logger.Errorf("[HTTP] error sending message to %s with path: %s", subject, r.URL.Path)
-		ResponseError(w, r, ErrNoResponders)
+		status = ResponseError(w, r, ErrNoResponders)
 		return
 	}
 
 	var response service.StargateClientMessage
 	if err = proto.Unmarshal(resp.Data, &response); err != nil {
-		ResponseError(w, r, errors.Wrapf(err, "failed to unmarshal response"))
+		status = ResponseError(w, r, errors.Wrapf(err, "failed to unmarshal response"))
 		return
 	}
 
@@ -70,10 +74,11 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 			}
 		}
 
+		status = int(ev.ApiCallResponse.StatusCode)
 		api.WriteResponse(w, int(ev.ApiCallResponse.StatusCode), ev.ApiCallResponse.Body)
 		return
 	default:
-		ResponseError(w, r, errors.Wrapf(err, "invalid response from client"))
+		status = ResponseError(w, r, errors.Wrapf(err, "invalid response from client"))
 		return
 	}
 }
