@@ -23,16 +23,22 @@ func init() {
 						WithPostLogoutRedirectUris(fmt.Sprintf("%s/auth/destroy", resolveContext.Stack.URL()))
 				},
 				Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
-					tag := modules.GetImage("control", resolveContext.Versions.Spec.Control)
+					tag := resolveContext.Versions.Spec.Control
 					url := ""
 					if semver.IsValid(tag) {
 						version := semver.Compare(tag, "v1.8.0")
 						if version == +1 {
 							url = resolveContext.Stack.URL()
 						}
+						if version == 0 {
+							url = resolveContext.Stack.URL()
+						}
+						if version == -1 {
+							url = fmt.Sprintf("%s/api", resolveContext.Stack.URL())
+						}
 					}
 					if url == "" {
-						url = fmt.Sprintf("%s/api", resolveContext.Stack.URL())
+						url = resolveContext.Stack.URL()
 					}
 					env := modules.ContainerEnv{
 						modules.Env("API_URL", url),

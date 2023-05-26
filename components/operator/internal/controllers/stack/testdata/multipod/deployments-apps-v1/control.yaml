@@ -53,7 +53,7 @@ spec:
                     - name: OTEL_SERVICE_NAME
                       value: control
                     - name: API_URL
-                      value: http://example.net/api
+                      value: http://example.net
                     - name: ENCRYPTION_KEY
                       value: 9h44y2ZqrDuUy5R9NGLA9hca7uRUr932
                     - name: ENCRYPTION_IV

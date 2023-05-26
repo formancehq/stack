@@ -6,9 +6,9 @@ metadata:
     name: stargate
     namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.64
+    clusterIP: 10.0.0.252
     clusterIPs:
-        - 10.0.0.64
+        - 10.0.0.252
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

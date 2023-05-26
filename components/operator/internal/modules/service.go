@@ -338,7 +338,7 @@ func (service *Service) Prepare(ctx PrepareContext, serviceName string) {
 		} else {
 			_, err = js.UpdateStream(&streamConfig)
 			if err != nil {
-				logging.Error(err)
+				logging.Error(fmt.Sprintf("%s: %s", topicName, err))
 			}
 		}
 	}
