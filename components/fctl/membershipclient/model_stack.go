@@ -12,6 +12,7 @@ package membershipclient
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // checks if the Stack type satisfies the MappedNullable interface at compile time
@@ -31,6 +32,7 @@ type Stack struct {
 	// The region where the stack is installed
 	RegionID string `json:"regionID"`
 	StargateEnabled bool `json:"stargateEnabled"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 }
 
 // NewStack instantiates a new Stack object
@@ -225,6 +227,38 @@ func (o *Stack) SetStargateEnabled(v bool) {
 	o.StargateEnabled = v
 }
 
+// GetDeletedAt returns the DeletedAt field value if set, zero value otherwise.
+func (o *Stack) GetDeletedAt() time.Time {
+	if o == nil || IsNil(o.DeletedAt) {
+		var ret time.Time
+		return ret
+	}
+	return *o.DeletedAt
+}
+
+// GetDeletedAtOk returns a tuple with the DeletedAt field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Stack) GetDeletedAtOk() (*time.Time, bool) {
+	if o == nil || IsNil(o.DeletedAt) {
+		return nil, false
+	}
+	return o.DeletedAt, true
+}
+
+// HasDeletedAt returns a boolean if a field has been set.
+func (o *Stack) HasDeletedAt() bool {
+	if o != nil && !IsNil(o.DeletedAt) {
+		return true
+	}
+
+	return false
+}
+
+// SetDeletedAt gets a reference to the given time.Time and assigns it to the DeletedAt field.
+func (o *Stack) SetDeletedAt(v time.Time) {
+	o.DeletedAt = &v
+}
+
 func (o Stack) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
@@ -242,6 +276,9 @@ func (o Stack) ToMap() (map[string]interface{}, error) {
 	toSerialize["uri"] = o.Uri
 	toSerialize["regionID"] = o.RegionID
 	toSerialize["stargateEnabled"] = o.StargateEnabled
+	if !IsNil(o.DeletedAt) {
+		toSerialize["deletedAt"] = o.DeletedAt
+	}
 	return toSerialize, nil
 }
 
@@ -280,3 +317,5 @@ func (v *NullableStack) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
+
+

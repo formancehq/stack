@@ -4,12 +4,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Id** | **string** |  |
-**BaseUrl** | **string** |  |
-**CreatedAt** | **string** |  |
-**Active** | **bool** |  |
-**LastPing** | Pointer to **time.Time** |  | [optional]
-**Name** | **string** |  |
+**Id** | **string** |  | 
+**BaseUrl** | **string** |  | 
+**CreatedAt** | **string** |  | 
+**Active** | **bool** |  | 
+**LastPing** | Pointer to **time.Time** |  | [optional] 
+**Name** | **string** |  | 
 
 ## Methods
 
@@ -157,3 +157,5 @@ SetName sets Name field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

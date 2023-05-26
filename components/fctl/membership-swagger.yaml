@@ -197,6 +197,12 @@ paths:
         schema:
           type: string
         required: true
+      - name: deleted
+        in: query
+        description: Include deleted stacks
+        schema:
+          type: boolean
+        required: false
       responses:
         200:
           description: List of stacks
@@ -270,6 +276,29 @@ paths:
       responses:
         204:
           description: Stack deleted
+
+  /organizations/{organizationId}/stacks/{stackId}/restore:
+    put:
+      summary: Restore stack
+      operationId: restoreStack
+      parameters:
+      - name: organizationId
+        in: path
+        schema:
+          type: string
+        required: true
+      - name: stackId
+        in: path
+        schema:
+          type: string
+        required: true
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadStackResponse'
 
   /organizations/{organizationId}/stacks/{stackId}/stargate/enable:
     parameters:
@@ -644,6 +673,9 @@ components:
             description: The region where the stack is installed
           stargateEnabled:
             type: boolean
+          deletedAt:
+            type: string
+            format: date-time
     UpdatableUserData:
       type: object
       properties:
@@ -734,6 +766,8 @@ components:
         data:
           $ref: '#/components/schemas/Stack'
     ReadStackResponse:
+      $ref: '#/components/schemas/CreateStackResponse'
+    RestoreStackResponse:
       $ref: '#/components/schemas/CreateStackResponse'
     ReadUserResponse:
       type: object

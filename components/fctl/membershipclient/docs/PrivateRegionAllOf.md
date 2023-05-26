@@ -4,10 +4,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**ClientID** | **string** |  |
-**OrganizationID** | **string** |  |
-**CreatorID** | **string** |  |
-**Secret** | Pointer to [**PrivateRegionAllOfSecret**](PrivateRegionAllOfSecret.md) |  | [optional]
+**ClientID** | **string** |  | 
+**OrganizationID** | **string** |  | 
+**CreatorID** | **string** |  | 
+**Secret** | Pointer to [**PrivateRegionAllOfSecret**](PrivateRegionAllOfSecret.md) |  | [optional] 
 
 ## Methods
 
@@ -115,3 +115,5 @@ HasSecret returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

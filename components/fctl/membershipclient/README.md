@@ -104,6 +104,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**ReadOrganization**](docs/DefaultApi.md#readorganization) | **Get** /organizations/{organizationId} | Read organization
 *DefaultApi* | [**ReadStack**](docs/DefaultApi.md#readstack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Read stack
 *DefaultApi* | [**ReadUser**](docs/DefaultApi.md#readuser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
+*DefaultApi* | [**RestoreStack**](docs/DefaultApi.md#restorestack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 *DefaultApi* | [**UnlinkUserFromOrganization**](docs/DefaultApi.md#unlinkuserfromorganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
 *DefaultApi* | [**UpdateConnectedUser**](docs/DefaultApi.md#updateconnecteduser) | **Put** /me | Update user
 *DefaultApi* | [**UpdateUser**](docs/DefaultApi.md#updateuser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
@@ -167,7 +168,7 @@ Class | Method | HTTP request | Description
 - **Type**: OAuth
 - **Flow**: accessCode
 - **Authorization URL**: /authorize
-- **Scopes**:
+- **Scopes**: 
  - **openid**: Enable OIDC
  - **email**: Ask email access
 
@@ -208,3 +209,6 @@ Each of these functions takes a value of the given basic type and returns a poin
 * `PtrTime`
 
 ## Author
+
+
+

@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Email** | **string** |  |
-**Metadata** | Pointer to **map[string]string** |  | [optional]
-**Id** | **string** | User ID |
+**Email** | **string** |  | 
+**Metadata** | Pointer to **map[string]string** |  | [optional] 
+**Id** | **string** | User ID | 
 
 ## Methods
 
@@ -94,3 +94,5 @@ SetId sets Id field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

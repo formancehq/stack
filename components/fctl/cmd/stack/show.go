@@ -39,7 +39,7 @@ func NewShowCommand() *cobra.Command {
 			var stack *membershipclient.Stack
 			if len(args) == 1 {
 				if fctl.GetString(cmd, stackNameFlag) != "" {
-					return errors.New("need either an id of a name spefified using --name flag")
+					return errors.New("need either an id of a name specified using --name flag")
 				}
 				stackResponse, httpResponse, err := apiClient.DefaultApi.ReadStack(cmd.Context(), organization, args[0]).Execute()
 				if err != nil {

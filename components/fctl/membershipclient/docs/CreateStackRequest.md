@@ -4,9 +4,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | **string** | Stack name |
-**Metadata** | **map[string]string** |  |
-**RegionID** | **string** |  |
+**Name** | **string** | Stack name | 
+**Metadata** | **map[string]string** |  | 
+**RegionID** | **string** |  | 
 
 ## Methods
 
@@ -89,3 +89,5 @@ SetRegionID sets RegionID field to given value.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

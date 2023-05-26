@@ -30,6 +30,7 @@ Method | HTTP request | Description
 [**ReadOrganization**](DefaultApi.md#ReadOrganization) | **Get** /organizations/{organizationId} | Read organization
 [**ReadStack**](DefaultApi.md#ReadStack) | **Get** /organizations/{organizationId}/stacks/{stackId} | Read stack
 [**ReadUser**](DefaultApi.md#ReadUser) | **Get** /organizations/{organizationId}/users/{userId} | Read user
+[**RestoreStack**](DefaultApi.md#RestoreStack) | **Put** /organizations/{organizationId}/stacks/{stackId}/restore | Restore stack
 [**UnlinkUserFromOrganization**](DefaultApi.md#UnlinkUserFromOrganization) | **Delete** /organizations/{organizationId}/users/{userId} | Unlink user from organization
 [**UpdateConnectedUser**](DefaultApi.md#UpdateConnectedUser) | **Put** /me | Update user
 [**UpdateUser**](DefaultApi.md#UpdateUser) | **Put** /organizations/{organizationId}/users/{userId} | Update user
@@ -55,7 +56,7 @@ import (
 )
 
 func main() {
-    invitationId := "invitationId_example" // string |
+    invitationId := "invitationId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -73,7 +74,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invitationId** | **string** |  |
+**invitationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -121,7 +122,7 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
+    organizationId := "organizationId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -141,7 +142,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -189,7 +190,7 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
+    organizationId := "organizationId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -209,7 +210,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -257,8 +258,8 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
-    email := "email_example" // string |
+    organizationId := "organizationId_example" // string | 
+    email := "email_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -278,7 +279,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -288,7 +289,7 @@ Other parameters are passed through a pointer to a apiCreateInvitationRequest st
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **email** | **string** |  |
+ **email** | **string** |  | 
 
 ### Return type
 
@@ -352,7 +353,7 @@ Other parameters are passed through a pointer to a apiCreateOrganizationRequest 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | **OrganizationData** |  |
+ **body** | **OrganizationData** |  | 
 
 ### Return type
 
@@ -391,7 +392,7 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
+    organizationId := "organizationId_example" // string | 
     createPrivateRegionRequest := *openapiclient.NewCreatePrivateRegionRequest("Name_example") // CreatePrivateRegionRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
@@ -412,7 +413,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -422,7 +423,7 @@ Other parameters are passed through a pointer to a apiCreatePrivateRegionRequest
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **createPrivateRegionRequest** | [**CreatePrivateRegionRequest**](CreatePrivateRegionRequest.md) |  |
+ **createPrivateRegionRequest** | [**CreatePrivateRegionRequest**](CreatePrivateRegionRequest.md) |  | 
 
 ### Return type
 
@@ -461,7 +462,7 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
+    organizationId := "organizationId_example" // string | 
     createStackRequest := *openapiclient.NewCreateStackRequest("Name_example", map[string]string{"key": "Inner_example"}, "RegionID_example") // CreateStackRequest |  (optional)
 
     configuration := openapiclient.NewConfiguration()
@@ -482,7 +483,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -492,7 +493,7 @@ Other parameters are passed through a pointer to a apiCreateStackRequest struct 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **createStackRequest** | [**CreateStackRequest**](CreateStackRequest.md) |  |
+ **createStackRequest** | [**CreateStackRequest**](CreateStackRequest.md) |  | 
 
 ### Return type
 
@@ -531,7 +532,7 @@ import (
 )
 
 func main() {
-    invitationId := "invitationId_example" // string |
+    invitationId := "invitationId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -549,7 +550,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**invitationId** | **string** |  |
+**invitationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -597,7 +598,7 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
+    organizationId := "organizationId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -615,7 +616,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -663,8 +664,8 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
-    regionId := "regionId_example" // string |
+    organizationId := "organizationId_example" // string | 
+    regionId := "regionId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -682,8 +683,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
-**regionId** | **string** |  |
+**organizationId** | **string** |  | 
+**regionId** | **string** |  | 
 
 ### Other Parameters
 
@@ -732,8 +733,8 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
-    stackId := "stackId_example" // string |
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -751,8 +752,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
-**stackId** | **string** |  |
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
 
 ### Other Parameters
 
@@ -801,8 +802,8 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
-    stackId := "stackId_example" // string |
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -820,8 +821,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
-**stackId** | **string** |  |
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
 
 ### Other Parameters
 
@@ -870,8 +871,8 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
-    stackId := "stackId_example" // string |
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -889,8 +890,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
-**stackId** | **string** |  |
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
 
 ### Other Parameters
 
@@ -939,8 +940,8 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
-    regionId := "regionId_example" // string |
+    organizationId := "organizationId_example" // string | 
+    regionId := "regionId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -960,8 +961,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
-**regionId** | **string** |  |
+**organizationId** | **string** |  | 
+**regionId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1095,8 +1096,8 @@ Other parameters are passed through a pointer to a apiListInvitationsRequest str
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **status** | **string** | Status of organizations |
- **organization** | **string** | Status of organizations |
+ **status** | **string** | Status of organizations | 
+ **organization** | **string** | Status of organizations | 
 
 ### Return type
 
@@ -1135,7 +1136,7 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
+    organizationId := "organizationId_example" // string | 
     status := "status_example" // string | Status of organizations (optional)
 
     configuration := openapiclient.NewConfiguration()
@@ -1156,7 +1157,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1166,7 +1167,7 @@ Other parameters are passed through a pointer to a apiListOrganizationInvitation
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **status** | **string** | Status of organizations |
+ **status** | **string** | Status of organizations | 
 
 ### Return type
 
@@ -1323,7 +1324,7 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
+    organizationId := "organizationId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -1343,7 +1344,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1374,7 +1375,7 @@ Name | Type | Description  | Notes
 
 ## ListStacks
 
-> ListStacksResponse ListStacks(ctx, organizationId).Execute()
+> ListStacksResponse ListStacks(ctx, organizationId).Deleted(deleted).Execute()
 
 List stacks
 
@@ -1391,11 +1392,12 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
+    organizationId := "organizationId_example" // string | 
+    deleted := true // bool | Include deleted stacks (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DefaultApi.ListStacks(context.Background(), organizationId).Execute()
+    resp, r, err := apiClient.DefaultApi.ListStacks(context.Background(), organizationId).Deleted(deleted).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.ListStacks``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -1411,7 +1413,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1421,6 +1423,7 @@ Other parameters are passed through a pointer to a apiListStacksRequest struct v
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
+ **deleted** | **bool** | Include deleted stacks | 
 
 ### Return type
 
@@ -1459,7 +1462,7 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
+    organizationId := "organizationId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -1479,7 +1482,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1586,7 +1589,7 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
+    organizationId := "organizationId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -1606,7 +1609,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
+**organizationId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1654,8 +1657,8 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
-    stackId := "stackId_example" // string |
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -1675,8 +1678,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
-**stackId** | **string** |  |
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1725,8 +1728,8 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
-    userId := "userId_example" // string |
+    organizationId := "organizationId_example" // string | 
+    userId := "userId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -1746,8 +1749,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
-**userId** | **string** |  |
+**organizationId** | **string** |  | 
+**userId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1762,6 +1765,77 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**ReadUserResponse**](ReadUserResponse.md)
+
+### Authorization
+
+[oauth2](../README.md#oauth2)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## RestoreStack
+
+> CreateStackResponse RestoreStack(ctx, organizationId, stackId).Execute()
+
+Restore stack
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "github.com/formancehq/fctl/membershipclient"
+)
+
+func main() {
+    organizationId := "organizationId_example" // string | 
+    stackId := "stackId_example" // string | 
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.DefaultApi.RestoreStack(context.Background(), organizationId, stackId).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `DefaultApi.RestoreStack``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `RestoreStack`: CreateStackResponse
+    fmt.Fprintf(os.Stdout, "Response from `DefaultApi.RestoreStack`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**organizationId** | **string** |  | 
+**stackId** | **string** |  | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiRestoreStackRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+
+
+### Return type
+
+[**CreateStackResponse**](CreateStackResponse.md)
 
 ### Authorization
 
@@ -1798,8 +1872,8 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
-    userId := "userId_example" // string |
+    organizationId := "organizationId_example" // string | 
+    userId := "userId_example" // string | 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
@@ -1817,8 +1891,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
-**userId** | **string** |  |
+**organizationId** | **string** |  | 
+**userId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1892,7 +1966,7 @@ Other parameters are passed through a pointer to a apiUpdateConnectedUserRequest
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | **UpdatableUserData** |  |
+ **body** | **UpdatableUserData** |  | 
 
 ### Return type
 
@@ -1931,8 +2005,8 @@ import (
 )
 
 func main() {
-    organizationId := "organizationId_example" // string |
-    userId := "userId_example" // string |
+    organizationId := "organizationId_example" // string | 
+    userId := "userId_example" // string | 
     body := UpdatableUserData(987) // UpdatableUserData |  (optional)
 
     configuration := openapiclient.NewConfiguration()
@@ -1953,8 +2027,8 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**organizationId** | **string** |  |
-**userId** | **string** |  |
+**organizationId** | **string** |  | 
+**userId** | **string** |  | 
 
 ### Other Parameters
 
@@ -1965,7 +2039,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
 
- **body** | **UpdatableUserData** |  |
+ **body** | **UpdatableUserData** |  | 
 
 ### Return type
 
@@ -1983,3 +2057,4 @@ Name | Type | Description  | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
+
