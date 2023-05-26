@@ -17,7 +17,7 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 	meter := meterProvider.Meter("server_http")
 
 	receivedHTTPCallByPath, err := meter.Int64Counter(
-		"received_http_call_by_path",
+		"stargate_server_received_http_call_by_path",
 		instrument.WithUnit("1"),
 		instrument.WithDescription("Received HTTP call by path"),
 	)
@@ -41,6 +41,6 @@ func NewNoOpMetricsRegistry() *NoOpMetricsRegistry {
 }
 
 func (m *NoOpMetricsRegistry) ReceivedHTTPCallByPath() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("received_http_call_by_path")
+	counter, _ := metric.NewNoopMeter().Int64Counter("stargate_server_received_http_call_by_path")
 	return counter
 }

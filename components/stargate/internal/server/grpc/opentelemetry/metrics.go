@@ -105,26 +105,26 @@ func NewNoOpMetricsRegistry() *NoOpMetricsRegistry {
 }
 
 func (m *NoOpMetricsRegistry) UnAuthenticatedCalls() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("unauthenticated_calls")
+	counter, _ := metric.NewNoopMeter().Int64Counter("stargate_server_unauthenticated_calls")
 	return counter
 }
 
 func (m *NoOpMetricsRegistry) GRPCLatencies() instrument.Int64Histogram {
-	histogram, _ := metric.NewNoopMeter().Int64Histogram("grpc_latencies")
+	histogram, _ := metric.NewNoopMeter().Int64Histogram("stargate_server_grpc_latencies")
 	return histogram
 }
 
 func (m *NoOpMetricsRegistry) CorrelationIDNotFound() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("correlation_id_not_found")
+	counter, _ := metric.NewNoopMeter().Int64Counter("stargate_server_correlation_id_not_found")
 	return counter
 }
 
 func (m *NoOpMetricsRegistry) ClientsConnected() instrument.Int64UpDownCounter {
-	counter, _ := metric.NewNoopMeter().Int64UpDownCounter("clients_connected")
+	counter, _ := metric.NewNoopMeter().Int64UpDownCounter("stargate_server_clients_connected")
 	return counter
 }
 
 func (m *NoOpMetricsRegistry) StreamErrors() instrument.Int64Counter {
-	counter, _ := metric.NewNoopMeter().Int64Counter("stream_errors")
+	counter, _ := metric.NewNoopMeter().Int64Counter("stargate_server_stream_errors")
 	return counter
 }
