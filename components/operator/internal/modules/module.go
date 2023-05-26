@@ -16,6 +16,18 @@ import (
 
 func HandleStack(ctx Context, deployer *ResourceDeployer) error {
 
+	if ctx.Stack.Spec.Disabled {
+		if err := deployer.client.DeleteAllOf(ctx, &v1.Deployment{},
+			client.InNamespace(ctx.Stack.Name),
+			client.MatchingLabels{
+				"stack": "true",
+			},
+		); err != nil {
+			return err
+		}
+		return nil
+	}
+
 	var (
 		portAllocator PortAllocator = StaticPortAllocator(8080)
 		podDeployer   PodDeployer   = NewDefaultPodDeployer(deployer)
