@@ -13,6 +13,7 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/logging"
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
+	"go.opentelemetry.io/otel/attribute"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -53,6 +54,9 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	ctx := stream.Context()
 	organizationID, stackID, err := orgaAndStackIDFromIncomingContext(ctx)
 	if err != nil {
+		s.metricsRegistry.StreamErrors().Add(ctx, 1, []attribute.KeyValue{
+			attribute.Int("code", int(codes.InvalidArgument)),
+		}...)
 		return status.Errorf(codes.InvalidArgument, "cannot get organization and stack id from contex metadata: %v", err)
 	}
 
@@ -60,6 +64,12 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 		"organization_id": organizationID,
 		"stack_id":        stackID,
 	})
+	attrs := []attribute.KeyValue{
+		attribute.String("organization_id", organizationID),
+		attribute.String("stack_id", stackID),
+	}
+	s.metricsRegistry.ClientsConnected().Add(ctx, 1, attrs...)
+	defer s.metricsRegistry.ClientsConnected().Add(ctx, -1, attrs...)
 
 	logger.Infof("[GRPC] new stargate connection")
 	defer logger.Infof("[GRPC] stargate connection closed")
@@ -71,6 +81,9 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	logger.Debugf("[GRPC] subscribing to nats subject %s", subject)
 	sub, err := s.natsConn.QueueSubscribeSync(subject, subject)
 	if err != nil {
+		s.metricsRegistry.StreamErrors().Add(ctx, 1, []attribute.KeyValue{
+			attribute.Int("code", int(codes.Internal)),
+		}...)
 		return status.Errorf(codes.Internal, "cannot subscribe to nats subject")
 	}
 
@@ -185,7 +198,9 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 	})
 
 	if err := eg.Wait(); err != nil {
-		// TODO(polo): should we expose the error here ?
+		s.metricsRegistry.StreamErrors().Add(ctx, 1, []attribute.KeyValue{
+			attribute.Int("code", int(codes.Internal)),
+		}...)
 		return status.Errorf(codes.Internal, "internal error: %v", err)
 	}
 
