@@ -18,7 +18,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/zitadel/oidc/v2/pkg/client"
 	"github.com/zitadel/oidc/v2/pkg/client/rp"
-	httphelper "github.com/zitadel/oidc/v2/pkg/http"
 	"github.com/zitadel/oidc/v2/pkg/oidc"
 	"golang.org/x/oauth2"
 )
@@ -144,29 +143,16 @@ func (p *Profile) GetClaims() (jwt.MapClaims, error) {
 	return claims, nil
 }
 
-func (p *Profile) GetUserInfo(cmd *cobra.Command) (*oidc.UserInfo, error) {
-
-	relyingParty, err := GetAuthRelyingParty(GetHttpClient(cmd, map[string][]string{}), p.GetMembershipURI())
-	if err != nil {
-		return nil, err
+func (p *Profile) GetUserInfo(cmd *cobra.Command) (*userClaims, error) {
+	claims := &userClaims{}
+	if p.token != nil && p.token.IDToken != "" {
+		_, err := oidc.ParseToken(p.token.IDToken, claims)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	req, err := http.NewRequest(http.MethodGet, relyingParty.UserinfoEndpoint(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	token, err := p.GetToken(cmd.Context(), relyingParty.HttpClient())
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("Authorization", fmt.Sprintf("%s %s", token.TokenType, token.AccessToken))
-	userinfo := &oidc.UserInfo{}
-	if err := httphelper.HttpRequest(relyingParty.HttpClient(), req, &userinfo); err != nil {
-		return nil, err
-	}
-	return userinfo, nil
+	return claims, nil
 }
 
 func (p *Profile) GetStackToken(ctx context.Context, httpClient *http.Client, stack *membershipclient.Stack) (string, error) {

@@ -11,5 +11,7 @@ type organizationClaim struct {
 }
 type organizationsClaim []organizationClaim
 type userClaims struct {
-	Org organizationsClaim `json:"org"`
+	Email   string             `json:"email"`
+	Subject string             `json:"sub"`
+	Org     organizationsClaim `json:"org"`
 }

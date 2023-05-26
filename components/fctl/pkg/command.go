@@ -8,7 +8,6 @@ import (
 	"github.com/segmentio/analytics-go/v3"
 	"github.com/segmentio/ksuid"
 	"github.com/spf13/cobra"
-	"github.com/zitadel/oidc/v2/pkg/oidc"
 )
 
 const (
@@ -242,8 +241,7 @@ func NewStackCommand(use string, opts ...CommandOption) *cobra.Command {
 		}
 		profile := GetCurrentProfile(cmd, cfg)
 
-		claims := &userClaims{}
-		_, err = oidc.ParseToken(profile.token.IDToken, claims)
+		claims, err := profile.GetUserInfo(cmd)
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
@@ -275,14 +273,14 @@ func NewMembershipCommand(use string, opts ...CommandOption) *cobra.Command {
 		)...,
 	)
 	cmd.RegisterFlagCompletionFunc("organization", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+
 		cfg, err := GetConfig(cmd)
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
 		profile := GetCurrentProfile(cmd, cfg)
 
-		claims := &userClaims{}
-		_, err = oidc.ParseToken(profile.token.IDToken, claims)
+		claims, err := profile.GetUserInfo(cmd)
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}

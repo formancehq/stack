@@ -60,6 +60,21 @@ func NewRootCommand() *cobra.Command {
 		fctl.WithPersistentBoolFlag(fctl.TelemetryFlag, false, "Telemetry enabled"),
 	)
 	cmd.Version = Version
+	cmd.RegisterFlagCompletionFunc(fctl.ProfileFlag, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		cfg, err := fctl.GetConfig(cmd)
+		if err != nil {
+			return []string{}, cobra.ShellCompDirectiveError
+		}
+		ret := make([]string, 0)
+		for name := range cfg.GetProfiles() {
+			//userInfo, err := profile.GetUserInfo(cmd)
+			//if err != nil {
+			//	continue
+			//}
+			ret = append(ret, name)
+		}
+		return ret, cobra.ShellCompDirectiveDefault
+	})
 	return cmd
 }
 
