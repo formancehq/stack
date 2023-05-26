@@ -77,9 +77,8 @@ func NewRootCommand() *cobra.Command {
 	}
 
 	root.PersistentFlags().Bool(service.DebugFlag, false, "Debug mode")
-
-	otlptraces.InitOTLPTracesFlags(root.Flags())
-	otlpmetrics.InitOTLPMetricsFlags(root.Flags())
+	otlptraces.InitOTLPTracesFlags(root.PersistentFlags())
+	otlpmetrics.InitOTLPMetricsFlags(root.PersistentFlags())
 
 	if err := viper.BindPFlags(root.PersistentFlags()); err != nil {
 		panic(err)
