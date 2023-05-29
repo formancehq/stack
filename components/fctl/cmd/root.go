@@ -67,10 +67,6 @@ func NewRootCommand() *cobra.Command {
 		}
 		ret := make([]string, 0)
 		for name := range cfg.GetProfiles() {
-			//userInfo, err := profile.GetUserInfo(cmd)
-			//if err != nil {
-			//	continue
-			//}
 			ret = append(ret, name)
 		}
 		return ret, cobra.ShellCompDirectiveDefault
@@ -93,6 +89,8 @@ func Execute() {
 		case errors.Is(err, fctl.ErrMissingApproval):
 			pterm.Error.WithWriter(os.Stderr).Printfln("Command aborted as you didn't approve.")
 			os.Exit(1)
+		case fctl.IsInvalidAuthentication(err):
+			pterm.Error.WithWriter(os.Stderr).Printfln("Your authentication is invalid, please login :)")
 		case extractOpenAPIErrorMessage(err) != nil:
 			pterm.Error.WithWriter(os.Stderr).Printfln(extractOpenAPIErrorMessage(err).Error())
 			os.Exit(2)

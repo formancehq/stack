@@ -22,6 +22,33 @@ import (
 	"golang.org/x/oauth2"
 )
 
+type ErrInvalidAuthentication struct {
+	err error
+}
+
+func (e ErrInvalidAuthentication) Error() string {
+	return e.err.Error()
+}
+
+func (e ErrInvalidAuthentication) Unwrap() error {
+	return e.err
+}
+
+func (e ErrInvalidAuthentication) Is(err error) bool {
+	_, ok := err.(*ErrInvalidAuthentication)
+	return ok
+}
+
+func IsInvalidAuthentication(err error) bool {
+	return errors.Is(err, &ErrInvalidAuthentication{})
+}
+
+func newErrInvalidAuthentication(err error) *ErrInvalidAuthentication {
+	return &ErrInvalidAuthentication{
+		err: err,
+	}
+}
+
 const AuthClient = "fctl"
 
 type persistedProfile struct {
@@ -96,7 +123,7 @@ func (p *Profile) GetToken(ctx context.Context, httpClient *http.Client) (*oauth
 		claims := &oidc.AccessTokenClaims{}
 		_, err := oidc.ParseToken(p.token.AccessToken, claims)
 		if err != nil {
-			return nil, err
+			return nil, newErrInvalidAuthentication(errors.Wrap(err, "parsing token"))
 		}
 		if claims.Expiration.AsTime().Before(time.Now()) {
 			relyingParty, err := GetAuthRelyingParty(httpClient, p.membershipURI)
@@ -106,7 +133,7 @@ func (p *Profile) GetToken(ctx context.Context, httpClient *http.Client) (*oauth
 
 			newToken, err := rp.RefreshAccessToken(relyingParty, p.token.RefreshToken, "", "")
 			if err != nil {
-				return nil, err
+				return nil, newErrInvalidAuthentication(errors.Wrap(err, "refreshing token"))
 			}
 
 			p.UpdateToken(&oidc.AccessTokenResponse{
@@ -123,7 +150,7 @@ func (p *Profile) GetToken(ctx context.Context, httpClient *http.Client) (*oauth
 	claims := &oidc.AccessTokenClaims{}
 	_, err := oidc.ParseToken(p.token.AccessToken, claims)
 	if err != nil {
-		return nil, err
+		return nil, newErrInvalidAuthentication(err)
 	}
 	return &oauth2.Token{
 		AccessToken:  p.token.AccessToken,
