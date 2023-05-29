@@ -64,12 +64,8 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 		"organization_id": organizationID,
 		"stack_id":        stackID,
 	})
-	attrs := []attribute.KeyValue{
-		attribute.String("organization_id", organizationID),
-		attribute.String("stack_id", stackID),
-	}
-	s.metricsRegistry.ClientsConnected().Add(ctx, 1, attrs...)
-	defer s.metricsRegistry.ClientsConnected().Add(ctx, -1, attrs...)
+	opentelemetry.ClientsConnected.Add(1)
+	defer opentelemetry.ClientsConnected.Add(-1)
 
 	logger.Infof("[GRPC] new stargate connection")
 	defer logger.Infof("[GRPC] stargate connection closed")

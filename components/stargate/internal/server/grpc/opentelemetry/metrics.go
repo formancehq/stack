@@ -1,13 +1,20 @@
 package opentelemetry
 
 import (
+	"context"
+	"sync/atomic"
+
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/instrument"
 )
 
+var (
+	ClientsConnected atomic.Int64
+)
+
 type MetricsRegistry interface {
 	UnAuthenticatedCalls() instrument.Int64Counter
-	ClientsConnected() instrument.Int64UpDownCounter
+	ClientsConnected() instrument.Int64ObservableGauge
 	StreamErrors() instrument.Int64Counter
 	GRPCLatencies() instrument.Int64Histogram
 	CorrelationIDNotFound() instrument.Int64Counter
@@ -15,7 +22,7 @@ type MetricsRegistry interface {
 
 type metricsRegistry struct {
 	unAuthenticatedCalls  instrument.Int64Counter
-	clientsConnected      instrument.Int64UpDownCounter
+	clientsConnected      instrument.Int64ObservableGauge
 	streamErrors          instrument.Int64Counter
 	grpcLatencies         instrument.Int64Histogram
 	correlationIDNotFound instrument.Int64Counter
@@ -33,10 +40,14 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 		return nil, err
 	}
 
-	clientsConnected, err := meter.Int64UpDownCounter(
+	clientsConnected, err := meter.Int64ObservableGauge(
 		"stargate_server_clients_connected",
 		instrument.WithUnit("1"),
 		instrument.WithDescription("Number of connected clients"),
+		instrument.WithInt64Callback(func(ctx context.Context, obs instrument.Int64Observer) error {
+			obs.Observe(ClientsConnected.Load())
+			return nil
+		}),
 	)
 	if err != nil {
 		return nil, err
@@ -90,7 +101,7 @@ func (m *metricsRegistry) CorrelationIDNotFound() instrument.Int64Counter {
 	return m.correlationIDNotFound
 }
 
-func (m *metricsRegistry) ClientsConnected() instrument.Int64UpDownCounter {
+func (m *metricsRegistry) ClientsConnected() instrument.Int64ObservableGauge {
 	return m.clientsConnected
 }
 
@@ -119,8 +130,8 @@ func (m *NoOpMetricsRegistry) CorrelationIDNotFound() instrument.Int64Counter {
 	return counter
 }
 
-func (m *NoOpMetricsRegistry) ClientsConnected() instrument.Int64UpDownCounter {
-	counter, _ := metric.NewNoopMeter().Int64UpDownCounter("stargate_server_clients_connected")
+func (m *NoOpMetricsRegistry) ClientsConnected() instrument.Int64ObservableGauge {
+	counter, _ := metric.NewNoopMeter().Int64ObservableGauge("stargate_server_clients_connected")
 	return counter
 }
 
