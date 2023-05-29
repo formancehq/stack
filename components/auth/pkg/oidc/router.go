@@ -13,9 +13,17 @@ import (
 const AuthorizeCallbackPath = "/authorize/callback"
 
 func AddRoutes(router *mux.Router, provider op.OpenIDProvider, storage Storage, relyingParty rp.RelyingParty) {
-	router.NewRoute().Path(AuthorizeCallbackPath).Queries("code", "{code}").
+	authorizationRouter := router.NewRoute().Subrouter()
+	authorizationRouter.Use(func(handler http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			handler.ServeHTTP(w, r.WithContext(
+				op.ContextWithIssuer(r.Context(), provider.IssuerFromRequest(r)),
+			))
+		})
+	})
+	authorizationRouter.NewRoute().Path(AuthorizeCallbackPath).Queries("code", "{code}").
 		Handler(authorizeCallbackHandler(provider, storage, relyingParty))
-	router.NewRoute().Path(AuthorizeCallbackPath).Queries("error", "{error}").
+	authorizationRouter.NewRoute().Path(AuthorizeCallbackPath).Queries("error", "{error}").
 		Handler(authorizeErrorHandler())
 
 	oidcLibRouter := router.PathPrefix("/").Subrouter()
