@@ -2,15 +2,29 @@ package opentelemetry
 
 import (
 	"context"
+	"math/rand"
 	"sync/atomic"
+	"time"
 
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/instrument"
 )
 
 var (
 	ClientsConnected atomic.Int64
+
+	// TODO(polo): this is not ideal, we should be able to have the pod name
+	// instead
+	attrs []attribute.KeyValue
 )
+
+func init() {
+	source := rand.NewSource(time.Now().UnixNano())
+	n := source.Int63()
+
+	attrs = append(attrs, attribute.Int64("pod_id", n))
+}
 
 type MetricsRegistry interface {
 	UnAuthenticatedCalls() instrument.Int64Counter
@@ -45,7 +59,7 @@ func RegisterMetricsRegistry(meterProvider metric.MeterProvider) (MetricsRegistr
 		instrument.WithUnit("1"),
 		instrument.WithDescription("Number of connected clients"),
 		instrument.WithInt64Callback(func(ctx context.Context, obs instrument.Int64Observer) error {
-			obs.Observe(ClientsConnected.Load())
+			obs.Observe(ClientsConnected.Load(), attrs...)
 			return nil
 		}),
 	)

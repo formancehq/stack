@@ -101,6 +101,14 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 				return err
 			}
 
+			switch ev := request.Event.(type) {
+			case *api.StargateServerMessage_ApiCall:
+				logger.WithFields(map[string]any{
+					"path": ev.ApiCall.Path,
+				}).Debug("[GRPC] stream api call request received")
+			default:
+			}
+
 			correlationID := uuid.New().String()
 
 			waitingResponses.Store(correlationID, waitingResponse{
