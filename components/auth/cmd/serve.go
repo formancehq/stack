@@ -150,7 +150,7 @@ func newServeCommand() *cobra.Command {
 					RedirectURL:  fmt.Sprintf("%s/authorize/callback", viper.GetString(baseUrlFlag)),
 				}),
 				sqlstorage.Module(sqlstorage.KindPostgres, viper.GetString(postgresUriFlag), key, o.Clients...),
-				api.Module(viper.GetString(listenFlag), sharedapi.ServiceInfo{
+				api.Module(viper.GetString(listenFlag), viper.GetString(baseUrlFlag), sharedapi.ServiceInfo{
 					Version: Version,
 				}),
 				oidc.Module(key, viper.GetString(baseUrlFlag), o.Clients...),
