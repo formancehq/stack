@@ -4250,6 +4250,8 @@ spec:
                     type: object
                   ledger:
                     properties:
+                      allowPastTimestamps:
+                        type: boolean
                       postgres:
                         properties:
                           disableSSLMode:

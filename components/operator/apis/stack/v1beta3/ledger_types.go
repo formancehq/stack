@@ -19,4 +19,6 @@ type LockingStrategyRedisConfig struct {
 // +kubebuilder:object:generate=true
 type LedgerSpec struct {
 	Postgres PostgresConfig `json:"postgres"`
+	// +optional
+	AllowPastTimestamps bool `json:"allowPastTimestamps"`
 }

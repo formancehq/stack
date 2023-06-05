@@ -54,6 +54,9 @@ func init() {
 							modules.Env("STORAGE_DRIVER", "postgres"),
 							modules.Env("PUBLISHER_TOPIC_MAPPING", "*:"+resolveContext.Stack.GetServiceName("ledger")),
 						).Append(modules.BrokerEnvVarsWithPrefix(resolveContext.Configuration.Spec.Broker, "ledger")...)
+						if resolveContext.Configuration.Spec.Services.Ledger.AllowPastTimestamps {
+							env = env.Append(modules.Env("COMMIT_POLICY", "allow-past-timestamps"))
+						}
 
 						return modules.Container{
 							Resources: modules.ResourceSizeSmall(),
