@@ -147,7 +147,8 @@ func NewDumbConfiguration() *v1beta3.Configuration {
 				},
 				Control: v1beta3.ControlSpec{},
 				Ledger: v1beta3.LedgerSpec{
-					Postgres: NewPostgresConfig(),
+					Postgres:            NewPostgresConfig(),
+					AllowPastTimestamps: true,
 				},
 				Payments: v1beta3.PaymentsSpec{
 					Postgres: NewPostgresConfig(),

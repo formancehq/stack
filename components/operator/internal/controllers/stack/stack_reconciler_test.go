@@ -82,6 +82,14 @@ var _ = Describe("When creating a stack", func() {
 		It("should be ok", func() {
 			verifyResources(stack, "monopod")
 		})
+		Context("and ledger v1", func() {
+			BeforeEach(func() {
+				versions.Spec.Ledger = "v1.0.0"
+			})
+			It("should be ok", func() {
+				verifyResources(stack, "monopod-ledgerv1")
+			})
+		})
 	})
 })
 

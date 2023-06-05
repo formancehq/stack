@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
     annotations:
         reloader.stakater.com/auto: "true"
-    generation: 1
+    generation: 2
     labels:
         formance.com/monopod: "true"
         stack: "true"
@@ -212,59 +212,61 @@ spec:
                       name: gateway-config
                       readOnly: true
                 - env:
-                    - name: POSTGRES_HOST
+                    - name: NUMARY_POSTGRES_HOST
                       value: localhost
-                    - name: POSTGRES_PORT
+                    - name: NUMARY_POSTGRES_PORT
                       value: "32786"
-                    - name: POSTGRES_DATABASE
+                    - name: NUMARY_POSTGRES_DATABASE
                       value: orga2-stack2-ledger
-                    - name: POSTGRES_USERNAME
+                    - name: NUMARY_POSTGRES_USERNAME
                       value: root
-                    - name: POSTGRES_PASSWORD
+                    - name: NUMARY_POSTGRES_PASSWORD
                       value: root
-                    - name: POSTGRES_NO_DATABASE_URI
-                      value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
-                    - name: POSTGRES_URI
-                      value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
-                    - name: BIND
+                    - name: NUMARY_POSTGRES_NO_DATABASE_URI
+                      value: postgresql://$(NUMARY_POSTGRES_USERNAME):$(NUMARY_POSTGRES_PASSWORD)@$(NUMARY_POSTGRES_HOST):$(NUMARY_POSTGRES_PORT)
+                    - name: NUMARY_POSTGRES_URI
+                      value: $(NUMARY_POSTGRES_NO_DATABASE_URI)/$(NUMARY_POSTGRES_DATABASE)?sslmode=disable
+                    - name: NUMARY_SERVER_HTTP_BIND_ADDRESS
                       value: :10002
-                    - name: OTEL_TRACES
+                    - name: NUMARY_OTEL_TRACES
                       value: "true"
-                    - name: OTEL_TRACES_EXPORTER
+                    - name: NUMARY_OTEL_TRACES_EXPORTER
                       value: otlp
-                    - name: OTEL_TRACES_EXPORTER_OTLP_INSECURE
+                    - name: NUMARY_OTEL_TRACES_EXPORTER_OTLP_INSECURE
                       value: "true"
-                    - name: OTEL_TRACES_EXPORTER_OTLP_MODE
+                    - name: NUMARY_OTEL_TRACES_EXPORTER_OTLP_MODE
                       value: grpc
-                    - name: OTEL_TRACES_PORT
+                    - name: NUMARY_OTEL_TRACES_PORT
                       value: "4317"
-                    - name: OTEL_TRACES_ENDPOINT
+                    - name: NUMARY_OTEL_TRACES_ENDPOINT
                       value: localhost
-                    - name: OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
-                      value: $(OTEL_TRACES_ENDPOINT):$(OTEL_TRACES_PORT)
-                    - name: OTEL_RESOURCE_ATTRIBUTES
-                    - name: DEBUG
+                    - name: NUMARY_OTEL_TRACES_EXPORTER_OTLP_ENDPOINT
+                      value: $(NUMARY_OTEL_TRACES_ENDPOINT):$(NUMARY_OTEL_TRACES_PORT)
+                    - name: NUMARY_OTEL_RESOURCE_ATTRIBUTES
+                    - name: NUMARY_DEBUG
                       value: "false"
-                    - name: DEV
+                    - name: NUMARY_DEV
                       value: "false"
-                    - name: STACK_URL
+                    - name: NUMARY_STACK_URL
                       value: http://example.net
-                    - name: OTEL_SERVICE_NAME
+                    - name: NUMARY_OTEL_SERVICE_NAME
                       value: ledger
-                    - name: STORAGE_DRIVER
+                    - name: NUMARY_STORAGE_DRIVER
                       value: postgres
-                    - name: PUBLISHER_TOPIC_MAPPING
+                    - name: NUMARY_PUBLISHER_TOPIC_MAPPING
                       value: '*:orga2-stack2-ledger'
-                    - name: BROKER
+                    - name: NUMARY_BROKER
                       value: kafka
-                    - name: PUBLISHER_KAFKA_ENABLED
+                    - name: NUMARY_PUBLISHER_KAFKA_ENABLED
                       value: "true"
-                    - name: PUBLISHER_KAFKA_BROKER
+                    - name: NUMARY_PUBLISHER_KAFKA_BROKER
                       value: kafka:1234
-                    - name: STORAGE_POSTGRES_CONN_STRING
-                      value: $(POSTGRES_URI)
-                  image: ghcr.io/formancehq/ledger:latest
-                  imagePullPolicy: Always
+                    - name: NUMARY_COMMIT_POLICY
+                      value: allow-past-timestamps
+                    - name: NUMARY_STORAGE_POSTGRES_CONN_STRING
+                      value: $(NUMARY_POSTGRES_URI)
+                  image: ghcr.io/formancehq/ledger:v1.0.0
+                  imagePullPolicy: IfNotPresent
                   livenessProbe:
                     failureThreshold: 20
                     httpGet:
@@ -280,7 +282,10 @@ spec:
                     - containerPort: 10002
                       name: http
                       protocol: TCP
-                  resources: {}
+                  resources:
+                    requests:
+                        cpu: 10m
+                        memory: 40Mi
                   terminationMessagePath: /dev/termination-log
                   terminationMessagePolicy: File
                 - env:
