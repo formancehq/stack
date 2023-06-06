@@ -195,7 +195,8 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 		c.metricsRegistry.ServerMessageReceivedByType().Add(ctx, 1, attrs...)
 
 		attrs = append(attrs, attribute.String("path", ev.ApiCall.Path))
-		req, err := http.NewRequest(ev.ApiCall.Method, c.config.GatewayUrl+"/"+ev.ApiCall.Path, bytes.NewReader(ev.ApiCall.Body))
+		path := strings.TrimPrefix(ev.ApiCall.Path, "/")
+		req, err := http.NewRequest(ev.ApiCall.Method, c.config.GatewayUrl+"/"+path, bytes.NewReader(ev.ApiCall.Body))
 		if err != nil {
 			return &ResponseChanEvent{
 				err: err,
