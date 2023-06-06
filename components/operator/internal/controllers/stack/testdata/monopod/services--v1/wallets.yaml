@@ -6,9 +6,9 @@ metadata:
     name: wallets
     namespace: orga2-stack2
 spec:
-    clusterIP: 10.0.0.171
+    clusterIP: 10.0.0.125
     clusterIPs:
-        - 10.0.0.171
+        - 10.0.0.125
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
