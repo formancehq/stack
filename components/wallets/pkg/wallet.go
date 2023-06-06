@@ -81,8 +81,8 @@ func (w WithBalances) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (w Wallet) LedgerMetadata() metadata.Metadata {
-	return metadata.Metadata{
+func (w Wallet) LedgerMetadata() Metadata {
+	return Metadata{
 		MetadataKeyWalletSpecType:   PrimaryWallet,
 		MetadataKeyWalletName:       w.Name,
 		MetadataKeyWalletCustomData: metadata.MarshalValue(w.Metadata),
