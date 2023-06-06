@@ -53,7 +53,7 @@ func (s *StargateController) HandleCalls(w http.ResponseWriter, r *http.Request)
 	s.logger.Debugf("[HTTP] sending message to %s with path: %s", subject, r.URL.Path)
 	resp, err := s.natsConn.Request(subject, buf, s.config.natsRequestTimeout)
 	if err != nil {
-		s.logger.Errorf("[HTTP] error sending message to %s with path: %s", subject, r.URL.Path)
+		s.logger.Errorf("[HTTP] error sending message to %s with path: %s: %v", subject, r.URL.Path, err)
 		status = ResponseError(w, r, ErrNoResponders)
 		return
 	}

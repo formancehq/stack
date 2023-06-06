@@ -64,12 +64,8 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 		"organization_id": organizationID,
 		"stack_id":        stackID,
 	})
-	attrs := []attribute.KeyValue{
-		attribute.String("organization_id", organizationID),
-		attribute.String("stack_id", stackID),
-	}
-	s.metricsRegistry.ClientsConnected().Add(ctx, 1, attrs...)
-	defer s.metricsRegistry.ClientsConnected().Add(ctx, -1, attrs...)
+	opentelemetry.ClientsConnected.Add(1)
+	defer opentelemetry.ClientsConnected.Add(-1)
 
 	logger.Infof("[GRPC] new stargate connection")
 	defer logger.Infof("[GRPC] stargate connection closed")
@@ -103,6 +99,14 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 			var request api.StargateServerMessage
 			if err := proto.Unmarshal(msg.Data, &request); err != nil {
 				return err
+			}
+
+			switch ev := request.Event.(type) {
+			case *api.StargateServerMessage_ApiCall:
+				logger.WithFields(map[string]any{
+					"path": ev.ApiCall.Path,
+				}).Debug("[GRPC] stream api call request received")
+			default:
 			}
 
 			correlationID := uuid.New().String()
