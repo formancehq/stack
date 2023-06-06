@@ -82,6 +82,7 @@ func (s *Server) Stargate(stream api.StargateService_StargateServer) error {
 		}...)
 		return status.Errorf(codes.Internal, "cannot subscribe to nats subject")
 	}
+	defer sub.Unsubscribe()
 
 	eg, ctx := errgroup.WithContext(ctx)
 
