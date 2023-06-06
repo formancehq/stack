@@ -6,9 +6,9 @@ metadata:
     name: gateway
     namespace: orga1-stack1
 spec:
-    clusterIP: 10.0.0.231
+    clusterIP: 10.0.0.181
     clusterIPs:
-        - 10.0.0.231
+        - 10.0.0.181
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4

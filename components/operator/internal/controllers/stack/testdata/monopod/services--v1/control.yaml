@@ -6,9 +6,9 @@ metadata:
     name: control
     namespace: orga2-stack2
 spec:
-    clusterIP: 10.0.0.139
+    clusterIP: 10.0.0.97
     clusterIPs:
-        - 10.0.0.139
+        - 10.0.0.97
     internalTrafficPolicy: Cluster
     ipFamilies:
         - IPv4
