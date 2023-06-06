@@ -41,7 +41,7 @@ func TestWalletsPatch(t *testing.T) {
 				},
 			}, nil
 		}),
-		WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, md metadata.Metadata) error {
+		WithAddMetadataToAccount(func(ctx context.Context, ledger, account string, md wallet.Metadata) error {
 			require.Equal(t, testEnv.LedgerName(), ledger)
 			require.Equal(t, testEnv.Chart().GetMainBalanceAccount(w.ID), account)
 			require.EqualValues(t, metadata.Metadata{

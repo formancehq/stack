@@ -16,8 +16,8 @@ type DebitHold struct {
 	Description string            `json:"description"`
 }
 
-func (h DebitHold) LedgerMetadata(chart *Chart) metadata.Metadata {
-	return metadata.Metadata{
+func (h DebitHold) LedgerMetadata(chart *Chart) Metadata {
+	return Metadata{
 		MetadataKeyWalletSpecType: HoldWallet,
 		MetadataKeyHoldWalletID:   h.WalletID,
 		MetadataKeyHoldID:         h.ID,

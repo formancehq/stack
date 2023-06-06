@@ -23,7 +23,7 @@ type ExpandedTransaction struct {
 	Timestamp         time.Time                    `json:"timestamp"`
 	Postings          []Posting                    `json:"postings"`
 	Reference         *string                      `json:"reference,omitempty"`
-	Metadata          map[string]string            `json:"metadata"`
+	Metadata          Metadata                     `json:"metadata"`
 	Txid              int64                        `json:"txid"`
 	PreCommitVolumes  map[string]map[string]Volume `json:"preCommitVolumes"`
 	PostCommitVolumes map[string]map[string]Volume `json:"postCommitVolumes"`

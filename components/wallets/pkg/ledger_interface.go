@@ -13,6 +13,32 @@ import (
 	"github.com/formancehq/stack/libs/go-libs/metadata"
 )
 
+type Metadata map[string]string
+
+// notes(gfyrag): hacky way to keep compatibility with ledger v1
+func (a *Metadata) UnmarshalJSON(data []byte) error {
+
+	v := make(map[string]any)
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+
+	*a = Metadata{}
+	for k, v := range v {
+		switch v := v.(type) {
+		case string:
+			(*a)[k] = v
+		default:
+			data, err := json.Marshal(v)
+			if err != nil {
+				panic(err)
+			}
+			(*a)[k] = string(data)
+		}
+	}
+	return nil
+}
+
 type ListAccountsQuery struct {
 	Cursor   string
 	Limit    int
@@ -99,7 +125,7 @@ type AccountsCursorResponse struct {
 }
 
 type Ledger interface {
-	AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error
+	AddMetadataToAccount(ctx context.Context, ledger, account string, metadata Metadata) error
 	GetAccount(ctx context.Context, ledger, account string) (*AccountWithVolumesAndBalances, error)
 	ListAccounts(ctx context.Context, ledger string, query ListAccountsQuery) (*AccountsCursorResponseCursor, error)
 	ListTransactions(ctx context.Context, ledger string, query ListTransactionsQuery) (*TransactionsCursorResponseCursor, error)
@@ -208,7 +234,7 @@ func (d DefaultLedger) CreateTransaction(ctx context.Context, ledger string, tra
 	}, nil
 }
 
-func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata metadata.Metadata) error {
+func (d DefaultLedger) AddMetadataToAccount(ctx context.Context, ledger, account string, metadata Metadata) error {
 
 	data, err := json.Marshal(metadata)
 	if err != nil {
