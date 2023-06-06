@@ -219,8 +219,17 @@ func (c *Client) Forward(ctx context.Context, in *api.StargateServerMessage) *Re
 		now := time.Now()
 		resp, err := c.httpClient.Do(req)
 		if err != nil {
+			c.logger.Errorf("error making http request: %v", err)
 			return &ResponseChanEvent{
-				err: err,
+				err: nil,
+				msg: &api.StargateClientMessage{
+					CorrelationId: in.CorrelationId,
+					Event: &api.StargateClientMessage_ApiCallResponse{ApiCallResponse: &api.StargateClientMessage_APICallResponse{
+						StatusCode: http.StatusInternalServerError,
+						Body:       []byte{},
+						Headers:    map[string]*api.Values{},
+					}},
+				},
 			}
 		}
 		latency := time.Since(now)
