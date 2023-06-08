@@ -777,7 +777,7 @@ spec:
                       value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
-                    - name: HTTP_BIND_ADDRESS_SERVER
+                    - name: LISTEN
                       value: :10007
                     - name: OTEL_TRACES
                       value: "true"
@@ -850,7 +850,7 @@ spec:
                       value: postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)
                     - name: POSTGRES_URI
                       value: $(POSTGRES_NO_DATABASE_URI)/$(POSTGRES_DATABASE)?sslmode=disable
-                    - name: HTTP_BIND_ADDRESS_WORKER
+                    - name: LISTEN
                       value: :0
                     - name: OTEL_TRACES
                       value: "true"
