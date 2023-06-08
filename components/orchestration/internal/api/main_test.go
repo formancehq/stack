@@ -76,7 +76,9 @@ func test(t *testing.T, fn func(router *chi.Mux, m *workflow.Manager, db *bun.DB
 	db := storage.LoadDB(database.ConnString(), testing.Verbose(), os.Stdout)
 	require.NoError(t, storage.Migrate(context.Background(), db))
 	manager := workflow.NewManager(db, newMockedClient(t, db), "default")
-	router := newRouter(manager, &health.HealthController{})
+	router := newRouter(manager, ServiceInfo{
+		Version: "test",
+	}, &health.HealthController{})
 	fn(router, manager, db)
 }
 

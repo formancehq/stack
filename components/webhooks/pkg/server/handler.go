@@ -11,6 +11,7 @@ import (
 
 const (
 	PathHealthCheck  = "/_healthcheck"
+	PathInfo         = "/_info"
 	PathConfigs      = "/configs"
 	PathTest         = "/test"
 	PathActivate     = "/activate"
@@ -27,7 +28,7 @@ type serverHandler struct {
 	httpClient *http.Client
 }
 
-func newServerHandler(store storage.Store, httpClient *http.Client, logger logging.Logger) http.Handler {
+func newServerHandler(store storage.Store, httpClient *http.Client, logger logging.Logger, info ServiceInfo) http.Handler {
 	h := &serverHandler{
 		Mux:        chi.NewRouter(),
 		store:      store,
@@ -46,6 +47,7 @@ func newServerHandler(store storage.Store, httpClient *http.Client, logger loggi
 		})
 	})
 	h.Mux.Get(PathHealthCheck, h.HealthCheckHandle)
+	h.Mux.Get(PathInfo, h.getInfo(info))
 
 	h.Mux.Group(func(r chi.Router) {
 		r.Use(otelchi.Middleware("webhooks"))

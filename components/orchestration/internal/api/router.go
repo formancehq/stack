@@ -10,7 +10,7 @@ import (
 	"github.com/riandyrn/otelchi"
 )
 
-func newRouter(m *workflow.Manager, healthController *health.HealthController) *chi.Mux {
+func newRouter(m *workflow.Manager, info ServiceInfo, healthController *health.HealthController) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 	r.Use(func(handler http.Handler) http.Handler {
@@ -20,6 +20,7 @@ func newRouter(m *workflow.Manager, healthController *health.HealthController) *
 		})
 	})
 	r.Get("/_healthcheck", healthController.Check)
+	r.Get("/_info", getInfo(info))
 	r.Group(func(r chi.Router) {
 		// Plug middleware to handle traces
 		r.Use(otelchi.Middleware("orchestration"))
