@@ -43,6 +43,11 @@ func serve(cmd *cobra.Command, _ []string) error {
 	}
 
 	options := []fx.Option{
+		fx.Provide(func() server.ServiceInfo {
+			return server.ServiceInfo{
+				Version: Version,
+			}
+		}),
 		postgres.NewModule(viper.GetString(flag.StoragePostgresConnString)),
 		otlp.HttpClientModule(),
 		server.StartModule(viper.GetString(flag.Listen)),
