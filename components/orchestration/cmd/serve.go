@@ -37,6 +37,11 @@ func newServeCommand() *cobra.Command {
 
 			options := []fx.Option{
 				healthCheckModule(),
+				fx.Provide(func() api.ServiceInfo {
+					return api.ServiceInfo{
+						Version: Version,
+					}
+				}),
 				api.NewModule(),
 				workflow.NewModule(viper.GetString(temporalTaskQueueFlag)),
 				fx.Invoke(func(lifecycle fx.Lifecycle, db *bun.DB) {
