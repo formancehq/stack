@@ -18,7 +18,7 @@ func init() {
 					HasVersionEndpoint:      true,
 					ExposeHTTP:              true,
 					InjectPostgresVariables: true,
-					ListenEnvVar:            "HTTP_BIND_ADDRESS_SERVER",
+					ListenEnvVar:            "LISTEN",
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
 							Image:     modules.GetImage("webhooks", resolveContext.Versions.Spec.Webhooks),
@@ -30,7 +30,7 @@ func init() {
 				{
 					Name:                    "worker",
 					InjectPostgresVariables: true,
-					ListenEnvVar:            "HTTP_BIND_ADDRESS_WORKER",
+					ListenEnvVar:            "LISTEN",
 					Liveness:                modules.LivenessDisable,
 					Container: func(resolveContext modules.ContainerResolutionContext) modules.Container {
 						return modules.Container{
