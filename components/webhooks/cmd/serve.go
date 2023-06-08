@@ -18,9 +18,10 @@ import (
 
 func newServeCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:   "serve",
-		Short: "Run webhooks server",
-		RunE:  serve,
+		Use:     "serve",
+		Aliases: []string{"server"},
+		Short:   "Run webhooks server",
+		RunE:    serve,
 	}
 }
 
