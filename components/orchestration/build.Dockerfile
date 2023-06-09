@@ -1,5 +1,4 @@
-FROM ubuntu:22.04
-RUN apt update && apt install -y ca-certificates curl && rm -rf /var/lib/apt/lists/*
+FROM ghcr.io/formancehq/base:22.04
 COPY orchestration /usr/bin/orchestration
 ENV OTEL_SERVICE_NAME orchestration
 ENTRYPOINT ["/usr/bin/orchestration"]
