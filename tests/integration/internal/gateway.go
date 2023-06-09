@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/http/httputil"
@@ -27,8 +28,36 @@ func registerService(s string, url *url.URL) {
 	}
 }
 
+type serviceInfo struct {
+	Name string `json:"name"`
+	// We do not want to omit empty values in the json response
+	Version string `json:"version"`
+	Health  bool   `json:"health"`
+}
+
+type versionsResponse struct {
+	Versions []*serviceInfo `json:"versions"`
+}
+
 func startFakeGateway() {
 	gatewayServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/versions" {
+			res := versionsResponse{
+				Versions: []*serviceInfo{
+					{
+						Name:    "ledger",
+						Version: "v2.0.0",
+					},
+					// If needed, add other services version
+				},
+			}
+			w.Header().Set("Content-Type", "application/json")
+			if err := json.NewEncoder(w).Encode(res); err != nil {
+				panic(err)
+			}
+			w.WriteHeader(http.StatusOK)
+			return
+		}
 		for name, proxy := range proxies {
 			if strings.HasPrefix(r.URL.Path, "/api/"+name) {
 				ginkgo.GinkgoWriter.Printf("Proxying %s: %s\r\n", name, proxy.url.String())
