@@ -183,6 +183,8 @@ func (tl *Timeline) Head(ctx context.Context, to *[]*stripe.BalanceTransaction) 
 		}
 	}
 
+	futureState.NoMoreHistory = !hasMore
+
 	for i, j := 0, len(*to)-1; i < j; i, j = i+1, j-1 {
 		(*to)[i], (*to)[j] = (*to)[j], (*to)[i]
 	}
