@@ -14,6 +14,7 @@ const (
 	stackFlag              = "stack"
 	organizationFlag       = "organization"
 	DefaultSegmentWriteKey = ""
+	outputFlag             = "output"
 )
 
 var (
@@ -174,6 +175,41 @@ func WithRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn 
 	}
 }
 
+func WithPreRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn {
+	return func(cmd *cobra.Command) {
+		cmd.PreRunE = fn
+	}
+}
+
+func WrapOutputPostRunE(fn func(cmd *cobra.Command, args []string) error) CommandOptionFn {
+	return func(cmd *cobra.Command) {
+		cmd.PostRunE = func(cmd *cobra.Command, args []string) error {
+			flags := GetString(cmd, OutputFlag)
+
+			if flags == "" {
+				return fn(cmd, args)
+			}
+
+			switch flags {
+			case "json":
+				// Marshal to JSON then print to stdout
+				data, err := ShareStoreToJson()
+				if (err) != nil {
+					return err
+				}
+
+				_, err = fmt.Fprintln(cmd.OutOrStdout(), string(data))
+				if (err) != nil {
+					return err
+				}
+				return nil
+			}
+
+			return cmd.Help()
+		}
+	}
+}
+
 func WithChildCommands(cmds ...*cobra.Command) CommandOptionFn {
 	return func(cmd *cobra.Command) {
 		for _, child := range cmds {
@@ -226,6 +262,11 @@ func WithSilenceError() CommandOptionFn {
 
 func WithConfirmFlag() CommandOptionFn {
 	return WithBoolFlag(confirmFlag, false, "Confirm action")
+}
+
+func WithOutputFlag() CommandOptionFn {
+	return WithStringFlag(outputFlag, "", "Output format. One of: json")
+
 }
 
 func NewStackCommand(use string, opts ...CommandOption) *cobra.Command {

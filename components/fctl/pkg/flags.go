@@ -13,6 +13,7 @@ const (
 	MembershipURIFlag = "membership-uri"
 	FileFlag          = "config"
 	ProfileFlag       = "profile"
+	OutputFlag        = "output"
 	DebugFlag         = "debug"
 	InsecureTlsFlag   = "insecure-tls"
 	TelemetryFlag     = "telemetry"
