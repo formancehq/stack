@@ -1,10 +1,9 @@
 package fctl
 
 import (
-	"fmt"
-
 	"github.com/formancehq/fctl/membershipclient"
 	"github.com/pkg/errors"
+	"github.com/pterm/pterm"
 	"github.com/segmentio/analytics-go/v3"
 	"github.com/segmentio/ksuid"
 	"github.com/spf13/cobra"
@@ -197,11 +196,7 @@ func WrapOutputPostRunE(fn func(cmd *cobra.Command, args []string) error) Comman
 				if (err) != nil {
 					return err
 				}
-
-				_, err = fmt.Fprintln(cmd.OutOrStdout(), string(data))
-				if (err) != nil {
-					return err
-				}
+				pterm.Println(string(data))
 				return nil
 			}
 
