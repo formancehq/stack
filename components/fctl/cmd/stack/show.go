@@ -14,9 +14,13 @@ import (
 
 var errStackNotFound = errors.New("stack not found")
 
-const stackNameFlag = "name"
+type StackInformation struct {
+	Stack    *membershipclient.Stack     `json:"stack"`
+	Versions *shared.GetVersionsResponse `json:"versions"`
+}
 
 func NewShowCommand() *cobra.Command {
+	var stackNameFlag = "name"
 
 	return fctl.NewMembershipCommand("show (<stack-id> | --name=<stack-name>)",
 		fctl.WithAliases("s", "sh"),
@@ -30,6 +34,8 @@ func NewShowCommand() *cobra.Command {
 }
 
 func showCommand(cmd *cobra.Command, args []string) error {
+	var stackNameFlag = "name"
+
 	cfg, err := fctl.GetConfig(cmd)
 	if err != nil {
 		return err
@@ -98,11 +104,6 @@ func showCommand(cmd *cobra.Command, args []string) error {
 
 	return nil
 
-}
-
-type StackInformation struct {
-	Stack    *membershipclient.Stack     `json:"stack"`
-	Versions *shared.GetVersionsResponse `json:"versions"`
 }
 
 func viewStackInformation(cmd *cobra.Command, args []string) error {
