@@ -7,24 +7,47 @@ import (
 )
 
 var (
-	Version   = "develop"
-	BuildDate = "-"
-	Commit    = "-"
+	Version = "develop"
 )
+
+type VersionStruct struct {
+	Version   string `json:"version" yaml:"version"`
+	BuildDate string `json:"buildDate" yaml:"buildDate"`
+	Commit    string `json:"commit" yaml:"commit"`
+}
 
 func NewVersionCommand() *cobra.Command {
 	return fctl.NewCommand("version",
 		fctl.WithShortDescription("Get version"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithRunE(func(cmd *cobra.Command, args []string) error {
-			tableData := pterm.TableData{}
-			tableData = append(tableData, []string{pterm.LightCyan("Version"), Version})
-			tableData = append(tableData, []string{pterm.LightCyan("Date"), BuildDate})
-			tableData = append(tableData, []string{pterm.LightCyan("Commit"), Commit})
-			return pterm.DefaultTable.
-				WithWriter(cmd.OutOrStdout()).
-				WithData(tableData).
-				Render()
-		}),
+		fctl.WithOutputFlag(),
+		fctl.WithRunE(versionCommand),
+		fctl.WrapOutputPostRunE(view),
 	)
+}
+
+func versionCommand(cmd *cobra.Command, args []string) error {
+
+	version := &VersionStruct{
+		Version:   "develop",
+		BuildDate: "-",
+		Commit:    "-",
+	}
+
+	fctl.SetSharedData(version, nil, nil)
+
+	return nil
+}
+
+func view(cmd *cobra.Command, args []string) error {
+	data := fctl.GetSharedData().(*VersionStruct)
+
+	tableData := pterm.TableData{}
+	tableData = append(tableData, []string{pterm.LightCyan("Version"), data.Version})
+	tableData = append(tableData, []string{pterm.LightCyan("Date"), data.BuildDate})
+	tableData = append(tableData, []string{pterm.LightCyan("Commit"), data.Commit})
+	return pterm.DefaultTable.
+		WithWriter(cmd.OutOrStdout()).
+		WithData(tableData).
+		Render()
 }
