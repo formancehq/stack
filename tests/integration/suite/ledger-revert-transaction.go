@@ -28,7 +28,7 @@ var _ = Given("some empty environment", func() {
 			_ = msgs
 
 			// Create a transaction
-			response, err := Client().Transactions.CreateTransaction(
+			response, err := Client().Ledger.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{
@@ -59,7 +59,7 @@ var _ = Given("some empty environment", func() {
 		})
 		Then("reverting it", func() {
 			BeforeEach(func() {
-				response, err := Client().Transactions.RevertTransaction(
+				response, err := Client().Ledger.RevertTransaction(
 					TestContext(),
 					operations.RevertTransactionRequest{
 						Ledger: "default",
@@ -75,7 +75,7 @@ var _ = Given("some empty environment", func() {
 				Expect(events.Check(msg.Data, "ledger", bus.EventTypeRevertedTransaction)).Should(Succeed())
 			})
 			It("should set a metadata on the original transaction", func() {
-				response, err := Client().Transactions.GetTransaction(
+				response, err := Client().Ledger.GetTransaction(
 					TestContext(),
 					operations.GetTransactionRequest{
 						Ledger: "default",
@@ -89,7 +89,7 @@ var _ = Given("some empty environment", func() {
 			})
 			Then("trying to revert again", func() {
 				It("should be rejected", func() {
-					response, err := Client().Transactions.RevertTransaction(
+					response, err := Client().Ledger.RevertTransaction(
 						TestContext(),
 						operations.RevertTransactionRequest{
 							Ledger: "default",

@@ -32,7 +32,7 @@ func NewListCommand() *cobra.Command {
 				return err
 			}
 
-			response, err := ledgerClient.Server.GetInfo(cmd.Context())
+			response, err := ledgerClient.Ledger.GetInfo(cmd.Context())
 			if err != nil {
 				return err
 			}

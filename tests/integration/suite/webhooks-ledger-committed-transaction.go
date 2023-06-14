@@ -45,7 +45,7 @@ var _ = Given("An environment configured with a webhook sent on created transact
 
 	When("creating a transaction", func() {
 		BeforeEach(func() {
-			response, err := Client().Transactions.CreateTransaction(
+			response, err := Client().Ledger.CreateTransaction(
 				TestContext(),
 				operations.CreateTransactionRequest{
 					PostTransaction: shared.PostTransaction{

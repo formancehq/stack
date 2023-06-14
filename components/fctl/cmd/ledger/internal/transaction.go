@@ -33,7 +33,7 @@ func TransactionIDOrLastN(ctx context.Context, ledgerClient *formance.Formance, 
 			Ledger:   ledger,
 			PageSize: &pageSize,
 		}
-		response, err := ledgerClient.Transactions.ListTransactions(ctx, request)
+		response, err := ledgerClient.Ledger.ListTransactions(ctx, request)
 		if err != nil {
 			return 0, err
 		}
@@ -69,7 +69,7 @@ func CreateTransaction(client *formance.Formance, ctx context.Context, ledger st
 		return version.Name == "ledger"
 	})[0].Version
 
-	response, err := client.Transactions.CreateTransaction(ctx, request)
+	response, err := client.Ledger.CreateTransaction(ctx, request)
 
 	if semver.IsValid(version) && semver.Compare(version, "v2.0.0") < 0 {
 		baseResponse := api.BaseResponse[[]shared.Transaction]{}

@@ -51,7 +51,7 @@ func NewRevertCommand() *cobra.Command {
 				Txid:   txId,
 			}
 
-			response, err := ledgerClient.Transactions.RevertTransaction(cmd.Context(), request)
+			response, err := ledgerClient.Ledger.RevertTransaction(cmd.Context(), request)
 			if err != nil {
 				return err
 			}

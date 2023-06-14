@@ -40,12 +40,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("deserunt") {{
+                .setSecurity(new Security("distinctio") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            AddScopeToClientRequest req = new AddScopeToClientRequest("perferendis", "ipsam");            
+            AddScopeToClientRequest req = new AddScopeToClientRequest("quibusdam", "unde");            
 
             AddScopeToClientResponse res = sdk.auth.addScopeToClient(req);
 
@@ -77,12 +77,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("repellendus") {{
+                .setSecurity(new Security("nulla") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            AddTransientScopeRequest req = new AddTransientScopeRequest("sapiente", "quo");            
+            AddTransientScopeRequest req = new AddTransientScopeRequest("corrupti", "illum");            
 
             AddTransientScopeResponse res = sdk.auth.addTransientScope(req);
 
@@ -114,29 +114,29 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("odit") {{
+                .setSecurity(new Security("vel") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            com.formance.formance_sdk.models.shared.CreateClientRequest req = new CreateClientRequest("at") {{
-                description = "at";
+            com.formance.formance_sdk.models.shared.CreateClientRequest req = new CreateClientRequest("error") {{
+                description = "deserunt";
                 metadata = new java.util.HashMap<String, Object>() {{
-                    put("molestiae", "quod");
-                    put("quod", "esse");
-                    put("totam", "porro");
-                    put("dolorum", "dicta");
+                    put("iure", "magnam");
+                    put("debitis", "ipsa");
                 }};
                 postLogoutRedirectUris = new String[]{{
-                    add("officia"),
-                    add("occaecati"),
-                    add("fugit"),
+                    add("tempora"),
+                    add("suscipit"),
+                    add("molestiae"),
+                    add("minus"),
                 }};
                 public_ = false;
                 redirectUris = new String[]{{
-                    add("hic"),
-                    add("optio"),
-                    add("totam"),
+                    add("voluptatum"),
+                    add("iusto"),
+                    add("excepturi"),
+                    add("nisi"),
                 }};
                 trusted = false;
             }};            
@@ -171,15 +171,14 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("beatae") {{
+                .setSecurity(new Security("recusandae") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            com.formance.formance_sdk.models.shared.CreateScopeRequest req = new CreateScopeRequest("commodi") {{
+            com.formance.formance_sdk.models.shared.CreateScopeRequest req = new CreateScopeRequest("temporibus") {{
                 metadata = new java.util.HashMap<String, Object>() {{
-                    put("modi", "qui");
-                    put("impedit", "cum");
+                    put("quis", "veritatis");
                 }};
             }};            
 
@@ -214,15 +213,18 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("esse") {{
+                .setSecurity(new Security("deserunt") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            CreateSecretRequest req = new CreateSecretRequest("ipsum") {{
-                createSecretRequest = new CreateSecretRequest("excepturi") {{
+            CreateSecretRequest req = new CreateSecretRequest("perferendis") {{
+                createSecretRequest = new CreateSecretRequest("ipsam") {{
                     metadata = new java.util.HashMap<String, Object>() {{
-                        put("perferendis", "ad");
+                        put("sapiente", "quo");
+                        put("odit", "at");
+                        put("at", "maiores");
+                        put("molestiae", "quod");
                     }};
                 }};;
             }};            
@@ -257,12 +259,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("natus") {{
+                .setSecurity(new Security("quod") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            DeleteClientRequest req = new DeleteClientRequest("sed");            
+            DeleteClientRequest req = new DeleteClientRequest("esse");            
 
             DeleteClientResponse res = sdk.auth.deleteClient(req);
 
@@ -294,12 +296,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("iste") {{
+                .setSecurity(new Security("totam") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            DeleteScopeRequest req = new DeleteScopeRequest("dolor");            
+            DeleteScopeRequest req = new DeleteScopeRequest("porro");            
 
             DeleteScopeResponse res = sdk.auth.deleteScope(req);
 
@@ -331,12 +333,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("natus") {{
+                .setSecurity(new Security("dolorum") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            DeleteScopeFromClientRequest req = new DeleteScopeFromClientRequest("laboriosam", "hic");            
+            DeleteScopeFromClientRequest req = new DeleteScopeFromClientRequest("dicta", "nam");            
 
             DeleteScopeFromClientResponse res = sdk.auth.deleteScopeFromClient(req);
 
@@ -368,12 +370,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("saepe") {{
+                .setSecurity(new Security("officia") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            DeleteSecretRequest req = new DeleteSecretRequest("fuga", "in");            
+            DeleteSecretRequest req = new DeleteSecretRequest("occaecati", "fugit");            
 
             DeleteSecretResponse res = sdk.auth.deleteSecret(req);
 
@@ -405,12 +407,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("corporis") {{
+                .setSecurity(new Security("deleniti") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            DeleteTransientScopeRequest req = new DeleteTransientScopeRequest("iste", "iure");            
+            DeleteTransientScopeRequest req = new DeleteTransientScopeRequest("hic", "optio");            
 
             DeleteTransientScopeResponse res = sdk.auth.deleteTransientScope(req);
 
@@ -441,7 +443,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("saepe") {{
+                .setSecurity(new Security("totam") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -475,7 +477,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("quidem") {{
+                .setSecurity(new Security("beatae") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -509,7 +511,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("architecto") {{
+                .setSecurity(new Security("commodi") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -543,7 +545,7 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("ipsa") {{
+                .setSecurity(new Security("molestiae") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
@@ -578,12 +580,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("reiciendis") {{
+                .setSecurity(new Security("modi") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            ReadClientRequest req = new ReadClientRequest("est");            
+            ReadClientRequest req = new ReadClientRequest("qui");            
 
             ReadClientResponse res = sdk.auth.readClient(req);
 
@@ -615,12 +617,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("mollitia") {{
+                .setSecurity(new Security("impedit") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            ReadScopeRequest req = new ReadScopeRequest("laborum");            
+            ReadScopeRequest req = new ReadScopeRequest("cum");            
 
             ReadScopeResponse res = sdk.auth.readScope(req);
 
@@ -652,12 +654,12 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("dolores") {{
+                .setSecurity(new Security("esse") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            ReadUserRequest req = new ReadUserRequest("dolorem");            
+            ReadUserRequest req = new ReadUserRequest("ipsum");            
 
             ReadUserResponse res = sdk.auth.readUser(req);
 
@@ -690,30 +692,29 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("corporis") {{
+                .setSecurity(new Security("excepturi") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            UpdateClientRequest req = new UpdateClientRequest("explicabo") {{
-                updateClientRequest = new UpdateClientRequest("nobis") {{
-                    description = "enim";
+            UpdateClientRequest req = new UpdateClientRequest("aspernatur") {{
+                updateClientRequest = new UpdateClientRequest("perferendis") {{
+                    description = "ad";
                     metadata = new java.util.HashMap<String, Object>() {{
-                        put("nemo", "minima");
-                        put("excepturi", "accusantium");
-                        put("iure", "culpa");
+                        put("sed", "iste");
+                        put("dolor", "natus");
+                        put("laboriosam", "hic");
                     }};
                     postLogoutRedirectUris = new String[]{{
-                        add("sapiente"),
-                        add("architecto"),
-                        add("mollitia"),
-                        add("dolorem"),
+                        add("fuga"),
+                        add("in"),
+                        add("corporis"),
+                        add("iste"),
                     }};
                     public_ = false;
                     redirectUris = new String[]{{
-                        add("consequuntur"),
-                        add("repellat"),
-                        add("mollitia"),
+                        add("saepe"),
+                        add("quidem"),
                     }};
                     trusted = false;
                 }};;
@@ -750,16 +751,17 @@ public class Application {
     public static void main(String[] args) {
         try {
             SDK sdk = SDK.builder()
-                .setSecurity(new Security("occaecati") {{
+                .setSecurity(new Security("architecto") {{
                     authorization = "Bearer YOUR_ACCESS_TOKEN_HERE";
                 }})
                 .build();
 
-            UpdateScopeRequest req = new UpdateScopeRequest("numquam") {{
-                updateScopeRequest = new UpdateScopeRequest("commodi") {{
+            UpdateScopeRequest req = new UpdateScopeRequest("ipsa") {{
+                updateScopeRequest = new UpdateScopeRequest("reiciendis") {{
                     metadata = new java.util.HashMap<String, Object>() {{
-                        put("molestiae", "velit");
-                        put("error", "quia");
+                        put("mollitia", "laborum");
+                        put("dolores", "dolorem");
+                        put("corporis", "explicabo");
                     }};
                 }};;
             }};            

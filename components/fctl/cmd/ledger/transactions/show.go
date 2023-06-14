@@ -42,7 +42,7 @@ func NewShowCommand() *cobra.Command {
 				return err
 			}
 
-			response, err := ledgerClient.Transactions.GetTransaction(
+			response, err := ledgerClient.Ledger.GetTransaction(
 				cmd.Context(),
 				operations.GetTransactionRequest{
 					Ledger: ledger,

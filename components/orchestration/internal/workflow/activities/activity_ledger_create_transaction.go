@@ -33,7 +33,7 @@ func (a Activities) CreateTransaction(ctx context.Context, request CreateTransac
 		return version.Name == "ledger"
 	})[0].Version
 
-	response, err := a.client.Transactions.
+	response, err := a.client.Ledger.
 		CreateTransaction(
 			ctx,
 			operations.CreateTransactionRequest{

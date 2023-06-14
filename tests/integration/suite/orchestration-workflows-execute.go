@@ -104,7 +104,7 @@ var _ = Given("An empty environment", func() {
 				Then("checking ledger account balance", func() {
 					var balancesCursorResponse *shared.BalancesCursorResponse
 					BeforeEach(func() {
-						reponse, err := Client().Balances.GetBalances(
+						reponse, err := Client().Ledger.GetBalances(
 							TestContext(),
 							operations.GetBalancesRequest{
 								Address: ptr("bank"),

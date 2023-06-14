@@ -47,8 +47,8 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.AddScopeToClient(ctx, operations.AddScopeToClientRequest{
-        ClientID: "molestiae",
-        ScopeID: "minus",
+        ClientID: "corrupti",
+        ScopeID: "provident",
     })
     if err != nil {
         log.Fatal(err)
@@ -85,8 +85,8 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.AddTransientScope(ctx, operations.AddTransientScopeRequest{
-        ScopeID: "placeat",
-        TransientScopeID: "voluptatum",
+        ScopeID: "distinctio",
+        TransientScopeID: "quibusdam",
     })
     if err != nil {
         log.Fatal(err)
@@ -123,23 +123,23 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.CreateClient(ctx, shared.CreateClientRequest{
-        Description: formance.String("iusto"),
+        Description: formance.String("unde"),
         Metadata: map[string]interface{}{
-            "nisi": "recusandae",
-            "temporibus": "ab",
-            "quis": "veritatis",
+            "corrupti": "illum",
+            "vel": "error",
+            "deserunt": "suscipit",
+            "iure": "magnam",
         },
-        Name: "Christopher Hills",
+        Name: "Larry Windler",
         PostLogoutRedirectUris: []string{
-            "odit",
-            "at",
-            "at",
-            "maiores",
+            "minus",
+            "placeat",
         },
         Public: formance.Bool(false),
         RedirectUris: []string{
-            "quod",
-            "quod",
+            "iusto",
+            "excepturi",
+            "nisi",
         },
         Trusted: formance.Bool(false),
     })
@@ -178,11 +178,12 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.CreateScope(ctx, shared.CreateScopeRequest{
-        Label: "esse",
+        Label: "recusandae",
         Metadata: map[string]interface{}{
-            "porro": "dolorum",
-            "dicta": "nam",
-            "officia": "occaecati",
+            "ab": "quis",
+            "veritatis": "deserunt",
+            "perferendis": "ipsam",
+            "repellendus": "sapiente",
         },
     })
     if err != nil {
@@ -223,11 +224,14 @@ func main() {
     res, err := s.Auth.CreateSecret(ctx, operations.CreateSecretRequest{
         CreateSecretRequest: &shared.CreateSecretRequest{
             Metadata: map[string]interface{}{
-                "deleniti": "hic",
+                "odit": "at",
+                "at": "maiores",
+                "molestiae": "quod",
+                "quod": "esse",
             },
-            Name: "Everett Breitenberg",
+            Name: "Miss Lowell Parisian",
         },
-        ClientID: "modi",
+        ClientID: "occaecati",
     })
     if err != nil {
         log.Fatal(err)
@@ -264,7 +268,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.DeleteClient(ctx, operations.DeleteClientRequest{
-        ClientID: "qui",
+        ClientID: "fugit",
     })
     if err != nil {
         log.Fatal(err)
@@ -301,7 +305,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.DeleteScope(ctx, operations.DeleteScopeRequest{
-        ScopeID: "impedit",
+        ScopeID: "deleniti",
     })
     if err != nil {
         log.Fatal(err)
@@ -338,8 +342,8 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.DeleteScopeFromClient(ctx, operations.DeleteScopeFromClientRequest{
-        ClientID: "cum",
-        ScopeID: "esse",
+        ClientID: "hic",
+        ScopeID: "optio",
     })
     if err != nil {
         log.Fatal(err)
@@ -376,8 +380,8 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.DeleteSecret(ctx, operations.DeleteSecretRequest{
-        ClientID: "ipsum",
-        SecretID: "excepturi",
+        ClientID: "totam",
+        SecretID: "beatae",
     })
     if err != nil {
         log.Fatal(err)
@@ -414,8 +418,8 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.DeleteTransientScope(ctx, operations.DeleteTransientScopeRequest{
-        ScopeID: "aspernatur",
-        TransientScopeID: "perferendis",
+        ScopeID: "commodi",
+        TransientScopeID: "molestiae",
     })
     if err != nil {
         log.Fatal(err)
@@ -588,7 +592,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.ReadClient(ctx, operations.ReadClientRequest{
-        ClientID: "ad",
+        ClientID: "modi",
     })
     if err != nil {
         log.Fatal(err)
@@ -625,7 +629,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.ReadScope(ctx, operations.ReadScopeRequest{
-        ScopeID: "natus",
+        ScopeID: "qui",
     })
     if err != nil {
         log.Fatal(err)
@@ -662,7 +666,7 @@ func main() {
 
     ctx := context.Background()
     res, err := s.Auth.ReadUser(ctx, operations.ReadUserRequest{
-        UserID: "sed",
+        UserID: "impedit",
     })
     if err != nil {
         log.Fatal(err)
@@ -701,23 +705,26 @@ func main() {
     ctx := context.Background()
     res, err := s.Auth.UpdateClient(ctx, operations.UpdateClientRequest{
         UpdateClientRequest: &shared.UpdateClientRequest{
-            Description: formance.String("iste"),
+            Description: formance.String("cum"),
             Metadata: map[string]interface{}{
-                "natus": "laboriosam",
+                "ipsum": "excepturi",
+                "aspernatur": "perferendis",
             },
-            Name: "Elias Parker",
+            Name: "Faye Cormier",
             PostLogoutRedirectUris: []string{
-                "iure",
+                "laboriosam",
+                "hic",
                 "saepe",
-                "quidem",
             },
             Public: formance.Bool(false),
             RedirectUris: []string{
-                "ipsa",
+                "in",
+                "corporis",
+                "iste",
             },
             Trusted: formance.Bool(false),
         },
-        ClientID: "reiciendis",
+        ClientID: "iure",
     })
     if err != nil {
         log.Fatal(err)
@@ -756,14 +763,14 @@ func main() {
     ctx := context.Background()
     res, err := s.Auth.UpdateScope(ctx, operations.UpdateScopeRequest{
         UpdateScopeRequest: &shared.UpdateScopeRequest{
-            Label: "est",
+            Label: "saepe",
             Metadata: map[string]interface{}{
-                "laborum": "dolores",
-                "dolorem": "corporis",
-                "explicabo": "nobis",
+                "architecto": "ipsa",
+                "reiciendis": "est",
+                "mollitia": "laborum",
             },
         },
-        ScopeID: "enim",
+        ScopeID: "dolores",
     })
     if err != nil {
         log.Fatal(err)
