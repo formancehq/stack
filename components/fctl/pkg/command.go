@@ -185,7 +185,7 @@ func WrapOutputPostRunE(fn func(cmd *cobra.Command, args []string) error) Comman
 		cmd.PostRunE = func(cmd *cobra.Command, args []string) error {
 			flags := GetString(cmd, OutputFlag)
 
-			if flags == "" {
+			if flags == "table" {
 				return fn(cmd, args)
 			}
 
@@ -257,11 +257,6 @@ func WithSilenceError() CommandOptionFn {
 
 func WithConfirmFlag() CommandOptionFn {
 	return WithBoolFlag(confirmFlag, false, "Confirm action")
-}
-
-func WithOutputFlag() CommandOptionFn {
-	return WithStringFlag(outputFlag, "", "Output format. One of: json")
-
 }
 
 func NewStackCommand(use string, opts ...CommandOption) *cobra.Command {

@@ -21,7 +21,6 @@ func NewListCommand() *cobra.Command {
 		fctl.WithShortDescription("List stacks"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
 		fctl.WithBoolFlag(deletedFlag, false, "Display deleted stacks"),
-		fctl.WithOutputFlag(),
 		fctl.WithRunE(listCommand),
 		fctl.WrapOutputPostRunE(view),
 	)
@@ -58,13 +57,11 @@ func listCommand(cmd *cobra.Command, args []string) error {
 	}
 
 	fctl.SetSharedData(rsp.Data, profile, cfg)
-
 	return nil
 }
 
 func view(cmd *cobra.Command, args []string) error {
 	sharedStruct := fctl.GetSharedData().([]membershipclient.Stack)
-
 	tableData := fctl.Map(sharedStruct, func(stack membershipclient.Stack) []string {
 		data := []string{
 			stack.Id,
