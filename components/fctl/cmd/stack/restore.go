@@ -19,7 +19,6 @@ func NewRestoreStackCommand() *cobra.Command {
 		fctl.WithShortDescription("Restore a deleted stack"),
 		fctl.WithArgs(cobra.ExactArgs(1)),
 		fctl.WithStringFlag(stackNameFlag, "", ""),
-		fctl.WithOutputFlag(),
 		fctl.WithRunE(restoreCommand),
 		fctl.WrapOutputPostRunE(viewRestore),
 	)

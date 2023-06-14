@@ -33,7 +33,6 @@ func NewCreateCommand() *cobra.Command {
 		fctl.WithBoolFlag(unprotectFlag, false, "Unprotect stacks (no confirmation on write commands)"),
 		fctl.WithStringFlag(regionFlag, "", "Region on which deploy the stack"),
 		fctl.WithBoolFlag(nowaitFlag, false, "Not wait stack availability"),
-		fctl.WithOutputFlag(),
 		fctl.WithRunE(createStackCommand),
 		fctl.WrapOutputPostRunE(viewStackCreate),
 	)

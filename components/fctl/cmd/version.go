@@ -20,7 +20,6 @@ func NewVersionCommand() *cobra.Command {
 	return fctl.NewCommand("version",
 		fctl.WithShortDescription("Get version"),
 		fctl.WithArgs(cobra.ExactArgs(0)),
-		fctl.WithOutputFlag(),
 		fctl.WithRunE(versionCommand),
 		fctl.WrapOutputPostRunE(view),
 	)
